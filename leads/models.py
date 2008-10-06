@@ -4,6 +4,17 @@ from django.contrib import admin
 from datetime import datetime
 
 # Create your models here.
+COMPANY=(
+             ("NEWARCH",     "New'Arch"),
+             ("SOLUCOM/D2S", "Solucom/D²S"),
+             ("SOLUCOM/SEC", "Solucom/Sec"),
+             ("IDESYS",      "Idesys"),
+             ("VISTALI",     "Vistali"),
+             ("DREAMSOFT",   "DreamSoft"),
+             ("ARCOME",      "Arcome"),
+             ("COSMOSBAY",   "CosmosBay~Vectis"),
+             ("KLC",         "KLC")
+            )
 
 class ClientCompany(models.Model):
     """Client company"""
@@ -30,8 +41,8 @@ class ClientContact(models.Model):
 class Client(models.Model):
     """A client organization"""
     organisation=models.ForeignKey(ClientOrganisation)
-    # Move contact to lead instead of Client ?
     contact=models.ForeignKey(ClientContact, blank=True, null=True)
+    salesOwner=models.CharField("Propriété commerciale", max_length=30, choices=COMPANY, default="NEWARCH")
     
     def __unicode__(self):
         return u"%s (%s)" % (self.organisation, self.contact)
@@ -46,17 +57,6 @@ class Consultant(models.Model):
 
 class SalesMan(models.Model):
     """A salesman from New'Arch or Solucom"""
-    COMPANY=(
-             ("NEWARCH",     "New'Arch"),
-             ("SOLUCOM/D2S", "Solucom/D²S"),
-             ("SOLUCOM/SEC", "Solucom/Sec"),
-             ("IDESYS",      "Idesys"),
-             ("VISTALI",     "Vistali"),
-             ("DREAMSOFT",   "DreamSoft"),
-             ("ARCOME",      "Arcome"),
-             ("COSMOSBAY",   "CosmosBay~Vectis"),
-             ("KLC",         "KLC")
-            )
     name=models.CharField("Nom", max_length=50)
     trigramme=models.CharField(max_length=4)
     company=models.CharField("Société", max_length=30, choices=COMPANY)
@@ -96,7 +96,7 @@ class Lead(models.Model):
 class LeadAdmin(admin.ModelAdmin):
     list_display = ("name", "client", "description", "responsible", "salesman", "sales", "creation_date", "due_date", "update_date")
     fieldsets = [
-        (None,    {"fields": ["name", "description", "client"]}),
+        (None,    {"fields": ["name", "client", "description"]}),
         ('État et suivi',     {'fields': ['responsible', 'salesman', 'start_date', 'state', 'due_date']}),
         ('Staffing',     {'fields': ["staffing", "sales"]}),
         ]
@@ -116,10 +116,15 @@ class SalesManAdmin(admin.ModelAdmin):
     odering=("name")
     search_fields=["name", "trigramme"]
 
+class ClientCompanyAdmin(admin.ModelAdmin):
+    list_display=("name",)
+    ordering=("name",)
+    search_fields=("name",)
+
 admin.site.register(Lead, LeadAdmin)
 admin.site.register(Client)
 admin.site.register(ClientOrganisation)
-admin.site.register(ClientCompany)
+admin.site.register(ClientCompany, ClientCompanyAdmin)
 admin.site.register(ClientContact, ClientContactAdmin)
 admin.site.register(Consultant)
 admin.site.register(SalesMan, SalesManAdmin)
