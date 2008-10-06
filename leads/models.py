@@ -77,7 +77,7 @@ class Lead(models.Model):
             ('FORGIVEN', u'Affaire abandonnée'),
            )
     name=models.CharField("Nom", max_length=200)
-    description=models.TextField()
+    description=models.TextField(blank=True)
     sales=models.IntegerField("CA (k€)", blank=True, null=True)
     salesman=models.ForeignKey(SalesMan, blank=True, null=True, verbose_name="Commercial")
     staffing=models.ManyToManyField(Consultant, blank=True)
@@ -121,8 +121,13 @@ class ClientCompanyAdmin(admin.ModelAdmin):
     ordering=("name",)
     search_fields=("name",)
 
+class ClientAdmin(admin.ModelAdmin):
+    list_display=("organisation", "salesOwner", "contact")
+    ordering=("organisation",)
+    search_fields=("organisation", "contact")
+
 admin.site.register(Lead, LeadAdmin)
-admin.site.register(Client)
+admin.site.register(Client, ClientAdmin)
 admin.site.register(ClientOrganisation)
 admin.site.register(ClientCompany, ClientCompanyAdmin)
 admin.site.register(ClientContact, ClientContactAdmin)
