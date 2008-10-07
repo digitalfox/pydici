@@ -1,0 +1,15 @@
+{% if leads %}
+    <ul>
+    {% for lead in leads %}
+        <li><b>{{ lead.client }} - {{ lead.name }}</b> (maj : {{ lead.update_date }})</li>
+        <ul>
+            <li>Statut : {{ lead.get_state_display }} (=> {{ lead.due_date }}) / D&eacute;marrage pr&eacute;vu : {{ lead.start_date }}</li>
+            <li>Suivi : {{ lead.responsible }} / IA : {{ lead.salesman }}</li>
+            <li>CA : {{ lead.sales }} kEuros / Staffing : {{ lead.staffing_list }}</li>
+            
+        </ul><br>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No active leads.</p>
+{% endif %}

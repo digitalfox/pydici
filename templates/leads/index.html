@@ -1,0 +1,10 @@
+{% if latest_lead_list %}
+    <ul>
+    {% for lead in latest_lead_list %}
+        <li>{{ lead.name }}</li>
+        <li>{{ lead.responsible }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
