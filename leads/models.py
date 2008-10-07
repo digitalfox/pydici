@@ -86,15 +86,17 @@ class Lead(models.Model):
     due_date=models.DateField("Échéance", blank=True, null=True)
     state=models.CharField("État", max_length=30, choices=STATES)
     client=models.ForeignKey(Client)
-
     creation_date=models.DateTimeField("Création", default=datetime.now())
     update_date=models.DateTimeField("Mise à jour", default=datetime.now())
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.client)
 
+    def staffing_list(self):
+        return ", ".join(x["trigramme"] for x in self.staffing.values())
+
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ("name", "client", "description", "responsible", "salesman", "sales", "creation_date", "due_date", "update_date")
+    list_display = ("name", "client", "description", "responsible", "salesman", "sales", "state", "due_date", "update_date")
     fieldsets = [
         (None,    {"fields": ["name", "client", "description"]}),
         ('État et suivi',     {'fields': ['responsible', 'salesman', 'start_date', 'state', 'due_date']}),
@@ -105,6 +107,10 @@ class LeadAdmin(admin.ModelAdmin):
     list_filter = ["state",]
     date_hierarchy = "creation_date"
     search_fields = ["name", "responsible__name", "description"]
+
+    def save_model(self, request, obj, form, change):
+        obj.update_date=datetime.now()
+        obj.save()
 
 class ClientContactAdmin(admin.ModelAdmin):
     list_display=("name", "function", "email", "phone")

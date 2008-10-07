@@ -20,4 +20,5 @@ urlpatterns = patterns('',
     (r'^leads/csv_all$', 'pydici.leads.views.csv_all'),
     (r'^leads/csv_active$', 'pydici.leads.views.csv_active'),
     (r'^leads/(?P<lead_id>\d+)/$', 'pydici.leads.views.detail'),
+    (r'^leads/mail$', 'pydici.leads.views.mail'),
 )
