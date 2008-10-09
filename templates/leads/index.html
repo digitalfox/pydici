@@ -3,7 +3,7 @@
 {% if latest_lead_list %}
     <ul>
     {% for lead in latest_lead_list %}
-        <li><a href='/leads/lead_mail/{{lead.id}}'>{{ lead.name }}</a> ({{ lead.client }})</li>
+        <li><a href='/leads/{{lead.id}}'>{{ lead.name }}</a> ({{ lead.client }})</li>
     {% endfor %}
     </ul>
 {% else %}

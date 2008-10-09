@@ -16,6 +16,8 @@ COMPANY=(
              ("KLC",         "KLC")
             )
 
+SHORT_DATETIME_FORMAT="%d/%m/%y %H:%M"
+
 class ClientCompany(models.Model):
     """Client company"""
     name=models.CharField(max_length=200)
@@ -94,6 +96,9 @@ class Lead(models.Model):
 
     def staffing_list(self):
         return ", ".join(x["trigramme"] for x in self.staffing.values())
+
+    def update_date_strf(self):
+        return self.update_date.strftime(SHORT_DATETIME_FORMAT)
 
 class LeadAdmin(admin.ModelAdmin):
     list_display = ("name", "client", "description", "responsible", "salesman", "sales", "state", "due_date", "update_date")

@@ -5,14 +5,11 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^pydici/', include('pydici.foo.urls')),
+    # Default to leads index
+    (r'^$', 'pydici.leads.views.index'),
 
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
+    # Admin
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
      (r'^admin/(.*)', admin.site.root),
      
     # Lead application
@@ -20,5 +17,5 @@ urlpatterns = patterns('',
     (r'^leads/csv_all$', 'pydici.leads.views.csv_all'),
     (r'^leads/csv_active$', 'pydici.leads.views.csv_active'),
     (r'^leads/(?P<lead_id>\d+)/$', 'pydici.leads.views.detail'),
-    (r'^leads/mail$', 'pydici.leads.views.mail'),
+    (r'^leads/mail$', 'pydici.leads.views.summary_mail'),
 )

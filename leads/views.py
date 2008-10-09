@@ -8,20 +8,21 @@ from django.shortcuts import render_to_response
 from pydici.leads.models import Lead
  
 def index(request):
-    latest_lead_list = Lead.objects.all().order_by("-update_date")[:5]
+    latest_lead_list = Lead.objects.all().order_by("-update_date")[:10]
     return render_to_response("leads/index.html", {"latest_lead_list": latest_lead_list})
 
+def summary_mail(request, html=True):
+    """Ready to copy/paste in mail summary leads activity"""
+    leads=Lead.objects.exclude(state__in=("LOST", "FORGIVEN", "WIN"))
+    return render_to_response("leads/mail.html", {"leads": leads})
+
 def detail(request, lead_id):
+    """Ready to copy/paste in mail a lead description"""
     try:
         lead=Lead.objects.get(id=lead_id)
     except Lead.DoesNotExist:
         return HttpResponse("Lead %s does not exist." % lead_id)
-    return HttpResponse("You're looking at lead %s." % lead.name)
-
-def mail(request, html=True):
-    """Ready to copy/paste in mail lead activity"""
-    leads=Lead.objects.exclude(state__in=("LOST", "FORGIVEN", "WIN"))
-    return render_to_response("leads/mail.html", {"leads": leads})
+    return render_to_response("leads/lead_mail.html", {"lead": lead})
 
 def csv_all(request):
     return csv_export(only_active=False)
