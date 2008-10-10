@@ -24,19 +24,13 @@ def detail(request, lead_id):
         return HttpResponse("Lead %s does not exist." % lead_id)
     return render_to_response("leads/lead_mail.html", {"lead": lead})
 
-def csv_all(request):
-    return csv_export(only_active=False)
-
-def csv_active(request):
-    return csv_export(only_active=True)
-
-def csv_export(only_active=False):
+def csv_export(request, target):
     response = HttpResponse(mimetype="text/csv")
     response["Content-Disposition"] = "attachment; filename=plan-de-charge.csv"
     writer = csv.writer(response)
     writer.writerow(["Nom", "Client", "Description", "Suivi par", "Commercial", "Date de démarrage", "État",
                      "Échéance", "Staffing", "CA (k€)", "Création"])
-    if only_active:
+    if target!="all":
         leads=Lead.objects.exclude(state__in=("LOST", "FORGIVEN", "WIN"))
     else:
         leads=Lead.objects.all()
