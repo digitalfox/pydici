@@ -6,15 +6,15 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Default to leads index
-    (r'^$', 'pydici.leads.views.index'),
+   # (r'^$', 'pydici.leads.views.index'),
 
     # Admin
-    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-     (r'^admin/(.*)', admin.site.root),
+    (r'^leads/admin/doc/', include('django.contrib.admindocs.urls')),
+     (r'^leads/admin/(.*)', admin.site.root),
      
     # Lead application
-    (r'^leads/$', 'pydici.leads.views.index'),
-    (r'^leads/csv/(.*)', 'pydici.leads.views.csv_export'),
-    (r'^leads/(?P<lead_id>\d+)/$', 'pydici.leads.views.detail'),
-    (r'^leads/mail$', 'pydici.leads.views.summary_mail'),
+    (r'leads/$', 'pydici.leads.views.index'),
+    (r'leads/csv/(.*)', 'pydici.leads.views.csv_export'),
+    (r'leads/(?P<lead_id>\d+)/$', 'pydici.leads.views.detail'),
+    (r'leads/mail$', 'pydici.leads.views.summary_mail'),
 )
