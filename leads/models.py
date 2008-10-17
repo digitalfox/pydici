@@ -47,7 +47,10 @@ class Client(models.Model):
     salesOwner=models.CharField("Propriété commerciale", max_length=30, choices=COMPANY, default="NEWARCH")
     
     def __unicode__(self):
-        return u"%s (%s)" % (self.organisation, self.contact)
+        if self.contact:
+            return u"%s (%s)" % (self.organisation, self.contact)
+        else:
+            return u"%s" % (self.organisation)
 
 class Consultant(models.Model):
     """A New'Arch consultant"""

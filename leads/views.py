@@ -14,7 +14,10 @@ def index(request):
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""
     leads=Lead.objects.exclude(state__in=("LOST", "FORGIVEN", "WIN"))
-    return render_to_response("leads/mail.html", {"leads": leads})
+    if html:
+        return render_to_response("leads/mail.html", {"leads": leads})
+    else:
+        return render_to_response("leads/mail.txt", {"leads": leads}, mimetype="text/plain")
 
 def detail(request, lead_id):
     """Ready to copy/paste in mail a lead description"""
