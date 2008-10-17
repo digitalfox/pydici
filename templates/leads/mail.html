@@ -1,9 +1,10 @@
 {% if leads %}
+<h3>Leads commerciaux New'Arch actifs :</h3>
     <ul>
     {% for lead in leads %}
         <li><b>{{ lead.client }} - {{ lead.name }}</b> (maj : {{ lead.update_date_strf }})</li>
         <ul>
-            <li>Statut : {{ lead.get_state_display }} (=> {{ lead.due_date }}) / D&eacute;marrage pr&eacute;vu : {{ lead.start_date }}</li>
+            <li>Statut : {{ lead.get_state_display }} (=> {{ lead.due_date }}) / D&eacute;marrage pr&eacute;vu : {% if lead.start_date %} {{ lead.start_date }} {% else %} non d&eacute;finie {% endif %}</li>
             <li>Suivi : {{ lead.responsible }} / IA : {{ lead.salesman }}</li>
             <li>{% if lead.sales %}
                     CA : {{ lead.sales }} kEuros
@@ -16,5 +17,5 @@
     {% endfor %}
     </ul>
 {% else %}
-    <p>No active leads.</p>
+    <p>Aucun leads actifs.</p>
 {% endif %}
