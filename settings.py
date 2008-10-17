@@ -1,10 +1,11 @@
+# -*- coding: UTF-8 -*-
 # Django settings for pydici project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Sébastien Renard', 'sebastien@digitalfox.org'),
+     ('SÃ©bastien Renard', 'sebastien@digitalfox.org'),
 )
 
 MANAGERS = ADMINS
