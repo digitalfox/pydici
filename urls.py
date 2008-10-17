@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     (r'^leads/$', 'pydici.leads.views.index'),
     (r'^leads/csv/(.*)', 'pydici.leads.views.csv_export'),
     (r'^leads/(?P<lead_id>\d+)/$', 'pydici.leads.views.detail'),
-    (r'^leads/mail$', 'pydici.leads.views.summary_mail'),
+    (r'^leads/mail/text', 'pydici.leads.views.summary_mail', { "html" : False }),
+    (r'^leads/mail/html', 'pydici.leads.views.summary_mail', { "html" : True  }),
     (r'^leads/media/leads/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/home/fox/prog/workspace/pydici/media/leads/'}),
 )
