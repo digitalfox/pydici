@@ -5,8 +5,8 @@ Leads commerciaux New'Arch actifs :
 * {{ lead.client }} - {{ lead.name }} (maj : {{ lead.update_date_strf }})
     o Statut : {{ lead.get_state_display }} (=> {{ lead.due_date }}) / Démarrage prévu : {% if lead.start_date %} {{ lead.start_date }} {% else %} non définie {% endif %}
     o Suivi : {{ lead.responsible }} / IA : {{ lead.salesman }}
-    o {% if lead.sales %}CA : {{ lead.sales }} kEuros{% else %}CA inconnu{% endif %} / Staffing : {{ lead.staffing_list }}
-    o {% if lead.description %}{{ lead.description }}{% endif %}
+    o {% if lead.sales %}CA : {{ lead.sales }} kEuros{% else %}CA inconnu{% endif %} / Staffing : {{ lead.staffing_list }}{% if lead.description %}
+    o {{ lead.description }}{% endif %}
 
 {% endfor %}
 
