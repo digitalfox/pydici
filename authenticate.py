@@ -7,6 +7,7 @@ Will be included in Django 1.1
 """
 
 from django.contrib.auth.models import User
+from django.contrib.auth.backends import ModelBackend
 
 class RemoteUserAuthMiddleware(object):
     def process_request(self, request):
@@ -26,7 +27,7 @@ setting to insert 'django.contrib.auth.middleware.AuthenticationMiddleware' *bef
                 login(request, user)   # auto-login the user to Django
         return None
 
-class RemoteUserAuthBackend:
+class RemoteUserAuthBackend(ModelBackend):
 
     def authenticate(self, username, password=None):
         """
@@ -40,6 +41,7 @@ class RemoteUserAuthBackend:
             username = self.parse_user(username)
             try:
                 user = User.objects.get(username=username)
+		file("/tmp/log", "w").write("coucou")
             except User.DoesNotExist:
                 user = self.unknown_user(username)
                 user = self.configure_user(user)
