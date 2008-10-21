@@ -32,7 +32,7 @@ def csv_export(request, target):
     response["Content-Disposition"] = "attachment; filename=plan-de-charge.csv"
     writer = csv.writer(response)
     writer.writerow(["Nom", "Client", "Description", "Suivi par", "Commercial", "Date de démarrage", "État",
-                     "Échéance", "Staffing", "CA (k€)", "Création"])
+                     "Échéance", "Staffing", "CA (k€)", "Création", "Mise à jour"])
     if target!="all":
         leads=Lead.objects.exclude(state__in=("LOST", "FORGIVEN", "WIN"))
     else:
@@ -40,7 +40,7 @@ def csv_export(request, target):
     for lead in leads.order_by("-update_date"):
         state=lead.get_state_display()
         row=[lead.name, lead.client, lead.description, lead.responsible, lead.salesman, lead.start_date, state,
-                         lead.due_date, lead.staffing_list(), lead.sales, lead.update_date]
+                         lead.due_date, lead.staffing_list(), lead.sales, lead.creation_date, lead.update_date]
         row=[unicode(x).encode("UTF-8") for x in row]
         writer.writerow(row)
     return response
