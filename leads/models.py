@@ -138,7 +138,7 @@ class ClientCompanyAdmin(admin.ModelAdmin):
 class ClientAdmin(admin.ModelAdmin):
     list_display=("organisation", "salesOwner", "contact")
     ordering=("organisation",)
-    search_fields=("organisation", "contact")
+    search_fields=("organisation__company__name", "organisation__name", "contact__name")
 
 admin.site.register(Lead, LeadAdmin)
 admin.site.register(Client, ClientAdmin)
