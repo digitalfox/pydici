@@ -3,7 +3,6 @@ from django.db import models
 from django.contrib import admin
 from datetime import datetime
 
-# Create your models here.
 COMPANY=(
              ("NEWARCH",     "New'Arch"),
              ("SOLUCOM/D2S", "Solucom/D²S"),
@@ -92,7 +91,7 @@ class Lead(models.Model):
     state=models.CharField("État", max_length=30, choices=STATES)
     client=models.ForeignKey(Client)
     creation_date=models.DateTimeField("Création", default=datetime.now())
-    update_date=models.DateTimeField("Mise à jour", default=datetime.now())
+    update_date=models.DateTimeField("Mise à jour", auto_now=True)
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.client)
@@ -115,10 +114,6 @@ class LeadAdmin(admin.ModelAdmin):
     list_filter = ["state",]
     date_hierarchy = "creation_date"
     search_fields = ["name", "responsible__name", "description"]
-
-    def save_model(self, request, obj, form, change):
-        obj.update_date=datetime.now()
-        obj.save()
 
 class ClientContactAdmin(admin.ModelAdmin):
     list_display=("name", "function", "email", "phone")
