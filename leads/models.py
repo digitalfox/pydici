@@ -125,13 +125,21 @@ class SalesManAdmin(admin.ModelAdmin):
     odering=("name")
     search_fields=["name", "trigramme"]
 
+class ClientOrganisationAdmin(admin.ModelAdmin):
+    fieldsets=[(None,    {"fields": ["company", "name"] } ),]
+    list_display=("name",)
+    ordering=("name",)
+    search_fields=("name",)
+
+class ClientOrganisationAdminInline(admin.TabularInline):
+    model=ClientOrganisation
+
 class ClientCompanyAdmin(admin.ModelAdmin):
     list_display=("name",)
     ordering=("name",)
     search_fields=("name",)
 
-class ClientOrganisationAdmin(admin.ModelAdmin):
-    fieldsets=[(None,    {"fields": ["company", "name"] } ),]
+    inlines=[ClientOrganisationAdminInline,]
 
 class ClientAdmin(admin.ModelAdmin):
     list_display=("organisation", "salesOwner", "contact")
