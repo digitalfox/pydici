@@ -19,14 +19,14 @@ SHORT_DATETIME_FORMAT="%d/%m/%y %H:%M"
 
 class ClientCompany(models.Model):
     """Client company"""
-    name=models.CharField(max_length=200)
+    name=models.CharField("Nom", max_length=200)
     
     def __unicode__(self): return self.name
 
 class ClientOrganisation(models.Model):
     """A department in client organization"""
-    name=models.CharField(max_length=200)
-    company=models.ForeignKey(ClientCompany)
+    name=models.CharField("Organisation", max_length=200)
+    company=models.ForeignKey(ClientCompany, verbose_name="Entreprise")
 
     def __unicode__(self): return u"%s : %s " % (self.company, self.name)
 
@@ -130,6 +130,9 @@ class ClientCompanyAdmin(admin.ModelAdmin):
     ordering=("name",)
     search_fields=("name",)
 
+class ClientOrganisationAdmin(admin.ModelAdmin):
+    fieldsets=[(None,    {"fields": ["company", "name"] } ),]
+
 class ClientAdmin(admin.ModelAdmin):
     list_display=("organisation", "salesOwner", "contact")
     ordering=("organisation",)
@@ -137,7 +140,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 admin.site.register(Lead, LeadAdmin)
 admin.site.register(Client, ClientAdmin)
-admin.site.register(ClientOrganisation)
+admin.site.register(ClientOrganisation, ClientOrganisationAdmin)
 admin.site.register(ClientCompany, ClientCompanyAdmin)
 admin.site.register(ClientContact, ClientContactAdmin)
 admin.site.register(Consultant)
