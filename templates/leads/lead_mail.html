@@ -16,4 +16,4 @@
 
 {% if lead.salesId %} <b>Code ActiveSys </b> : {{ lead.salesId }}<br>{% endif %}
 
-<br><i><a href='/leads/admin/leads/lead/{{ lead.id }}'>Modifier ce lead</a> -- <i><a href='/leads/admin/leads/lead/{{ lead.id }}/history/'>Historique des changements</a> -- <a href='/leads/'>Retour page d'accueil</a></i>
+<br><i><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}'>Modifier ce lead</a> -- <i><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history/'>Historique des changements</a> -- <a href='{{ link_root }}/leads/'>Page d'accueil</a></i>
