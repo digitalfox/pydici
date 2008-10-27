@@ -1,18 +1,16 @@
-<b>Sujet</b> : {{ lead.name }} <br>
+<b>{{ lead.client.organisation }} -</b> {{ lead.name }} <br>
 
-<b>Client</b> : {{ lead.client.organisation }} <br>
+<b>Origine/Contact</b> : {{ lead.client.contact }} <br>
 
-<b>Origine</b> : {{ lead.client.contact }} <br>
+<b>Description / contexte</b> : {{ lead.description|linebreaksbr }} <br>
 
-<b>Description / contexte</b> : {{ lead.description }} <br>
+<b>Responsable </b>: {% if lead.responsible %} {{ lead.responsible }} {% else %} à définir {% endif %}<br>
 
-<b>Responsable </b>: {{ lead.responsible }} <br>
+<b>IA</b> : {% if lead.salesman %} {{ lead.salesman }} {% else %} aucun {% endif %}<br>
 
-<b>IA</b> : {{ lead.salesman }} <br>
+<b>Date prévisionnelle de démarrage</b> : {% if lead.start_date %} {{ lead.start_date }} {% else %} inconnue {% endif %}<br>
 
-<b>Date prévisionnelle de démarrage</b> : {{ lead.start_date }}<br>
-
-<b>Chiffre d'affaire estimatif (kEuros)</b> : {{ lead.sales }}<br>
+<b>Chiffre d'affaire estimatif (kEuros)</b> : {% if lead.sales %} {{ lead.sales }} {% else %} inconnu {% endif %}<br>
 
 <b>Profile(s) pressenti(s)</b> : {{ lead.staffing_list }}<br>
 
