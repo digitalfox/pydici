@@ -104,7 +104,7 @@ class Lead(models.Model):
         return self.update_date.strftime(SHORT_DATETIME_FORMAT)
 
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ("name", "client", "description", "responsible", "salesman", "sales", "state", "salesId", "due_date", "update_date")
+    list_display = ("name", "client", "description", "responsible", "salesman", "sales", "state", "due_date", "update_date")
     fieldsets = [
         (None,    {"fields": ["name", "client", "description", "salesId"]}),
         ('État et suivi',     {'fields': ['responsible', 'salesman', 'start_date', 'state', 'due_date']}),
