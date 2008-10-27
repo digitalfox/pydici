@@ -82,6 +82,7 @@ class Lead(models.Model):
            )
     name=models.CharField("Nom", max_length=200)
     description=models.TextField(blank=True)
+    salesId=models.CharField("Code A6", max_length=100, blank=True)
     sales=models.IntegerField("CA (k€)", blank=True, null=True)
     salesman=models.ForeignKey(SalesMan, blank=True, null=True, verbose_name="Commercial")
     staffing=models.ManyToManyField(Consultant, blank=True)
@@ -103,9 +104,9 @@ class Lead(models.Model):
         return self.update_date.strftime(SHORT_DATETIME_FORMAT)
 
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ("name", "client", "description", "responsible", "salesman", "sales", "state", "due_date", "update_date")
+    list_display = ("name", "client", "description", "responsible", "salesman", "sales", "state", "salesId", "due_date", "update_date")
     fieldsets = [
-        (None,    {"fields": ["name", "client", "description"]}),
+        (None,    {"fields": ["name", "client", "description", "salesId"]}),
         ('État et suivi',     {'fields': ['responsible', 'salesman', 'start_date', 'state', 'due_date']}),
         ('Staffing',     {'fields': ["staffing", "sales"]}),
         ]
@@ -113,7 +114,7 @@ class LeadAdmin(admin.ModelAdmin):
     filter_horizontal=["staffing"]
     list_filter = ["state",]
     date_hierarchy = "creation_date"
-    search_fields = ["name", "responsible__name", "description"]
+    search_fields = ["name", "responsible__name", "description", "salesId"]
 
 class ClientContactAdmin(admin.ModelAdmin):
     list_display=("name", "function", "email", "phone")
