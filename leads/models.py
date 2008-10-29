@@ -123,8 +123,9 @@ class LeadAdmin(admin.ModelAdmin):
         if not change:
             try:
                 send_lead_mail(obj)
+                request.user.message_set.create(message="Ce lead a été envoyé par mail au plan de charge.")
             except Exception, e:
-                request.user.message_set.create(message="Failed to send mail: %s" % e)
+                request.user.message_set.create(message="Échec d'envoi du mail : %s" % e)
 
 class ClientContactAdmin(admin.ModelAdmin):
     list_display=("name", "function", "email", "phone")
