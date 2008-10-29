@@ -87,3 +87,4 @@ INSTALLED_APPS = (
 LEADS_MAIL_FROM="sre@newarch.Fr"
 LEADS_MAIL_TO="sre@newarch.Fr"
 LEADS_MAIL_LINK_ROOT="http://localhost:8000" # Without trailing slash
+LEADS_MAIL_SMTP="mail.newarch.fr"

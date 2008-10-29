@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib import admin
 from datetime import datetime
 
+from pydici.leads.utils import send_lead_mail
+
 COMPANY=(
              ("NEWARCH",     "New'Arch"),
              ("SOLUCOM/D2S", "Solucom/D²S"),
@@ -115,6 +117,14 @@ class LeadAdmin(admin.ModelAdmin):
     list_filter = ["state",]
     date_hierarchy = "creation_date"
     search_fields = ["name", "responsible__name", "description", "salesId"]
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        if not change:
+            try:
+                send_lead_mail(obj)
+            except Exception, e:
+                request.user.message_set.create(message="Failed to send mail: %s" % e)
 
 class ClientContactAdmin(admin.ModelAdmin):
     list_display=("name", "function", "email", "phone")
