@@ -56,7 +56,7 @@ class Client(models.Model):
 class Consultant(models.Model):
     """A New'Arch consultant"""
     name=models.CharField(max_length=50)
-    trigramme=models.CharField(max_length=4)
+    trigramme=models.CharField(max_length=4, unique=True)
     #manager=models.ForeignKey(Consultant)
 
     def __unicode__(self): return self.name

@@ -84,6 +84,8 @@ INSTALLED_APPS = (
     'pydici.leads',
 )
 
+LOGIN_URL="/leads/admin/"
+
 LEADS_MAIL_FROM="sre@newarch.Fr"
 LEADS_MAIL_TO="sre@newarch.Fr"
 LEADS_MAIL_LINK_ROOT="http://localhost:8000" # Without trailing slash

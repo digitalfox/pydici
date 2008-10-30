@@ -9,10 +9,30 @@
 <hr>
 <center><img src="/leads/media/leads/na.png"><h1>Gestion des leads commerciaux</h1></center>
 <hr>
-<h2> Les 10 derniers leads crées ou modifiés</h2>
-{% if latest_lead_list %}
+{% if my_leads_as_staffee or my_leads_as_responsible %}
+<h2> Mes leads </h2>
+    {% if my_leads_as_responsible %}
+    <h3> Les leads dont je suis responsable </h3>
     <ul>
-    {% for lead in latest_lead_list %}
+	    {% for lead in my_leads_as_responsible %}
+	        <li><a href='/leads/{{lead.id}}'>{{ lead.name }}</a> - {{ lead.client }} - {{ lead.update_date_strf }}</li>
+	    {% endfor %}
+    </ul>
+    {% endif %}
+    {% if my_leads_as_staffee %}
+    <h3> Les leads pour lesquels je suis une ressource pressentie </h3>
+	<ul>
+	    {% for lead in my_leads_as_staffee %}
+	        <li><a href='/leads/{{lead.id}}'>{{ lead.name }}</a> - {{ lead.client }} - {{ lead.update_date_strf }}</li>
+	    {% endfor %}
+	</ul>
+	{% endif %}
+{% endif %}
+
+<h2> Les 10 derniers leads crées ou modifiés</h2>
+{% if latest_leads %}
+    <ul>
+    {% for lead in latest_leads %}
         <li><a href='/leads/{{lead.id}}'>{{ lead.name }}</a> - {{ lead.client }} - {{ lead.update_date_strf }}</li>
     {% endfor %}
     </ul>

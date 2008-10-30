@@ -6,13 +6,29 @@ import pydici.settings
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from django.contrib.auth.decorators import login_required
 
-from pydici.leads.models import Lead
+from pydici.leads.models import Lead, Consultant
 from pydici.leads.utils import send_lead_mail
- 
+
+@login_required
 def index(request):
-    latest_lead_list = Lead.objects.all().order_by("-update_date")[:10]
-    return render_to_response("leads/index.html", {"latest_lead_list": latest_lead_list})
+    consultants=Consultant.objects.filter(trigramme__iexact=request.user.username)
+    print consultants
+    if consultants:
+        consultant=consultants[0]
+        #myLeads=Lead.objects.filter(responsible=request.user)
+        myLeadsAsResponsible=consultant.lead_responsible.all()
+        myLeadsAsStaffee=consultant.lead_set.all()
+    else:
+        myLeadsAsResponsible=None
+        myLeadsAsStaffee=None
+
+    latestLeads=Lead.objects.all().order_by("-update_date")[:10]
+
+    return render_to_response("leads/index.html", {"latest_leads": latestLeads,
+                                                   "my_leads_as_responsible": myLeadsAsResponsible,
+                                                   "my_leads_as_staffee": myLeadsAsStaffee })
 
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""
