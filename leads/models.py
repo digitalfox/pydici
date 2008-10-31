@@ -95,6 +95,7 @@ class Lead(models.Model):
     sales=models.IntegerField("CA (k€)", blank=True, null=True)
     salesman=models.ForeignKey(SalesMan, blank=True, null=True, verbose_name="Commercial")
     staffing=models.ManyToManyField(Consultant, blank=True)
+    external_staffing=models.CharField("Staffing externe", max_length=300, blank=True)
     responsible=models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name="Responsable", blank=True, null=True)
     start_date=models.DateField("Démarrage", blank=True, null=True)
     due_date=models.DateField("Échéance", blank=True, null=True)
@@ -109,7 +110,7 @@ class Lead(models.Model):
         return u"%s (%s)" % (self.name, self.client)
 
     def staffing_list(self):
-        return ", ".join(x["trigramme"] for x in self.staffing.values())
+        return ", ".join(x["trigramme"] for x in self.staffing.values() ) +", %s" % self.external_staffing
 
     def update_date_strf(self):
         return self.update_date.strftime(SHORT_DATETIME_FORMAT)
@@ -119,13 +120,16 @@ class LeadAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,    {"fields": ["name", "client", "description", "salesId"]}),
         ('État et suivi',     {'fields': ['responsible', 'salesman', 'start_date', 'state', 'due_date']}),
-        ('Staffing',     {'fields': ["staffing", "sales"]}),
+        ('Staffing',     {'fields': ["staffing", "external_staffing", "sales"]}),
         ]
     ordering = ("creation_date",)
     filter_horizontal=["staffing"]
     list_filter = ["state",]
     date_hierarchy = "creation_date"
-    search_fields = ["name", "responsible__name", "description", "salesId"]
+    search_fields = ["name", "description", "salesId",
+                     "responsible__name",  "responsible__trigramme",
+                     "salesman__name", "salesman__trigramme",
+                     "client__contact__name", "client__organisation__company__name"]
 
     def save_model(self, request, obj, form, change):
         obj.save()
