@@ -71,6 +71,13 @@ class SalesMan(models.Model):
 
     def __unicode__(self): return "%s (%s)" % (self.name, self.get_company_display())
 
+class LeadManager(models.Manager):
+    def active(self):
+        return self.get_query_set().exclude(state__in=("LOST", "FORGIVEN", "WIN"))
+
+    def passive(self):
+        return self.get_query_set().filter(state__in=("LOST", "FORGIVEN", "WIN"))
+
 class Lead(models.Model):
     """A commercial lead"""
     STATES=(
@@ -95,6 +102,8 @@ class Lead(models.Model):
     client=models.ForeignKey(Client)
     creation_date=models.DateTimeField("Création", default=datetime.now())
     update_date=models.DateTimeField("Mise à jour", auto_now=True)
+
+    objects=LeadManager() # Custom manager that factorise active/passive lead code
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.client)

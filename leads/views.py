@@ -17,9 +17,8 @@ def index(request):
     print consultants
     if consultants:
         consultant=consultants[0]
-        #myLeads=Lead.objects.filter(responsible=request.user)
-        myLeadsAsResponsible=consultant.lead_responsible.all()
-        myLeadsAsStaffee=consultant.lead_set.all()
+        myLeadsAsResponsible=consultant.lead_responsible.active()
+        myLeadsAsStaffee=consultant.lead_set.active()
     else:
         myLeadsAsResponsible=None
         myLeadsAsStaffee=None
@@ -32,7 +31,7 @@ def index(request):
 
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""
-    leads=Lead.objects.exclude(state__in=("LOST", "FORGIVEN", "WIN"))
+    leads=Lead.objects.active()
     if html:
         return render_to_response("leads/mail.html", {"leads": leads})
     else:
@@ -53,7 +52,7 @@ def csv_export(request, target):
     writer.writerow(["Nom", "Client", "Description", "Suivi par", "Commercial", "Date de démarrage", "État",
                      "Échéance", "Staffing", "CA (k€)", "Code A6", "Création", "Mise à jour"])
     if target!="all":
-        leads=Lead.objects.exclude(state__in=("LOST", "FORGIVEN", "WIN"))
+        leads=Lead.objects.active()
     else:
         leads=Lead.objects.all()
     for lead in leads.order_by("-update_date"):
