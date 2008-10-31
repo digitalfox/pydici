@@ -8,7 +8,7 @@
 
 <b>IA</b> : {% if lead.salesman %} {{ lead.salesman }} {% else %} aucun {% endif %}<br>
 
-<b>Date prévisionnelle de démarrage</b> : {% if lead.start_date %} {{ lead.start_date }} {% else %} inconnue {% endif %}<br>
+<b>Statut</b> : {{ lead.get_state_display }} {% if lead.due_date %}(=>  {{ lead.due_date }}){% endif %} / D&eacute;marrage pr&eacute;vu : {% if lead.start_date %} {{ lead.start_date }} {% else %} non d&eacute;finie {% endif %}<br>
 
 <b>Chiffre d'affaire estimatif (kEuros)</b> : {% if lead.sales %} {{ lead.sales }} {% else %} inconnu {% endif %}<br>
 
