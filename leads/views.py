@@ -27,7 +27,8 @@ def index(request):
 
     return render_to_response("leads/index.html", {"latest_leads": latestLeads,
                                                    "my_leads_as_responsible": myLeadsAsResponsible,
-                                                   "my_leads_as_staffee": myLeadsAsStaffee })
+                                                   "my_leads_as_staffee": myLeadsAsStaffee,
+                                                   "user": request.user })
 
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""

@@ -1,58 +1,109 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-   <title>Gestion des leads commerciaux New'Arch</title>
-   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head>
+{% extends "admin/base_site.html" %}
+{% load i18n %}
 
-<body text="#777777" bgcolor="#FFFFFF" link="#0000CC" vlink="#000080" alink="#0000CC">
-<hr>
-<center><img src="/leads/media/leads/na.png"><h1>Gestion des leads commerciaux</h1></center>
-<hr>
-{% if my_leads_as_staffee or my_leads_as_responsible %}
-<h2> Mes leads </h2>
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
     {% if my_leads_as_responsible %}
-    <h3> Les leads dont je suis responsable </h3>
-    <ul>
-	    {% for lead in my_leads_as_responsible %}
-	        <li><a href='/leads/{{lead.id}}'>{{ lead.name }}</a> - {{ lead.client }} - {{ lead.update_date_strf }}</li>
-	    {% endfor %}
-    </ul>
+    <div class="module">
+        <table summary="Leads">
+        <caption>Les leads dont je suis responsable</caption>
+        {% for lead in my_leads_as_responsible %}
+            <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <th scope="row"><a href='/leads/{{lead.id}}'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <td>{{ lead.update_date_strf }}</td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
     {% endif %}
     {% if my_leads_as_staffee %}
-    <h3> Les leads pour lesquels je suis une ressource pressentie </h3>
-	<ul>
-	    {% for lead in my_leads_as_staffee %}
-	        <li><a href='/leads/{{lead.id}}'>{{ lead.name }}</a> - {{ lead.client }} - {{ lead.update_date_strf }}</li>
-	    {% endfor %}
-	</ul>
-	{% endif %}
-{% endif %}
+    <div class="module">
+        <table summary="Leads">
+        <caption>Les leads ou je suis une ressource pressentie</caption>
+        {% for lead in my_leads_as_staffee %}
+            <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <th scope="row"><a href='/leads/{{lead.id}}'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <td>{{ lead.update_date_strf }}</td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    {% if latest_leads %}
+    <div class="module">
+        <table summary="Les derniers leads crées ou modifiés">
+        <caption>Les derniers leads modifiés</caption>
+        {% for lead in latest_leads %}
+            <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <th scope="row"><a href='/leads/{{lead.id}}'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <td>{{ lead.update_date_strf }}</td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
 
-<h2> Les 10 derniers leads crées ou modifiés</h2>
-{% if latest_leads %}
-    <ul>
-    {% for lead in latest_leads %}
-        <li><a href='/leads/{{lead.id}}'>{{ lead.name }}</a> - {{ lead.client }} - {{ lead.update_date_strf }}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>Aucun lead actif.</p>
-{% endif %}
+    <div class="module">
+        <table summary="Export tableur au format CSV">
+        <caption>Export tableur au format CSV</caption>
+        <tr><th scope='row'><a href='/leads/csv/active'>Fichier CSV des leads actifs</a></th><td></td></tr>
+        <tr><th scope='row'><a href='/leads/csv/all'>Fichier CSV de tous les leads</a></th><td></td></tr>
+        </table>
+    </div>
+     <div class="module">
+        <table summary="Mail récapitulatif des leads actifs">
+        <caption>Mail récapitulatif des leads actifs</caption>
+        <tr><th scope='row'><a href='/leads/mail/html'>Format HTML</a></th><td></td></tr>
+        <tr><th scope='row'><a href='/leads/mail/text'>Format texte</a></th><td></td></tr>
+        </table>
+    </div>
+</div>
+{% endblock %}
 
-<h2>Gestion des leads</h2>
-<ul>
-<li><a href='/leads/admin/leads/lead/add/'>Ajouter</a>, <a href='/leads/admin/leads/lead/'>modifier ou rechercher</a> un <b>lead</b></li>
-<li><a href='/leads/admin/leads/client/add/'>Ajouter</a>, <a href='/leads/admin/leads/client/'>modifier ou rechercher</a> un <b>client</b></li>
-<li><a href='/leads/admin/leads/clientcontact/add/'>Ajouter</a>, <a href='/leads/admin/leads/clientcontact/'>modifier ou rechercher</a> un <b>contact client</b></li>
-</ul>
-<h2> Mail récapitulatif des leads actifs</h2>
-<a href='/leads/mail/html'>Cliquez ici</a> pour générer un texte prêt à copier/coller dans un mail aux listes de plan de charge (<a href='/leads/mail/text'>version texte</a>)
 
-<h2> Export tableur au format CSV</h2>
-<ul>
-<li><a href='/leads/csv/active'>Fichier CSV des leads actifs</a></li>
-<li><a href='/leads/csv/all'>Fichier CSV de tous les leads</a></li>
-</ul>
-</body>
-</html>
+{% block sidebar %}
+<div id="content-related">
+    <div class="module" id="recent-actions-module">
+        <h2></h2>
+        <h3>Rechercher un lead</h3>
+        <div id="toolbar"><form id="changelist-search" action="admin/leads/lead/" method="get">
+		<div><!-- DIV needed for valid HTML -->
+		<label for="searchbar"><img src="{% admin_media_prefix %}img/admin/icon_searchbox.png" alt="Search" /></label>
+		<input type="text" size="20" name="q" value="{{ cl.query|escape }}" id="searchbar" />
+		<input type="submit" value="{% trans 'Go' %}" />
+		</div>
+		</form></div>
+		<script type="text/javascript">document.getElementById("searchbar").focus();</script>
+		<h3>Ajouter...</h3>
+		    <ul class="actionlist">
+		    <li><a href='/leads/admin/leads/lead/add/'>un nouveau lead</a></li>
+		    <li><a href='/leads/admin/leads/client/add/'>un nouveau client</a></li>
+		    <li><a href='/leads/admin/leads/clientcontact/add/'>un nouveau contact client</a></li>
+		    </ul>
+        <h3>Mes dernières actions</h3>
+            {% load log %}
+            {% get_admin_log 10 as admin_log for_user user %}
+            {% if not admin_log %}
+            <p>{% trans 'None available' %}</p>
+            {% else %}
+            <ul class="actionlist">
+            {% for entry in admin_log %}
+            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">{% if not entry.is_deletion %}<a href="{{ entry.get_admin_url }}">{% endif %}{{ entry.object_repr|escape }}{% if not entry.is_deletion %}</a>{% endif %}<br /><span class="mini quiet">{% filter capfirst %}{% trans entry.content_type.name %}{% endfilter %}</span></li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+    </div>
+</div>
+{% endblock %}
