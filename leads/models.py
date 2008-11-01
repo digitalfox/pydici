@@ -125,7 +125,7 @@ class LeadAdmin(admin.ModelAdmin):
     ordering = ("creation_date",)
     filter_horizontal=["staffing"]
     list_filter = ["state",]
-    date_hierarchy = "creation_date"
+    date_hierarchy = "update_date"
     search_fields = ["name", "description", "salesId",
                      "responsible__name",  "responsible__trigramme",
                      "salesman__name", "salesman__trigramme",
