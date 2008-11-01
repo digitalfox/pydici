@@ -1,7 +1,7 @@
 body { margin:0; padding:0; font-size:12px; font-family:"Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif; color:#333; background:#fff; }
 
 /* LINKS */
-a:link, a:visited { color: #5b80b2; text-decoration:none; }
+a:link, a:visited { color: #49678F; text-decoration:none; }
 a:hover { color: #036; }
 a img { border:none; }
 a.section:link, a.section:visited { color: white; text-decoration:none; }
