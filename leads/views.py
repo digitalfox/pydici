@@ -8,26 +8,36 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 
-from pydici.leads.models import Lead, Consultant
+from pydici.leads.models import Lead, Consultant, SalesMan
 from pydici.leads.utils import send_lead_mail
 
 @login_required
 def index(request):
+
+    myLeadsAsResponsible=set()
+    myLatestArchivedLeads=set()
+    myLeadsAsStaffee=set()
+
     consultants=Consultant.objects.filter(trigramme__iexact=request.user.username)
-    print consultants
     if consultants:
         consultant=consultants[0]
-        myLeadsAsResponsible=consultant.lead_responsible.active()
+        myLeadsAsResponsible=set(consultant.lead_responsible.active())
         myLeadsAsStaffee=consultant.lead_set.active()
-    else:
-        myLeadsAsResponsible=None
-        myLeadsAsStaffee=None
+        myLatestArchivedLeads=set(consultant.lead_responsible.passive().order_by("-update_date")[:5])
+
+    salesmen=SalesMan.objects.filter(trigramme__iexact=request.user.username)
+    if salesmen:
+        salesman=salesmen[0]
+        myLeadsAsResponsible.update(salesman.lead_set.active())
+        myLatestArchivedLeads.update(salesman.lead_set.passive().order_by("-update_date")[:5])
+
 
     latestLeads=Lead.objects.all().order_by("-update_date")[:10]
 
     return render_to_response("leads/index.html", {"latest_leads": latestLeads,
                                                    "my_leads_as_responsible": myLeadsAsResponsible,
                                                    "my_leads_as_staffee": myLeadsAsStaffee,
+                                                   "my_latest_archived_leads": myLatestArchivedLeads,
                                                    "user": request.user })
 
 def summary_mail(request, html=True):

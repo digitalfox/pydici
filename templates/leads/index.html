@@ -57,7 +57,22 @@
         </table>
     </div>
     {% endif %}
-
+    {% if my_latest_archived_leads %}
+    <div class="module">
+        <table summary="Leads">
+        <caption>Mes derniers leads archivés (gagnés, perdus ou abandonnés)</caption>
+        {% for lead in my_latest_archived_leads %}
+            <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <th scope="row"><a href='/leads/{{lead.id}}'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <td>{{ lead.get_state_display }}</td>
+                <td>{{ lead.update_date_strf }}</td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
     <div class="module">
         <table summary="Export tableur au format CSV">
         <caption>Export tableur au format CSV</caption>
