@@ -21,7 +21,7 @@ SHORT_DATETIME_FORMAT="%d/%m/%y %H:%M"
 
 class ClientCompany(models.Model):
     """Client company"""
-    name=models.CharField("Nom", max_length=200)
+    name=models.CharField("Nom", max_length=200, unique=True)
     
     def __unicode__(self): return self.name
 
@@ -34,7 +34,7 @@ class ClientOrganisation(models.Model):
 
 class ClientContact(models.Model):
     """A contact in client organization"""
-    name=models.CharField("Nom", max_length=200)
+    name=models.CharField("Nom", max_length=200, unique=True)
     function=models.CharField("Fonction", max_length=200, blank=True)
     email=models.EmailField(blank=True)
     phone=models.CharField("Téléphone", max_length=30, blank=True)
@@ -64,7 +64,7 @@ class Consultant(models.Model):
 class SalesMan(models.Model):
     """A salesman from New'Arch or Solucom"""
     name=models.CharField("Nom", max_length=50)
-    trigramme=models.CharField(max_length=4)
+    trigramme=models.CharField(max_length=4, unique=True)
     company=models.CharField("Société", max_length=30, choices=COMPANY)
     email=models.EmailField(blank=True)
     phone=models.CharField("Téléphone", max_length=30, blank=True)
