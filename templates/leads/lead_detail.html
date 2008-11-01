@@ -1,0 +1,59 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+    <h1>Détail du lead</h1>
+    <div class="form-row name  ">
+    <h2><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}' class='changelink'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a></h2> 
+    {% if lead.description %}
+    <div class='system-message'>{{ lead.description|linebreaksbr }} </div>
+    {% endif %}
+    <hr>
+    <b>Origine/Contact</b> : {{ lead.client.contact|default_if_none:"Inconnu" }}
+    <br><br><hr>
+    <b>Responsable </b>: {% if lead.responsible %} {{ lead.responsible }} {% else %} à définir {% endif %}<br>
+    <b>IA</b> : {% if lead.salesman %} {{ lead.salesman }} {% else %} aucun {% endif %}
+    <br><br><hr>
+    <b>Statut</b> : {{ lead.get_state_display }} {% if lead.due_date %}(=>  {{ lead.due_date }}){% endif %} / D&eacute;marrage pr&eacute;vu : {% if lead.start_date %} {{ lead.start_date }} {% else %} non d&eacute;finie {% endif %}<br>
+    <b>Chiffre d'affaire estimatif (kEuros)</b> : {% if lead.sales %} {{ lead.sales }} {% else %} inconnu {% endif %}
+    <br><br><hr>
+    <b>Profile(s) pressenti(s)</b> : {{ lead.staffing_list }}<br>
+    {% if lead.salesId %} <b>Code ActiveSys </b> : {{ lead.salesId }}<br>{% endif %}
+    <br><br><hr>
+</div>
+
+{% if action_list %}
+    <h2>Historique des modifications</h2>
+    <table id="change-history">
+        <thead>
+        <tr>
+            <th scope="col">{% trans 'Date/time' %}</th>
+            <th scope="col">{% trans 'User' %}</th>
+            <th scope="col">{% trans 'Action' %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for action in action_list %}
+        <tr>
+            <th scope="row">{{ action.action_time|date:_("DATETIME_FORMAT") }}</th>
+            <td>{{ action.user.username }}{% if action.user.first_name %} ({{ action.user.first_name }} {{ action.user.last_name }}){% endif %}</td>
+            <td>{{ action.change_message }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+<br><a href='{{ link_root }}/leads/'>Retour page d'accueil</a></i>
+
+{% endblock %}

@@ -7,6 +7,8 @@ import pydici.settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.admin.models import LogEntry
 
 from pydici.leads.models import Lead, Consultant, SalesMan
 from pydici.leads.utils import send_lead_mail
@@ -49,12 +51,17 @@ def summary_mail(request, html=True):
         return render_to_response("leads/mail.txt", {"leads": leads}, mimetype="text/plain")
 
 def detail(request, lead_id):
-    """Ready to copy/paste in mail a lead description"""
+    """Lead detailed description"""
     try:
         lead=Lead.objects.get(id=lead_id)
+        actionList = LogEntry.objects.filter(object_id = lead_id,
+                                              content_type__name="lead")
+        actionList=actionList.select_related().order_by('action_time')
     except Lead.DoesNotExist:
         return HttpResponse("Lead %s does not exist." % lead_id)
-    return render_to_response("leads/lead_mail.html", {"lead": lead, "link_root": pydici.settings.LEADS_MAIL_LINK_ROOT})
+    return render_to_response("leads/lead_detail.html", {"lead": lead,
+                                                         "link_root": pydici.settings.LEADS_MAIL_LINK_ROOT,
+                                                         "action_list": actionList})
 
 def csv_export(request, target):
     response = HttpResponse(mimetype="text/csv")
