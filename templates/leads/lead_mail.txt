@@ -1,0 +1,22 @@
+{% autoescape off %}
+{{ lead.client.organisation }} - {{ lead.name }}
+
+Origine/Contact : {{ lead.client.contact }}
+
+Description / contexte : {{ lead.description }}
+
+Responsable : {% if lead.responsible %} {{ lead.responsible }} {% else %} à définir {% endif %}
+
+IA : {% if lead.salesman %} {{ lead.salesman }} {% else %} aucun {% endif %}
+
+Statut : {{ lead.get_state_display }} {% if lead.due_date %}(=>  {{ lead.due_date }}){% endif %} / Démarrage prévu : {% if lead.start_date %} {{ lead.start_date }} {% else %} non définie {% endif %}
+
+Chiffre d'affaire estimatif (kEuros) : {% if lead.sales %} {{ lead.sales }} {% else %} inconnu {% endif %}
+
+Profile(s) pressenti(s) : {{ lead.staffing_list }}
+
+{% if lead.salesId %} Code ActiveSys : {{ lead.salesId }}{% endif %}
+
+Modifier ce lead : {{ link_root }}/leads/admin/leads/lead/{{ lead.id }}
+Page d'accueil : {{ link_root }}/leads/
+{% endautoescape %}

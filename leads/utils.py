@@ -21,7 +21,8 @@ def send_lead_mail(lead):
     @raise exception: if SMTP errors occurs. It is up to the caller to catch that.
     """
 
-    template=get_template("leads/lead_mail.html")
+    htmlTemplate=get_template("leads/lead_mail.html")
+    textTemplate=get_template("leads/lead_mail.txt")
 
     msgRoot = MIMEMultipart('related')
     msgRoot.set_charset("UTF-8")
@@ -34,12 +35,12 @@ def send_lead_mail(lead):
     msgAlternative = MIMEMultipart('alternative')
     msgRoot.attach(msgAlternative)
 
-    msgText = MIMEText("Le mail au format texte n'est pas encore développé... C'est pour bientôt. La partie HTML est ok")
+    msgText = MIMEText(textTemplate.render(Context({"lead" : lead, "link_root": pydici.settings.LEADS_MAIL_LINK_ROOT })).encode("UTF-8"))
     msgText.set_charset("UTF-8")
     encode_7or8bit(msgText)
     msgAlternative.attach(msgText)
 
-    msgText = MIMEText(template.render(Context({"lead" : lead, "link_root": pydici.settings.LEADS_MAIL_LINK_ROOT })).encode("UTF-8"), 'html')
+    msgText = MIMEText(htmlTemplate.render(Context({"lead" : lead, "link_root": pydici.settings.LEADS_MAIL_LINK_ROOT })).encode("UTF-8"), 'html')
     msgText.set_charset("UTF-8")
     encode_7or8bit(msgText)
     msgAlternative.attach(msgText)
