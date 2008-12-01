@@ -104,12 +104,14 @@
 		</div>
 		</form></div>
 		<script type="text/javascript">document.getElementById("searchbar").focus();</script>
+		<br/>
 		<h3>Ajouter...</h3>
 		    <ul class="actionlist">
 		    <li><a href='/leads/admin/leads/lead/add/'>un nouveau lead</a></li>
 		    <li><a href='/leads/admin/leads/client/add/'>un nouveau client</a></li>
 		    <li><a href='/leads/admin/leads/clientcontact/add/'>un nouveau contact client</a></li>
 		    </ul>
+		 <br/>
         <h3>Mes dernières actions</h3>
             {% load log %}
             {% get_admin_log 10 as admin_log for_user user %}
@@ -122,6 +124,8 @@
             {% endfor %}
             </ul>
             {% endif %}
+        <br/>
+        <h3><a href="/leads/admin/">Console d'administration</a></h3>
     </div>
 </div>
 {% endblock %}
