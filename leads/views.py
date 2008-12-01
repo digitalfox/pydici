@@ -48,7 +48,7 @@ def summary_mail(request, html=True):
     if html:
         return render_to_response("leads/mail.html", {"leads": leads})
     else:
-        return render_to_response("leads/mail.txt", {"leads": leads}, mimetype="text/plain")
+        return render_to_response("leads/mail.txt", {"leads": leads}, mimetype="text/plain; charset=utf-8")
 
 def detail(request, lead_id):
     """Lead detailed description"""
