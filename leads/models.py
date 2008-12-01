@@ -25,12 +25,18 @@ class ClientCompany(models.Model):
     
     def __unicode__(self): return self.name
 
+    class Meta:
+        ordering=["name"]
+
 class ClientOrganisation(models.Model):
     """A department in client organization"""
     name=models.CharField("Organisation", max_length=200)
     company=models.ForeignKey(ClientCompany, verbose_name="Entreprise")
 
     def __unicode__(self): return u"%s : %s " % (self.company, self.name)
+
+    class Meta:
+        ordering=["company", "name"]
 
 class ClientContact(models.Model):
     """A contact in client organization"""
@@ -41,17 +47,23 @@ class ClientContact(models.Model):
     
     def __unicode__(self): return self.name
 
+    class Meta:
+        ordering=["name"]
+
 class Client(models.Model):
     """A client organization"""
     organisation=models.ForeignKey(ClientOrganisation)
     contact=models.ForeignKey(ClientContact, blank=True, null=True)
     salesOwner=models.CharField("Propriété commerciale", max_length=30, choices=COMPANY, default="NEWARCH")
-    
+
     def __unicode__(self):
         if self.contact:
             return u"%s (%s)" % (self.organisation, self.contact)
         else:
             return u"%s" % (self.organisation)
+
+    class Meta:
+        ordering = ["organisation", "contact"]
 
 class Consultant(models.Model):
     """A New'Arch consultant"""
