@@ -147,7 +147,7 @@ class LeadAdmin(admin.ModelAdmin):
         obj.save()
         if not change:
             try:
-                send_lead_mail(obj)
+                send_lead_mail(obj, fromAddr="%s@newarch.Fr" % request.user.username)
                 request.user.message_set.create(message="Ce lead a été envoyé par mail au plan de charge.")
             except Exception, e:
                 request.user.message_set.create(message="Échec d'envoi du mail : %s" % e)
