@@ -164,7 +164,8 @@ class SalesManAdmin(admin.ModelAdmin):
 
 class ClientOrganisationAdmin(admin.ModelAdmin):
     fieldsets=[(None,    {"fields": ["company", "name"] } ),]
-    list_display=("name",)
+    list_display=("company", "name",)
+    list_display_links=("company", "name",)
     ordering=("name",)
     search_fields=("name",)
 
