@@ -1,4 +1,4 @@
-{% if leads %}
+{% autoescape off %}{% if leads %}
 Leads commerciaux New'Arch actifs :
 
 {% for lead in leads %}
@@ -12,4 +12,4 @@ Leads commerciaux New'Arch actifs :
 
 {% else %}
 Aucun lead actifs !
-{% endif %}
+{% endif %}{% endautoescape %}
