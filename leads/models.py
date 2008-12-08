@@ -7,8 +7,7 @@ from pydici.leads.utils import send_lead_mail
 
 COMPANY=(
              ("NEWARCH",     "New'Arch"),
-             ("SOLUCOM/D2S", "Solucom/D²S"),
-             ("SOLUCOM/SEC", "Solucom/Sec"),
+             ("SOLUCOM",     "Solucom"),
              ("IDESYS",      "Idesys"),
              ("VISTALI",     "Vistali"),
              ("DREAMSOFT",   "DreamSoft"),
