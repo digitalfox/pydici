@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib import admin
 from datetime import datetime
 
-from pydici.leads.utils import send_lead_mail
+from pydici.leads.utils import send_lead_mail, capitalize
 
 COMPANY=(
              ("NEWARCH",     "New'Arch"),
@@ -46,6 +46,10 @@ class ClientContact(models.Model):
     
     def __unicode__(self): return self.name
 
+    def save(self, force_insert=False, force_update=False):
+        self.name=capitalize(self.name)
+        super(ClientContact, self).save(force_insert, force_update)
+
     class Meta:
         ordering=["name"]
 
@@ -72,6 +76,12 @@ class Consultant(models.Model):
 
     def __unicode__(self): return self.name
 
+    def save(self, force_insert=False, force_update=False):
+        self.name=capitalize(self.name)
+        self.trigramme=self.trigramme.upper()
+        super(Consultant, self).save(force_insert, force_update)
+
+
 class SalesMan(models.Model):
     """A salesman from New'Arch or Solucom"""
     name=models.CharField("Nom", max_length=50)
@@ -81,6 +91,11 @@ class SalesMan(models.Model):
     phone=models.CharField("Téléphone", max_length=30, blank=True)
 
     def __unicode__(self): return "%s (%s)" % (self.name, self.get_company_display())
+
+    def save(self, force_insert=False, force_update=False):
+        self.name=capitalize(self.name)
+        self.trigramme=self.trigramme.upper()
+        super(SalesMan, self).save(force_insert, force_update)
 
 class LeadManager(models.Manager):
     def active(self):

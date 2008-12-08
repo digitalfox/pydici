@@ -49,3 +49,13 @@ def send_lead_mail(lead, fromAddr=pydici.settings.LEADS_MAIL_FROM):
     smtpConnection = smtplib.SMTP(pydici.settings.LEADS_MAIL_SMTP)
     smtpConnection.sendmail(pydici.settings.LEADS_MAIL_FROM, pydici.settings.LEADS_MAIL_TO, msgRoot.as_string())
     smtpConnection.quit()
+
+def capitalize(sentence):
+    """
+    @arg sentence: string or unicode
+    @return:Capitalize each word of the sentence
+    """
+    result=[]
+    for word in sentence.split():
+        result.append(word.capitalize())
+    return " ".join(result)
