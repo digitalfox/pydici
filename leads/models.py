@@ -81,6 +81,9 @@ class Consultant(models.Model):
         self.trigramme=self.trigramme.upper()
         super(Consultant, self).save(force_insert, force_update)
 
+    class Meta:
+        ordering = ["name",]
+
 
 class SalesMan(models.Model):
     """A salesman from New'Arch or Solucom"""
@@ -96,6 +99,9 @@ class SalesMan(models.Model):
         self.name=capitalize(self.name)
         self.trigramme=self.trigramme.upper()
         super(SalesMan, self).save(force_insert, force_update)
+
+    class Meta:
+        ordering = ["name",]
 
 class LeadManager(models.Manager):
     def active(self):
