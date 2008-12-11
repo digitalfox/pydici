@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import csv
+from datetime import datetime, timedelta
 
 import pydici.settings
 
@@ -9,6 +10,7 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry
+from django.db.models import Q
 
 from pydici.leads.models import Lead, Consultant, SalesMan
 from pydici.leads.utils import send_lead_mail
@@ -91,3 +93,12 @@ def mail_lead(request, lead_id=0):
         return HttpResponse("Lead %s was sent to %s !" % (lead_id, pydici.settings.LEADS_MAIL_TO))
     except Exception, e:
         return HttpResponse("Failed to send mail: %s" % e)
+
+def review(request):
+    today=datetime.today()
+    delay=timedelta(days=10) #(10 days)
+    recentArchivedLeads=Lead.objects.passive().filter(Q(update_date__lt=(today-delay)) |
+                                                      Q(state="WON", salesId=None))
+    return render_to_response("leads/review.html", {"recent_archived_leads" : recentArchivedLeads,
+                                                    "active_leads" : Lead.objects.active(),
+                                                    "user": request.user })

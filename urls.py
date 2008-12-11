@@ -14,6 +14,7 @@ urlpatterns = patterns('',
      
     # Lead application
     (r'^leads/$', 'pydici.leads.views.index'),
+    (r'^leads/review', 'pydici.leads.views.review'),
     (r'^leads/csv/(.*)', 'pydici.leads.views.csv_export'),
     (r'^leads/(?P<lead_id>\d+)/$', 'pydici.leads.views.detail'),
     (r'^leads/sendmail/(?P<lead_id>\d+)/$', 'pydici.leads.views.mail_lead'),

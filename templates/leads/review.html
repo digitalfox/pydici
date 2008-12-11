@@ -1,0 +1,68 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    {% if active_leads %}
+    <div class="module">
+        <table summary="Leads">
+        <caption>Tous les leads actifs</caption>
+        <tr>
+                <th scope="row"><b>Lead</b></th>
+                <td><b>Responsable</b></td>
+                <td><b>Staffing</b></td>
+                <td><b>Statut</b></td>
+                <td><b>Échéance</b></td>
+                <td></td>
+                <td></td>
+        </tr>
+        {% for lead in active_leads %}
+            <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <th scope="row"><a href='/leads/{{lead.id}}'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <td>{{ lead.responsible }}</td>
+                <td>{{ lead.staffing_list }}</td>
+                <td>{{ lead.get_state_display }}</td>
+                <td>{{ lead.due_date }}</td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    {% if recent_archived_leads %}
+    <div class="module">
+        <table summary="Leads">
+        <caption>Les affaires gagnées, perdues ou abandonnées recemment et les affaires gagnées sans code A6</caption>
+        <tr>
+                <th scope="row"><b>Lead</b></th>
+                <td><b>Responsable</b></td>
+                <td><b>Staffing</b></td>
+                <td><b>Statut</b></td>
+                <td><b>Dernière mise à jour</b></td>
+                <td></td>
+                <td></td>
+        </tr>
+        {% for lead in recent_archived_leads %}
+            <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <th scope="row"><a href='/leads/{{lead.id}}'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <td>{{ lead.responsible }}</td>
+                <td>{{ lead.staffing_list }}</td>
+                <td>{{ lead.get_state_display }}</td>
+                <td>{{ lead.update_date_strf }}</td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
