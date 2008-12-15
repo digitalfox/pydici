@@ -1,22 +1,22 @@
 {% autoescape off %}
-{{ lead.client.organisation }} - {{ lead.name }}
+{{ obj.client.organisation }} - {{ obj.name }}
 
-Origine/Contact : {{ lead.client.contact }}
+Origine/Contact : {{ obj.client.contact }}
 
-Description / contexte : {{ lead.description }}
+Description / contexte : {{ obj.description }}
 
-Responsable : {% if lead.responsible %} {{ lead.responsible }} {% else %} à définir {% endif %}
+Responsable : {% if obj.responsible %} {{ obj.responsible }} {% else %} à définir {% endif %}
 
-IA : {% if lead.salesman %} {{ lead.salesman }} {% else %} aucun {% endif %}
+IA : {% if obj.salesman %} {{ obj.salesman }} {% else %} aucun {% endif %}
 
-Statut : {{ lead.get_state_display }} {% if lead.due_date %}(=>  {{ lead.due_date }}){% endif %} / Démarrage prévu : {% if lead.start_date %} {{ lead.start_date }} {% else %} non définie {% endif %}
+Statut : {{ obj.get_state_display }} {% if obj.due_date %}(=>  {{ obj.due_date }}){% endif %} / Démarrage prévu : {% if obj.start_date %} {{ obj.start_date }} {% else %} non définie {% endif %}
 
-Chiffre d'affaire estimatif (kEuros) : {% if lead.sales %} {{ lead.sales }} {% else %} inconnu {% endif %}
+Chiffre d'affaire estimatif (kEuros) : {% if obj.sales %} {{ obj.sales }} {% else %} inconnu {% endif %}
 
-Profile(s) pressenti(s) : {{ lead.staffing_list }}
+Profile(s) pressenti(s) : {{ obj.staffing_list }}
 
-{% if lead.salesId %} Code ActiveSys : {{ lead.salesId }}{% endif %}
+{% if obj.salesId %} Code ActiveSys : {{ obj.salesId }}{% endif %}
 
-Modifier ce lead : {{ link_root }}/leads/admin/leads/lead/{{ lead.id }}
+Modifier ce lead : {{ link_root }}/leads/admin/leads/lead/{{ obj.id }}
 Page d'accueil : {{ link_root }}/leads/
 {% endautoescape %}

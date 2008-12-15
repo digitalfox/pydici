@@ -1,19 +1,19 @@
-<b>{{ lead.client.organisation }} -</b> {{ lead.name }} <br>
+<b>{{ obj.client.organisation }} -</b> {{ obj.name }} <br>
 
-<b>Origine/Contact</b> : {{ lead.client.contact }} <br>
+<b>Origine/Contact</b> : {{ obj.client.contact }} <br>
 
-<b>Description / contexte</b> : {{ lead.description|linebreaksbr }} <br>
+<b>Description / contexte</b> : {{ obj.description|linebreaksbr }} <br>
 
-<b>Responsable </b>: {% if lead.responsible %} {{ lead.responsible }} {% else %} à définir {% endif %}<br>
+<b>Responsable </b>: {% if obj.responsible %} {{ obj.responsible }} {% else %} à définir {% endif %}<br>
 
-<b>IA</b> : {% if lead.salesman %} {{ lead.salesman }} {% else %} aucun {% endif %}<br>
+<b>IA</b> : {% if obj.salesman %} {{ obj.salesman }} {% else %} aucun {% endif %}<br>
 
-<b>Statut</b> : {{ lead.get_state_display }} {% if lead.due_date %}(=>  {{ lead.due_date }}){% endif %} / D&eacute;marrage pr&eacute;vu : {% if lead.start_date %} {{ lead.start_date }} {% else %} non d&eacute;finie {% endif %}<br>
+<b>Statut</b> : {{ obj.get_state_display }} {% if obj.due_date %}(=>  {{ obj.due_date }}){% endif %} / D&eacute;marrage pr&eacute;vu : {% if obj.start_date %} {{ obj.start_date }} {% else %} non d&eacute;finie {% endif %}<br>
 
-<b>Chiffre d'affaire estimatif (kEuros)</b> : {% if lead.sales %} {{ lead.sales }} {% else %} inconnu {% endif %}<br>
+<b>Chiffre d'affaire estimatif (kEuros)</b> : {% if obj.sales %} {{ obj.sales }} {% else %} inconnu {% endif %}<br>
 
-<b>Profile(s) pressenti(s)</b> : {{ lead.staffing_list }}<br>
+<b>Profile(s) pressenti(s)</b> : {{ obj.staffing_list }}<br>
 
-{% if lead.salesId %} <b>Code ActiveSys </b> : {{ lead.salesId }}<br>{% endif %}
+{% if obj.salesId %} <b>Code ActiveSys </b> : {{ obj.salesId }}<br>{% endif %}
 
-<br><i><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}'>Modifier ce lead</a> -- <a href='{{ link_root }}/leads/'>Page d'accueil</a></i>
+<br><i><a href='{{ link_root }}/leads/admin/leads/lead/{{ obj.id }}'>Modifier ce lead</a> -- <a href='{{ link_root }}/leads/'>Page d'accueil</a></i>

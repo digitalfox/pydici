@@ -4,6 +4,7 @@ from django.contrib import admin
 from datetime import datetime
 
 from pydici.leads.utils import send_lead_mail, capitalize
+import pydici.settings
 
 COMPANY=(
              ("NEWARCH",     "New'Arch"),
@@ -146,6 +147,9 @@ class Lead(models.Model):
 
     def update_date_strf(self):
         return self.update_date.strftime(SHORT_DATETIME_FORMAT)
+
+    def get_absolute_url(self):
+        return "%s/leads/%s" % (pydici.settings.LEADS_MAIL_LINK_ROOT, self.id)
 
 class LeadAdmin(admin.ModelAdmin):
     list_display = ("name", "client", "description", "responsible", "salesman", "sales", "state", "due_date", "update_date")
