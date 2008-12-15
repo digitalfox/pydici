@@ -6,13 +6,14 @@ admin.autodiscover()
 
 
 # RSS feeds definition
-from pydici.leads.feeds import LatestLeads, NewLeads, MyLatestLeads, AllChanges
+from pydici.leads.feeds import LatestLeads, NewLeads, MyLatestLeads, AllChanges, WonLeads
 
 feeds = {
         "latest": LatestLeads,
-        "new" : NewLeads,
-        "mine": MyLatestLeads,
-        "all" : AllChanges
+        "new" :   NewLeads,
+        "won" :   WonLeads,
+        "mine":   MyLatestLeads,
+        "all" :   AllChanges
         }
 
 urlpatterns = patterns('',
