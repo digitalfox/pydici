@@ -148,11 +148,19 @@ class Lead(models.Model):
     def update_date_strf(self):
         return self.update_date.strftime(SHORT_DATETIME_FORMAT)
 
+    def short_description(self):
+        max_length=20
+        if len(self.description)>max_length:
+            return self.description[:max_length]+"..."
+        else:
+            return self.description
+    short_description.short_description="Description"
+
     def get_absolute_url(self):
         return "%s/leads/%s" % (pydici.settings.LEADS_MAIL_LINK_ROOT, self.id)
 
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ("name", "client", "description", "responsible", "salesman", "sales", "state", "due_date", "update_date")
+    list_display = ("name", "client", "short_description", "responsible", "salesman", "sales", "state", "due_date", "update_date")
     fieldsets = [
         (None,    {"fields": ["name", "client", "description", "salesId"]}),
         ('État et suivi',     {'fields': ['responsible', 'salesman', 'start_date', 'state', 'due_date']}),
