@@ -53,9 +53,14 @@ def send_lead_mail(lead, fromAddr=pydici.settings.LEADS_MAIL_FROM):
 def capitalize(sentence):
     """
     @arg sentence: string or unicode
-    @return:Capitalize each word of the sentence
+    @return:Capitalize each word or sub-word (separated by dash or quote) of the sentence
     """
+    sentence=sentence.lower()
     result=[]
-    for word in sentence.split():
-        result.append(word.capitalize())
-    return " ".join(result)
+    for sep in (" ", "'", "-"):
+        for word in sentence.split(sep):
+            word=word[0].upper()+word[1:]
+            result.append(word)
+        sentence=sep.join(result)
+        result=[]
+    return sentence
