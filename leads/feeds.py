@@ -17,6 +17,9 @@ class LatestLeads(LeadFeed):
     def items(self):
         return Lead.objects.order_by('-update_date')[:20]
 
+    def item_pubdate(self, item):
+        return item.update_date
+
 class NewLeads(LeadFeed):
     title="Les nouveaux Leads"
     description="Les 20 derniers leads crées"
