@@ -1,5 +1,9 @@
 # coding: utf-8
-
+"""
+Django views. All http request are processed here.
+@author: Sébastien Renard (sebastien.renard@digitalfox.org)
+@license: BSD
+"""
 import csv
 from datetime import datetime, timedelta
 

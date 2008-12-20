@@ -1,6 +1,10 @@
+# -*- coding: UTF-8 -*-
+"""URL dispatcher
+@author: Sébastien Renard (sebastien.renard@digitalfox.org)
+@license: BSD
+"""
+#
 from django.conf.urls.defaults import *
-
-# Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 

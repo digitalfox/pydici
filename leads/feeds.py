@@ -1,4 +1,8 @@
 # coding: utf-8
+"""RSS feeds
+@author: Sébastien Renard (sebastien.renard@digitalfox.org)
+@license: BSD
+"""
 
 from django.contrib.syndication.feeds import Feed
 

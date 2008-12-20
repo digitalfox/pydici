@@ -1,7 +1,11 @@
 # coding: utf-8
 
-""" Helper module that factorize some code that would not be
-    appropriate to live in models or view"""
+"""
+Helper module that factorize some code that would not be
+appropriate to live in models or view
+@author: Sébastien Renard (sebastien.renard@digitalfox.org)
+@license: BSD
+"""
 
 from email.Utils import formatdate
 import smtplib

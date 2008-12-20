@@ -1,4 +1,10 @@
 # coding: utf-8
+"""
+Database access layer.
+@author: Sébastien Renard (sebastien.renard@digitalfox.org)
+@license: BSD
+"""
+
 from django.db import models
 from django.contrib import admin
 from datetime import datetime
