@@ -183,6 +183,7 @@ class LeadAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         obj.save()
+        form.save_m2m() # Save many to many relations
         if not change:
             try:
                 send_lead_mail(obj, fromAddr="%s@newarch.Fr" % request.user.username)
