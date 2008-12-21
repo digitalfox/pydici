@@ -24,12 +24,12 @@
         </tr>
         {% for lead in active_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <th scope="row"><a href='/leads/{{lead.id}}/'>{{ lead.name }} - {{ lead.client }}</a></th>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.get_state_display }}</td>
                 <td>{{ lead.due_date }}</td>
-                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
             </tr>
         {% endfor %}
@@ -56,7 +56,7 @@
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.get_state_display }}</td>
                 <td>{{ lead.update_date_strf }}</td>
-                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
             </tr>
         {% endfor %}

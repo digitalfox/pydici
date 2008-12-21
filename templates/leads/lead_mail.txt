@@ -17,6 +17,6 @@ Profile(s) pressenti(s) : {{ obj.staffing_list }}
 
 {% if obj.salesId %} Code ActiveSys : {{ obj.salesId }}{% endif %}
 
-Modifier ce lead : {{ link_root }}/leads/admin/leads/lead/{{ obj.id }}
+Modifier ce lead : {{ link_root }}/leads/admin/leads/lead/{{ obj.id }}/
 Page d'accueil : {{ link_root }}/leads/
 {% endautoescape %}

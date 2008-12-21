@@ -13,7 +13,7 @@
 <div id="content-main">
     <h1>Détail du lead</h1>
     <div class="form-row name  ">
-    <h2><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}' class='changelink'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a></h2> 
+    <h2><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a></h2> 
     {% if lead.description %}
     <div class='system-message'>{{ lead.description|linebreaksbr }} </div>
     {% endif %}
