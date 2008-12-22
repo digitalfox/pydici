@@ -27,8 +27,13 @@
         <div id="branding">
         {% block branding %}{% endblock %}
         </div>
+
         {% if user.is_authenticated and user.is_staff %}
-        <div id="user-tools">{% trans 'Welcome,' %} <strong>{% if user.first_name %}{{ user.first_name|escape }}{% else %}{{ user.username }}{% endif %}</strong>.</div>
+        <div id="user-tools">
+        <a href="/leads/">Accueil</a>&nbsp;|&nbsp;
+        <a href="/leads/review/">Revue des affaires en cours</a>&nbsp;|&nbsp;
+        <a href="/mediawiki/index.php/Pydici">Aide</a>&nbsp;|&nbsp;
+        {% trans 'Welcome,' %} <strong>{% if user.first_name %}{{ user.first_name|escape }}{% else %}{{ user.username }}{% endif %}</strong>.</div>
         {% endif %}
         {% block nav-global %}{% endblock %}
     </div>
