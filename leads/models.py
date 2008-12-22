@@ -112,10 +112,10 @@ class SalesMan(models.Model):
 
 class LeadManager(models.Manager):
     def active(self):
-        return self.get_query_set().exclude(state__in=("LOST", "FORGIVEN", "WIN"))
+        return self.get_query_set().exclude(state__in=("LOST", "FORGIVEN", "WIN", "SLEEPING"))
 
     def passive(self):
-        return self.get_query_set().filter(state__in=("LOST", "FORGIVEN", "WIN"))
+        return self.get_query_set().filter(state__in=("LOST", "FORGIVEN", "WIN", "SLEEPING"))
 
 class Lead(models.Model):
     """A commercial lead"""
@@ -127,6 +127,7 @@ class Lead(models.Model):
             ('WIN', u'Affaire gagnée'),
             ('LOST', u'Affaire perdue'),
             ('FORGIVEN', u'Affaire abandonnée'),
+            ('SLEEPING', u'En sommeil'),
            )
     name=models.CharField("Nom", max_length=200)
     description=models.TextField(blank=True)
