@@ -56,6 +56,7 @@ def summary_mail(request, html=True):
     else:
         return render_to_response("leads/mail.txt", {"leads": leads}, mimetype="text/plain; charset=utf-8")
 
+@login_required
 def detail(request, lead_id):
     """Lead detailed description"""
     try:
@@ -67,7 +68,8 @@ def detail(request, lead_id):
         return HttpResponse("Lead %s does not exist." % lead_id)
     return render_to_response("leads/lead_detail.html", {"lead": lead,
                                                          "link_root": pydici.settings.LEADS_MAIL_LINK_ROOT,
-                                                         "action_list": actionList})
+                                                         "action_list": actionList,
+                                                         "user": request.user})
 
 def csv_export(request, target):
     response = HttpResponse(mimetype="text/csv")
