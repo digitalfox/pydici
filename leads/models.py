@@ -166,7 +166,7 @@ class Lead(models.Model):
         return "%s/leads/%s" % (pydici.settings.LEADS_MAIL_LINK_ROOT, self.id)
 
 class LeadAdmin(admin.ModelAdmin):
-    list_display = ("name", "client", "short_description", "responsible", "salesman", "sales", "state", "due_date", "update_date")
+    list_display = ("name", "client", "short_description", "responsible", "salesman", "state", "due_date", "update_date")
     fieldsets = [
         (None,    {"fields": ["name", "client", "description", "salesId"]}),
         ('État et suivi',     {'fields': ['responsible', 'salesman', 'start_date', 'state', 'due_date']}),
