@@ -165,7 +165,7 @@ class Lead(models.Model):
     short_description.short_description="Description"
 
     def get_absolute_url(self):
-        return "%s/leads/%s" % (pydici.settings.LEADS_MAIL_LINK_ROOT, self.id)
+        return "%s/leads/%s/" % (pydici.settings.LEADS_MAIL_LINK_ROOT, self.id)
 
 class LeadAdmin(admin.ModelAdmin):
     list_display = ("name", "client", "short_description", "responsible", "salesman", "state", "due_date", "update_date_strf")
