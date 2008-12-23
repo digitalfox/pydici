@@ -19,12 +19,12 @@ class SimpleTest(TestCase):
     def test_basic_page(self):
         self.client.login(username='sre', password='rototo')
         for page in ("/leads/",
-                     "/leads/1/",
-                     "/leads/10/",
+                     "/leads/3/",
+                     "/leads/25/",
                      "/leads/admin/",
                      "/leads/csv/all",
                      "/leads/csv/active",
-                     "/leads/sendmail/2/",
+                     "/leads/sendmail/4/",
                      "/leads/mail/text",
                      "/leads/mail/html",
                      "/leads/review",

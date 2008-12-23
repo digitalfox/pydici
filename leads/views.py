@@ -9,10 +9,9 @@ from datetime import datetime, timedelta
 
 import pydici.settings
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry
 from django.db.models import Q
 
@@ -65,7 +64,7 @@ def detail(request, lead_id):
                                               content_type__name="lead")
         actionList=actionList.select_related().order_by('action_time')
     except Lead.DoesNotExist:
-        return HttpResponse("Lead %s does not exist." % lead_id)
+        raise Http404
     return render_to_response("leads/lead_detail.html", {"lead": lead,
                                                          "link_root": pydici.settings.LEADS_MAIL_LINK_ROOT,
                                                          "action_list": actionList,
@@ -93,7 +92,7 @@ def mail_lead(request, lead_id=0):
     try:
         lead=Lead.objects.get(id=lead_id)
     except Lead.DoesNotExist:
-        return HttpResponse("Lead %s does not exist." % lead_id)
+        raise Http404
     try:
         send_lead_mail(lead)
         return HttpResponse("Lead %s was sent to %s !" % (lead_id, pydici.settings.LEADS_MAIL_TO))
