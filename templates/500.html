@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+<h1>Désolé, ceci est une erreur de l'application</h1>
+<h2>L'administrateur a été prévenu par mail de cette erreur</h2>
+<p>N'hésitez pas à <a href="mailto:sre@newarch.fr">envoyer
+un mail à Sébastien R. </a> en indiquant les conditions qui ont provoquées cette erreur
+afin d'aider au diagnostic.
+
+</div>
+{% endblock %}
