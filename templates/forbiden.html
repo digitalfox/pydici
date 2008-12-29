@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+<h1>Désolé, la page {{ request_path }} n'est pas accessible.<h1>
+<h2>Votre profil ne vous permet pas d'accéder à cette page.</h2>
+<p>Si vous pensez qu'il s'agit d'une anomalie, merci <a href="mailto:sre@newarch.fr">d'envoyer
+un mail à Sébastien R. </a> pour mettre à jour vos droits.
+
+</div>
+{% endblock %}

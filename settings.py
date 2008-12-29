@@ -84,7 +84,7 @@ INSTALLED_APPS = (
     'pydici.leads',
 )
 
-LOGIN_URL="/leads/admin/"
+LOGIN_URL="/leads/forbiden"
 
 LEADS_MAIL_FROM="sre@newarch.Fr"
 LEADS_MAIL_TO="sre@newarch.Fr"
