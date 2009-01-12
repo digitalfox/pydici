@@ -103,7 +103,8 @@ def review(request):
     today=datetime.today()
     delay=timedelta(days=10) #(10 days)
     recentArchivedLeads=Lead.objects.passive().filter(Q(update_date__gte=(today-delay)) |
-                                                      Q(state="WIN", salesId=""))
+                                                      Q(state="WIN", salesId="") |
+                                                      Q(state="SLEEPING"))
     recentArchivedLeads=recentArchivedLeads.order_by("state", "-update_date")
     return render_to_response("leads/review.html", {"recent_archived_leads" : recentArchivedLeads,
                                                     "active_leads" : Lead.objects.active(),
