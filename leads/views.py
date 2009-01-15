@@ -49,11 +49,16 @@ def index(request):
 
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""
-    leads=Lead.objects.active()
+    today=datetime.today()
+    delay=timedelta(days=10) #(10 days)
+
+    active_leads=Lead.objects.active().order_by("state").order_by("-update_date")
+    passive_leads=Lead.objects.passive().filter(update_date__gte=(today-delay)).order_by("state").order_by("-update_date")
     if html:
-        return render_to_response("leads/mail.html", {"leads": leads})
+        return render_to_response("leads/mail.html", {"lead_group": [active_leads, passive_leads] })
     else:
-        return render_to_response("leads/mail.txt", {"leads": leads}, mimetype="text/plain; charset=utf-8")
+        return render_to_response("leads/mail.txt", {"lead_group": [active_leads, passive_leads] },
+                                  mimetype="text/plain; charset=utf-8")
 
 @login_required
 def detail(request, lead_id):

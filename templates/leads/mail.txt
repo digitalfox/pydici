@@ -1,15 +1,13 @@
-{% autoescape off %}{% if leads %}
-Leads commerciaux New'Arch actifs :
-
+{% autoescape off %}
+{% for leads in lead_group %}
+{% cycle "*** Les Leads commerciaux New'Arch actifs ***" "*** Les affaires gagnées, perdues, abandonnéees ou en sommeil ***" %}
 {% for lead in leads %}
+{% ifchanged %}__{{ lead.get_state_display }}__
+{% endifchanged %}
 * {{ lead.client }} - {{ lead.name }} (maj : {{ lead.update_date_strf }})
-    o Statut : {{ lead.get_state_display }} (=> {{ lead.due_date }}) / Démarrage prévu : {% if lead.start_date %} {{ lead.start_date }} {% else %} non définie {% endif %}
-    o Suivi : {{ lead.responsible }} / IA : {{ lead.salesman }}
-    o {% if lead.sales %}CA : {{ lead.sales }} kEuros{% else %}CA inconnu{% endif %} / Staffing : {{ lead.staffing_list }}{% if lead.description %}
-    o {{ lead.description }}{% endif %}
-
+    o Échéance : {{ lead.due_date|default_if_none:"non définie" }} / Démarrage prévu : {{ lead.start_date|default_if_none:"non définie" }}
+    o Suivi : {{ lead.responsible|default_if_none:"non défini" }} / IA : {{ lead.salesman|default_if_none:"non défini" }}
+    o CA : {{ lead.sales|default_if_none:"non défini" }} kEuros / Staffing : {{ lead.staffing_list }}
 {% endfor %}
-
-{% else %}
-Aucun lead actifs !
-{% endif %}{% endautoescape %}
+{% endfor %}
+{% endautoescape %}
