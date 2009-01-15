@@ -26,7 +26,7 @@
     <b>Statut</b> : {{ lead.get_state_display }} {% if lead.due_date %}(=>  {{ lead.due_date }}){% endif %} / D&eacute;marrage pr&eacute;vu : {% if lead.start_date %} {{ lead.start_date }} {% else %} non d&eacute;finie {% endif %}<br>
     <b>Chiffre d'affaire estimatif (kEuros)</b> : {% if lead.sales %} {{ lead.sales }} {% else %} inconnu {% endif %}
     <br><br><hr>
-    <b>Profile(s) pressenti(s)</b> : {{ lead.staffing_list }}<br>
+    <b>Profil(s) pressenti(s)</b> : {{ lead.staffing_list }}<br>
     {% if lead.salesId %} <b>Code ActiveSys </b> : {{ lead.salesId }}<br>{% endif %}
     <br><br><hr>
 </div>

@@ -13,7 +13,7 @@ Statut : {{ obj.get_state_display }} {% if obj.due_date %}(=>  {{ obj.due_date }
 
 Chiffre d'affaire estimatif (kEuros) : {% if obj.sales %} {{ obj.sales }} {% else %} inconnu {% endif %}
 
-Profile(s) pressenti(s) : {{ obj.staffing_list }}
+Profil(s) pressenti(s) : {{ obj.staffing_list }}
 
 {% if obj.salesId %} Code ActiveSys : {{ obj.salesId }}{% endif %}
 
