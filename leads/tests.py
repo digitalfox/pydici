@@ -32,7 +32,16 @@ class SimpleTest(TestCase):
                      "/leads/feeds/new/",
                      "/leads/feeds/won/"):
             response = self.client.get(page)
-            self.failUnlessEqual(response.status_code, 200, "Failed to test url %s" % page)
+            self.failUnlessEqual(response.status_code, 200,
+                                 "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
+
+    def test_not_found_page(self):
+        self.client.login(username='sre', password='rototo')
+        for page in ("/leads/234/",
+                     "/leads/sendmail/434/"):
+            response = self.client.get(page)
+            self.failUnlessEqual(response.status_code, 404,
+                                 "Failed to test url %s (got %s instead of 404" % (page, response.status_code))
 
     def test_create_lead(self):
         self.client.login(username='sre', password='rototo')
