@@ -15,7 +15,7 @@
         <caption>Les leads dont je suis responsable</caption>
         {% for lead in my_leads_as_responsible %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}/'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name }} - {{ lead.client }}</a></th>
                 <td>{{ lead.get_state_display }}</td>
                 <td>{{ lead.update_date_strf }}</td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
@@ -31,7 +31,7 @@
         <caption>Les leads ou je suis une ressource pressentie</caption>
         {% for lead in my_leads_as_staffee %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}/'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name }} - {{ lead.client }}</a></th>
                 <td style="text-align:right;">{{ lead.get_state_display }}</td>
                 <td>{{ lead.update_date_strf }}</td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
@@ -47,7 +47,7 @@
         <caption>Les derniers leads modifiés</caption>
         {% for lead in latest_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}/'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name }} - {{ lead.client }}</a></th>
                 <td style="text-align:right;">{{ lead.get_state_display }}</td>
                 <td>{{ lead.update_date_strf }}</td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
@@ -63,7 +63,7 @@
         <caption>Mes derniers leads archivés (gagnés, perdus ou abandonnés)</caption>
         {% for lead in my_latest_archived_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}/'>{{ lead.name }} - {{ lead.client }}</a></th>
+                <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name }} - {{ lead.client }}</a></th>
                 <td style="text-align:right;">{{ lead.get_state_display }}</td>
                 <td>{{ lead.update_date_strf }}</td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
