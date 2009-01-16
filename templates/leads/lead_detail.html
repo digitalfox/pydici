@@ -13,19 +13,20 @@
 <div id="content-main">
     <h1>Détail du lead</h1>
     <div class="form-row name  ">
-    <h2><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a></h2> 
+    <h2><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
     {% if lead.description %}
     <div class='system-message'>{{ lead.description|linebreaksbr }} </div>
     {% endif %}
     <hr>
     <b>Origine/Contact</b> : {{ lead.client.contact|default_if_none:"Inconnu" }}
     <br><br><hr>
-    <b>Responsable </b>: {% if lead.responsible %} {{ lead.responsible }} {% else %} à définir {% endif %}<br>
+    <b>Responsable </b>: {{ lead.responsible|default_if_none:"à définir" }}<br>
     <b>IA</b> : {% if lead.salesman %} {{ lead.salesman }} {% else %} aucun {% endif %}
     <br><br><hr>
-    <b>Statut</b> : {{ lead.get_state_display }} {% if lead.due_date %}(=>  {{ lead.due_date }}){% endif %} / D&eacute;marrage pr&eacute;vu : {% if lead.start_date %} {{ lead.start_date }} {% else %} non d&eacute;finie {% endif %}<br>
-    <b>Chiffre d'affaire estimatif (kEuros)</b> : {% if lead.sales %} {{ lead.sales }} {% else %} inconnu {% endif %}
+    <b>Date d'&eacute;ch&eacute;ance</b> : {{ lead.due_date|default_if_none:"Non d&eacute;finie" }})<br>
+    <b>D&eacute;marrage pr&eacute;vu </b>: {{ lead.start_date|default_if_none:"non d&eacute;finie" }}
     <br><br><hr>
+    <b>Chiffre d'affaire estimatif (kEuros)</b> : {{ lead.sales|default_if_none:"inconnu" }}<br>
     <b>Profil(s) pressenti(s)</b> : {{ lead.staffing_list }}<br>
     {% if lead.salesId %} <b>Code ActiveSys </b> : {{ lead.salesId }}<br>{% endif %}
     <br><br><hr>
