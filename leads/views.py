@@ -56,9 +56,9 @@ def summary_mail(request, html=True):
     active_leads=Lead.objects.active().order_by("state", "-update_date")
     passive_leads=Lead.objects.passive().filter(update_date__gte=(today-delay)).order_by("state", "-update_date")
     if html:
-        return render_to_response("leads/mail.html", {"lead_group": [active_leads, passive_leads] })
+        return render_to_response("leads/mail.html", {"lead_group": [passive_leads, active_leads] })
     else:
-        return render_to_response("leads/mail.txt", {"lead_group": [active_leads, passive_leads] },
+        return render_to_response("leads/mail.txt", {"lead_group": [passive_leads, active_leads] },
                                   mimetype="text/plain; charset=utf-8")
 
 @login_required

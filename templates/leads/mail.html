@@ -1,6 +1,6 @@
 
 {% for leads in lead_group %}
-{% cycle "<h2>Les Leads commerciaux New'Arch actifs :</h2>" "<h2>Les affaires gagn&eacute;es, perdues, abandonn&eacute;es ou en sommeil :</h2>" %}
+{% cycle "<h2>Les affaires gagn&eacute;es perdues abandonn&eacute;es ou en sommeil :</h2>" "<h2>Les Leads commerciaux actifs :</h2>" %}
     <ul>
     {% for lead in leads %}
     {% ifchanged %} <h4><u> {{ lead.get_state_display }}</u></h4>{% endifchanged %}

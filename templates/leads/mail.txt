@@ -1,6 +1,6 @@
 {% autoescape off %}
 {% for leads in lead_group %}
-{% cycle "*** Les Leads commerciaux New'Arch actifs ***" "*** Les affaires gagnées, perdues, abandonnéees ou en sommeil ***" %}
+{% cycle "*** Les affaires gagnées perdues abandonnéees ou en sommeil ***" "*** Les Leads commerciaux actifs ***" %}
 {% for lead in leads %}
 {% ifchanged %}__{{ lead.get_state_display }}__
 {% endifchanged %}
