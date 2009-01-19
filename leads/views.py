@@ -54,7 +54,8 @@ def summary_mail(request, html=True):
     delay=timedelta(days=10) #(10 days)
 
     active_leads=Lead.objects.active().order_by("state", "-update_date")
-    passive_leads=Lead.objects.passive().filter(update_date__gte=(today-delay)).order_by("state", "-update_date")
+    passive_leads=Lead.objects.passive().filter(update_date__gte=(today-delay)).exclude(state="SLEEPING")
+    passive_leads=passive_leads.order_by("state", "-update_date")
     if html:
         return render_to_response("leads/mail.html", {"lead_group": [passive_leads, active_leads] })
     else:
