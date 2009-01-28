@@ -23,7 +23,7 @@
     <b>Responsable </b>: {{ lead.responsible|default_if_none:"à définir" }}<br>
     <b>IA</b> : {% if lead.salesman %} {{ lead.salesman }} {% else %} aucun {% endif %}
     <br><br><hr>
-    <b>Date d'&eacute;ch&eacute;ance</b> : {{ lead.due_date|default_if_none:"Non d&eacute;finie" }})<br>
+    <b>Date d'&eacute;ch&eacute;ance</b> : {{ lead.due_date|default_if_none:"Non d&eacute;finie" }}<br>
     <b>D&eacute;marrage pr&eacute;vu </b>: {{ lead.start_date|default_if_none:"non d&eacute;finie" }}
     <br><br><hr>
     <b>Chiffre d'affaire estimatif (kEuros)</b> : {{ lead.sales|default_if_none:"inconnu" }}<br>
