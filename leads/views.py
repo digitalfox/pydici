@@ -7,6 +7,9 @@ Django views. All http request are processed here.
 import csv
 from datetime import datetime, timedelta
 
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+
 import pydici.settings
 
 from django.http import HttpResponse, Http404
@@ -14,6 +17,7 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.models import LogEntry
 from django.db.models import Q
+from django.db import connection
 
 from pydici.leads.models import Lead, Consultant, SalesMan
 from pydici.leads.utils import send_lead_mail
@@ -116,3 +120,18 @@ def review(request):
     return render_to_response("leads/review.html", {"recent_archived_leads" : recentArchivedLeads,
                                                     "active_leads" : Lead.objects.active(),
                                                     "user": request.user })
+
+def graph_stat_pie(request):
+    """Nice graph pie of lead state repartition using matplotlib
+    @todo: per year, with start-end date"""
+    stateDict=dict(Lead.STATES)
+    cursor=connection.cursor()
+    cursor.execute("select  state, count(*) from leads_lead  group by state")
+    data=cursor.fetchall()
+    fig=Figure(figsize=(8,8))
+    ax=fig.add_subplot(111)
+    ax.pie([x[1] for x in data], labels=["%s\n(%s)" % (stateDict[x[0]], x[1]) for x in data], shadow=True, autopct='%1.1f%%')
+    canvas=FigureCanvas(fig)
+    response=HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    return response

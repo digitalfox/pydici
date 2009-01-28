@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     (r'^leads/sendmail/(?P<lead_id>\d+)/$', 'pydici.leads.views.mail_lead'),
     (r'^leads/mail/text', 'pydici.leads.views.summary_mail', { "html" : False }),
     (r'^leads/mail/html', 'pydici.leads.views.summary_mail', { "html" : True  }),
+    (r'^leads/graph/pie', 'pydici.leads.views.graph_stat_pie'),
     (r'^leads/media/leads/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': '/home/fox/prog/workspace/pydici/media/leads/'}),
 
