@@ -6,6 +6,9 @@ Django views. All http request are processed here.
 """
 import csv
 from datetime import datetime, timedelta
+import os
+
+os.environ['MPLCONFIGDIR']='/tmp' # Needed for matplotlib
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -130,7 +133,9 @@ def graph_stat_pie(request):
     data=cursor.fetchall()
     fig=Figure(figsize=(8,8))
     ax=fig.add_subplot(111)
-    ax.pie([x[1] for x in data], labels=["%s\n(%s)" % (stateDict[x[0]], x[1]) for x in data], shadow=True, autopct='%1.1f%%')
+    ax.set_axis_bgcolor("w") # BUG: does not work
+    colors=("#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFFF6D", "#AAFF86", "#D972FF", "#FF8D8F")
+    ax.pie([x[1] for x in data], colors=colors, labels=["%s\n(%s)" % (stateDict[x[0]], x[1]) for x in data], shadow=True, autopct='%1.1f%%')
     canvas=FigureCanvas(fig)
     response=HttpResponse(content_type='image/png')
     canvas.print_png(response)
