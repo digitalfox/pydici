@@ -5,7 +5,7 @@ Django views. All http request are processed here.
 @license: BSD
 """
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import os
 
 os.environ['MPLCONFIGDIR']='/tmp' # Needed for matplotlib
@@ -24,6 +24,9 @@ from django.db import connection
 
 from pydici.leads.models import Lead, Consultant, SalesMan
 from pydici.leads.utils import send_lead_mail
+
+# Graph colors
+COLORS=["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFFF6D", "#AAFF86", "#D972FF", "#FF8D8F"]
 
 @login_required
 def index(request):
@@ -133,9 +136,48 @@ def graph_stat_pie(request):
     data=cursor.fetchall()
     fig=Figure(figsize=(8,8))
     ax=fig.add_subplot(111)
-    ax.set_axis_bgcolor("w") # BUG: does not work
-    colors=("#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFFF6D", "#AAFF86", "#D972FF", "#FF8D8F")
-    ax.pie([x[1] for x in data], colors=colors, labels=["%s\n(%s)" % (stateDict[x[0]], x[1]) for x in data], shadow=True, autopct='%1.1f%%')
+    ax.pie([x[1] for x in data], colors=COLORS, labels=["%s\n(%s)" % (stateDict[x[0]], x[1]) for x in data], shadow=True, autopct='%1.1f%%')
+    canvas=FigureCanvas(fig)
+    response=HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    return response
+
+def graph_stat_bar(request):
+    """Nice graph bar of lead state during time using matplotlib
+    @todo: per year, with start-end date"""
+    data={} # Graph data
+    bars=[] # List of bars - needed to add legend
+    colors=list(COLORS)
+
+    # Gathering data
+    for lead in Lead.objects.all():
+        #Using first day of each month as key date
+        kdate=date(lead.creation_date.year, lead.creation_date.month, 1)
+        if not data.has_key(kdate):
+            data[kdate]=[] # Create key with empty list
+        data[kdate].append(lead)
+
+    # Setting up graph
+    fig=Figure(figsize=(8,8))
+    ax=fig.add_subplot(111)
+    bottom=[0]*len(data.keys()) # Bottom of each graph. Starts if [0, 0, 0, ...]
+
+    # Draw a bar for each state
+    for state in Lead.STATES:
+        ydata=[len([i for i in x if i.state==state[0]]) for x in data.values()]
+        b=ax.bar(data.keys(), ydata, bottom=bottom, align="center", width=15,
+               color=colors.pop())
+        bars.append(b[0])
+        for i in range(len(ydata)):
+            bottom[i]+=ydata[i] # Update bottom
+
+    # Add Legend and setup axes
+    ax.set_xticks(data.keys())
+    ax.set_xticklabels(data.keys())
+    ax.set_ylim(ymax=max(bottom)+10)
+    ax.legend(bars, [i[1] for i in Lead.STATES])
+
+    # Send response to user
     canvas=FigureCanvas(fig)
     response=HttpResponse(content_type='image/png')
     canvas.print_png(response)
