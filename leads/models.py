@@ -171,7 +171,7 @@ class LeadAdmin(admin.ModelAdmin):
     list_display = ("name", "client", "short_description", "responsible", "salesman", "state", "due_date", "update_date_strf")
     fieldsets = [
         (None,    {"fields": ["name", "client", "description", "salesId"]}),
-        ('État et suivi',     {'fields': ['responsible', 'salesman', 'start_date', 'state', 'due_date']}),
+        ('État et suivi',     {'fields': ['responsible', 'salesman', 'state', 'due_date', 'start_date']}),
         ('Staffing',     {'fields': ["staffing", "external_staffing", "sales"]}),
         ]
     ordering = ("creation_date",)
