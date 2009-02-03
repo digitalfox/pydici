@@ -177,6 +177,48 @@ def graph_stat_bar(request):
 
     return print_png(fig)
 
+def graph_stat_salesmen(request):
+    """Nice graph bar of lead per IA during time using matplotlib
+    @todo: per year, with start-end date"""
+    data={} # Graph data
+    lines=[] # List of lines - needed to add legend
+    colors=list(COLORS)
+
+    # Gathering data
+    for lead in Lead.objects.all():
+        #Using first day of each month as key date
+        kdate=date(lead.creation_date.year, lead.creation_date.month, 1)
+        if not data.has_key(kdate):
+            data[kdate]=[] # Create key with empty list
+        data[kdate].append(lead)
+
+    # Setting up graph
+    fig=Figure(figsize=(8,8))
+    ax=fig.add_subplot(111)
+
+    ymax=0
+    # Draw a bar for each state
+    salesMen=list(SalesMan.objects.all()) + [None]
+    for salesMan in salesMen:
+        color=colors.pop()
+        for state, style in (("LOST", "--^"), ("WIN", "-o")):
+            ydata=[len([i for i in x if (i.state==state and i.salesman==salesMan)]) for x in data.values()]
+            line=ax.plot(data.keys(), ydata, style, color=color)
+            print salesMan
+            print ydata
+            if max(ydata)>ymax:
+                ymax=max(ydata)
+        lines.append(line)
+
+    # Add Legend and setup axes
+    ax.set_xticks(data.keys())
+    ax.set_xticklabels(data.keys())
+    ax.set_ylim(ymax=ymax+10)
+    ax.legend(lines, [i.name for i in SalesMan.objects.all()]+["Aucun"])
+    ax.set_title(u"Suivi des leads par IA (trait plein : aff. gagnées. Pointillés : aff. perdues)")
+
+    return print_png(fig)
+
 def print_png(fig):
     """Return http response with fig rendered as png
     @param fig: fig to render
