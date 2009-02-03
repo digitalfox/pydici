@@ -137,10 +137,8 @@ def graph_stat_pie(request):
     fig=Figure(figsize=(8,8))
     ax=fig.add_subplot(111)
     ax.pie([x[1] for x in data], colors=COLORS, labels=["%s\n(%s)" % (stateDict[x[0]], x[1]) for x in data], shadow=True, autopct='%1.1f%%')
-    canvas=FigureCanvas(fig)
-    response=HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
+
+    return print_png(fig)
 
 def graph_stat_bar(request):
     """Nice graph bar of lead state during time using matplotlib
@@ -177,7 +175,13 @@ def graph_stat_bar(request):
     ax.set_ylim(ymax=max(bottom)+10)
     ax.legend(bars, [i[1] for i in Lead.STATES])
 
-    # Send response to user
+    return print_png(fig)
+
+def print_png(fig):
+    """Return http response with fig rendered as png
+    @param fig: fig to render
+    @type fig: matplotlib.Figure
+    @return: HttpResponse"""
     canvas=FigureCanvas(fig)
     response=HttpResponse(content_type='image/png')
     canvas.print_png(response)
