@@ -80,7 +80,7 @@ def detail(request, lead_id):
         actionList = LogEntry.objects.filter(object_id = lead_id,
                                               content_type__name="lead")
         actionList=actionList.select_related().order_by('action_time')
-        rank=Lead.objects.active().filter(creation_date__lte=lead.creation_date).count() # Lead rank in active list
+        rank=Lead.objects.active().filter(creation_date__lt=lead.creation_date).count()+1 # Lead rank in active list
     except Lead.DoesNotExist:
         raise Http404
     return render_to_response("leads/lead_detail.html", {"lead": lead,
@@ -203,12 +203,12 @@ def graph_stat_salesmen(request):
     # Draw a bar for each state
     salesMen=list(SalesMan.objects.all()) + [None]
     for salesMan in salesMen:
+        if len(colors)==0:
+            colors=list(COLORS)
         color=colors.pop()
         for state, style in (("LOST", "--^"), ("WIN", "-o")):
             ydata=[len([i for i in x if (i.state==state and i.salesman==salesMan)]) for x in data.values()]
             line=ax.plot(data.keys(), ydata, style, color=color)
-            print salesMan
-            print ydata
             if max(ydata)>ymax:
                 ymax=max(ydata)
         lines.append(line)
