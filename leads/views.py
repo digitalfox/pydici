@@ -80,11 +80,17 @@ def detail(request, lead_id):
         actionList = LogEntry.objects.filter(object_id = lead_id,
                                               content_type__name="lead")
         actionList=actionList.select_related().order_by('action_time')
-        rank=Lead.objects.active().filter(creation_date__lt=lead.creation_date).count()+1 # Lead rank in active list
+         # Lead rank in active list
+        active_leads=Lead.objects.active().order_by("creation_date", "id")
+        try:
+            rank=[l.id for l in active_leads].index(lead.id)+1
+        except ValueError:
+            # Lead is not in active list, rank it to zero
+            rank=0
     except Lead.DoesNotExist:
         raise Http404
     return render_to_response("leads/lead_detail.html", {"lead": lead,
-                                                         "active_count": Lead.objects.active().count(),
+                                                         "active_count": active_leads.count(),
                                                          "active_rank" : rank,
                                                          "link_root": pydici.settings.LEADS_MAIL_LINK_ROOT,
                                                          "action_list": actionList,
@@ -127,7 +133,7 @@ def review(request):
                                                       Q(state="SLEEPING"))
     recentArchivedLeads=recentArchivedLeads.order_by("state", "-update_date")
     return render_to_response("leads/review.html", {"recent_archived_leads" : recentArchivedLeads,
-                                                    "active_leads" : Lead.objects.active(),
+                                                    "active_leads" : Lead.objects.active().order_by("creation_date", "id"),
                                                     "user": request.user })
 
 def graph_stat_pie(request):
