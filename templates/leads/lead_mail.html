@@ -1,6 +1,6 @@
 <b>{{ obj.client.organisation }} -</b> {{ obj.name }} <br>
 
-<b>Origine/Contact</b> : {{ obj.client.contact }} <br>
+<b>Origine/Contact</b> : {{ obj.client.contact }} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}<br>
 
 <b>Description / contexte</b> : {{ obj.description|linebreaksbr }} <br>
 

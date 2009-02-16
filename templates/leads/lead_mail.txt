@@ -1,7 +1,7 @@
 {% autoescape off %}
 {{ obj.client.organisation }} - {{ obj.name }}
 
-Origine/Contact : {{ obj.client.contact }}
+Origine/Contact : {{ obj.client.contact }} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}
 
 Description / contexte : {{ obj.description }}
 

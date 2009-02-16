@@ -33,7 +33,7 @@
     <div class='system-message'>{{ lead.description|linebreaksbr }} </div>
     {% endif %}
     <hr>
-    <b>Origine/Contact</b> : {{ lead.client.contact|default_if_none:"Inconnu" }}
+    <b>Origine/Contact</b> : {{ lead.client.contact|default_if_none:"Inconnu" }} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}
     <br><br><hr>
     <b>Responsable </b>: {{ lead.responsible|default_if_none:"à définir" }}<br>
     <b>IA</b> : {% if lead.salesman %} {{ lead.salesman }} {% else %} aucun {% endif %}
