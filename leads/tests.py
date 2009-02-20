@@ -29,6 +29,7 @@ class SimpleTest(TestCase):
                      "/leads/mail/html",
                      "/leads/review",
                      "/leads/feeds/latest/",
+                     "/leads/feeds/mine/",
                      "/leads/feeds/new/",
                      "/leads/feeds/won/"):
             response = self.client.get(page)

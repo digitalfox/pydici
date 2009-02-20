@@ -33,6 +33,7 @@ urlpatterns = patterns('',
     # Lead application
     (r'^leads/$', 'pydici.leads.views.index'),
     (r'^leads/review', 'pydici.leads.views.review'),
+    (r'^leads/IA_stats', 'pydici.leads.views.IA_stats'),
     (r'^leads/forbiden',  direct_to_template, {'template': 'forbiden.html'}),
     (r'^leads/csv/(.*)', 'pydici.leads.views.csv_export'),
     (r'^leads/(?P<lead_id>\d+)/$', 'pydici.leads.views.detail'),

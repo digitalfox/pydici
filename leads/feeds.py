@@ -6,7 +6,7 @@
 
 from django.contrib.syndication.feeds import Feed
 
-from pydici.leads.models import Lead
+from pydici.leads.models import Consultant, Lead
 import pydici.settings
 
 class LeadFeed(Feed):
@@ -39,7 +39,14 @@ class WonLeads(LeadFeed):
         return Lead.objects.filter(state="WIN").order_by('-update_date')[:20]
 
 class MyLatestLeads(LeadFeed):
-    pass
+    title="Mes Leads"
+    description="Tous les leads actifs dont je suis responsable ou ressource pressentie"
+
+    def items(self):
+        consultants=Consultant.objects.filter(trigramme__iexact=self.request.user.username)
+        if consultants:
+            consultant=consultants[0]
+            return set(consultant.lead_responsible.active()|consultant.lead_set.active())
 
 class AllChanges(LeadFeed):
     pass
