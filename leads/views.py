@@ -136,6 +136,46 @@ def review(request):
                                                     "active_leads" : Lead.objects.active().order_by("creation_date", "id"),
                                                     "user": request.user })
 
+def IA_stats(request):
+    """Statistics about IA performance (hé hé)
+    @todo: make it per year"""
+
+    leadData={} # Lead data group by month
+    salesMenData={} # Leads by state group by month for each salesman
+    salesMen=list(SalesMan.objects.all()) + [None]
+
+    # Gathering data
+    for lead in Lead.objects.all():
+        #Using first day of each month as key date
+        kdate=date(lead.creation_date.year, lead.creation_date.month, 1)
+        if not leadData.has_key(kdate):
+            leadData[kdate]=[] # Create key with empty list
+        leadData[kdate].append(lead)
+
+    # Years of data
+    years=range(min(leadData.keys()).year, max(leadData.keys()).year+1)
+
+    data={}
+    for year in years:
+        data[year]={}
+        leadSum={}
+        for salesMan in salesMen:
+            data[year][salesMan]={}
+            for month in range(1, 13):
+                if not leadSum.has_key(month):
+                    leadSum[month]={}
+                data[year][salesMan][month]={}
+                for state, label in (("LOST", "P"), ("WIN", "G"), ("FORGIVEN", "A")):
+                    leads=leadData.get(date(year=year, month=month, day=1), [])
+                    n=len([lead for lead in leads if (lead.state==state and lead.salesman==salesMan)])
+                    data[year][salesMan][month][label]=n
+                    if not leadSum[month].has_key(label):
+                        leadSum[month][label]=0
+                    leadSum[month][label]+=n
+        data[year]["Total"]=leadSum
+
+    return render_to_response("leads/IA_stats.html", {"data": data})
+
 def graph_stat_pie(request):
     """Nice graph pie of lead state repartition using matplotlib
     @todo: per year, with start-end date"""
