@@ -189,7 +189,8 @@ class LeadAdmin(admin.ModelAdmin):
     search_fields = ["name", "description", "salesId",
                      "responsible__name",  "responsible__trigramme",
                      "salesman__name", "salesman__trigramme",
-                     "client__contact__name", "client__organisation__company__name"]
+                     "client__contact__name", "client__organisation__company__name",
+                     "client__organisation__name"]
 
     def save_model(self, request, obj, form, change):
         obj.save()
