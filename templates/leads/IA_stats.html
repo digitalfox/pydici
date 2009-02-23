@@ -1,0 +1,42 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="module">
+        {% for year, salesmen in data.items %}
+	        <table summary="IA stat">
+	        <caption>Leads gagnés / perdus par provenance en {{ year }}</caption>
+	        <tr>
+	        <th>Provenance</th>
+	        <td>Janvier</td><td>Février</td><td>Mars</td><td>Avril</td><td>Mai</td><td>Juin</td>
+	        <td>Juillet</td><td>Août</td><td>Septembre</td><td>Octobre</td><td>Novembre</td><td>Décembre</td>
+	        </tr>
+	        {% for salesman, months in salesmen.items %}
+	            <tr {%cycle 'class="row1"' 'class="row2"' %}>
+	                <th scope="row">{{ salesman|default:"Aucun" }}</th>
+	                {% for month, stat in months.items %}
+	                    <td>
+	                    {% for state, value in stat.items %}
+	                       {% ifnotequal value 0 %}
+	                           {{ state }} : {{ value }}<br>
+	                       {% endifnotequal %}
+	                    {% endfor %}
+	                    </td>
+	                {% endfor %}
+	            </tr>
+	        {% endfor %}
+	        </table>
+	        <br><br>
+	   {% endfor %}
+	   <p>Légende : G=>Gagné, P=>Perdu, A=>Abandonné</p>
+    </div>
+</div>
+{% endblock %}
+
