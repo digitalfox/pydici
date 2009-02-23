@@ -18,7 +18,7 @@
                 <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name }} - {{ lead.client }}</a></th>
                 <td>{{ lead.get_state_display }}</td>
                 <td>{{ lead.update_date_strf }}</td>
-                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink', target='_blank'>Modifier</a></td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
             </tr>
         {% endfor %}
@@ -34,7 +34,7 @@
                 <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name }} - {{ lead.client }}</a></th>
                 <td style="text-align:right;">{{ lead.get_state_display }}</td>
                 <td>{{ lead.update_date_strf }}</td>
-                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink', target='_blank'>Modifier</a></td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
             </tr>
         {% endfor %}
@@ -50,7 +50,7 @@
                 <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name }} - {{ lead.client }}</a></th>
                 <td style="text-align:right;">{{ lead.get_state_display }}</td>
                 <td>{{ lead.update_date_strf }}</td>
-                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink', target='_blank'>Modifier</a></td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
             </tr>
         {% endfor %}
@@ -66,7 +66,7 @@
                 <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name }} - {{ lead.client }}</a></th>
                 <td style="text-align:right;">{{ lead.get_state_display }}</td>
                 <td>{{ lead.update_date_strf }}</td>
-                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink', target='_blank'>Modifier</a></td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
             </tr>
         {% endfor %}

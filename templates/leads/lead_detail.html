@@ -28,7 +28,7 @@
 {% endwith %}{% endwith %}
 
     <div class="form-row name  ">
-    <h2><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
+    <h2><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink' title='Cliquez pour modifier ce lead', target='_blank'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
     {% if lead.description %}
     <div class='system-message'>{{ lead.description|linebreaksbr }} </div>
     {% endif %}

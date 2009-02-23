@@ -29,7 +29,7 @@
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.get_state_display }}</td>
                 <td>{{ lead.due_date }}</td>
-                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink', target='_blank'>Modifier</a></td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
             </tr>
         {% endfor %}
@@ -56,7 +56,7 @@
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.get_state_display }}</td>
                 <td>{{ lead.update_date_strf }}</td>
-                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink'>Modifier</a></td>
+                <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink', target='_blank'>Modifier</a></td>
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/history' class='historylink'>Historique</a></td>
             </tr>
         {% endfor %}
