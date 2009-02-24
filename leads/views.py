@@ -93,7 +93,7 @@ def detail(request, lead_id):
     return render_to_response("leads/lead_detail.html", {"lead": lead,
                                                          "active_count": active_leads.count(),
                                                          "active_rank" : rank,
-                                                         "link_root": pydici.settings.LEADS_MAIL_LINK_ROOT,
+                                                         "link_root": pydici.settings.LEADS_WEB_LINK_ROOT,
                                                          "action_list": actionList,
                                                          "user": request.user})
 

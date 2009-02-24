@@ -10,7 +10,7 @@ from pydici.leads.models import Consultant, Lead
 import pydici.settings
 
 class LeadFeed(Feed):
-    link=pydici.settings.LEADS_MAIL_LINK_ROOT
+    link=pydici.settings.LEADS_WEB_LINK_ROOT
     description_template="leads/lead_mail.html"
     title_template="leads/feed_title.txt"
 

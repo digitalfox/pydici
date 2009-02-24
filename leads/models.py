@@ -165,7 +165,7 @@ class Lead(models.Model):
     short_description.short_description="Description"
 
     def get_absolute_url(self):
-        return "%s/leads/%s/" % (pydici.settings.LEADS_MAIL_LINK_ROOT, self.id)
+        return "%s/leads/%s/" % (pydici.settings.LEADS_WEB_LINK_ROOT, self.id)
 
     def get_next_active(self):
         """Return next active lead"""
