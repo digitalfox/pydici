@@ -6,7 +6,6 @@ Database access layer.
 """
 
 from django.db import models
-from django.contrib import admin
 from datetime import datetime
 
 from pydici.leads.utils import send_lead_mail, capitalize
@@ -174,75 +173,3 @@ class Lead(models.Model):
     def get_previous_active(self):
         """Return next active lead"""
         return self.get_previous_by_creation_date(state__in=("QUALIF", "WRITE_OFFER", "OFFER_SENT", "NEGOCATION"))
-
-class LeadAdmin(admin.ModelAdmin):
-    list_display = ("name", "client", "short_description", "responsible", "salesman", "state", "due_date", "update_date_strf")
-    fieldsets = [
-        (None,    {"fields": ["name", "client", "description", "salesId"]}),
-        ('État et suivi',     {'fields': ['responsible', 'salesman', 'state', 'due_date', 'start_date']}),
-        ('Staffing',     {'fields': ["staffing", "external_staffing", "sales"]}),
-        ]
-    ordering = ("creation_date",)
-    filter_horizontal=["staffing"]
-    list_filter = ["state",]
-    date_hierarchy = "update_date"
-    search_fields = ["name", "description", "salesId",
-                     "responsible__name",  "responsible__trigramme",
-                     "salesman__name", "salesman__trigramme",
-                     "client__contact__name", "client__organisation__company__name",
-                     "client__organisation__name"]
-
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        form.save_m2m() # Save many to many relations
-        if not change:
-            try:
-                send_lead_mail(obj, fromAddr="%s@newarch.Fr" % request.user.username)
-                request.user.message_set.create(message="Ce lead a été envoyé par mail au plan de charge.")
-            except Exception, e:
-                request.user.message_set.create(message="Échec d'envoi du mail : %s" % e)
-
-class ClientContactAdmin(admin.ModelAdmin):
-    list_display=("name", "function", "email", "phone")
-    odering=("name")
-    search_fields=["name", "function"]
-
-class SalesManAdmin(admin.ModelAdmin):
-    list_display=("name", "company", "trigramme", "email", "phone")
-    odering=("name")
-    search_fields=["name", "trigramme"]
-
-class ClientOrganisationAdmin(admin.ModelAdmin):
-    fieldsets=[(None,    {"fields": ["company", "name"] } ),]
-    list_display=("company", "name",)
-    list_display_links=("company", "name",)
-    ordering=("name",)
-    search_fields=("name",)
-
-class ClientOrganisationAdminInline(admin.TabularInline):
-    model=ClientOrganisation
-
-class ClientCompanyAdmin(admin.ModelAdmin):
-    list_display=("name",)
-    ordering=("name",)
-    search_fields=("name",)
-
-#    inlines=[ClientOrganisationAdminInline,]
-
-class ClientAdmin(admin.ModelAdmin):
-    list_display=("organisation", "salesOwner", "contact")
-    ordering=("organisation",)
-    search_fields=("organisation__company__name", "organisation__name", "contact__name")
-
-class ConsultantAdmin(admin.ModelAdmin):
-    list_display=("name", "trigramme")
-    search_fields=("name", "trigramme")
-    ordering=("name",)
-
-admin.site.register(Lead, LeadAdmin)
-admin.site.register(Client, ClientAdmin)
-admin.site.register(ClientOrganisation, ClientOrganisationAdmin)
-admin.site.register(ClientCompany, ClientCompanyAdmin)
-admin.site.register(ClientContact, ClientContactAdmin)
-admin.site.register(Consultant, ConsultantAdmin)
-admin.site.register(SalesMan, SalesManAdmin)
