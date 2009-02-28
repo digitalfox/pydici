@@ -15,9 +15,10 @@ from pydici.leads.utils import send_lead_mail, capitalize
 class LeadAdmin(admin.ModelAdmin):
     list_display = ("name", "client", "short_description", "responsible", "salesman", "state", "due_date", "update_date_strf")
     fieldsets = [
-        (None,    {"fields": ["name", "client", "description", "salesId"]}),
-        ('État et suivi',     {'fields': ['responsible', 'salesman', 'state', 'due_date', 'start_date']}),
-        ('Staffing',     {'fields': ["staffing", "external_staffing", "sales"]}),
+        (None,              {"fields": ["name", "client", "description", "salesId"]}),
+        ("État et suivi",   {"fields": ["responsible", "salesman", "state", "due_date", "start_date"]}),
+        ("Staffing",        {"fields": ["staffing", "external_staffing", "sales"]}),
+        (None,              {"fields": ["send_email",]})
         ]
     ordering = ("creation_date",)
     filter_horizontal=["staffing"]
@@ -30,9 +31,13 @@ class LeadAdmin(admin.ModelAdmin):
                      "client__organisation__name"]
 
     def save_model(self, request, obj, form, change):
+        mail=False
+        if obj.send_email:
+            mail=True
+            obj.send_email=False
         obj.save()
         form.save_m2m() # Save many to many relations
-        if not change:
+        if mail:
             try:
                 send_lead_mail(obj, fromAddr="%s@newarch.Fr" % request.user.username)
                 request.user.message_set.create(message="Ce lead a été envoyé par mail au plan de charge.")
