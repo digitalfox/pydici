@@ -12,6 +12,7 @@ import smtplib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from email.Encoders import encode_7or8bit
+from email.Header import Header
 import re
 
 from django.template.loader import get_template
@@ -33,7 +34,7 @@ def send_lead_mail(lead, fromAddr=pydici.settings.LEADS_MAIL_FROM):
     msgRoot.set_charset("UTF-8")
     msgRoot["Date"]=formatdate()
     msgRoot["Subject"]=(u"[AVV] %s : %s" % (lead.client.organisation, lead.name)).encode("UTF-8")
-    msgRoot["From"]=fromAddr
+    msgRoot["From"]=Header(fromAddr, "UTF-8")
     msgRoot["To"]=pydici.settings.LEADS_MAIL_TO
     msgRoot.preamble="This is a multi-part message in MIME format."
 
