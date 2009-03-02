@@ -8,7 +8,7 @@ Database access layer.
 from django.db import models
 from datetime import datetime
 
-from pydici.leads.utils import send_lead_mail, capitalize
+from pydici.leads.utils import send_lead_mail, capitalize, compact_text
 import pydici.settings
 
 COMPANY=(
@@ -148,6 +148,10 @@ class Lead(models.Model):
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.client)
+
+    def save(self, force_insert=False, force_update=False):
+        self.description=compact_text(self.description)
+        super(Lead, self).save(force_insert, force_update)
 
     def staffing_list(self):
         return ", ".join(x["trigramme"] for x in self.staffing.values() ) +", %s" % self.external_staffing

@@ -12,6 +12,7 @@ import smtplib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from email.Encoders import encode_7or8bit
+import re
 
 from django.template.loader import get_template
 from django.template import Context
@@ -56,7 +57,7 @@ def send_lead_mail(lead, fromAddr=pydici.settings.LEADS_MAIL_FROM):
 
 def capitalize(sentence):
     """
-    @arg sentence: string or unicode
+    @param sentence: string or unicode
     @return:Capitalize each word or sub-word (separated by dash or quote) of the sentence
     """
     sentence=sentence.lower()
@@ -68,3 +69,14 @@ def capitalize(sentence):
         sentence=sep.join(result)
         result=[]
     return sentence
+
+EXTRA_SPACE=re.compile("[ ]+")
+EXTRA_NLINE=re.compile("\n\n+")
+def compact_text(text):
+    """Compact text by removing extra space and extra lines. BTW, it also squash carriage returns.
+    @param text: text to compact
+    @return: compacted text"""
+    text=text.replace("\r", "")
+    text=EXTRA_SPACE.sub(" ", text)
+    text=EXTRA_NLINE.sub("\n\n", text)
+    return text
