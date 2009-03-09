@@ -30,7 +30,7 @@
         {% block branding %}{% endblock %}
         </div>
 
-        {% if user.is_authenticated and user.is_staff %}
+        {% if user.is_authenticated %}
         <div id="user-tools">
         <a href="/leads/">Accueil</a>&nbsp;|&nbsp;
         <a href="/leads/review/">Revue des affaires en cours</a>&nbsp;|&nbsp;
