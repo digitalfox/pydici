@@ -1,18 +1,23 @@
 # coding: utf-8
-"""RSS feeds
+"""Atom feeds
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: BSD
 """
 
 from django.contrib.syndication.feeds import Feed
+from django.utils.feedgenerator import Atom1Feed
 
 from pydici.leads.models import Consultant, Lead
 import pydici.settings
 
 class LeadFeed(Feed):
+    feed_type = Atom1Feed
     link=pydici.settings.LEADS_WEB_LINK_ROOT
     description_template="leads/lead_mail.html"
     title_template="leads/feed_title.txt"
+
+    def item_guid(self, item):
+        return "%s-%s" % (item.id, item.update_date)
 
 class LatestLeads(LeadFeed):
     title="Les leads récents"

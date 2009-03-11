@@ -11,7 +11,7 @@ from django.views.generic.simple import direct_to_template
 admin.autodiscover()
 
 
-# RSS feeds definition
+# Feeds definition
 from pydici.leads.feeds import LatestLeads, NewLeads, MyLatestLeads, AllChanges, WonLeads
 
 feeds = {
