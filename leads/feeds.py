@@ -24,7 +24,7 @@ class LatestLeads(LeadFeed):
     description="Les 20 derniers leads modifiés"
 
     def items(self):
-        return Lead.objects.order_by('-update_date')[:20]
+        return Lead.objects.order_by('-update_date')[:50]
 
     def item_pubdate(self, item):
         return item.update_date
@@ -36,15 +36,16 @@ class NewLeads(LeadFeed):
     def item_guid(self, item):
         """Overload std guid to make it unchanged when lead is updated"""
         return "%s-%s" % (item.id, item.creation_date)
+
     def items(self):
-        return Lead.objects.order_by('-creation_date')[:20]
+        return Lead.objects.order_by('-creation_date')[:50]
 
 class WonLeads(LeadFeed):
     title="Les leads gagnés"
     description="Les 20 derniers leads gagnés"
 
     def items(self):
-        return Lead.objects.filter(state="WIN").order_by('-update_date')[:20]
+        return Lead.objects.filter(state="WIN").order_by('-update_date')[:50]
 
 class MyLatestLeads(LeadFeed):
     title="Mes Leads"
