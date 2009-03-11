@@ -16,6 +16,9 @@ class LeadFeed(Feed):
     description_template="leads/lead_mail.html"
     title_template="leads/feed_title.txt"
 
+    def item_pubdate(self, item):
+        return item.update_date
+
     def item_guid(self, item):
         return "%s-%s" % (item.id, item.update_date)
 
@@ -25,9 +28,6 @@ class LatestLeads(LeadFeed):
 
     def items(self):
         return Lead.objects.order_by('-update_date')[:50]
-
-    def item_pubdate(self, item):
-        return item.update_date
 
 class NewLeads(LeadFeed):
     title="Les nouveaux Leads"
