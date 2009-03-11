@@ -33,6 +33,9 @@ class NewLeads(LeadFeed):
     title="Les nouveaux Leads"
     description="Les 20 derniers leads crées"
 
+    def item_guid(self, item):
+        """Overload std guid to make it unchanged when lead is updated"""
+        return "%s-%s" % (item.id, item.creation_date)
     def items(self):
         return Lead.objects.order_by('-creation_date')[:20]
 
