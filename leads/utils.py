@@ -20,7 +20,7 @@ from django.template import Context
 
 import pydici.settings
 
-def send_lead_mail(lead, fromAddr=pydici.settings.LEADS_MAIL_FROM):
+def send_lead_mail(lead, fromAddr=pydici.settings.LEADS_MAIL_FROM, fromName=""):
     """ Send a mail with lead detailed description.
     @param lead: the lead to send by mail
     @type lead: pydici.leads.lead instance
@@ -34,7 +34,7 @@ def send_lead_mail(lead, fromAddr=pydici.settings.LEADS_MAIL_FROM):
     msgRoot.set_charset("UTF-8")
     msgRoot["Date"]=formatdate()
     msgRoot["Subject"]=(u"[AVV] %s : %s" % (lead.client.organisation, lead.name)).encode("UTF-8")
-    msgRoot["From"]=Header(fromAddr, "UTF-8")
+    msgRoot["From"]="%s <%s>" % (Header(fromName, "UTF-8"), fromAddr)
     msgRoot["To"]=pydici.settings.LEADS_MAIL_TO
     msgRoot.preamble="This is a multi-part message in MIME format."
 
