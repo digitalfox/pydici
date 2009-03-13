@@ -72,7 +72,7 @@ def capitalize(sentence):
     return sentence
 
 EXTRA_SPACE=re.compile("[ ]+")
-EXTRA_NLINE=re.compile("\n\n+")
+EXTRA_NLINE=re.compile("\n\s*\n+")
 def compact_text(text):
     """Compact text by removing extra space and extra lines. BTW, it also squash carriage returns.
     @param text: text to compact
