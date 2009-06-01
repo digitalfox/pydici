@@ -28,7 +28,8 @@ class LeadAdmin(admin.ModelAdmin):
                      "responsible__name",  "responsible__trigramme",
                      "salesman__name", "salesman__trigramme",
                      "client__contact__name", "client__organisation__company__name",
-                     "client__organisation__name"]
+                     "client__organisation__name",
+                     "staffing__trigramme", "staffing__name"]
 
     def save_model(self, request, obj, form, change):
         mail=False
