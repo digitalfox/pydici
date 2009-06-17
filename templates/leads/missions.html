@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+<h1>Liste des missions</h1>
+{% for mission in missions %}
+	<tr {%cycle 'class="row1"' 'class="row2"' %}>
+	    <th scope="row"><a href='/leads/mission/{{mission.id}}/', title='{{ mission }}'>{{ mission }}</a></th>
+	</tr>
+{% endfor %}
+
+</div>
+<br>
+<hr>
+<br><a href='{{ link_root }}/leads/'>Retour page d'accueil</a></i>
+
+{% endblock %}

@@ -14,6 +14,7 @@ from email.MIMEText import MIMEText
 from email.Encoders import encode_7or8bit
 from email.Header import Header
 import re
+from datetime import date, timedelta
 
 from django.template.loader import get_template
 from django.template import Context
@@ -81,3 +82,26 @@ def compact_text(text):
     text=EXTRA_SPACE.sub(" ", text)
     text=EXTRA_NLINE.sub("\n\n", text)
     return text
+
+def to_int_if_possible(x):
+    """Convert a float to int if decimal part is equal to 0
+    @param x: float to be converted
+    @requires: int or float"""
+    if (int(x)-x)==0:
+        return int(x)
+    else:
+        return x
+
+def working_days(monthDate, holidays=[]):
+    """Compute the number of working days of a month
+    @param monthDate: first day of month datetime.date
+    @param holidays: list of days (datetime.date) that are not worked
+    @return: number of working days (int)"""
+    day=timedelta(1)
+    n=0
+    currentMonth=monthDate.month
+    while monthDate.month==currentMonth:
+        if monthDate.weekday()<5 and monthDate not in holidays: # Only count working days
+            n+=1
+        monthDate+=day
+    return n

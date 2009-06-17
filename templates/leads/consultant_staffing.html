@@ -1,0 +1,47 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+    <h1>{{ consultant }}</h1>
+    <form action="" method="POST">
+        {{ formset.management_form }}
+        <div class="form-row">
+        <table>
+           <tr>
+               <th></th>
+               <th>Mission</th>
+               <th>Mois</th>
+               <th>Charge</th>
+               <th></th>
+               <th>Supprimer</th>
+           </tr>
+           {% for form in formset.forms %}
+               <tr {%cycle 'class="row1"' 'class="row2"' %}>
+               {% for field in form %}
+                    <td>
+                        {{ field.errors }}    
+                        {{ field }}
+                    </td>
+               {% endfor %}
+               </tr>
+           {% endfor %}
+        </table>       
+        </div>
+        <div class="submit-row">
+            <input type="submit" value="Enregistrer"/>
+        </div>
+    </form>
+</div>
+<br><a href='..'>Retour à la liste des consultants</a></i>
+<br><a href='{{ link_root }}/leads/'>Retour page d'accueil</a></i>
+
+{% endblock %}

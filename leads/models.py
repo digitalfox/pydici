@@ -7,6 +7,7 @@ Database access layer.
 
 from django.db import models
 from datetime import datetime
+from django.db.models import Q
 
 from pydici.leads.utils import send_lead_mail, capitalize, compact_text
 import pydici.settings
@@ -178,3 +179,46 @@ class Lead(models.Model):
     def get_previous_active(self):
         """Return next active lead"""
         return self.get_previous_by_creation_date(state__in=("QUALIF", "WRITE_OFFER", "OFFER_SENT", "NEGOCATION"))
+
+class Mission(models.Model):
+    MISSION_NATURE=(
+            ('PROD', u'Productif'),
+            ('NONPROD', u'Non productif'),
+            ('HOLIDAYS', u'Congés'))
+    lead=models.ForeignKey(Lead, null=True, blank=True)
+    description=models.CharField("Description", max_length=30, blank=True, null=True)
+    nature=models.CharField("Type", max_length=30, choices=MISSION_NATURE, default="PROD")
+    active=models.BooleanField("Active", default=True)
+    update_date=models.DateTimeField("Mise à jour", auto_now=True)
+
+    def __unicode__(self):
+        if self.description:
+            return unicode(self.description)
+        else:
+            return unicode(self.lead)
+
+    class Meta:
+        ordering=["nature", "lead", "description"]
+
+class Holidays(models.Model):
+    """List of public and enterprise specific holidays"""
+    day=models.DateField("date")
+
+class Staffing(models.Model):
+    """The staffing fact table: charge per month per consultant per mission"""
+    consultant=models.ForeignKey(Consultant)
+    mission=models.ForeignKey(Mission, limit_choices_to=Q(active=True))
+    staffing_date=models.DateField("Date")
+    charge=models.FloatField("Charge", default=0)
+    update_date=models.DateTimeField("Mise à jour", auto_now=True)
+
+    def __unicode__(self):
+        return "%s/%s (%s): %s" % (self.staffing_date.month, self.staffing_date.year, self.consultant.trigramme, self.charge)
+
+    def save(self, force_insert=False, force_update=False):
+        self.staffing_date=datetime(self.staffing_date.year, self.staffing_date.month, 1)
+        super(Staffing, self).save(force_insert, force_update)
+
+    class Meta:
+        unique_together = (("consultant", "mission", "staffing_date"),)
+        ordering=["staffing_date", "consultant"]

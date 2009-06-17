@@ -7,7 +7,7 @@ Django administration setup
 
 from django.contrib import admin
 
-from pydici.leads.models import Lead, Client, ClientOrganisation, ClientCompany, ClientContact, Consultant, SalesMan
+from pydici.leads.models import Lead, Client, ClientOrganisation, ClientCompany, ClientContact, Consultant, SalesMan, Mission, Staffing, Holidays
 
 from pydici.leads.utils import send_lead_mail, capitalize
 
@@ -78,10 +78,17 @@ class ClientAdmin(admin.ModelAdmin):
     ordering=("organisation",)
     search_fields=("organisation__company__name", "organisation__name", "contact__name")
 
+class StaffingAdminInline(admin.TabularInline):
+    model=Staffing
+
 class ConsultantAdmin(admin.ModelAdmin):
     list_display=("name", "trigramme")
     search_fields=("name", "trigramme")
     ordering=("name",)
+    inlines=[StaffingAdminInline,]
+
+class MissionAdmin(admin.ModelAdmin):
+    inlines=[StaffingAdminInline,]
 
 admin.site.register(Lead, LeadAdmin)
 admin.site.register(Client, ClientAdmin)
@@ -90,3 +97,6 @@ admin.site.register(ClientCompany, ClientCompanyAdmin)
 admin.site.register(ClientContact, ClientContactAdmin)
 admin.site.register(Consultant, ConsultantAdmin)
 admin.site.register(SalesMan, SalesManAdmin)
+admin.site.register(Mission, MissionAdmin)
+admin.site.register(Staffing)
+admin.site.register(Holidays)

@@ -1,0 +1,83 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+	<h1>Revue du plan de charge</h1>
+
+<table>
+<tr>
+    <th>Consultants</th>
+	{% for month in months %}
+	    <th colspan="4" style="border-left:2px solid #eee;"><center>{{ month|date:"F y" }}</center></th>
+	{% endfor %}
+</tr>
+    <th></th>
+    {% for month in months %}
+        <th style="border-left:2px solid #eee;">prod</th>
+        <th>imprd</th>
+        <th>cngs</th>
+        <th>disp</th>
+    {% endfor %}
+<tr>
+
+</tr>
+{% for consultant, charges in staffing.items %}
+    <tr {%cycle 'class="row1"' 'class="row2"' %}>
+        <td><a href="consultant/{{ consultant.id }}">{{ consultant }}</a></td>
+        {% for charge in charges %}
+            <td style="border-left:2px solid #eee;">{{ charge|join:"</td><td class='charge'>" }}</td>
+        {% endfor %}
+    </tr>
+{% endfor %}
+<tr>
+    <th>Totaux</th>
+    {% for month_total in total %}
+        <th style="border-left:2px solid #eee;">{{ month_total|join:"</th><th>" }}</th>
+    {% endfor %}
+</tr>
+<tr>
+    <th>Taux (%)</th>
+    {% for month_rates in rates %}
+        <th style="border-left:2px solid #eee;">{{ month_rates|join:"</th><th>" }}</th>
+    {% endfor %}
+</tr>
+</table>
+
+</div>
+<br><a href='{{ link_root }}/leads/'>Retour page d'accueil</a></i>
+
+<SCRIPT type="text/JavaScript">
+<!-- 
+var cells=document.getElementsByTagName('td');
+var j=0;
+for(i in cells)
+{
+    if(/charge/.test(cells[i].className))
+    {
+        j++;
+        if (j%3==0)
+        {
+	        if(parseInt(cells[i].innerHTML)>5)
+	        {
+	            cells[i].style.backgroundColor='#ABFF91';
+	        }
+	        if(parseInt(cells[i].innerHTML)<0)
+	        {
+	            cells[i].style.backgroundColor='#FF8284';
+	        }
+        }
+    }
+}
+//-->
+</SCRIPT>
+
+{% endblock %}

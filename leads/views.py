@@ -15,15 +15,17 @@ from matplotlib.figure import Figure
 
 import pydici.settings
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.models import LogEntry
 from django.db.models import Q
 from django.db import connection
+from django.forms import ModelForm
+from django.forms.models import inlineformset_factory
 
-from pydici.leads.models import Lead, Consultant, SalesMan
-from pydici.leads.utils import send_lead_mail
+from pydici.leads.models import Lead, Consultant, SalesMan, Staffing, Mission, Holidays
+from pydici.leads.utils import send_lead_mail, to_int_if_possible, working_days
 
 # Graph colors
 COLORS=["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFFF6D", "#AAFF86", "#D972FF", "#FF8D8F"]
@@ -137,6 +139,113 @@ def review(request):
                                                     "active_leads" : Lead.objects.active().order_by("creation_date", "id"),
                                                     "user": request.user })
 
+def missions(request, onlyActive=True):
+    """List of missions"""
+    if onlyActive:
+        missions=Mission.objects.filter(active=True)
+    else:
+        missions=Mission.objects.all()
+    return render_to_response("leads/missions.html", {"missions": missions })
+    
+    
+    
+def mission_staffing(request, mission_id):
+    """Edit mission staffing"""
+    StaffingFormSet=inlineformset_factory(Mission, Staffing)
+    mission=Mission.objects.get(id=mission_id)
+    if request.method == "POST":
+        formset = StaffingFormSet(request.POST, instance=mission)
+        if formset.is_valid():
+            formset.save()
+            formset=StaffingFormSet(instance=mission) # Recreate a new form for next update
+    else:
+        formset=StaffingFormSet(instance=mission) # An unbound form
+    
+    return render_to_response('leads/mission_staffing.html', {"formset": formset,
+                                                              "mission": mission
+                                                              })
+
+
+def consultant_staffing(request, consultant_id):
+    """Edit consultant staffing"""
+    StaffingFormSet=inlineformset_factory(Consultant, Staffing)
+    consultant=Consultant.objects.get(id=consultant_id)
+    if request.method == "POST":
+        formset = StaffingFormSet(request.POST, instance=consultant)
+        if formset.is_valid():
+            formset.save()
+            formset=StaffingFormSet(instance=consultant) # Recreate a new form for next update
+    else:
+        formset=StaffingFormSet(instance=consultant) # An unbound form
+
+    return render_to_response('leads/consultant_staffing.html', {"formset": formset,
+                                                              "consultant": consultant
+                                                              })
+
+def pdc_review(request, year=None, month=None, n_month=4):
+    """PDC overview
+    @param year: start date year. None means current year
+    @param year: start date year. None means current month
+    @param n_month: number of month displays"""
+    if year and month:
+        start_date=date(int(year), int(month), 1)
+    else:
+        start_date=date.today()
+        start_date=start_date.replace(day=1) # We use the first day to represent month
+
+    staffing={} # staffing data per month and per consultant
+    total={}    # total staffing data per month
+    rates=[]     # staffing rates per month
+    available_month={} # available working days per month
+    months=[]   # list of month to be displayed
+    people=Consultant.objects.count()
+    for i in range(int(n_month)):
+        months.append(start_date.replace(month=start_date.month+i))
+
+    # Initialize total dict and available dict
+    holidays_days=Holidays.objects.all()
+    for month in months:
+        total[month]={"prod":0, "unprod":0, "holidays":0, "available":0}
+        available_month[month]=working_days(month, holidays_days)
+
+    # Get consultants staffing
+    for consultant in Consultant.objects.all():
+        staffing[consultant]=[]
+        for month in months:
+            current_staffing=consultant.staffing_set.filter(staffing_date=month)
+            prod=to_int_if_possible(sum(i.charge for i in current_staffing.filter(mission__nature="PROD")))
+            unprod=to_int_if_possible(sum(i.charge for i in current_staffing.filter(mission__nature="NONPROD")))
+            holidays=to_int_if_possible(sum(i.charge for i in current_staffing.filter(mission__nature="HOLIDAYS")))
+            available=available_month[month]-(prod+unprod+holidays)
+            staffing[consultant].append([prod, unprod, holidays, available])
+            total[month]["prod"]+=prod
+            total[month]["unprod"]+=unprod
+            total[month]["holidays"]+=holidays
+            total[month]["available"]+=available
+
+    # Compute indicator rates
+    for month in months:
+        rate=[]
+        for indicator in ("prod", "unprod", "holidays"):
+            print total[month][indicator]
+            rate.append(100*total[month][indicator]/(people*available_month[month]))
+        rate.append(100*total[month]["available"]/(total[month]["available"]+total[month]["prod"]+total[month]["unprod"]))
+        rates.append(map(lambda x: round(x, 1), rate))
+    print rates
+    # Format total dict into list
+    total=total.items()
+    total.sort(cmp=lambda x, y:cmp(x[0], y[0])) # Sort according date
+    # Remove date, and transform dict into ordered list:
+    total=[(i[1]["prod"], i[1]["unprod"], i[1]["holidays"], i[1]["available"]) for i in total]
+    #TODO: add production rate
+    return render_to_response("leads/pdc_review.html", {"staffing": staffing,
+                                                        "months": months,
+                                                        "consultants": Consultant.objects.all(),
+                                                        "total": total,
+                                                        "rates": rates}
+                                                        )
+
+    
 def IA_stats(request):
     """Statistics about IA performance (hé hé)
     @todo: make it per year"""
