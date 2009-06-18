@@ -143,9 +143,11 @@ def missions(request, onlyActive=True):
     """List of missions"""
     if onlyActive:
         missions=Mission.objects.filter(active=True)
+        all=False
     else:
         missions=Mission.objects.all()
-    return render_to_response("leads/missions.html", {"missions": missions })
+        all=True
+    return render_to_response("leads/missions.html", {"missions": missions, "all": all })
     
     
     

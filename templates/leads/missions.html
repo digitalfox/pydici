@@ -11,16 +11,27 @@
 {% block content %}
 
 <div id="content-main">
-<h1>Liste des missions</h1>
+{% if all %}
+    <h1>Liste de toutes les missions</h1>
+{% else %}
+    <h1>Liste des missions actives</h1>
+{% endif %}
+
+<table>
 {% for mission in missions %}
 	<tr {%cycle 'class="row1"' 'class="row2"' %}>
 	    <th scope="row"><a href='/leads/mission/{{mission.id}}/', title='{{ mission }}'>{{ mission }}</a></th>
 	</tr>
 {% endfor %}
+</table>
 
+<br><br>
+{% if all %}
+    <a href='{{ link_root }}/leads/mission/'>N'afficher que les missions actives</a>
+{% else %}
+    <a href='{{ link_root }}/leads/mission/all'>Afficher toutes les missions</a>
+{% endif %}
+&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+<a href='{{ link_root }}/leads/'>Retour page d'accueil</a>
 </div>
-<br>
-<hr>
-<br><a href='{{ link_root }}/leads/'>Retour page d'accueil</a></i>
-
 {% endblock %}
