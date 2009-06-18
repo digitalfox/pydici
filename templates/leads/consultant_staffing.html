@@ -40,8 +40,19 @@
             <input type="submit" value="Enregistrer"/>
         </div>
     </form>
-</div>
-<br><a href='..'>Retour à la liste des consultants</a></i>
-<br><a href='{{ link_root }}/leads/'>Retour page d'accueil</a></i>
+<br>
+<h1>Missions de ce consultants</h1>
+<table>
+{% for mission in missions %}
+    <tr {%cycle 'class="row1"' 'class="row2"' %}>
+        <th scope="row"><a href='/leads/mission/{{mission.id}}/', title='{{ mission }}'>{{ mission }}</a></th>
+    </tr>
+{% endfor %}
+</table>
 
+<br>
+<a href='{{ link_root }}/leads/pdcreview'>Retour au plan de charge</a>
+&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+<a href='{{ link_root }}/leads/'>Retour page d'accueil</a>
+</div>
 {% endblock %}

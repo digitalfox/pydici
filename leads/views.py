@@ -139,6 +139,7 @@ def review(request):
                                                     "active_leads" : Lead.objects.active().order_by("creation_date", "id"),
                                                     "user": request.user })
 
+
 def missions(request, onlyActive=True):
     """List of missions"""
     if onlyActive:
@@ -149,8 +150,8 @@ def missions(request, onlyActive=True):
         all=True
     return render_to_response("leads/missions.html", {"missions": missions, "all": all })
     
-    
-    
+
+
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
     StaffingFormSet=inlineformset_factory(Mission, Staffing)
@@ -163,8 +164,12 @@ def mission_staffing(request, mission_id):
     else:
         formset=StaffingFormSet(instance=mission) # An unbound form
     
+    consultants=set([s.consultant for s in mission.staffing_set.all()])
+    consultants=list(consultants)
+    consultants.sort(cmp=lambda x,y: cmp(x.name, y.name))
     return render_to_response('leads/mission_staffing.html', {"formset": formset,
-                                                              "mission": mission
+                                                              "mission": mission,
+                                                              "consultants": consultants
                                                               })
 
 
@@ -179,9 +184,14 @@ def consultant_staffing(request, consultant_id):
             formset=StaffingFormSet(instance=consultant) # Recreate a new form for next update
     else:
         formset=StaffingFormSet(instance=consultant) # An unbound form
+        
+    missions=set([s.mission for s in consultant.staffing_set.all()])
+    missions=list(missions)
+    missions.sort(cmp=lambda x,y: cmp(x.lead, y.lead))
 
     return render_to_response('leads/consultant_staffing.html', {"formset": formset,
-                                                              "consultant": consultant
+                                                              "consultant": consultant,
+                                                              "missions": missions
                                                               })
 
 def pdc_review(request, year=None, month=None, n_month=4):
