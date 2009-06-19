@@ -243,11 +243,9 @@ def pdc_review(request, year=None, month=None, n_month=4):
     for month in months:
         rate=[]
         for indicator in ("prod", "unprod", "holidays"):
-            print total[month][indicator]
             rate.append(100*total[month][indicator]/(people*available_month[month]))
         rate.append(100*total[month]["available"]/(total[month]["available"]+total[month]["prod"]+total[month]["unprod"]))
         rates.append(map(lambda x: round(x, 1), rate))
-    print rates
     # Format total dict into list
     total=total.items()
     total.sort(cmp=lambda x, y:cmp(x[0], y[0])) # Sort according date

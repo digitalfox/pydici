@@ -25,6 +25,9 @@
                <th>Supprimer</th>
            </tr>
            {% for form in formset.forms %}
+               {% ifchanged form.initial.staffing_date %}
+               <tr><th>{{ form.initial.staffing_date|date:"F Y" }}</th></tr>
+               {% endifchanged%}
                <tr {%cycle 'class="row1"' 'class="row2"' %}>
                {% for field in form %}
                     <td>
@@ -41,7 +44,7 @@
         </div>
     </form>
 <br>
-<h1>Missions de ce consultants</h1>
+<h1>Missions de ce consultant</h1>
 <table>
 {% for mission in missions %}
     <tr {%cycle 'class="row1"' 'class="row2"' %}>
