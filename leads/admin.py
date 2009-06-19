@@ -7,7 +7,7 @@ Django administration setup
 
 from django.contrib import admin
 
-from pydici.leads.models import Lead, Client, ClientOrganisation, ClientCompany, ClientContact, Consultant, SalesMan, Mission, Staffing, Holidays
+from pydici.leads.models import Lead, Client, ClientOrganisation, ClientCompany, ClientContact, Consultant, SalesMan, Mission, Staffing, Holiday
 
 from pydici.leads.utils import send_lead_mail, capitalize
 
@@ -87,9 +87,12 @@ class MissionAdmin(admin.ModelAdmin):
     list_display=("lead", "description", "nature", "active", "update_date")
     search_fields=("lead__name", "description")
     ordering=("lead", "description")
-    date_hierarchy = "update_date"
-    list_filter = ["nature", "active"]
+    date_hierarchy="update_date"
+    list_filter=["nature", "active"]
 
+class HolidayAdmin(admin.ModelAdmin):
+    list_display=("day", "description")
+    date_hierarchy="day"
 
 admin.site.register(Lead, LeadAdmin)
 admin.site.register(Client, ClientAdmin)
@@ -99,4 +102,4 @@ admin.site.register(ClientContact, ClientContactAdmin)
 admin.site.register(Consultant, ConsultantAdmin)
 admin.site.register(SalesMan, SalesManAdmin)
 admin.site.register(Mission, MissionAdmin)
-admin.site.register(Holidays)
+admin.site.register(Holiday, HolidayAdmin)

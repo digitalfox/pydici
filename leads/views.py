@@ -24,7 +24,7 @@ from django.db import connection
 from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 
-from pydici.leads.models import Lead, Consultant, SalesMan, Staffing, Mission, Holidays
+from pydici.leads.models import Lead, Consultant, SalesMan, Staffing, Mission, Holiday
 from pydici.leads.utils import send_lead_mail, to_int_if_possible, working_days
 
 # Graph colors
@@ -215,7 +215,7 @@ def pdc_review(request, year=None, month=None, n_month=4):
         months.append(start_date.replace(month=start_date.month+i))
 
     # Initialize total dict and available dict
-    holidays_days=Holidays.objects.all()
+    holidays_days=Holiday.objects.all()
     for month in months:
         total[month]={"prod":0, "unprod":0, "holidays":0, "available":0}
         available_month[month]=working_days(month, holidays_days)

@@ -200,9 +200,10 @@ class Mission(models.Model):
     class Meta:
         ordering=["nature", "lead", "description"]
 
-class Holidays(models.Model):
+class Holiday(models.Model):
     """List of public and enterprise specific holidays"""
     day=models.DateField("date")
+    description=models.CharField("Description", max_length=200)
 
 class Staffing(models.Model):
     """The staffing fact table: charge per month per consultant per mission"""
