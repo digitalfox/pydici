@@ -78,17 +78,18 @@ class ClientAdmin(admin.ModelAdmin):
     ordering=("organisation",)
     search_fields=("organisation__company__name", "organisation__name", "contact__name")
 
-class StaffingAdminInline(admin.TabularInline):
-    model=Staffing
-
 class ConsultantAdmin(admin.ModelAdmin):
     list_display=("name", "trigramme")
     search_fields=("name", "trigramme")
     ordering=("name",)
-    inlines=[StaffingAdminInline,]
 
 class MissionAdmin(admin.ModelAdmin):
-    inlines=[StaffingAdminInline,]
+    list_display=("lead", "description", "nature", "active", "update_date")
+    search_fields=("lead__name", "description")
+    ordering=("lead", "description")
+    date_hierarchy = "update_date"
+    list_filter = ["nature", "active"]
+
 
 admin.site.register(Lead, LeadAdmin)
 admin.site.register(Client, ClientAdmin)
@@ -98,5 +99,4 @@ admin.site.register(ClientContact, ClientContactAdmin)
 admin.site.register(Consultant, ConsultantAdmin)
 admin.site.register(SalesMan, SalesManAdmin)
 admin.site.register(Mission, MissionAdmin)
-admin.site.register(Staffing)
 admin.site.register(Holidays)
