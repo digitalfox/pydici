@@ -153,6 +153,17 @@ class Lead(models.Model):
     def save(self, force_insert=False, force_update=False):
         self.description=compact_text(self.description)
         super(Lead, self).save(force_insert, force_update)
+        if self.state=="WIN" and Mission.objects.filter(lead=self).count()==0:
+            currentMonth=datetime.now()
+            mission=Mission()
+            mission.lead=self
+            mission.save()
+            for consultant in self.staffing.all():
+                staffing=Staffing()
+                staffing.mission=mission
+                staffing.consultant=consultant
+                staffing.staffing_date=currentMonth
+                staffing.save()
 
     def staffing_list(self):
         return ", ".join(x["trigramme"] for x in self.staffing.values() ) +", %s" % self.external_staffing

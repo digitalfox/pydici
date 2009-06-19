@@ -71,8 +71,6 @@ class ClientCompanyAdmin(admin.ModelAdmin):
     ordering=("name",)
     search_fields=("name",)
 
-#    inlines=[ClientOrganisationAdminInline,]
-
 class ClientAdmin(admin.ModelAdmin):
     list_display=("organisation", "salesOwner", "contact")
     ordering=("organisation",)
