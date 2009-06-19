@@ -148,7 +148,9 @@ def missions(request, onlyActive=True):
     else:
         missions=Mission.objects.all()
         all=True
-    return render_to_response("leads/missions.html", {"missions": missions, "all": all })
+    return render_to_response("leads/missions.html", {"missions": missions,
+                                                      "all": all,
+                                                      "user": request.user })
     
 
 
@@ -169,7 +171,8 @@ def mission_staffing(request, mission_id):
     consultants.sort(cmp=lambda x,y: cmp(x.name, y.name))
     return render_to_response('leads/mission_staffing.html', {"formset": formset,
                                                               "mission": mission,
-                                                              "consultants": consultants
+                                                              "consultants": consultants,
+                                                              "user": request.user
                                                               })
 
 
@@ -191,7 +194,8 @@ def consultant_staffing(request, consultant_id):
 
     return render_to_response('leads/consultant_staffing.html', {"formset": formset,
                                                               "consultant": consultant,
-                                                              "missions": missions
+                                                              "missions": missions,
+                                                              "user": request.user
                                                               })
 
 def pdc_review(request, year=None, month=None, n_month=4):
@@ -254,7 +258,8 @@ def pdc_review(request, year=None, month=None, n_month=4):
                                                         "months": months,
                                                         "consultants": Consultant.objects.all(),
                                                         "total": total,
-                                                        "rates": rates}
+                                                        "rates": rates,
+                                                        "user": request.user}
                                                         )
 
     
