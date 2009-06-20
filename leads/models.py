@@ -148,7 +148,7 @@ class Lead(models.Model):
     objects=LeadManager() # Custom manager that factorise active/passive lead code
 
     def __unicode__(self):
-        return u"%s - %s" % (self.client, self.name)
+        return u"%s - %s" % (self.client.organisation, self.name)
 
     def save(self, force_insert=False, force_update=False):
         self.description=compact_text(self.description)
