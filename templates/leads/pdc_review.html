@@ -32,7 +32,7 @@
 </tr>
 {% for consultant, charges in staffing.items %}
     <tr {%cycle 'class="row1"' 'class="row2"' %}>
-        <td><a href="consultant/{{ consultant.id }}">{{ consultant }}</a></td>
+        <td><a href="../consultant/{{ consultant.id }}">{{ consultant }}</a></td>
         {% for charge in charges %}
             <td style="border-left:2px solid #eee;">{{ charge|join:"</td><td class='charge'>" }}</td>
         {% endfor %}
