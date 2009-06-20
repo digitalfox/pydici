@@ -27,11 +27,13 @@
 
 <br><br>
 {% if all %}
-    <a href='{{ link_root }}/leads/mission/'>N'afficher que les missions actives</a>
+    <a href='/leads/mission/'>N'afficher que les missions actives</a>
 {% else %}
-    <a href='{{ link_root }}/leads/mission/all'>Afficher toutes les missions</a>
+    <a href='/leads/mission/all'>Afficher toutes les missions</a>
 {% endif %}
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='{{ link_root }}/leads/'>Retour page d'accueil</a>
+<a href='/leads/admin/leads/mission/'>Administration des missions</a>
+&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+<a href='/leads/'>Retour page d'accueil</a>
 </div>
 {% endblock %}
