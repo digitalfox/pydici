@@ -209,7 +209,7 @@ class Mission(models.Model):
             return unicode(self.lead)
 
     class Meta:
-        ordering=["nature", "lead", "description"]
+        ordering=["nature", "lead__client__organisation__company", "description"]
 
 class Holiday(models.Model):
     """List of public and enterprise specific holidays"""
