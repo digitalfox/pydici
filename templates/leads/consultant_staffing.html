@@ -26,7 +26,11 @@
            </tr>
            {% for form in formset.forms %}
                {% ifchanged form.initial.staffing_date %}
-               <tr><th>{{ form.initial.staffing_date|date:"F Y" }}</th></tr>
+	               {% if form.initial.staffing_date %}
+	                   <tr><th>{{ form.initial.staffing_date|date:"F Y" }}</th></tr>
+	               {% else %}
+	                   <tr><th>Nouveau staffing :</th></tr>
+	               {% endif %}
                {% endifchanged%}
                <tr {%cycle 'class="row1"' 'class="row2"' %}>
                {% for field in form %}
