@@ -242,9 +242,12 @@ def pdc_review(request, year=None, month=None, n_month=4):
     # Compute indicator rates
     for month in months:
         rate=[]
-        for indicator in ("prod", "unprod", "holidays"):
-            rate.append(100*total[month][indicator]/(people*available_month[month]))
-        rate.append(100*total[month]["available"]/(total[month]["available"]+total[month]["prod"]+total[month]["unprod"]))
+        ndays=people*available_month[month] # Total days for this month
+        for indicator in ("prod", "unprod", "holidays", "available"):
+            if indicator=="holidays":
+                rate.append(100.0*total[month][indicator]/ndays)
+            else:
+                rate.append(100.0*total[month][indicator]/(ndays-total[month]["holidays"]))
         rates.append(map(lambda x: round(x, 1), rate))
 
     # Format total dict into list
