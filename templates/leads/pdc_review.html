@@ -30,7 +30,10 @@
 <tr>
 
 </tr>
-{% for consultant, charges in staffing.items %}
+{% for consultant, charges in staffing %}
+    {% ifchanged consultant.manager %}
+        <tr><th>Équipe {{consultant.manager}}</th></tr>
+    {% endifchanged %}
     <tr {%cycle 'class="row1"' 'class="row2"' %}>
         <td><a href="/leads/consultant/{{ consultant.id }}">{{ consultant }}</a></td>
         {% for charge in charges %}

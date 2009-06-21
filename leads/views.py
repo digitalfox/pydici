@@ -246,15 +246,18 @@ def pdc_review(request, year=None, month=None, n_month=4):
             rate.append(100*total[month][indicator]/(people*available_month[month]))
         rate.append(100*total[month]["available"]/(total[month]["available"]+total[month]["prod"]+total[month]["unprod"]))
         rates.append(map(lambda x: round(x, 1), rate))
+
     # Format total dict into list
     total=total.items()
     total.sort(cmp=lambda x, y:cmp(x[0], y[0])) # Sort according date
     # Remove date, and transform dict into ordered list:
     total=[(i[1]["prod"], i[1]["unprod"], i[1]["holidays"], i[1]["available"]) for i in total]
-    #TODO: add production rate
+
+    # Order staffing list
+    staffing=staffing.items()
+    staffing.sort(cmp=lambda x, y:cmp(x[0].manager.name, y[0].manager.name))
     return render_to_response("leads/pdc_review.html", {"staffing": staffing,
                                                         "months": months,
-                                                        "consultants": Consultant.objects.all(),
                                                         "total": total,
                                                         "rates": rates,
                                                         "user": request.user}
