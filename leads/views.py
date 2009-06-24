@@ -156,12 +156,13 @@ def missions(request, onlyActive=True):
 
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
-    StaffingFormSet=inlineformset_factory(Mission, Staffing)
+    StaffingFormSet=inlineformset_factory(Mission, Staffing,
+                                          fields=("consultant", "staffing_date", "charge"))
     mission=Mission.objects.get(id=mission_id)
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=mission)
         if formset.is_valid():
-            formset.save()
+            saveFormsetAndLog(formset, request)
             formset=StaffingFormSet(instance=mission) # Recreate a new form for next update
     else:
         formset=StaffingFormSet(instance=mission) # An unbound form
@@ -178,12 +179,13 @@ def mission_staffing(request, mission_id):
 
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
-    StaffingFormSet=inlineformset_factory(Consultant, Staffing)
+    StaffingFormSet=inlineformset_factory(Consultant, Staffing,
+                                          fields=("mission", "staffing_date", "charge"))
     consultant=Consultant.objects.get(id=consultant_id)
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=consultant)
         if formset.is_valid():
-            formset.save()
+            saveFormsetAndLog(formset, request)
             formset=StaffingFormSet(instance=consultant) # Recreate a new form for next update
     else:
         formset=StaffingFormSet(instance=consultant) # An unbound form
@@ -197,6 +199,7 @@ def consultant_staffing(request, consultant_id):
                                                               "missions": missions,
                                                               "user": request.user
                                                               })
+
 
 def pdc_review(request, year=None, month=None, n_month=4):
     """PDC overview
@@ -408,3 +411,12 @@ def print_png(fig):
     response=HttpResponse(content_type='image/png')
     canvas.print_png(response)
     return response
+
+def saveFormsetAndLog(formset, request):
+    """Save the given staffing formset and log last user"""
+    now=datetime.now()
+    staffings=formset.save(commit=False)
+    for staffing in staffings:
+        staffing.last_user=unicode(request.user)
+        staffing.update_date=now
+        staffing.save()

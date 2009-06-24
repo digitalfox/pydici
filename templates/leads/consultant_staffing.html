@@ -23,6 +23,7 @@
                <th>Charge</th>
                <th></th>
                <th>Supprimer</th>
+               <th>Dernière modif</th>
            </tr>
            {% for form in formset.forms %}
                {% ifchanged form.initial.staffing_date %}
@@ -39,6 +40,11 @@
                         {{ field }}
                     </td>
                {% endfor %}
+               <td>
+               {% if form.initial.last_user %}
+                    {{ form.initial.last_user }} ({{ form.initial.update_date|date:"d/n/y G:i" }})
+               {% endif %}
+               </td>
                </tr>
            {% endfor %}
         </table>       

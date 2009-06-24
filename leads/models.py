@@ -222,7 +222,8 @@ class Staffing(models.Model):
     mission=models.ForeignKey(Mission, limit_choices_to=Q(active=True))
     staffing_date=models.DateField("Date")
     charge=models.FloatField("Charge", default=0)
-    update_date=models.DateTimeField("Mise à jour", auto_now=True)
+    update_date=models.DateTimeField("Mise à jour")
+    last_user=models.CharField(max_length=60)
 
     def __unicode__(self):
         return "%s/%s (%s): %s" % (self.staffing_date.month, self.staffing_date.year, self.consultant.trigramme, self.charge)
