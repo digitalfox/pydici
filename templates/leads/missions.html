@@ -19,8 +19,11 @@
 
 <table>
 {% for mission in missions %}
+	{% ifchanged mission.nature %}
+	   <tr><th>{{ mission.get_nature_display }}</th></tr>
+	{% endifchanged %}
 	<tr {%cycle 'class="row1"' 'class="row2"' %}>
-	    <th scope="row"><a href='/leads/mission/{{mission.id}}/', title='{{ mission }}'>{{ mission }}</a></th>
+	    <td scope="row"><a href='/leads/mission/{{mission.id}}/', title='{{ mission }}'>{{ mission }}</a></td>
 	</tr>
 {% endfor %}
 </table>
