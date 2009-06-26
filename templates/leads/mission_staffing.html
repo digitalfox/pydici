@@ -42,7 +42,7 @@
                {% endfor %}
                <td>
                {% if form.initial.last_user %}
-                    {{ form.initial.last_user }} ({{ form.initial.update_date|date:"d/n/y G:i" }})
+                    {{ form.initial.last_user }} ({{ form.initial.update_date|timesince }})
                {% endif %}
                </td>
                </tr>
