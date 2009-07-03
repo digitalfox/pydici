@@ -218,8 +218,14 @@ def pdc_review(request, year=None, month=None, n_month=4):
     available_month={} # available working days per month
     months=[]   # list of month to be displayed
     people=Consultant.objects.count()
+    if n_month>12:
+        n_month=12 # Limit to 12 month to avoid complexe and useless month list computation
     for i in range(int(n_month)):
-        months.append(start_date.replace(month=start_date.month+i))
+        if start_date.month+i<=12:
+            months.append(start_date.replace(month=start_date.month+i))
+        else:
+            # We wrap around a year (max one year)
+            months.append(start_date.replace(month=start_date.month+i-12, year=start_date.year+1))
 
     # Initialize total dict and available dict
     holidays_days=Holiday.objects.all()
