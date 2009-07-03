@@ -15,7 +15,7 @@ from pydici.leads.models import Consultant, Client, Lead
 from urllib2 import urlparse
 
 class SimpleTest(TestCase):
-    fixtures = ["auth.json", "contenttypes.json", "leads.json"]
+    fixtures = ["auth.json", "leads.json"]
     def test_basic_page(self):
         self.client.login(username='sre', password='rototo')
         for page in ("/leads/",
@@ -31,10 +31,23 @@ class SimpleTest(TestCase):
                      "/leads/feeds/latest/",
                      "/leads/feeds/mine/",
                      "/leads/feeds/new/",
-                     "/leads/feeds/won/"):
+                     "/leads/feeds/won/",
+                     "/leads/pdcreview/",
+                     "/leads/pdcreview/2009/07",
+                     "/leads/pdcreview/2009/07/7",
+                     "/leads/forbiden",
+                     "/leads/mission/",
+                     "/leads/mission/all",
+                     "/leads/mission/3/",
+                     "/leads/consultant/1/"):
             response = self.client.get(page)
             self.failUnlessEqual(response.status_code, 200,
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
+
+    def test_redirect(self):
+        self.client.login(username='sre', password='rototo')
+        response = self.client.get("/leads/mission/3/deactivate")
+        self.failUnlessEqual(response.status_code, 302)
 
     def test_not_found_page(self):
         self.client.login(username='sre', password='rototo')
@@ -68,12 +81,12 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(len(lead.update_date_strf()), 14)
         self.failUnlessEqual(lead.staffing_list(), "SRE, JCF")
         self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
-        self.failUnlessEqual(lead.get_absolute_url(), "http://localhost:8000/leads/41/")
+        self.failUnlessEqual(lead.get_absolute_url(), "http://localhost:8000/leads/47/")
         
         url="".join(urlparse.urlsplit(lead.get_absolute_url())[2:])
         response = self.client.get(url)
         self.failUnlessEqual(response.status_code, 200)
         context = response.context[-1]
-        self.failUnlessEqual(unicode(context["lead"]), u"laala (RTE : DSI )")
+        self.failUnlessEqual(unicode(context["lead"]), u"RTE : DSI  - laala")
         self.failUnlessEqual(unicode(context["user"]), "sre")
 
