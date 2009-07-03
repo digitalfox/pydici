@@ -269,7 +269,14 @@ def pdc_review(request, year=None, month=None, n_month=4):
                                                         "user": request.user}
                                                         )
 
+def deactivate_mission(request, mission_id):
+    """Deactivate the given mission"""
+    mission=Mission.objects.get(id=mission_id)
+    mission.active=False
+    mission.save()
+    return HttpResponseRedirect("/leads/mission/")
     
+
 def IA_stats(request):
     """Statistics about IA performance (hé hé)
     @todo: make it per year"""

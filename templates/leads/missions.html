@@ -24,6 +24,7 @@
 	{% endifchanged %}
 	<tr {%cycle 'class="row1"' 'class="row2"' %}>
 	    <td scope="row"><a href='/leads/mission/{{mission.id}}/', title='{{ mission }}'>{{ mission }}</a></td>
+	    <td scope="row"><a href='/leads/mission/{{mission.id}}/deactivate', title='{{ mission }}/deactivate'><em>Archiver</em></a></td>
 	</tr>
 {% endfor %}
 </table>
