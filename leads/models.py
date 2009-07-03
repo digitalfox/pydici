@@ -191,6 +191,9 @@ class Lead(models.Model):
         """Return next active lead"""
         return self.get_previous_by_creation_date(state__in=("QUALIF", "WRITE_OFFER", "OFFER_SENT", "NEGOCATION"))
 
+    class Meta:
+        ordering=["client__organisation__company__name", "name"]
+
 class Mission(models.Model):
     MISSION_NATURE=(
             ('PROD', u'Productif'),
