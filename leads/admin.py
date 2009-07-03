@@ -83,7 +83,8 @@ class ConsultantAdmin(admin.ModelAdmin):
 
 class MissionAdmin(admin.ModelAdmin):
     list_display=("lead", "description", "nature", "active", "update_date")
-    search_fields=("lead__name", "description")
+    search_fields=("lead__name", "description", "lead__client__organisation__company__name",
+                   "lead__client__contact__name")
     ordering=("lead", "description")
     date_hierarchy="update_date"
     list_filter=["nature", "active"]
