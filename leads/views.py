@@ -102,9 +102,9 @@ def detail(request, lead_id):
 def csv_export(request, target):
     response = HttpResponse(mimetype="text/csv")
     response["Content-Disposition"] = "attachment; filename=plan-de-charge.csv"
-    writer = csv.writer(response)
-    writer.writerow(["Nom", "Client", "Description", "Suivi par", "Commercial", "Date de démarrage", "État",
-                     "Échéance", "Staffing", "CA (k€)", "Code A6", "Création", "Mise à jour"])
+    writer = csv.writer(response, delimiter=';')
+    writer.writerow([i.encode("ISO-8859-15") for i in [u"Nom", u"Client", u"Description", u"Suivi par", u"Commercial", u"Date de démarrage", u"État",
+                     u"Échéance", u"Staffing", u"CA (KE)", u"Code A6", u"Création", u"Mise à jour"]])
     if target!="all":
         leads=Lead.objects.active()
     else:
@@ -113,7 +113,7 @@ def csv_export(request, target):
         state=lead.get_state_display()
         row=[lead.name, lead.client, lead.description, lead.responsible, lead.salesman, lead.start_date, state,
                          lead.due_date, lead.staffing_list(), lead.sales, lead.salesId, lead.creation_date, lead.update_date]
-        row=[unicode(x).encode("UTF-8") for x in row]
+        row=[unicode(x).encode("ISO-8859-15") for x in row]
         writer.writerow(row)
     return response
 
