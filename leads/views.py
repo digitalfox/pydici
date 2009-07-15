@@ -113,7 +113,7 @@ def csv_export(request, target):
         state=lead.get_state_display()
         row=[lead.name, lead.client, lead.description, lead.responsible, lead.salesman, lead.start_date, state,
                          lead.due_date, lead.staffing_list(), lead.sales, lead.salesId, lead.creation_date, lead.update_date]
-        row=[unicode(x).encode("ISO-8859-15") for x in row]
+        row=[unicode(x).encode("ISO-8859-15", "ignore") for x in row]
         writer.writerow(row)
     return response
 
