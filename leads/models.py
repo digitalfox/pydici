@@ -163,6 +163,8 @@ class Lead(models.Model):
                 staffing.mission=mission
                 staffing.consultant=consultant
                 staffing.staffing_date=currentMonth
+                staffing.update_date=currentMonth
+                staffing.last_user="-"
                 staffing.save()
 
     def staffing_list(self):
