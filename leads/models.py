@@ -201,10 +201,17 @@ class Mission(models.Model):
             ('PROD', u'Productif'),
             ('NONPROD', u'Non productif'),
             ('HOLIDAYS', u'Congés'))
+    PROBABILITY=(
+            (0,   u"Nulle"),
+            (25,  u"Faible"),
+            (50,  u"Normale"),
+            (75,  u"Forte"),
+            (100, u"Certaine"))
     lead=models.ForeignKey(Lead, null=True, blank=True)
     description=models.CharField("Description", max_length=30, blank=True, null=True)
     nature=models.CharField("Type", max_length=30, choices=MISSION_NATURE, default="PROD")
     active=models.BooleanField("Active", default=True)
+    probability=models.IntegerField("Proba", default=50, choices=PROBABILITY)
     update_date=models.DateTimeField("Mise à jour", auto_now=True)
 
     def __unicode__(self):

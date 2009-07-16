@@ -82,12 +82,12 @@ class ConsultantAdmin(admin.ModelAdmin):
     ordering=("name",)
 
 class MissionAdmin(admin.ModelAdmin):
-    list_display=("lead", "description", "nature", "active", "update_date")
+    list_display=("lead", "description", "nature", "probability", "active", "update_date")
     search_fields=("lead__name", "description", "lead__client__organisation__company__name",
                    "lead__client__contact__name")
     ordering=("lead", "description")
     date_hierarchy="update_date"
-    list_filter=["nature", "active"]
+    list_filter=["nature", "probability", "active"]
 
 class HolidayAdmin(admin.ModelAdmin):
     list_display=("day", "description")
