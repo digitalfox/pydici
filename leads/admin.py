@@ -6,6 +6,7 @@ Django administration setup
 """
 
 from django.contrib import admin
+from datetime import datetime
 
 from pydici.leads.models import Lead, Client, ClientOrganisation, ClientCompany, ClientContact, Consultant, SalesMan, Mission, Staffing, Holiday
 
@@ -45,6 +46,35 @@ class LeadAdmin(admin.ModelAdmin):
                 request.user.message_set.create(message="Ce lead a été envoyé par mail au plan de charge.")
             except Exception, e:
                 request.user.message_set.create(message="Échec d'envoi du mail : %s" % e)
+
+        # Create or update mission object if needed
+        mission, mission_does_not_exist=Mission.objects.get_or_create(lead=obj)
+        if obj.state in ("OFFER_SENT", "NEGOCIATION", "WIN") and mission_does_not_exist:
+            currentMonth=datetime.now()
+            mission.lead=obj
+            mission.save()
+            # Create default staffing
+            for consultant in obj.staffing.all():
+                staffing=Staffing()
+                staffing.mission=mission
+                staffing.consultant=consultant
+                staffing.staffing_date=currentMonth
+                staffing.update_date=currentMonth
+                staffing.last_user="-"
+                staffing.save()
+            request.user.message_set.create(message="Une mission a été initialisée dans le plan de charge pour cette affaire.")
+        if obj.state=="WIN":
+            mission.probability=100
+            mission.active=True
+            mission.save()
+            request.user.message_set.create(message="La probabilité de la mission a été mise à 100 % dans le plan de charge")
+        elif obj.state in ("LOST", "FORGIVEN", "SLEEPING"):
+            mission.probability=0
+            mission.active=False
+            mission.save()
+            request.user.message_set.create(message="La mission correspondante a été archivée dans le plan de charge")
+
+
 
 class ClientContactAdmin(admin.ModelAdmin):
     list_display=("name", "function", "email", "phone")
