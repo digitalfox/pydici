@@ -25,7 +25,7 @@ from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 
 from pydici.leads.models import Lead, Consultant, SalesMan, Staffing, Mission, Holiday
-from pydici.leads.utils import send_lead_mail, to_int_if_possible, working_days
+from pydici.leads.utils import send_lead_mail, to_int_or_round, working_days
 
 # Graph colors
 COLORS=["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFFF6D", "#AAFF86", "#D972FF", "#FF8D8F"]
@@ -242,9 +242,9 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
             if not projected:
                 # Only keep 100% mission
                 current_staffing=current_staffing.filter(mission__probability=100)
-            prod=to_int_if_possible(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="PROD")))
-            unprod=to_int_if_possible(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="NONPROD")))
-            holidays=to_int_if_possible(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="HOLIDAYS")))
+            prod=to_int_or_round(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="PROD")))
+            unprod=to_int_or_round(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="NONPROD")))
+            holidays=to_int_or_round(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="HOLIDAYS")))
             available=available_month[month]-(prod+unprod+holidays)
             staffing[consultant].append([prod, unprod, holidays, available])
             total[month]["prod"]+=prod
@@ -261,13 +261,16 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
                 rate.append(100.0*total[month][indicator]/ndays)
             else:
                 rate.append(100.0*total[month][indicator]/(ndays-total[month]["holidays"]))
-        rates.append(map(lambda x: round(x, 1), rate))
+        rates.append(map(lambda x: to_int_or_round(x), rate))
 
     # Format total dict into list
     total=total.items()
     total.sort(cmp=lambda x, y:cmp(x[0], y[0])) # Sort according date
     # Remove date, and transform dict into ordered list:
-    total=[(i[1]["prod"], i[1]["unprod"], i[1]["holidays"], i[1]["available"]) for i in total]
+    total=[(to_int_or_round(i[1]["prod"]),
+            to_int_or_round(i[1]["unprod"]),
+            to_int_or_round(i[1]["holidays"]),
+            to_int_or_round(i[1]["available"])) for i in total]
 
     # Order staffing list
     staffing=staffing.items()

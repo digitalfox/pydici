@@ -83,14 +83,15 @@ def compact_text(text):
     text=EXTRA_NLINE.sub("\n\n", text)
     return text
 
-def to_int_if_possible(x):
+def to_int_or_round(x):
     """Convert a float to int if decimal part is equal to 0
+    else round it with one decimal
     @param x: float to be converted
     @requires: int or float"""
     if (int(x)-x)==0:
         return int(x)
     else:
-        return x
+        return round(x, 1)
 
 def working_days(monthDate, holidays=[]):
     """Compute the number of working days of a month
