@@ -274,7 +274,9 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
 
     # Order staffing list
     staffing=staffing.items()
-    staffing.sort(cmp=lambda x, y:cmp(x[0].manager.name, y[0].manager.name))
+    staffing.sort(cmp=lambda x, y:cmp(x[0].name, y[0].name)) # Sort by name
+    staffing.sort(cmp=lambda x, y:cmp(x[0].manager.name, y[0].manager.name)) # Sort by manager
+
     return render_to_response("leads/pdc_review.html", {"staffing": staffing,
                                                         "months": months,
                                                         "total": total,
