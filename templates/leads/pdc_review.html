@@ -12,7 +12,15 @@
 
 <div id="content-main">
 	<h1>Revue du plan de charge</h1>
-
+{% if projected %}
+<h3>Projections de staffing prises en compte</h3>
+<a href="/leads/pdcreview"><em>Enlever les projections</em></a>
+{% else %}
+<h3>Projections de staffing <em>non</em> prises en compte</h3>
+<a href="/leads/pdcreview/proj"><em>Ajouter les projections</em></a>
+{% endif %}
+<br>
+<br>
 <table>
 <tr>
     <th>Consultants</th>

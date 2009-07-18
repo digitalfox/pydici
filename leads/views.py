@@ -201,11 +201,12 @@ def consultant_staffing(request, consultant_id):
                                                               })
 
 
-def pdc_review(request, year=None, month=None, n_month=4):
+def pdc_review(request, year=None, month=None, n_month=4, projected=False):
     """PDC overview
     @param year: start date year. None means current year
     @param year: start date year. None means current month
-    @param n_month: number of month displays"""
+    @param n_month: number of month displays
+    @param projected: Include projected staffing"""
     if year and month:
         start_date=date(int(year), int(month), 1)
     else:
@@ -238,9 +239,12 @@ def pdc_review(request, year=None, month=None, n_month=4):
         staffing[consultant]=[]
         for month in months:
             current_staffing=consultant.staffing_set.filter(staffing_date=month)
-            prod=to_int_if_possible(sum(i.charge for i in current_staffing.filter(mission__nature="PROD")))
-            unprod=to_int_if_possible(sum(i.charge for i in current_staffing.filter(mission__nature="NONPROD")))
-            holidays=to_int_if_possible(sum(i.charge for i in current_staffing.filter(mission__nature="HOLIDAYS")))
+            if not projected:
+                # Only keep 100% mission
+                current_staffing=current_staffing.filter(mission__probability=100)
+            prod=to_int_if_possible(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="PROD")))
+            unprod=to_int_if_possible(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="NONPROD")))
+            holidays=to_int_if_possible(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="HOLIDAYS")))
             available=available_month[month]-(prod+unprod+holidays)
             staffing[consultant].append([prod, unprod, holidays, available])
             total[month]["prod"]+=prod
@@ -272,7 +276,8 @@ def pdc_review(request, year=None, month=None, n_month=4):
                                                         "months": months,
                                                         "total": total,
                                                         "rates": rates,
-                                                        "user": request.user}
+                                                        "user": request.user,
+                                                        "projected": projected}
                                                         )
 
 def deactivate_mission(request, mission_id):
