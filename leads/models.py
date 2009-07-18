@@ -79,6 +79,7 @@ class Consultant(models.Model):
     """A New'Arch consultant"""
     name=models.CharField(max_length=50)
     trigramme=models.CharField(max_length=4, unique=True)
+    productive=models.BooleanField("Productif", default=True)
     manager=models.ForeignKey("self")
 
     def __unicode__(self): return self.name

@@ -218,7 +218,7 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
     rates=[]     # staffing rates per month
     available_month={} # available working days per month
     months=[]   # list of month to be displayed
-    people=Consultant.objects.count()
+    people=Consultant.objects.filter(productive=True).count()
     if n_month>12:
         n_month=12 # Limit to 12 month to avoid complexe and useless month list computation
     for i in range(int(n_month)):
@@ -235,7 +235,7 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
         available_month[month]=working_days(month, holidays_days)
 
     # Get consultants staffing
-    for consultant in Consultant.objects.all():
+    for consultant in Consultant.objects.filter(productive=True):
         staffing[consultant]=[]
         for month in months:
             current_staffing=consultant.staffing_set.filter(staffing_date=month)
