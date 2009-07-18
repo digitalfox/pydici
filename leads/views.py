@@ -207,6 +207,7 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
     @param year: start date year. None means current month
     @param n_month: number of month displays
     @param projected: Include projected staffing"""
+
     if year and month:
         start_date=date(int(year), int(month), 1)
     else:
@@ -235,16 +236,30 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
         available_month[month]=working_days(month, holidays_days)
 
     # Get consultants staffing
-    for consultant in Consultant.objects.filter(productive=True):
+    for consultant in Consultant.objects.select_related().filter(productive=True):
         staffing[consultant]=[]
         for month in months:
-            current_staffing=consultant.staffing_set.filter(staffing_date=month)
-            if not projected:
+            if projected:
+                current_staffings=consultant.staffing_set.filter(staffing_date=month).order_by()
+            else:
                 # Only keep 100% mission
-                current_staffing=current_staffing.filter(mission__probability=100)
-            prod=to_int_or_round(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="PROD")))
-            unprod=to_int_or_round(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="NONPROD")))
-            holidays=to_int_or_round(sum(i.charge*i.mission.probability/100 for i in current_staffing.filter(mission__nature="HOLIDAYS")))
+                current_staffings=consultant.staffing_set.filter(staffing_date=month, mission__probability=100).order_by()
+
+            # Sum staffing
+            prod=unprod=holidays=[]
+            for current_staffing  in current_staffings:
+                nature=current_staffing.mission.nature
+                if nature=="PROD":
+                    prod.append(current_staffing.charge*current_staffing.mission.probability/100)
+                elif nature=="NONPROD":
+                    unprod.append(current_staffing.charge*current_staffing.mission.probability/100)
+                elif nature=="HOLIDAYS":
+                    holidays.append(current_staffing.charge*current_staffing.mission.probability/100)
+
+            # Staffing computation
+            prod=sum(prod)
+            unprod=sum(unprod)
+            holidays=sum(holidays)
             available=available_month[month]-(prod+unprod+holidays)
             staffing[consultant].append([prod, unprod, holidays, available])
             total[month]["prod"]+=prod
