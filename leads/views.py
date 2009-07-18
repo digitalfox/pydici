@@ -246,7 +246,9 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
                 current_staffings=consultant.staffing_set.filter(staffing_date=month, mission__probability=100).order_by()
 
             # Sum staffing
-            prod=unprod=holidays=[]
+            prod=[]
+            unprod=[]
+            holidays=[]
             for current_staffing  in current_staffings:
                 nature=current_staffing.mission.nature
                 if nature=="PROD":
