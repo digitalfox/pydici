@@ -25,12 +25,12 @@
 <tr>
     <th>Consultants</th>
 	{% for month in months %}
-	    <th colspan="4" style="border-left:2px solid #eee;"><center>{{ month|date:"F y" }}</center></th>
+	    <th colspan="4" style="border-left:1px solid #C3C3C3;"><center>{{ month|date:"F y" }}</center></th>
 	{% endfor %}
 </tr>
     <th></th>
     {% for month in months %}
-        <th style="border-left:2px solid #eee;">prod</th>
+        <th style="border-left:1px solid #C3C3C3;">prod</th>
         <th>imprd</th>
         <th>cngs</th>
         <th>disp</th>
@@ -45,20 +45,20 @@
     <tr {%cycle 'class="row1"' 'class="row2"' %}>
         <td><a href="/leads/consultant/{{ consultant.id }}">{{ consultant }}</a></td>
         {% for charge in charges %}
-            <td style="border-left:2px solid #eee;">{{ charge|join:"</td><td class='charge'>" }}</td>
+            <td style="border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td class='charge'>" }}</td>
         {% endfor %}
     </tr>
 {% endfor %}
 <tr>
     <th>Totaux</th>
     {% for month_total in total %}
-        <th style="border-left:2px solid #eee;">{{ month_total|join:"</th><th>" }}</th>
+        <th style="border-left:2px solid #C3C3C3;">{{ month_total|join:"</th><th>" }}</th>
     {% endfor %}
 </tr>
 <tr>
     <th>Taux (%)</th>
     {% for month_rates in rates %}
-        <th style="border-left:2px solid #eee;">{{ month_rates|join:"</th><th>" }}</th>
+        <th style="border-left:2px solid #C3C3C3;">{{ month_rates|join:" %</th><th>" }} %</th>
     {% endfor %}
 </tr>
 </table>
