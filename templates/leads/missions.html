@@ -18,15 +18,16 @@
 {% endif %}
 
 <table>
-<tr><th>Nom</th><th>Probabilité</th><th></th></tr>
+<tr><th>Nom</th><th>Probabilité</th><th></th><th></th></tr>
 {% for mission in missions %}
 	{% ifchanged mission.nature %}
 	   <tr><th>{{ mission.get_nature_display }}</th></tr>
 	{% endifchanged %}
 	<tr {%cycle 'class="row1"' 'class="row2"' %}>
-	    <td scope="row"><a href='/leads/mission/{{mission.id}}/', title='{{ mission }}'>{{ mission }}</a></td>
+	    <td scope="row"><a href='/leads/mission/{{mission.id}}/', title='Définir le staffing de {{ mission }}'>{{ mission }}</a></td>
 	    <td>{{ mission.get_probability_display }} </td>
-	    <td scope="row"><a href='/leads/mission/{{mission.id}}/deactivate', title='{{ mission }}/deactivate'><em>Archiver</em></a></td>
+	    <td scope="row"><a href='/leads/mission/{{mission.id}}/deactivate', title='Archiver {{ mission }}'><em>Archiver</em></a></td>
+	    <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='Modifier {{ mission }}', target='_blank', class='changelink'><em>Modifier</em></a></td>
 	</tr>
 {% endfor %}
 </table>

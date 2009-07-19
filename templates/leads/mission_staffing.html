@@ -13,6 +13,8 @@
 <div id="content-main">
     <h1>{{ mission }}</h1>
     <h3>Probabilité : {{ mission.get_probability_display }} </h3>
+    <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='Modifier {{ mission }}', target='_blank', class='changelink'><em>Modifier</em></a></td>
+    <br><br>
     <form action="" method="POST">
         {{ formset.management_form }}
         <div class="form-row">
