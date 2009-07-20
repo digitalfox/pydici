@@ -12,7 +12,7 @@
     {% if my_leads_as_responsible %}
     <div class="module">
         <table summary="Leads">
-        <caption>Les leads dont je suis responsable</caption>
+        <tr><th colspan=7>Les leads dont je suis responsable</th></tr>
         <tr>
                 <td><b>Lead</b></td>
                 <td><b>Responsable</b></td>
@@ -25,7 +25,7 @@
 
         {% for lead in my_leads_as_responsible %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></th>
+                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></b></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -34,13 +34,10 @@
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink', target='_blank'>Modifier</a></td>
             </tr>
         {% endfor %}
-        </table>
-    </div>
+
     {% endif %}
     {% if my_leads_as_staffee %}
-    <div class="module">
-        <table summary="Leads">
-        <caption>Les leads où je suis une ressource pressentie</caption>
+        <tr><th colspan=7>Les leads où je suis une ressource pressentie</th></tr>
         <tr>
                 <td><b>Lead</b></td>
                 <td><b>Responsable</b></td>
@@ -53,7 +50,7 @@
 
         {% for lead in my_leads_as_staffee %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></th>
+                <td><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
                  <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -62,13 +59,9 @@
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink', target='_blank'>Modifier</a></td>
             </tr>
         {% endfor %}
-        </table>
-    </div>
     {% endif %}
     {% if latest_leads %}
-    <div class="module">
-        <table summary="Les derniers leads crées ou modifiés">
-        <caption>Les derniers leads modifiés</caption>
+        <tr><th colspan=7>Les derniers leads modifiés</th></tr>
         <tr>
                 <td><b>Lead</b></td>
                 <td><b>Responsable</b></td>
@@ -81,7 +74,7 @@
 
         {% for lead in latest_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></th>
+                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></b></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -90,13 +83,9 @@
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink', target='_blank'>Modifier</a></td>
             </tr>
         {% endfor %}
-        </table>
-    </div>
     {% endif %}
     {% if my_latest_archived_leads %}
-    <div class="module">
-        <table summary="Leads">
-        <caption>Mes derniers leads archivés (gagnés, perdus ou abandonnés)</caption>
+        <tr><th colspan=7>Mes derniers leads archivés (gagnés, perdus ou abandonnés)</th></tr>
         <tr>
                 <td><b>Lead</b></td>
                 <td><b>Responsable</b></td>
@@ -109,7 +98,7 @@
 
         {% for lead in my_latest_archived_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></th>
+                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></b></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -118,17 +107,13 @@
                 <td><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink', target='_blank'>Modifier</a></td>
             </tr>
         {% endfor %}
-        </table>
-    </div>
     {% endif %}
-    <div class="module">
-        <table summary="Export tableur au format CSV">
-        <caption>Récapitulatifs</caption>
-        <tr><th scope='row'><a href='/leads/review'>Revue des affaires en cours</a></th><td></td><td></td></tr>
-        <tr><th scope='row'><a href='/leads/csv/active'>Fichier CSV des leads actifs</a></th><td></td><td></td></tr>
-        <tr><th scope='row'><a href='/leads/csv/all'>Fichier CSV de tous les leads</a></th><td></td><td></td></tr>
-        <tr><th scope='row'><a href='/leads/mail/html'>Mail récapitulatif (format HTML)</a></th><td></td><td></td></tr>
-        <tr><th scope='row'><a href='/leads/mail/text'>Mail récapitulatif (format texte)</a></th><td><td></td></td></tr>
+        <tr><th colspan=7>Récapitulatifs</th></tr>
+        <tr><td><a href='/leads/review'>Revue des affaires en cours</a></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td><a href='/leads/csv/active'>Fichier CSV des leads actifs</a></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td><a href='/leads/csv/all'>Fichier CSV de tous les leads</a></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td><a href='/leads/mail/html'>Mail récapitulatif (format HTML)</a></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td><a href='/leads/mail/text'>Mail récapitulatif (format texte)</a></td><td><td></td></td><td></td><td></td><td></td><td></td></tr>
         </table>
     </div>
 </div>

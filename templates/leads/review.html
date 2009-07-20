@@ -14,7 +14,7 @@
         <table summary="Leads">
         <caption>Tous les leads actifs</caption>
         <tr>
-                <th scope="row"><b>Lead</b></th>
+                <td><b>Lead</b></td>
                 <td><b>Responsable</b></td>
                 <td><b>IA</b></td>
                 <td><b>Staffing</b></td>
@@ -25,7 +25,7 @@
         </tr>
         {% for lead in active_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}/' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></th>
+                <td><a href='/leads/{{lead.id}}/' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.staffing_list }}</td>
@@ -43,7 +43,7 @@
         <table summary="Leads">
         <caption>Les affaires gagnées, perdues ou abandonnées recemment et les affaires gagnées sans code A6</caption>
         <tr>
-                <th scope="row"><b>Lead</b></th>
+                <td><b>Lead</b></td>
                 <td><b>Responsable</b></td>
                 <td><b>IA</b></td>
                 <td><b>Staffing</b></td>
@@ -54,7 +54,7 @@
         </tr>
         {% for lead in recent_archived_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='/leads/{{lead.id}}' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></th>
+                <td><a href='/leads/{{lead.id}}' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.staffing_list }}</td>
