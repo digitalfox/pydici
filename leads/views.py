@@ -109,7 +109,7 @@ def csv_export(request, target):
         leads=Lead.objects.active()
     else:
         leads=Lead.objects.all()
-    for lead in leads.order_by("-update_date"):
+    for lead in leads.order_by("start_date"):
         state=lead.get_state_display()
         row=[lead.name, lead.client, lead.description, lead.responsible, lead.salesman, lead.start_date, state,
                          lead.due_date, lead.staffing_list(), lead.sales, lead.salesId, lead.creation_date, lead.update_date]
@@ -136,7 +136,7 @@ def review(request):
                                                       Q(state="SLEEPING"))
     recentArchivedLeads=recentArchivedLeads.order_by("state", "-update_date")
     return render_to_response("leads/review.html", {"recent_archived_leads" : recentArchivedLeads,
-                                                    "active_leads" : Lead.objects.active().order_by("creation_date", "id"),
+                                                    "active_leads" : Lead.objects.active().order_by("start_date", "id"),
                                                     "user": request.user })
 
 
