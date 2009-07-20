@@ -1,5 +1,6 @@
 {% extends "admin/base_site.html" %}
 {% load i18n %}
+{% load pydici_filters %}
 
 {% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
 
@@ -24,7 +25,7 @@
 
         {% for lead in my_leads_as_responsible %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></b></td>
+                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name|truncate_by_chars:"60" }}</a></b></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -47,7 +48,7 @@
 
         {% for lead in my_leads_as_staffee %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
+                <td><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name|truncate_by_chars:"60" }}</a></td>
                  <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -69,7 +70,7 @@
 
         {% for lead in latest_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></b></td>
+                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name|truncate_by_chars:"60" }}</a></b></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -91,7 +92,7 @@
 
         {% for lead in my_latest_archived_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></b></td>
+                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name|truncate_by_chars:"60" }}</a></b></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
