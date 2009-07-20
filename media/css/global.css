@@ -98,8 +98,19 @@ input[type=submit].default:active { background-image:url(../img/admin/default-bg
 .module blockquote { margin-left:12px; }
 .module ul, .module ol { margin-left:1.5em; }
 .module h3 { margin-top:.6em; }
-.module h2, .module caption, .module th, .inline-group h2 { margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background:#7CA0C7 url(../img/admin/default-bg.gif) top left repeat-x; color:white; }
+.module h2, .module caption, .inline-group h2 { margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background:#7CA0C7 url(../img/admin/default-bg.gif) top left repeat-x; color:white; }
 .module table { border-collapse: collapse; }
+
+/* Index MODULES */
+.imodule { border:1px solid #ccc; margin-bottom:5px; background:white; }
+.imodule p, .imodule ul, .imodule h3, .imodule h4, .imodule dl, .imodule pre { padding-left:10px; padding-right:10px; }
+.imodule blockquote { margin-left:12px; }
+.imodule ul, .imodule ol { margin-left:1.5em; }
+.imodule h3 { margin-top:.6em; }
+.imodule h2, .imodule caption, .imodule th, .inline-group h2 { margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background:#7CA0C7 url(../img/admin/default-bg.gif) top left repeat-x; color:white; }
+.imodule table { border-collapse: collapse; }
+
+
 
 /* MESSAGES & ERRORS */
 ul.messagelist { padding:0 0 5px 0; margin:0; }
