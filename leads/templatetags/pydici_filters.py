@@ -14,6 +14,7 @@ def truncate_by_chars(value, arg):
   """ Truncate words if higher than value and use "..."   """
   try:
     limit = int(arg)
+    value=unicode(value)
   except ValueError:
     return value
   if len(value) >= limit:
