@@ -214,6 +214,7 @@ class Staffing(models.Model):
     mission=models.ForeignKey(Mission, limit_choices_to=Q(active=True))
     staffing_date=models.DateField("Date")
     charge=models.FloatField("Charge", default=0)
+    comment=models.CharField("Remarques", max_length=500, blank=True, null=True)
     update_date=models.DateTimeField("Mise à jour")
     last_user=models.CharField(max_length=60)
 

@@ -173,7 +173,7 @@ def missions(request, onlyActive=True):
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
     StaffingFormSet=inlineformset_factory(Mission, Staffing,
-                                          fields=("consultant", "staffing_date", "charge"))
+                                          fields=("consultant", "staffing_date", "charge", "comment"))
     mission=Mission.objects.get(id=mission_id)
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=mission)
@@ -196,7 +196,7 @@ def mission_staffing(request, mission_id):
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
     StaffingFormSet=inlineformset_factory(Consultant, Staffing,
-                                          fields=("mission", "staffing_date", "charge"))
+                                          fields=("mission", "staffing_date", "charge", "comment"))
     consultant=Consultant.objects.get(id=consultant_id)
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=consultant)
