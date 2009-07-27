@@ -10,12 +10,9 @@
 
 {% block content %}
 
-{% with lead.get_previous_active as previous_lead %}
-{% with lead.get_next_active as next_lead %}
-
 <div id="content-main">
     <h1>Détail du lead</h1>
-    {% if active_rank %}
+    {% if active_count %}
 	    {% if previous_lead %}
 	        <a href='{{ link_root }}/leads/{{ previous_lead.id }}/'><small><</small>  </a>
 	    {% endif %}
@@ -25,7 +22,6 @@
 	    {% endif %}
     {% endif %}
 
-{% endwith %}{% endwith %}
 
     <div class="form-row name  ">
     <h2><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink' title='Cliquez pour modifier ce lead', target='_blank'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>

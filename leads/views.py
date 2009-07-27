@@ -84,17 +84,33 @@ def detail(request, lead_id):
                                               content_type__name="lead")
         actionList=actionList.select_related().order_by('action_time')
          # Lead rank in active list
-        active_leads=Lead.objects.active().order_by("creation_date", "id")
+        active_leads=Lead.objects.active().order_by("start_date", "creation_date", "id")
         try:
-            rank=[l.id for l in active_leads].index(lead.id)+1
+            rank=[l.id for l in active_leads].index(lead.id)
+            active_count=active_leads.count()
+            if rank==0:
+                previous_lead=None
+                next_lead=active_leads[1]
+            elif rank+1>=active_count:
+                previous_lead=active_leads[rank-1]
+                next_lead=None
+            else:
+                previous_lead=active_leads[rank-1]
+                next_lead=active_leads[rank+1]
         except ValueError:
             # Lead is not in active list, rank it to zero
             rank=0
+            next_lead=None
+            previous_lead=None
+            active_count=None
+
     except Lead.DoesNotExist:
         raise Http404
     return render_to_response("leads/lead_detail.html", {"lead": lead,
-                                                         "active_count": active_leads.count(),
-                                                         "active_rank" : rank,
+                                                         "active_count": active_count,
+                                                         "active_rank" : rank+1,
+                                                         "next_lead" : next_lead,
+                                                         "previous_lead" : previous_lead,
                                                          "link_root": pydici.settings.LEADS_WEB_LINK_ROOT,
                                                          "action_list": actionList,
                                                          "user": request.user})
