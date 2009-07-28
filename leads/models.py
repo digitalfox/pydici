@@ -156,7 +156,12 @@ class Lead(models.Model):
         super(Lead, self).save(force_insert, force_update)
 
     def staffing_list(self):
-        return ", ".join(x["trigramme"] for x in self.staffing.values() ) +", %s" % self.external_staffing
+        staffing=""
+        if self.staffing:
+            staffing+=", ".join(x["trigramme"] for x in self.staffing.values())
+        if self.external_staffing:
+            staffing+=", (%s)" % self.external_staffing
+        return staffing
 
     def update_date_strf(self):
         return self.update_date.strftime(SHORT_DATETIME_FORMAT)
