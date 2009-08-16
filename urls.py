@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 """URL dispatcher
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
-@license: BSD
+@license: GPL v3 or newer
 """
 #
 from django.conf.urls.defaults import *

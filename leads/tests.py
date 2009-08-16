@@ -2,7 +2,7 @@
 """
 Test cases
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
-@license: BSD
+@license: GPL v3 or newer
 """
 
 # Python/Django test modules

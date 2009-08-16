@@ -2,7 +2,7 @@
 """
 Django administration setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
-@license: BSD
+@license: GPL v3 or newer
 """
 
 from django.contrib import admin

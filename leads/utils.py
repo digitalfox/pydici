@@ -4,7 +4,7 @@
 Helper module that factorize some code that would not be
 appropriate to live in models or view
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
-@license: BSD
+@license: GPL v3 or newer
 """
 
 from email.Utils import formatdate

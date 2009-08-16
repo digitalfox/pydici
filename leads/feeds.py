@@ -1,7 +1,7 @@
 # coding: utf-8
 """Atom feeds
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
-@license: BSD
+@license: GPL v3 or newer
 """
 
 from django.contrib.syndication.feeds import Feed

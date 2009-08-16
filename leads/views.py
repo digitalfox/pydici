@@ -2,7 +2,7 @@
 """
 Django views. All http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
-@license: BSD
+@license: GPL v3 or newer
 """
 import csv
 from datetime import datetime, timedelta, date
