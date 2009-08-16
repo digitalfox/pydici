@@ -41,7 +41,8 @@ class LeadAdmin(admin.ModelAdmin):
         form.save_m2m() # Save many to many relations
         if mail:
             try:
-                send_lead_mail(obj, fromAddr="%s@newarch.Fr" % request.user.username,
+                fromAddr = request.user.email or "plandecharge@newarch.fr"
+                send_lead_mail(obj, fromAddr=fromAddr,
                                fromName="%s %s" % (request.user.first_name, request.user.last_name))
                 request.user.message_set.create(message="Ce lead a été envoyé par mail au plan de charge.")
             except Exception, e:
