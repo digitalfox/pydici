@@ -56,6 +56,8 @@ class MyLatestLeads(LeadFeed):
         if consultants:
             consultant=consultants[0]
             return set(consultant.lead_responsible.active()|consultant.lead_set.active())
+        else:
+            return []
 
 class AllChanges(LeadFeed):
     pass
