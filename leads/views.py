@@ -374,7 +374,7 @@ def graph_stat_pie(request):
     cursor.execute("select  state, count(*) from leads_lead  group by state")
     data=cursor.fetchall()
     fig=Figure(figsize=(8,8))
-    fig.patch.set_facecolor("white")
+    fig.set_facecolor("white")
     ax=fig.add_subplot(111)
     ax.pie([x[1] for x in data], colors=COLORS, labels=["%s\n(%s)" % (stateDict[x[0]], x[1]) for x in data], shadow=True, autopct='%1.1f%%')
 
@@ -397,7 +397,7 @@ def graph_stat_bar(request):
 
     # Setting up graph
     fig=Figure(figsize=(8,8))
-    fig.patch.set_facecolor("white")
+    fig.set_facecolor("white")
     ax=fig.add_subplot(111)
     bottom=[0]*len(data.keys()) # Bottom of each graph. Starts if [0, 0, 0, ...]
 
