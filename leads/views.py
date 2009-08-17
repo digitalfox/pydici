@@ -413,6 +413,7 @@ def graph_stat_bar(request):
     ax.set_xticklabels(data.keys())
     ax.set_ylim(ymax=max(bottom)+10)
     ax.legend(bars, [i[1] for i in Lead.STATES])
+    fig.autofmt_xdate()
 
     return print_png(fig)
 
