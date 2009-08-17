@@ -14,11 +14,11 @@
     <h1>Détail du lead</h1>
     {% if active_count %}
 	    {% if previous_lead %}
-	        <a href='{{ link_root }}/leads/{{ previous_lead.id }}/'><small><</small>  </a>
+	        <a href='{{ link_root }}/leads/{{ previous_lead.id }}/'><img src="fg.png" border=0/></a>
 	    {% endif %}
 	    {{ active_rank }} / {{ active_count }}
 	    {% if next_lead %}
-	        <a href='{{ link_root }}/leads/{{ next_lead.id }}/'>  <small>></small></a>
+	        <a href='{{ link_root }}/leads/{{ next_lead.id }}/'><img src="fd.png" border=0/></a>
 	    {% endif %}
     {% endif %}
 
