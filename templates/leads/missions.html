@@ -28,6 +28,9 @@
 	    <td>{{ mission.get_probability_display }} </td>
 	    <td scope="row"><a href='/leads/mission/{{mission.id}}/deactivate', title='Archiver {{ mission }}'><em>Archiver</em></a></td>
 	    <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='Modifier {{ mission }}', target='_blank', class='changelink'><em>Modifier</em></a></td>
+	    <td>{% if mission.no_more_staffing_since %}
+	    Cette mission n'a plus de staffing défini dans le futur
+	    {% endif %}</td>
 	</tr>
 {% endfor %}
 </table>
