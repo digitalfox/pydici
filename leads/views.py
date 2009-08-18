@@ -223,7 +223,7 @@ def pdc_review(request, year=None, month=None, n_month=3, projected=False):
     @param year: start date year. None means current month
     @param n_month: number of month displays
     @param projected: Include projected staffing"""
-
+    n_month=int(n_month) # Safe cast - url.py regexp ensure we receive a number
     if year and month:
         start_date=date(int(year), int(month), 1)
     else:
@@ -238,7 +238,7 @@ def pdc_review(request, year=None, month=None, n_month=3, projected=False):
     people=Consultant.objects.filter(productive=True).count()
     if n_month>12:
         n_month=12 # Limit to 12 month to avoid complexe and useless month list computation
-    for i in range(int(n_month)):
+    for i in range(n_month):
         if start_date.month+i<=12:
             months.append(start_date.replace(month=start_date.month+i))
         else:
