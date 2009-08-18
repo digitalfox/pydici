@@ -1,6 +1,6 @@
 {% autoescape off %}
 {% for leads in lead_group %}
-{% cycle "*** Les affaires gagnées perdues abandonnéees cette semaine ***" "*** Les Leads commerciaux actifs mis à jour cette semaine ***" "*** Les autres Leads commerciaux actifs en cours ***"%}
+{% cycle "*** Les affaires gagnées perdues abandonnéees cette semaine ***" "*** Les affaires mises à jour cette semaine ***" "*** Les autres affaires en cours ***"%}
 {% for lead in leads %}
 {% ifchanged %}__{{ lead.get_state_display }}__
 {% endifchanged %}
