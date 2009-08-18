@@ -217,7 +217,7 @@ def consultant_staffing(request, consultant_id):
                                                               })
 
 
-def pdc_review(request, year=None, month=None, n_month=4, projected=False):
+def pdc_review(request, year=None, month=None, n_month=3, projected=False):
     """PDC overview
     @param year: start date year. None means current year
     @param year: start date year. None means current month
@@ -254,6 +254,7 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
     # Get consultants staffing
     for consultant in Consultant.objects.select_related().filter(productive=True):
         staffing[consultant]=[]
+        missions=set()
         for month in months:
             if projected:
                 current_staffings=consultant.staffing_set.filter(staffing_date=month).order_by()
@@ -268,6 +269,7 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
             for current_staffing  in current_staffings:
                 nature=current_staffing.mission.nature
                 if nature=="PROD":
+                    missions.add(current_staffing.mission) # Store prod missions for this consultant
                     prod.append(current_staffing.charge*current_staffing.mission.probability/100)
                 elif nature=="NONPROD":
                     unprod.append(current_staffing.charge*current_staffing.mission.probability/100)
@@ -284,6 +286,8 @@ def pdc_review(request, year=None, month=None, n_month=4, projected=False):
             total[month]["unprod"]+=unprod
             total[month]["holidays"]+=holidays
             total[month]["available"]+=available
+        # Add mission synthesis to staffing dict
+        staffing[consultant].append([", ".join([m.short_name() for m in list(missions)])])
 
     # Compute indicator rates
     for month in months:

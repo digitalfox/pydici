@@ -27,6 +27,7 @@
 	{% for month in months %}
 	    <th colspan="4" style="border-left:1px solid #C3C3C3;"><center>{{ month|date:"F y" }}</center></th>
 	{% endfor %}
+	<th style="border-left:1px solid #C3C3C3;"></th>
 </tr>
     <th></th>
     {% for month in months %}
@@ -35,6 +36,7 @@
         <th>cngs</th>
         <th>disp</th>
     {% endfor %}
+    <th style="border-left:1px solid #C3C3C3;">Clients</th>
 <tr>
 
 </tr>
@@ -62,7 +64,6 @@
     {% endfor %}
 </tr>
 </table>
-
 <br>
 <a href='{{ link_root }}/leads/mission/'>Liste des missions</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;

@@ -205,6 +205,13 @@ class Mission(models.Model):
         else:
             return unicode(self.lead)
 
+    def short_name(self):
+        """Client name if defined, else first words of description"""
+        if self.lead:
+            return unicode(self.lead.client.organisation.company)
+        else:
+            return self.description.split(":")[0]
+
     class Meta:
         ordering=["nature", "lead__client__organisation__company", "description"]
 
