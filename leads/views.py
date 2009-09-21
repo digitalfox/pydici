@@ -63,7 +63,7 @@ def index(request):
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""
     today=datetime.today()
-    delay=timedelta(days=9)
+    delay=timedelta(days=6)
 
     new_active_leads=Lead.objects.active().filter(update_date__gte=(today-delay)).order_by("state", "-update_date")
     old_active_leads=Lead.objects.active().filter(update_date__lt=(today-delay)).order_by("state", "-update_date")
