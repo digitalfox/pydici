@@ -22,7 +22,7 @@ from django.contrib.admin.models import LogEntry
 from django.db.models import Q
 from django.db import connection
 from django.forms import ModelForm
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, BaseInlineFormSet
 
 from pydici.leads.models import Lead, Consultant, SalesMan, Staffing, Mission, Holiday
 from pydici.leads.utils import send_lead_mail, to_int_or_round, working_days
@@ -193,9 +193,16 @@ def mission_staffing(request, mission_id):
                                                               })
 
 
+class ActiveStaffingInlineFormSet(BaseInlineFormSet):
+    """Custom inline formset used to override queryset
+    and get ride of inactive mission staffing"""
+    def get_queryset(self):
+        return super(ActiveStaffingInlineFormSet, self).get_queryset().filter(mission__active=True)
+
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
     StaffingFormSet=inlineformset_factory(Consultant, Staffing,
+                                          formset=ActiveStaffingInlineFormSet,
                                           fields=("mission", "staffing_date", "charge", "comment"))
     consultant=Consultant.objects.get(id=consultant_id)
     if request.method == "POST":

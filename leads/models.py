@@ -224,11 +224,6 @@ class Holiday(models.Model):
     day=models.DateField("date")
     description=models.CharField("Description", max_length=200)
 
-class StaffingManager(models.Manager):
-    """Specific manager that only return staffing for active missions"""
-    def get_query_set(self):
-        return super(StaffingManager, self).get_query_set().filter(mission__active=True)
-
 class Staffing(models.Model):
     """The staffing fact table: charge per month per consultant per mission"""
     consultant=models.ForeignKey(Consultant)
@@ -238,8 +233,6 @@ class Staffing(models.Model):
     comment=models.CharField("Remarques", max_length=500, blank=True, null=True)
     update_date=models.DateTimeField("Mise à jour")
     last_user=models.CharField(max_length=60)
-
-    objects=StaffingManager() # Overriding default manager
 
     def __unicode__(self):
         return "%s/%s (%s): %s" % (self.staffing_date.month, self.staffing_date.year, self.consultant.trigramme, self.charge)
