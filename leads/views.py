@@ -197,7 +197,12 @@ class ActiveStaffingInlineFormSet(BaseInlineFormSet):
     """Custom inline formset used to override queryset
     and get ride of inactive mission staffing"""
     def get_queryset(self):
-        return super(ActiveStaffingInlineFormSet, self).get_queryset().filter(mission__active=True)
+        lastMonth=datetime.today()-timedelta(days=30)
+        qs=super(ActiveStaffingInlineFormSet, self).get_queryset()
+        qs=qs.filter(mission__active=True) # Remove archived mission
+        qs=qs.exclude(Q(staffing_date__lte=lastMonth) &
+                  ~Q(mission__nature="PROD")) # Remove past non prod mission
+        return qs
 
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
