@@ -8,6 +8,7 @@ Database access layer.
 from django.db import models
 from datetime import datetime
 from django.db.models import Q
+from django.core.cache import cache
 
 from pydici.leads.utils import send_lead_mail, capitalize, compact_text
 import pydici.settings
@@ -203,7 +204,13 @@ class Mission(models.Model):
         if self.description:
             return unicode(self.description)
         else:
-            return unicode(self.lead)
+            # As lead name computation generate lots of sql request, cache it to avoid
+            # perf issue for screen that intensively use lead name (like consultant staffing)
+            name=cache.get("missionName-%s" % self.id)
+            if not name:
+                name=unicode(self.lead)
+                cache.set("missionName-%s" % self.id, name, 3)
+            return name
 
     def short_name(self):
         """Client name if defined, else first words of description"""
