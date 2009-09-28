@@ -257,6 +257,9 @@ def pdc_review(request, year=None, month=None, n_month=3, projected=False):
             # We wrap around a year (max one year)
             months.append(start_date.replace(month=start_date.month+i-12, year=start_date.year+1))
 
+    previous_slice_date=start_date-timedelta(days=31*n_month)
+    next_slice_date=start_date+timedelta(days=31*n_month)
+
     # Initialize total dict and available dict
     holidays_days=Holiday.objects.all()
     for month in months:
@@ -331,7 +334,10 @@ def pdc_review(request, year=None, month=None, n_month=3, projected=False):
                                                         "total": total,
                                                         "rates": rates,
                                                         "user": request.user,
-                                                        "projected": projected}
+                                                        "projected": projected,
+                                                        "previous_slice_date" : previous_slice_date,
+                                                        "next_slice_date" : next_slice_date,
+                                                        "start_date" : start_date}
                                                         )
 
 def deactivate_mission(request, mission_id):
