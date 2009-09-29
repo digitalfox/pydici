@@ -6,7 +6,7 @@
     {% ifchanged %} <h4><u> {{ lead.get_state_display }}</u></h4>{% endifchanged %}
         <li><b>{{ lead.client }} - {{ lead.name }}</b> (maj : {{ lead.update_date_strf }})</li>
         <ul>
-            <li>D&eacute;marrage pr&eacute;vu : {{ lead.start_date|default_if_none:"non d&eacute;finie" }}  / &eacute;ch&eacute;ance : {{ lead.due_date|default_if_none:"non d&eacute;finie"}}</li>
+            <li>&Eacute;ch&eacute;ance : {{ lead.due_date|default_if_none:"non d&eacute;finie"}} / D&eacute;marrage pr&eacute;vu : {{ lead.start_date|default_if_none:"non d&eacute;finie" }}</li>
             <li>Suivi : {{ lead.responsible|default_if_none:"aucun" }} / IA : {{ lead.salesman|default_if_none:"aucun" }}</li>
             <li>{% if lead.sales %}
                     CA : {{ lead.sales }} kEuros
