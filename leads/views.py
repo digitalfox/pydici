@@ -229,13 +229,18 @@ def consultant_staffing(request, consultant_id):
                                                               })
 
 
-def pdc_review(request, year=None, month=None, n_month=3, projected=False):
+def pdc_review(request, year=None, month=None, projected=False):
     """PDC overview
     @param year: start date year. None means current year
     @param year: start date year. None means current month
-    @param n_month: number of month displays
     @param projected: Include projected staffing"""
-    n_month=int(n_month) # Safe cast - url.py regexp ensure we receive a number
+    n_month=3
+    if "n_month" in request.GET:
+        try:
+            n_month=int(request.GET["n_month"])
+        except ValueError:
+            pass
+
     if year and month:
         start_date=date(int(year), int(month), 1)
     else:
