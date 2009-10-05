@@ -25,10 +25,10 @@ COMPANY=(
             )
 
 CONSULTANT_PROFILE=(
-                    ("CONSULTANT",   "Consultant"),
-                    ("CONSULTANT_A", "Consultant Architecte"),
-                    ("ARCHITECTE",   "Architecte"),
-                    ("DIRECTOR",     "Directeur associé")
+                    ("1_CONSULTANT",   "Consultant"),
+                    ("2_CONSULTANT_A", "Consultant Architecte"),
+                    ("3_ARCHITECTE",   "Architecte"),
+                    ("4_DIRECTOR",     "Directeur associé")
                     )
 
 SHORT_DATETIME_FORMAT="%d/%m/%y %H:%M"
