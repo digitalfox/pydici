@@ -12,9 +12,9 @@
 
 <div id="content-main">
 	<h1>
-	<a href='/leads/pdcreview/{% if projected %}proj/{% endif %}{{ previous_slice_date|date:"Y/m" }}' title="Mois précédents"><img src="/leads/media/leads/fg.png" border=0/></a>
+	<a href='/leads/pdcreview/{{ previous_slice_date|date:"Y/m" }}/{% if projected %}?projected{% endif %}' title="Mois précédents"><img src="/leads/media/leads/fg.png" border=0/></a>
 	Revue du plan de charge
-	<a href='/leads/pdcreview/{% if projected %}proj/{% endif %}{{ next_slice_date|date:"Y/m" }}' title="Mois suivants"><img src="/leads/media/leads/fd.png" border=0/></a>
+	<a href='/leads/pdcreview/{{ next_slice_date|date:"Y/m" }}/{% if projected %}?projected{% endif %}' title="Mois suivants"><img src="/leads/media/leads/fd.png" border=0/></a>
 	</h1>
 <br>
 {% if projected %}
@@ -22,7 +22,7 @@
     <a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}'><em>Enlever les projections</em></a>
 {% else %}
     <h3>Projections de staffing <em>non</em> prises en compte</h3>
-    <a href='/leads/pdcreview/proj/{{ start_date|date:"Y/m" }}'><em>Ajouter les projections</em></a>
+    <a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}/?projected'><em>Ajouter les projections</em></a>
 {% endif %}
 <br>
 <br>

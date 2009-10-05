@@ -229,17 +229,22 @@ def consultant_staffing(request, consultant_id):
                                                               })
 
 
-def pdc_review(request, year=None, month=None, projected=False):
+def pdc_review(request, year=None, month=None):
     """PDC overview
     @param year: start date year. None means current year
-    @param year: start date year. None means current month
-    @param projected: Include projected staffing"""
+    @param year: start date year. None means current month"""
+
     n_month=3
     if "n_month" in request.GET:
         try:
             n_month=int(request.GET["n_month"])
         except ValueError:
             pass
+
+    if "projected" in request.GET:
+        projected=True
+    else:
+        projected=False
 
     if year and month:
         start_date=date(int(year), int(month), 1)
