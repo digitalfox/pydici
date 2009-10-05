@@ -43,7 +43,12 @@
     {% endfor %}
     <th style="border-left:1px solid #C3C3C3;">Clients</th>
 <tr>
-
+<tr>
+    <th>Totaux</th>
+    {% for month_total in total %}
+        <th style="border-left:2px solid #C3C3C3;">{{ month_total|join:"</th><th>" }}</th>
+    {% endfor %}
+</tr>
 </tr>
 {% for consultant, charges in staffing %}
     {% ifchanged consultant.manager %}
