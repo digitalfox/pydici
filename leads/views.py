@@ -238,6 +238,8 @@ def pdc_review(request, year=None, month=None):
     if "n_month" in request.GET:
         try:
             n_month=int(request.GET["n_month"])
+            if n_month>12:
+                n_month=12 # Limit to 12 month to avoid complex and useless month list computation
         except ValueError:
             pass
 
@@ -245,6 +247,11 @@ def pdc_review(request, year=None, month=None):
         projected=True
     else:
         projected=False
+
+    groupby="manager"
+    if "groupby" in request.GET:
+        if request.GET["groupby"] in ("manager", "position"):
+            groupby=request.GET["groupby"]
 
     if year and month:
         start_date=date(int(year), int(month), 1)
@@ -258,8 +265,7 @@ def pdc_review(request, year=None, month=None):
     available_month={} # available working days per month
     months=[]   # list of month to be displayed
     people=Consultant.objects.filter(productive=True).count()
-    if n_month>12:
-        n_month=12 # Limit to 12 month to avoid complexe and useless month list computation
+
     for i in range(n_month):
         if start_date.month+i<=12:
             months.append(start_date.replace(month=start_date.month+i))
@@ -337,7 +343,10 @@ def pdc_review(request, year=None, month=None):
     # Order staffing list
     staffing=staffing.items()
     staffing.sort(cmp=lambda x, y:cmp(x[0].name, y[0].name)) # Sort by name
-    staffing.sort(cmp=lambda x, y:cmp(x[0].manager.name, y[0].manager.name)) # Sort by manager
+    if groupby=="manager":
+        staffing.sort(cmp=lambda x, y:cmp(x[0].manager.name, y[0].manager.name)) # Sort by manager
+    else:
+        staffing.sort(cmp=lambda x, y:cmp(x[0].profil, y[0].profil)) # Sort by position
 
     return render_to_response("leads/pdc_review.html", {"staffing": staffing,
                                                         "months": months,
@@ -347,7 +356,8 @@ def pdc_review(request, year=None, month=None):
                                                         "projected": projected,
                                                         "previous_slice_date" : previous_slice_date,
                                                         "next_slice_date" : next_slice_date,
-                                                        "start_date" : start_date}
+                                                        "start_date" : start_date,
+                                                        "groupby" : groupby}
                                                         )
 
 def deactivate_mission(request, mission_id):

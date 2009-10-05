@@ -12,23 +12,30 @@
 
 <div id="content-main">
 	<h1>
-	<a href='/leads/pdcreview/{{ previous_slice_date|date:"Y/m" }}/{% if projected %}?projected{% endif %}' title="Mois précédents"><img src="/leads/media/leads/fg.png" border=0/></a>
+	<a href='/leads/pdcreview/{{ previous_slice_date|date:"Y/m" }}/?groupby={{groupby}};{% if projected %}projected;{% endif %}' title="Mois précédents"><img src="/leads/media/leads/fg.png" border=0/></a>
 	Revue du plan de charge
-	<a href='/leads/pdcreview/{{ next_slice_date|date:"Y/m" }}/{% if projected %}?projected{% endif %}' title="Mois suivants"><img src="/leads/media/leads/fd.png" border=0/></a>
+	<a href='/leads/pdcreview/{{ next_slice_date|date:"Y/m" }}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="Mois suivants"><img src="/leads/media/leads/fd.png" border=0/></a>
 	</h1>
-<br>
 {% if projected %}
-    <h3>Projections de staffing prises en compte</h3>
-    <a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}'><em>Enlever les projections</em></a>
+    <strong>Projections de staffing prises en compte </strong>
+    (<a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}/?groupby={{groupby}}'><em>enlever les projections</em></a>)
 {% else %}
-    <h3>Projections de staffing <em>non</em> prises en compte</h3>
-    <a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}/?projected'><em>Ajouter les projections</em></a>
+    <strong>Projections de staffing <em>non</em> prises en compte </strong>
+    (<a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}/?groupby={{groupby}};projected'><em>ajouter les projections</em></a>)
 {% endif %}
+<br>
+{% ifequal groupby "manager" %}
+    <strong>Groupement par manager</strong>
+    (<a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}/?groupby=position;projected'><em>grouper par position</em></a>)
+{% else %}
+    <strong>Groupement par position</strong>
+    (<a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}/?groupby=manager;projected'><em>grouper par manager</em></a>)
+{% endifequal %}
 <br>
 <br>
 <table style="white-space: nowrap;">
 <tr>
-    <th>Consultants</th>
+    <th></th>
 	{% for month in months %}
 	    <th colspan="4" style="border-left:1px solid #C3C3C3;"><center>{{ month|date:"F y" }}</center></th>
 	{% endfor %}
@@ -50,9 +57,17 @@
     {% endfor %}
 </tr>
 {% for consultant, charges in staffing %}
-    {% ifchanged consultant.manager %}
-        <tr><th>Équipe {{consultant.manager}}</th></tr>
-    {% endifchanged %}
+    {% ifequal groupby "manager" %}
+	    {% ifchanged consultant.manager %}
+	        <tr><th>Équipe {{consultant.manager}}</th></tr>
+	    {% endifchanged %}
+	{% endifequal %}
+    {% ifequal groupby "position" %}
+        {% ifchanged consultant.profil %}
+            <tr><th>{{consultant.get_profil_display}}</th></tr>
+        {% endifchanged %}
+    {% endifequal %}
+
     <tr {%cycle 'class="row1"' 'class="row2"' %}>
         <td><a href="/leads/consultant/{{ consultant.id }}">{{ consultant }}</a></td>
         {% for charge in charges %}

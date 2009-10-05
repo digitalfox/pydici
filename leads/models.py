@@ -26,7 +26,7 @@ COMPANY=(
 
 CONSULTANT_PROFILE=(
                     ("1_CONSULTANT",   "Consultant"),
-                    ("2_CONSULTANT_A", "Consultant Architecte"),
+                    ("2_CONSULTANT_A", "Consultant architecte"),
                     ("3_ARCHITECTE",   "Architecte"),
                     ("4_DIRECTOR",     "Directeur associé")
                     )
