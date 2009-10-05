@@ -108,7 +108,7 @@ class ClientAdmin(admin.ModelAdmin):
     search_fields=("organisation__company__name", "organisation__name", "contact__name")
 
 class ConsultantAdmin(admin.ModelAdmin):
-    list_display=("name", "trigramme", "productive")
+    list_display=("name", "trigramme", "profil", "productive")
     search_fields=("name", "trigramme")
     ordering=("name",)
     list_filter=["profil",]
