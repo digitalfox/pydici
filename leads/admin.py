@@ -111,6 +111,7 @@ class ConsultantAdmin(admin.ModelAdmin):
     list_display=("name", "trigramme", "productive")
     search_fields=("name", "trigramme")
     ordering=("name",)
+    list_filter=["profil",]
 
 class MissionAdmin(admin.ModelAdmin):
     list_display=("lead", "description", "nature", "probability", "active", "update_date")

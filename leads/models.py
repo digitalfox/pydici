@@ -24,6 +24,13 @@ COMPANY=(
              ("KLC",         "KLC")
             )
 
+CONSULTANT_PROFILE=(
+                    ("CONSULTANT",   "Consultant"),
+                    ("CONSULTANT_A", "Consultant Architecte"),
+                    ("ARCHITECTE",   "Architecte"),
+                    ("DIRECTOR",     "Directeur associé")
+                    )
+
 SHORT_DATETIME_FORMAT="%d/%m/%y %H:%M"
 
 class ClientCompany(models.Model):
@@ -82,6 +89,7 @@ class Consultant(models.Model):
     trigramme=models.CharField(max_length=4, unique=True)
     productive=models.BooleanField("Productif", default=True)
     manager=models.ForeignKey("self")
+    profil=models.CharField("Position", max_length=30, choices=CONSULTANT_PROFILE, default="CONSULTANT")
 
     def __unicode__(self): return self.name
 
