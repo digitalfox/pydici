@@ -218,7 +218,7 @@ def consultant_staffing(request, consultant_id):
     else:
         formset=StaffingFormSet(instance=consultant) # An unbound form
         
-    missions=set([s.mission for s in consultant.staffing_set.all()])
+    missions=set([s.mission for s in consultant.staffing_set.all() if s.mission.active])
     missions=list(missions)
     missions.sort(cmp=lambda x,y: cmp(x.lead, y.lead))
 
