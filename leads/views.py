@@ -15,7 +15,7 @@ from matplotlib.figure import Figure
 
 import pydici.settings
 
-from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.models import LogEntry
@@ -215,7 +215,7 @@ def consultant_staffing(request, consultant_id):
             request.user.has_perm("leads.delete_staffing")):
         # Only forbid access if the user try to edit someone else staffing
         if request.user.username.upper()!=consultant.trigramme:
-            return HttpResponseForbidden()
+            return HttpResponseRedirect("/leads/forbiden")
 
     StaffingFormSet=inlineformset_factory(Consultant, Staffing,
                                           formset=ActiveStaffingInlineFormSet,
