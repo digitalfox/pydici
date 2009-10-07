@@ -130,14 +130,14 @@ class LeadManager(models.Manager):
 class Lead(models.Model):
     """A commercial lead"""
     STATES=(
-            ('QUALIF', u'En cours de qualification'),
-            ('WRITE_OFFER', u'Proposition à émettre'),
-            ('OFFER_SENT', u'Proposition émise'),
-            ('NEGOCATION', u'Négociation en cours'),
-            ('WIN', u'Affaire gagnée'),
-            ('LOST', u'Affaire perdue'),
-            ('FORGIVEN', u'Affaire abandonnée'),
-            ('SLEEPING', u'En sommeil'),
+            ('QUALIF',      u'En qualif.'),
+            ('WRITE_OFFER', u'Propal à émettre'),
+            ('OFFER_SENT',  u'Propal émise'),
+            ('NEGOCATION',  u'Négo en cours'),
+            ('WIN',         u'Aff. gagnée'),
+            ('LOST',        u'Aff. perdue'),
+            ('FORGIVEN',    u'Aff. abandonnée'),
+            ('SLEEPING',    u'En sommeil'),
            )
     name=models.CharField("Nom", max_length=200)
     description=models.TextField(blank=True)
