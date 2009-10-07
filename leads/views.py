@@ -15,9 +15,9 @@ from matplotlib.figure import Figure
 
 import pydici.settings
 
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render_to_response
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.models import LogEntry
 from django.db.models import Q
 from django.db import connection
@@ -169,7 +169,9 @@ def missions(request, onlyActive=True):
                                                       "user": request.user })
     
 
-
+@permission_required("leads.add_staffing")
+@permission_required("leads.change_staffing")
+@permission_required("leads.delete_staffing")
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
     StaffingFormSet=inlineformset_factory(Mission, Staffing,
@@ -206,10 +208,19 @@ class ActiveStaffingInlineFormSet(BaseInlineFormSet):
 
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
+    consultant=Consultant.objects.get(id=consultant_id)
+
+    if not (request.user.has_perm("leads.add_staffing") and
+            request.user.has_perm("leads.change_staffing") and
+            request.user.has_perm("leads.delete_staffing")):
+        # Only forbid access if the user try to edit someone else staffing
+        if request.user.username.upper()!=consultant.trigramme:
+            return HttpResponseForbidden()
+
     StaffingFormSet=inlineformset_factory(Consultant, Staffing,
                                           formset=ActiveStaffingInlineFormSet,
                                           fields=("mission", "staffing_date", "charge", "comment"))
-    consultant=Consultant.objects.get(id=consultant_id)
+
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=consultant)
         if formset.is_valid():
