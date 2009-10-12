@@ -70,9 +70,11 @@
 
     <tr {%cycle 'class="row1"' 'class="row2"' %}>
         <td><a href="/leads/consultant/{{ consultant.id }}">{{ consultant }}</a></td>
+        {% autoescape off %}
         {% for charge in charges %}
             <td style="border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td class='charge'>" }}</td>
         {% endfor %}
+        {% endautoescape %}
     </tr>
 {% endfor %}
 <tr>

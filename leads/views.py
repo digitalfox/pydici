@@ -329,7 +329,7 @@ def pdc_review(request, year=None, month=None):
             total[month]["holidays"]+=holidays
             total[month]["available"]+=available
         # Add mission synthesis to staffing dict
-        staffing[consultant].append([", ".join([m.short_name() for m in list(missions)])])
+        staffing[consultant].append([", ".join(["<a href='/leads/mission/%s'>%s</a>" % (m.id, m.short_name()) for m in list(missions)])])
 
     # Compute indicator rates
     for month in months:
