@@ -64,15 +64,16 @@ def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""
     today=datetime.today()
     delay=timedelta(days=6)
-
-    new_active_leads=Lead.objects.active().filter(update_date__gte=(today-delay)).order_by("state", "-update_date")
-    old_active_leads=Lead.objects.active().filter(update_date__lt=(today-delay)).order_by("state", "-update_date")
-    passive_leads=Lead.objects.passive().filter(update_date__gte=(today-delay)).exclude(state="SLEEPING")
-    passive_leads=passive_leads.order_by("state", "-update_date")
+    leads=[]
+    for state in ("WIN", "FORGIVEN", "LOST", "WRITE_OFFER", "OFFER_SENT", "NEGOCIATION", "QUALIF"):
+        rs=Lead.objects.filter(state=state).order_by("-update_date")
+        if state in ("WIN", "FORGIVEN", "LOST"):
+            rs=rs.filter(update_date__gte=(today-delay))
+        leads.append(rs)
     if html:
-        return render_to_response("leads/mail.html", {"lead_group": [passive_leads, new_active_leads, old_active_leads] })
+        return render_to_response("leads/mail.html", {"lead_group": leads })
     else:
-        return render_to_response("leads/mail.txt", {"lead_group": [passive_leads, new_active_leads, old_active_leads] },
+        return render_to_response("leads/mail.txt", {"lead_group": leads },
                                   mimetype="text/plain; charset=utf-8")
 
 @login_required

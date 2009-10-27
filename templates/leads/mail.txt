@@ -1,13 +1,8 @@
-{% autoescape off %}
-{% for leads in lead_group %}
-{% cycle "*** Les affaires gagnées perdues abandonnéees cette semaine ***" "*** Les affaires mises à jour cette semaine ***" "*** Les autres affaires en cours ***"%}
+{% autoescape off %}{% for leads in lead_group %}
 {% for lead in leads %}
 {% ifchanged %}__{{ lead.get_state_display }}__
 {% endifchanged %}
 * {{ lead.client }} - {{ lead.name }} (maj : {{ lead.update_date_strf }})
     o Échéance : {{ lead.due_date|default_if_none:"non définie" }} / Démarrage prévu : {{ lead.start_date|default_if_none:"non définie" }}
     o Suivi : {{ lead.responsible|default_if_none:"non défini" }} / IA : {{ lead.salesman|default_if_none:"non défini" }}
-    o CA : {{ lead.sales|default_if_none:"non défini" }} kEuros / Staffing : {{ lead.staffing_list }}
-{% endfor %}
-{% endfor %}
-{% endautoescape %}
+    o CA : {{ lead.sales|default_if_none:"non défini" }} kEuros / Staffing : {{ lead.staffing_list }}{% endfor %}{% endfor %}{% endautoescape %}

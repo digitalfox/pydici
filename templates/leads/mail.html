@@ -1,6 +1,5 @@
 
 {% for leads in lead_group %}
-{% cycle "<h3>Les affaires gagn&eacute;es perdues ou abandonn&eacute;es cette semaine :</h3>" "<h3>Les affaires mises à jour cette semaine :</h3>" "<h3>Les autres affaires en cours :</h3>"%}
     <ul>
     {% for lead in leads %}
     {% ifchanged %} <h4><u> {{ lead.get_state_display }}</u></h4>{% endifchanged %}
