@@ -141,6 +141,7 @@ class Lead(models.Model):
            )
     name=models.CharField("Nom", max_length=200)
     description=models.TextField(blank=True)
+    action=models.CharField("Action", max_length=2000, blank=True, null=True)
     salesId=models.CharField("Code A6", max_length=100, blank=True)
     sales=models.IntegerField("CA (k€)", blank=True, null=True)
     salesman=models.ForeignKey(SalesMan, blank=True, null=True, verbose_name="Commercial")
