@@ -17,8 +17,7 @@ COMPANY=(
              ("NEWARCH",     "New'Arch"),
              ("SOLUCOM",     "Solucom"),
              ("IDESYS",      "Idesys"),
-             ("VISTALI",     "Vistali"),
-             ("DREAMSOFT",   "DreamSoft"),
+             ("SOLUCOM-DV",  "Solucom DV"),
              ("ARCOME",      "Arcome"),
              ("COSMOSBAY",   "CosmosBay~Vectis"),
              ("KLC",         "KLC")
