@@ -8,7 +8,7 @@
             <li>&Eacute;ch&eacute;ance : {{ lead.due_date|default_if_none:"non d&eacute;finie"}} / D&eacute;marrage pr&eacute;vu : {{ lead.start_date|default_if_none:"non d&eacute;finie" }} / {% if lead.sales %}CA : {{ lead.sales }} kEuros{% else %}CA inconnu{% endif %}</li>
             <li>Suivi : {{ lead.responsible|default_if_none:"aucun" }} / IA : {{ lead.salesman|default_if_none:"aucun" }}</li>
             <li>Staffing : {{ lead.staffing_list }}</li>
-            {% if lead.description %} <li> {{ lead.description }} </li> {% endif %}
+            <li>Action PDC : {{ lead.action|default_if_none:"rien" }}</li>
         </ul><br>
     {% endfor %}
     </ul>

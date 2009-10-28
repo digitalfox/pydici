@@ -5,4 +5,5 @@
 * {{ lead.client }} - {{ lead.name }} (maj : {{ lead.update_date_strf }})
     o Échéance : {{ lead.due_date|default_if_none:"non définie" }} / Démarrage prévu : {{ lead.start_date|default_if_none:"non définie" }}
     o Suivi : {{ lead.responsible|default_if_none:"non défini" }} / IA : {{ lead.salesman|default_if_none:"non défini" }} / {% if lead.sales %}CA : {{ lead.sales }} kEuros{% else %}CA inconnu{% endif %}
-    o Staffing : {{ lead.staffing_list }}{% endfor %}{% endfor %}{% endautoescape %}
+    o Staffing : {{ lead.staffing_list }}
+    o Action PDC : {{ lead.action|default_if_none:"rien" }}{% endfor %}{% endfor %}{% endautoescape %}

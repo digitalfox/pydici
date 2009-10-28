@@ -14,6 +14,7 @@
 
 <b>Profil(s) pressenti(s)</b> : {{ obj.staffing_list }}<br>
 
-{% if obj.salesId %} <b>Code ActiveSys </b> : {{ obj.salesId }}<br>{% endif %}
+<b>Action PDC</b> : {% if obj.action %}{{ obj.action }}{% else %}rien{% endif %}<br>
+
 
 <br><i><a href='{{ link_root }}/leads/admin/leads/lead/{{ obj.id }}/'>Modifier ce lead</a> -- <a href='{{ link_root }}/leads/'>Page d'accueil</a></i>

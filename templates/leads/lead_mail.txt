@@ -15,7 +15,8 @@ Chiffre d'affaire estimatif (kEuros) : {% if obj.sales %} {{ obj.sales }} {% els
 
 Profil(s) pressenti(s) : {{ obj.staffing_list }}
 
-{% if obj.salesId %} Code ActiveSys : {{ obj.salesId }}{% endif %}
+Action PDC : {% if obj.action %}{{ obj.action }}{% else %}rien{% endif %}
+
 
 Modifier ce lead : {{ link_root }}/leads/admin/leads/lead/{{ obj.id }}/
 Page d'accueil : {{ link_root }}/leads/

@@ -39,6 +39,7 @@
     <br><br><hr>
     <b>Chiffre d'affaire estimatif (kEuros)</b> : {{ lead.sales|default_if_none:"inconnu" }}<br>
     <b>Profil(s) pressenti(s)</b> : {{ lead.staffing_list }}<br>
+    <b>Action PDC</b> : {% if lead.action %}{{ lead.action }}{% else %}rien{% endif %}<br>
     {% if lead.salesId %} <b>Code ActiveSys </b> : {{ lead.salesId }}<br>{% endif %}
     <br><br><hr>
 </div>
