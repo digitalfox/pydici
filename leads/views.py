@@ -65,7 +65,7 @@ def summary_mail(request, html=True):
     today=datetime.today()
     delay=timedelta(days=6)
     leads=[]
-    for state in ("WIN", "FORGIVEN", "LOST", "WRITE_OFFER", "OFFER_SENT", "NEGOCIATION", "QUALIF"):
+    for state in ("WIN", "FORGIVEN", "LOST", "WRITE_OFFER", "OFFER_SENT", "NEGOCATION", "QUALIF"):
         rs=Lead.objects.filter(state=state).order_by("-update_date")
         if state in ("WIN", "FORGIVEN", "LOST"):
             rs=rs.filter(update_date__gte=(today-delay))
