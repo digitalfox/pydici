@@ -34,7 +34,6 @@ class SimpleTest(TestCase):
                      "/leads/feeds/won/",
                      "/leads/pdcreview/",
                      "/leads/pdcreview/2009/07",
-                     "/leads/pdcreview/2009/07/7",
                      "/leads/forbiden",
                      "/leads/mission/",
                      "/leads/mission/all",
@@ -79,9 +78,9 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(lead.staffing.count(), 1)
         # Add staffing here lead.add...
         self.failUnlessEqual(len(lead.update_date_strf()), 14)
-        self.failUnlessEqual(lead.staffing_list(), "SRE, JCF")
+        self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
         self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
-        self.failUnlessEqual(lead.get_absolute_url(), "http://localhost:8000/leads/47/")
+        self.failUnlessEqual(lead.get_absolute_url(), "http://localhost:8000/leads/59/")
         
         url="".join(urlparse.urlsplit(lead.get_absolute_url())[2:])
         response = self.client.get(url)
@@ -90,3 +89,10 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(unicode(context["lead"]), u"RTE : DSI  - laala")
         self.failUnlessEqual(unicode(context["user"]), "sre")
 
+    def test_pdc_review(self):
+        self.client.login(username='sre', password='rototo')
+        url="/leads/pdcreview/2009/07"
+        for arg in ({}, {"projected":None}, {"groupby": "manager"}, {"groupby": "position"}):
+            response = self.client.get(url, arg)
+            self.failUnlessEqual(response.status_code, 200,
+                "Failed to test pdc_review with arg %s (got %s instead of 200" % (arg, response.status_code))
