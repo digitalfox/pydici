@@ -66,10 +66,15 @@
     </tr>
 {% endfor %}
 </table>
-
+<br>
 <br>
 <a href='..'>Retour à la liste des missions</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 <a href='/leads/'>Retour page d'accueil</a>
+{% if mission.lead %}
+    &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+    <a href='/leads/{{ mission.lead_id }}'>Lead de cette mission</a>
+{% endif %}
+
 </div>
 {% endblock %}
