@@ -67,6 +67,11 @@
 {% endif %}
 
 
-<br><a href='{{ link_root }}/leads/'>Retour page d'accueil</a></i>
+<br><a href='{{ link_root }}/leads/'>Retour page d'accueil</a>
+{% if lead.mission_set.count %}
+    &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+    <a href='/leads/mission/{{ lead.mission_set.get.id }}/'>Prévision de staffing</a>
+{% endif %}
+
 
 {% endblock %}
