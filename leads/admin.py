@@ -49,7 +49,13 @@ class LeadAdmin(admin.ModelAdmin):
                 request.user.message_set.create(message="Échec d'envoi du mail : %s" % e)
 
         # Create or update mission object if needed
-        mission, mission_does_not_exist=Mission.objects.get_or_create(lead=obj)
+        try:
+            mission=Mission.objects.get(lead=obj)
+            mission_does_not_exist=False
+        except Mission.DoesNotExist:
+            mission=Mission(lead=obj) # Mission is saved below if needed
+            mission_does_not_exist=True
+
         if obj.state in ("OFFER_SENT", "NEGOCIATION", "WIN") and mission_does_not_exist:
             currentMonth=datetime.now()
             mission.lead=obj
