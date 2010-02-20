@@ -84,9 +84,9 @@ INSTALLED_APPS = (
     'pydici.leads',
 )
 
-LOGIN_URL="/leads/forbiden"
+LOGIN_URL = "/leads/forbiden"
 
-LEADS_MAIL_FROM="sre@newarch.Fr"
-LEADS_MAIL_TO="sre@newarch.Fr"
-LEADS_WEB_LINK_ROOT="http://localhost:8000" # Without trailing slash
-LEADS_MAIL_SMTP="mail.newarch.fr"
+LEADS_MAIL_FROM = "sebastien.renard@digitalfox.org"
+LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
+LEADS_WEB_LINK_ROOT = "http://localhost:8000" # Without trailing slash
+LEADS_MAIL_SMTP = "mail.digitalfox.org"
