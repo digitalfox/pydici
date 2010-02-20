@@ -41,7 +41,6 @@ class RemoteUserAuthBackend(ModelBackend):
             username = self.parse_user(username)
             try:
                 user = User.objects.get(username=username)
-		file("/tmp/log", "w").write("coucou")
             except User.DoesNotExist:
                 user = self.unknown_user(username)
                 user = self.configure_user(user)
