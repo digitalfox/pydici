@@ -58,7 +58,7 @@ class SimpleTest(TestCase):
 
     def test_create_lead(self):
         self.client.login(username='sre', password='rototo')
-        lead=Lead(name="laala",
+        lead = Lead(name="laala",
                   due_date="2008-11-01",
                   update_date="2008-11-01 16:14:16",
                   creation_date="2008-11-01 15:43:43",
@@ -66,10 +66,10 @@ class SimpleTest(TestCase):
                   responsible=None,
                   sales=None,
                   external_staffing="JCF",
-                  salesId="A6code",
+                  salesId="code",
                   state="QUALIF",
                   client=Client.objects.get(pk=3),
-                  salesman=None, 
+                  salesman=None,
                   description="A wonderfull lead that as a so so long description")
 
         lead.save()
@@ -81,8 +81,8 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
         self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
         self.failUnlessEqual(lead.get_absolute_url(), "http://localhost:8000/leads/59/")
-        
-        url="".join(urlparse.urlsplit(lead.get_absolute_url())[2:])
+
+        url = "".join(urlparse.urlsplit(lead.get_absolute_url())[2:])
         response = self.client.get(url)
         self.failUnlessEqual(response.status_code, 200)
         context = response.context[-1]
@@ -91,7 +91,7 @@ class SimpleTest(TestCase):
 
     def test_pdc_review(self):
         self.client.login(username='sre', password='rototo')
-        url="/leads/pdcreview/2009/07"
+        url = "/leads/pdcreview/2009/07"
         for arg in ({}, {"projected":None}, {"groupby": "manager"}, {"groupby": "position"}):
             response = self.client.get(url, arg)
             self.failUnlessEqual(response.status_code, 200,
