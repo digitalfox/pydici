@@ -356,7 +356,7 @@ def pdc_review(request, year=None, month=None):
     staffing = staffing.items()
     staffing.sort(cmp=lambda x, y:cmp(x[0].name, y[0].name)) # Sort by name
     if groupby == "manager":
-        staffing.sort(cmp=lambda x, y:cmp(x[0].manager.name, y[0].manager.name)) # Sort by manager
+        staffing.sort(cmp=lambda x, y:cmp(unicode(x[0].manager), unicode(y[0].manager))) # Sort by manager
     else:
         staffing.sort(cmp=lambda x, y:cmp(x[0].profil, y[0].profil)) # Sort by position
 

@@ -88,7 +88,7 @@ class Consultant(models.Model):
     trigramme = models.CharField(max_length=4, unique=True)
     company = models.ForeignKey(Company)
     productive = models.BooleanField("Productif", default=True)
-    manager = models.ForeignKey("self")
+    manager = models.ForeignKey("self", null=True, blank=True)
     profil = models.ForeignKey(ConsultantProfile)
 
     def __unicode__(self): return self.name
