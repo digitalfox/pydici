@@ -244,7 +244,12 @@ def consultant_staffing(request, consultant_id):
 def pdc_review(request, year=None, month=None):
     """PDC overview
     @param year: start date year. None means current year
-    @param year: start date year. None means current month"""
+    @param year: start date year. None means curre    nt month"""
+
+    # Don't display this page if no productive consultant are defined
+    if Consultant.objects.filter(productive=True).count() == 0:
+        #TODO: make this message nice
+        return HttpResponse("Aucun consultant productif n'est déclaré.")
 
     n_month = 3
     if "n_month" in request.GET:
