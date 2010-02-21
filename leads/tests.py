@@ -20,11 +20,10 @@ class SimpleTest(TestCase):
         self.client.login(username='sre', password='rototo')
         for page in ("/leads/",
                      "/leads/3/",
-                     "/leads/25/",
                      "/leads/admin/",
                      "/leads/csv/all",
                      "/leads/csv/active",
-                     "/leads/sendmail/4/",
+                     "/leads/sendmail/2/",
                      "/leads/mail/text",
                      "/leads/mail/html",
                      "/leads/review",
@@ -37,7 +36,7 @@ class SimpleTest(TestCase):
                      "/leads/forbiden",
                      "/leads/mission/",
                      "/leads/mission/all",
-                     "/leads/mission/3/",
+                     "/leads/mission/1/",
                      "/leads/consultant/1/"):
             response = self.client.get(page)
             self.failUnlessEqual(response.status_code, 200,
@@ -45,7 +44,7 @@ class SimpleTest(TestCase):
 
     def test_redirect(self):
         self.client.login(username='sre', password='rototo')
-        response = self.client.get("/leads/mission/3/deactivate")
+        response = self.client.get("/leads/mission/1/deactivate")
         self.failUnlessEqual(response.status_code, 302)
 
     def test_not_found_page(self):
@@ -68,7 +67,7 @@ class SimpleTest(TestCase):
                   external_staffing="JCF",
                   salesId="code",
                   state="QUALIF",
-                  client=Client.objects.get(pk=3),
+                  client=Client.objects.get(pk=1),
                   salesman=None,
                   description="A wonderfull lead that as a so so long description")
 
@@ -80,13 +79,13 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(len(lead.update_date_strf()), 14)
         self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
         self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
-        self.failUnlessEqual(lead.get_absolute_url(), "http://localhost:8000/leads/59/")
+        self.failUnlessEqual(lead.get_absolute_url(), "http://localhost:8000/leads/4/")
 
         url = "".join(urlparse.urlsplit(lead.get_absolute_url())[2:])
         response = self.client.get(url)
         self.failUnlessEqual(response.status_code, 200)
         context = response.context[-1]
-        self.failUnlessEqual(unicode(context["lead"]), u"RTE : DSI  - laala")
+        self.failUnlessEqual(unicode(context["lead"]), u"World company : DSI  - laala")
         self.failUnlessEqual(unicode(context["user"]), "sre")
 
     def test_pdc_review(self):
