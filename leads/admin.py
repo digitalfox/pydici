@@ -134,6 +134,7 @@ class HolidayAdmin(admin.ModelAdmin):
 
 class ConsultantProfileAdmin(admin.ModelAdmin):
     ordering = ("level",)
+    list_display = ("name", "level")
 
 class CompanyAdmin(admin.ModelAdmin):
     ordering = ("name",)
