@@ -1,0 +1,210 @@
+[
+    {
+        "pk": 1, 
+        "model": "leads.company", 
+        "fields": {
+            "name": "the E company"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "leads.consultantprofile", 
+        "fields": {
+            "name": "Consultant", 
+            "level": 1
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "leads.consultantprofile", 
+        "fields": {
+            "name": "Directeur", 
+            "level": 4
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "leads.clientcompany", 
+        "fields": {
+            "name": "World company"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "leads.clientorganisation", 
+        "fields": {
+            "company": 1, 
+            "name": "DSI"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "leads.clientcontact", 
+        "fields": {
+            "function": "", 
+            "phone": "", 
+            "name": "Sylvester", 
+            "email": ""
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "leads.client", 
+        "fields": {
+            "organisation": 1, 
+            "contact": 1, 
+            "salesOwner": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "leads.consultant", 
+        "fields": {
+            "trigramme": "GBA", 
+            "productive": true, 
+            "name": "Gr\u00e9goire", 
+            "company": 1, 
+            "profil": 1, 
+            "manager": 3
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "leads.consultant", 
+        "fields": {
+            "trigramme": "JCF", 
+            "productive": true, 
+            "name": "Jean-Christophe", 
+            "company": 1, 
+            "profil": 1, 
+            "manager": 2
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "leads.consultant", 
+        "fields": {
+            "trigramme": "SRE", 
+            "productive": true, 
+            "name": "S\u00e9bastien", 
+            "company": 1, 
+            "profil": 1, 
+            "manager": 1
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "leads.consultant", 
+        "fields": {
+            "trigramme": "TCO", 
+            "productive": true, 
+            "name": "Thomas", 
+            "company": 1, 
+            "profil": 2, 
+            "manager": 1
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "leads.lead", 
+        "fields": {
+            "due_date": null, 
+            "name": "a wonderful project", 
+            "update_date": "2010-02-21 22:53:37", 
+            "responsible": 1, 
+            "sales": null, 
+            "external_staffing": "", 
+            "salesId": "", 
+            "send_email": false, 
+            "state": "OFFER_SENT", 
+            "client": 1, 
+            "action": "", 
+            "creation_date": "2010-02-21 16:49:25", 
+            "salesman": null, 
+            "start_date": null, 
+            "staffing": [], 
+            "description": "what a wonderful project mister fox !"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "leads.lead", 
+        "fields": {
+            "due_date": null, 
+            "name": "and a small project for a change", 
+            "update_date": "2010-02-21 22:54:50", 
+            "responsible": null, 
+            "sales": null, 
+            "external_staffing": "", 
+            "salesId": "", 
+            "send_email": false, 
+            "state": "QUALIF", 
+            "client": 1, 
+            "action": "", 
+            "creation_date": "2010-02-21 16:49:25", 
+            "salesman": null, 
+            "start_date": null, 
+            "staffing": [], 
+            "description": "very interesting project"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "leads.lead", 
+        "fields": {
+            "due_date": null, 
+            "name": "another great project", 
+            "update_date": "2010-02-21 22:54:18", 
+            "responsible": null, 
+            "sales": null, 
+            "external_staffing": "", 
+            "salesId": "", 
+            "send_email": false, 
+            "state": "NEGOCATION", 
+            "client": 1, 
+            "action": "", 
+            "creation_date": "2010-02-21 16:49:25", 
+            "salesman": null, 
+            "start_date": null, 
+            "staffing": [], 
+            "description": "again, a big project"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "leads.mission", 
+        "fields": {
+            "update_date": "2010-02-21 22:53:37", 
+            "description": null, 
+            "probability": 50, 
+            "nature": "PROD", 
+            "lead": 1, 
+            "active": true
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "leads.mission", 
+        "fields": {
+            "update_date": "2010-02-21 22:54:18", 
+            "description": null, 
+            "probability": 50, 
+            "nature": "PROD", 
+            "lead": 2, 
+            "active": true
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "leads.staffing", 
+        "fields": {
+            "comment": "", 
+            "update_date": "2010-02-21 23:01:12", 
+            "consultant": 1, 
+            "mission": 1, 
+            "charge": 10.0, 
+            "last_user": "fox", 
+            "staffing_date": "2010-02-01"
+        }
+    }
+]
