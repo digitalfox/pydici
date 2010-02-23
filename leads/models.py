@@ -9,6 +9,7 @@ from django.db import models
 from datetime import datetime
 from django.db.models import Q
 from django.core.cache import cache
+from django.utils.translation import ugettext_lazy as _
 
 from pydici.leads.utils import send_lead_mail, capitalize, compact_text
 import pydici.settings
@@ -18,14 +19,14 @@ SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
 class Company(models.Model):
     """Internal company / organisation unit"""
-    name = models.CharField("Nom", max_length=200, unique=True)
+    name = models.CharField(_("Name"), max_length=200, unique=True)
 
     def __unicode__(self): return self.name
 
 class ConsultantProfile(models.Model):
     """Consultant hierarchy"""
-    name = models.CharField("Nom", max_length=50, unique=True)
-    level = models.IntegerField("Niveau")
+    name = models.CharField(_("Name"), max_length=50, unique=True)
+    level = models.IntegerField(_("Level"))
 
     def __unicode__(self): return self.name
 
@@ -34,7 +35,7 @@ class ConsultantProfile(models.Model):
 
 class ClientCompany(models.Model):
     """Client company"""
-    name = models.CharField("Nom", max_length=200, unique=True)
+    name = models.CharField(_("Name"), max_length=200, unique=True)
 
     def __unicode__(self): return self.name
 
@@ -43,8 +44,8 @@ class ClientCompany(models.Model):
 
 class ClientOrganisation(models.Model):
     """A department in client organization"""
-    name = models.CharField("Organisation", max_length=200)
-    company = models.ForeignKey(ClientCompany, verbose_name="Entreprise")
+    name = models.CharField(_("Organization"), max_length=200)
+    company = models.ForeignKey(ClientCompany, verbose_name=_("Entreprise"))
 
     def __unicode__(self): return u"%s : %s " % (self.company, self.name)
 
@@ -53,10 +54,10 @@ class ClientOrganisation(models.Model):
 
 class ClientContact(models.Model):
     """A contact in client organization"""
-    name = models.CharField("Nom", max_length=200, unique=True)
-    function = models.CharField("Fonction", max_length=200, blank=True)
+    name = models.CharField(_("Name"), max_length=200, unique=True)
+    function = models.CharField(_("Function"), max_length=200, blank=True)
     email = models.EmailField(blank=True)
-    phone = models.CharField("Téléphone", max_length=30, blank=True)
+    phone = models.CharField(_("Phone"), max_length=30, blank=True)
 
     def __unicode__(self): return self.name
 
@@ -87,7 +88,7 @@ class Consultant(models.Model):
     name = models.CharField(max_length=50)
     trigramme = models.CharField(max_length=4, unique=True)
     company = models.ForeignKey(Company)
-    productive = models.BooleanField("Productif", default=True)
+    productive = models.BooleanField(_("Productive"), default=True)
     manager = models.ForeignKey("self", null=True, blank=True)
     profil = models.ForeignKey(ConsultantProfile)
 
@@ -104,11 +105,11 @@ class Consultant(models.Model):
 
 class SalesMan(models.Model):
     """A salesman"""
-    name = models.CharField("Nom", max_length=50)
+    name = models.CharField(_("Name"), max_length=50)
     trigramme = models.CharField(max_length=4, unique=True)
     company = models.ForeignKey(Company)
     email = models.EmailField(blank=True)
-    phone = models.CharField("Téléphone", max_length=30, blank=True)
+    phone = models.CharField(_("Phone"), max_length=30, blank=True)
 
     def __unicode__(self): return "%s (%s)" % (self.name, self.get_company_display())
 
@@ -130,31 +131,31 @@ class LeadManager(models.Manager):
 class Lead(models.Model):
     """A commercial lead"""
     STATES = (
-            ('QUALIF', u'En qualif.'),
-            ('WRITE_OFFER', u'Propal à émettre'),
-            ('OFFER_SENT', u'Propal émise'),
-            ('NEGOCATION', u'Négo en cours'),
-            ('WIN', u'Aff. gagnée'),
-            ('LOST', u'Aff. perdue'),
-            ('FORGIVEN', u'Aff. abandonnée'),
-            ('SLEEPING', u'En sommeil'),
+            ('QUALIF', _("Qualifying")),
+            ('WRITE_OFFER', _("Writting offer")),
+            ('OFFER_SENT', _("Offer sent")),
+            ('NEGOCATION', _("Negociation")),
+            ('WON', _("Won")),
+            ('LOST', _("Lost")),
+            ('FORGIVEN', _("Forgiven")),
+            ('SLEEPING', _("Sleeping")),
            )
-    name = models.CharField("Nom", max_length=200)
+    name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)
-    action = models.CharField("Action", max_length=2000, blank=True, null=True)
-    salesId = models.CharField("Code affaire", max_length=100, blank=True)
-    sales = models.IntegerField("CA (k€)", blank=True, null=True)
-    salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name="Commercial")
+    action = models.CharField(_("Action"), max_length=2000, blank=True, null=True)
+    salesId = models.CharField(_("Deal id"), max_length=100, blank=True)
+    sales = models.IntegerField(_("Sales(k€)"), blank=True, null=True)
+    salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"))
     staffing = models.ManyToManyField(Consultant, blank=True)
-    external_staffing = models.CharField("Staffing externe", max_length=300, blank=True)
+    external_staffing = models.CharField(_("External staffing"), max_length=300, blank=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name="Responsable", blank=True, null=True)
-    start_date = models.DateField("Démarrage", blank=True, null=True)
-    due_date = models.DateField("Échéance", blank=True, null=True)
-    state = models.CharField("État", max_length=30, choices=STATES)
+    start_date = models.DateField(_("Starting"), blank=True, null=True)
+    due_date = models.DateField(_("Due"), blank=True, null=True)
+    state = models.CharField(_("State"), max_length=30, choices=STATES)
     client = models.ForeignKey(Client)
-    creation_date = models.DateTimeField("Création", default=datetime.now())
-    update_date = models.DateTimeField("Mise à jour", auto_now=True)
-    send_email = models.BooleanField("Envoyer le lead par mail", default=False)
+    creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
+    update_date = models.DateTimeField(_("Updated"), auto_now=True)
+    send_email = models.BooleanField(_("Send lead by email"), default=False)
 
     objects = LeadManager() # Custom manager that factorise active/passive lead code
 
@@ -175,7 +176,7 @@ class Lead(models.Model):
 
     def update_date_strf(self):
         return self.update_date.strftime(SHORT_DATETIME_FORMAT)
-    update_date_strf.short_description = "Mise à jour"
+    update_date_strf.short_description = _("Update")
 
     def short_description(self):
         max_length = 20
@@ -183,7 +184,7 @@ class Lead(models.Model):
             return self.description[:max_length] + "..."
         else:
             return self.description
-    short_description.short_description = "Description"
+    short_description.short_description = _("Description")
 
     def get_absolute_url(self):
         return "%s/leads/%s/" % (pydici.settings.LEADS_WEB_LINK_ROOT, self.id)
