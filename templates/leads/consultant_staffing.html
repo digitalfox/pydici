@@ -13,39 +13,39 @@
 <div id="content-main">
     <h1>{{ consultant }}</h1>
 
-    <h2>Missions de ce consultant</h2>
+    <h2>{% trans "Consultant's missions" %}</h2>
 		<table>
-		<tr><th>Nom</th><th>Probabilité</th></tr>
+		<tr><th>{% trans "Name" %}</th><th>{% trans "Probability" %}</th></tr>
 		{% for mission in missions %}
 		    <tr {%cycle 'class="row1"' 'class="row2"' %}>
-		        <th scope="row"><a href='/leads/mission/{{mission.id}}/', title='Modifier le staffing de {{ mission }}'>{{ mission }}</a></th>
+		        <th scope="row"><a href='/leads/mission/{{mission.id}}/', title='{% blocktrans %}Change mission {{ mission }} staffing {% endblocktrans %}'>{{ mission }}</a></th>
 		        <td>{{ mission.get_probability_display }}</td>
-		        <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='Modifier {{ mission }}', target='_blank', class='changelink'><em>Modifier</em></a></td>
+		        <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', target='_blank', class='changelink'><em>{% trans "Change" %}</em></a></td>
 		    </tr>
 		{% endfor %}
 		</table>
     <br><hr>
-    <h2>Staffing</h2>
+    <h2>{% trans "Staffing" %}</h2>
     <form action="" method="POST">
         {{ formset.management_form }}
         <div class="form-row">
         <table>
            <tr>
                <th></th>
-               <th>Mission</th>
-               <th>Mois</th>
-               <th>Charge</th>
-               <th>Remarques</th>
+               <th>{% trans "Mission" %}</th>
+               <th>{% trans "Mont" %}</th>
+               <th>{% trans "Load" %}</th>
+               <th>{% trans "Comment" %}</th>
                <th></th>
-               <th>Supprimer</th>
-               <th>Dernière modif</th>
+               <th>{% trans "Delete" %}</th>
+               <th>{% trans "Last change" %}</th>
            </tr>
            {% for form in formset.forms %}
                {% ifchanged form.initial.staffing_date %}
 	               {% if form.initial.staffing_date %}
 	                   <tr><th>{{ form.initial.staffing_date|date:"F Y" }}</th></tr>
 	               {% else %}
-	                   <tr><th>Nouveau staffing :</th></tr>
+	                   <tr><th>{% trans "New staffing:" %}</th></tr>
 	               {% endif %}
                {% endifchanged%}
                <tr {%cycle 'class="row1"' 'class="row2"' %}>
@@ -65,13 +65,13 @@
         </table>       
         </div>
         <div class="submit-row">
-            <input type="submit" value="Enregistrer"/>
+            <input type="submit" value="{% trans 'Save' %}"/>
         </div>
     </form>
 <br>
 <br>
-<a href='/leads/pdcreview'>Retour au plan de charge</a>
+<a href='/leads/pdcreview'>{% trans "Back to work load schedule" %}</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='/leads/'>Retour page d'accueil</a>
+<a href='/leads/'>{% trans "Back to home page" %}</a>
 </div>
 {% endblock %}

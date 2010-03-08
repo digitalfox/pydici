@@ -6,6 +6,8 @@ Django administration setup
 """
 
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
+
 from datetime import datetime
 
 from pydici.leads.models import Lead, Client, ClientOrganisation, ClientCompany, ClientContact, Consultant, \
@@ -42,12 +44,12 @@ class LeadAdmin(admin.ModelAdmin):
         form.save_m2m() # Save many to many relations
         if mail:
             try:
-                fromAddr = request.user.email or "plandecharge@newarch.fr"
+                fromAddr = request.user.email or "noreply@noreply.com"
                 send_lead_mail(obj, fromAddr=fromAddr,
                                fromName="%s %s" % (request.user.first_name, request.user.last_name))
-                request.user.message_set.create(message="Ce lead a été envoyé par mail au plan de charge.")
+                request.user.message_set.create(message=_("Lead sent to business mailing list"))
             except Exception, e:
-                request.user.message_set.create(message="Échec d'envoi du mail : %s" % e)
+                request.user.message_set.create(message=_("Failed to send mail: %s") % e)
 
         # Create or update mission object if needed
         try:
@@ -70,17 +72,17 @@ class LeadAdmin(admin.ModelAdmin):
                 staffing.update_date = currentMonth
                 staffing.last_user = "-"
                 staffing.save()
-            request.user.message_set.create(message="Une mission a été initialisée dans le plan de charge pour cette affaire.")
+            request.user.message_set.create(message=_("A mission has been initialized for this lead."))
         if obj.state == "WIN":
             mission.probability = 100
             mission.active = True
             mission.save()
-            request.user.message_set.create(message="La probabilité de la mission a été mise à 100 % dans le plan de charge")
+            request.user.message_set.create(message=_("Mission's probability has been set to 100%"))
         elif obj.state in ("LOST", "FORGIVEN", "SLEEPING"):
             mission.probability = 0
             mission.active = False
             mission.save()
-            request.user.message_set.create(message="La mission correspondante a été archivée dans le plan de charge")
+            request.user.message_set.create(message=_("According mission has been archived"))
 
 
 

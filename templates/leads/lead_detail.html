@@ -11,7 +11,7 @@
 {% block content %}
 
 <div id="content-main">
-    <h1>Détail du lead</h1>
+    <h1>{% trans "Lead detail" %}</h1>
     {% if active_count %}
 	    {% if previous_lead %}
 	        <a href='{{ link_root }}/leads/{{ previous_lead.id }}/'><img src="../media/leads/fg.png" border=0/></a>
@@ -29,23 +29,23 @@
     <div class='system-message'>{{ lead.description|linebreaksbr }} </div>
     {% endif %}
     <hr>
-    <b>Origine/Contact</b> : {{ lead.client.contact|default_if_none:"Inconnu" }} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}
+    <b>{% trans "Contact: " %}</b>{{ lead.client.contact|default_if_none:_("Unknown")}} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}
     <br><br><hr>
-    <b>Responsable </b>: {{ lead.responsible|default_if_none:"à définir" }}<br>
-    <b>IA</b> : {% if lead.salesman %} {{ lead.salesman }} {% else %} aucun {% endif %}
+    <b>{% trans "Responsible: " %}</b>{{ lead.responsible|default_if_none:_("To be defined") }}<br>
+    <b>{% trans "Salesman: " %}</b>{% if lead.salesman %} {{ lead.salesman }} {% else %} {% trans "None" %} {% endif %}
     <br><br><hr>
-    <b>Date d'&eacute;ch&eacute;ance</b> : {{ lead.due_date|default_if_none:"Non d&eacute;finie" }}<br>
-    <b>D&eacute;marrage pr&eacute;vu </b>: {{ lead.start_date|default_if_none:"non d&eacute;finie" }}
+    <b>{% trans "Due date: " %}</b>{{ lead.due_date|default_if_none:_("Unknown") }}<br>
+    <b>{% trans "Start date: " %} </b>{{ lead.start_date|default_if_none:_("Unknown") }}
     <br><br><hr>
-    <b>Chiffre d'affaire estimatif (kEuros)</b> : {{ lead.sales|default_if_none:"inconnu" }}<br>
-    <b>Profil(s) pressenti(s)</b> : {{ lead.staffing_list }}<br>
-    <b>Action PDC</b> : {% if lead.action %}{{ lead.action }}{% else %}rien{% endif %}<br>
-    {% if lead.salesId %} <b>Code ActiveSys </b> : {{ lead.salesId }}<br>{% endif %}
+    <b>{% trans "Sales (k€): " %}</b>{{ lead.sales|default_if_none:_("Unknown") }}<br>
+    <b>{% trans "Potential resource(s): " %} </b>{{ lead.staffing_list }}<br>
+    <b>{% trans "Action: " %}</b>{% if lead.action %}{{ lead.action }}{% else %}{% trans "nothing" %}{% endif %}<br>
+    {% if lead.salesId %} <b>{% trans "Sales code: " %} </b>{{ lead.salesId }}<br>{% endif %}
     <br><br><hr>
 </div>
 
 {% if action_list %}
-    <h2>Historique des modifications</h2>
+    <h2>{% trans "Change history" %}</h2>
     <table id="change-history">
         <thead>
         <tr>
@@ -67,10 +67,10 @@
 {% endif %}
 
 
-<br><a href='{{ link_root }}/leads/'>Retour page d'accueil</a>
+<br><a href='{{ link_root }}/leads/'>{% trans "Back to home page" %}</a>
 {% if lead.mission_set.count %}
     &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-    <a href='/leads/mission/{{ lead.mission_set.get.id }}/'>Prévision de staffing</a>
+    <a href='/leads/mission/{{ lead.mission_set.get.id }}/'>{% trans "Staffing forecast" %}</a>
 {% endif %}
 
 

@@ -23,6 +23,7 @@ from django.db.models import Q
 from django.db import connection
 from django.forms import ModelForm
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
+from django.utils.translation import ugettext as _
 
 from pydici.leads.models import Lead, Consultant, SalesMan, Staffing, Mission, Holiday
 from pydici.leads.utils import send_lead_mail, to_int_or_round, working_days
@@ -118,10 +119,13 @@ def detail(request, lead_id):
 
 def csv_export(request, target):
     response = HttpResponse(mimetype="text/csv")
-    response["Content-Disposition"] = "attachment; filename=plan-de-charge.csv"
+    response["Content-Disposition"] = "attachment; filename=%s" % _("leads.csv")
     writer = csv.writer(response, delimiter=';')
-    writer.writerow([i.encode("ISO-8859-15") for i in [u"Nom", u"Client", u"Description", u"Suivi par", u"Commercial", u"Date de démarrage", u"État",
-                     u"Échéance", u"Staffing", u"CA (KE)", u"Code", u"Création", u"Mise à jour"]])
+    writer.writerow([i.encode("ISO-8859-15") for i in [_("Name"), _("Client"), _("Description"),
+                                                       _("Managed by"), _("Salesman"), _("Starting"),
+                                                       _("State"), _("Due date"), _("Staffing"),
+                                                       _("Sales (k€)"), _("Deal Id"), _("Creation"),
+                                                       _("Updated")]])
     if target != "all":
         leads = Lead.objects.active()
     else:
@@ -141,9 +145,10 @@ def mail_lead(request, lead_id=0):
         raise Http404
     try:
         send_lead_mail(lead)
-        return HttpResponse("Lead %s was sent to %s !" % (lead_id, pydici.settings.LEADS_MAIL_TO))
+        return HttpResponse(_("Lead %(id)s was sent to %(mail)s !") % { "id": lead_id,
+                                                                       "mail": pydici.settings.LEADS_MAIL_TO})
     except Exception, e:
-        return HttpResponse("Failed to send mail: %s" % e)
+        return HttpResponse(_("Failed to send mail: %s") % e)
 
 def review(request):
     today = datetime.today()
@@ -249,7 +254,7 @@ def pdc_review(request, year=None, month=None):
     # Don't display this page if no productive consultant are defined
     if Consultant.objects.filter(productive=True).count() == 0:
         #TODO: make this message nice
-        return HttpResponse("Aucun consultant productif n'est déclaré.")
+        return HttpResponse(_("No productive consultant defined !"))
 
     n_month = 3
     if "n_month" in request.GET:
@@ -516,7 +521,7 @@ def graph_stat_salesmen(request):
     ax.set_xticklabels(data.keys())
     ax.set_ylim(ymax=ymax + 10)
     ax.legend(lines, [i.name for i in SalesMan.objects.all()] + ["Aucun"])
-    ax.set_title(u"Suivi des leads par IA (trait plein : aff. gagnées. Pointillés : aff. perdues)")
+    ax.set_title(_("Leads per salesmen (solid line: won. Dotted line: lost)"))
 
     return print_png(fig)
 

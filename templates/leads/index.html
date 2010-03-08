@@ -13,15 +13,15 @@
     <div class="imodule">
     <table summary="Leads">
     {% if my_leads_as_responsible %}
-        <tr><th colspan=7>Les leads dont je suis responsable</th></tr>
+        <tr><th colspan=7>{% trans "My leads as responsible" %}</th></tr>
         <tr>
-                <td><b>Client</b></td>
-                <td><b>Lead</b></td>
-                <td><b>Responsable</b></td>
-                <td><b>IA</b></td>
-                <td><b>CA (k€)</b></td>
-                <td><b>Statut</b></td>
-                <td><b>Mise à jour</b></td>
+                <td><b>{% trans "Client" %}</b></td>
+                <td><b>{% trans "Lead" %}</b></td>
+                <td><b>{% trans "Responsible" %}</b></td>
+                <td><b>{% trans "Salesman" %}</b></td>
+                <td><b>{% trans "Sales (k€)" %}</b></td>
+                <td><b>{% trans "Status" %}</b></td>
+                <td><b>{% trans "Updated" %}</b></td>
         </tr>
 
         {% for lead in my_leads_as_responsible %}
@@ -38,15 +38,15 @@
 
     {% endif %}
     {% if my_leads_as_staffee %}
-        <tr><th colspan=7>Les leads où je suis une ressource pressentie</th></tr>
+        <tr><th colspan=7>{% trans "My leads as a resource" %}</th></tr>
         <tr>
-                <td><b>Client</b></td>
-                <td><b>Lead</b></td>
-                <td><b>Responsable</b></td>
-                <td><b>IA</b></td>
-                <td><b>CA (k€)</b></td>
-                <td><b>Statut</b></td>
-                <td><b>Mise à jour</b></td>
+                <td><b>{% trans "Client" %}</b></td>
+                <td><b>{% trans "Lead" %}</b></td>
+                <td><b>{% trans "Responsible" %}</b></td>
+                <td><b>{% trans "Salesman" %}</b></td>
+                <td><b>{% trans "Sales (k€)" %}</b></td>
+                <td><b>{% trans "Status" %}</b></td>
+                <td><b>{% trans "Updated" %}</b></td>
         </tr>
 
         {% for lead in my_leads_as_staffee %}
@@ -62,15 +62,15 @@
         {% endfor %}
     {% endif %}
     {% if latest_leads %}
-        <tr><th colspan=7>Les derniers leads modifiés</th></tr>
+        <tr><th colspan=7>{% trans "Last modified leads" %}</th></tr>
         <tr>
-                <td><b>Client</b></td>
-                <td><b>Lead</b></td>
-                <td><b>Responsable</b></td>
-                <td><b>IA</b></td>
-                <td><b>CA (k€)</b></td>
-                <td><b>Statut</b></td>
-                <td><b>Mise à jour</b></td>
+                <td><b>{% trans "Client" %}</b></td>
+                <td><b>{% trans "Lead" %}</b></td>
+                <td><b>{% trans "Responsible" %}</b></td>
+                <td><b>{% trans "Salesman" %}</b></td>
+                <td><b>{% trans "Sales (k€)" %}</b></td>
+                <td><b>{% trans "Status" %}</b></td>
+                <td><b>{% trans "Updated" %}</b></td>
         </tr>
 
         {% for lead in latest_leads %}
@@ -86,15 +86,15 @@
         {% endfor %}
     {% endif %}
     {% if my_latest_archived_leads %}
-        <tr><th colspan=7>Mes derniers leads archivés (gagnés, perdus ou abandonnés)</th></tr>
+        <tr><th colspan=7>{% trans "My last archived leads (won, lost, forgiven or sleeping)" %}</th></tr>
         <tr>
-                <td><b>Client</b></td>
-                <td><b>Lead</b></td>
-                <td><b>Responsable</b></td>
-                <td><b>IA</b></td>
-                <td><b>CA (k€)</b></td>
-                <td><b>Statut</b></td>
-                <td><b>Mise à jour</b></td>
+                <td><b>{% trans "Client" %}</b></td>
+                <td><b>{% trans "Lead" %}</b></td>
+                <td><b>{% trans "Responsible" %}</b></td>
+                <td><b>{% trans "Salesman" %}</b></td>
+                <td><b>{% trans "Sales (k€)" %}</b></td>
+                <td><b>{% trans "Status" %}</b></td>
+                <td><b>{% trans "Updated" %}</b></td>
         </tr>
 
         {% for lead in my_latest_archived_leads %}
@@ -109,12 +109,12 @@
             </tr>
         {% endfor %}
     {% endif %}
-        <tr><th colspan=7>Récapitulatifs</th></tr>
-        <tr><td colspan=2><a href='/leads/review'>Revue des affaires en cours</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='/leads/csv/active'>Fichier CSV des leads actifs</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='/leads/csv/all'>Fichier CSV de tous les leads</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='/leads/mail/html'>Mail récapitulatif (format HTML)</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='/leads/mail/text'>Mail récapitulatif (format texte)</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><th colspan=7>{% trans "Summary" %}</th></tr>
+        <tr><td colspan=2><a href='/leads/review'>{% trans "Current leads review" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan=2><a href='/leads/csv/active'>{% trans "Active leads as csv file" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan=2><a href='/leads/csv/all'>{% trans "All leads as csv file" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan=2><a href='/leads/mail/html'>{% trans "Week summary mail (html)" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan=2><a href='/leads/mail/text'>{% trans "Week summary mail (text)" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
         </table>
     </div>
 </div>
@@ -125,7 +125,7 @@
 <div id="content-related">
     <div class="module" id="recent-actions-module">
         <h2></h2>
-        <h3>Rechercher un lead</h3>
+        <h3>{% trans "Lead search" %}</h3>
         <div id="toolbar"><form id="changelist-search" action="admin/leads/lead/" method="get">
 		<div><!-- DIV needed for valid HTML -->
 		<label for="searchbar"><img src="{% admin_media_prefix %}img/admin/icon_searchbox.png" alt="Search" /></label>
@@ -135,14 +135,14 @@
 		</form></div>
 		<script type="text/javascript">document.getElementById("searchbar").focus();</script>
 		<br/>
-		<h3>Ajouter...</h3>
+		<h3>{% trans "Add..." %}</h3>
 		    <ul class="actionlist">
-		    <li><a href='/leads/admin/leads/lead/add/'>un nouveau lead</a></li>
-		    <li><a href='/leads/admin/leads/client/add/'>un nouveau client</a></li>
-		    <li><a href='/leads/admin/leads/clientcontact/add/'>un nouveau contact client</a></li>
+		    <li><a href='/leads/admin/leads/lead/add/'>{% trans "new lead" %}</a></li>
+		    <li><a href='/leads/admin/leads/client/add/'>{% trans "new client" %}</a></li>
+		    <li><a href='/leads/admin/leads/clientcontact/add/'>{% trans "new client contact" %}</a></li>
 		    </ul>
 		 <br/>
-        <h3>Mes dernières actions</h3>
+        <h3>{% trans "My last actions" %}</h3>
             {% load log %}
             {% get_admin_log 10 as admin_log for_user user %}
             {% if not admin_log %}
@@ -155,12 +155,12 @@
             </ul>
             {% endif %}
         <br/>
-        <h3><a href="/leads/admin/">Console d'administration</a></h3>
+        <h3><a href="/leads/admin/">{% trans "Admin console" %}</a></h3>
         <ul class="actionlist">
-	        <li><a href="/leads/admin/leads/lead/">Tous les leads</a></li>
-	        <li><a href="/leads/admin/leads/mission/">Toutes les missions</a></li>
-	        <li><a href="/leads/admin/leads/client/">Tous les clients</a></li>
-	        <li><a href="/leads/admin/leads/clientcontact/">Tous les contacts clients</a></li>
+	        <li><a href="/leads/admin/leads/lead/">{% trans "All leads" %}</a></li>
+	        <li><a href="/leads/admin/leads/mission/">{% trans "All missions" %}</a></li>
+	        <li><a href="/leads/admin/leads/client/">{% trans "All clients" %}</a></li>
+	        <li><a href="/leads/admin/leads/clientcontact/">{% trans "All client contacts" %}</a></li>
         </ul>
     </div>
 </div>

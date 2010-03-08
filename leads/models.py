@@ -144,7 +144,7 @@ class Lead(models.Model):
     description = models.TextField(blank=True)
     action = models.CharField(_("Action"), max_length=2000, blank=True, null=True)
     salesId = models.CharField(_("Deal id"), max_length=100, blank=True)
-    sales = models.IntegerField(_("Sales(k€)"), blank=True, null=True)
+    sales = models.IntegerField(_("Sales (k€)"), blank=True, null=True)
     salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"))
     staffing = models.ManyToManyField(Consultant, blank=True)
     external_staffing = models.CharField(_("External staffing"), max_length=300, blank=True)
@@ -194,21 +194,21 @@ class Lead(models.Model):
 
 class Mission(models.Model):
     MISSION_NATURE = (
-            ('PROD', u'Productif'),
-            ('NONPROD', u'Non productif'),
-            ('HOLIDAYS', u'Congés'))
+            ('PROD', _("Productive")),
+            ('NONPROD', _("Unproductive")),
+            ('HOLIDAYS', _("Holidays")))
     PROBABILITY = (
-            (0, u"Nulle"),
-            (25, u"Faible"),
-            (50, u"Normale"),
-            (75, u"Forte"),
-            (100, u"Certaine"))
+            (0, _("Null")),
+            (25, _("Low")),
+            (50, _("Normal")),
+            (75, _("High")),
+            (100, _("Certain")))
     lead = models.ForeignKey(Lead, null=True, blank=True)
-    description = models.CharField("Description", max_length=30, blank=True, null=True)
-    nature = models.CharField("Type", max_length=30, choices=MISSION_NATURE, default="PROD")
-    active = models.BooleanField("Active", default=True)
-    probability = models.IntegerField("Proba", default=50, choices=PROBABILITY)
-    update_date = models.DateTimeField("Mise à jour", auto_now=True)
+    description = models.CharField(_("Description"), max_length=30, blank=True, null=True)
+    nature = models.CharField(_("Type"), max_length=30, choices=MISSION_NATURE, default="PROD")
+    active = models.BooleanField(_("Active"), default=True)
+    probability = models.IntegerField(_("Proba"), default=50, choices=PROBABILITY)
+    update_date = models.DateTimeField(_("Updated"), auto_now=True)
 
     def __unicode__(self):
         if self.description:
@@ -238,17 +238,17 @@ class Mission(models.Model):
 
 class Holiday(models.Model):
     """List of public and enterprise specific holidays"""
-    day = models.DateField("date")
-    description = models.CharField("Description", max_length=200)
+    day = models.DateField(_("Date"))
+    description = models.CharField(_("Description"), max_length=200)
 
 class Staffing(models.Model):
     """The staffing fact table: charge per month per consultant per mission"""
     consultant = models.ForeignKey(Consultant)
     mission = models.ForeignKey(Mission, limit_choices_to=Q(active=True))
-    staffing_date = models.DateField("Date")
-    charge = models.FloatField("Charge", default=0)
-    comment = models.CharField("Remarques", max_length=500, blank=True, null=True)
-    update_date = models.DateTimeField("Mise à jour")
+    staffing_date = models.DateField(_("Date"))
+    charge = models.FloatField(_("Load"), default=0)
+    comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
+    update_date = models.DateTimeField(_("Updated"))
     last_user = models.CharField(max_length=60)
 
     def __unicode__(self):
