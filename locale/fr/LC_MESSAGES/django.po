@@ -1,0 +1,538 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-03-08 23:34+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: leads/admin.py:50
+msgid "Lead sent to business mailing list"
+msgstr ""
+
+#: leads/admin.py:52 leads/views.py:151
+#, python-format
+msgid "Failed to send mail: %s"
+msgstr ""
+
+#: leads/admin.py:75
+msgid "A mission has been initialized for this lead."
+msgstr ""
+
+#: leads/admin.py:80
+msgid "Mission's probability has been set to 100%"
+msgstr ""
+
+#: leads/admin.py:85
+msgid "According mission has been archived"
+msgstr ""
+
+#: leads/models.py:22 leads/models.py:28 leads/models.py:38 leads/models.py:57
+#: leads/models.py:108 leads/models.py:143 leads/views.py:124
+#: templates/leads/consultant_staffing.html:18
+msgid "Name"
+msgstr "Nom"
+
+#: leads/models.py:29
+msgid "Level"
+msgstr ""
+
+#: leads/models.py:47
+msgid "Organization"
+msgstr ""
+
+#: leads/models.py:48
+msgid "Entreprise"
+msgstr ""
+
+#: leads/models.py:58
+msgid "Function"
+msgstr ""
+
+#: leads/models.py:60 leads/models.py:112
+msgid "Phone"
+msgstr ""
+
+#: leads/models.py:91 leads/models.py:197
+msgid "Productive"
+msgstr ""
+
+#: leads/models.py:134
+msgid "Qualifying"
+msgstr "En qualif."
+
+#: leads/models.py:135
+msgid "Writting offer"
+msgstr ""
+
+#: leads/models.py:136
+msgid "Offer sent"
+msgstr ""
+
+#: leads/models.py:137
+msgid "Negociation"
+msgstr ""
+
+#: leads/models.py:138
+msgid "Won"
+msgstr ""
+
+#: leads/models.py:139
+msgid "Lost"
+msgstr ""
+
+#: leads/models.py:140
+msgid "Forgiven"
+msgstr ""
+
+#: leads/models.py:141
+msgid "Sleeping"
+msgstr ""
+
+#: leads/models.py:145 templates/leads/lead_detail.html:54
+msgid "Action"
+msgstr ""
+
+#: leads/models.py:146
+msgid "Deal id"
+msgstr ""
+
+#: leads/models.py:147 leads/views.py:127 templates/leads/index.html:22
+#: templates/leads/index.html.py:47 templates/leads/index.html:71
+#: templates/leads/index.html.py:95
+msgid "Sales (k€)"
+msgstr ""
+
+#: leads/models.py:148 leads/views.py:125 templates/leads/index.html:21
+#: templates/leads/index.html.py:46 templates/leads/index.html:70
+#: templates/leads/index.html.py:94
+msgid "Salesman"
+msgstr ""
+
+#: leads/models.py:150
+msgid "External staffing"
+msgstr ""
+
+#: leads/models.py:152 leads/views.py:125
+msgid "Starting"
+msgstr ""
+
+#: leads/models.py:153
+msgid "Due"
+msgstr ""
+
+#: leads/models.py:154 leads/views.py:126
+msgid "State"
+msgstr ""
+
+#: leads/models.py:156 leads/views.py:127
+msgid "Creation"
+msgstr ""
+
+#: leads/models.py:157 leads/models.py:211 leads/models.py:251
+#: leads/views.py:128 templates/leads/index.html:24
+#: templates/leads/index.html.py:49 templates/leads/index.html:73
+#: templates/leads/index.html.py:97
+msgid "Updated"
+msgstr ""
+
+#: leads/models.py:158
+msgid "Send lead by email"
+msgstr ""
+
+#: leads/models.py:179
+msgid "Update"
+msgstr ""
+
+#: leads/models.py:187 leads/models.py:207 leads/models.py:242
+#: leads/views.py:124
+msgid "Description"
+msgstr ""
+
+#: leads/models.py:198
+msgid "Unproductive"
+msgstr ""
+
+#: leads/models.py:199
+msgid "Holidays"
+msgstr ""
+
+#: leads/models.py:201
+msgid "Null"
+msgstr ""
+
+#: leads/models.py:202
+msgid "Low"
+msgstr ""
+
+#: leads/models.py:203
+msgid "Normal"
+msgstr ""
+
+#: leads/models.py:204
+msgid "High"
+msgstr ""
+
+#: leads/models.py:205
+msgid "Certain"
+msgstr ""
+
+#: leads/models.py:208
+msgid "Type"
+msgstr ""
+
+#: leads/models.py:209
+msgid "Active"
+msgstr ""
+
+#: leads/models.py:210
+msgid "Proba"
+msgstr ""
+
+#: leads/models.py:241 leads/models.py:248
+msgid "Date"
+msgstr ""
+
+#: leads/models.py:249 templates/leads/consultant_staffing.html:37
+msgid "Load"
+msgstr ""
+
+#: leads/models.py:250
+msgid "Comments"
+msgstr ""
+
+#: leads/views.py:122
+msgid "leads.csv"
+msgstr ""
+
+#: leads/views.py:124 templates/leads/index.html:18
+#: templates/leads/index.html.py:43 templates/leads/index.html:67
+#: templates/leads/index.html.py:91
+msgid "Client"
+msgstr ""
+
+#: leads/views.py:125
+msgid "Managed by"
+msgstr ""
+
+#: leads/views.py:126
+msgid "Due date"
+msgstr ""
+
+#: leads/views.py:126 templates/leads/consultant_staffing.html:28
+msgid "Staffing"
+msgstr ""
+
+#: leads/views.py:127
+msgid "Deal Id"
+msgstr ""
+
+#: leads/views.py:148
+#, python-format
+msgid "Lead %(id)s was sent to %(mail)s !"
+msgstr ""
+
+#: leads/views.py:257
+msgid "No productive consultant defined !"
+msgstr ""
+
+#: leads/views.py:524
+msgid "Leads per salesmen (solid line: won. Dotted line: lost)"
+msgstr ""
+
+#: templates/admin/app_index.html:8 templates/admin/base.html:44
+#: templates/admin/change_list.html:8
+msgid "Home"
+msgstr ""
+
+#: templates/admin/app_index.html:10 templates/admin/index.html:19
+#, python-format
+msgid "%(name)s"
+msgstr ""
+
+#: templates/admin/base.html:39
+msgid "Welcome,"
+msgstr ""
+
+#: templates/admin/change_list.html:16
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
+
+#: templates/admin/change_list.html:26
+msgid "Filter"
+msgstr ""
+
+#: templates/admin/index.html:18
+#, python-format
+msgid "Models available in the %(name)s application."
+msgstr ""
+
+#: templates/admin/index.html:29
+msgid "Add"
+msgstr ""
+
+#: templates/admin/index.html:35 templates/leads/consultant_staffing.html:23
+msgid "Change"
+msgstr ""
+
+#: templates/admin/index.html:45
+msgid "You don't have permission to edit anything."
+msgstr ""
+
+#: templates/admin/index.html:53
+msgid "Recent Actions"
+msgstr ""
+
+#: templates/admin/index.html:54
+msgid "My Actions"
+msgstr ""
+
+#: templates/admin/index.html:58 templates/leads/index.html:149
+msgid "None available"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:16
+msgid "Consultant's missions"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:18
+msgid "Probability"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:21
+#, python-format
+msgid "Change mission %(mission)s staffing "
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:23
+#, python-format
+msgid "Change %(mission)s"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:35
+msgid "Mission"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:36
+msgid "Mont"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:38
+msgid "Comment"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:40
+msgid "Delete"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:41
+msgid "Last change"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:48
+msgid "New staffing:"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:68
+msgid "Save"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:73
+msgid "Back to work load schedule"
+msgstr ""
+
+#: templates/leads/consultant_staffing.html:75
+#: templates/leads/lead_detail.html:70
+msgid "Back to home page"
+msgstr ""
+
+#: templates/leads/index.html:16
+msgid "My leads as responsible"
+msgstr ""
+
+#: templates/leads/index.html:19 templates/leads/index.html.py:44
+#: templates/leads/index.html:68 templates/leads/index.html.py:92
+msgid "Lead"
+msgstr ""
+
+#: templates/leads/index.html:20 templates/leads/index.html.py:45
+#: templates/leads/index.html:69 templates/leads/index.html.py:93
+msgid "Responsible"
+msgstr ""
+
+#: templates/leads/index.html:23 templates/leads/index.html.py:48
+#: templates/leads/index.html:72 templates/leads/index.html.py:96
+msgid "Status"
+msgstr ""
+
+#: templates/leads/index.html:41
+msgid "My leads as a resource"
+msgstr ""
+
+#: templates/leads/index.html:65
+msgid "Last modified leads"
+msgstr ""
+
+#: templates/leads/index.html:89
+msgid "My last archived leads (won, lost, forgiven or sleeping)"
+msgstr ""
+
+#: templates/leads/index.html:112
+msgid "Summary"
+msgstr ""
+
+#: templates/leads/index.html:113
+msgid "Current leads review"
+msgstr ""
+
+#: templates/leads/index.html:114
+msgid "Active leads as csv file"
+msgstr ""
+
+#: templates/leads/index.html:115
+msgid "All leads as csv file"
+msgstr ""
+
+#: templates/leads/index.html:116
+msgid "Week summary mail (html)"
+msgstr ""
+
+#: templates/leads/index.html:117
+msgid "Week summary mail (text)"
+msgstr ""
+
+#: templates/leads/index.html:128
+msgid "Lead search"
+msgstr ""
+
+#: templates/leads/index.html:133
+msgid "Go"
+msgstr ""
+
+#: templates/leads/index.html:138
+msgid "Add..."
+msgstr ""
+
+#: templates/leads/index.html:140
+msgid "new lead"
+msgstr ""
+
+#: templates/leads/index.html:141
+msgid "new client"
+msgstr ""
+
+#: templates/leads/index.html:142
+msgid "new client contact"
+msgstr ""
+
+#: templates/leads/index.html:145
+msgid "My last actions"
+msgstr ""
+
+#: templates/leads/index.html:158
+msgid "Admin console"
+msgstr ""
+
+#: templates/leads/index.html:160
+msgid "All leads"
+msgstr ""
+
+#: templates/leads/index.html:161
+msgid "All missions"
+msgstr ""
+
+#: templates/leads/index.html:162
+msgid "All clients"
+msgstr ""
+
+#: templates/leads/index.html:163
+msgid "All client contacts"
+msgstr ""
+
+#: templates/leads/lead_detail.html:14
+msgid "Lead detail"
+msgstr ""
+
+#: templates/leads/lead_detail.html:32
+msgid "Contact: "
+msgstr ""
+
+#: templates/leads/lead_detail.html:32 templates/leads/lead_detail.html:37
+#: templates/leads/lead_detail.html:38 templates/leads/lead_detail.html:40
+msgid "Unknown"
+msgstr ""
+
+#: templates/leads/lead_detail.html:34
+msgid "Responsible: "
+msgstr ""
+
+#: templates/leads/lead_detail.html:34
+msgid "To be defined"
+msgstr ""
+
+#: templates/leads/lead_detail.html:35
+msgid "Salesman: "
+msgstr ""
+
+#: templates/leads/lead_detail.html:35
+msgid "None"
+msgstr ""
+
+#: templates/leads/lead_detail.html:37
+msgid "Due date: "
+msgstr ""
+
+#: templates/leads/lead_detail.html:38
+msgid "Start date: "
+msgstr ""
+
+#: templates/leads/lead_detail.html:40
+msgid "Sales (k€): "
+msgstr ""
+
+#: templates/leads/lead_detail.html:41
+msgid "Potential resource(s): "
+msgstr ""
+
+#: templates/leads/lead_detail.html:42
+msgid "Action: "
+msgstr ""
+
+#: templates/leads/lead_detail.html:42
+msgid "nothing"
+msgstr ""
+
+#: templates/leads/lead_detail.html:43
+msgid "Sales code: "
+msgstr ""
+
+#: templates/leads/lead_detail.html:48
+msgid "Change history"
+msgstr ""
+
+#: templates/leads/lead_detail.html:52
+msgid "Date/time"
+msgstr ""
+
+#: templates/leads/lead_detail.html:53
+msgid "User"
+msgstr ""
+
+#: templates/leads/lead_detail.html:60
+msgid "DATETIME_FORMAT"
+msgstr ""
+
+#: templates/leads/lead_detail.html:73
+msgid "Staffing forecast"
+msgstr ""
