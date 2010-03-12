@@ -88,5 +88,5 @@ LOGIN_URL = "/leads/forbiden"
 
 LEADS_MAIL_FROM = "sebastien.renard@digitalfox.org"
 LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
-LEADS_WEB_LINK_ROOT = "http://localhost:8000" # Without trailing slash
+LEADS_WEB_LINK_ROOT = "http://localhost:8888" # Without trailing slash
 LEADS_MAIL_SMTP = "mail.digitalfox.org"
