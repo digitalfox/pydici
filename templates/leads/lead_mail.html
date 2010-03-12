@@ -1,20 +1,20 @@
 <b>{{ obj.client.organisation }} -</b> {{ obj.name }} <br>
 
-<b>Origine/Contact</b> : {{ obj.client.contact }} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}<br>
+<b>{% trans "Contact: " %}</b>{{ obj.client.contact }} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}<br>
 
-<b>Description / contexte</b> : {{ obj.description|linebreaksbr }} <br>
+<b>{% trans "Description: " %}</b>{{ obj.description|linebreaksbr }} <br>
 
-<b>Responsable </b>: {% if obj.responsible %} {{ obj.responsible }} {% else %} à définir {% endif %}<br>
+<b>{% trans "Responsible: " %} </b>{% if obj.responsible %} {{ obj.responsible }} {% else %} {% trans "To be defined" %} {% endif %}<br>
 
-<b>IA</b> : {% if obj.salesman %} {{ obj.salesman }} {% else %} aucun {% endif %}<br>
+<b>{% trans "Salesman: " %}</b>{% if obj.salesman %} {{ obj.salesman }} {% else %} {% trans "None" %} {% endif %}<br>
 
-<b>Statut</b> : {{ obj.get_state_display }} {% if obj.due_date %}(=>  {{ obj.due_date }}){% endif %} / D&eacute;marrage pr&eacute;vu : {% if obj.start_date %} {{ obj.start_date }} {% else %} non d&eacute;finie {% endif %}<br>
+<b>{% trans "Status: " %}</b>{{ obj.get_state_display }} {% if obj.due_date %}(=>  {{ obj.due_date }}){% endif %} / {% trans "Starting date" %} : {% if obj.start_date %} {{ obj.start_date }} {% else %} {% trans "To be defined" %} {% endif %}<br>
 
-<b>Chiffre d'affaire estimatif (kEuros)</b> : {% if obj.sales %} {{ obj.sales }} {% else %} inconnu {% endif %}<br>
+<b>{% trans "Sales (kEuros): " %}</b>{% if obj.sales %} {{ obj.sales }} {% else %} {% trans "Unknown" %} {% endif %}<br>
 
-<b>Profil(s) pressenti(s)</b> : {{ obj.staffing_list }}<br>
+<b>{% trans "Potential resource(s): " %}</b>{{ obj.staffing_list }}<br>
 
-<b>Action PDC</b> : {% if obj.action %}{{ obj.action }}{% else %}rien{% endif %}<br>
+<b>{% trans "Action: " %}</b>{% if obj.action %}{{ obj.action }}{% else %}{% trans "Nothing" %}{% endif %}<br>
 
 
-<br><i><a href='{{ link_root }}/leads/admin/leads/lead/{{ obj.id }}/'>Modifier ce lead</a> -- <a href='{{ link_root }}/leads/'>Page d'accueil</a></i>
+<br><i><a href='{{ link_root }}/leads/admin/leads/lead/{{ obj.id }}/'>{% trans "Change this lead" %}</a> -- <a href='{{ link_root }}/leads/'>{% trans "HomePage" %}</a></i>

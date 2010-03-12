@@ -1,23 +1,23 @@
 {% autoescape off %}
 {{ obj.client.organisation }} - {{ obj.name }}
 
-Origine/Contact : {{ obj.client.contact }} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}
+{% trans "Contact: " %}{{ obj.client.contact }} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}
 
-Description / contexte : {{ obj.description }}
+{% trans "Description: " %}{{ obj.description }}
 
-Responsable : {% if obj.responsible %} {{ obj.responsible }} {% else %} à définir {% endif %}
+{% trans "Responsible: " %}{% if obj.responsible %} {{ obj.responsible }} {% else %} {% trans "To be defined" %}{% endif %}
 
-IA : {% if obj.salesman %} {{ obj.salesman }} {% else %} aucun {% endif %}
+{% trans "Salesman: " %}{% if obj.salesman %} {{ obj.salesman }} {% else %} {% trans "None" %} {% endif %}
 
-Statut : {{ obj.get_state_display }} {% if obj.due_date %}(=>  {{ obj.due_date }}){% endif %} / Démarrage prévu : {% if obj.start_date %} {{ obj.start_date }} {% else %} non définie {% endif %}
+{% trans "Status: " %}{{ obj.get_state_display }} {% if obj.due_date %}(=>  {{ obj.due_date }}){% endif %} / Démarrage prévu : {% if obj.start_date %} {{ obj.start_date }} {% else %} {% trans "To be defined" %} {% endif %}
 
-Chiffre d'affaire estimatif (kEuros) : {% if obj.sales %} {{ obj.sales }} {% else %} inconnu {% endif %}
+{% trans "Sales (kEuros): " %}{% if obj.sales %} {{ obj.sales }} {% else %} {% trans "Unknown" %} {% endif %}
 
-Profil(s) pressenti(s) : {{ obj.staffing_list }}
+{% trans "Potential resource(s): " %}{{ obj.staffing_list }}
 
-Action PDC : {% if obj.action %}{{ obj.action }}{% else %}rien{% endif %}
+{% trans "Action: " %}{% if obj.action %}{{ obj.action }}{% else %}{% trans "None" %}{% endif %}
 
 
-Modifier ce lead : {{ link_root }}/leads/admin/leads/lead/{{ obj.id }}/
-Page d'accueil : {{ link_root }}/leads/
+{% trans "Change this lead: " %}{{ link_root }}/leads/admin/leads/lead/{{ obj.id }}/
+{% trans "Homepage: " %}{{ link_root }}/leads/
 {% endautoescape %}

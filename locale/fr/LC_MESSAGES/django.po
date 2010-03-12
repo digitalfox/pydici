@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-08 23:34+0100\n"
+"POT-Creation-Date: 2010-03-12 09:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -325,7 +325,7 @@ msgid "Mission"
 msgstr ""
 
 #: templates/leads/consultant_staffing.html:36
-msgid "Mont"
+msgid "Month"
 msgstr ""
 
 #: templates/leads/consultant_staffing.html:38
@@ -464,36 +464,50 @@ msgstr ""
 msgid "Lead detail"
 msgstr ""
 
-#: templates/leads/lead_detail.html:32
+#: templates/leads/lead_detail.html:32 templates/leads/lead_mail.html:3
+#: templates/leads/lead_mail.txt:4
 msgid "Contact: "
 msgstr ""
 
 #: templates/leads/lead_detail.html:32 templates/leads/lead_detail.html:37
 #: templates/leads/lead_detail.html:38 templates/leads/lead_detail.html:40
+#: templates/leads/lead_mail.html:13 templates/leads/lead_mail.txt:14
+#: templates/leads/mail.html:8 templates/leads/mail.txt:7
 msgid "Unknown"
 msgstr ""
 
-#: templates/leads/lead_detail.html:34
+#: templates/leads/lead_detail.html:34 templates/leads/lead_mail.html:7
+#: templates/leads/lead_mail.txt:8 templates/leads/mail.html:9
+#: templates/leads/mail.txt:7
 msgid "Responsible: "
 msgstr ""
 
-#: templates/leads/lead_detail.html:34
+#: templates/leads/lead_detail.html:34 templates/leads/lead_mail.html:7
+#: templates/leads/lead_mail.html.py:11 templates/leads/lead_mail.txt:12
+#: templates/leads/mail.html:8 templates/leads/mail.txt:6
+#: templates/leads/mail.txt.py:7
 msgid "To be defined"
 msgstr ""
 
-#: templates/leads/lead_detail.html:35
+#: templates/leads/lead_detail.html:35 templates/leads/lead_mail.html:9
+#: templates/leads/lead_mail.txt:10 templates/leads/mail.html:9
+#: templates/leads/mail.txt:7
 msgid "Salesman: "
 msgstr ""
 
-#: templates/leads/lead_detail.html:35
+#: templates/leads/lead_detail.html:35 templates/leads/lead_mail.html:9
+#: templates/leads/lead_mail.txt:10 templates/leads/lead_mail.txt.py:18
+#: templates/leads/mail.html:9 templates/leads/mail.html.py:11
 msgid "None"
 msgstr ""
 
-#: templates/leads/lead_detail.html:37
+#: templates/leads/lead_detail.html:37 templates/leads/mail.html:8
+#: templates/leads/mail.txt:6
 msgid "Due date: "
 msgstr ""
 
-#: templates/leads/lead_detail.html:38
+#: templates/leads/lead_detail.html:38 templates/leads/mail.html:8
+#: templates/leads/mail.txt:6
 msgid "Start date: "
 msgstr ""
 
@@ -501,16 +515,19 @@ msgstr ""
 msgid "Sales (k€): "
 msgstr ""
 
-#: templates/leads/lead_detail.html:41
+#: templates/leads/lead_detail.html:41 templates/leads/lead_mail.html:15
 msgid "Potential resource(s): "
 msgstr ""
 
-#: templates/leads/lead_detail.html:42
+#: templates/leads/lead_detail.html:42 templates/leads/lead_mail.html:17
+#: templates/leads/lead_mail.txt:18 templates/leads/mail.html:11
+#: templates/leads/mail.txt:9
 msgid "Action: "
 msgstr ""
 
-#: templates/leads/lead_detail.html:42
-msgid "nothing"
+#: templates/leads/lead_detail.html:42 templates/leads/lead_mail.html:17
+#: templates/leads/mail.txt:9
+msgid "Nothing"
 msgstr ""
 
 #: templates/leads/lead_detail.html:43
@@ -535,4 +552,56 @@ msgstr ""
 
 #: templates/leads/lead_detail.html:73
 msgid "Staffing forecast"
+msgstr ""
+
+#: templates/leads/lead_mail.html:5 templates/leads/lead_mail.txt:6
+msgid "Description: "
+msgstr ""
+
+#: templates/leads/lead_mail.html:11 templates/leads/lead_mail.txt:12
+msgid "Status: "
+msgstr ""
+
+#: templates/leads/lead_mail.html:11
+msgid "Starting date"
+msgstr ""
+
+#: templates/leads/lead_mail.html:13 templates/leads/lead_mail.txt:14
+msgid "Sales (kEuros): "
+msgstr ""
+
+#: templates/leads/lead_mail.html:20
+msgid "Change this lead"
+msgstr ""
+
+#: templates/leads/lead_mail.html:20
+msgid "HomePage"
+msgstr ""
+
+#: templates/leads/lead_mail.txt:8
+msgid "to be defined"
+msgstr ""
+
+#: templates/leads/lead_mail.txt:16
+msgid "Potential resources: "
+msgstr ""
+
+#: templates/leads/lead_mail.txt:21
+msgid "Change this lead: "
+msgstr ""
+
+#: templates/leads/lead_mail.txt:22
+msgid "Homepage: "
+msgstr ""
+
+#: templates/leads/mail.html:8 templates/leads/mail.txt:7
+msgid "Sales: "
+msgstr ""
+
+#: templates/leads/mail.html:10 templates/leads/mail.txt:8
+msgid "Staffing: "
+msgstr ""
+
+#: templates/leads/mail.txt:5
+msgid "updated: "
 msgstr ""

@@ -5,10 +5,10 @@
     {% ifchanged %} <h4><u> {{ lead.get_state_display }}</u></h4>{% endifchanged %}
         <li><b>{{ lead.client }} - {{ lead.name }}</b> (maj : {{ lead.update_date_strf }})</li>
         <ul>
-            <li>&Eacute;ch&eacute;ance : {{ lead.due_date|default_if_none:"non d&eacute;finie"}} / D&eacute;marrage pr&eacute;vu : {{ lead.start_date|default_if_none:"non d&eacute;finie" }} / {% if lead.sales %}CA : {{ lead.sales }} kEuros{% else %}CA inconnu{% endif %}</li>
-            <li>Suivi : {{ lead.responsible|default_if_none:"aucun" }} / IA : {{ lead.salesman|default_if_none:"aucun" }}</li>
-            <li>Staffing : {{ lead.staffing_list }}</li>
-            <li>Action PDC : {{ lead.action|default_if_none:"rien" }}</li>
+            <li>{% trans "Due date: " %}{{ lead.due_date|default_if_none:_("To be defined")}} / {% trans "Start date: " %}{{ lead.start_date|default_if_none:_("To be defined") }} / {% if lead.sales %}{% trans "Sales: " %}{{ lead.sales }} kEuros{% else %}{% trans "Unknown" %}{% endif %}</li>
+            <li>{% trans "Responsible: " %}{{ lead.responsible|default_if_none:_("None") }} / {% trans "Salesman: " %}{{ lead.salesman|default_if_none:_("None") }}</li>
+            <li>{% trans "Staffing: " %}{{ lead.staffing_list }}</li>
+            <li>{% trans "Action: " %}{{ lead.action|default_if_none:_("None") }}</li>
         </ul><br>
     {% endfor %}
     </ul>
