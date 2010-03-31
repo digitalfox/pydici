@@ -1,3 +1,4 @@
+{% load i18n %}
 <b>{{ obj.client.organisation }} -</b> {{ obj.name }} <br>
 
 <b>{% trans "Contact: " %}</b>{{ obj.client.contact }} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}<br>

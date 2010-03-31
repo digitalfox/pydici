@@ -1,3 +1,4 @@
+{% load i18n %}
 {% autoescape off %}{% for leads in lead_group %}
 {% for lead in leads %}
 {% ifchanged %}__{{ lead.get_state_display }}__
