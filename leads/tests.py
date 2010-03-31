@@ -10,6 +10,7 @@ from django.test import TestCase
 
 # Pydici modules
 from pydici.leads.models import Consultant, Client, Lead
+import pydici.settings
 
 # Python modules used by tests
 from urllib2 import urlparse
@@ -79,7 +80,8 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(len(lead.update_date_strf()), 14)
         self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
         self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
-        self.failUnlessEqual(lead.get_absolute_url(), "http://localhost:8000/leads/4/")
+        self.failUnlessEqual(lead.get_absolute_url(),
+                             pydici.settings.LEADS_WEB_LINK_ROOT + "/leads/4/")
 
         url = "".join(urlparse.urlsplit(lead.get_absolute_url())[2:])
         response = self.client.get(url)
