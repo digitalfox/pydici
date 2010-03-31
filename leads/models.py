@@ -177,7 +177,7 @@ class Lead(models.Model):
 
     def update_date_strf(self):
         return self.update_date.strftime(SHORT_DATETIME_FORMAT)
-    update_date_strf.short_description = _("Update")
+    update_date_strf.short_description = _("Updated")
 
     def short_description(self):
         max_length = 20

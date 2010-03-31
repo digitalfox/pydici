@@ -124,7 +124,7 @@ def csv_export(request, target):
     writer.writerow([i.encode("ISO-8859-15") for i in [_("Name"), _("Client"), _("Description"),
                                                        _("Managed by"), _("Salesman"), _("Starting"),
                                                        _("State"), _("Due date"), _("Staffing"),
-                                                       _(u"Sales (k€)"), _("Deal Id"), _("Creation"),
+                                                       _(u"Sales (k€)"), _("Deal id"), _("Creation"),
                                                        _("Updated")]])
     if target != "all":
         leads = Lead.objects.active()

@@ -20,5 +20,5 @@
 
 
 {% trans "Change this lead: " %}{{ link_root }}/leads/admin/leads/lead/{{ obj.id }}/
-{% trans "Homepage: " %}{{ link_root }}/leads/
+{% trans "Home: " %}{{ link_root }}/leads/
 {% endautoescape %}
