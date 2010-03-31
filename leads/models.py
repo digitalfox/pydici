@@ -10,6 +10,7 @@ from datetime import datetime
 from django.db.models import Q
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
 
 from pydici.leads.utils import send_lead_mail, capitalize, compact_text
 import pydici.settings
@@ -131,14 +132,14 @@ class LeadManager(models.Manager):
 class Lead(models.Model):
     """A commercial lead"""
     STATES = (
-            ('QUALIF', _("Qualifying")),
-            ('WRITE_OFFER', _("Writting offer")),
-            ('OFFER_SENT', _("Offer sent")),
-            ('NEGOCATION', _("Negociation")),
-            ('WON', _("Won")),
-            ('LOST', _("Lost")),
-            ('FORGIVEN', _("Forgiven")),
-            ('SLEEPING', _("Sleeping")),
+            ('QUALIF', ugettext("Qualifying")),
+            ('WRITE_OFFER', ugettext("Writting offer")),
+            ('OFFER_SENT', ugettext("Offer sent")),
+            ('NEGOCATION', ugettext("Negociation")),
+            ('WON', ugettext("Won")),
+            ('LOST', ugettext("Lost")),
+            ('FORGIVEN', ugettext("Forgiven")),
+            ('SLEEPING', ugettext("Sleeping")),
            )
     name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)
