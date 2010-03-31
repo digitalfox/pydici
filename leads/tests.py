@@ -15,10 +15,13 @@ import pydici.settings
 # Python modules used by tests
 from urllib2 import urlparse
 
+TEST_USERNAME = "fox"
+TEST_PASSWORD = "rototo"
+
 class SimpleTest(TestCase):
     fixtures = ["auth.json", "leads.json"]
     def test_basic_page(self):
-        self.client.login(username='sre', password='rototo')
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         for page in ("/leads/",
                      "/leads/3/",
                      "/leads/admin/",
@@ -44,12 +47,12 @@ class SimpleTest(TestCase):
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
 
     def test_redirect(self):
-        self.client.login(username='sre', password='rototo')
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         response = self.client.get("/leads/mission/1/deactivate")
         self.failUnlessEqual(response.status_code, 302)
 
     def test_not_found_page(self):
-        self.client.login(username='sre', password='rototo')
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         for page in ("/leads/234/",
                      "/leads/sendmail/434/"):
             response = self.client.get(page)
@@ -57,7 +60,7 @@ class SimpleTest(TestCase):
                                  "Failed to test url %s (got %s instead of 404" % (page, response.status_code))
 
     def test_create_lead(self):
-        self.client.login(username='sre', password='rototo')
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         lead = Lead(name="laala",
                   due_date="2008-11-01",
                   update_date="2008-11-01 16:14:16",
@@ -88,10 +91,10 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(response.status_code, 200)
         context = response.context[-1]
         self.failUnlessEqual(unicode(context["lead"]), u"World company : DSI  - laala")
-        self.failUnlessEqual(unicode(context["user"]), "sre")
+        self.failUnlessEqual(unicode(context["user"]), "fox")
 
     def test_pdc_review(self):
-        self.client.login(username='sre', password='rototo')
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         url = "/leads/pdcreview/2009/07"
         for arg in ({}, {"projected":None}, {"groupby": "manager"}, {"groupby": "position"}):
             response = self.client.get(url, arg)
