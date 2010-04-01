@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from datetime import datetime
 
 from pydici.leads.models import Lead, Client, ClientOrganisation, ClientCompany, ClientContact, Consultant, \
-                                SalesMan, Mission, Staffing, Holiday, ConsultantProfile, Company
+                                SalesMan, Mission, Staffing, Holiday, ConsultantProfile, Subsidiary
 
 from pydici.leads.utils import send_lead_mail, capitalize
 
@@ -138,7 +138,7 @@ class ConsultantProfileAdmin(admin.ModelAdmin):
     ordering = ("level",)
     list_display = ("name", "level")
 
-class CompanyAdmin(admin.ModelAdmin):
+class SubsidiaryAdmin(admin.ModelAdmin):
     ordering = ("name",)
 
 admin.site.register(Lead, LeadAdmin)
@@ -151,4 +151,4 @@ admin.site.register(SalesMan, SalesManAdmin)
 admin.site.register(Mission, MissionAdmin)
 admin.site.register(Holiday, HolidayAdmin)
 admin.site.register(ConsultantProfile, ConsultantProfileAdmin)
-admin.site.register(Company, CompanyAdmin)
+admin.site.register(Subsidiary, SubsidiaryAdmin)

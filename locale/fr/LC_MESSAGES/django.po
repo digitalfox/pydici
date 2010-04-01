@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-02 00:10+0200\n"
-"PO-Revision-Date: 2010-04-02 00:10+0200\n"
+"POT-Creation-Date: 2010-04-02 00:34+0200\n"
+"PO-Revision-Date: 2010-04-02 00:25+0200\n"
 "Last-Translator: Sebastien Renard <Sebastien.Renard@digitalfox.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -37,237 +37,245 @@ msgstr "La probabilité de la mission a été mise à 100 %"
 msgid "According mission has been archived"
 msgstr "La mission correspondante a été archivée"
 
-#: leads/models.py:23 leads/models.py:32 leads/models.py:43 leads/models.py:64
-#: leads/models.py:118 leads/models.py:155 leads/views.py:124
+#: leads/models.py:23 leads/models.py:33 leads/models.py:44 leads/models.py:65
+#: leads/models.py:119 leads/models.py:156 leads/views.py:124
 #: templates/leads/consultant_staffing.html:18
 msgid "Name"
 msgstr "Nom"
 
-#: leads/models.py:28
+#: leads/models.py:28 leads/models.py:100 leads/models.py:121
 msgid "Subsidiary"
 msgstr "Filiale"
 
-#: leads/models.py:33
+#: leads/models.py:29
+msgid "Subsidiaries"
+msgstr "Filiales"
+
+#: leads/models.py:34
 msgid "Level"
 msgstr "Niveau"
 
-#: leads/models.py:39
+#: leads/models.py:40
 msgid "Consultant profile"
 msgstr "Profile du consultant"
 
-#: leads/models.py:49
+#: leads/models.py:50
 msgid "Client Company"
 msgstr "Entreprise"
 
-#: leads/models.py:53
+#: leads/models.py:54
 msgid "Organization"
 msgstr "Organisation"
 
-#: leads/models.py:54
+#: leads/models.py:55
 msgid "Client company"
 msgstr "Entreprise"
 
-#: leads/models.py:60
+#: leads/models.py:61
 msgid "Client organisation"
 msgstr "Département"
 
-#: leads/models.py:65
+#: leads/models.py:66
 msgid "Function"
 msgstr "Fonction"
 
-#: leads/models.py:67 leads/models.py:122
+#: leads/models.py:68 leads/models.py:123
 msgid "Phone"
 msgstr "Téléphone"
 
-#: leads/models.py:77
+#: leads/models.py:78
 msgid "Client contact"
 msgstr "Contact client"
 
-#: leads/models.py:81
+#: leads/models.py:82
 msgid "Organisation"
 msgstr "Département"
 
-#: leads/models.py:82
+#: leads/models.py:83
 msgid "Contact"
 msgstr "Contact"
 
-#: leads/models.py:83
+#: leads/models.py:84
 msgid "Sales owner"
 msgstr "Propriété commerciale"
 
-#: leads/models.py:93 leads/views.py:124 templates/leads/index.html:18
+#: leads/models.py:94 leads/views.py:124 templates/leads/index.html:18
 #: templates/leads/index.html.py:43 templates/leads/index.html:67
 #: templates/leads/index.html.py:91
 msgid "Client"
 msgstr "Client"
 
-#: leads/models.py:100 leads/models.py:210
+#: leads/models.py:101 leads/models.py:211
 msgid "Productive"
 msgstr "Productif"
 
-#: leads/models.py:113
+#: leads/models.py:103
+msgid "Profil"
+msgstr "Profile"
+
+#: leads/models.py:114
 msgid "Consultant"
 msgstr "Consultant"
 
-#: leads/models.py:133 leads/models.py:160 leads/views.py:125
+#: leads/models.py:134 leads/models.py:161 leads/views.py:125
 #: templates/leads/index.html:21 templates/leads/index.html.py:46
 #: templates/leads/index.html:70 templates/leads/index.html.py:94
 msgid "Salesman"
 msgstr "Commercial"
 
-#: leads/models.py:134
+#: leads/models.py:135
 msgid "Salesmen"
 msgstr "Commerciaux"
 
-#: leads/models.py:146
+#: leads/models.py:147
 msgid "Qualifying"
 msgstr "En qualif."
 
-#: leads/models.py:147
+#: leads/models.py:148
 msgid "Writting offer"
 msgstr "Propal. à écrire"
 
-#: leads/models.py:148
+#: leads/models.py:149
 msgid "Offer sent"
 msgstr "Propal. envoyée"
 
-#: leads/models.py:149
+#: leads/models.py:150
 msgid "Negociation"
 msgstr "En négo."
 
-#: leads/models.py:150
+#: leads/models.py:151
 msgid "Won"
 msgstr "Gagnée"
 
-#: leads/models.py:151
+#: leads/models.py:152
 msgid "Lost"
 msgstr "Perdue"
 
-#: leads/models.py:152
+#: leads/models.py:153
 msgid "Forgiven"
 msgstr "Abandonnée"
 
-#: leads/models.py:153
+#: leads/models.py:154
 msgid "Sleeping"
 msgstr "En sommeil"
 
-#: leads/models.py:157 templates/leads/lead_detail.html:54
+#: leads/models.py:158 templates/leads/lead_detail.html:54
 msgid "Action"
 msgstr "Action"
 
-#: leads/models.py:158 leads/views.py:127
+#: leads/models.py:159 leads/views.py:127
 msgid "Deal id"
 msgstr "N° affaire"
 
-#: leads/models.py:159 leads/views.py:127 templates/leads/index.html:22
+#: leads/models.py:160 leads/views.py:127 templates/leads/index.html:22
 #: templates/leads/index.html.py:47 templates/leads/index.html:71
 #: templates/leads/index.html.py:95
 msgid "Sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/models.py:162
+#: leads/models.py:163
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:164 leads/views.py:125
+#: leads/models.py:165 leads/views.py:125
 msgid "Starting"
 msgstr "Démarrage"
 
-#: leads/models.py:165
+#: leads/models.py:166
 msgid "Due"
 msgstr "Échéance"
 
-#: leads/models.py:166 leads/views.py:126
+#: leads/models.py:167 leads/views.py:126
 msgid "State"
 msgstr "État"
 
-#: leads/models.py:168 leads/views.py:127
+#: leads/models.py:169 leads/views.py:127
 msgid "Creation"
 msgstr "Création"
 
-#: leads/models.py:169 leads/models.py:191 leads/models.py:224
-#: leads/models.py:268 leads/views.py:128 templates/leads/index.html:24
+#: leads/models.py:170 leads/models.py:192 leads/models.py:225
+#: leads/models.py:269 leads/views.py:128 templates/leads/index.html:24
 #: templates/leads/index.html.py:49 templates/leads/index.html:73
 #: templates/leads/index.html.py:97
 msgid "Updated"
 msgstr "Mise à jour"
 
-#: leads/models.py:170
+#: leads/models.py:171
 msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
-#: leads/models.py:199 leads/models.py:220 leads/models.py:256
+#: leads/models.py:200 leads/models.py:221 leads/models.py:257
 #: leads/views.py:124
 msgid "Description"
 msgstr "Description"
 
-#: leads/models.py:206 templates/leads/index.html:19
+#: leads/models.py:207 templates/leads/index.html:19
 #: templates/leads/index.html.py:44 templates/leads/index.html:68
 #: templates/leads/index.html.py:92
 msgid "Lead"
 msgstr "Opportunité"
 
-#: leads/models.py:211
+#: leads/models.py:212
 msgid "Unproductive"
 msgstr "Non productif"
 
-#: leads/models.py:212
+#: leads/models.py:213
 msgid "Holidays"
 msgstr "Congés"
 
-#: leads/models.py:214
+#: leads/models.py:215
 msgid "Null"
 msgstr "Nulle"
 
-#: leads/models.py:215
+#: leads/models.py:216
 msgid "Low"
 msgstr "Faible"
 
-#: leads/models.py:216
+#: leads/models.py:217
 msgid "Normal"
 msgstr "Moyenne"
 
-#: leads/models.py:217
+#: leads/models.py:218
 msgid "High"
 msgstr "Haute"
 
-#: leads/models.py:218
+#: leads/models.py:219
 msgid "Certain"
 msgstr "Certaine"
 
-#: leads/models.py:221
+#: leads/models.py:222
 msgid "Type"
 msgstr "Type"
 
-#: leads/models.py:222
+#: leads/models.py:223
 msgid "Active"
 msgstr "Active"
 
-#: leads/models.py:223
+#: leads/models.py:224
 msgid "Proba"
 msgstr "Proba"
 
-#: leads/models.py:251 templates/leads/consultant_staffing.html:35
+#: leads/models.py:252 templates/leads/consultant_staffing.html:35
 msgid "Mission"
 msgstr "Mission"
 
-#: leads/models.py:255 leads/models.py:265
+#: leads/models.py:256 leads/models.py:266
 msgid "Date"
 msgstr "Date"
 
-#: leads/models.py:259
+#: leads/models.py:260
 msgid "Holiday"
 msgstr "Congé"
 
-#: leads/models.py:266 templates/leads/consultant_staffing.html:37
+#: leads/models.py:267 templates/leads/consultant_staffing.html:37
 msgid "Load"
 msgstr "Charge"
 
-#: leads/models.py:267 templates/leads/consultant_staffing.html:38
+#: leads/models.py:268 templates/leads/consultant_staffing.html:38
 msgid "Comments"
 msgstr "Remarques"
 
-#: leads/models.py:281 leads/views.py:126
+#: leads/models.py:282 leads/views.py:126
 #: templates/leads/consultant_staffing.html:28
 msgid "Staffing"
 msgstr "Staffing"

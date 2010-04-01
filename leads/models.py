@@ -18,7 +18,7 @@ import pydici.settings
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
-class Company(models.Model):
+class Subsidiary(models.Model):
     """Internal company / organisation unit"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
 
@@ -26,6 +26,7 @@ class Company(models.Model):
 
     class Meta:
         verbose_name = _("Subsidiary")
+        verbose_name_plural = _("Subsidiaries")
 
 class ConsultantProfile(models.Model):
     """Consultant hierarchy"""
@@ -80,7 +81,7 @@ class Client(models.Model):
     """A client is defined by a contact and the organisation where he works"""
     organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Organisation"))
     contact = models.ForeignKey(ClientContact, blank=True, null=True, verbose_name=_("Contact"))
-    salesOwner = models.ForeignKey(Company, verbose_name=_("Sales owner"))
+    salesOwner = models.ForeignKey(Subsidiary, verbose_name=_("Sales owner"))
 
     def __unicode__(self):
         if self.contact:
@@ -96,10 +97,10 @@ class Consultant(models.Model):
     """A consultant that can manage a lead or be ressource of a mission"""
     name = models.CharField(max_length=50)
     trigramme = models.CharField(max_length=4, unique=True)
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
     productive = models.BooleanField(_("Productive"), default=True)
     manager = models.ForeignKey("self", null=True, blank=True)
-    profil = models.ForeignKey(ConsultantProfile)
+    profil = models.ForeignKey(ConsultantProfile, verbose_name=_("Profil"))
 
     def __unicode__(self): return self.name
 
@@ -117,7 +118,7 @@ class SalesMan(models.Model):
     """A salesman"""
     name = models.CharField(_("Name"), max_length=50)
     trigramme = models.CharField(max_length=4, unique=True)
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)
 
