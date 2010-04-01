@@ -1,11 +1,11 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
 
-{% block title %}{{ title }} |Gestion des leads commerciaux{% endblock %}
+{% block title %}{{ title }} |{% trans "Pydici - Lead and workload schedule management" %}{% endblock %}
 
 {% block branding %}
 <h1 id="site-name">
-    <a href='/leads/'><img src="/leads/media/leads/company_logo.png">  Gestion des leads commerciaux</a>
+    <a href='/leads/'><img src="/leads/media/leads/company_logo.png">  {% trans "Lead and workload schedule management" %}</a>
 </h1>
 {% endblock %}
 

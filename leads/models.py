@@ -24,6 +24,9 @@ class Company(models.Model):
 
     def __unicode__(self): return self.name
 
+    class Meta:
+        verbose_name = _("Subsidiary")
+
 class ConsultantProfile(models.Model):
     """Consultant hierarchy"""
     name = models.CharField(_("Name"), max_length=50, unique=True)
@@ -33,6 +36,7 @@ class ConsultantProfile(models.Model):
 
     class Meta:
         ordering = ["level"]
+        verbose_name = _("Consultant profile")
 
 class ClientCompany(models.Model):
     """Client company"""
@@ -42,16 +46,18 @@ class ClientCompany(models.Model):
 
     class Meta:
         ordering = ["name"]
+        verbose_name = _("Client Company")
 
 class ClientOrganisation(models.Model):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
-    company = models.ForeignKey(ClientCompany, verbose_name=_("Entreprise"))
+    company = models.ForeignKey(ClientCompany, verbose_name=_("Client company"))
 
     def __unicode__(self): return u"%s : %s " % (self.company, self.name)
 
     class Meta:
         ordering = ["company", "name"]
+        verbose_name = _("Client organisation")
 
 class ClientContact(models.Model):
     """A contact in client organization"""
@@ -68,12 +74,13 @@ class ClientContact(models.Model):
 
     class Meta:
         ordering = ["name"]
+        verbose_name = _("Client contact")
 
 class Client(models.Model):
-    """A client organization"""
-    organisation = models.ForeignKey(ClientOrganisation)
-    contact = models.ForeignKey(ClientContact, blank=True, null=True)
-    salesOwner = models.ForeignKey(Company)
+    """A client is defined by a contact and the organisation where he works"""
+    organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Organisation"))
+    contact = models.ForeignKey(ClientContact, blank=True, null=True, verbose_name=_("Contact"))
+    salesOwner = models.ForeignKey(Company, verbose_name=_("Sales owner"))
 
     def __unicode__(self):
         if self.contact:
@@ -83,6 +90,7 @@ class Client(models.Model):
 
     class Meta:
         ordering = ["organisation", "contact"]
+        verbose_name = _("Client")
 
 class Consultant(models.Model):
     """A consultant that can manage a lead or be ressource of a mission"""
@@ -102,6 +110,7 @@ class Consultant(models.Model):
 
     class Meta:
         ordering = ["name", ]
+        verbose_name = _("Consultant")
 
 
 class SalesMan(models.Model):
@@ -121,6 +130,8 @@ class SalesMan(models.Model):
 
     class Meta:
         ordering = ["name", ]
+        verbose_name = _("Salesman")
+        verbose_name_plural = _("Salesmen")
 
 class LeadManager(models.Manager):
     def active(self):
@@ -145,7 +156,7 @@ class Lead(models.Model):
     description = models.TextField(blank=True)
     action = models.CharField(_("Action"), max_length=2000, blank=True, null=True)
     salesId = models.CharField(_("Deal id"), max_length=100, blank=True)
-    sales = models.IntegerField(_("Sales (k€)"), blank=True, null=True)
+    sales = models.IntegerField(_(u"Sales (k€)"), blank=True, null=True)
     salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"))
     staffing = models.ManyToManyField(Consultant, blank=True)
     external_staffing = models.CharField(_("External staffing"), max_length=300, blank=True)
@@ -192,6 +203,7 @@ class Lead(models.Model):
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]
+        verbose_name = _("Lead")
 
 class Mission(models.Model):
     MISSION_NATURE = (
@@ -236,11 +248,15 @@ class Mission(models.Model):
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "description"]
+        verbose_name = _("Mission")
 
 class Holiday(models.Model):
     """List of public and enterprise specific holidays"""
     day = models.DateField(_("Date"))
     description = models.CharField(_("Description"), max_length=200)
+
+    class Meta:
+        verbose_name = _("Holiday")
 
 class Staffing(models.Model):
     """The staffing fact table: charge per month per consultant per mission"""
@@ -262,3 +278,4 @@ class Staffing(models.Model):
     class Meta:
         unique_together = (("consultant", "mission", "staffing_date"),)
         ordering = ["staffing_date", "consultant"]
+        verbose_name = _("Staffing")
