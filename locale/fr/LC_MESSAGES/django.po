@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-02 15:31+0200\n"
+"POT-Creation-Date: 2010-04-02 15:56+0200\n"
 "PO-Revision-Date: 2010-04-02 15:31+0200\n"
 "Last-Translator: Sebastien Renard <Sebastien.Renard@digitalfox.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
@@ -105,7 +105,7 @@ msgstr "Propriété commerciale"
 msgid "Client"
 msgstr "Client"
 
-#: leads/models.py:101 leads/models.py:211
+#: leads/models.py:101 leads/models.py:210
 msgid "Productive"
 msgstr "Productif"
 
@@ -117,7 +117,7 @@ msgstr "Profile"
 msgid "Consultant"
 msgstr "Consultant"
 
-#: leads/models.py:134 leads/models.py:161 leads/views.py:125
+#: leads/models.py:134 leads/models.py:160 leads/views.py:125
 #: templates/leads/index.html:21 templates/leads/index.html.py:46
 #: templates/leads/index.html:70 templates/leads/index.html.py:94
 msgid "Salesman"
@@ -159,89 +159,89 @@ msgstr "Abandonnée"
 msgid "Sleeping"
 msgstr "En sommeil"
 
-#: leads/models.py:158 templates/leads/lead_detail.html:54
+#: leads/models.py:158 templates/leads/lead_detail.html:53
 msgid "Action"
 msgstr "Action"
 
-#: leads/models.py:159 leads/views.py:127
-msgid "Deal id"
-msgstr "N° affaire"
-
-#: leads/models.py:160 leads/views.py:127 templates/leads/index.html:22
+#: leads/models.py:159 leads/views.py:127 templates/leads/index.html:22
 #: templates/leads/index.html.py:47 templates/leads/index.html:71
 #: templates/leads/index.html.py:95
 msgid "Sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/models.py:163
+#: leads/models.py:162
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:165 leads/views.py:125
+#: leads/models.py:164 leads/views.py:125
 msgid "Starting"
 msgstr "Démarrage"
 
-#: leads/models.py:166
+#: leads/models.py:165
 msgid "Due"
 msgstr "Échéance"
 
-#: leads/models.py:167 leads/views.py:126
+#: leads/models.py:166 leads/views.py:126
 msgid "State"
 msgstr "État"
 
-#: leads/models.py:169 leads/views.py:127
+#: leads/models.py:168 leads/views.py:127
 msgid "Creation"
 msgstr "Création"
 
-#: leads/models.py:170 leads/models.py:192 leads/models.py:225
+#: leads/models.py:169 leads/models.py:191 leads/models.py:225
 #: leads/models.py:269 leads/views.py:128 templates/leads/index.html:24
 #: templates/leads/index.html.py:49 templates/leads/index.html:73
 #: templates/leads/index.html.py:97
 msgid "Updated"
 msgstr "Mise à jour"
 
-#: leads/models.py:171
+#: leads/models.py:170
 msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
-#: leads/models.py:200 leads/models.py:221 leads/models.py:257
+#: leads/models.py:199 leads/models.py:221 leads/models.py:257
 #: leads/views.py:124
 msgid "Description"
 msgstr "Description"
 
-#: leads/models.py:207 templates/leads/index.html:19
+#: leads/models.py:206 leads/models.py:219 templates/leads/index.html:19
 #: templates/leads/index.html.py:44 templates/leads/index.html:68
 #: templates/leads/index.html.py:92
 msgid "Lead"
 msgstr "Opportunité"
 
-#: leads/models.py:212
+#: leads/models.py:211
 msgid "Unproductive"
 msgstr "Non productif"
 
-#: leads/models.py:213
+#: leads/models.py:212
 msgid "Holidays"
 msgstr "Congés"
 
-#: leads/models.py:215
+#: leads/models.py:214
 msgid "Null"
 msgstr "Nulle"
 
-#: leads/models.py:216
+#: leads/models.py:215
 msgid "Low"
 msgstr "Faible"
 
-#: leads/models.py:217
+#: leads/models.py:216
 msgid "Normal"
 msgstr "Moyenne"
 
-#: leads/models.py:218
+#: leads/models.py:217
 msgid "High"
 msgstr "Haute"
 
-#: leads/models.py:219
+#: leads/models.py:218
 msgid "Certain"
 msgstr "Certaine"
+
+#: leads/models.py:220
+msgid "Deal id"
+msgstr "N° affaire"
 
 #: leads/models.py:222
 msgid "Type"
@@ -297,11 +297,11 @@ msgstr "Date d'échéance"
 msgid "Lead %(id)s was sent to %(mail)s !"
 msgstr "L'opportunité %(id)s a été envoyée à %(mail)s !"
 
-#: leads/views.py:257
+#: leads/views.py:256
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: leads/views.py:524
+#: leads/views.py:523
 msgid "Leads per salesmen (solid line: won. Dotted line: lost)"
 msgstr ""
 "Opportunités par commercial (trait continu : gagnées, pointillés : perdues)"
@@ -454,7 +454,7 @@ msgid "Back to work load schedule"
 msgstr "Retour au plan de charge"
 
 #: templates/leads/consultant_staffing.html:75
-#: templates/leads/lead_detail.html:70
+#: templates/leads/lead_detail.html:69
 msgid "Back to home page"
 msgstr "Retour à la page d'accueil"
 
@@ -629,27 +629,23 @@ msgstr "Action : "
 msgid "Nothing"
 msgstr "Rien"
 
-#: templates/leads/lead_detail.html:43
-msgid "Sales code: "
-msgstr "N° affaire"
-
-#: templates/leads/lead_detail.html:48
+#: templates/leads/lead_detail.html:47
 msgid "Change history"
 msgstr "Historique des changements"
 
-#: templates/leads/lead_detail.html:52
+#: templates/leads/lead_detail.html:51
 msgid "Date/time"
 msgstr "Date/heure"
 
-#: templates/leads/lead_detail.html:53
+#: templates/leads/lead_detail.html:52
 msgid "User"
 msgstr "Utilisateur"
 
-#: templates/leads/lead_detail.html:60
+#: templates/leads/lead_detail.html:59
 msgid "DATETIME_FORMAT"
 msgstr "j F Y, G:i"
 
-#: templates/leads/lead_detail.html:73
+#: templates/leads/lead_detail.html:72
 msgid "Workload schedule"
 msgstr "Plan de charge"
 
@@ -692,6 +688,9 @@ msgstr "Staffing : "
 #: templates/leads/mail.txt:6
 msgid "updated: "
 msgstr "Mise à jour : "
+
+#~ msgid "Sales code: "
+#~ msgstr "N° affaire"
 
 #~ msgid "Summary"
 #~ msgstr "Résumés"

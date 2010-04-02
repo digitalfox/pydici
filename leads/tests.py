@@ -69,7 +69,6 @@ class SimpleTest(TestCase):
                   responsible=None,
                   sales=None,
                   external_staffing="JCF",
-                  salesId="code",
                   state="QUALIF",
                   client=Client.objects.get(pk=1),
                   salesman=None,

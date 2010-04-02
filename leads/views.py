@@ -124,7 +124,7 @@ def csv_export(request, target):
     writer.writerow([i.encode("ISO-8859-15") for i in [_("Name"), _("Client"), _("Description"),
                                                        _("Managed by"), _("Salesman"), _("Starting"),
                                                        _("State"), _("Due date"), _("Staffing"),
-                                                       _(u"Sales (k€)"), _("Deal id"), _("Creation"),
+                                                       _(u"Sales (k€)"), _("Creation"),
                                                        _("Updated")]])
     if target != "all":
         leads = Lead.objects.active()
@@ -133,7 +133,7 @@ def csv_export(request, target):
     for lead in leads.order_by("start_date"):
         state = lead.get_state_display()
         row = [lead.name, lead.client, lead.description, lead.responsible, lead.salesman, lead.start_date, state,
-                         lead.due_date, lead.staffing_list(), lead.sales, lead.salesId, lead.creation_date, lead.update_date]
+                         lead.due_date, lead.staffing_list(), lead.sales, lead.creation_date, lead.update_date]
         row = [unicode(x).encode("ISO-8859-15", "ignore") for x in row]
         writer.writerow(row)
     return response
@@ -154,7 +154,6 @@ def review(request):
     today = datetime.today()
     delay = timedelta(days=10) #(10 days)
     recentArchivedLeads = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
-                                                      Q(state="WIN", salesId="") |
                                                       Q(state="SLEEPING"))
     recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date")
     return render_to_response("leads/review.html", {"recent_archived_leads" : recentArchivedLeads,

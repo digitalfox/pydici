@@ -156,7 +156,6 @@ class Lead(models.Model):
     name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)
     action = models.CharField(_("Action"), max_length=2000, blank=True, null=True)
-    salesId = models.CharField(_("Deal id"), max_length=100, blank=True)
     sales = models.IntegerField(_(u"Sales (k€)"), blank=True, null=True)
     salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"))
     staffing = models.ManyToManyField(Consultant, blank=True)
@@ -217,7 +216,8 @@ class Mission(models.Model):
             (50, _("Normal")),
             (75, _("High")),
             (100, _("Certain")))
-    lead = models.ForeignKey(Lead, null=True, blank=True)
+    lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"))
+    deal_id = models.CharField(_("Deal id"), max_length=100, blank=True)
     description = models.CharField(_("Description"), max_length=30, blank=True, null=True)
     nature = models.CharField(_("Type"), max_length=30, choices=MISSION_NATURE, default="PROD")
     active = models.BooleanField(_("Active"), default=True)

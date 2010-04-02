@@ -40,7 +40,6 @@
     <b>{% trans "Sales (k€): " %}</b>{{ lead.sales|default_if_none:_("Unknown") }}<br>
     <b>{% trans "Potential resource(s): " %} </b>{{ lead.staffing_list }}<br>
     <b>{% trans "Action: " %}</b>{% if lead.action %}{{ lead.action }}{% else %}{% trans "Nothing" %}{% endif %}<br>
-    {% if lead.salesId %} <b>{% trans "Sales code: " %} </b>{{ lead.salesId }}<br>{% endif %}
     <br><br><hr>
 </div>
 

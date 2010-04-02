@@ -19,7 +19,7 @@ from pydici.leads.utils import send_lead_mail, capitalize
 class LeadAdmin(admin.ModelAdmin):
     list_display = ("name", "client", "short_description", "responsible", "salesman", "state", "due_date", "update_date_strf")
     fieldsets = [
-        (None, {"fields": ["name", "client", "description", "action", "salesId"]}),
+        (None, {"fields": ["name", "client", "description", "action"]}),
         ("État et suivi", {"fields": ["responsible", "salesman", "state", "due_date", "start_date"]}),
         ("Staffing", {"fields": ["staffing", "external_staffing", "sales"]}),
         (None, {"fields": ["send_email", ]})
@@ -28,7 +28,7 @@ class LeadAdmin(admin.ModelAdmin):
     filter_horizontal = ["staffing"]
     list_filter = ["state", ]
     date_hierarchy = "update_date"
-    search_fields = ["name", "description", "action", "salesId",
+    search_fields = ["name", "description", "action",
                      "responsible__name", "responsible__trigramme",
                      "salesman__name", "salesman__trigramme",
                      "client__contact__name", "client__organisation__company__name",
@@ -123,8 +123,8 @@ class ConsultantAdmin(admin.ModelAdmin):
     list_filter = ["profil", ]
 
 class MissionAdmin(admin.ModelAdmin):
-    list_display = ("lead", "description", "nature", "probability", "active", "update_date")
-    search_fields = ("lead__name", "description", "lead__client__organisation__company__name",
+    list_display = ("lead", "description", "nature", "probability", "deal_id", "active", "update_date")
+    search_fields = ("lead__name", "description", "deal_id", "lead__client__organisation__company__name",
                    "lead__client__contact__name")
     ordering = ("lead", "description")
     date_hierarchy = "update_date"

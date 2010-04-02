@@ -113,8 +113,7 @@
             "update_date": "2010-02-21 22:53:37", 
             "responsible": 1, 
             "sales": null, 
-            "external_staffing": "", 
-            "salesId": "", 
+            "external_staffing": "",  
             "send_email": false, 
             "state": "OFFER_SENT", 
             "client": 1, 
@@ -135,8 +134,7 @@
             "update_date": "2010-02-21 22:54:50", 
             "responsible": null, 
             "sales": null, 
-            "external_staffing": "", 
-            "salesId": "", 
+            "external_staffing": "",  
             "send_email": false, 
             "state": "QUALIF", 
             "client": 1, 
@@ -157,8 +155,7 @@
             "update_date": "2010-02-21 22:54:18", 
             "responsible": null, 
             "sales": null, 
-            "external_staffing": "", 
-            "salesId": "", 
+            "external_staffing": "",  
             "send_email": false, 
             "state": "NEGOCATION", 
             "client": 1, 
@@ -179,6 +176,7 @@
             "probability": 50, 
             "nature": "PROD", 
             "lead": 1, 
+            "deal_id": "1234",
             "active": true
         }
     }, 
@@ -191,6 +189,7 @@
             "probability": 50, 
             "nature": "PROD", 
             "lead": 2, 
+            "deal_id": "4321",
             "active": true
         }
     }, 
