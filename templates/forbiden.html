@@ -12,11 +12,16 @@
 {% block content %}
 
 <div id="content-main">
-
-<h1>Désolé, cette page n'est pas accessible.<h1>
-<h2>Votre profil ne vous permet pas d'accéder à cette page.</h2>
-<p>Si vous pensez qu'il s'agit d'une anomalie, merci <a href="mailto:sebastien@digitalfox.org">d'envoyer
-un mail à Sébastien R. </a> pour mettre à jour vos droits.
-
+{% blocktrans %}
+<h1>Sorry, this page is not available.<h1>
+<h2>You profil does not allow you to access to this page.</h2>
+<p>If you think that this could be a mistake, please, contact an administrator
+to update your profile:</p>
+{% endblocktrans %}
+<ul> 
+{% for admin in ADMINS %}
+    <li><a href='mailto:{{ admin.1 }}'>{{ admin.0 }}</a></li>
+{% endfor %}
+</ul>
 </div>
 {% endblock %}

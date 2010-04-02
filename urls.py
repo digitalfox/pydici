@@ -3,13 +3,16 @@
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: GPL v3 or newer
 """
-#
+# Django import
 from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.views.generic.simple import direct_to_template
 
 admin.autodiscover()
 
+# Config to get admin conctat
+import pydici.settings
+admin_contact = { "ADMINS" : pydici.settings.ADMINS }
 
 # Feeds definition
 from pydici.leads.feeds import LatestLeads, NewLeads, MyLatestLeads, AllChanges, WonLeads
@@ -36,7 +39,7 @@ urlpatterns = patterns('',
     (r'^leads/pdcreview/?$', 'pydici.leads.views.pdc_review'),
     (r'^leads/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pydici.leads.views.pdc_review'),
     (r'^leads/IA_stats', 'pydici.leads.views.IA_stats'),
-    (r'^leads/forbiden',  direct_to_template, {'template': 'forbiden.html'}),
+    (r'^leads/forbiden', direct_to_template, {'template': 'forbiden.html', 'extra_context': admin_contact}),
     (r'^leads/csv/(.*)', 'pydici.leads.views.csv_export'),
     (r'^leads/(?P<lead_id>\d+)/$', 'pydici.leads.views.detail'),
     (r'^leads/mission/$', 'pydici.leads.views.missions'),

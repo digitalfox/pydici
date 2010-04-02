@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Django settings for pydici project.
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

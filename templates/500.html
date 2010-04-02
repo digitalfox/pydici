@@ -9,12 +9,11 @@
 
 {% block content %}
 <div id="content-main">
-
-<h1>Désolé, ceci est une erreur de l'application</h1>
-<h2>L'administrateur a été prévenu par mail de cette erreur</h2>
-<p>N'hésitez pas à <a href="mailto:sebastien@digitalfox.org">envoyer
-un mail à Sébastien R. </a> en indiquant les conditions qui ont provoquées cette erreur
-afin d'aider au diagnostic.
-
+{% blocktrans %}
+<h1>Sorry, this is an application error</h1>
+<h2>Administrators have been warned by email of this error</h2>
+<p>Don't hesitate to contact them to explain conditions that lead
+to that error in order to help help diagnotics.</p>
+{% endblocktrans %}
 </div>
 {% endblock %}
