@@ -85,7 +85,7 @@ def detail(request, lead_id):
         actionList = LogEntry.objects.filter(object_id=lead_id,
                                               content_type__name="lead")
         actionList = actionList.select_related().order_by('action_time')
-         # Lead rank in active list
+        # Lead rank in active list
         active_leads = Lead.objects.active().order_by("start_date", "creation_date", "id")
         try:
             rank = [l.id for l in active_leads].index(lead.id)
@@ -99,7 +99,7 @@ def detail(request, lead_id):
             else:
                 previous_lead = active_leads[rank - 1]
                 next_lead = active_leads[rank + 1]
-        except ValueError:
+        except (ValueError, IndexError):
             # Lead is not in active list, rank it to zero
             rank = 0
             next_lead = None
