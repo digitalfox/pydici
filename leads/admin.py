@@ -59,7 +59,7 @@ class LeadAdmin(admin.ModelAdmin):
             mission = Mission(lead=obj) # Mission is saved below if needed
             mission_does_not_exist = True
 
-        if obj.state in ("OFFER_SENT", "NEGOCATION", "WIN") and mission_does_not_exist:
+        if obj.state in ("OFFER_SENT", "NEGOCATION", "WON") and mission_does_not_exist:
             currentMonth = datetime.now()
             mission.lead = obj
             mission.save()
@@ -73,7 +73,7 @@ class LeadAdmin(admin.ModelAdmin):
                 staffing.last_user = "-"
                 staffing.save()
             request.user.message_set.create(message=_("A mission has been initialized for this lead."))
-        if obj.state == "WIN":
+        if obj.state == "WON":
             mission.probability = 100
             mission.active = True
             mission.save()

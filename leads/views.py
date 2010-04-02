@@ -66,9 +66,9 @@ def summary_mail(request, html=True):
     today = datetime.today()
     delay = timedelta(days=6)
     leads = []
-    for state in ("WIN", "FORGIVEN", "LOST", "WRITE_OFFER", "OFFER_SENT", "NEGOCATION", "QUALIF"):
+    for state in ("WON", "FORGIVEN", "LOST", "WRITE_OFFER", "OFFER_SENT", "NEGOCATION", "QUALIF"):
         rs = Lead.objects.filter(state=state).order_by("-update_date")
-        if state in ("WIN", "FORGIVEN", "LOST"):
+        if state in ("WON", "FORGIVEN", "LOST"):
             rs = rs.filter(update_date__gte=(today - delay))
         leads.append(rs)
     if html:
@@ -418,7 +418,7 @@ def IA_stats(request):
                 if not leadSum.has_key(month):
                     leadSum[month] = {}
                 data[year][salesMan][month] = {}
-                for state, label in (("LOST", "P"), ("WIN", "G"), ("FORGIVEN", "A")):
+                for state, label in (("LOST", "P"), ("WON", "G"), ("FORGIVEN", "A")):
                     leads = leadData.get(date(year=year, month=month, day=1), [])
                     n = len([lead for lead in leads if (lead.state == state and lead.salesman == salesMan)])
                     data[year][salesMan][month][label] = n
@@ -508,7 +508,7 @@ def graph_stat_salesmen(request):
         if len(colors) == 0:
             colors = list(COLORS)
         color = colors.pop()
-        for state, style in (("LOST", "--^"), ("WIN", "-o")):
+        for state, style in (("LOST", "--^"), ("WON", "-o")):
             ydata = [len([i for i in x if (i.state == state and i.salesman == salesMan)]) for x in data.values()]
             line = ax.plot(data.keys(), ydata, style, color=color)
             if max(ydata) > ymax:
