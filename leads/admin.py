@@ -7,6 +7,7 @@ Django administration setup
 
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
 
 from datetime import datetime
 
@@ -47,9 +48,9 @@ class LeadAdmin(admin.ModelAdmin):
                 fromAddr = request.user.email or "noreply@noreply.com"
                 send_lead_mail(obj, fromAddr=fromAddr,
                                fromName="%s %s" % (request.user.first_name, request.user.last_name))
-                request.user.message_set.create(message=_("Lead sent to business mailing list"))
+                request.user.message_set.create(message=ugettext("Lead sent to business mailing list"))
             except Exception, e:
-                request.user.message_set.create(message=_("Failed to send mail: %s") % e)
+                request.user.message_set.create(message=ugettext("Failed to send mail: %s") % e)
 
         # Create or update mission object if needed
         try:
@@ -72,17 +73,17 @@ class LeadAdmin(admin.ModelAdmin):
                 staffing.update_date = currentMonth
                 staffing.last_user = "-"
                 staffing.save()
-            request.user.message_set.create(message=_("A mission has been initialized for this lead."))
+            request.user.message_set.create(message=ugettext("A mission has been initialized for this lead."))
         if obj.state == "WON":
             mission.probability = 100
             mission.active = True
             mission.save()
-            request.user.message_set.create(message=_("Mission's probability has been set to 100%"))
+            request.user.message_set.create(message=ugettext("Mission's probability has been set to 100%"))
         elif obj.state in ("LOST", "FORGIVEN", "SLEEPING"):
             mission.probability = 0
             mission.active = False
             mission.save()
-            request.user.message_set.create(message=_("According mission has been archived"))
+            request.user.message_set.create(message=ugettext("According mission has been archived"))
 
 
 
