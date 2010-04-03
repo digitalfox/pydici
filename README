@@ -25,7 +25,7 @@ Pydici can be installed as any Django application. Just drop the code somewhere
 and setup Apache.
 
 Prerequisite:
-- django
+- django (1.1.x is recommended)
 - mathplotlib
 
 Here's a sample Apache/mod_python config file. Pydici code live

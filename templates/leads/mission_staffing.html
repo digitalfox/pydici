@@ -21,12 +21,12 @@
         <table>
            <tr>
                <th>Consultant</th>
+               <th></th>
                <th>Mois</th>
                <th>Charge</th>
                <th>Remarques</th>
                <th></th>
                <th>Supprimer</th>
-               <th></th>
                <th>Dernière modif</th>
            </tr>
            {% for form in formset.forms %}
@@ -39,10 +39,14 @@
                {% endifchanged%}
                <tr {%cycle 'class="row1"' 'class="row2"' %}>
                {% for field in form %}
+                    {% ifnotequal field.label "Last user" %}
+                    {% ifnotequal field.label "Update date" %}
                     <td>
                         {{ field.errors }}    
                         {{ field }}
                     </td>
+                    {% endifnotequal %}
+                    {% endifnotequal %}
                {% endfor %}
                <td>
                {% if form.initial.last_user %}

@@ -179,8 +179,7 @@ def missions(request, onlyActive=True):
 @permission_required("leads.delete_staffing")
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
-    StaffingFormSet = inlineformset_factory(Mission, Staffing,
-                                          fields=("consultant", "staffing_date", "charge", "comment"))
+    StaffingFormSet = inlineformset_factory(Mission, Staffing)
     mission = Mission.objects.get(id=mission_id)
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=mission)
@@ -223,8 +222,7 @@ def consultant_staffing(request, consultant_id):
             return HttpResponseRedirect("/leads/forbiden")
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
-                                          formset=ActiveStaffingInlineFormSet,
-                                          fields=("mission", "staffing_date", "charge", "comment"))
+                                          formset=ActiveStaffingInlineFormSet)
 
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=consultant)

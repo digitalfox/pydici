@@ -266,8 +266,8 @@ class Staffing(models.Model):
     staffing_date = models.DateField(_("Date"))
     charge = models.FloatField(_("Load"), default=0)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
-    update_date = models.DateTimeField(_("Updated"))
-    last_user = models.CharField(max_length=60)
+    update_date = models.DateTimeField(blank=True, null=True)
+    last_user = models.CharField(max_length=60, blank=True, null=True)
 
     def __unicode__(self):
         return "%s/%s (%s): %s" % (self.staffing_date.month, self.staffing_date.year, self.consultant.trigramme, self.charge)
