@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-02 15:56+0200\n"
-"PO-Revision-Date: 2010-04-02 15:31+0200\n"
+"POT-Creation-Date: 2010-04-03 11:00+0200\n"
+"PO-Revision-Date: 2010-04-03 11:00+0200\n"
 "Last-Translator: Sebastien Renard <Sebastien.Renard@digitalfox.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,24 +16,24 @@ msgstr ""
 "X-Generator: Lokalize 1.0\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: leads/admin.py:50
+#: leads/admin.py:51
 msgid "Lead sent to business mailing list"
 msgstr "Opportunité envoyée à la liste de diffusion de suivi des affaires"
 
-#: leads/admin.py:52 leads/views.py:151
+#: leads/admin.py:53 leads/views.py:151
 #, python-format
 msgid "Failed to send mail: %s"
 msgstr "Échec lors de l'envoi du courriel : %s"
 
-#: leads/admin.py:75
+#: leads/admin.py:76
 msgid "A mission has been initialized for this lead."
 msgstr "Une mission a été créée pour cette affaire."
 
-#: leads/admin.py:80
+#: leads/admin.py:81
 msgid "Mission's probability has been set to 100%"
 msgstr "La probabilité de la mission a été mise à 100 %"
 
-#: leads/admin.py:85
+#: leads/admin.py:86
 msgid "According mission has been archived"
 msgstr "La mission correspondante a été archivée"
 
@@ -120,6 +120,7 @@ msgstr "Consultant"
 #: leads/models.py:134 leads/models.py:160 leads/views.py:125
 #: templates/leads/index.html:21 templates/leads/index.html.py:46
 #: templates/leads/index.html:70 templates/leads/index.html.py:94
+#: templates/leads/review.html:24 templates/leads/review.html.py:53
 msgid "Salesman"
 msgstr "Commercial"
 
@@ -165,7 +166,8 @@ msgstr "Action"
 
 #: leads/models.py:159 leads/views.py:127 templates/leads/index.html:22
 #: templates/leads/index.html.py:47 templates/leads/index.html:71
-#: templates/leads/index.html.py:95
+#: templates/leads/index.html.py:95 templates/leads/review.html:26
+#: templates/leads/review.html.py:55
 msgid "Sales (k€)"
 msgstr "C.A. (k€)"
 
@@ -173,7 +175,8 @@ msgstr "C.A. (k€)"
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:164 leads/views.py:125
+#: leads/models.py:164 leads/views.py:125 templates/leads/review.html:29
+#: templates/leads/review.html.py:58
 msgid "Starting"
 msgstr "Démarrage"
 
@@ -192,7 +195,8 @@ msgstr "Création"
 #: leads/models.py:169 leads/models.py:191 leads/models.py:225
 #: leads/models.py:269 leads/views.py:128 templates/leads/index.html:24
 #: templates/leads/index.html.py:49 templates/leads/index.html:73
-#: templates/leads/index.html.py:97
+#: templates/leads/index.html.py:97 templates/leads/review.html:28
+#: templates/leads/review.html.py:57
 msgid "Updated"
 msgstr "Mise à jour"
 
@@ -207,7 +211,8 @@ msgstr "Description"
 
 #: leads/models.py:206 leads/models.py:219 templates/leads/index.html:19
 #: templates/leads/index.html.py:44 templates/leads/index.html:68
-#: templates/leads/index.html.py:92
+#: templates/leads/index.html.py:92 templates/leads/review.html:22
+#: templates/leads/review.html.py:51
 msgid "Lead"
 msgstr "Opportunité"
 
@@ -276,7 +281,8 @@ msgid "Comments"
 msgstr "Remarques"
 
 #: leads/models.py:282 leads/views.py:126
-#: templates/leads/consultant_staffing.html:28
+#: templates/leads/consultant_staffing.html:28 templates/leads/review.html:25
+#: templates/leads/review.html.py:54
 msgid "Staffing"
 msgstr "Staffing"
 
@@ -464,11 +470,13 @@ msgstr "Les opportunités dont je suis le responsable"
 
 #: templates/leads/index.html:20 templates/leads/index.html.py:45
 #: templates/leads/index.html:69 templates/leads/index.html.py:93
+#: templates/leads/review.html:23 templates/leads/review.html.py:52
 msgid "Responsible"
 msgstr "Responsable"
 
 #: templates/leads/index.html:23 templates/leads/index.html.py:48
 #: templates/leads/index.html:72 templates/leads/index.html.py:96
+#: templates/leads/review.html:27 templates/leads/review.html.py:56
 msgid "Status"
 msgstr "État"
 
@@ -688,6 +696,14 @@ msgstr "Staffing : "
 #: templates/leads/mail.txt:6
 msgid "updated: "
 msgstr "Mise à jour : "
+
+#: templates/leads/review.html:20
+msgid "All active leads"
+msgstr "Toutes les opportunités actives"
+
+#: templates/leads/review.html:49
+msgid "Recent won, lost or forgiven leads"
+msgstr "Opportunités récemment gagnées, perdues ou abandonnées"
 
 #~ msgid "Sales code: "
 #~ msgstr "N° affaire"

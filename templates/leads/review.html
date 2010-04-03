@@ -17,16 +17,16 @@
     {% if active_leads %}
     <div class="module">
         <table summary="Leads">
-        <caption>Tous les leads actifs</caption>
+        <caption>{% trans "All active leads" %}</caption>
         <tr>
-                <td><b>Lead</b></td>
-                <td><b>Responsable</b></td>
-                <td><b>IA</b></td>
-                <td><b>Staffing</b></td>
-                <td><b>CA (k€)</b></td>
-                <td><b>Statut</b></td>
-                <td><b>Échéance</b></td>
-                <td><b>Démarrage</b></td>
+                <td><b>{% trans "Lead" %}</b></td>
+                <td><b>{% trans "Responsible" %}</b></td>
+                <td><b>{% trans "Salesman" %}</b></td>
+                <td><b>{% trans "Staffing" %}</b></td>
+                <td><b>{% trans "Sales (k€)" %}</b></td>
+                <td><b>{% trans "Status" %}</b></td>
+                <td><b>{% trans "Updated" %}</b></td>
+                <td><b>{% trans "Starting" %}</b></td>
         </tr>
         {% for lead in active_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
@@ -46,16 +46,16 @@
     {% if recent_archived_leads %}
     <div class="module">
         <table summary="Leads">
-        <caption>{% trans "Recent won, lost or forgiven leads"</caption>
+        <caption>{% trans "Recent won, lost or forgiven leads" %}</caption>
         <tr>
-                <td><b>Lead</b></td>
-                <td><b>Responsable</b></td>
-                <td><b>IA</b></td>
-                <td><b>Staffing</b></td>
-                <td><b>CA (k€)</b></td>
-                <td><b>Statut</b></td>
-                <td><b>Mise à jour</b></td>
-                <td><b>Démarrage</b></td>
+                <td><b>{% trans "Lead" %}</b></td>
+                <td><b>{% trans "Responsible" %}</b></td>
+                <td><b>{% trans "Salesman" %}</b></td>
+                <td><b>{% trans "Staffing" %}</b></td>
+                <td><b>{% trans "Sales (k€)" %}</b></td>
+                <td><b>{% trans "Status" %}</b></td>
+                <td><b>{% trans "Updated" %}</b></td>
+                <td><b>{% trans "Starting" %}</b></td>
         </tr>
         {% for lead in recent_archived_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
