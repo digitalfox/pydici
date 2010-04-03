@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-03 11:00+0200\n"
-"PO-Revision-Date: 2010-04-03 11:00+0200\n"
+"POT-Creation-Date: 2010-04-03 18:44+0200\n"
+"PO-Revision-Date: 2010-04-03 18:44+0200\n"
 "Last-Translator: Sebastien Renard <Sebastien.Renard@digitalfox.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -113,7 +113,7 @@ msgstr "Productif"
 msgid "Profil"
 msgstr "Profile"
 
-#: leads/models.py:114
+#: leads/models.py:114 templates/leads/mission_staffing.html:36
 msgid "Consultant"
 msgstr "Consultant"
 
@@ -193,7 +193,7 @@ msgid "Creation"
 msgstr "Création"
 
 #: leads/models.py:169 leads/models.py:191 leads/models.py:225
-#: leads/models.py:269 leads/views.py:128 templates/leads/index.html:24
+#: leads/views.py:128 templates/leads/index.html:24
 #: templates/leads/index.html.py:49 templates/leads/index.html:73
 #: templates/leads/index.html.py:97 templates/leads/review.html:28
 #: templates/leads/review.html.py:57
@@ -273,15 +273,18 @@ msgid "Holiday"
 msgstr "Congé"
 
 #: leads/models.py:267 templates/leads/consultant_staffing.html:37
+#: templates/leads/mission_staffing.html:39
 msgid "Load"
 msgstr "Charge"
 
 #: leads/models.py:268 templates/leads/consultant_staffing.html:38
+#: templates/leads/mission_staffing.html:40
 msgid "Comments"
 msgstr "Remarques"
 
 #: leads/models.py:282 leads/views.py:126
-#: templates/leads/consultant_staffing.html:28 templates/leads/review.html:25
+#: templates/leads/consultant_staffing.html:28
+#: templates/leads/mission_staffing.html:28 templates/leads/review.html:25
 #: templates/leads/review.html.py:54
 msgid "Staffing"
 msgstr "Staffing"
@@ -303,11 +306,11 @@ msgstr "Date d'échéance"
 msgid "Lead %(id)s was sent to %(mail)s !"
 msgstr "L'opportunité %(id)s a été envoyée à %(mail)s !"
 
-#: leads/views.py:256
+#: leads/views.py:254
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: leads/views.py:523
+#: leads/views.py:521
 msgid "Leads per salesmen (solid line: won. Dotted line: lost)"
 msgstr ""
 "Opportunités par commercial (trait continu : gagnées, pointillés : perdues)"
@@ -436,31 +439,37 @@ msgid "Change %(mission)s"
 msgstr "Modifier %(mission)s"
 
 #: templates/leads/consultant_staffing.html:36
+#: templates/leads/mission_staffing.html:38
 msgid "Month"
 msgstr "Mois"
 
 #: templates/leads/consultant_staffing.html:40
+#: templates/leads/mission_staffing.html:42
 msgid "Delete"
 msgstr "Supprimer"
 
 #: templates/leads/consultant_staffing.html:41
+#: templates/leads/mission_staffing.html:43
 msgid "Last change"
 msgstr "Dernière modif."
 
 #: templates/leads/consultant_staffing.html:48
+#: templates/leads/mission_staffing.html:50
 msgid "New staffing:"
 msgstr "Nouveau staffing : "
 
-#: templates/leads/consultant_staffing.html:68
+#: templates/leads/consultant_staffing.html:81
+#: templates/leads/mission_staffing.html:83
 msgid "Save"
 msgstr "Enregistrer"
 
-#: templates/leads/consultant_staffing.html:73
+#: templates/leads/consultant_staffing.html:86
 msgid "Back to work load schedule"
 msgstr "Retour au plan de charge"
 
-#: templates/leads/consultant_staffing.html:75
+#: templates/leads/consultant_staffing.html:88
 #: templates/leads/lead_detail.html:69
+#: templates/leads/mission_staffing.html:90
 msgid "Back to home page"
 msgstr "Retour à la page d'accueil"
 
@@ -696,6 +705,18 @@ msgstr "Staffing : "
 #: templates/leads/mail.txt:6
 msgid "updated: "
 msgstr "Mise à jour : "
+
+#: templates/leads/mission_staffing.html:19
+msgid "Consultants currently implicated in this mission"
+msgstr "Consultants impliqués actuellement dans cette mission"
+
+#: templates/leads/mission_staffing.html:88
+msgid "Back to mission list"
+msgstr "Retour à la liste des missions"
+
+#: templates/leads/mission_staffing.html:93
+msgid "Lead of this mission"
+msgstr "Opportunité de cette mission"
 
 #: templates/leads/review.html:20
 msgid "All active leads"

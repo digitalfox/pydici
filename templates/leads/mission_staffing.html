@@ -14,27 +14,40 @@
     <h1>{{ mission }}</h1>
     <h3>Probabilité : {{ mission.get_probability_display }} </h3>
     <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='Modifier {{ mission }}', target='_blank', class='changelink'><em>Modifier</em></a></td>
-    <br><br>
+    <br>
+    
+    <h2>{% trans "Consultants currently implicated in this mission" %}</h1>
+    <table>
+    {% for consultant in consultants %}
+        <tr {%cycle 'class="row1"' 'class="row2"' %}>
+            <th scope="row"><a href='/leads/consultant/{{consultant.id}}/', title='{{ consultant }}'>{{ consultant }}</a></th>
+        </tr>
+    {% endfor %}
+    </table>
+    <br><hr>
+    <h2>{% trans "Staffing" %}</h2>
+    
+    
     <form action="" method="POST">
         {{ formset.management_form }}
         <div class="form-row">
         <table>
            <tr>
-               <th>Consultant</th>
+               <th>{% trans "Consultant" %}</th>
                <th></th>
-               <th>Mois</th>
-               <th>Charge</th>
-               <th>Remarques</th>
+               <th>{% trans "Month" %}</th>
+               <th>{% trans "Load" %}</th>
+               <th>{% trans "Comments" %}</th>
                <th></th>
-               <th>Supprimer</th>
-               <th>Dernière modif</th>
+               <th>{% trans "Delete" %}</th>
+               <th>{% trans "Last change" %}</th>
            </tr>
            {% for form in formset.forms %}
                {% ifchanged form.initial.staffing_date %}
                {% if form.initial.staffing_date %}
                        <tr><th>{{ form.initial.staffing_date|date:"F Y" }}</th></tr>
                    {% else %}
-                       <tr><th>Nouveau staffing :</th></tr>
+                       <tr><th>{% trans "New staffing:" %}</th></tr>
                    {% endif %}
                {% endifchanged%}
                {% if form.non_field_errors %}
@@ -67,26 +80,17 @@
         </table>       
         </div>
         <div class="submit-row">
-            <input type="submit" value="Enregistrer"/>
+            <input type="submit" value="{% trans 'Save' %}"/>
         </div>
     </form>
 <br>
-<h1>Consultants impliqués actuellement dans cette mission</h1>
-<table>
-{% for consultant in consultants %}
-    <tr {%cycle 'class="row1"' 'class="row2"' %}>
-        <th scope="row"><a href='/leads/consultant/{{consultant.id}}/', title='{{ consultant }}'>{{ consultant }}</a></th>
-    </tr>
-{% endfor %}
-</table>
 <br>
-<br>
-<a href='..'>Retour à la liste des missions</a>
+<a href='..'>{% trans "Back to mission list" %}</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='/leads/'>Retour page d'accueil</a>
+<a href='/leads/'>{% trans "Back to home page" %}</a>
 {% if mission.lead %}
     &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-    <a href='/leads/{{ mission.lead_id }}/'>Lead de cette mission</a>
+    <a href='/leads/{{ mission.lead_id }}/'>{% trans "Lead of this mission" %}</a>
 {% endif %}
 
 </div>
