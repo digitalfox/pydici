@@ -296,7 +296,7 @@ def pdc_review(request, year=None, month=None):
     next_slice_date = start_date + timedelta(days=31 * n_month)
 
     # Initialize total dict and available dict
-    holidays_days = Holiday.objects.all()
+    holidays_days = [h.day for h in Holiday.objects.all()]
     for month in months:
         total[month] = {"prod":0, "unprod":0, "holidays":0, "available":0}
         available_month[month] = working_days(month, holidays_days)
