@@ -147,7 +147,7 @@ class Lead(models.Model):
             ('QUALIF', ugettext("Qualifying")),
             ('WRITE_OFFER', ugettext("Writting offer")),
             ('OFFER_SENT', ugettext("Offer sent")),
-            ('NEGOCATION', ugettext("Negociation")),
+            ('NEGOTIATION', ugettext("Negotiation")),
             ('WON', ugettext("Won")),
             ('LOST', ugettext("Lost")),
             ('FORGIVEN', ugettext("Forgiven")),
