@@ -539,8 +539,10 @@ def print_png(fig):
 def saveFormsetAndLog(formset, request):
     """Save the given staffing formset and log last user"""
     now = datetime.now()
-    staffings = formset.save(commit=False)
-    for staffing in staffings:
-        staffing.last_user = unicode(request.user)
-        staffing.update_date = now
-        staffing.save()
+    now = now.replace(microsecond=0) # Remove useless microsecond that pollute form validation in callback
+    for form in formset.forms:
+        if form.has_changed():
+            staffing = form.save(commit=False)
+            staffing.last_user = unicode(request.user)
+            staffing.update_date = now
+            staffing.save()

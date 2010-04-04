@@ -59,14 +59,18 @@
                {% endif %}
                <tr {%cycle 'class="row1"' 'class="row2"' %}>
                {% for field in form %}
-                    {% ifnotequal field.label "Last user" %}
-                    {% ifnotequal field.label "Update date" %}
-                    <td>
-                        {{ field.errors }}    
-                        {{ field }}
-                    </td>
-                    {% endifnotequal %}
-                    {% endifnotequal %}
+                    {% ifequal field.label "Last user" %}
+                        {{ field.as_hidden }}
+                    {% else %}
+	                    {% ifequal field.label "Update date" %}
+	                        {{ field.as_hidden }}
+	                    {% else %}
+	                       <td>
+	                        {{ field.errors }}
+	                        {{ field }}
+	                       </td>
+	                    {% endifequal %}
+                    {% endifequal %}
                {% endfor %}
                <td>
                {% if form.initial.last_user %}
