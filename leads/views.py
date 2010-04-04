@@ -431,13 +431,17 @@ def graph_stat_pie(request):
     """Nice graph pie of lead state repartition using matplotlib
     @todo: per year, with start-end date"""
     stateDict = dict(Lead.STATES)
+    states = [i[0] for i in Lead.STATES]
     cursor = connection.cursor()
     cursor.execute("select  state, count(*) from leads_lead  group by state")
     data = cursor.fetchall()
+    data.sort(cmp=lambda x, y: cmp(states.index(x[0]), states.index(y[0])))
     fig = Figure(figsize=(8, 8))
     fig.set_facecolor("white")
     ax = fig.add_subplot(111)
-    ax.pie([x[1] for x in data], colors=COLORS, labels=["%s\n(%s)" % (stateDict[x[0]], x[1]) for x in data], shadow=True, autopct='%1.1f%%')
+    ax.pie([x[1] for x in data], colors=COLORS,
+           labels=["%s\n(%s)" % (stateDict[x[0]], x[1]) for x in data],
+           shadow=True, autopct='%1.1f%%')
 
     return print_png(fig)
 
@@ -466,7 +470,7 @@ def graph_stat_bar(request):
     for state in Lead.STATES:
         ydata = [len([i for i in x if i.state == state[0]]) for x in data.values()]
         b = ax.bar(data.keys(), ydata, bottom=bottom, align="center", width=15,
-               color=colors.pop())
+               color=colors.pop(0))
         bars.append(b[0])
         for i in range(len(ydata)):
             bottom[i] += ydata[i] # Update bottom
