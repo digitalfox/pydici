@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-03 18:44+0200\n"
-"PO-Revision-Date: 2010-04-03 18:44+0200\n"
+"POT-Creation-Date: 2010-04-04 15:40+0200\n"
+"PO-Revision-Date: 2010-04-04 15:35+0200\n"
 "Last-Translator: Sebastien Renard <Sebastien.Renard@digitalfox.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -40,6 +40,7 @@ msgstr "La mission correspondante a été archivée"
 #: leads/models.py:23 leads/models.py:33 leads/models.py:44 leads/models.py:65
 #: leads/models.py:119 leads/models.py:156 leads/views.py:124
 #: templates/leads/consultant_staffing.html:18
+#: templates/leads/missions.html:21
 msgid "Name"
 msgstr "Nom"
 
@@ -244,7 +245,7 @@ msgstr "Haute"
 msgid "Certain"
 msgstr "Certaine"
 
-#: leads/models.py:220
+#: leads/models.py:220 templates/leads/missions.html:21
 msgid "Deal id"
 msgstr "N° affaire"
 
@@ -310,7 +311,7 @@ msgstr "L'opportunité %(id)s a été envoyée à %(mail)s !"
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: leads/views.py:521
+#: leads/views.py:525
 msgid "Leads per salesmen (solid line: won. Dotted line: lost)"
 msgstr ""
 "Opportunités par commercial (trait continu : gagnées, pointillés : perdues)"
@@ -401,6 +402,7 @@ msgid "Add"
 msgstr "Ajouter"
 
 #: templates/admin/index.html:35 templates/leads/consultant_staffing.html:23
+#: templates/leads/mission_staffing.html:16 templates/leads/missions.html:31
 msgid "Change"
 msgstr "Modifier"
 
@@ -425,6 +427,7 @@ msgid "Consultant's missions"
 msgstr "Missions du consultant"
 
 #: templates/leads/consultant_staffing.html:18
+#: templates/leads/missions.html:21
 msgid "Probability"
 msgstr "Probabilité"
 
@@ -434,6 +437,7 @@ msgid "Change mission %(mission)s staffing "
 msgstr "Modifier le staffing de la mission %(mission)s "
 
 #: templates/leads/consultant_staffing.html:23
+#: templates/leads/missions.html:31
 #, python-format
 msgid "Change %(mission)s"
 msgstr "Modifier %(mission)s"
@@ -469,7 +473,7 @@ msgstr "Retour au plan de charge"
 
 #: templates/leads/consultant_staffing.html:88
 #: templates/leads/lead_detail.html:69
-#: templates/leads/mission_staffing.html:90
+#: templates/leads/mission_staffing.html:90 templates/leads/missions.html:48
 msgid "Back to home page"
 msgstr "Retour à la page d'accueil"
 
@@ -563,7 +567,7 @@ msgstr "Console d'administration"
 msgid "All leads"
 msgstr "Toutes les opportunités"
 
-#: templates/leads/index.html:161
+#: templates/leads/index.html:161 templates/leads/missions.html:15
 msgid "All missions"
 msgstr "Toutes les missions"
 
@@ -706,6 +710,10 @@ msgstr "Staffing : "
 msgid "updated: "
 msgstr "Mise à jour : "
 
+#: templates/leads/mission_staffing.html:15
+msgid "Probability:"
+msgstr "Probabilité :"
+
 #: templates/leads/mission_staffing.html:19
 msgid "Consultants currently implicated in this mission"
 msgstr "Consultants impliqués actuellement dans cette mission"
@@ -718,6 +726,40 @@ msgstr "Retour à la liste des missions"
 msgid "Lead of this mission"
 msgstr "Opportunité de cette mission"
 
+#: templates/leads/missions.html:17
+msgid "Active missions"
+msgstr "Liste des missions actives"
+
+#: templates/leads/missions.html:27
+#, python-format
+msgid "Defines %(mission)s staffing"
+msgstr "Définir le staffing de la mission %(mission)s"
+
+#: templates/leads/missions.html:30
+#, python-format
+msgid "Archive %(mission)s"
+msgstr "Archiver la mission %(mission)s"
+
+#: templates/leads/missions.html:30
+msgid "Archive"
+msgstr "Archiver"
+
+#: templates/leads/missions.html:33
+msgid "This mission has no staffing in future"
+msgstr "Cette mission n'a plus de staffing défini dans le futur"
+
+#: templates/leads/missions.html:41
+msgid "Only display active missions"
+msgstr "N'afficher que les missions actives"
+
+#: templates/leads/missions.html:43
+msgid "Display all missions"
+msgstr "Afficher toutes les missions"
+
+#: templates/leads/missions.html:46
+msgid "Missions administration"
+msgstr "Administration des missions"
+
 #: templates/leads/review.html:20
 msgid "All active leads"
 msgstr "Toutes les opportunités actives"
@@ -725,6 +767,10 @@ msgstr "Toutes les opportunités actives"
 #: templates/leads/review.html:49
 msgid "Recent won, lost or forgiven leads"
 msgstr "Opportunités récemment gagnées, perdues ou abandonnées"
+
+#, fuzzy
+#~ msgid "Change {{ mission }}"
+#~ msgstr "Modifier %(mission)s"
 
 #~ msgid "Sales code: "
 #~ msgstr "N° affaire"

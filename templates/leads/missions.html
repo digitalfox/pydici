@@ -12,24 +12,25 @@
 
 <div id="content-main">
 {% if all %}
-    <h1>Liste de toutes les missions</h1>
+    <h1>{% trans "All missions" %}</h1>
 {% else %}
-    <h1>Liste des missions actives</h1>
+    <h1>{% trans "Active missions" %}</h1>
 {% endif %}
 
 <table>
-<tr><th>Nom</th><th>Probabilité</th><th></th><th></th></tr>
+<tr><th>{% trans "Name" %}</th><th>{% trans "Deal id" %}</th><th>{% trans "Probability" %}</th><th></th></tr>
 {% for mission in missions %}
 	{% ifchanged mission.nature %}
 	   <tr><th>{{ mission.get_nature_display }}</th></tr>
 	{% endifchanged %}
 	<tr {%cycle 'class="row1"' 'class="row2"' %}>
-	    <td scope="row"><a href='/leads/mission/{{mission.id}}/', title='Définir le staffing de {{ mission }}'>{{ mission }}</a></td>
+	    <td scope="row"><a href='/leads/mission/{{mission.id}}/', title='{% blocktrans %}Defines {{ mission }} staffing{% endblocktrans %}'>{{ mission }}</a></td>
+	    <td>{{ mission.deal_id }}</td>
 	    <td>{{ mission.get_probability_display }} </td>
-	    <td scope="row"><a href='/leads/mission/{{mission.id}}/deactivate', title='Archiver {{ mission }}'><em>Archiver</em></a></td>
-	    <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='Modifier {{ mission }}', target='_blank', class='changelink'><em>Modifier</em></a></td>
+	    <td scope="row"><a href='/leads/mission/{{mission.id}}/deactivate', title='{% blocktrans %}Archive {{ mission }}{% endblocktrans %}'><em>{% trans "Archive" %}</em></a></td>
+	    <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', target='_blank', class='changelink'><em>{% trans "Change" %}</em></a></td>
 	    <td>{% if mission.no_more_staffing_since %}
-	    Cette mission n'a plus de staffing défini dans le futur
+	    {% trans "This mission has no staffing in future" %}
 	    {% endif %}</td>
 	</tr>
 {% endfor %}
@@ -37,13 +38,13 @@
 
 <br><br>
 {% if all %}
-    <a href='/leads/mission/'>N'afficher que les missions actives</a>
+    <a href='/leads/mission/'>{% trans "Only display active missions" %}</a>
 {% else %}
-    <a href='/leads/mission/all'>Afficher toutes les missions</a>
+    <a href='/leads/mission/all'>{% trans "Display all missions" %}</a>
 {% endif %}
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='/leads/admin/leads/mission/'>Administration des missions</a>
+<a href='/leads/admin/leads/mission/'>{% trans "Missions administration" %}</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='/leads/'>Retour page d'accueil</a>
+<a href='/leads/'>{% trans "Back to home page" %}</a>
 </div>
 {% endblock %}

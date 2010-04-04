@@ -12,8 +12,8 @@
 
 <div id="content-main">
     <h1>{{ mission }}</h1>
-    <h3>Probabilité : {{ mission.get_probability_display }} </h3>
-    <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='Modifier {{ mission }}', target='_blank', class='changelink'><em>Modifier</em></a></td>
+    <h3>{% trans "Probability:" %} {{ mission.get_probability_display }} </h3>
+    <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='{% trans "Change"%} {{ mission }}', target='_blank', class='changelink'><em>{% trans "Change"%}</em></a></td>
     <br>
     
     <h2>{% trans "Consultants currently implicated in this mission" %}</h1>
