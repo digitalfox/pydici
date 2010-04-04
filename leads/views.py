@@ -86,7 +86,7 @@ def detail(request, lead_id):
                                               content_type__name="lead")
         actionList = actionList.select_related().order_by('action_time')
         # Lead rank in active list
-        active_leads = Lead.objects.active().order_by("start_date", "creation_date", "id")
+        active_leads = Lead.objects.active().order_by("creation_date")
         try:
             rank = [l.id for l in active_leads].index(lead.id)
             active_count = active_leads.count()
@@ -130,7 +130,7 @@ def csv_export(request, target):
         leads = Lead.objects.active()
     else:
         leads = Lead.objects.all()
-    for lead in leads.order_by("start_date"):
+    for lead in leads.order_by("creation_date"):
         state = lead.get_state_display()
         row = [lead.name, lead.client, lead.description, lead.responsible, lead.salesman, lead.start_date, state,
                          lead.due_date, lead.staffing_list(), lead.sales, lead.creation_date, lead.update_date]
@@ -157,7 +157,7 @@ def review(request):
                                                       Q(state="SLEEPING"))
     recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date")
     return render_to_response("leads/review.html", {"recent_archived_leads" : recentArchivedLeads,
-                                                    "active_leads" : Lead.objects.active().order_by("start_date", "id"),
+                                                    "active_leads" : Lead.objects.active().order_by("creation_date"),
                                                     "user": request.user })
 
 
