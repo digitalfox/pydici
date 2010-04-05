@@ -157,7 +157,7 @@
             "sales": null, 
             "external_staffing": "",  
             "send_email": false, 
-            "state": "NEGOCATION", 
+            "state": "NEGOTIATION", 
             "client": 1, 
             "action": "", 
             "creation_date": "2010-02-21 16:49:25", 

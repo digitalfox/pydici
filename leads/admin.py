@@ -60,7 +60,7 @@ class LeadAdmin(admin.ModelAdmin):
             mission = Mission(lead=obj) # Mission is saved below if needed
             mission_does_not_exist = True
 
-        if obj.state in ("OFFER_SENT", "NEGOCATION", "WON") and mission_does_not_exist:
+        if obj.state in ("OFFER_SENT", "NEGOTIATION", "WON") and mission_does_not_exist:
             currentMonth = datetime.now()
             mission.lead = obj
             mission.save()
