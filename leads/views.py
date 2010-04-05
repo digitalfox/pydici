@@ -64,11 +64,11 @@ def index(request):
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""
     today = datetime.today()
-    delay = timedelta(days=6)
+    delay = timedelta(days=6) # Six days
     leads = []
-    for state in ("WON", "FORGIVEN", "LOST", "WRITE_OFFER", "OFFER_SENT", "NEGOTIATION", "QUALIF"):
+    for state in ("WON", "FORGIVEN", "LOST", "SLEEPING", "WRITE_OFFER", "OFFER_SENT", "NEGOTIATION", "QUALIF"):
         rs = Lead.objects.filter(state=state).order_by("-update_date")
-        if state in ("WON", "FORGIVEN", "LOST"):
+        if state in ("WON", "FORGIVEN", "LOST", "SLEEPING"):
             rs = rs.filter(update_date__gte=(today - delay))
         leads.append(rs)
     if html:
