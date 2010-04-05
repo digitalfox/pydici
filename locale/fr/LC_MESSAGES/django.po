@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-05 14:19+0200\n"
-"PO-Revision-Date: 2010-04-05 14:18+0200\n"
+"POT-Creation-Date: 2010-04-05 19:09+0200\n"
+"PO-Revision-Date: 2010-04-05 19:10+0200\n"
 "Last-Translator: Sebastien Renard <Sebastien.Renard@digitalfox.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -106,7 +106,7 @@ msgstr "Propriété commerciale"
 msgid "Client"
 msgstr "Client"
 
-#: leads/models.py:101 leads/models.py:210
+#: leads/models.py:101 leads/models.py:218
 msgid "Productive"
 msgstr "Productif"
 
@@ -193,7 +193,7 @@ msgstr "État"
 msgid "Creation"
 msgstr "Création"
 
-#: leads/models.py:169 leads/models.py:191 leads/models.py:225
+#: leads/models.py:169 leads/models.py:191 leads/models.py:233
 #: leads/views.py:128 templates/leads/index.html:24
 #: templates/leads/index.html.py:49 templates/leads/index.html:73
 #: templates/leads/index.html.py:97 templates/leads/review.html:28
@@ -205,86 +205,87 @@ msgstr "Mise à jour"
 msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
-#: leads/models.py:199 leads/models.py:221 leads/models.py:257
+#: leads/models.py:199 leads/models.py:229 leads/models.py:265
 #: leads/views.py:124
 msgid "Description"
 msgstr "Description"
 
-#: leads/models.py:206 leads/models.py:219 templates/leads/index.html:19
+#: leads/models.py:214 leads/models.py:227 templates/leads/index.html:19
 #: templates/leads/index.html.py:44 templates/leads/index.html:68
 #: templates/leads/index.html.py:92 templates/leads/review.html:22
 #: templates/leads/review.html.py:51
 msgid "Lead"
 msgstr "Opportunité"
 
-#: leads/models.py:211
+#: leads/models.py:219
 msgid "Unproductive"
 msgstr "Non productif"
 
-#: leads/models.py:212
+#: leads/models.py:220
 msgid "Holidays"
 msgstr "Congés"
 
-#: leads/models.py:214
+#: leads/models.py:222
 msgid "Null"
 msgstr "Nulle"
 
-#: leads/models.py:215
+#: leads/models.py:223
 msgid "Low"
 msgstr "Faible"
 
-#: leads/models.py:216
+#: leads/models.py:224
 msgid "Normal"
 msgstr "Moyenne"
 
-#: leads/models.py:217
+#: leads/models.py:225
 msgid "High"
 msgstr "Haute"
 
-#: leads/models.py:218
+#: leads/models.py:226
 msgid "Certain"
 msgstr "Certaine"
 
-#: leads/models.py:220 templates/leads/missions.html:21
+#: leads/models.py:228 templates/leads/consultant_staffing.html:19
+#: templates/leads/missions.html:21
 msgid "Deal id"
 msgstr "N° affaire"
 
-#: leads/models.py:222
+#: leads/models.py:230
 msgid "Type"
 msgstr "Type"
 
-#: leads/models.py:223
+#: leads/models.py:231
 msgid "Active"
 msgstr "Active"
 
-#: leads/models.py:224
+#: leads/models.py:232
 msgid "Proba"
 msgstr "Proba"
 
-#: leads/models.py:252 templates/leads/consultant_staffing.html:35
+#: leads/models.py:260 templates/leads/consultant_staffing.html:39
 msgid "Mission"
 msgstr "Mission"
 
-#: leads/models.py:256 leads/models.py:266
+#: leads/models.py:264 leads/models.py:274
 msgid "Date"
 msgstr "Date"
 
-#: leads/models.py:260
+#: leads/models.py:268
 msgid "Holiday"
 msgstr "Congé"
 
-#: leads/models.py:267 templates/leads/consultant_staffing.html:37
+#: leads/models.py:275 templates/leads/consultant_staffing.html:41
 #: templates/leads/mission_staffing.html:42
 msgid "Load"
 msgstr "Charge"
 
-#: leads/models.py:268 templates/leads/consultant_staffing.html:38
+#: leads/models.py:276 templates/leads/consultant_staffing.html:42
 #: templates/leads/mission_staffing.html:43
 msgid "Comments"
 msgstr "Remarques"
 
-#: leads/models.py:282 leads/views.py:126
-#: templates/leads/consultant_staffing.html:28
+#: leads/models.py:290 leads/views.py:126
+#: templates/leads/consultant_staffing.html:32
 #: templates/leads/mission_staffing.html:31 templates/leads/review.html:25
 #: templates/leads/review.html.py:54
 msgid "Staffing"
@@ -361,8 +362,9 @@ msgstr ""
 "<p>Si vous pensez qu'il s'agit d'une anomalie, merci d'envoyer\n"
 "un mail à un administrateur pour mettre à jour vos droits :</p>\n"
 
-#: templates/admin/app_index.html:8 templates/admin/base.html:44
-#: templates/admin/change_list.html:8 templates/leads/lead_mail.html:21
+#: templates/admin/app_index.html:8 templates/admin/base.html:35
+#: templates/admin/base.html.py:44 templates/admin/change_list.html:8
+#: templates/leads/lead_mail.html:21
 msgid "Home"
 msgstr "Accueil"
 
@@ -370,6 +372,34 @@ msgstr "Accueil"
 #, python-format
 msgid "%(name)s"
 msgstr "%(name)s"
+
+#: templates/admin/base.html:10
+msgid "ATOM feed of last modified leads"
+msgstr "Flux ATOM des dernières opportunités modifiées"
+
+#: templates/admin/base.html:12
+msgid "ATOM feed of last created leads"
+msgstr "Flux ATOM des dernières opportunités créées"
+
+#: templates/admin/base.html:14
+msgid "ATOM feed of last won leads"
+msgstr "Flux ATOM des dernières opportunités gagnées"
+
+#: templates/admin/base.html:16
+msgid "ATOM feed of my leads"
+msgstr "Flux ATOM des mes opportunités"
+
+#: templates/admin/base.html:36 templates/leads/index.html:113
+msgid "Current leads review"
+msgstr "Revue des opportunités en cours"
+
+#: templates/admin/base.html:37 templates/leads/lead_detail.html:72
+msgid "Workload schedule"
+msgstr "Plan de charge"
+
+#: templates/admin/base.html:38
+msgid "Help"
+msgstr "Aide"
 
 #: templates/admin/base.html:39
 msgid "Welcome,"
@@ -401,7 +431,7 @@ msgstr "Modèles disponibles dans l'application %(name)s."
 msgid "Add"
 msgstr "Ajouter"
 
-#: templates/admin/index.html:35 templates/leads/consultant_staffing.html:23
+#: templates/admin/index.html:35 templates/leads/consultant_staffing.html:27
 #: templates/leads/mission_staffing.html:19 templates/leads/missions.html:31
 msgid "Change"
 msgstr "Modifier"
@@ -426,52 +456,52 @@ msgstr "Aucun(e) disponible"
 msgid "Consultant's missions"
 msgstr "Missions du consultant"
 
-#: templates/leads/consultant_staffing.html:18
+#: templates/leads/consultant_staffing.html:20
 #: templates/leads/missions.html:21
 msgid "Probability"
 msgstr "Probabilité"
 
-#: templates/leads/consultant_staffing.html:21
+#: templates/leads/consultant_staffing.html:24
 #, python-format
 msgid "Change mission %(mission)s staffing "
 msgstr "Modifier le staffing de la mission %(mission)s "
 
-#: templates/leads/consultant_staffing.html:23
+#: templates/leads/consultant_staffing.html:27
 #: templates/leads/missions.html:31
 #, python-format
 msgid "Change %(mission)s"
 msgstr "Modifier %(mission)s"
 
-#: templates/leads/consultant_staffing.html:36
+#: templates/leads/consultant_staffing.html:40
 #: templates/leads/mission_staffing.html:41
 msgid "Month"
 msgstr "Mois"
 
-#: templates/leads/consultant_staffing.html:40
+#: templates/leads/consultant_staffing.html:44
 #: templates/leads/mission_staffing.html:45
 msgid "Delete"
 msgstr "Supprimer"
 
-#: templates/leads/consultant_staffing.html:41
+#: templates/leads/consultant_staffing.html:45
 #: templates/leads/mission_staffing.html:46
 msgid "Last change"
 msgstr "Dernière modif."
 
-#: templates/leads/consultant_staffing.html:48
+#: templates/leads/consultant_staffing.html:52
 #: templates/leads/mission_staffing.html:53
 msgid "New staffing:"
 msgstr "Nouveau staffing : "
 
-#: templates/leads/consultant_staffing.html:85
+#: templates/leads/consultant_staffing.html:89
 #: templates/leads/mission_staffing.html:90
 msgid "Save"
 msgstr "Enregistrer"
 
-#: templates/leads/consultant_staffing.html:90
+#: templates/leads/consultant_staffing.html:94
 msgid "Back to work load schedule"
 msgstr "Retour au plan de charge"
 
-#: templates/leads/consultant_staffing.html:92
+#: templates/leads/consultant_staffing.html:96
 #: templates/leads/lead_detail.html:69
 #: templates/leads/mission_staffing.html:97 templates/leads/missions.html:48
 msgid "Back to home page"
@@ -510,10 +540,6 @@ msgstr ""
 #: templates/leads/index.html:112
 msgid "Reports"
 msgstr "Rapports"
-
-#: templates/leads/index.html:113
-msgid "Current leads review"
-msgstr "Revue des opportunités en cours"
 
 #: templates/leads/index.html:114
 msgid "Active leads as csv file"
@@ -665,10 +691,6 @@ msgstr "Utilisateur"
 #: templates/leads/lead_detail.html:59
 msgid "DATETIME_FORMAT"
 msgstr "j F Y, G:i"
-
-#: templates/leads/lead_detail.html:72
-msgid "Workload schedule"
-msgstr "Plan de charge"
 
 #: templates/leads/lead_mail.html:6 templates/leads/lead_mail.txt:7
 msgid "Description: "
