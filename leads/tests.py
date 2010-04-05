@@ -50,6 +50,8 @@ class SimpleTest(TestCase):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         response = self.client.get("/leads/mission/1/deactivate")
         self.failUnlessEqual(response.status_code, 302)
+        response = self.client.get("/leads/help")
+        self.failUnlessEqual(response.status_code, 301)
 
     def test_not_found_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)

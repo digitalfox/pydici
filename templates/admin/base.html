@@ -36,7 +36,7 @@
         <a href="/leads/">{% trans "Home" %}</a>&nbsp;|&nbsp;
         <a href="/leads/review/">{% trans "Current leads review" %}</a>&nbsp;|&nbsp;
         <a href="/leads/pdcreview/">{% trans "Workload schedule" %}</a>&nbsp;|&nbsp;
-        <a href="/mediawiki/index.php/Pydici">{% trans "Help" %}</a>&nbsp;|&nbsp;
+        <a href="/leads/help">{% trans "Help" %}</a>&nbsp;|&nbsp;
         {% trans "Welcome," %} <strong>{% if user.first_name %}{{ user.first_name|escape }}{% else %}{{ user.username }}{% endif %}</strong>.</div>
         {% endif %}
         {% block nav-global %}{% endblock %}
