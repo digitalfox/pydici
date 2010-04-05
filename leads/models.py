@@ -6,7 +6,7 @@ Database access layer.
 """
 
 from django.db import models
-from datetime import datetime
+from datetime import datetime, date
 from django.db.models import Q
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
@@ -200,6 +200,14 @@ class Lead(models.Model):
 
     def get_absolute_url(self):
         return "%s/leads/%s/" % (pydici.settings.LEADS_WEB_LINK_ROOT, self.id)
+
+    def is_late(self):
+        """@return: True if due date is today or in the past.
+        False if not defined or in the future"""
+        if self.due_date and self.due_date <= date.today():
+            return True
+        else:
+            return False
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]

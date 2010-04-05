@@ -34,7 +34,7 @@
     <b>{% trans "Responsible: " %}</b>{{ lead.responsible|default_if_none:_("To be defined") }}<br>
     <b>{% trans "Salesman: " %}</b>{% if lead.salesman %} {{ lead.salesman }} {% else %} {% trans "None" %} {% endif %}
     <br><br><hr>
-    <b>{% trans "Due date: " %}</b>{{ lead.due_date|default_if_none:_("Unknown") }}<br>
+    <b>{% trans "Due date: " %}</b><span {% if lead.is_late %}style='color:red'{% endif %}>{{ lead.due_date|default_if_none:_("Unknown") }}</span><br>
     <b>{% trans "Start date: " %} </b>{{ lead.start_date|default_if_none:_("Unknown") }}
     <br><br><hr>
     <b>{% trans "Sales (k€): " %}</b>{{ lead.sales|default_if_none:_("Unknown") }}<br>

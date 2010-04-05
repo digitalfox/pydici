@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-04 23:41+0200\n"
-"PO-Revision-Date: 2010-04-04 23:41+0200\n"
+"POT-Creation-Date: 2010-04-05 14:19+0200\n"
+"PO-Revision-Date: 2010-04-05 14:18+0200\n"
 "Last-Translator: Sebastien Renard <Sebastien.Renard@digitalfox.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -114,7 +114,7 @@ msgstr "Productif"
 msgid "Profil"
 msgstr "Profile"
 
-#: leads/models.py:114 templates/leads/mission_staffing.html:36
+#: leads/models.py:114 templates/leads/mission_staffing.html:39
 msgid "Consultant"
 msgstr "Consultant"
 
@@ -274,18 +274,18 @@ msgid "Holiday"
 msgstr "Congé"
 
 #: leads/models.py:267 templates/leads/consultant_staffing.html:37
-#: templates/leads/mission_staffing.html:39
+#: templates/leads/mission_staffing.html:42
 msgid "Load"
 msgstr "Charge"
 
 #: leads/models.py:268 templates/leads/consultant_staffing.html:38
-#: templates/leads/mission_staffing.html:40
+#: templates/leads/mission_staffing.html:43
 msgid "Comments"
 msgstr "Remarques"
 
 #: leads/models.py:282 leads/views.py:126
 #: templates/leads/consultant_staffing.html:28
-#: templates/leads/mission_staffing.html:28 templates/leads/review.html:25
+#: templates/leads/mission_staffing.html:31 templates/leads/review.html:25
 #: templates/leads/review.html.py:54
 msgid "Staffing"
 msgstr "Staffing"
@@ -402,7 +402,7 @@ msgid "Add"
 msgstr "Ajouter"
 
 #: templates/admin/index.html:35 templates/leads/consultant_staffing.html:23
-#: templates/leads/mission_staffing.html:16 templates/leads/missions.html:31
+#: templates/leads/mission_staffing.html:19 templates/leads/missions.html:31
 msgid "Change"
 msgstr "Modifier"
 
@@ -443,37 +443,37 @@ msgid "Change %(mission)s"
 msgstr "Modifier %(mission)s"
 
 #: templates/leads/consultant_staffing.html:36
-#: templates/leads/mission_staffing.html:38
+#: templates/leads/mission_staffing.html:41
 msgid "Month"
 msgstr "Mois"
 
 #: templates/leads/consultant_staffing.html:40
-#: templates/leads/mission_staffing.html:42
+#: templates/leads/mission_staffing.html:45
 msgid "Delete"
 msgstr "Supprimer"
 
 #: templates/leads/consultant_staffing.html:41
-#: templates/leads/mission_staffing.html:43
+#: templates/leads/mission_staffing.html:46
 msgid "Last change"
 msgstr "Dernière modif."
 
 #: templates/leads/consultant_staffing.html:48
-#: templates/leads/mission_staffing.html:50
+#: templates/leads/mission_staffing.html:53
 msgid "New staffing:"
 msgstr "Nouveau staffing : "
 
-#: templates/leads/consultant_staffing.html:81
-#: templates/leads/mission_staffing.html:83
+#: templates/leads/consultant_staffing.html:85
+#: templates/leads/mission_staffing.html:90
 msgid "Save"
 msgstr "Enregistrer"
 
-#: templates/leads/consultant_staffing.html:86
+#: templates/leads/consultant_staffing.html:90
 msgid "Back to work load schedule"
 msgstr "Retour au plan de charge"
 
-#: templates/leads/consultant_staffing.html:88
+#: templates/leads/consultant_staffing.html:92
 #: templates/leads/lead_detail.html:69
-#: templates/leads/mission_staffing.html:90 templates/leads/missions.html:48
+#: templates/leads/mission_staffing.html:97 templates/leads/missions.html:48
 msgid "Back to home page"
 msgstr "Retour à la page d'accueil"
 
@@ -710,19 +710,23 @@ msgstr "Staffing : "
 msgid "updated: "
 msgstr "Mise à jour : "
 
-#: templates/leads/mission_staffing.html:15
+#: templates/leads/mission_staffing.html:16
+msgid "Deal id: "
+msgstr "N° affaire : "
+
+#: templates/leads/mission_staffing.html:18
 msgid "Probability:"
 msgstr "Probabilité :"
 
-#: templates/leads/mission_staffing.html:19
+#: templates/leads/mission_staffing.html:22
 msgid "Consultants currently implicated in this mission"
 msgstr "Consultants impliqués actuellement dans cette mission"
 
-#: templates/leads/mission_staffing.html:88
+#: templates/leads/mission_staffing.html:95
 msgid "Back to mission list"
 msgstr "Retour à la liste des missions"
 
-#: templates/leads/mission_staffing.html:93
+#: templates/leads/mission_staffing.html:100
 msgid "Lead of this mission"
 msgstr "Opportunité de cette mission"
 

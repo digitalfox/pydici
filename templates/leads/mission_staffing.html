@@ -12,6 +12,9 @@
 
 <div id="content-main">
     <h1>{{ mission }}</h1>
+    {% if mission.deal_id %}
+        <h3>{% trans "Deal id: " %} {{ mission.deal_id }}</h3>
+    {% endif %}
     <h3>{% trans "Probability:" %} {{ mission.get_probability_display }} </h3>
     <td scope="row"><a href='/leads/admin/leads/mission/{{mission.id}}/', title='{% trans "Change"%} {{ mission }}', target='_blank', class='changelink'><em>{% trans "Change"%}</em></a></td>
     <br>
