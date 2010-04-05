@@ -167,7 +167,7 @@ class Lead(models.Model):
     client = models.ForeignKey(Client)
     creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
-    send_email = models.BooleanField(_("Send lead by email"), default=False)
+    send_email = models.BooleanField(_("Send lead by email"), default=True)
 
     objects = LeadManager() # Custom manager that factorise active/passive lead code
 
