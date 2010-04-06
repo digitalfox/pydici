@@ -26,6 +26,7 @@ class LeadAdmin(admin.ModelAdmin):
         (None, {"fields": ["send_email", ]})
         ]
     ordering = ("creation_date",)
+    actions = None
     filter_horizontal = ["staffing"]
     list_filter = ["state", ]
     date_hierarchy = "update_date"
@@ -91,11 +92,13 @@ class ClientContactAdmin(admin.ModelAdmin):
     list_display = ("name", "function", "email", "phone")
     odering = ("name")
     search_fields = ["name", "function"]
+    actions = None
 
 class SalesManAdmin(admin.ModelAdmin):
     list_display = ("name", "company", "trigramme", "email", "phone")
     odering = ("name")
     search_fields = ["name", "trigramme"]
+    actions = None
 
 class ClientOrganisationAdmin(admin.ModelAdmin):
     fieldsets = [(None, {"fields": ["company", "name"] }), ]
@@ -103,6 +106,7 @@ class ClientOrganisationAdmin(admin.ModelAdmin):
     list_display_links = ("company", "name",)
     ordering = ("name",)
     search_fields = ("name",)
+    actions = None
 
 class ClientOrganisationAdminInline(admin.TabularInline):
     model = ClientOrganisation
@@ -111,17 +115,20 @@ class ClientCompanyAdmin(admin.ModelAdmin):
     list_display = ("name",)
     ordering = ("name",)
     search_fields = ("name",)
+    actions = None
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ("organisation", "salesOwner", "contact")
     ordering = ("organisation",)
     search_fields = ("organisation__company__name", "organisation__name", "contact__name")
+    actions = None
 
 class ConsultantAdmin(admin.ModelAdmin):
     list_display = ("name", "trigramme", "profil", "productive")
     search_fields = ("name", "trigramme")
     ordering = ("name",)
     list_filter = ["profil", ]
+    actions = None
 
 class MissionAdmin(admin.ModelAdmin):
     list_display = ("lead", "description", "nature", "probability", "deal_id", "active", "update_date")
@@ -130,17 +137,21 @@ class MissionAdmin(admin.ModelAdmin):
     ordering = ("lead", "description")
     date_hierarchy = "update_date"
     list_filter = ["nature", "probability", "active"]
+    actions = None
 
 class HolidayAdmin(admin.ModelAdmin):
     list_display = ("day", "description")
     date_hierarchy = "day"
+    actions = None
 
 class ConsultantProfileAdmin(admin.ModelAdmin):
     ordering = ("level",)
     list_display = ("name", "level")
+    actions = None
 
 class SubsidiaryAdmin(admin.ModelAdmin):
     ordering = ("name",)
+    actions = None
 
 admin.site.register(Lead, LeadAdmin)
 admin.site.register(Client, ClientAdmin)
