@@ -434,7 +434,7 @@ def graph_stat_pie(request):
     states = [i[0] for i in Lead.STATES]
     cursor = connection.cursor()
     cursor.execute("select  state, count(*) from leads_lead  group by state")
-    data = cursor.fetchall()
+    data = list(cursor.fetchall())
     data.sort(cmp=lambda x, y: cmp(states.index(x[0]), states.index(y[0])))
     fig = Figure(figsize=(8, 8))
     fig.set_facecolor("white")
