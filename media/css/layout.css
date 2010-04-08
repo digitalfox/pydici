@@ -16,7 +16,7 @@
 .dashboard #content { width:80%; }
 
 /*  HEADER  */
-#header { background:#05467A; color:#ffc; overflow:hidden; }
+#header { background-image:url(../leads/header.png); background-repeat:repeat-x; color:#ffc; overflow:hidden; }
 #header a:link, #header a:visited { color:white; }
 #header a:hover { text-decoration:underline; }
 #branding h1 { padding:0 10px; font-size:18px; margin:8px 0; font-weight:normal; color:#f4f379; }
