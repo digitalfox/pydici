@@ -31,7 +31,7 @@ urlpatterns = patterns('',
 
     # Admin
     (r'^leads/admin/doc/', include('django.contrib.admindocs.urls')),
-    (r'^leads/admin/(.*)', admin.site.root),
+    (r'^leads/admin/', include(admin.site.urls)),
 
     # Ajax select
     (r'^ajax_select/', include('ajax_select.urls')),
