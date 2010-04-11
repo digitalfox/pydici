@@ -100,4 +100,6 @@ LEADS_HELP_PAGE = "/my_custom_help_page.html" # May be absolute or relative
 
 AJAX_LOOKUP_CHANNELS = {
     'responsible' : dict(model='leads.consultant', search_field='name'),
+    'salesman' : dict(model='leads.salesman', search_field='name'),
+    'client' : ('leads.lookups', 'ClientLookup'),
 }

@@ -16,3 +16,5 @@ class LeadForm(models.ModelForm):
         model = Lead
     # declare a field and specify the named channel that it uses
     responsible = AutoCompleteSelectField('responsible', required=False)
+    salesman = AutoCompleteSelectField('salesman', required=False)
+    client = AutoCompleteSelectField('client', required=True)
