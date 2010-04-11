@@ -8,6 +8,13 @@
 {% block extrahead %}{% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 {% load i18n %}
+
+<script type="text/javascript" src="/media/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="/media/js/jquery.autocomplete.min.js"></script>
+<script type="text/javascript" src="/media/js/admin/ajax_select.js"></script>
+<link rel="stylesheet" type="text/css" href="/media/css/jquery.autocomplete.css" />
+<link rel="stylesheet" type="text/css" href="/media/css/iconic.css" />
+
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last modified leads' %}"
       href="/leads/feeds/latest" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last created leads' %}"

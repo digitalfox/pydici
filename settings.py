@@ -84,6 +84,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'debug_toolbar',
     'pydici.leads',
+    'ajax_select'
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
@@ -96,3 +97,7 @@ LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
 LEADS_WEB_LINK_ROOT = "http://localhost:8888" # Without trailing slash
 LEADS_MAIL_SMTP = "mail.digitalfox.org"
 LEADS_HELP_PAGE = "/my_custom_help_page.html" # May be absolute or relative
+
+AJAX_LOOKUP_CHANNELS = {
+    'responsible' : dict(model='leads.consultant', search_field='name'),
+}

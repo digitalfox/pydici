@@ -9,15 +9,20 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
+from ajax_select import make_ajax_form
+from ajax_select.admin import AjaxSelectAdmin
+
 from datetime import datetime
 
 from pydici.leads.models import Lead, Client, ClientOrganisation, ClientCompany, ClientContact, Consultant, \
                                 SalesMan, Mission, Staffing, Holiday, ConsultantProfile, Subsidiary
 
+from pydici.leads.forms import LeadForm
+
 from pydici.leads.utils import send_lead_mail, capitalize
 
 
-class LeadAdmin(admin.ModelAdmin):
+class LeadAdmin(AjaxSelectAdmin):
     list_display = ("name", "client", "short_description", "responsible", "salesman", "state", "due_date", "update_date_strf")
     fieldsets = [
         (None, {"fields": ["name", "client", "description", "action"]}),
@@ -36,6 +41,7 @@ class LeadAdmin(admin.ModelAdmin):
                      "client__contact__name", "client__organisation__company__name",
                      "client__organisation__name",
                      "staffing__trigramme", "staffing__name"]
+    form = LeadForm
 
     def save_model(self, request, obj, form, change):
         mail = False
