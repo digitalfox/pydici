@@ -13,6 +13,8 @@ os.environ['MPLCONFIGDIR'] = '/tmp' # Needed for matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+from ajax_select.fields import AutoCompleteSelectField
+
 import pydici.settings
 
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -209,6 +211,11 @@ class ActiveStaffingInlineFormSet(BaseInlineFormSet):
         qs = qs.exclude(Q(staffing_date__lte=lastMonth) &
                   ~ Q(mission__nature="PROD")) # Remove past non prod mission
         return qs
+
+    #that adds the field in, overwriting the previous default field
+    def add_fields(self, form, index):
+        super(ActiveStaffingInlineFormSet, self).add_fields(form, index)
+        form.fields["mission"] = AutoCompleteSelectField('mission', required=False)
 
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""

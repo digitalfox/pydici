@@ -102,4 +102,5 @@ AJAX_LOOKUP_CHANNELS = {
     'responsible' : dict(model='leads.consultant', search_field='name'),
     'salesman' : dict(model='leads.salesman', search_field='name'),
     'client' : ('leads.lookups', 'ClientLookup'),
+    'mission' : ('leads.lookups', 'MissionLookup'),
 }
