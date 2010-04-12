@@ -29,20 +29,19 @@ input.ac_loading {
 
 /* change the X to an image */
 .results_on_deck .iconic, .results_on_deck .iconic:hover {
-    float: left;
+    /*float: left;*/
     background: url('../img/admin/icon_deletelink.gif') no-repeat;
     color: transparent;
     border: 0;
 }
 
 /* specific to a site I worked on. the formatted results were tables.  I sized them and floated them left, next to the icon */
-.results_on_deck div table {
-    float: left;
-    width: 300px;
+.results_on_deck span {
+ /*   float: left;*/
+    /*width: 300px;*/
     border: 0;
 }
 /* and each div in the result clears to start a new row */
-.results_on_deck > div {
+.results_on_deck > span {
     clear: both;
 }
-
