@@ -27,7 +27,7 @@ from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 
 from pydici.leads.models import Lead, Consultant, SalesMan, Staffing, Mission, Holiday
-from pydici.leads.forms import ConsultantStaffingInlineFormset
+from pydici.leads.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset
 from pydici.leads.utils import send_lead_mail, to_int_or_round, working_days
 
 # Graph colors
@@ -181,7 +181,8 @@ def missions(request, onlyActive=True):
 @permission_required("leads.delete_staffing")
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
-    StaffingFormSet = inlineformset_factory(Mission, Staffing)
+    StaffingFormSet = inlineformset_factory(Mission, Staffing,
+                                            formset=MissionStaffingInlineFormset)
     mission = Mission.objects.get(id=mission_id)
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=mission)
