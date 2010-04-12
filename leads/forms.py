@@ -6,6 +6,7 @@ Administration form setup
 """
 
 from django.forms import models
+from django.forms.models import BaseInlineFormSet
 
 from ajax_select.fields import AutoCompleteSelectField
 
@@ -18,3 +19,13 @@ class LeadForm(models.ModelForm):
     responsible = AutoCompleteSelectField('responsible', required=False)
     salesman = AutoCompleteSelectField('salesman', required=False)
     client = AutoCompleteSelectField('client', required=True)
+
+
+class ConsultantStaffingInlineFormset(BaseInlineFormSet):
+    """Custom inline formset used to override queryset
+    and get ride of inactive mission staffing"""
+
+    def add_fields(self, form, index):
+        """that adds the field in, overwriting the previous default field"""
+        super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
+        form.fields["mission"] = AutoCompleteSelectField('mission', required=True)

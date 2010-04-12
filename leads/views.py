@@ -24,10 +24,11 @@ from django.contrib.admin.models import LogEntry
 from django.db.models import Q
 from django.db import connection
 from django.forms import ModelForm
-from django.forms.models import inlineformset_factory, BaseInlineFormSet
+from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 
 from pydici.leads.models import Lead, Consultant, SalesMan, Staffing, Mission, Holiday
+from pydici.leads.forms import ConsultantStaffingInlineFormset
 from pydici.leads.utils import send_lead_mail, to_int_or_round, working_days
 
 # Graph colors
@@ -201,21 +202,6 @@ def mission_staffing(request, mission_id):
                                                               })
 
 
-class ActiveStaffingInlineFormSet(BaseInlineFormSet):
-    """Custom inline formset used to override queryset
-    and get ride of inactive mission staffing"""
-    def get_queryset(self):
-        lastMonth = datetime.today() - timedelta(days=30)
-        qs = super(ActiveStaffingInlineFormSet, self).get_queryset()
-        qs = qs.filter(mission__active=True) # Remove archived mission
-        qs = qs.exclude(Q(staffing_date__lte=lastMonth) &
-                  ~ Q(mission__nature="PROD")) # Remove past non prod mission
-        return qs
-
-    #that adds the field in, overwriting the previous default field
-    def add_fields(self, form, index):
-        super(ActiveStaffingInlineFormSet, self).add_fields(form, index)
-        form.fields["mission"] = AutoCompleteSelectField('mission', required=False)
 
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
@@ -229,7 +215,7 @@ def consultant_staffing(request, consultant_id):
             return HttpResponseRedirect("/leads/forbiden")
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
-                                          formset=ActiveStaffingInlineFormSet)
+                                          formset=ConsultantStaffingInlineFormset)
 
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=consultant)
