@@ -10,7 +10,7 @@
 
 {% block content %}
 
-<div id="content-main">
+<div id="content-staffing">
     <h1>{{ consultant }}</h1>
 
     <h2>{% trans "Consultant's missions" %}</h2>
@@ -33,7 +33,7 @@
     <form action="" method="POST">
         {{ formset.management_form }}
         <div class="form-row">
-        <table style='white-space:nowrap;'>
+        <table>
            <tr>
                <th></th>
                <th>{% trans "Mission" %}</th>

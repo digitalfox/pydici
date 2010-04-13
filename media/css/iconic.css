@@ -30,6 +30,7 @@ input.ac_loading {
 /* change the X to an image */
 .results_on_deck .iconic, .results_on_deck .iconic:hover {
     /*float: left;*/
+    vertical-align: middle;
     background: url('../img/admin/icon_deletelink.gif') no-repeat;
     color: transparent;
     border: 0;
@@ -37,7 +38,8 @@ input.ac_loading {
 
 /* specific to a site I worked on. the formatted results were tables.  I sized them and floated them left, next to the icon */
 .results_on_deck span {
- /*   float: left;*/
+    /*float: left;*/
+    vertical-align: middle;
     /*width: 300px;*/
     border: 0;
 }
