@@ -6,9 +6,6 @@ Database access layer for pydici CRM module
 """
 
 from django.db import models
-from datetime import datetime, date
-from django.db.models import Q
-from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
@@ -72,4 +69,3 @@ class Client(models.Model):
     class Meta:
         ordering = ["organisation", "contact"]
         verbose_name = _("Client")
-

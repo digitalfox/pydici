@@ -5,26 +5,16 @@ Pydici core views. Http request are processed here.
 @license: GPL v3 or newer
 """
 
-from datetime import datetime, timedelta, date
-import os
-
-
-from ajax_select.fields import AutoCompleteSelectField
-
 import pydici.settings
 
-from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from django.contrib.auth.decorators import login_required, permission_required
-from django.db import connection
+from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 
 from pydici.leads.models import Lead
 
 from pydici.people.models import Consultant, SalesMan
-from pydici.staffing.models import Staffing, Mission, Holiday
 
-from pydici.core.utils import send_lead_mail, to_int_or_round
 
 
 @login_required

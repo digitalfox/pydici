@@ -42,7 +42,11 @@ class SimpleTest(TestCase):
                      "/leads/mission/",
                      "/leads/mission/all",
                      "/leads/mission/1/",
-                     "/leads/consultant/1/"):
+                     "/leads/consultant/1/",
+                     "/leads/graph/pie",
+                     "/leads/graph/bar",
+                     "/leads/graph/salesmen",
+                     ):
             response = self.client.get(page)
             self.failUnlessEqual(response.status_code, 200,
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))

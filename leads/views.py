@@ -6,7 +6,7 @@ Pydici leads views. Http request are processed here.
 """
 
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import os
 
 os.environ['MPLCONFIGDIR'] = '/tmp' # Needed for matplotlib
@@ -18,10 +18,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.models import LogEntry
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, Http404
-from django.db.models import Q
 from django.utils.translation import ugettext as _
+from django.db import connection
+from django.db.models import Q
 
+from pydici.core.utils import send_lead_mail
 from pydici.leads.models import Lead
+from pydici.people.models import SalesMan
 import pydici.settings
 
 

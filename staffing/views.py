@@ -5,12 +5,13 @@ Pydici staffing views. Http request are processed here.
 @license: GPL v3 or newer
 """
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
+from django.utils.translation import ugettext as _
 
 from pydici.staffing.models import Staffing, Mission, Holiday
 from pydici.people.models import Consultant
