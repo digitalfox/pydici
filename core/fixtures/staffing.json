@@ -1,0 +1,41 @@
+[
+    {
+        "pk": 1, 
+        "model": "staffing.mission", 
+        "fields": {
+            "update_date": "2010-02-21 22:53:37", 
+            "description": null, 
+            "probability": 50, 
+            "nature": "PROD", 
+            "lead": 1, 
+            "deal_id": "1234",
+            "active": true
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "staffing.mission", 
+        "fields": {
+            "update_date": "2010-02-21 22:54:18", 
+            "description": null, 
+            "probability": 50, 
+            "nature": "PROD", 
+            "lead": 2, 
+            "deal_id": "4321",
+            "active": true
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "staffing.staffing", 
+        "fields": {
+            "comment": "", 
+            "update_date": "2010-02-21 23:01:12", 
+            "consultant": 1, 
+            "mission": 1, 
+            "charge": 10.0, 
+            "last_user": "fox", 
+            "staffing_date": "2010-02-01"
+        }
+    }
+]

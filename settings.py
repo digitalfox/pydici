@@ -83,7 +83,11 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'debug_toolbar',
+    'pydici.core',
+    'pydici.people',
     'pydici.leads',
+    'pydici.staffing',
+    'pydici.crm',
     'ajax_select'
 )
 
@@ -99,8 +103,8 @@ LEADS_MAIL_SMTP = "mail.digitalfox.org"
 LEADS_HELP_PAGE = "/my_custom_help_page.html" # May be absolute or relative
 
 AJAX_LOOKUP_CHANNELS = {
-    'consultant' : dict(model='leads.consultant', search_field='name'),
-    'salesman' : dict(model='leads.salesman', search_field='name'),
-    'client' : ('leads.lookups', 'ClientLookup'),
-    'mission' : ('leads.lookups', 'MissionLookup'),
+    'consultant' : dict(model='people.consultant', search_field='name'),
+    'salesman' : dict(model='people.salesman', search_field='name'),
+    'client' : ('crm.lookups', 'ClientLookup'),
+    'mission' : ('staffing.lookups', 'MissionLookup'),
 }

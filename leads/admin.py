@@ -14,12 +14,11 @@ from ajax_select.admin import AjaxSelectAdmin
 
 from datetime import datetime
 
-from pydici.leads.models import Lead, Client, ClientOrganisation, ClientCompany, ClientContact, Consultant, \
-                                SalesMan, Mission, Staffing, Holiday, ConsultantProfile, Subsidiary
+from pydici.leads.models import Lead
 
 from pydici.leads.forms import LeadForm
 
-from pydici.leads.utils import send_lead_mail, capitalize
+from pydici.core.utils import send_lead_mail, capitalize
 
 
 class LeadAdmin(AjaxSelectAdmin):
@@ -93,80 +92,4 @@ class LeadAdmin(AjaxSelectAdmin):
             request.user.message_set.create(message=ugettext("According mission has been archived"))
 
 
-
-class ClientContactAdmin(admin.ModelAdmin):
-    list_display = ("name", "function", "email", "phone")
-    odering = ("name")
-    search_fields = ["name", "function"]
-    actions = None
-
-class SalesManAdmin(admin.ModelAdmin):
-    list_display = ("name", "company", "trigramme", "email", "phone")
-    odering = ("name")
-    search_fields = ["name", "trigramme"]
-    actions = None
-
-class ClientOrganisationAdmin(admin.ModelAdmin):
-    fieldsets = [(None, {"fields": ["company", "name"] }), ]
-    list_display = ("company", "name",)
-    list_display_links = ("company", "name",)
-    ordering = ("name",)
-    search_fields = ("name",)
-    actions = None
-
-class ClientOrganisationAdminInline(admin.TabularInline):
-    model = ClientOrganisation
-
-class ClientCompanyAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    ordering = ("name",)
-    search_fields = ("name",)
-    actions = None
-
-class ClientAdmin(admin.ModelAdmin):
-    list_display = ("organisation", "salesOwner", "contact")
-    ordering = ("organisation",)
-    search_fields = ("organisation__company__name", "organisation__name", "contact__name")
-    actions = None
-
-class ConsultantAdmin(admin.ModelAdmin):
-    list_display = ("name", "trigramme", "profil", "productive")
-    search_fields = ("name", "trigramme")
-    ordering = ("name",)
-    list_filter = ["profil", ]
-    actions = None
-
-class MissionAdmin(admin.ModelAdmin):
-    list_display = ("lead", "description", "nature", "probability", "deal_id", "active", "update_date")
-    search_fields = ("lead__name", "description", "deal_id", "lead__client__organisation__company__name",
-                   "lead__client__contact__name")
-    ordering = ("lead", "description")
-    date_hierarchy = "update_date"
-    list_filter = ["nature", "probability", "active"]
-    actions = None
-
-class HolidayAdmin(admin.ModelAdmin):
-    list_display = ("day", "description")
-    date_hierarchy = "day"
-    actions = None
-
-class ConsultantProfileAdmin(admin.ModelAdmin):
-    ordering = ("level",)
-    list_display = ("name", "level")
-    actions = None
-
-class SubsidiaryAdmin(admin.ModelAdmin):
-    ordering = ("name",)
-    actions = None
-
 admin.site.register(Lead, LeadAdmin)
-admin.site.register(Client, ClientAdmin)
-admin.site.register(ClientOrganisation, ClientOrganisationAdmin)
-admin.site.register(ClientCompany, ClientCompanyAdmin)
-admin.site.register(ClientContact, ClientContactAdmin)
-admin.site.register(Consultant, ConsultantAdmin)
-admin.site.register(SalesMan, SalesManAdmin)
-admin.site.register(Mission, MissionAdmin)
-admin.site.register(Holiday, HolidayAdmin)
-admin.site.register(ConsultantProfile, ConsultantProfileAdmin)
-admin.site.register(Subsidiary, SubsidiaryAdmin)

@@ -19,7 +19,8 @@ TEST_USERNAME = "fox"
 TEST_PASSWORD = "rototo"
 
 class SimpleTest(TestCase):
-    fixtures = ["auth.json", "leads.json"]
+    fixtures = ["auth.json", "core.json", "people.json", "crm.json",
+                "leads.json", "staffing.json"]
     def test_basic_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         for page in ("/leads/",

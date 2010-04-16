@@ -1,0 +1,65 @@
+[
+    {
+        "pk": 1, 
+        "model": "leads.lead", 
+        "fields": {
+            "due_date": null, 
+            "name": "a wonderful project", 
+            "update_date": "2010-02-21 22:53:37", 
+            "responsible": 1, 
+            "sales": null, 
+            "external_staffing": "",  
+            "send_email": false, 
+            "state": "OFFER_SENT", 
+            "client": 1, 
+            "action": "", 
+            "creation_date": "2010-02-21 16:49:25", 
+            "salesman": null, 
+            "start_date": null, 
+            "staffing": [], 
+            "description": "what a wonderful project mister fox !"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "leads.lead", 
+        "fields": {
+            "due_date": null, 
+            "name": "and a small project for a change", 
+            "update_date": "2010-02-21 22:54:50", 
+            "responsible": null, 
+            "sales": null, 
+            "external_staffing": "",  
+            "send_email": false, 
+            "state": "QUALIF", 
+            "client": 1, 
+            "action": "", 
+            "creation_date": "2010-02-21 16:49:25", 
+            "salesman": null, 
+            "start_date": null, 
+            "staffing": [], 
+            "description": "very interesting project"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "leads.lead", 
+        "fields": {
+            "due_date": null, 
+            "name": "another great project", 
+            "update_date": "2010-02-21 22:54:18", 
+            "responsible": null, 
+            "sales": null, 
+            "external_staffing": "",  
+            "send_email": false, 
+            "state": "NEGOTIATION", 
+            "client": 1, 
+            "action": "", 
+            "creation_date": "2010-02-21 16:49:25", 
+            "salesman": null, 
+            "start_date": null, 
+            "staffing": [], 
+            "description": "again, a big project"
+        }
+    }
+]

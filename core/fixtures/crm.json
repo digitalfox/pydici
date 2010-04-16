@@ -1,0 +1,36 @@
+[
+    {
+        "pk": 1, 
+        "model": "crm.clientcompany", 
+        "fields": {
+            "name": "World company"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "crm.clientorganisation", 
+        "fields": {
+            "company": 1, 
+            "name": "DSI"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "crm.clientcontact", 
+        "fields": {
+            "function": "", 
+            "phone": "", 
+            "name": "Sylvester", 
+            "email": ""
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "crm.client", 
+        "fields": {
+            "organisation": 1, 
+            "contact": 1, 
+            "salesOwner": 1
+        }
+    } 
+]

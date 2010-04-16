@@ -1,0 +1,66 @@
+[
+    {
+        "pk": 2, 
+        "model": "people.consultantprofile", 
+        "fields": {
+            "name": "Consultant", 
+            "level": 1
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "people.consultantprofile", 
+        "fields": {
+            "name": "Directeur", 
+            "level": 4
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "people.consultant", 
+        "fields": {
+            "trigramme": "GBA", 
+            "productive": true, 
+            "name": "Gr\u00e9goire", 
+            "company": 1, 
+            "profil": 1, 
+            "manager": 3
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "people.consultant", 
+        "fields": {
+            "trigramme": "JCF", 
+            "productive": true, 
+            "name": "Jean-Christophe", 
+            "company": 1, 
+            "profil": 1, 
+            "manager": 2
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "people.consultant", 
+        "fields": {
+            "trigramme": "SRE", 
+            "productive": true, 
+            "name": "S\u00e9bastien", 
+            "company": 1, 
+            "profil": 1, 
+            "manager": 1
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "people.consultant", 
+        "fields": {
+            "trigramme": "TCO", 
+            "productive": true, 
+            "name": "Thomas", 
+            "company": 1, 
+            "profil": 2, 
+            "manager": 1
+        }
+    }
+]
