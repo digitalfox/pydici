@@ -26,8 +26,8 @@
 
         {% for lead in my_leads_as_responsible %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client.organisation|truncate_by_chars:"30" }}</a></b></td>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name|truncate_by_chars:"40" }}</a></b></td>
+                <td><b><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead.client.organisation|truncate_by_chars:"30" }}</a></b></td>
+                <td><b><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead.name|truncate_by_chars:"40" }}</a></b></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -51,8 +51,8 @@
 
         {% for lead in my_leads_as_staffee %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client.organisation|truncate_by_chars:"30" }}</a></b></td>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name|truncate_by_chars:"40" }}</a></b></td>
+                <td><b><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead.client.organisation|truncate_by_chars:"30" }}</a></b></td>
+                <td><b><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead.name|truncate_by_chars:"40" }}</a></b></td>
                  <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -75,8 +75,8 @@
 
         {% for lead in latest_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client.organisation|truncate_by_chars:"30" }}</a></b></td>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name|truncate_by_chars:"40" }}</a></b></td>
+                <td><b><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead.client.organisation|truncate_by_chars:"30" }}</a></b></td>
+                <td><b><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead.name|truncate_by_chars:"40" }}</a></b></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -99,8 +99,8 @@
 
         {% for lead in my_latest_archived_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.client.organisation|truncate_by_chars:"30" }}</a></b></td>
-                <td><b><a href='/leads/{{lead.id}}/', title='{{ lead.description }}'>{{ lead.name|truncate_by_chars:"40" }}</a></b></td>
+                <td><b><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead.client.organisation|truncate_by_chars:"30" }}</a></b></td>
+                <td><b><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead.name|truncate_by_chars:"40" }}</a></b></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.sales }}</td>
@@ -110,11 +110,11 @@
         {% endfor %}
     {% endif %}
         <tr><th colspan=7>{% trans "Reports" %}</th></tr>
-        <tr><td colspan=2><a href='/leads/review'>{% trans "Current leads review" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='/leads/csv/active'>{% trans "Active leads as csv file" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='/leads/csv/all'>{% trans "All leads as csv file" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='/leads/mail/html'>{% trans "Week summary mail (html)" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='/leads/mail/text'>{% trans "Week summary mail (text)" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan=2><a href='{% url pydici.leads.views.review %}'>{% trans "Current leads review" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan=2><a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads as csv file" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan=2><a href='{% url pydici.leads.views.csv_export target="all" %}'>{% trans "All leads as csv file" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan=2><a href='{% url lead-mail-html %}'>{% trans "Week summary mail (html)" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan=2><a href='{% url lead-mail-text %}'>{% trans "Week summary mail (text)" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
         </table>
     </div>
 </div>
@@ -137,9 +137,9 @@
 		<br/>
 		<h3>{% trans "Add..." %}</h3>
 		    <ul class="actionlist">
-		    <li><a href='/leads/admin/leads/lead/add/'>{% trans "new lead" %}</a></li>
-		    <li><a href='/leads/admin/leads/client/add/'>{% trans "new client" %}</a></li>
-		    <li><a href='/leads/admin/leads/clientcontact/add/'>{% trans "new client contact" %}</a></li>
+		    <li><a href='{% url admin:leads_lead_add %}'>{% trans "new lead" %}</a></li>
+		    <li><a href='{% url admin:crm_client_add %}'>{% trans "new client" %}</a></li>
+		    <li><a href='{% url admin:crm_clientcontact_add %}'>{% trans "new client contact" %}</a></li>
 		    </ul>
 		 <br/>
         <h3>{% trans "My last actions" %}</h3>
@@ -155,12 +155,12 @@
             </ul>
             {% endif %}
         <br/>
-        <h3><a href="/leads/admin/">{% trans "Admin console" %}</a></h3>
+        <h3><a href="{% url admin:index %}">{% trans "Admin console" %}</a></h3>
         <ul class="actionlist">
-	        <li><a href="/leads/admin/leads/lead/">{% trans "All leads" %}</a></li>
-	        <li><a href="/leads/admin/leads/mission/">{% trans "All missions" %}</a></li>
-	        <li><a href="/leads/admin/leads/client/">{% trans "All clients" %}</a></li>
-	        <li><a href="/leads/admin/leads/clientcontact/">{% trans "All client contacts" %}</a></li>
+	        <li><a href="{% url admin:leads_lead_changelist %}">{% trans "All leads" %}</a></li>
+	        <li><a href="{% url admin:staffing_mission_changelist %}">{% trans "All missions" %}</a></li>
+	        <li><a href="{% url admin:crm_client_changelist %}">{% trans "All clients" %}</a></li>
+	        <li><a href="{% url admin:crm_clientcontact_changelist %}">{% trans "All client contacts" %}</a></li>
         </ul>
     </div>
 </div>
