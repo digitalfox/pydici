@@ -15,6 +15,7 @@ from ajax_select.admin import AjaxSelectAdmin
 from datetime import datetime
 
 from pydici.leads.models import Lead
+from pydici.staffing.models import Mission, Staffing
 
 from pydici.leads.forms import LeadForm
 
