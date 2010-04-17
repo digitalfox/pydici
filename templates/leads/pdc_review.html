@@ -12,24 +12,24 @@
 
 <div id="content-main">
 	<h1>
-	<a href='/leads/pdcreview/{{ previous_slice_date|date:"Y/m" }}/?groupby={{groupby}};{% if projected %}projected;{% endif %}' title="Mois précédents"><img src="/leads/media/leads/fg.png" border=0/></a>
+	<a href='{% url pdcreview year=previous_slice_date|date:"Y",month=previous_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="Mois précédents"><img src="/leads/media/leads/fg.png" border=0/></a>
 	Revue du plan de charge
-	<a href='/leads/pdcreview/{{ next_slice_date|date:"Y/m" }}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="Mois suivants"><img src="/leads/media/leads/fd.png" border=0/></a>
+	<a href='{% url pdcreview year=next_slice_date|date:"Y",month=next_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="Mois suivants"><img src="/leads/media/leads/fd.png" border=0/></a>
 	</h1>
 {% if projected %}
     <strong>Projections de staffing prises en compte </strong>
-    (<a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}/?groupby={{groupby}}'><em>enlever les projections</em></a>)
+    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby={{groupby}}'><em>enlever les projections</em></a>)
 {% else %}
     <strong>Projections de staffing <em>non</em> prises en compte </strong>
-    (<a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}/?groupby={{groupby}};projected'><em>ajouter les projections</em></a>)
+    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby={{groupby}};projected'><em>ajouter les projections</em></a>)
 {% endif %}
 <br>
 {% ifequal groupby "manager" %}
     <strong>Groupement par manager</strong>
-    (<a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}/?groupby=position;projected'><em>grouper par position</em></a>)
+    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby=position;projected'><em>grouper par position</em></a>)
 {% else %}
     <strong>Groupement par position</strong>
-    (<a href='/leads/pdcreview/{{ start_date|date:"Y/m" }}/?groupby=manager;projected'><em>grouper par manager</em></a>)
+    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby=manager;projected'><em>grouper par manager</em></a>)
 {% endifequal %}
 <br>
 <br>

@@ -35,7 +35,7 @@ urlpatterns = patterns('',
 
     # Direct to template and direct pages
     (r'^leads/forbiden', direct_to_template, {'template': 'forbiden.html', 'extra_context': admin_contact}),
-    (r'^leads/help', redirect_to, {'url': pydici.settings.LEADS_HELP_PAGE}),
+    url(r'^leads/help', redirect_to, {'url': pydici.settings.LEADS_HELP_PAGE}, name='help'),
 
     # Media
     (r'^leads/media/leads/(?P<path>.*)$', 'django.views.static.serve',
@@ -62,7 +62,7 @@ urlpatterns = patterns('',
     (r'^leads/graph/salesmen', 'pydici.leads.views.graph_stat_salesmen'),
 
     # Staffing module
-    url(r'^leads/pdcreview/?$', 'pydici.staffing.views.pdc_review', name='pdreview-index'),
+    url(r'^leads/pdcreview/?$', 'pydici.staffing.views.pdc_review', name='pdcreview-index'),
     url(r'^leads/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pydici.staffing.views.pdc_review', name='pdcreview'),
     url(r'^leads/mission/$', 'pydici.staffing.views.missions', name='missions'),
     url(r'^leads/mission/all', 'pydici.staffing.views.missions', { 'onlyActive' : False }, 'all-missions'),

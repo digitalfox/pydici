@@ -16,13 +16,13 @@
 <link rel="stylesheet" type="text/css" href="/media/css/iconic.css" />
 
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last modified leads' %}"
-      href="/leads/feeds/latest" />
+      href="{% url django.contrib.syndication.views.feed 'latest' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last created leads' %}"
-      href="/leads/feeds/new" />
+      href="{% url django.contrib.syndication.views.feed 'new' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last won leads' %}"
-      href="/leads/feeds/won" />
+      href="{% url django.contrib.syndication.views.feed 'won' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my leads' %}"
-      href="/leads/feeds/mine" />
+      href="{% url django.contrib.syndication.views.feed 'mine' %}" />
 </head>
 
 
@@ -40,10 +40,10 @@
 
         {% if user.is_authenticated %}
         <div id="user-tools">
-        <a href="/leads/">{% trans "Home" %}</a>&nbsp;|&nbsp;
-        <a href="/leads/review/">{% trans "Current leads review" %}</a>&nbsp;|&nbsp;
-        <a href="/leads/pdcreview/">{% trans "Workload schedule" %}</a>&nbsp;|&nbsp;
-        <a href="/leads/help">{% trans "Help" %}</a>&nbsp;|&nbsp;
+        <a href="{% url index %}">{% trans "Home" %}</a>&nbsp;|&nbsp;
+        <a href="{% url pydici.leads.views.review %}">{% trans "Current leads review" %}</a>&nbsp;|&nbsp;
+        <a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a>&nbsp;|&nbsp;
+        <a href="{% url help %}">{% trans "Help" %}</a>&nbsp;|&nbsp;
         {% trans "Welcome," %} <strong>{% if user.first_name %}{{ user.first_name|escape }}{% else %}{{ user.username }}{% endif %}</strong>.</div>
         {% endif %}
         {% block nav-global %}{% endblock %}
