@@ -19,6 +19,6 @@
 {% trans "Action: " %}{% if obj.action %}{{ obj.action }}{% else %}{% trans "None" %}{% endif %}
 
 
-{% trans "Change this lead: " %}{{ link_root }}/leads/admin/leads/lead/{{ obj.id }}/
-{% trans "Home: " %}{{ link_root }}/leads/
+{% trans "Change this lead: " %}{% url admin:leads_lead_change obj.id %}
+{% trans "Home: " %}{% url index %}
 {% endautoescape %}

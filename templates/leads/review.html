@@ -9,9 +9,9 @@
 
 {% block content %}
 <center>
-<a href="/leads/graph/bar"><img src="/leads/graph/bar" height="400"></a>
+<a href="{% url pydici.leads.views.graph_stat_bar %}"><img src="{% url pydici.leads.views.graph_stat_bar %}" height="400"></a>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="/leads/graph/pie"><img src="/leads/graph/pie" height="400"></a>
+<a href="{% url pydici.leads.views.graph_stat_pie %}"><img src="{% url pydici.leads.views.graph_stat_pie %}" height="400"></a>
 </center>
 <div id="content-main">
     {% if active_leads %}
@@ -30,7 +30,7 @@
         </tr>
         {% for lead in active_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><a href='/leads/{{lead.id}}/' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
+                <td><a href='{% url pydici.leads.views.detail lead.id %}' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.staffing_list }}</td>
@@ -59,7 +59,7 @@
         </tr>
         {% for lead in recent_archived_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><a href='/leads/{{lead.id}}' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
+                <td><a href='{% url pydici.leads.views.detail lead.id %}' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
                 <td>{{ lead.responsible }}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.staffing_list }}</td>

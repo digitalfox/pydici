@@ -62,8 +62,8 @@ urlpatterns = patterns('',
     (r'^leads/graph/salesmen', 'pydici.leads.views.graph_stat_salesmen'),
 
     # Staffing module
-    (r'^leads/pdcreview/?$', 'pydici.staffing.views.pdc_review'),
-    (r'^leads/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pydici.staffing.views.pdc_review'),
+    url(r'^leads/pdcreview/?$', 'pydici.staffing.views.pdc_review', name='pdreview-index'),
+    url(r'^leads/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pydici.staffing.views.pdc_review', name='pdcreview'),
     url(r'^leads/mission/$', 'pydici.staffing.views.missions', name='missions'),
     url(r'^leads/mission/all', 'pydici.staffing.views.missions', { 'onlyActive' : False }, 'all-missions'),
     (r'^leads/mission/(?P<mission_id>\d+)/$', 'pydici.staffing.views.mission_staffing'),

@@ -14,17 +14,17 @@
     <h1>{% trans "Lead detail" %}</h1>
     {% if active_count %}
 	    {% if previous_lead %}
-	        <a href='{{ link_root }}/leads/{{ previous_lead.id }}/'><img src="../media/leads/fg.png" border=0/></a>
+	        <a href='{% url pydici.leads.views.detail previous_lead.id %}'><img src="../media/leads/fg.png" border=0/></a>
 	    {% endif %}
 	    {{ active_rank }} / {{ active_count }}
 	    {% if next_lead %}
-	        <a href='{{ link_root }}/leads/{{ next_lead.id }}/'><img src="../media/leads/fd.png" border=0/></a>
+	        <a href='{% url pydici.leads.views.detail next_lead.id %}'><img src="../media/leads/fd.png" border=0/></a>
 	    {% endif %}
     {% endif %}
 
 
     <div class="form-row name  ">
-    <h2><a href='{{ link_root }}/leads/admin/leads/lead/{{ lead.id }}/' class='changelink' title='Cliquez pour modifier ce lead', target='_blank'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
+    <h2><a href='{% url admin:leads_lead_change lead.id %}' class='changelink' title='Cliquez pour modifier ce lead', target='_blank'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
     {% if lead.description %}
     <div class='system-message'>{{ lead.description|linebreaksbr }} </div>
     {% endif %}
@@ -66,11 +66,10 @@
 {% endif %}
 
 
-<br><a href='{{ link_root }}/leads/'>{% trans "Back to home page" %}</a>
+<br><a href='{% url index %}'>{% trans "Back to home page" %}</a>
 {% if lead.mission_set.count %}
     &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-    <a href='/leads/mission/{{ lead.mission_set.get.id }}/'>{% trans "Workload schedule" %}</a>
+    <a href='{% url pydici.staffing.views.mission_staffing lead.mission_set.get.id %}'>{% trans "Workload schedule" %}</a>
 {% endif %}
-
 
 {% endblock %}

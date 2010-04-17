@@ -18,4 +18,4 @@
 <b>{% trans "Action: " %}</b>{% if obj.action %}{{ obj.action }}{% else %}{% trans "Nothing" %}{% endif %}<br>
 
 
-<br><i><a href='{{ link_root }}/leads/admin/leads/lead/{{ obj.id }}/'>{% trans "Change this lead" %}</a> -- <a href='{{ link_root }}/leads/'>{% trans "Home" %}</a></i>
+<br><i><a href='{% url admin:leads_lead_change obj.id %}'>{% trans "Change this lead" %}</a> -- <a href='{% url index %}'>{% trans "Home" %}</a></i>
