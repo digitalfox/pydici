@@ -9,6 +9,7 @@ from django.db import models
 from datetime import datetime, date
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.core import urlresolvers
 
 from pydici.core.utils import send_lead_mail, capitalize, compact_text
 import pydici.settings
@@ -84,7 +85,7 @@ class Lead(models.Model):
     short_description.short_description = _("Description")
 
     def get_absolute_url(self):
-        return "%s/leads/%s/" % (pydici.settings.LEADS_WEB_LINK_ROOT, self.id)
+        return urlresolvers.reverse(pydici.leads.views.detail, args=[self.id])
 
     def is_late(self):
         """@return: True if due date is today or in the past.

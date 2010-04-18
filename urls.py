@@ -34,7 +34,7 @@ urlpatterns = patterns('',
     (r'^ajax_select/', include('ajax_select.urls')),
 
     # Direct to template and direct pages
-    (r'^leads/forbiden', direct_to_template, {'template': 'forbiden.html', 'extra_context': admin_contact}),
+    url(r'^leads/forbiden', direct_to_template, {'template': 'forbiden.html', 'extra_context': admin_contact}, name='forbiden'),
     url(r'^leads/help', redirect_to, {'url': pydici.settings.LEADS_HELP_PAGE}, name='help'),
 
     # Media
@@ -42,8 +42,8 @@ urlpatterns = patterns('',
             {'document_root': '/home/fox/prog/workspace/pydici/media/leads/'}),
 
     # Feeds
-    (r'^leads/feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',
-            {'feed_dict': feeds}),
+    url(r'^leads/feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',
+            {'feed_dict': feeds}, name='feed'),
 
     # core module
     (r'^$', 'pydici.core.views.index'),

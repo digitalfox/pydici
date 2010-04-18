@@ -16,13 +16,13 @@
 <link rel="stylesheet" type="text/css" href="/media/css/iconic.css" />
 
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last modified leads' %}"
-      href="{% url django.contrib.syndication.views.feed 'latest' %}" />
+      href="{% url feed 'latest' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last created leads' %}"
-      href="{% url django.contrib.syndication.views.feed 'new' %}" />
+      href="{% url feed 'new' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last won leads' %}"
-      href="{% url django.contrib.syndication.views.feed 'won' %}" />
+      href="{% url feed 'won' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my leads' %}"
-      href="{% url django.contrib.syndication.views.feed 'mine' %}" />
+      href="{% url feed 'mine' %}" />
 </head>
 
 

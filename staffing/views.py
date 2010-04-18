@@ -12,6 +12,8 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
+from django.core import urlresolvers
+
 
 from pydici.staffing.models import Staffing, Mission, Holiday
 from pydici.people.models import Consultant
@@ -67,7 +69,7 @@ def consultant_staffing(request, consultant_id):
             request.user.has_perm("leads.delete_staffing")):
         # Only forbid access if the user try to edit someone else staffing
         if request.user.username.upper() != consultant.trigramme:
-            return HttpResponseRedirect("/leads/forbiden")
+            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
                                           formset=ConsultantStaffingInlineFormset)
@@ -185,7 +187,9 @@ def pdc_review(request, year=None, month=None):
             total[month]["holidays"] += holidays
             total[month]["available"] += available
         # Add mission synthesis to staffing dict
-        staffing[consultant].append([", ".join(["<a href='/leads/mission/%s'>%s</a>" % (m.id, m.short_name()) for m in list(missions)])])
+        staffing[consultant].append([", ".join(["<a href='%s'>%s</a>" %
+                                        (urlresolvers.reverse("pydici.staffing.views.mission_staffing", args=[m.id]),
+                                        m.short_name()) for m in list(missions)])])
 
     # Compute indicator rates
     for month in months:
@@ -232,7 +236,7 @@ def deactivate_mission(request, mission_id):
     mission = Mission.objects.get(id=mission_id)
     mission.active = False
     mission.save()
-    return HttpResponseRedirect("/leads/mission/")
+    return HttpResponseRedirect(urlresolvers.reverse("missions"))
 
 
 def saveFormsetAndLog(formset, request):

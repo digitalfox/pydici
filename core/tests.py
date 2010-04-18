@@ -7,6 +7,7 @@ Test cases
 
 # Python/Django test modules
 from django.test import TestCase
+from django.core import urlresolvers
 
 # Pydici modules
 from pydici.leads.models import Consultant, Client, Lead
@@ -89,10 +90,9 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(len(lead.update_date_strf()), 14)
         self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
         self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
-        self.failUnlessEqual(lead.get_absolute_url(),
-                             pydici.settings.LEADS_WEB_LINK_ROOT + "/leads/4/")
+        self.failUnlessEqual(urlresolvers.reverse(pydici.leads.views.detail, args=[4]), "/leads/4/")
 
-        url = "".join(urlparse.urlsplit(lead.get_absolute_url())[2:])
+        url = "".join(urlparse.urlsplit(urlresolvers.reverse(pydici.leads.views.detail, args=[4]))[2:])
         response = self.client.get(url)
         self.failUnlessEqual(response.status_code, 200)
         context = response.context[-1]
