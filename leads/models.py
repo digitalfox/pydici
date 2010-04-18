@@ -84,9 +84,6 @@ class Lead(models.Model):
             return self.description
     short_description.short_description = _("Description")
 
-    def get_absolute_url(self):
-        return urlresolvers.reverse(pydici.leads.views.detail, args=[self.id])
-
     def is_late(self):
         """@return: True if due date is today or in the past.
         False if not defined or in the future"""

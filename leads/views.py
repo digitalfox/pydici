@@ -8,6 +8,7 @@ Pydici leads views. Http request are processed here.
 import csv
 from datetime import datetime, timedelta, date
 import os
+from django.core import urlresolvers
 
 os.environ['MPLCONFIGDIR'] = '/tmp' # Needed for matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -84,7 +85,7 @@ def detail(request, lead_id):
                                                          "active_rank" : rank + 1,
                                                          "next_lead" : next_lead,
                                                          "previous_lead" : previous_lead,
-                                                         "link_root": pydici.settings.LEADS_WEB_LINK_ROOT,
+                                                         "link_root": urlresolvers.reverse("index"),
                                                          "action_list": actionList,
                                                          "user": request.user})
 

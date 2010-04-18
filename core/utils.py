@@ -18,6 +18,7 @@ from datetime import date, timedelta
 
 from django.template.loader import get_template
 from django.template import Context
+from django.core import urlresolvers
 
 import pydici.settings
 
@@ -42,12 +43,12 @@ def send_lead_mail(lead, fromAddr=pydici.settings.LEADS_MAIL_FROM, fromName=""):
     msgAlternative = MIMEMultipart('alternative')
     msgRoot.attach(msgAlternative)
 
-    msgText = MIMEText(textTemplate.render(Context({"obj" : lead, "link_root": pydici.settings.LEADS_WEB_LINK_ROOT })).encode("UTF-8"))
+    msgText = MIMEText(textTemplate.render(Context({"obj" : lead, "link_root": urlresolvers.reverse("index") })).encode("UTF-8"))
     msgText.set_charset("UTF-8")
     encode_7or8bit(msgText)
     msgAlternative.attach(msgText)
 
-    msgText = MIMEText(htmlTemplate.render(Context({"obj" : lead, "link_root": pydici.settings.LEADS_WEB_LINK_ROOT })).encode("UTF-8"), 'html')
+    msgText = MIMEText(htmlTemplate.render(Context({"obj" : lead, "link_root": urlresolvers.reverse("index") })).encode("UTF-8"), 'html')
     msgText.set_charset("UTF-8")
     encode_7or8bit(msgText)
     msgAlternative.attach(msgText)

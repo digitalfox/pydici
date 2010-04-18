@@ -98,8 +98,7 @@ LOGIN_URL = "/leads/forbiden"
 
 LEADS_MAIL_FROM = "sebastien.renard@digitalfox.org"
 LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
-LEADS_WEB_LINK_ROOT = "http://localhost:8888" # Without trailing slash
-LEADS_MAIL_SMTP = "mail.digitalfox.org"
+LEADS_MAIL_SMTP = "www.digitalfox.org"
 LEADS_HELP_PAGE = "/my_custom_help_page.html" # May be absolute or relative
 
 AJAX_LOOKUP_CHANNELS = {

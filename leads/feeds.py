@@ -4,17 +4,24 @@
 @license: GPL v3 or newer
 """
 
-from django.contrib.syndication.feeds import Feed
+from django.contrib.syndication.feeds import Feed, FeedDoesNotExist
 from django.utils.feedgenerator import Atom1Feed
 
 from pydici.leads.models import Consultant, Lead
 import pydici.settings
+from django.core import urlresolvers
 
 class LeadFeed(Feed):
     feed_type = Atom1Feed
-    link = pydici.settings.LEADS_WEB_LINK_ROOT
     description_template = "leads/lead_mail.html"
     title_template = "leads/feed_title.txt"
+
+    def link(self):
+        return urlresolvers.reverse("pydici.core.views.index")
+
+    def item_link(self, obj):
+        url = urlresolvers.reverse("pydici.leads.views.detail", args=[obj.id])
+        return  self.request.build_absolute_uri(url)
 
     def item_pubdate(self, item):
         return item.update_date
