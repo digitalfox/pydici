@@ -101,6 +101,10 @@ LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
 LEADS_MAIL_SMTP = "www.digitalfox.org"
 LEADS_HELP_PAGE = "/my_custom_help_page.html" # May be absolute or relative
 
+# Application prefix without leading or trailing slash
+# Ex. if defined to 'pydici', index url will be http://my-site.com/pydici/
+PYDICI_PREFIX = "pydici"
+
 AJAX_LOOKUP_CHANNELS = {
     'consultant' : dict(model='people.consultant', search_field='name'),
     'salesman' : dict(model='people.salesman', search_field='name'),

@@ -25,14 +25,17 @@ feeds = {
         "all" :   AllChanges
         }
 
-urlpatterns = patterns('',
+
+pydici_patterns = patterns('',
     # Admin
     (r'^leads/admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^leads/admin/', include(admin.site.urls)),
 
     # Ajax select
     (r'^ajax_select/', include('ajax_select.urls')),
+)
 
+pydici_patterns += patterns('',
     # Direct to template and direct pages
     url(r'^leads/forbiden', direct_to_template, {'template': 'forbiden.html', 'extra_context': admin_contact}, name='forbiden'),
     url(r'^leads/help', redirect_to, {'url': pydici.settings.LEADS_HELP_PAGE}, name='help'),
@@ -46,13 +49,13 @@ urlpatterns = patterns('',
             {'feed_dict': feeds}, name='feed'),
 )
 
-urlpatterns += patterns('pydici.core.views',
+pydici_patterns += patterns('pydici.core.views',
     # core module
     (r'^$', 'index'),
     url(r'^leads/$', 'index', name='index'),
 )
 
-urlpatterns += patterns('pydici.leads.views',
+pydici_patterns += patterns('pydici.leads.views',
     # Lead module
     (r'^leads/review', 'review'),
     (r'^leads/IA_stats', 'IA_stats'),
@@ -66,7 +69,7 @@ urlpatterns += patterns('pydici.leads.views',
     (r'^leads/graph/salesmen', 'graph_stat_salesmen'),
 )
 
-urlpatterns += patterns('pydici.staffing.views',
+pydici_patterns += patterns('pydici.staffing.views',
     # Staffing module
     url(r'^leads/pdcreview/?$', 'pdc_review', name='pdcreview-index'),
     url(r'^leads/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', name='pdcreview'),
@@ -76,3 +79,7 @@ urlpatterns += patterns('pydici.staffing.views',
     (r'^leads/mission/(?P<mission_id>\d+)/deactivate$', 'deactivate_mission'),
     (r'^leads/consultant/(?P<consultant_id>\d+)/$', 'consultant_staffing'),
 )
+
+# Application prefix
+pydici_prefix = r'^%s/' % pydici.settings.PYDICI_PREFIX
+urlpatterns = patterns('', (pydici_prefix, include(pydici_patterns)))
