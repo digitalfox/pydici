@@ -9,6 +9,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
+from pydici.core.utils import capitalize
 from pydici.core.models import Subsidiary
 
 class ConsultantProfile(models.Model):
