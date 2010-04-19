@@ -41,8 +41,8 @@ pydici_patterns += patterns('',
     url(r'^leads/help', redirect_to, {'url': pydici.settings.LEADS_HELP_PAGE}, name='help'),
 
     # Media
-    (r'^leads/media/leads/(?P<path>.*)$', 'django.views.static.serve',
-            {'document_root': '/home/fox/prog/workspace/pydici/media/leads/'}),
+    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': '/home/fox/prog/workspace/pydici/media/'}),
 
     # Feeds
     url(r'^leads/feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',

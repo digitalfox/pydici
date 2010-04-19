@@ -22,6 +22,7 @@ from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext as _
 from django.db import connection
 from django.db.models import Q
+from django.template import RequestContext
 
 from pydici.core.utils import send_lead_mail
 from pydici.leads.models import Lead
@@ -44,9 +45,11 @@ def summary_mail(request, html=True):
             rs = rs.filter(update_date__gte=(today - delay))
         leads.append(rs)
     if html:
-        return render_to_response("leads/mail.html", {"lead_group": leads })
+        return render_to_response("leads/mail.html", {"lead_group": leads },
+                                  RequestContext(request))
     else:
         return render_to_response("leads/mail.txt", {"lead_group": leads },
+                                  RequestContext(request),
                                   mimetype="text/plain; charset=utf-8")
 
 @login_required
@@ -80,14 +83,16 @@ def detail(request, lead_id):
 
     except Lead.DoesNotExist:
         raise Http404
-    return render_to_response("leads/lead_detail.html", {"lead": lead,
-                                                         "active_count": active_count,
-                                                         "active_rank" : rank + 1,
-                                                         "next_lead" : next_lead,
-                                                         "previous_lead" : previous_lead,
-                                                         "link_root": urlresolvers.reverse("index"),
-                                                         "action_list": actionList,
-                                                         "user": request.user})
+    return render_to_response("leads/lead_detail.html",
+                              {"lead": lead,
+                               "active_count": active_count,
+                               "active_rank" : rank + 1,
+                               "next_lead" : next_lead,
+                               "previous_lead" : previous_lead,
+                               "link_root": urlresolvers.reverse("index"),
+                               "action_list": actionList,
+                               "user": request.user},
+                               RequestContext(request))
 
 def csv_export(request, target):
     response = HttpResponse(mimetype="text/csv")
@@ -128,9 +133,11 @@ def review(request):
     recentArchivedLeads = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
                                                       Q(state="SLEEPING"))
     recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date")
-    return render_to_response("leads/review.html", {"recent_archived_leads" : recentArchivedLeads,
-                                                    "active_leads" : Lead.objects.active().order_by("creation_date"),
-                                                    "user": request.user })
+    return render_to_response("leads/review.html",
+                              {"recent_archived_leads" : recentArchivedLeads,
+                               "active_leads" : Lead.objects.active().order_by("creation_date"),
+                               "user": request.user },
+                               RequestContext(request))
 
 
 def graph_stat_pie(request):
@@ -271,7 +278,9 @@ def IA_stats(request):
                     leadSum[month][label] += n
         data[year]["Total"] = leadSum
 
-    return render_to_response("leads/IA_stats.html", {"data": data})
+    return render_to_response("leads/IA_stats.html",
+                              {"data": data},
+                              RequestContext(request))
 
 
 def print_png(fig):

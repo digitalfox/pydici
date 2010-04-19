@@ -10,6 +10,27 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+
+# Pydici specific parameters
+
+# Application prefix without leading or trailing slash
+# Ex. if defined to 'pydici', index url will be http://my-site.com/pydici/
+PYDICI_PREFIX = "pydici"
+
+LEADS_MAIL_FROM = "sebastien.renard@digitalfox.org"
+LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
+LEADS_MAIL_SMTP = "www.digitalfox.org"
+LEADS_HELP_PAGE = "/my_custom_help_page.html" # May be absolute or relative
+
+AJAX_LOOKUP_CHANNELS = {
+    'consultant' : dict(model='people.consultant', search_field='name'),
+    'salesman' : dict(model='people.salesman', search_field='name'),
+    'client' : ('crm.lookups', 'ClientLookup'),
+    'mission' : ('staffing.lookups', 'MissionLookup'),
+}
+
+
+# Database settings
 DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'pydici.db'             # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
@@ -42,7 +63,7 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = "/%s/media/" % PYDICI_PREFIX
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -96,18 +117,3 @@ DEBUG_TOOLBAR_CONFIG = { "INTERCEPT_REDIRECTS" : False }
 
 LOGIN_URL = "/leads/forbiden"
 
-LEADS_MAIL_FROM = "sebastien.renard@digitalfox.org"
-LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
-LEADS_MAIL_SMTP = "www.digitalfox.org"
-LEADS_HELP_PAGE = "/my_custom_help_page.html" # May be absolute or relative
-
-# Application prefix without leading or trailing slash
-# Ex. if defined to 'pydici', index url will be http://my-site.com/pydici/
-PYDICI_PREFIX = "pydici"
-
-AJAX_LOOKUP_CHANNELS = {
-    'consultant' : dict(model='people.consultant', search_field='name'),
-    'salesman' : dict(model='people.salesman', search_field='name'),
-    'client' : ('crm.lookups', 'ClientLookup'),
-    'mission' : ('staffing.lookups', 'MissionLookup'),
-}

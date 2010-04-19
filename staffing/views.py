@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
-
+from django.template import RequestContext
 
 from pydici.staffing.models import Staffing, Mission, Holiday
 from pydici.people.models import Consultant
@@ -28,9 +28,11 @@ def missions(request, onlyActive=True):
     else:
         missions = Mission.objects.all()
         all = True
-    return render_to_response("leads/missions.html", {"missions": missions,
-                                                      "all": all,
-                                                      "user": request.user })
+    return render_to_response("leads/missions.html",
+                              {"missions": missions,
+                               "all": all,
+                               "user": request.user },
+                               RequestContext(request))
 
 
 @permission_required("leads.add_staffing")
@@ -52,11 +54,12 @@ def mission_staffing(request, mission_id):
     consultants = set([s.consultant for s in mission.staffing_set.all()])
     consultants = list(consultants)
     consultants.sort(cmp=lambda x, y: cmp(x.name, y.name))
-    return render_to_response('leads/mission_staffing.html', {"formset": formset,
-                                                              "mission": mission,
-                                                              "consultants": consultants,
-                                                              "user": request.user
-                                                              })
+    return render_to_response('leads/mission_staffing.html',
+                              {"formset": formset,
+                               "mission": mission,
+                               "consultants": consultants,
+                               "user": request.user},
+                               RequestContext(request))
 
 
 
@@ -86,11 +89,12 @@ def consultant_staffing(request, consultant_id):
     missions = list(missions)
     missions.sort(cmp=lambda x, y: cmp(x.lead, y.lead))
 
-    return render_to_response('leads/consultant_staffing.html', {"formset": formset,
-                                                              "consultant": consultant,
-                                                              "missions": missions,
-                                                              "user": request.user
-                                                              })
+    return render_to_response('leads/consultant_staffing.html',
+                              {"formset": formset,
+                               "consultant": consultant,
+                               "missions": missions,
+                               "user": request.user },
+                               RequestContext(request))
 
 
 def pdc_review(request, year=None, month=None):
@@ -219,17 +223,18 @@ def pdc_review(request, year=None, month=None):
     else:
         staffing.sort(cmp=lambda x, y:cmp(x[0].profil.level, y[0].profil.level)) # Sort by position
 
-    return render_to_response("leads/pdc_review.html", {"staffing": staffing,
-                                                        "months": months,
-                                                        "total": total,
-                                                        "rates": rates,
-                                                        "user": request.user,
-                                                        "projected": projected,
-                                                        "previous_slice_date" : previous_slice_date,
-                                                        "next_slice_date" : next_slice_date,
-                                                        "start_date" : start_date,
-                                                        "groupby" : groupby}
-                                                        )
+    return render_to_response("leads/pdc_review.html",
+                              {"staffing": staffing,
+                               "months": months,
+                               "total": total,
+                               "rates": rates,
+                               "user": request.user,
+                               "projected": projected,
+                               "previous_slice_date" : previous_slice_date,
+                               "next_slice_date" : next_slice_date,
+                               "start_date" : start_date,
+                               "groupby" : groupby},
+                               RequestContext(request))
 
 def deactivate_mission(request, mission_id):
     """Deactivate the given mission"""

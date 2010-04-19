@@ -10,11 +10,11 @@ import pydici.settings
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
+from django.template import RequestContext
 
 from pydici.leads.models import Lead
 
 from pydici.people.models import Consultant, SalesMan
-
 
 
 @login_required
@@ -41,9 +41,11 @@ def index(request):
 
     latestLeads = Lead.objects.all().order_by("-update_date")[:10]
 
-    return render_to_response("leads/index.html", {"latest_leads": latestLeads,
-                                                   "my_leads_as_responsible": myLeadsAsResponsible,
-                                                   "my_leads_as_staffee": myLeadsAsStaffee,
-                                                   "my_latest_archived_leads": myLatestArchivedLeads,
-                                                   "user": request.user })
+    return render_to_response("leads/index.html",
+                              {"latest_leads": latestLeads,
+                               "my_leads_as_responsible": myLeadsAsResponsible,
+                               "my_leads_as_staffee": myLeadsAsStaffee,
+                               "my_latest_archived_leads": myLatestArchivedLeads,
+                               "user": request.user },
+                               RequestContext(request))
 

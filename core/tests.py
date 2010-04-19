@@ -18,10 +18,13 @@ from urllib2 import urlparse
 
 TEST_USERNAME = "fox"
 TEST_PASSWORD = "rototo"
+PREFIX = "/" + pydici.settings.PYDICI_PREFIX
 
 class SimpleTest(TestCase):
     fixtures = ["auth.json", "core.json", "people.json", "crm.json",
                 "leads.json", "staffing.json"]
+
+
     def test_basic_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         for page in ("/leads/",
@@ -48,21 +51,21 @@ class SimpleTest(TestCase):
                      "/leads/graph/bar",
                      "/leads/graph/salesmen",
                      ):
-            response = self.client.get(page)
+            response = self.client.get(PREFIX + page)
             self.failUnlessEqual(response.status_code, 200,
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
 
     def test_redirect(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        response = self.client.get("/leads/mission/1/deactivate")
+        response = self.client.get(PREFIX + "/leads/mission/1/deactivate")
         self.failUnlessEqual(response.status_code, 302)
-        response = self.client.get("/leads/help")
+        response = self.client.get(PREFIX + "/leads/help")
         self.failUnlessEqual(response.status_code, 301)
 
     def test_not_found_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        for page in ("/leads/234/",
-                     "/leads/sendmail/434/"):
+        for page in (PREFIX + "/leads/234/",
+                     PREFIX + "/leads/sendmail/434/"):
             response = self.client.get(page)
             self.failUnlessEqual(response.status_code, 404,
                                  "Failed to test url %s (got %s instead of 404" % (page, response.status_code))
@@ -90,7 +93,7 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(len(lead.update_date_strf()), 14)
         self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
         self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
-        self.failUnlessEqual(urlresolvers.reverse(pydici.leads.views.detail, args=[4]), "/leads/4/")
+        self.failUnlessEqual(urlresolvers.reverse(pydici.leads.views.detail, args=[4]), PREFIX + "/leads/4/")
 
         url = "".join(urlparse.urlsplit(urlresolvers.reverse(pydici.leads.views.detail, args=[4]))[2:])
         response = self.client.get(url)
@@ -101,7 +104,7 @@ class SimpleTest(TestCase):
 
     def test_pdc_review(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        url = "/leads/pdcreview/2009/07"
+        url = PREFIX + "/leads/pdcreview/2009/07"
         for arg in ({}, {"projected":None}, {"groupby": "manager"}, {"groupby": "position"}):
             response = self.client.get(url, arg)
             self.failUnlessEqual(response.status_code, 200,
