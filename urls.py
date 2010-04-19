@@ -44,29 +44,35 @@ urlpatterns = patterns('',
     # Feeds
     url(r'^leads/feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',
             {'feed_dict': feeds}, name='feed'),
+)
 
+urlpatterns += patterns('pydici.core.views',
     # core module
-    (r'^$', 'pydici.core.views.index'),
-    url(r'^leads/$', 'pydici.core.views.index', name='index'),
+    (r'^$', 'index'),
+    url(r'^leads/$', 'index', name='index'),
+)
 
+urlpatterns += patterns('pydici.leads.views',
     # Lead module
-    (r'^leads/review', 'pydici.leads.views.review'),
-    (r'^leads/IA_stats', 'pydici.leads.views.IA_stats'),
-    (r'^leads/csv/(?P<target>.*)', 'pydici.leads.views.csv_export'),
-    (r'^leads/(?P<lead_id>\d+)/$', 'pydici.leads.views.detail'),
-    (r'^leads/sendmail/(?P<lead_id>\d+)/$', 'pydici.leads.views.mail_lead'),
-    url(r'^leads/mail/text', 'pydici.leads.views.summary_mail', { "html" : False }, name="lead-mail-text"),
-    url(r'^leads/mail/html', 'pydici.leads.views.summary_mail', { "html" : True  }, name="lead-mail-html"),
-    (r'^leads/graph/pie', 'pydici.leads.views.graph_stat_pie'),
-    (r'^leads/graph/bar', 'pydici.leads.views.graph_stat_bar'),
-    (r'^leads/graph/salesmen', 'pydici.leads.views.graph_stat_salesmen'),
+    (r'^leads/review', 'review'),
+    (r'^leads/IA_stats', 'IA_stats'),
+    (r'^leads/csv/(?P<target>.*)', 'csv_export'),
+    (r'^leads/(?P<lead_id>\d+)/$', 'detail'),
+    (r'^leads/sendmail/(?P<lead_id>\d+)/$', 'mail_lead'),
+    url(r'^leads/mail/text', 'summary_mail', { "html" : False }, name="lead-mail-text"),
+    url(r'^leads/mail/html', 'summary_mail', { "html" : True  }, name="lead-mail-html"),
+    (r'^leads/graph/pie', 'graph_stat_pie'),
+    (r'^leads/graph/bar', 'graph_stat_bar'),
+    (r'^leads/graph/salesmen', 'graph_stat_salesmen'),
+)
 
+urlpatterns += patterns('pydici.staffing.views',
     # Staffing module
-    url(r'^leads/pdcreview/?$', 'pydici.staffing.views.pdc_review', name='pdcreview-index'),
-    url(r'^leads/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pydici.staffing.views.pdc_review', name='pdcreview'),
-    url(r'^leads/mission/$', 'pydici.staffing.views.missions', name='missions'),
-    url(r'^leads/mission/all', 'pydici.staffing.views.missions', { 'onlyActive' : False }, 'all-missions'),
-    (r'^leads/mission/(?P<mission_id>\d+)/$', 'pydici.staffing.views.mission_staffing'),
-    (r'^leads/mission/(?P<mission_id>\d+)/deactivate$', 'pydici.staffing.views.deactivate_mission'),
-    (r'^leads/consultant/(?P<consultant_id>\d+)/$', 'pydici.staffing.views.consultant_staffing'),
+    url(r'^leads/pdcreview/?$', 'pdc_review', name='pdcreview-index'),
+    url(r'^leads/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', name='pdcreview'),
+    url(r'^leads/mission/$', 'missions', name='missions'),
+    url(r'^leads/mission/all', 'missions', { 'onlyActive' : False }, 'all-missions'),
+    (r'^leads/mission/(?P<mission_id>\d+)/$', 'mission_staffing'),
+    (r'^leads/mission/(?P<mission_id>\d+)/deactivate$', 'deactivate_mission'),
+    (r'^leads/consultant/(?P<consultant_id>\d+)/$', 'consultant_staffing'),
 )

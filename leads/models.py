@@ -9,7 +9,6 @@ from django.db import models
 from datetime import datetime, date
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
-from django.core import urlresolvers
 
 from pydici.core.utils import send_lead_mail, capitalize, compact_text
 import pydici.settings
