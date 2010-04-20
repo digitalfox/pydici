@@ -120,5 +120,8 @@ INSTALLED_APPS = (
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_CONFIG = { "INTERCEPT_REDIRECTS" : False }
 
-LOGIN_URL = "/leads/forbiden"
+if PYDICI_PREFIX:
+    LOGIN_URL = "/%s/forbiden" % PYDICI_PREFIX
+else:
+    LOGIN_URL = "/forbiden"
 

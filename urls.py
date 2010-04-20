@@ -37,7 +37,7 @@ pydici_patterns = patterns('',
 
 pydici_patterns += patterns('',
     # Direct to template and direct pages
-    url(r'^leads/forbiden', direct_to_template, {'template': 'forbiden.html', 'extra_context': admin_contact}, name='forbiden'),
+    url(r'^forbiden', direct_to_template, {'template': 'forbiden.html', 'extra_context': admin_contact}, name='forbiden'),
     url(r'^leads/help', redirect_to, {'url': pydici.settings.LEADS_HELP_PAGE}, name='help'),
 
     # Media
