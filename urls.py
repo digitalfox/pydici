@@ -28,7 +28,7 @@ feeds = {
 
 pydici_patterns = patterns('',
     # Admin
-    (r'^leads/admin/', include(admin.site.urls)),
+    (r'^admin/', include(admin.site.urls)),
 
     # Ajax select
     (r'^ajax_select/', include('ajax_select.urls')),
@@ -44,7 +44,7 @@ pydici_patterns += patterns('',
             {'document_root': '/home/fox/prog/workspace/pydici/media/'}),
 
     # Feeds
-    url(r'^leads/feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',
+    url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',
             {'feed_dict': feeds}, name='feed'),
 )
 

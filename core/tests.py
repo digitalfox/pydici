@@ -29,20 +29,20 @@ class SimpleTest(TestCase):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         for page in ("/leads/",
                      "/leads/3/",
-                     "/leads/admin/",
+                     "/admin/",
                      "/leads/csv/all",
                      "/leads/csv/active",
                      "/leads/sendmail/2/",
                      "/leads/mail/text",
                      "/leads/mail/html",
                      "/leads/review",
-                     "/leads/feeds/latest/",
-                     "/leads/feeds/mine/",
-                     "/leads/feeds/new/",
-                     "/leads/feeds/won/",
+                     "/feeds/latest/",
+                     "/feeds/mine/",
+                     "/feeds/new/",
+                     "/feeds/won/",
                      "/leads/pdcreview/",
                      "/leads/pdcreview/2009/07",
-                     "/leads/forbiden",
+                     "/forbiden",
                      "/leads/mission/",
                      "/leads/mission/all",
                      "/leads/mission/1/",
@@ -59,7 +59,7 @@ class SimpleTest(TestCase):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         response = self.client.get(PREFIX + "/leads/mission/1/deactivate")
         self.failUnlessEqual(response.status_code, 302)
-        response = self.client.get(PREFIX + "/leads/help")
+        response = self.client.get(PREFIX + "/help")
         self.failUnlessEqual(response.status_code, 301)
 
     def test_not_found_page(self):
