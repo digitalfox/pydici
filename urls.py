@@ -50,8 +50,7 @@ pydici_patterns += patterns('',
 
 pydici_patterns += patterns('pydici.core.views',
     # core module
-    (r'^$', 'index'),
-    url(r'^leads/$', 'index', name='index'),
+    url(r'^$', 'index', name='index'),
 )
 
 pydici_patterns += patterns('pydici.leads.views',
@@ -70,13 +69,13 @@ pydici_patterns += patterns('pydici.leads.views',
 
 pydici_patterns += patterns('pydici.staffing.views',
     # Staffing module
-    url(r'^leads/pdcreview/?$', 'pdc_review', name='pdcreview-index'),
-    url(r'^leads/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', name='pdcreview'),
-    url(r'^leads/mission/$', 'missions', name='missions'),
-    url(r'^leads/mission/all', 'missions', { 'onlyActive' : False }, 'all-missions'),
-    (r'^leads/mission/(?P<mission_id>\d+)/$', 'mission_staffing'),
-    (r'^leads/mission/(?P<mission_id>\d+)/deactivate$', 'deactivate_mission'),
-    (r'^leads/consultant/(?P<consultant_id>\d+)/$', 'consultant_staffing'),
+    url(r'^staffing/pdcreview/?$', 'pdc_review', name='pdcreview-index'),
+    url(r'^staffing/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', name='pdcreview'),
+    url(r'^staffing/mission/$', 'missions', name='missions'),
+    url(r'^staffing/mission/all', 'missions', { 'onlyActive' : False }, 'all-missions'),
+    (r'^staffing/mission/(?P<mission_id>\d+)/$', 'mission_staffing'),
+    (r'^staffing/mission/(?P<mission_id>\d+)/deactivate$', 'deactivate_mission'),
+    (r'^staffing/consultant/(?P<consultant_id>\d+)/$', 'consultant_staffing'),
 )
 
 # Application prefix

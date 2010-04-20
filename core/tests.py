@@ -27,8 +27,7 @@ class SimpleTest(TestCase):
 
     def test_basic_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        for page in ("/leads/",
-                     "/leads/3/",
+        for page in ("/leads/3/",
                      "/admin/",
                      "/leads/csv/all",
                      "/leads/csv/active",
@@ -40,13 +39,13 @@ class SimpleTest(TestCase):
                      "/feeds/mine/",
                      "/feeds/new/",
                      "/feeds/won/",
-                     "/leads/pdcreview/",
-                     "/leads/pdcreview/2009/07",
+                     "/staffing/pdcreview/",
+                     "/staffing/pdcreview/2009/07",
                      "/forbiden",
-                     "/leads/mission/",
-                     "/leads/mission/all",
-                     "/leads/mission/1/",
-                     "/leads/consultant/1/",
+                     "/staffing/mission/",
+                     "/staffing/mission/all",
+                     "/staffing/mission/1/",
+                     "/staffing/consultant/1/",
                      "/leads/graph/pie",
                      "/leads/graph/bar",
                      "/leads/graph/salesmen",
@@ -57,7 +56,7 @@ class SimpleTest(TestCase):
 
     def test_redirect(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        response = self.client.get(PREFIX + "/leads/mission/1/deactivate")
+        response = self.client.get(PREFIX + "/staffing/mission/1/deactivate")
         self.failUnlessEqual(response.status_code, 302)
         response = self.client.get(PREFIX + "/help")
         self.failUnlessEqual(response.status_code, 301)
@@ -104,7 +103,7 @@ class SimpleTest(TestCase):
 
     def test_pdc_review(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        url = PREFIX + "/leads/pdcreview/2009/07"
+        url = PREFIX + "/staffing/pdcreview/2009/07"
         for arg in ({}, {"projected":None}, {"groupby": "manager"}, {"groupby": "position"}):
             response = self.client.get(url, arg)
             self.failUnlessEqual(response.status_code, 200,
