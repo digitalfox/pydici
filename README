@@ -30,6 +30,8 @@ Prerequisite:
 
 Here's a sample Apache/mod_python config file. Pydici code live
 is /var/www/pydici and application is published as '/pydici/'.
+This prefix (pydici) can be changed in settings.py. Make sure it's
+consistent with you Apache/mod_python setup. 
 
 --------------8<-------------------------------
 LoadModule python_module modules/mod_python.so

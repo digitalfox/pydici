@@ -81,5 +81,10 @@ pydici_patterns += patterns('pydici.staffing.views',
 )
 
 # Application prefix
-pydici_prefix = r'^%s/' % pydici.settings.PYDICI_PREFIX
+if pydici.settings.PYDICI_PREFIX:
+    pydici_prefix = r'^%s/' % pydici.settings.PYDICI_PREFIX
+else:
+    pydici_prefix = ''
+
+# Define URL patterns
 urlpatterns = patterns('', (pydici_prefix, include(pydici_patterns)))

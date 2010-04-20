@@ -15,6 +15,7 @@ MANAGERS = ADMINS
 
 # Application prefix without leading or trailing slash
 # Ex. if defined to 'pydici', index url will be http://my-site.com/pydici/
+# Use '' for no prerix. Index url will be http://my-site.com/
 PYDICI_PREFIX = "pydici"
 
 LEADS_MAIL_FROM = "sebastien.renard@digitalfox.org"
@@ -63,7 +64,11 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = "/%s/media/" % PYDICI_PREFIX
+if PYDICI_PREFIX:
+    MEDIA_URL = "/%s/media/" % PYDICI_PREFIX
+else:
+    # Needed for empty prefix (equivalent to "/")
+    MEDIA_URL = "/media/"
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
