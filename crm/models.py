@@ -37,22 +37,44 @@ class ClientOrganisation(models.Model):
         ordering = ["company", "name"]
         verbose_name = _("Client organisation")
 
-class ClientContact(models.Model):
-    """A contact in client organization"""
+class ThirdPartyContact(models.Model):
+    """Third party contact abstract definition"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
-    function = models.CharField(_("Function"), max_length=200, blank=True)
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)
+    mobile_phone = models.CharField(_("Mobile phone"), max_length=30, blank=True)
+    fax = models.CharField(_("Fax"), max_length=30, blank=True)
 
     def __unicode__(self): return self.name
 
     def save(self, force_insert=False, force_update=False):
         self.name = capitalize(self.name)
-        super(ClientContact, self).save(force_insert, force_update)
+        super(ThirdPartyContact, self).save(force_insert, force_update)
 
     class Meta:
+        abstract = True
         ordering = ["name"]
+
+class ClientContact(ThirdPartyContact):
+    """A contact in client organization"""
+    function = models.CharField(_("Function"), max_length=200, blank=True)
+
+    class Meta:
         verbose_name = _("Client contact")
+
+class BusinessBroker(ThirdPartyContact):
+    """A business broken: someone that is not a client but an outsider that act
+    as a partner to provide some business"""
+    company = models.CharField(_("Company"), max_length=200, blank=True)
+
+    def __unicode__(self):
+        if self.company:
+            return "%s (%s)" % (self.name, self.company)
+        else:
+            return self.name
+
+    class Meta:
+        verbose_name = _("Business broker")
 
 class Client(models.Model):
     """A client is defined by a contact and the organisation where he works"""

@@ -32,7 +32,12 @@
     <b>{% trans "Contact: " %}</b>{{ lead.client.contact|default_if_none:_("Unknown")}} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}
     <br><br><hr>
     <b>{% trans "Responsible: " %}</b>{{ lead.responsible|default_if_none:_("To be defined") }}<br>
-    <b>{% trans "Salesman: " %}</b>{% if lead.salesman %} {{ lead.salesman }} {% else %} {% trans "None" %} {% endif %}
+    {% if lead.salesman %}
+        <b>{% trans "Salesman: " %}</b>{{ lead.salesman }}
+    {% endif %}
+    {% if lead.business_broker %}
+        <b>{% trans "Broker: " %}</b>{{ lead.business_broker }}
+    {% endif %}
     <br><br><hr>
     <b>{% trans "Due date: " %}</b><span {% if lead.is_late %}style='color:red'{% endif %}>{{ lead.due_date|default_if_none:_("Unknown") }}</span><br>
     <b>{% trans "Start date: " %} </b>{{ lead.start_date|default_if_none:_("Unknown") }}

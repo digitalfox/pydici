@@ -10,13 +10,21 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
 
-from pydici.crm.models import Client, ClientOrganisation, ClientCompany, ClientContact
+from pydici.crm.models import Client, ClientOrganisation, ClientCompany, \
+                              ClientContact, BusinessBroker
 
 class ClientContactAdmin(admin.ModelAdmin):
-    list_display = ("name", "function", "email", "phone")
+    list_display = ("name", "function", "email", "phone", "mobile_phone")
     odering = ("name")
     search_fields = ["name", "function"]
     actions = None
+
+class BusinessBrokerAdmin(admin.ModelAdmin):
+    list_display = ("name", "company", "email", "phone", "mobile_phone")
+    odering = ("name")
+    search_fields = ["name", "company"]
+    actions = None
+
 
 class ClientOrganisationAdmin(admin.ModelAdmin):
     fieldsets = [(None, {"fields": ["company", "name"] }), ]
@@ -45,3 +53,4 @@ admin.site.register(Client, ClientAdmin)
 admin.site.register(ClientOrganisation, ClientOrganisationAdmin)
 admin.site.register(ClientCompany, ClientCompanyAdmin)
 admin.site.register(ClientContact, ClientContactAdmin)
+admin.site.register(BusinessBroker, BusinessBrokerAdmin)

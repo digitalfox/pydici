@@ -14,7 +14,7 @@ from pydici.core.utils import send_lead_mail, capitalize, compact_text
 import pydici.settings
 
 from pydici.core.models import Subsidiary
-from pydici.crm.models import Client
+from pydici.crm.models import Client, BusinessBroker
 from pydici.people.models import Consultant, SalesMan
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
@@ -45,7 +45,8 @@ class Lead(models.Model):
     salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"))
     staffing = models.ManyToManyField(Consultant, blank=True)
     external_staffing = models.CharField(_("External staffing"), max_length=300, blank=True)
-    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name="Responsable", blank=True, null=True)
+    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True)
+    business_broker = models.ForeignKey(BusinessBroker, related_name="%(class)s_broker", verbose_name=_("Business broker"), blank=True, null=True)
     start_date = models.DateField(_("Starting"), blank=True, null=True)
     due_date = models.DateField(_("Due"), blank=True, null=True)
     state = models.CharField(_("State"), max_length=30, choices=STATES)
