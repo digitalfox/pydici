@@ -28,16 +28,16 @@ def missions(request, onlyActive=True):
     else:
         missions = Mission.objects.all()
         all = True
-    return render_to_response("leads/missions.html",
+    return render_to_response("staffing/missions.html",
                               {"missions": missions,
                                "all": all,
                                "user": request.user },
                                RequestContext(request))
 
 
-@permission_required("leads.add_staffing")
-@permission_required("leads.change_staffing")
-@permission_required("leads.delete_staffing")
+@permission_required("staffing.add_staffing")
+@permission_required("staffing.change_staffing")
+@permission_required("staffing.delete_staffing")
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
     StaffingFormSet = inlineformset_factory(Mission, Staffing,
@@ -54,7 +54,7 @@ def mission_staffing(request, mission_id):
     consultants = set([s.consultant for s in mission.staffing_set.all()])
     consultants = list(consultants)
     consultants.sort(cmp=lambda x, y: cmp(x.name, y.name))
-    return render_to_response('leads/mission_staffing.html',
+    return render_to_response('staffing/mission_staffing.html',
                               {"formset": formset,
                                "mission": mission,
                                "consultants": consultants,
@@ -67,9 +67,9 @@ def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
     consultant = Consultant.objects.get(id=consultant_id)
 
-    if not (request.user.has_perm("leads.add_staffing") and
-            request.user.has_perm("leads.change_staffing") and
-            request.user.has_perm("leads.delete_staffing")):
+    if not (request.user.has_perm("staffing.add_staffing") and
+            request.user.has_perm("staffing.change_staffing") and
+            request.user.has_perm("staffing.delete_staffing")):
         # Only forbid access if the user try to edit someone else staffing
         if request.user.username.upper() != consultant.trigramme:
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
@@ -89,7 +89,7 @@ def consultant_staffing(request, consultant_id):
     missions = list(missions)
     missions.sort(cmp=lambda x, y: cmp(x.lead, y.lead))
 
-    return render_to_response('leads/consultant_staffing.html',
+    return render_to_response('staffing/consultant_staffing.html',
                               {"formset": formset,
                                "consultant": consultant,
                                "missions": missions,
@@ -223,7 +223,7 @@ def pdc_review(request, year=None, month=None):
     else:
         staffing.sort(cmp=lambda x, y:cmp(x[0].profil.level, y[0].profil.level)) # Sort by position
 
-    return render_to_response("leads/pdc_review.html",
+    return render_to_response("staffing/pdc_review.html",
                               {"staffing": staffing,
                                "months": months,
                                "total": total,

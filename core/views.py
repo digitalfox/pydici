@@ -41,7 +41,7 @@ def index(request):
 
     latestLeads = Lead.objects.all().order_by("-update_date")[:10]
 
-    return render_to_response("leads/index.html",
+    return render_to_response("core/index.html",
                               {"latest_leads": latestLeads,
                                "my_leads_as_responsible": myLeadsAsResponsible,
                                "my_leads_as_staffee": myLeadsAsStaffee,
