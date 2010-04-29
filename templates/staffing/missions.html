@@ -27,7 +27,11 @@
 	    <td scope="row"><a href='{% url pydici.staffing.views.mission_staffing mission.id %}', title='{% blocktrans %}Defines {{ mission }} staffing{% endblocktrans %}'>{{ mission }}</a></td>
 	    <td>{{ mission.deal_id }}</td>
 	    <td>{{ mission.get_probability_display }} </td>
-	    <td scope="row"><a href='{% url pydici.staffing.views.deactivate_mission mission.id %}', title='{% blocktrans %}Archive {{ mission }}{% endblocktrans %}'><em>{% trans "Archive" %}</em></a></td>
+	    <td scope="row">
+	       {% if mission.active %}
+	           <a href='{% url pydici.staffing.views.deactivate_mission mission.id %}', title='{% blocktrans %}Archive {{ mission }}{% endblocktrans %}'><em>{% trans "Archive" %}</em></a>
+	       {% endif %}
+	    </td>
 	    <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', target='_blank', class='changelink'><em>{% trans "Change" %}</em></a></td>
 	    <td>{% if mission.no_more_staffing_since %}
 	    {% trans "This mission has no staffing in future" %}
