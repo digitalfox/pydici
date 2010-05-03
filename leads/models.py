@@ -10,7 +10,7 @@ from datetime import datetime, date
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
-from pydici.core.utils import send_lead_mail, capitalize, compact_text
+from pydici.core.utils import capitalize, compact_text
 import pydici.settings
 
 from pydici.core.models import Subsidiary

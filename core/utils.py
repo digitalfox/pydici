@@ -17,15 +17,15 @@ import re
 from datetime import date, timedelta
 
 from django.template.loader import get_template
-from django.template import Context
-from django.core import urlresolvers
+from django.template import RequestContext
 
 import pydici.settings
 
-def send_lead_mail(lead, fromAddr=pydici.settings.LEADS_MAIL_FROM, fromName=""):
+def send_lead_mail(lead, request, fromAddr=pydici.settings.LEADS_MAIL_FROM, fromName=""):
     """ Send a mail with lead detailed description.
     @param lead: the lead to send by mail
     @type lead: pydici.leads.lead instance
+    @param request: http request of user - used to determine full URL
     @raise exception: if SMTP errors occurs. It is up to the caller to catch that.
     """
 
@@ -43,12 +43,16 @@ def send_lead_mail(lead, fromAddr=pydici.settings.LEADS_MAIL_FROM, fromName=""):
     msgAlternative = MIMEMultipart('alternative')
     msgRoot.attach(msgAlternative)
 
-    msgText = MIMEText(textTemplate.render(Context({"obj" : lead, "link_root": urlresolvers.reverse("index") })).encode("UTF-8"))
+    msgText = MIMEText(textTemplate.render(RequestContext(
+                                            request,
+                                            {"obj" : lead })).encode("UTF-8"))
     msgText.set_charset("UTF-8")
     encode_7or8bit(msgText)
     msgAlternative.attach(msgText)
 
-    msgText = MIMEText(htmlTemplate.render(Context({"obj" : lead, "link_root": urlresolvers.reverse("index") })).encode("UTF-8"), 'html')
+    msgText = MIMEText(htmlTemplate.render(RequestContext(
+                                            request,
+                                            {"obj" : lead })).encode("UTF-8"), 'html')
     msgText.set_charset("UTF-8")
     encode_7or8bit(msgText)
     msgAlternative.attach(msgText)
