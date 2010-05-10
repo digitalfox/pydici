@@ -53,7 +53,7 @@ class LeadAdmin(AjaxSelectAdmin):
         if mail:
             try:
                 fromAddr = request.user.email or "noreply@noreply.com"
-                send_lead_mail(obj, fromAddr=fromAddr,
+                send_lead_mail(obj, request, fromAddr=fromAddr,
                                fromName="%s %s" % (request.user.first_name, request.user.last_name))
                 request.user.message_set.create(message=ugettext("Lead sent to business mailing list"))
             except Exception, e:
