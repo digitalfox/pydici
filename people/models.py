@@ -53,7 +53,7 @@ class SalesMan(models.Model):
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)
 
-    def __unicode__(self): return "%s (%s)" % (self.name, self.get_company_display())
+    def __unicode__(self): return "%s (%s)" % (self.name, self.company)
 
     def save(self, force_insert=False, force_update=False):
         self.name = capitalize(self.name)
