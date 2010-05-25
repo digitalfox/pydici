@@ -5,8 +5,8 @@
 .dashboard .module table td { white-space:nowrap; }
 .dashboard .module table td a { display:block; padding-right:.6em; }
 
-.dashboard .module table th { width:100%; }
-.dashboard .imodule table td { white-space:nowrap; }
+.dashboard .imodule table th { width:100%; }
+.dashboard .imodule table td { white-space:wrap; }
 .dashboard .imodule table td a { display:block; padding-right:.6em; }
 
 /*  RECENT ACTIONS MODULE  */
