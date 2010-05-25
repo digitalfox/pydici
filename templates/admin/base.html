@@ -41,7 +41,7 @@
         {% if user.is_authenticated %}
         <div id="user-tools">
         <a href="{% url index %}">{% trans "Home" %}</a>&nbsp;|&nbsp;
-        <a href="{% url pydici.leads.views.review %}">{% trans "Current leads review" %}</a>&nbsp;|&nbsp;
+        <a href="{% url pydici.leads.views.review %}">{% trans "Current leads review" %}</a><br/>
         <a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a>&nbsp;|&nbsp;
         <a href="{% url help %}">{% trans "Help" %}</a>&nbsp;|&nbsp;
         {% trans "Welcome," %} <strong>{% if user.first_name %}{{ user.first_name|escape }}{% else %}{{ user.username }}{% endif %}</strong>.</div>
