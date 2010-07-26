@@ -78,6 +78,11 @@ pydici_patterns += patterns('pydici.staffing.views',
     (r'^staffing/consultant/(?P<consultant_id>\d+)/$', 'consultant_staffing'),
 )
 
+pydici_patterns += patterns('pydici.people.views',
+    # People module
+    (r'^people/consultant/(?P<consultant_id>\d+)/$', 'consultant_detail'),
+)
+
 # Application prefix
 if pydici.settings.PYDICI_PREFIX:
     pydici_prefix = r'^%s/' % pydici.settings.PYDICI_PREFIX

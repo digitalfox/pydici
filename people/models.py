@@ -35,6 +35,8 @@ class Consultant(models.Model):
 
     def __unicode__(self): return self.name
 
+    def full_name(self): return u"%s (%s)" % (self.name, self.trigramme)
+
     def save(self, force_insert=False, force_update=False):
         self.name = capitalize(self.name)
         self.trigramme = self.trigramme.upper()
