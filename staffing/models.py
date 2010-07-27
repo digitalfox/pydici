@@ -72,7 +72,7 @@ class Holiday(models.Model):
         verbose_name = _("Holiday")
 
 class Staffing(models.Model):
-    """The staffing fact table: charge per month per consultant per mission"""
+    """The staffing fact forecasting table: charge per month per consultant per mission"""
     consultant = models.ForeignKey(Consultant)
     mission = models.ForeignKey(Mission, limit_choices_to=Q(active=True))
     staffing_date = models.DateField(_("Date"))
@@ -92,3 +92,18 @@ class Staffing(models.Model):
         unique_together = (("consultant", "mission", "staffing_date"),)
         ordering = ["staffing_date", "consultant"]
         verbose_name = _("Staffing")
+
+class Timesheet(models.Model):
+    """The staffing table: charge per day per consultant per mission"""
+    consultant = models.ForeignKey(Consultant)
+    mission = models.ForeignKey(Mission, limit_choices_to=Q(active=True))
+    working_date = models.DateField(_("Date"))
+    charge = models.FloatField(_("Load"), default=0)
+
+    def __unicode__(self):
+        return "%s - %s: %s" % (self.working_date, self.consultant.trigramme, self.charge)
+
+    class Meta:
+        unique_together = (("consultant", "mission", "working_date"),)
+        ordering = ["working_date", "consultant"]
+        verbose_name = _("Timesheet")

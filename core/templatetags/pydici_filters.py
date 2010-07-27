@@ -21,3 +21,8 @@ def truncate_by_chars(value, arg):
         return value[:limit - 3] + "..."
     else:
         return value
+
+@register.filter
+def split(value, arg):
+    """Split a string on "arg" and return a list"""
+    return value.split(arg)

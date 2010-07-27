@@ -76,6 +76,8 @@ pydici_patterns += patterns('pydici.staffing.views',
     (r'^staffing/mission/(?P<mission_id>\d+)/$', 'mission_staffing'),
     (r'^staffing/mission/(?P<mission_id>\d+)/deactivate$', 'deactivate_mission'),
     (r'^staffing/consultant/(?P<consultant_id>\d+)/$', 'consultant_staffing'),
+    (r'^staffing/timesheet/(?P<consultant_id>\d+)/$', 'timesheet'),
+    (r'^staffing/timesheet/(?P<consultant_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/?$', 'timesheet'),
 )
 
 pydici_patterns += patterns('pydici.people.views',

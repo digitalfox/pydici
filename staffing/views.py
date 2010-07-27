@@ -15,9 +15,9 @@ from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
 
-from pydici.staffing.models import Staffing, Mission, Holiday
+from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet
 from pydici.people.models import Consultant
-from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset
+from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
 from pydici.core.utils import working_days, to_int_or_round
 
 def missions(request, onlyActive=True):
@@ -253,3 +253,90 @@ def saveFormsetAndLog(formset, request):
         staffing.last_user = unicode(request.user)
         staffing.update_date = now
         staffing.save()
+
+def timesheet(request, consultant_id, year=None, month=None):
+    """Consultant timesheet"""
+
+    if year and month:
+        month = date(int(year), int(month), 1)
+    else:
+        month = date.today().replace(day=1) # We use the first day to represent month
+
+    forecastTotal = {} # forecast charge (value) per mission (key is mission.id)
+    missions = set()   # Set of all consultant missions for this month
+    day = timedelta(1)
+    tmpDate = month
+    days = [] # List of days in month
+    currentMonth = tmpDate.month
+    while tmpDate.month == currentMonth:
+        days.append(tmpDate)
+        tmpDate += day
+
+    consultant = Consultant.objects.get(id=consultant_id)
+
+    staffings = Staffing.objects.filter(consultant=consultant)
+    staffings = staffings.filter(staffing_date__gte=days[0]).filter(staffing_date__lte=days[-1])
+    for staffing in staffings:
+        missions.add(staffing.mission)
+        if staffing.mission.id in forecastTotal:
+            forecastTotal[staffing.mission.id] += staffing.charge
+        else:
+            forecastTotal[staffing.mission.id] = staffing.charge
+
+    timesheetData, timesheetTotal = gatherTimesheetData(consultant, missions, month)
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = TimesheetForm(request.POST, days=days, missions=missions,
+                             forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
+        if form.is_valid(): # All validation rules pass
+            # Process the data in form.cleaned_data
+            saveTimesheetData(consultant, month, form.cleaned_data)
+            # Recreate a new form for next update and compute again totals
+            timesheetData, timesheetTotal = gatherTimesheetData(consultant, missions, month)
+            form = TimesheetForm(days=days, missions=missions, forecastTotal=forecastTotal,
+                                 timesheetTotal=timesheetTotal, initial=timesheetData)
+    else:
+        # An unbound form
+        form = TimesheetForm(days=days, missions=missions, forecastTotal=forecastTotal,
+                             timesheetTotal=timesheetTotal, initial=timesheetData)
+
+    return render_to_response("staffing/timesheet.html", {
+                                "consultant": consultant,
+                               "form": form,
+                               "days": days,
+                               "month": month,
+                               "user": request.user },
+                               RequestContext(request))
+
+
+def gatherTimesheetData(consultant, missions, month):
+    """Gather existing timesheet timesheetData
+    @returns: (timesheetData, timesheetTotal)
+    timesheetData represent timesheet form post timesheetData as a dict
+    timesheetTotal is a dict of total charge (key is mission id)"""
+    timesheetData = {}
+    timesheetTotal = {}
+    for mission in missions:
+        for timesheet in Timesheet.objects.filter(consultant=consultant).filter(mission=mission):
+            if timesheet.working_date.month == month.month:
+                timesheetData["charge_%s_%s" % (timesheet.mission.id, timesheet.working_date.day)] = timesheet.charge
+                if mission.id in timesheetTotal:
+                    timesheetTotal[mission.id] += timesheet.charge
+                else:
+                    timesheetTotal[mission.id] = timesheet.charge
+    return (timesheetData, timesheetTotal)
+
+def saveTimesheetData(consultant, month, data):
+    """Save user input timesheet in database"""
+    for key, charge in data.items():
+        if not charge:
+            continue
+        (foo, mission_id, day) = key.split("_")
+        day = int(day)
+        mission = Mission.objects.get(id=mission_id)
+        working_date = month.replace(day=day)
+        timesheet, created = Timesheet.objects.get_or_create(consultant=consultant,
+                                                             mission=mission,
+                                                             working_date=working_date)
+        timesheet.charge = charge
+        timesheet.save()

@@ -9,7 +9,7 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
-from pydici.staffing.models import Mission, Holiday
+from pydici.staffing.models import Mission, Holiday, Timesheet
 
 
 class MissionAdmin(admin.ModelAdmin):
@@ -29,3 +29,4 @@ class HolidayAdmin(admin.ModelAdmin):
 
 admin.site.register(Mission, MissionAdmin)
 admin.site.register(Holiday, HolidayAdmin)
+admin.site.register(Timesheet)

@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+
+<div>
+    <h1>{{ consultant }} - {{ month|date:"F Y"}}</h1>
+    <form action="" method="POST">
+    <table class='small-form-row'>
+            <tr style="text-align:center">
+            {% for day in days %}
+                <td></td><td>{{ day|date:"j" }}</td>
+            {% endfor %}
+            <td></td><td></td></tr>
+            <tr style="text-align:center">
+            {% for day in days %}
+                <td></td><td>{{ day|date:"D" }}</td>
+            {% endfor %}
+            <td>Total</td><td>Prévu</td></tr>
+            <tr>
+            {% for field in form  %}
+                {% if field.is_hidden %}
+	               <td style="text-align:center">{{ field.label|split:" "|first }}</td>
+	               <td style="text-align:center">{{ field.label|split:" "|last }}</td>
+	               </tr><tr>
+                {% else %}
+	               <td>{{ field.label }}</td>
+	               <td>{{ field }}</td>
+                {% endif %}
+            {% endfor %}
+            </tr>
+    </table>
+        <div class="submit-row">
+            <input type="submit" value="{% trans 'Save' %}"/>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
