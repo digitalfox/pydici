@@ -14,6 +14,8 @@ from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
+from django.db import transaction
+
 
 from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet
 from pydici.people.models import Consultant
@@ -256,7 +258,6 @@ def saveFormsetAndLog(formset, request):
 
 def timesheet(request, consultant_id, year=None, month=None):
     """Consultant timesheet"""
-
     if year and month:
         month = date(int(year), int(month), 1)
     else:
@@ -326,6 +327,7 @@ def gatherTimesheetData(consultant, missions, month):
                     timesheetTotal[mission.id] = timesheet.charge
     return (timesheetData, timesheetTotal)
 
+@transaction.commit_on_success
 def saveTimesheetData(consultant, month, data):
     """Save user input timesheet in database"""
     for key, charge in data.items():
