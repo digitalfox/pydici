@@ -299,7 +299,7 @@ def timesheet(request, consultant_id, year=None, month=None):
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
         if form.is_valid(): # All validation rules pass
             # Process the data in form.cleaned_data
-            saveTimesheetData(consultant, month, form.cleaned_data)
+            saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
             # Recreate a new form for next update and compute again totals
             timesheetData, timesheetTotal = gatherTimesheetData(consultant, missions, month)
             form = TimesheetForm(days=days, missions=missions, forecastTotal=forecastTotal,
@@ -326,7 +326,7 @@ def gatherTimesheetData(consultant, missions, month):
     timesheetData = {}
     timesheetTotal = {}
     for mission in missions:
-        for timesheet in Timesheet.objects.filter(consultant=consultant).filter(mission=mission):
+        for timesheet in Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission):
             if timesheet.working_date.month == month.month:
                 timesheetData["charge_%s_%s" % (timesheet.mission.id, timesheet.working_date.day)] = timesheet.charge
                 if mission.id in timesheetTotal:
@@ -336,14 +336,21 @@ def gatherTimesheetData(consultant, missions, month):
     return (timesheetData, timesheetTotal)
 
 @transaction.commit_on_success
-def saveTimesheetData(consultant, month, data):
+def saveTimesheetData(consultant, month, data, oldData):
     """Save user input timesheet in database"""
+    previousMissionId = 0
+    mission = None
     for key, charge in data.items():
         if not charge:
             continue
-        (foo, mission_id, day) = key.split("_")
+        if float(data[key]) == oldData[key]:
+            # Data does not changed - skip it
+            continue
+        (foo, missionId, day) = key.split("_")
         day = int(day)
-        mission = Mission.objects.get(id=mission_id)
+        if missionId != previousMissionId:
+            mission = Mission.objects.get(id=missionId)
+            previousMissionId = missionId
         working_date = month.replace(day=day)
         timesheet, created = Timesheet.objects.get_or_create(consultant=consultant,
                                                              mission=mission,
