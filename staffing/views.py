@@ -337,17 +337,20 @@ def csv_timesheet(request, consultant, days, month, missions):
 
     # Days
     writer.writerow([""] + [d.day for d in days])
-    writer.writerow([""] + [_(d.strftime("%a")) for d in days])
+    writer.writerow([""] + [_(d.strftime("%a")) for d in days] + [_("total")])
 
     for mission in missions:
+        total = 0
         row = [unicode(mission).encode("ISO-8859-15", "ignore"), ]
         timesheets = Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission)
         for day in days:
             try:
                 timesheet = timesheets.get(working_date=day)
                 row.append(timesheet.charge)
+                total += timesheet.charge
             except Timesheet.DoesNotExist:
                 row.append("")
+        row.append(total)
         writer.writerow(row)
 
     return response
