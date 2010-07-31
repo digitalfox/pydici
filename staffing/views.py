@@ -313,11 +313,15 @@ def timesheet(request, consultant_id, year=None, month=None):
         form = TimesheetForm(days=days, missions=missions, forecastTotal=forecastTotal,
                              timesheetTotal=timesheetTotal, initial=timesheetData)
 
+    wDays = working_days(month, [h.day for h in Holiday.objects.all()])
+    wDaysBalance = wDays - sum(timesheetTotal.values())
+
     return render_to_response("staffing/timesheet.html", {
                                 "consultant": consultant,
                                "form": form,
                                "days": days,
                                "month": month,
+                               "working_days_balance" : wDaysBalance,
                                "user": request.user },
                                RequestContext(request))
 
@@ -371,9 +375,10 @@ def saveTimesheetData(consultant, month, data, oldData):
     previousMissionId = 0
     mission = None
     for key, charge in data.items():
-        if not charge:
+        if not charge and not key in oldData:
+            # No charge in new and old data
             continue
-        if float(data[key]) == oldData[key]:
+        if charge and key in oldData and float(data[key]) == oldData[key]:
             # Data does not changed - skip it
             continue
         (foo, missionId, day) = key.split("_")
@@ -385,5 +390,10 @@ def saveTimesheetData(consultant, month, data, oldData):
         timesheet, created = Timesheet.objects.get_or_create(consultant=consultant,
                                                              mission=mission,
                                                              working_date=working_date)
-        timesheet.charge = charge
-        timesheet.save()
+        if charge:
+            # create/update new data
+            timesheet.charge = charge
+            timesheet.save()
+        else:
+            # remove data user just deleted
+            timesheet.delete()
