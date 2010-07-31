@@ -275,6 +275,14 @@ def timesheet(request, consultant_id, year=None, month=None):
 
     consultant = Consultant.objects.get(id=consultant_id)
 
+    if not (request.user.has_perm("staffing.add_staffing") and
+            request.user.has_perm("staffing.change_staffing") and
+            request.user.has_perm("staffing.delete_staffing")):
+        # Only forbid access if the user try to edit someone else staffing
+        if request.user.username.upper() != consultant.trigramme:
+            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+
+
     staffings = Staffing.objects.filter(consultant=consultant)
     staffings = staffings.filter(staffing_date__gte=days[0]).filter(staffing_date__lte=days[-1])
     for staffing in staffings:
