@@ -54,5 +54,5 @@ class TimesheetForm(forms.Form):
             # Add staffing total and forecast in hidden field
             hwidget = forms.HiddenInput()
             # Mission id is added to ensure field key is uniq.
-            key = "%s %s %s" % (timesheetTotal[mission.id], mission.id, forecastTotal[mission.id])
+            key = "%s %s %s" % (timesheetTotal.get(mission.id, 0), mission.id, forecastTotal[mission.id])
             self.fields[key] = forms.CharField(widget=hwidget, required=False)
