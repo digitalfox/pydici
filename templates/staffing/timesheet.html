@@ -24,7 +24,7 @@
             {% for day in days %}
                 <td></td><td>{{ day|date:"D" }}</td>
             {% endfor %}
-            <td>Total</td><td>Prévu</td></tr>
+            <td>{% trans "Total" %}</td><td>{% trans "Forecast" %}</td></tr>
             <tr>
             {% for field in form  %}
                 {% if field.is_hidden %}
