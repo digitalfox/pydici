@@ -6,6 +6,7 @@ Pydici staffing views. Http request are processed here.
 """
 
 from datetime import date, timedelta, datetime
+import csv
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
@@ -292,6 +293,9 @@ def timesheet(request, consultant_id, year=None, month=None):
         else:
             forecastTotal[staffing.mission.id] = staffing.charge
 
+    if "csv" in request.GET:
+        return csv_timesheet(request, consultant, days, month, missions)
+
     timesheetData, timesheetTotal = gatherTimesheetData(consultant, missions, month)
 
     if request.method == 'POST': # If the form has been submitted...
@@ -317,6 +321,32 @@ def timesheet(request, consultant_id, year=None, month=None):
                                "user": request.user },
                                RequestContext(request))
 
+
+def csv_timesheet(request, consultant, days, month, missions):
+    """@return: csv timesheet"""
+    response = HttpResponse(mimetype="text/csv")
+    response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    writer = csv.writer(response, delimiter=';')
+
+    # Header
+    writer.writerow([("%s - %s" % (unicode(consultant), month)).encode("ISO-8859-15"), ])
+
+    # Days
+    writer.writerow([""] + [d.day for d in days])
+    writer.writerow([""] + [_(d.strftime("%a")) for d in days])
+
+    for mission in missions:
+        row = [unicode(mission).encode("ISO-8859-15", "ignore"), ]
+        timesheets = Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission)
+        for day in days:
+            try:
+                timesheet = timesheets.get(working_date=day)
+                row.append(timesheet.charge)
+            except Timesheet.DoesNotExist:
+                row.append("")
+        writer.writerow(row)
+
+    return response
 
 def gatherTimesheetData(consultant, missions, month):
     """Gather existing timesheet timesheetData
