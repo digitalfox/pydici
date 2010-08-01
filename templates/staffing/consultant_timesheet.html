@@ -1,18 +1,11 @@
-{% extends "admin/base_site.html" %}
-
+{% extends "staffing/consultant_base.html" %}
 {% load i18n %}
 {% load pydici_filters %}
 
-{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
-{% block content %}
-
-<div>
-    <h1>{{ consultant }} - {{ month|date:"F Y"}}</h1>
+{% block consultant_detail %}
+    <h2>{% trans "Timesheet" %} {{ month|date:"F Y"}}</h2>
+    <a href="{% url pydici.staffing.views.consultant_staffing consultant.id %}" class='changelink'>{% trans "See also forecast staffing of this consultant" %}</a>
+    <br/><br/><hr/>
     <form action="" method="POST">
     <table class='small-form-row'>
             <tr style="text-align:center">
@@ -46,10 +39,5 @@
     {% if working_days_balance %}
     <br/><p>{% trans "Working days balance: " %} {{ working_days_balance }}</p>
     {% endif %}
-    <br/><br/>
-    <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id,year=month.year,month=month.month%}/?csv'>{% trans "Export in CSV" %}</a>
-&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='{% url pydici.core.views.index %}'>{% trans "Back to home page" %}</a>
-    
-</div>
+
 {% endblock %}

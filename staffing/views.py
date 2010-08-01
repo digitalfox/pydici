@@ -309,6 +309,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
                                "form": form,
                                "days": days,
                                "month": month,
+                               "missions": missions,
                                "working_days_balance" : wDaysBalance,
                                "user": request.user },
                                RequestContext(request))
