@@ -47,7 +47,7 @@
     <br/><p>{% trans "Working days balance: " %} {{ working_days_balance }}</p>
     {% endif %}
     <br/><br/>
-    <a href='{% url pydici.staffing.views.timesheet consultant_id=consultant.id,year=month.year,month=month.month%}/?csv'>{% trans "Export in CSV" %}</a>
+    <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id,year=month.year,month=month.month%}/?csv'>{% trans "Export in CSV" %}</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 <a href='{% url pydici.core.views.index %}'>{% trans "Back to home page" %}</a>
     

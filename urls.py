@@ -73,11 +73,13 @@ pydici_patterns += patterns('pydici.staffing.views',
     url(r'^staffing/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', name='pdcreview'),
     url(r'^staffing/mission/$', 'missions', name='missions'),
     url(r'^staffing/mission/all', 'missions', { 'onlyActive' : False }, 'all-missions'),
-    (r'^staffing/mission/(?P<mission_id>\d+)/$', 'mission_staffing'),
+    (r'^staffing/forecast/mission/(?P<mission_id>\d+)/$', 'mission_staffing'),
     (r'^staffing/mission/(?P<mission_id>\d+)/deactivate$', 'deactivate_mission'),
-    (r'^staffing/consultant/(?P<consultant_id>\d+)/$', 'consultant_staffing'),
-    (r'^staffing/timesheet/(?P<consultant_id>\d+)/$', 'timesheet'),
-    (r'^staffing/timesheet/(?P<consultant_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/?$', 'timesheet'),
+    (r'^staffing/forecast/consultant/(?P<consultant_id>\d+)/$', 'consultant_staffing'),
+    (r'^staffing/timesheet/consultant/(?P<consultant_id>\d+)/$', 'consultant_timesheet'),
+    (r'^staffing/timesheet/consultant/(?P<consultant_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/?$', 'consultant_timesheet'),
+    (r'^staffing/timesheet/mission/(?P<mission_id>\d+)/$', 'mission_timesheet'),
+
 )
 
 pydici_patterns += patterns('pydici.people.views',

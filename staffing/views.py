@@ -257,7 +257,7 @@ def saveFormsetAndLog(formset, request):
         staffing.update_date = now
         staffing.save()
 
-def timesheet(request, consultant_id, year=None, month=None):
+def consultant_timesheet(request, consultant_id, year=None, month=None):
     """Consultant timesheet"""
     if year and month:
         month = date(int(year), int(month), 1)
@@ -294,7 +294,7 @@ def timesheet(request, consultant_id, year=None, month=None):
             forecastTotal[staffing.mission.id] = staffing.charge
 
     if "csv" in request.GET:
-        return csv_timesheet(request, consultant, days, month, missions)
+        return consultant_csv_timesheet(request, consultant, days, month, missions)
 
     timesheetData, timesheetTotal = gatherTimesheetData(consultant, missions, month)
 
@@ -317,7 +317,7 @@ def timesheet(request, consultant_id, year=None, month=None):
     wDays = working_days(month, [h.day for h in Holiday.objects.all()])
     wDaysBalance = wDays - sum(timesheetTotal.values())
 
-    return render_to_response("staffing/timesheet.html", {
+    return render_to_response("staffing/consultant_timesheet.html", {
                                 "consultant": consultant,
                                "form": form,
                                "days": days,
@@ -327,8 +327,8 @@ def timesheet(request, consultant_id, year=None, month=None):
                                RequestContext(request))
 
 
-def csv_timesheet(request, consultant, days, month, missions):
-    """@return: csv timesheet"""
+def consultant_csv_timesheet(request, consultant, days, month, missions):
+    """@return: csv timesheet for a given consultant"""
     response = HttpResponse(mimetype="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
     writer = csv.writer(response, delimiter=';')
@@ -355,3 +355,13 @@ def csv_timesheet(request, consultant, days, month, missions):
         writer.writerow(row)
 
     return response
+
+def mission_timesheet(request, mission_id):
+    """Mission timesheet"""
+    mission = Mission.objects.get(id=mission_id)
+    timesheets = Timesheet.objects.filter(mission=mission)
+    return render_to_response("staffing/mission_timesheet.html", {
+                                "mission": mission,
+                                "timesheets": timesheets,
+                               "user": request.user },
+                               RequestContext(request))
