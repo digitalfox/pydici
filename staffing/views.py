@@ -147,8 +147,8 @@ def pdc_review(request, year=None, month=None):
             # We wrap around a year (max one year)
             months.append(start_date.replace(month=start_date.month + i - 12, year=start_date.year + 1))
 
-    previous_slice_date = start_date - timedelta(days=31 * n_month)
-    next_slice_date = start_date + timedelta(days=31 * n_month)
+    previous_slice_date = start_date - timedelta(days=(28 * n_month))
+    next_slice_date = start_date + timedelta(days=(31 * n_month))
 
     # Initialize total dict and available dict
     holidays_days = [h.day for h in Holiday.objects.all()]
@@ -261,6 +261,9 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
         days.append(tmpDate)
         tmpDate += day
 
+    previous_date = month - timedelta(days=5)
+    next_date = month + timedelta(days=40)
+
     consultant = Consultant.objects.get(id=consultant_id)
 
     if not (request.user.has_perm("staffing.add_staffing") and
@@ -311,6 +314,8 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
                                "month": month,
                                "missions": missions,
                                "working_days_balance" : wDaysBalance,
+                               "next_date": next_date,
+                               "previous_date": previous_date,
                                "user": request.user },
                                RequestContext(request))
 

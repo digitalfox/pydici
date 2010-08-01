@@ -12,9 +12,9 @@
 
 <div id="content-main">
 	<h1>
-	<a href='{% url pdcreview year=previous_slice_date|date:"Y",month=previous_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="Mois précédents"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
+	<a href='{% url pdcreview year=previous_slice_date|date:"Y",month=previous_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
 	Revue du plan de charge
-	<a href='{% url pdcreview year=next_slice_date|date:"Y",month=next_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="Mois suivants"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
+	<a href='{% url pdcreview year=next_slice_date|date:"Y",month=next_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
 	</h1>
 {% if projected %}
     <strong>Projections de staffing prises en compte </strong>
