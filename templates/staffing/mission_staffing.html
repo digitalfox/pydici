@@ -3,6 +3,8 @@
 
 {% block mission_detail %}
     <h2>{% trans "Staffing" %}</h2>
+    <a href="{% url pydici.staffing.views.mission_timesheet mission.id %}" class='changelink'>{% trans "See also the timesheet of this mission" %}</a>
+    <br/><br/><hr/>
     <form action="" method="POST">
         {{ formset.management_form }}
         <div class="form-row">

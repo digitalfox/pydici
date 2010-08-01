@@ -3,6 +3,8 @@
 
 {% block mission_detail %}
     <h2>{% trans "Timesheet" %}</h2>
+    <a href="{% url pydici.staffing.views.mission_staffing mission.id %}" class='changelink'>{% trans "Seel also the forecast staffing of this mission" %}</a>
+    <br/><br/><hr/>
     <div class="timesheet">
     <table>
     <tr>

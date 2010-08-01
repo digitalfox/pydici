@@ -20,7 +20,7 @@ from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet
 from pydici.people.models import Consultant
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
 from pydici.core.utils import working_days, to_int_or_round
-from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData
+from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog
 
 def missions(request, onlyActive=True):
     """List of missions"""
@@ -243,17 +243,6 @@ def deactivate_mission(request, mission_id):
     mission.active = False
     mission.save()
     return HttpResponseRedirect(urlresolvers.reverse("missions"))
-
-
-def saveFormsetAndLog(formset, request):
-    """Save the given staffing formset and log last user"""
-    now = datetime.now()
-    now = now.replace(microsecond=0) # Remove useless microsecond that pollute form validation in callback
-    staffings = formset.save(commit=False)
-    for staffing in staffings:
-        staffing.last_user = unicode(request.user)
-        staffing.update_date = now
-        staffing.save()
 
 def consultant_timesheet(request, consultant_id, year=None, month=None):
     """Consultant timesheet"""

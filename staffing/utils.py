@@ -7,6 +7,8 @@ appropriate to live in Staffing models or view
 @license: GPL v3 or newer
 """
 
+from datetime import datetime
+
 from django.db import transaction
 
 from pydici.staffing.models import Timesheet, Mission
@@ -56,3 +58,13 @@ def saveTimesheetData(consultant, month, data, oldData):
         else:
             # remove data user just deleted
             timesheet.delete()
+
+def saveFormsetAndLog(formset, request):
+    """Save the given staffing formset and log last user"""
+    now = datetime.now()
+    now = now.replace(microsecond=0) # Remove useless microsecond that pollute form validation in callback
+    staffings = formset.save(commit=False)
+    for staffing in staffings:
+        staffing.last_user = unicode(request.user)
+        staffing.update_date = now
+        staffing.save()
