@@ -111,6 +111,14 @@ input[type=submit].default:active { background-image:url(../img/admin/default-bg
 .imodule h2, .imodule caption, .imodule th, .inline-group h2 { margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background:#7CA0C7 url(../img/admin/default-bg.gif) top left repeat-x; color:white; }
 .imodule table { border-collapse: collapse; }
 
+/* timesheet tables */
+.timesheet { }
+.timesheet p, .timesheet ul, .timesheet h3, .timesheet h4, .timesheet dl, .timesheet pre { padding-left:10px; padding-right:10px; }
+.timesheet blockquote { margin-left:12px; }
+.timesheet ul, .timesheet ol { margin-left:1.5em; }
+.timesheet h3 { margin-top:.6em; }
+.timesheet h2, .timesheet caption, .timesheet th, .inline-group h2 { width:auto; margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background:#7CA0C7 url(../img/admin/default-bg.gif) top left repeat-x; color:white; }
+.timesheet table { border-collapse: collapse; }
 
 
 /* MESSAGES & ERRORS */

@@ -16,7 +16,6 @@ from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
 
-
 from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet
 from pydici.people.models import Consultant
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
@@ -54,9 +53,8 @@ def mission_staffing(request, mission_id):
     else:
         formset = StaffingFormSet(instance=mission) # An unbound form
 
-    consultants = set([s.consultant for s in mission.staffing_set.all()])
-    consultants = list(consultants)
-    consultants.sort(cmp=lambda x, y: cmp(x.name, y.name))
+    consultants = mission.staffed_consultant()
+
     return render_to_response('staffing/mission_staffing.html',
                               {"formset": formset,
                                "mission": mission,
@@ -359,9 +357,28 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
 def mission_timesheet(request, mission_id):
     """Mission timesheet"""
     mission = Mission.objects.get(id=mission_id)
+    consultants = mission.staffed_consultant()
     timesheets = Timesheet.objects.filter(mission=mission)
+    months = [t.working_date.replace(day=1) for t in timesheets.distinct("working_date")]
+    months = list(set(months)) # uniq instance
+    months.sort()
+    timesheetData = [] # list of tuple (consultant, (charge month 1, charge month 2))
+    for consultant in consultants:
+        data = []
+        for month in months:
+            data.append(sum([t.charge for t in timesheets.filter(consultant=consultant) if t.working_date.month == month.month]))
+        data.append(sum(data)) # Add total per consultant
+        timesheetData.append((consultant, data))
+    # Compute total per month
+    total = [data for consultant, data in timesheetData]
+    total = zip(*total) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
+    total = [sum(t) for t in total]
+    timesheetData.append((_("Total"), total))
+
     return render_to_response("staffing/mission_timesheet.html", {
                                 "mission": mission,
-                                "timesheets": timesheets,
+                                "months": list(months),
+                                "consultants": consultants,
+                                "timesheet": timesheetData,
                                "user": request.user },
                                RequestContext(request))

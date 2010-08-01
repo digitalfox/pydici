@@ -1,0 +1,27 @@
+{% extends "staffing/mission_base.html" %}
+{% load i18n %}
+
+{% block mission_detail %}
+    <h2>{% trans "Timesheet" %}</h2>
+    <div class="timesheet">
+    <table>
+    <tr>
+        <th></th>
+        {% for month in months %}
+            <th>{{ month|date:"M y" }}</th>
+        {% endfor %}
+        <th>{% trans "Total" %}</th>
+    </tr>
+    {% for consultant, data in timesheet %}
+        {% ifequal consultant "Total" %}
+            <tr style="font-weight:bold">
+        {% else %}
+            <tr>
+        {% endifequal %}
+            <td>{{ consultant }}</td>
+            <td>{{ data|join:"</td><td>" }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    </div>
+{% endblock %}

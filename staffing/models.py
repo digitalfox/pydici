@@ -59,6 +59,14 @@ class Mission(models.Model):
         """@return: True if at least one staffing is defined after refDate. Zero charge staffing are considered."""
         return not bool(self.staffing_set.filter(staffing_date__gt=refDate).count())
 
+    def staffed_consultant(self):
+        """@return: sorted list of consultant forecasted for this mission"""
+        consultants = set([s.consultant for s in self.staffing_set.all()])
+        consultants = list(consultants)
+        consultants.sort(cmp=lambda x, y: cmp(x.name, y.name))
+        return consultants
+
+
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "description"]
         verbose_name = _("Mission")
