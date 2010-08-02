@@ -15,13 +15,15 @@
         <th>{% trans "Total" %}</th>
     </tr>
     {% for consultant, data in timesheet %}
-        {% ifequal consultant "Total" %}
+        {% ifequal consultant None %}
             <tr style="font-weight:bold">
+            <td>{% trans "Total" %}</td>
+            <td>{{ data|join:"</td><td>" }}</td>
         {% else %}
-            <tr>
-        {% endifequal %}
+            <tr>        
             <td>{{ consultant }}</td>
             <td>{{ data|join:"</td><td>" }}</td>
+        {% endifequal %}
         </tr>
     {% endfor %}
     </table>

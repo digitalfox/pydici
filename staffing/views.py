@@ -368,7 +368,7 @@ def mission_timesheet(request, mission_id):
     total = [data for consultant, data in timesheetData]
     total = zip(*total) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
     total = [sum(t) for t in total]
-    timesheetData.append((_("Total"), total))
+    timesheetData.append((None, total))
 
     return render_to_response("staffing/mission_timesheet.html", {
                                 "mission": mission,
