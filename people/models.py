@@ -30,6 +30,7 @@ class Consultant(models.Model):
     trigramme = models.CharField(max_length=4, unique=True)
     company = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
     productive = models.BooleanField(_("Productive"), default=True)
+    active = models.BooleanField(_("Active"), default=True)
     manager = models.ForeignKey("self", null=True, blank=True)
     profil = models.ForeignKey(ConsultantProfile, verbose_name=_("Profil"))
 

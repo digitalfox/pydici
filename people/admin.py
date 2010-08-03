@@ -19,10 +19,10 @@ class SalesManAdmin(admin.ModelAdmin):
 
 
 class ConsultantAdmin(admin.ModelAdmin):
-    list_display = ("name", "trigramme", "profil", "productive")
+    list_display = ("name", "trigramme", "profil", "productive", "active")
     search_fields = ("name", "trigramme")
     ordering = ("name",)
-    list_filter = ["profil", ]
+    list_filter = ["profil", "productive", "active"]
     actions = None
 
 class ConsultantProfileAdmin(admin.ModelAdmin):
