@@ -13,6 +13,9 @@
 <div id="content-main">
 <h1>{{ consultant.full_name }}</h1>
 <br/>
+{% if not consultant.active %}
+<h3>{% trans "This consultant does not work anymore for the company" %}</h3>
+{% endif %}
 <p>{% trans "Profil: " %} {{consultant.profil }}</p>
 <p>{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href='{% url pydici.people.views.consultant_detail people.id %}'>{{ people.full_name }}</a>{{ consultant.manager }} {% endifnotequal %}</p>
 <p>{% if staff %}{% trans "Staff:" %}<ul>{% for people in staff %}

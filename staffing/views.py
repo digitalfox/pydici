@@ -104,7 +104,7 @@ def pdc_review(request, year=None, month=None):
     @param year: start date year. None means curre    nt month"""
 
     # Don't display this page if no productive consultant are defined
-    if Consultant.objects.filter(productive=True).count() == 0:
+    if Consultant.objects.filter(productive=True).filter(active=True).count() == 0:
         #TODO: make this message nice
         return HttpResponse(_("No productive consultant defined !"))
 
@@ -138,7 +138,7 @@ def pdc_review(request, year=None, month=None):
     rates = []     # staffing rates per month
     available_month = {} # available working days per month
     months = []   # list of month to be displayed
-    people = Consultant.objects.filter(productive=True).count()
+    people = Consultant.objects.filter(productive=True).filter(active=True).count()
 
     for i in range(n_month):
         if start_date.month + i <= 12:
@@ -157,7 +157,7 @@ def pdc_review(request, year=None, month=None):
         available_month[month] = working_days(month, holidays_days)
 
     # Get consultants staffing
-    for consultant in Consultant.objects.select_related().filter(productive=True):
+    for consultant in Consultant.objects.select_related().filter(productive=True).filter(active=True):
         staffing[consultant] = []
         missions = set()
         for month in months:
