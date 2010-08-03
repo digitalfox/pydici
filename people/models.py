@@ -53,6 +53,7 @@ class SalesMan(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     trigramme = models.CharField(max_length=4, unique=True)
     company = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
+    active = models.BooleanField(_("Active"), default=True)
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)
 

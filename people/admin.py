@@ -12,8 +12,9 @@ from django.utils.translation import ugettext
 from pydici.people.models import SalesMan, Consultant, ConsultantProfile
 
 class SalesManAdmin(admin.ModelAdmin):
-    list_display = ("name", "company", "trigramme", "email", "phone")
+    list_display = ("name", "company", "trigramme", "email", "phone", "active")
     odering = ("name")
+    list_filter = ["active", ]
     search_fields = ["name", "trigramme"]
     actions = None
 
