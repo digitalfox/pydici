@@ -11,8 +11,8 @@ from django.db.models import Q
 class PeopleLookup(object):
     def get_query(self, q, request):
         """ return a query set.  you also have access to request.user if needed """
-        return self.People.objects.filter(Q(name__icontains=q) |
-                                         Q(trigramme__icontains=q))
+        return self.People.objects.filter(active=True).filter(Q(name__icontains=q) |
+                                                              Q(trigramme__icontains=q))
 
     def format_result(self, people):
         """ the search results display in the dropdown menu.  may contain html and multiple-lines. will remove any |  """
