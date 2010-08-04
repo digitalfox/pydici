@@ -191,10 +191,12 @@ def pdc_review(request, year=None, month=None):
             total[month]["unprod"] += unprod
             total[month]["holidays"] += holidays
             total[month]["available"] += available
-        # Add mission synthesis to staffing dict
+        # Add client synthesis to staffing dict
+        company = set([m.lead.client.organisation.company for m in list(missions)])
+
         staffing[consultant].append([", ".join(["<a href='%s'>%s</a>" %
-                                        (urlresolvers.reverse("pydici.staffing.views.mission_staffing", args=[m.id]),
-                                        m.short_name()) for m in list(missions)])])
+                                        (urlresolvers.reverse("pydici.crm.views.company_detail", args=[c.id]),
+                                        unicode(c)) for c in company])])
 
     # Compute indicator rates
     for month in months:
