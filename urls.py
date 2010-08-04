@@ -87,6 +87,12 @@ pydici_patterns += patterns('pydici.people.views',
     (r'^people/consultant/(?P<consultant_id>\d+)/$', 'consultant_detail'),
 )
 
+pydici_patterns += patterns('pydici.crm.views',
+    # CRM module
+    (r'^crm/company/(?P<company_id>\d+)/$', 'company_detail'),
+)
+
+
 # Application prefix
 if pydici.settings.PYDICI_PREFIX:
     pydici_prefix = r'^%s/' % pydici.settings.PYDICI_PREFIX

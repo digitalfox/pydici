@@ -1,0 +1,34 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+<h1>{{ company }}</h1>
+
+{% for mission in missions %}
+    {% ifchanged mission.lead.client %}
+        <h2>{{ mission.lead.client }}</h2>    
+    {% endifchanged %}
+    {% ifchanged mission.lead.state %}
+        <h3>{{ mission.lead.get_state_display }}</h3>    
+    {% endifchanged %}
+    <h4>{{ mission.lead.name }} ({{ mission.lead.start_date|date:"F Y" }})</h4>
+    <ul>
+    <li><a href='{% url pydici.leads.views.detail mission.lead_id %}'>{% trans "Lead of this mission" %}</a></li>
+    <li><a href="{% url pydici.staffing.views.mission_staffing mission.id %}" class='changelink'>{% trans "Forecast staffing of this mission" %}</a> - 
+    <a href="{% url pydici.staffing.views.mission_timesheet mission.id %}" class='changelink'>{% trans "Timesheet of this mission" %}</a></li>   
+    
+    </ul>
+    
+{% endfor %}
+
+</div>
+{% endblock %}
