@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-02 22:29+0200\n"
-"PO-Revision-Date: 2010-08-02 22:29+0200\n"
+"POT-Creation-Date: 2010-08-04 23:15+0200\n"
+"PO-Revision-Date: 2010-08-04 23:15+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,14 +17,14 @@ msgstr ""
 "X-Generator: Lokalize 1.0\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: core/models.py:16 crm/models.py:21 crm/models.py:42 leads/models.py:41
-#: leads/views.py:101 people/models.py:17 people/models.py:52
+#: core/models.py:16 crm/models.py:21 crm/models.py:42 leads/models.py:42
+#: leads/views.py:101 people/models.py:17 people/models.py:53
 #: templates/staffing/consultant_base.html:18
 #: templates/staffing/missions.html:21
 msgid "Name"
 msgstr "Nom"
 
-#: core/models.py:21 people/models.py:31 people/models.py:54
+#: core/models.py:21 people/models.py:31 people/models.py:55
 msgid "Subsidiary"
 msgstr "Filiale"
 
@@ -48,7 +48,7 @@ msgstr "Entreprise"
 msgid "Client organisation"
 msgstr "Département"
 
-#: crm/models.py:44 people/models.py:56
+#: crm/models.py:44 people/models.py:58
 msgid "Phone"
 msgstr "Téléphone"
 
@@ -72,7 +72,7 @@ msgstr "Contact client"
 msgid "Company"
 msgstr "Société"
 
-#: crm/models.py:77 leads/models.py:49
+#: crm/models.py:77 leads/models.py:50
 msgid "Business broker"
 msgstr "Apporteur d'affaire"
 
@@ -115,85 +115,85 @@ msgstr "La probabilité de la mission a été mise à 100 %"
 msgid "According mission has been archived"
 msgstr "La mission correspondante a été archivée"
 
-#: leads/models.py:32
+#: leads/models.py:33
 msgid "Qualifying"
 msgstr "En qualif."
 
-#: leads/models.py:33
+#: leads/models.py:34
 msgid "Writting offer"
 msgstr "Propal. à écrire"
 
-#: leads/models.py:34
+#: leads/models.py:35
 msgid "Offer sent"
 msgstr "Propal. envoyée"
 
-#: leads/models.py:35
+#: leads/models.py:36
 msgid "Negotiation"
 msgstr "En négo."
 
-#: leads/models.py:36
+#: leads/models.py:37
 msgid "Won"
 msgstr "Gagnée"
 
-#: leads/models.py:37
+#: leads/models.py:38
 msgid "Lost"
 msgstr "Perdue"
 
-#: leads/models.py:38
+#: leads/models.py:39
 msgid "Forgiven"
 msgstr "Abandonnée"
 
-#: leads/models.py:39
+#: leads/models.py:40
 msgid "Sleeping"
 msgstr "En sommeil"
 
-#: leads/models.py:43 templates/leads/lead_detail.html:58
+#: leads/models.py:44 templates/leads/lead_detail.html:58
 msgid "Action"
 msgstr "Action"
 
-#: leads/models.py:44 leads/views.py:104 templates/core/index.html:22
+#: leads/models.py:45 leads/views.py:104 templates/core/index.html:22
 #: templates/core/index.html.py:47 templates/core/index.html:71
 #: templates/core/index.html.py:95 templates/leads/review.html:26
 #: templates/leads/review.html.py:55
 msgid "Sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/models.py:45 leads/views.py:102 people/models.py:67
+#: leads/models.py:46 leads/views.py:102 people/models.py:69
 #: templates/core/index.html:21 templates/core/index.html.py:46
 #: templates/core/index.html:70 templates/core/index.html.py:94
 #: templates/leads/review.html:24 templates/leads/review.html.py:53
 msgid "Salesman"
 msgstr "Commercial"
 
-#: leads/models.py:47
+#: leads/models.py:48
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:48 templates/core/index.html:20
+#: leads/models.py:49 templates/core/index.html:20
 #: templates/core/index.html.py:45 templates/core/index.html:69
 #: templates/core/index.html.py:93 templates/leads/review.html:23
 #: templates/leads/review.html.py:52
 msgid "Responsible"
 msgstr "Responsable"
 
-#: leads/models.py:50 leads/views.py:102 templates/leads/review.html:29
+#: leads/models.py:51 leads/views.py:102 templates/leads/review.html:29
 #: templates/leads/review.html.py:58
 msgid "Starting"
 msgstr "Démarrage"
 
-#: leads/models.py:51
+#: leads/models.py:52
 msgid "Due"
 msgstr "Échéance"
 
-#: leads/models.py:52 leads/views.py:103
+#: leads/models.py:53 leads/views.py:103
 msgid "State"
 msgstr "État"
 
-#: leads/models.py:54 leads/views.py:104
+#: leads/models.py:55 leads/views.py:104
 msgid "Creation"
 msgstr "Création"
 
-#: leads/models.py:55 leads/models.py:77 leads/views.py:105
+#: leads/models.py:56 leads/models.py:78 leads/views.py:105
 #: staffing/models.py:37 templates/core/index.html:24
 #: templates/core/index.html.py:49 templates/core/index.html:73
 #: templates/core/index.html.py:97 templates/leads/review.html:28
@@ -201,16 +201,16 @@ msgstr "Création"
 msgid "Updated"
 msgstr "Mise à jour"
 
-#: leads/models.py:56
+#: leads/models.py:57
 msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
-#: leads/models.py:85 leads/views.py:101 staffing/models.py:33
+#: leads/models.py:86 leads/views.py:101 staffing/models.py:33
 #: staffing/models.py:77
 msgid "Description"
 msgstr "Description"
 
-#: leads/models.py:97 staffing/models.py:31 templates/core/index.html:19
+#: leads/models.py:98 staffing/models.py:31 templates/core/index.html:19
 #: templates/core/index.html.py:44 templates/core/index.html:68
 #: templates/core/index.html.py:92 templates/leads/review.html:22
 #: templates/leads/review.html.py:51
@@ -257,15 +257,19 @@ msgstr "Profile du consultant"
 msgid "Productive"
 msgstr "Productif"
 
-#: people/models.py:34
+#: people/models.py:33 people/models.py:56 staffing/models.py:35
+msgid "Active"
+msgstr "Active"
+
+#: people/models.py:35
 msgid "Profil"
 msgstr "Profile"
 
-#: people/models.py:47 templates/staffing/mission_staffing.html:13
+#: people/models.py:48 templates/staffing/mission_staffing.html:13
 msgid "Consultant"
 msgstr "Consultant"
 
-#: people/models.py:68
+#: people/models.py:70
 msgid "Salesmen"
 msgstr "Commerciaux"
 
@@ -306,10 +310,6 @@ msgstr "N° affaire"
 msgid "Type"
 msgstr "Type"
 
-#: staffing/models.py:35
-msgid "Active"
-msgstr "Active"
-
 #: staffing/models.py:36
 msgid "Proba"
 msgstr "Proba"
@@ -346,11 +346,11 @@ msgstr "Feuille de temps"
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:326
+#: staffing/views.py:328
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:334
+#: staffing/views.py:336
 msgid "total"
 msgstr "total"
 
@@ -581,6 +581,19 @@ msgstr "Tous les clients"
 msgid "All client contacts"
 msgstr "Tous les contacts clients"
 
+#: templates/crm/company_detail.html:25
+#: templates/staffing/mission_base.html:41
+msgid "Lead of this mission"
+msgstr "Opportunité de cette mission"
+
+#: templates/crm/company_detail.html:26
+msgid "Forecast staffing of this mission"
+msgstr "Charge prévisionnelle de cette mission"
+
+#: templates/crm/company_detail.html:27
+msgid "Timesheet of this mission"
+msgstr "Feuille de temps de cette mission"
+
 #: templates/leads/lead_detail.html:14
 msgid "Lead detail"
 msgstr "Détail de l'opportunité"
@@ -667,7 +680,7 @@ msgid "DATETIME_FORMAT"
 msgstr "j F Y, G:i"
 
 #: templates/leads/lead_detail.html:74
-#: templates/people/consultant_detail.html:44
+#: templates/people/consultant_detail.html:47
 #: templates/staffing/consultant_base.html:40
 #: templates/staffing/mission_base.html:38 templates/staffing/missions.html:52
 msgid "Back to home page"
@@ -727,41 +740,45 @@ msgstr "Toutes les opportunités actives"
 msgid "Recent won, lost or forgiven leads"
 msgstr "Opportunités récemment gagnées, perdues ou abandonnées"
 
-#: templates/people/consultant_detail.html:16
+#: templates/people/consultant_detail.html:17
+msgid "This consultant does not work anymore for the company"
+msgstr "Ce consultant ne travaille plus pour la société"
+
+#: templates/people/consultant_detail.html:19
 msgid "Profil: "
 msgstr "Profile : "
 
-#: templates/people/consultant_detail.html:17
+#: templates/people/consultant_detail.html:20
 msgid "Manager: "
 msgstr "Manager : "
 
-#: templates/people/consultant_detail.html:18
+#: templates/people/consultant_detail.html:21
 msgid "Staff:"
 msgstr "Équipe : "
 
-#: templates/people/consultant_detail.html:24
+#: templates/people/consultant_detail.html:27
 msgid "Current missions:"
 msgstr "Missions actuelles : "
 
-#: templates/people/consultant_detail.html:26
+#: templates/people/consultant_detail.html:29
 #: templates/staffing/consultant_base.html:24
 #, python-format
 msgid "Change mission %(mission)s staffing "
 msgstr "Modifier le staffing de la mission %(mission)s "
 
-#: templates/people/consultant_detail.html:29
+#: templates/people/consultant_detail.html:32
 msgid "Current leads as responsible:"
 msgstr "Opportunités en tant que responsable :"
 
-#: templates/people/consultant_detail.html:34
+#: templates/people/consultant_detail.html:37
 msgid "Current leads as resource:"
 msgstr "Opportunités en tant que ressource :"
 
-#: templates/people/consultant_detail.html:40
+#: templates/people/consultant_detail.html:43
 msgid "Change this consultant"
 msgstr "Modifier ce consultant"
 
-#: templates/people/consultant_detail.html:42
+#: templates/people/consultant_detail.html:45
 msgid "Consultant's staffing"
 msgstr "Prévisions de charge du consultant"
 
@@ -865,10 +882,6 @@ msgstr "Consultants impliqués actuellement dans cette mission"
 #: templates/staffing/mission_base.html:36
 msgid "Back to mission list"
 msgstr "Retour à la liste des missions"
-
-#: templates/staffing/mission_base.html:41
-msgid "Lead of this mission"
-msgstr "Opportunité de cette mission"
 
 #: templates/staffing/mission_staffing.html:6
 msgid "See also the timesheet of this mission"
