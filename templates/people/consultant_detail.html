@@ -12,34 +12,57 @@
 
 <div id="content-main">
 <h1>{{ consultant.full_name }}</h1>
-<br/>
 {% if not consultant.active %}
 <h3>{% trans "This consultant does not work anymore for the company" %}</h3>
 {% endif %}
-<p>{% trans "Profil: " %} {{consultant.profil }}</p>
+<h4>{% trans "Profil: " %} {{consultant.profil }}</h4>
 <p>{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href='{% url pydici.people.views.consultant_detail consultant.manager.id %}'>{{ consultant.manager.full_name }}</a>{% endifnotequal %}</p>
-<p>{% if staff %}{% trans "Staff:" %}<ul>{% for people in staff %}
-                        <li><a href='{% url pydici.people.views.consultant_detail people.id %}'>{{ people.full_name }}</a></li>
-                     {% endfor %}</ul>
-   {% endif %}
-</p>
+
+{% if staff %}
+    <h2>{% trans "Staff" %}</h2>
+    <ul>
+    {% for people in staff %}
+        <li><a href='{% url pydici.people.views.consultant_detail people.id %}'>{{ people.full_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+<h2>{% trans "Clients" %}</h2>
+<ul>
+{% for company in current_companies %}
+    <li>{{ company }}</li>    
+{% endfor %}
+</ul>
+
+<h2>{% trans "Current missions" %}</h2>
+<ul>
+{% for mission in current_missions %}
+    <li><a href='{% url pydici.staffing.views.mission_staffing mission.id %}', title='{% blocktrans %}Change mission {{ mission }} staffing {% endblocktrans %}'>{{ mission }}</a></li>
+{% endfor %}
+</ul>
+
+
+<h2>{% trans "Leads" %}</h2>
+
+{% if leads_as_responsible %}
+<h3>{% trans "Current leads as responsible" %}</h3>
+<ul>
+{% for lead in leads_as_responsible %}
+    <li><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if leads_as_staffee %}
+<h3>{% trans "Current leads as resource" %}</h3>
+<ul>
+{% for lead in leads_as_staffee %}
+    <li><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
 <br/>
-<p>{% trans "Current missions:" %}</p>
-<ul>{% for mission in current_missions %}
-<li><a href='{% url pydici.staffing.views.mission_staffing mission.id %}', title='{% blocktrans %}Change mission {{ mission }} staffing {% endblocktrans %}'>{{ mission }}</a></li>
-{% endfor %}</ul>
-
-<p>{% trans "Current leads as responsible:" %}</p>
-<ul>{% for lead in leads_as_responsible %}
-<li><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead }}</a></li>
-{% endfor %}</ul>
-
-<p>{% trans "Current leads as resource:" %}</p>
-<ul>{% for lead in leads_as_staffee %}
-<li><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead }}</a></li>
-{% endfor %}</ul>
-
-
 <a href='{% url admin:people_consultant_change consultant.id %}'>{% trans "Change this consultant" %}</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 <a href='{% url pydici.staffing.views.consultant_staffing consultant.id %}'>{% trans "Consultant's staffing" %}</a>

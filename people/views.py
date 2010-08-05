@@ -22,6 +22,8 @@ def consultant_detail(request, consultant_id):
         # Compute user current mission
         current_staffing = consultant.staffing_set.filter(staffing_date__gte=today)
         current_missions = list(set(s.mission for s in current_staffing))
+        current_companies = list(set([m.lead.client.organisation.company for m in current_missions if m.lead]))
+
         leads_as_responsible = set(consultant.lead_responsible.active())
         leads_as_staffee = consultant.lead_set.active()
     except Consultant.DoesNotExist:
@@ -30,6 +32,7 @@ def consultant_detail(request, consultant_id):
                               {"consultant": consultant,
                                "staff" : staff,
                                "current_missions" : current_missions,
+                               "current_companies": current_companies,
                                "leads_as_responsible" : leads_as_responsible,
                                "leads_as_staffee" : leads_as_staffee,
                                "user": request.user},
