@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-04 23:15+0200\n"
-"PO-Revision-Date: 2010-08-04 23:15+0200\n"
+"POT-Creation-Date: 2010-08-05 18:03+0200\n"
+"PO-Revision-Date: 2010-08-05 18:02+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -586,13 +586,17 @@ msgstr "Tous les contacts clients"
 msgid "Lead of this mission"
 msgstr "Opportunité de cette mission"
 
-#: templates/crm/company_detail.html:26
+#: templates/crm/company_detail.html:27
 msgid "Forecast staffing of this mission"
 msgstr "Charge prévisionnelle de cette mission"
 
-#: templates/crm/company_detail.html:27
+#: templates/crm/company_detail.html:30
 msgid "Timesheet of this mission"
 msgstr "Feuille de temps de cette mission"
+
+#: templates/crm/company_detail.html:35
+msgid "Consultants that work for this company:"
+msgstr "Les consultants qui ont travaillé pour cette société :"
 
 #: templates/leads/lead_detail.html:14
 msgid "Lead detail"
@@ -680,7 +684,6 @@ msgid "DATETIME_FORMAT"
 msgstr "j F Y, G:i"
 
 #: templates/leads/lead_detail.html:74
-#: templates/people/consultant_detail.html:47
 #: templates/staffing/consultant_base.html:40
 #: templates/staffing/mission_base.html:38 templates/staffing/missions.html:52
 msgid "Back to home page"
@@ -740,47 +743,59 @@ msgstr "Toutes les opportunités actives"
 msgid "Recent won, lost or forgiven leads"
 msgstr "Opportunités récemment gagnées, perdues ou abandonnées"
 
-#: templates/people/consultant_detail.html:17
+#: templates/people/consultant_detail.html:16
 msgid "This consultant does not work anymore for the company"
 msgstr "Ce consultant ne travaille plus pour la société"
 
-#: templates/people/consultant_detail.html:19
+#: templates/people/consultant_detail.html:18
 msgid "Profil: "
 msgstr "Profile : "
 
-#: templates/people/consultant_detail.html:20
+#: templates/people/consultant_detail.html:19
 msgid "Manager: "
 msgstr "Manager : "
 
-#: templates/people/consultant_detail.html:21
-msgid "Staff:"
-msgstr "Équipe : "
+#: templates/people/consultant_detail.html:22
+msgid "Staff"
+msgstr "Équipe"
 
-#: templates/people/consultant_detail.html:27
-msgid "Current missions:"
-msgstr "Missions actuelles : "
+#: templates/people/consultant_detail.html:30
+msgid "Clients"
+msgstr "Clients"
 
-#: templates/people/consultant_detail.html:29
+#: templates/people/consultant_detail.html:37
+msgid "Current missions"
+msgstr "Missions actuelles"
+
+#: templates/people/consultant_detail.html:40
 #: templates/staffing/consultant_base.html:24
 #, python-format
 msgid "Change mission %(mission)s staffing "
 msgstr "Modifier le staffing de la mission %(mission)s "
 
-#: templates/people/consultant_detail.html:32
-msgid "Current leads as responsible:"
-msgstr "Opportunités en tant que responsable :"
+#: templates/people/consultant_detail.html:45
+msgid "Leads"
+msgstr "Opportunités commerciales"
 
-#: templates/people/consultant_detail.html:37
-msgid "Current leads as resource:"
-msgstr "Opportunités en tant que ressource :"
+#: templates/people/consultant_detail.html:48
+msgid "Current leads as responsible"
+msgstr "Opportunités en tant que responsable"
 
-#: templates/people/consultant_detail.html:43
+#: templates/people/consultant_detail.html:57
+msgid "Current leads as resource"
+msgstr "Opportunités en tant que ressource"
+
+#: templates/people/consultant_detail.html:66
 msgid "Change this consultant"
 msgstr "Modifier ce consultant"
 
-#: templates/people/consultant_detail.html:45
+#: templates/people/consultant_detail.html:68
 msgid "Consultant's staffing"
 msgstr "Prévisions de charge du consultant"
+
+#: templates/people/consultant_detail.html:70
+msgid "Consultant's timesheet"
+msgstr "Feuille de temps du consultant"
 
 #: templates/staffing/consultant_base.html:16
 msgid "Consultant's missions"
