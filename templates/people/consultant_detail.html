@@ -17,7 +17,7 @@
 <h3>{% trans "This consultant does not work anymore for the company" %}</h3>
 {% endif %}
 <p>{% trans "Profil: " %} {{consultant.profil }}</p>
-<p>{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href='{% url pydici.people.views.consultant_detail people.id %}'>{{ people.full_name }}</a>{{ consultant.manager }} {% endifnotequal %}</p>
+<p>{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href='{% url pydici.people.views.consultant_detail consultant.manager.id %}'>{{ consultant.manager.full_name }}</a>{% endifnotequal %}</p>
 <p>{% if staff %}{% trans "Staff:" %}<ul>{% for people in staff %}
                         <li><a href='{% url pydici.people.views.consultant_detail people.id %}'>{{ people.full_name }}</a></li>
                      {% endfor %}</ul>
