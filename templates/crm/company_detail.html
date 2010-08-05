@@ -30,8 +30,13 @@
         <li><a href="{% url pydici.staffing.views.mission_timesheet mission.id %}" class='changelink'>{% trans "Timesheet of this mission" %}</a></li>
     {% endifequal %}
     </ul>
-    
 {% endfor %}
 
+<h2>{% trans "Consultants that work for this company:" %}</h2>
+<ul>
+{% for consultant in consultants %}
+    <li><a href="{% url pydici.people.views.consultant_detail consultant.id %}">{{ consultant }}</a></li>
+{% endfor %}
+</ul>
 </div>
 {% endblock %}
