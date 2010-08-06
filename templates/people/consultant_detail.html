@@ -29,14 +29,14 @@
 
 <h2>{% trans "Clients" %}</h2>
 <ul>
-{% for company in current_companies %}
+{% for company in companies %}
     <li><a href="{% url pydici.crm.views.company_detail company.id %}">{{ company }}</a></li>
 {% endfor %}
 </ul>
 
 <h2>{% trans "Current missions" %}</h2>
 <ul>
-{% for mission in current_missions %}
+{% for mission in missions %}
     <li><a href='{% url pydici.staffing.views.mission_staffing mission.id %}', title='{% blocktrans %}Change mission {{ mission }} staffing {% endblocktrans %}'>{{ mission }}</a></li>
 {% endfor %}
 </ul>
