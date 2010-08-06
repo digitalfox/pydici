@@ -9,7 +9,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 from pydici.crm.models import ClientCompany
-from pydici.staffing.models import Mission, Staffing
+from pydici.staffing.models import Mission, Timesheet
 
 def company_detail(request, company_id):
     """Home page of client company"""
@@ -21,7 +21,7 @@ def company_detail(request, company_id):
     missions = missions.order_by("lead__client").order_by("lead__state").order_by("lead__start_date")
 
     # Find consultant that work (=declare timesheet) for this company
-    consultants = [ s.consultant for s in Staffing.objects.filter(mission__lead__client__organisation__company=company)]
+    consultants = [ s.consultant for s in Timesheet.objects.filter(mission__lead__client__organisation__company=company)]
     consultants = list(set(consultants)) # Distinct
 
 
@@ -30,9 +30,3 @@ def company_detail(request, company_id):
                                "missions": missions,
                                "consultants": consultants},
                                RequestContext(request))
-
-
-
-
-
-
