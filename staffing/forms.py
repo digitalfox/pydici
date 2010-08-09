@@ -5,8 +5,11 @@ Staffing form setup
 @license: GPL v3 or newer
 """
 
+from datetime import datetime, timedelta
+
 from django import forms
 from django.forms.models import BaseInlineFormSet
+from django.db.models import Q
 
 from ajax_select.fields import AutoCompleteSelectField
 
@@ -14,6 +17,14 @@ from pydici.staffing.models import Staffing
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
+    def get_queryset(self):
+        lastMonth = datetime.today() - timedelta(days=30)
+        qs = super(ConsultantStaffingInlineFormset, self).get_queryset()
+        qs = qs.filter(mission__active=True) # Remove archived mission
+        qs = qs.exclude(Q(staffing_date__lte=lastMonth) &
+                  ~ Q(mission__nature="PROD")) # Remove past non prod mission
+        return qs
+
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
