@@ -12,7 +12,7 @@ from django.http import Http404
 from django.template import RequestContext
 
 from pydici.people.models import Consultant
-from pydici.staffing.models import Mission, Staffing
+from pydici.staffing.models import Mission, Staffing, Timesheet
 
 def consultant_detail(request, consultant_id):
     """Summary page of consultant activity"""
@@ -23,10 +23,10 @@ def consultant_detail(request, consultant_id):
         staffings = Staffing.objects.filter(consultant=consultant)
         staffings = staffings.filter(mission__nature="PROD")
         staffings = staffings.filter(mission__probability=100)
-        missions = list(set([s.mission for s in staffings]))
-        companies = list(set([m.lead.client.organisation.company for m in missions if m.lead]))
-        missions = [m for m in missions if m.active] # Only display current missions
-
+        missions = list(set([s.mission for s in staffings if s.mission.active]))
+        missionsFromTimesheets = list(set([t.mission for t in Timesheet.objects.filter(consultant=consultant).select_related() if t.mission.lead]))
+        companies = [m.lead.client.organisation.company for m in missionsFromTimesheets]
+        companies = list(set(companies))
         leads_as_responsible = set(consultant.lead_responsible.active())
         leads_as_staffee = consultant.lead_set.active()
     except Consultant.DoesNotExist:
