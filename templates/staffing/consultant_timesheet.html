@@ -28,7 +28,7 @@
 	               <td style="text-align:center">{{ field.label|split:" "|last }}</td>
 	               </tr><tr>
                 {% else %}
-	               <td>{{ field.label }}</td>
+	               <td>{{ field.label }}{{ field.errors }}</td>
 	               <td>{{ field }}</td>
                 {% endif %}
             {% endfor %}
