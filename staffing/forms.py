@@ -56,7 +56,7 @@ class TimesheetForm(forms.Form):
         for mission in missions:
             for day in days:
                 key = "charge_%s_%s" % (mission.id, day.day)
-                self.fields[key] = forms.DecimalField(required=False, min_value=0, max_value=1, decimal_places=1)
+                self.fields[key] = forms.DecimalField(required=False, min_value=0, max_value=1, decimal_places=2)
                 self.fields[key].widget.attrs.setdefault("size", 2) # Reduce default size
                 if day.day == 1: # Only show label for first day
                     self.fields[key].label = unicode(mission)
