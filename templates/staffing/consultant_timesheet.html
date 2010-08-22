@@ -24,7 +24,7 @@
             <tr>
             {% for field in form  %}
                 {% if field.is_hidden %}
-	               <td style="text-align:center">{{ field.label|split:" "|first }}</td>
+	               <td style="text-align:center; font-weight:bold;">{{ field.label|split:" "|first }}</td>
 	               <td style="text-align:center">{{ field.label|split:" "|last }}</td>
 	               </tr><tr>
                 {% else %}
