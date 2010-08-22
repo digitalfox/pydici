@@ -8,7 +8,7 @@
     <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m" %}' title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a></h2>
     
     <a href="{% url pydici.staffing.views.consultant_staffing consultant.id %}" class='changelink'>{% trans "See also forecast staffing of this consultant" %}</a>
-    <br/><br/><hr/>
+    <br/><br/>
     <form action="" method="POST">
     <table class='small-form-row'>
             <tr style="text-align:center">
