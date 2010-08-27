@@ -31,7 +31,7 @@
     <hr>
     <b>{% trans "Contact: " %}</b>{{ lead.client.contact|default_if_none:_("Unknown")}} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}
     <br><br><hr>
-    <b>{% trans "Responsible: " %}</b>{{ lead.responsible|default_if_none:_("To be defined") }}<br>
+    <b>{% trans "Responsible: " %}</b>{% if lead.responsible %}<a href="{% url pydici.people.views.consultant_detail lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}<br>
     {% if lead.salesman %}
         <b>{% trans "Salesman: " %}</b>{{ lead.salesman }}
     {% endif %}
