@@ -26,7 +26,7 @@
     <div class="form-row name  ">
     <h2><a href='{% url admin:leads_lead_change lead.id %}' class='changelink' title='Cliquez pour modifier ce lead', target='_blank'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
     {% if lead.description %}
-    <div class='system-message'>{{ lead.description|linebreaksbr }} </div>
+    <div class='system-message'>{{ lead.description|urlize|linebreaksbr }} </div>
     {% endif %}
     <hr>
     <b>{% trans "Contact: " %}</b>{{ lead.client.contact|default_if_none:_("Unknown")}} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}
