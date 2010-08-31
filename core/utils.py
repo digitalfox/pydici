@@ -111,3 +111,15 @@ def working_days(monthDate, holidays=[]):
             n += 1
         monthDate += day
     return n
+
+def month_days(monthDate):
+    """Compute the number of days in a month
+    @param monthDate: first day of month datetime.date
+    @return: number of days (int)"""
+    day = timedelta(1)
+    n = 0
+    currentMonth = monthDate.month
+    while monthDate.month == currentMonth:
+        n += 1
+        monthDate += day
+    return n

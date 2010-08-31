@@ -289,7 +289,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     if "csv" in request.GET:
         return consultant_csv_timesheet(request, consultant, days, month, missions)
 
-    timesheetData, timesheetTotal = gatherTimesheetData(consultant, missions, month)
+    timesheetData, timesheetTotal, overbooking = gatherTimesheetData(consultant, missions, month)
 
     if request.method == 'POST': # If the form has been submitted...
         form = TimesheetForm(request.POST, days=days, missions=missions,
@@ -298,7 +298,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
             # Process the data in form.cleaned_data
             saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
             # Recreate a new form for next update and compute again totals
-            timesheetData, timesheetTotal = gatherTimesheetData(consultant, missions, month)
+            timesheetData, timesheetTotal, overbooking = gatherTimesheetData(consultant, missions, month)
             form = TimesheetForm(days=days, missions=missions, forecastTotal=forecastTotal,
                                  timesheetTotal=timesheetTotal, initial=timesheetData)
     else:
@@ -317,6 +317,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
                                "month": month,
                                "missions": missions,
                                "working_days_balance" : wDaysBalance,
+                               "overbooking": overbooking,
                                "next_date": next_date,
                                "previous_date": previous_date,
                                "user": request.user },

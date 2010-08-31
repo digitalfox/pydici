@@ -12,14 +12,18 @@ from datetime import datetime
 from django.db import transaction
 
 from pydici.staffing.models import Timesheet, Mission
+from pydici.core.utils import month_days
 
 def gatherTimesheetData(consultant, missions, month):
     """Gather existing timesheet timesheetData
-    @returns: (timesheetData, timesheetTotal)
+    @returns: (timesheetData, timesheetTotal, overbooking)
     timesheetData represent timesheet form post timesheetData as a dict
-    timesheetTotal is a dict of total charge (key is mission id)"""
+    timesheetTotal is a fffddict of total charge (key is mission id)
+    overbooking is a list of 0 (no surbooking) or 1 (surbooking). One entry per day"""
     timesheetData = {}
     timesheetTotal = {}
+    overbooking = []
+    totalPerDay = [0] * month_days(month)
     for mission in missions:
         for timesheet in Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission):
             if timesheet.working_date.month == month.month:
@@ -28,7 +32,14 @@ def gatherTimesheetData(consultant, missions, month):
                     timesheetTotal[mission.id] += timesheet.charge
                 else:
                     timesheetTotal[mission.id] = timesheet.charge
-    return (timesheetData, timesheetTotal)
+                totalPerDay[timesheet.working_date.day - 1] += timesheet.charge
+    # Compute overbooking
+    for i in totalPerDay:
+        if i > 1:
+            overbooking.append(1)
+        else:
+            overbooking.append(0)
+    return (timesheetData, timesheetTotal, overbooking)
 
 @transaction.commit_on_success
 def saveTimesheetData(consultant, month, data, oldData):

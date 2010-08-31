@@ -33,6 +33,11 @@
                 {% endif %}
             {% endfor %}
             </tr>
+            <tr style="text-align:center">
+            {% for i in overbooking %}
+                <td></td><td> {% if i %}<img src="{{ MEDIA_URL }}/img/admin/icon_alert.gif"/>{% endif %}</td>
+            {% endfor %}
+            </tr>
     </table>
     <br/>
         <div class="submit-row">
