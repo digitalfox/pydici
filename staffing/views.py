@@ -268,9 +268,9 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
 
     consultant = Consultant.objects.get(id=consultant_id)
 
-    if not (request.user.has_perm("staffing.add_staffing") and
-            request.user.has_perm("staffing.change_staffing") and
-            request.user.has_perm("staffing.delete_staffing")):
+    if not (request.user.has_perm("staffing.add_timesheet") and
+            request.user.has_perm("staffing.change_timesheet") and
+            request.user.has_perm("staffing.delete_timesheet")):
         # Only forbid access if the user try to edit someone else staffing
         if request.user.username.upper() != consultant.trigramme:
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
