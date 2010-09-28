@@ -30,4 +30,7 @@
     {% endif %}
     </div>
 
+<br/><br/>
+
+<a href="{% url pydici.staffing.views.all_timesheet year=month.year, month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
 {% endblock %}
