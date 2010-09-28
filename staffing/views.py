@@ -430,14 +430,20 @@ def all_timesheet(request, year=None, month=None):
     charges = data
 
     # Compute total per consultant
-    total = [i[1:] for i in charges[1:]]
-    total = zip(*total) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
-    total = [sum(t) for t in total]
-    charges.append([_("Total")] + total)
+    if len(charges) > 1:
+        total = [i[1:] for i in charges[1:]]
+        total = zip(*total) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
+        total = [sum(t) for t in total]
+        charges.append([_("Total")] + total)
+    else:
+        # Set charges to None to allow proper message on template
+        charges = None
+
     #          , Cons1, Cons2, Cons3
     # Mission 1, M1/C1, M1/C2, M1/C3
     # Mission 2, M2/C1, M2/C2, M2/C3
-    if "csv" in request.GET:
+
+    if "csv" in request.GET and charges:
         # Return CSV timesheet
         return all_csv_timesheet(request, charges, month)
     else:
