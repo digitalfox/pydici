@@ -110,11 +110,11 @@
         {% endfor %}
     {% endif %}
         <tr><th colspan=7>{% trans "Reports" %}</th></tr>
-        <tr><td colspan=2><a href='{% url pydici.leads.views.review %}'>{% trans "Current leads review" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
         <tr><td colspan=2><a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads as csv file" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
         <tr><td colspan=2><a href='{% url pydici.leads.views.csv_export target="all" %}'>{% trans "All leads as csv file" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
         <tr><td colspan=2><a href='{% url lead-mail-html %}'>{% trans "Week summary mail (html)" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
         <tr><td colspan=2><a href='{% url lead-mail-text %}'>{% trans "Week summary mail (text)" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td colspan=2><a href='{% url pydici.staffing.views.all_timesheet %}'>{% trans "All people timesheet" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
         </table>
     </div>
 </div>

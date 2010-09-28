@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-05 18:03+0200\n"
-"PO-Revision-Date: 2010-08-05 18:02+0200\n"
+"POT-Creation-Date: 2010-09-28 08:25+0200\n"
+"PO-Revision-Date: 2010-09-28 08:25+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -342,15 +342,15 @@ msgstr "Remarques"
 msgid "Timesheet"
 msgstr "Feuille de temps"
 
-#: staffing/views.py:109
+#: staffing/views.py:114
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:328
+#: staffing/views.py:335
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:336
+#: staffing/views.py:343
 msgid "total"
 msgstr "total"
 
@@ -399,8 +399,8 @@ msgstr ""
 "<p>Si vous pensez qu'il s'agit d'une anomalie, merci d'envoyer\n"
 "un mail à un administrateur pour mettre à jour vos droits :</p>\n"
 
-#: templates/admin/app_index.html:8 templates/admin/base.html:43
-#: templates/admin/base.html.py:52 templates/admin/change_list.html:8
+#: templates/admin/app_index.html:8 templates/admin/base.html:44
+#: templates/admin/base.html.py:53 templates/admin/change_list.html:8
 #: templates/leads/lead_mail.html:21
 msgid "Home"
 msgstr "Accueil"
@@ -410,35 +410,35 @@ msgstr "Accueil"
 msgid "%(name)s"
 msgstr "%(name)s"
 
-#: templates/admin/base.html:18
+#: templates/admin/base.html:19
 msgid "ATOM feed of last modified leads"
 msgstr "Flux ATOM des dernières opportunités modifiées"
 
-#: templates/admin/base.html:20
+#: templates/admin/base.html:21
 msgid "ATOM feed of last created leads"
 msgstr "Flux ATOM des dernières opportunités créées"
 
-#: templates/admin/base.html:22
+#: templates/admin/base.html:23
 msgid "ATOM feed of last won leads"
 msgstr "Flux ATOM des dernières opportunités gagnées"
 
-#: templates/admin/base.html:24
+#: templates/admin/base.html:25
 msgid "ATOM feed of my leads"
 msgstr "Flux ATOM des mes opportunités"
 
-#: templates/admin/base.html:44 templates/core/index.html:113
+#: templates/admin/base.html:45
 msgid "Current leads review"
 msgstr "Revue des opportunités en cours"
 
-#: templates/admin/base.html:45 templates/leads/lead_detail.html:77
+#: templates/admin/base.html:46 templates/leads/lead_detail.html:77
 msgid "Workload schedule"
 msgstr "Plan de charge"
 
-#: templates/admin/base.html:46
+#: templates/admin/base.html:47
 msgid "Help"
 msgstr "Aide"
 
-#: templates/admin/base.html:47
+#: templates/admin/base.html:48
 msgid "Welcome,"
 msgstr "Bienvenue, "
 
@@ -499,6 +499,15 @@ msgstr "Les opportunités dont je suis le responsable"
 msgid "Status"
 msgstr "État"
 
+#: templates/core/index.html:31 templates/core/index.html.py:56
+#: templates/core/index.html:80 templates/core/index.html.py:104
+#: templates/leads/lead_detail.html:34 templates/leads/lead_mail.html:8
+#: templates/leads/lead_mail.html.py:12 templates/leads/lead_mail.txt:9
+#: templates/leads/lead_mail.txt.py:13 templates/leads/mail.html:8
+#: templates/leads/mail.txt:7 templates/leads/mail.txt.py:8
+msgid "To be defined"
+msgstr "À définir"
+
 #: templates/core/index.html:41
 msgid "My leads as a resource"
 msgstr "Les opportunités où je suis une ressource"
@@ -517,21 +526,25 @@ msgstr ""
 msgid "Reports"
 msgstr "Rapports"
 
-#: templates/core/index.html:114
+#: templates/core/index.html:113
 msgid "Active leads as csv file"
 msgstr "Opportunités en cours sous forme de fichier CSV"
 
-#: templates/core/index.html:115
+#: templates/core/index.html:114
 msgid "All leads as csv file"
 msgstr "Toutes les opportunités sous forme de fichier CSV"
 
-#: templates/core/index.html:116
+#: templates/core/index.html:115
 msgid "Week summary mail (html)"
 msgstr "Courriel de bilan hebdomadaire (html)"
 
-#: templates/core/index.html:117
+#: templates/core/index.html:116
 msgid "Week summary mail (text)"
 msgstr "Courriel de bilan hebdomadaire (texte)"
+
+#: templates/core/index.html:117
+msgid "All people timesheet"
+msgstr "Feuille de temps globale"
 
 #: templates/core/index.html:128
 msgid "Lead search"
@@ -619,13 +632,6 @@ msgstr "Inconnu"
 #: templates/leads/mail.txt:8
 msgid "Responsible: "
 msgstr "Responsable : "
-
-#: templates/leads/lead_detail.html:34 templates/leads/lead_mail.html:8
-#: templates/leads/lead_mail.html.py:12 templates/leads/lead_mail.txt:9
-#: templates/leads/lead_mail.txt.py:13 templates/leads/mail.html:8
-#: templates/leads/mail.txt:7 templates/leads/mail.txt.py:8
-msgid "To be defined"
-msgstr "À définir"
 
 #: templates/leads/lead_detail.html:36 templates/leads/lead_mail.html:10
 #: templates/leads/lead_mail.txt:11 templates/leads/mail.html:9
@@ -797,6 +803,22 @@ msgstr "Prévisions de charge du consultant"
 msgid "Consultant's timesheet"
 msgstr "Feuille de temps du consultant"
 
+#: templates/staffing/all_timesheet.html:13
+#: templates/staffing/consultant_timesheet.html:6
+#: templates/staffing/pdc_review.html:15
+msgid "Previous months"
+msgstr "Mois précédents"
+
+#: templates/staffing/all_timesheet.html:14
+msgid "All people timesheet for "
+msgstr "Feuille de temps globale pour "
+
+#: templates/staffing/all_timesheet.html:15
+#: templates/staffing/consultant_timesheet.html:8
+#: templates/staffing/pdc_review.html:17
+msgid "Next months"
+msgstr "Mois suivants"
+
 #: templates/staffing/consultant_base.html:16
 msgid "Consultant's missions"
 msgstr "Missions du consultant"
@@ -845,20 +867,10 @@ msgid "New staffing:"
 msgstr "Nouveau staffing : "
 
 #: templates/staffing/consultant_staffing.html:65
-#: templates/staffing/consultant_timesheet.html:39
+#: templates/staffing/consultant_timesheet.html:44
 #: templates/staffing/mission_staffing.html:64
 msgid "Save"
 msgstr "Enregistrer"
-
-#: templates/staffing/consultant_timesheet.html:6
-#: templates/staffing/pdc_review.html:15
-msgid "Previous months"
-msgstr "Mois précédents"
-
-#: templates/staffing/consultant_timesheet.html:8
-#: templates/staffing/pdc_review.html:17
-msgid "Next months"
-msgstr "Mois suivants"
 
 #: templates/staffing/consultant_timesheet.html:10
 msgid "See also forecast staffing of this consultant"
@@ -874,11 +886,11 @@ msgstr "Total"
 msgid "Forecast"
 msgstr "Prévisions"
 
-#: templates/staffing/consultant_timesheet.html:43
+#: templates/staffing/consultant_timesheet.html:48
 msgid "Working days balance: "
 msgstr "Balance de jours travaillés : "
 
-#: templates/staffing/consultant_timesheet.html:45
+#: templates/staffing/consultant_timesheet.html:50
 msgid "Export this timesheet in a spreadsheet"
 msgstr "Exporter cette feuille de temps dans un tableur"
 

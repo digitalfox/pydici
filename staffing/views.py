@@ -15,6 +15,11 @@ from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
+from django.db.models import Sum
+from django.utils.safestring import mark_safe
+from django.utils.html import escape
+
+
 
 from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet
 from pydici.people.models import Consultant
@@ -380,4 +385,49 @@ def mission_timesheet(request, mission_id):
                                 "consultants": consultants,
                                 "timesheet": timesheetData,
                                "user": request.user },
+                               RequestContext(request))
+
+def all_timesheet(request, year=None, month=None):
+    if year and month:
+        month = date(int(year), int(month), 1)
+    else:
+        month = date.today().replace(day=1) # We use the first day to represent month
+
+    previous_date = month - timedelta(days=5)
+    next_date = month + timedelta(days=40)
+
+    timesheets = Timesheet.objects.filter(working_date__gte=month) # Filter on current month
+    timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1)) # Discard next month
+    timesheets = timesheets.values("consultant", "mission") # group by consultant, mission
+    timesheets = timesheets.annotate(sum=Sum('charge')).order_by("mission", "consultant") # Sum and clean order by (else, group by won't work because of default ordering)
+    consultants = list(set([i["consultant"] for i in timesheets]))
+    missions = list(set([i["mission"] for i in timesheets]))
+    consultants = Consultant.objects.filter(id__in=consultants).order_by("id")
+    missions = Mission.objects.filter(id__in=missions).order_by("id")
+    charges = {}
+    data = [mark_safe("<a href='%s'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.consultant_timesheet", args=[consultant.id, month.year, month.month]),
+                                        escape(unicode(consultant)))) for consultant in consultants]
+    data = [[""] + data]
+    for timesheet in timesheets:
+        charges[(timesheet["mission"], timesheet["consultant"])] = timesheet["sum"]
+    for mission in missions:
+        missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.mission_timesheet", args=[mission.id, ]),
+                                        escape(unicode(mission)))
+        consultantData = [mark_safe(missionUrl)]
+        for consultant in consultants:
+            consultantData.append(charges.get((mission.id, consultant.id), 0))
+        data.append(consultantData)
+    charges = data
+    #          , Cons1, Cons2, Cons3
+    # Mission 1, M1/C1, M1/C2, M1/C3
+    # Mission 2, M2/C1, M2/C2, M2/C3
+
+    return render_to_response("staffing/all_timesheet.html", {
+                               "user": request.user,
+                               "next_date": next_date,
+                               "previous_date": previous_date,
+                               "month" : month,
+                               "consultants" : consultants,
+                               "missions" : missions,
+                               "charges" : charges },
                                RequestContext(request))
