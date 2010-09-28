@@ -405,7 +405,12 @@ def all_timesheet(request, year=None, month=None):
     consultants = Consultant.objects.filter(id__in=consultants).order_by("id")
     missions = Mission.objects.filter(id__in=missions).order_by("id")
     charges = {}
-    data = [mark_safe("<a href='%s'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.consultant_timesheet", args=[consultant.id, month.year, month.month]),
+    if "csv" in request.GET:
+        # Simple consultant list
+        data = list(consultants)
+    else:
+        # drill down link
+        data = [mark_safe("<a href='%s'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.consultant_timesheet", args=[consultant.id, month.year, month.month]),
                                         escape(unicode(consultant)))) for consultant in consultants]
     data = [[""] + data]
     for timesheet in timesheets:
@@ -413,7 +418,12 @@ def all_timesheet(request, year=None, month=None):
     for mission in missions:
         missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.mission_timesheet", args=[mission.id, ]),
                                         escape(unicode(mission)))
-        consultantData = [mark_safe(missionUrl)]
+        if "csv" in request.GET:
+            # Simple mission name
+            consultantData = [unicode(mission)]
+        else:
+            # Drill down link
+            consultantData = [mark_safe(missionUrl)]
         for consultant in consultants:
             consultantData.append(charges.get((mission.id, consultant.id), 0))
         data.append(consultantData)
@@ -421,8 +431,12 @@ def all_timesheet(request, year=None, month=None):
     #          , Cons1, Cons2, Cons3
     # Mission 1, M1/C1, M1/C2, M1/C3
     # Mission 2, M2/C1, M2/C2, M2/C3
-
-    return render_to_response("staffing/all_timesheet.html", {
+    if "csv" in request.GET:
+        # Return CSV timesheet
+        return all_csv_timesheet(request, charges, month)
+    else:
+        # Return html page
+        return render_to_response("staffing/all_timesheet.html", {
                                "user": request.user,
                                "next_date": next_date,
                                "previous_date": previous_date,
@@ -431,3 +445,15 @@ def all_timesheet(request, year=None, month=None):
                                "missions" : missions,
                                "charges" : charges },
                                RequestContext(request))
+
+def all_csv_timesheet(request, charges, month):
+    response = HttpResponse(mimetype="text/csv")
+    response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    writer = csv.writer(response, delimiter=';')
+
+    # Header
+    writer.writerow([unicode(month).encode("ISO-8859-15"), ])
+    for charge in charges:
+        writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in charge])
+    return response
+
