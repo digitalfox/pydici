@@ -59,7 +59,11 @@ class TimesheetForm(forms.Form):
                 self.fields[key] = forms.DecimalField(required=False, min_value=0, max_value=1, decimal_places=2)
                 self.fields[key].widget.attrs.setdefault("size", 2) # Reduce default size
                 # Order tabindex by day
-                self.fields[key].widget.attrs.setdefault("tabindex", day.day)
+                if day.isoweekday() in (6, 7):
+                    tabIndex = 100000 # Skip week-end from tab path
+                else:
+                    tabIndex = day.day
+                self.fields[key].widget.attrs.setdefault("tabindex", tabIndex)
                 if day.weekday() in (5, 6):
                     # Color week ends in grey
                     self.fields[key].widget.attrs.setdefault("style", "background-color: LightGrey;")
