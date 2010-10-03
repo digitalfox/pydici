@@ -1,0 +1,53 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{% trans "Pydici search" %}</h1>
+
+    <form action="{% url search %}" method="POST">        
+        {% for field in form %}
+            {{ field.errors }}
+            <label for="searchbar"><img src="{% admin_media_prefix %}img/admin/icon_searchbox.png" alt="Search" /></label>
+            {{ field }}
+        {% endfor %}
+        <input type="submit" value="{% trans 'Go' %}"/>
+    </form>
+
+{% if consultants %}
+    <h2>{% trans "Consultants"%}</h2>
+    <ul>
+    {% for consultant in consultants %}
+        <li><a href="{% url pydici.people.views.consultant_detail consultant.id %}">{{ consultant.full_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% if client_companies %}
+    <h2>{% trans "Clients companies"%}</h2>
+    <ul>
+    {% for company in client_companies %}
+        <li><a href="{% url pydici.crm.views.company_detail company.id %}">{{ company }}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% if leads %}
+    <h2>{% trans "Leads"%}</h2>
+    <ul>
+    {% for lead in leads %}
+        <li><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+
+</div>
+{% endblock %}

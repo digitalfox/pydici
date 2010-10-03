@@ -53,6 +53,7 @@ pydici_patterns += patterns('',
 pydici_patterns += patterns('pydici.core.views',
     # core module
     url(r'^$', 'index', name='index'),
+    url(r'^search$', 'search', name='search'),
 )
 
 pydici_patterns += patterns('pydici.leads.views',

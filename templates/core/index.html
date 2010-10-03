@@ -125,14 +125,21 @@
 <div id="content-related">
     <div class="module" id="recent-actions-module">
         <h2></h2>
-        <h3>{% trans "Lead search" %}</h3>
-        <div id="toolbar"><form id="changelist-search" action="admin/leads/lead/" method="get">
-		<div><!-- DIV needed for valid HTML -->
-		<label for="searchbar"><img src="{% admin_media_prefix %}img/admin/icon_searchbox.png" alt="Search" /></label>
-		<input type="text" size="20" name="q" value="{{ cl.query|escape }}" id="searchbar" />
-		<input type="submit" value="{% trans 'Go' %}" />
-		</div>
-		</form></div>
+        <h3>{% trans "Search" %}</h3>
+        <div id="toolbar">
+        
+	    <form action="/pydici/search" method="POST">        
+	        <div>
+	            
+	            <label for="searchbar"><img src="/media/img/admin/icon_searchbox.png" alt="Search" /></label>
+	            <input id="id_search" type="text" name="search" maxlength="100" />
+	        
+	        <input type="submit" value="{% trans 'Go' %}"/>
+	        </div>
+	    </form>
+        
+
+        </div>
 		<script type="text/javascript">document.getElementById("searchbar").focus();</script>
 		<br/>
 		<h3>{% trans "Add..." %}</h3>

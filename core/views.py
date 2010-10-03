@@ -9,12 +9,14 @@ import pydici.settings
 
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
-from django.utils.translation import ugettext as _
 from django.template import RequestContext
+from django.db.models import Q
 
 from pydici.leads.models import Lead
-
 from pydici.people.models import Consultant, SalesMan
+from pydici.crm.models import ClientCompany
+
+from pydici.core.forms import SearchForm
 
 
 @login_required
@@ -48,4 +50,47 @@ def index(request):
                                "my_latest_archived_leads": myLatestArchivedLeads,
                                "user": request.user },
                                RequestContext(request))
+
+@login_required
+def search(request):
+    """Very simple search function on all major pydici objects"""
+
+    form = SearchForm()
+    consultants = None
+    clientCompanies = None
+    leads = None
+
+    if request.method == "POST":
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            words = request.POST["search"]
+            words = words.split()
+
+            # Consultant
+            consultants = Consultant.objects.filter(active=True)
+            for word in words:
+                consultants = consultants.filter(Q(name__icontains=word) |
+                                                 Q(trigramme__icontains=word))
+
+            # Client Company
+            clientCompanies = ClientCompany.objects.all()
+            for word in words:
+                clientCompanies = clientCompanies.filter(name__icontains=word)
+
+            # Leads
+            leads = Lead.objects.all()
+            for word in words:
+                leads = leads.filter(Q(name__icontains=word) |
+                                     Q(description__icontains=word))
+
+
+    return render_to_response("core/search.html",
+                              {"form" : form,
+                               "consultants": consultants,
+                               "client_companies" : clientCompanies,
+                               "leads" : leads,
+                               "user": request.user },
+                               RequestContext(request))
+
+
 
