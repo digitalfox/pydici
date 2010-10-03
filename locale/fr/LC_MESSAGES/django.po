@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-03 14:46+0200\n"
-"PO-Revision-Date: 2010-10-03 14:46+0200\n"
+"POT-Creation-Date: 2010-10-03 16:35+0200\n"
+"PO-Revision-Date: 2010-10-03 16:35+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -491,7 +491,7 @@ msgstr "Actions récentes"
 msgid "My Actions"
 msgstr "Mes actions"
 
-#: templates/admin/index.html:58 templates/core/index.html:149
+#: templates/admin/index.html:58 templates/core/index.html:156
 msgid "None available"
 msgstr "Aucun(e) disponible"
 
@@ -553,52 +553,68 @@ msgid "All people timesheet"
 msgstr "Feuille de temps globale"
 
 #: templates/core/index.html:128
-msgid "Lead search"
-msgstr "Recherche d'opportunités"
+msgid "Search"
+msgstr "Recherche"
 
-#: templates/core/index.html:133
+#: templates/core/index.html:137 templates/core/search.html:21
 msgid "Go"
 msgstr "Envoyer"
 
-#: templates/core/index.html:138
+#: templates/core/index.html:145
 msgid "Add..."
 msgstr "Ajouter..."
 
-#: templates/core/index.html:140
+#: templates/core/index.html:147
 msgid "new lead"
 msgstr "Nouvelle opportunité"
 
-#: templates/core/index.html:141
+#: templates/core/index.html:148
 msgid "new client"
 msgstr "Nouveau client"
 
-#: templates/core/index.html:142
+#: templates/core/index.html:149
 msgid "new client contact"
 msgstr "Nouveau contact client"
 
-#: templates/core/index.html:145
+#: templates/core/index.html:152
 msgid "My last actions"
 msgstr "Mes dernières actions"
 
-#: templates/core/index.html:158
+#: templates/core/index.html:165
 msgid "Admin console"
 msgstr "Console d'administration"
 
-#: templates/core/index.html:160
+#: templates/core/index.html:167
 msgid "All leads"
 msgstr "Toutes les opportunités"
 
-#: templates/core/index.html:161 templates/staffing/missions.html:15
+#: templates/core/index.html:168 templates/staffing/missions.html:15
 msgid "All missions"
 msgstr "Toutes les missions"
 
-#: templates/core/index.html:162
+#: templates/core/index.html:169
 msgid "All clients"
 msgstr "Tous les clients"
 
-#: templates/core/index.html:163
+#: templates/core/index.html:170
 msgid "All client contacts"
 msgstr "Tous les contacts clients"
+
+#: templates/core/search.html:13
+msgid "Pydici search"
+msgstr "Recherche Pydici"
+
+#: templates/core/search.html:25
+msgid "Consultants"
+msgstr "Consultants"
+
+#: templates/core/search.html:34
+msgid "Clients companies"
+msgstr "Entreprises"
+
+#: templates/core/search.html:43 templates/people/consultant_detail.html:45
+msgid "Leads"
+msgstr "Opportunités commerciales"
 
 #: templates/crm/clientcompany_detail.html:25
 #: templates/staffing/mission_base.html:41
@@ -789,10 +805,6 @@ msgstr "Missions actuelles"
 #, python-format
 msgid "Change mission %(mission)s staffing "
 msgstr "Modifier le staffing de la mission %(mission)s "
-
-#: templates/people/consultant_detail.html:45
-msgid "Leads"
-msgstr "Opportunités commerciales"
 
 #: templates/people/consultant_detail.html:48
 msgid "Current leads as responsible"
