@@ -25,8 +25,9 @@ def company_detail(request, company_id):
     consultants = list(set(consultants)) # Distinct
 
 
-    return render_to_response("crm/company_detail.html",
+    return render_to_response("crm/clientcompany_detail.html",
                               {"company": company,
                                "missions": missions,
                                "consultants": consultants},
                                RequestContext(request))
+

@@ -32,11 +32,15 @@
     </ul>
 {% endfor %}
 
-<h2>{% trans "Consultants that work for this company:" %}</h2>
-<ul>
-{% for consultant in consultants %}
-    <li><a href="{% url pydici.people.views.consultant_detail consultant.id %}">{{ consultant.full_name }}</a></li>
-{% endfor %}
-</ul>
+{% if consultants %}
+    <h2>{% trans "Consultants that work for this company:" %}</h2>
+    <ul>
+    {% for consultant in consultants %}
+        <li><a href="{% url pydici.people.views.consultant_detail consultant.id %}">{{ consultant.full_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+<br/>
+<a href='{% url clientcompany_list %}'>{% trans "All companies list" %}</a> 
 </div>
 {% endblock %}

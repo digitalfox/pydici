@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-28 08:25+0200\n"
-"PO-Revision-Date: 2010-09-28 08:25+0200\n"
+"POT-Creation-Date: 2010-10-03 14:46+0200\n"
+"PO-Revision-Date: 2010-10-03 14:46+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -346,13 +346,19 @@ msgstr "Feuille de temps"
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:335
+#: staffing/views.py:335 staffing/views.py:463
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
 #: staffing/views.py:343
 msgid "total"
 msgstr "total"
+
+#: staffing/views.py:437 templates/staffing/consultant_timesheet.html:23
+#: templates/staffing/mission_timesheet.html:15
+#: templates/staffing/mission_timesheet.html:20
+msgid "Total"
+msgstr "Total"
 
 #: templates/404.html:12
 #, python-format
@@ -594,22 +600,27 @@ msgstr "Tous les clients"
 msgid "All client contacts"
 msgstr "Tous les contacts clients"
 
-#: templates/crm/company_detail.html:25
+#: templates/crm/clientcompany_detail.html:25
 #: templates/staffing/mission_base.html:41
 msgid "Lead of this mission"
 msgstr "Opportunité de cette mission"
 
-#: templates/crm/company_detail.html:27
+#: templates/crm/clientcompany_detail.html:27
 msgid "Forecast staffing of this mission"
 msgstr "Charge prévisionnelle de cette mission"
 
-#: templates/crm/company_detail.html:30
+#: templates/crm/clientcompany_detail.html:30
 msgid "Timesheet of this mission"
 msgstr "Feuille de temps de cette mission"
 
-#: templates/crm/company_detail.html:35
+#: templates/crm/clientcompany_detail.html:36
 msgid "Consultants that work for this company:"
 msgstr "Les consultants qui ont travaillé pour cette société :"
+
+#: templates/crm/clientcompany_detail.html:44
+#: templates/crm/clientcompany_list.html:15
+msgid "All companies list"
+msgstr "Liste de toutes les entreprises clientes"
 
 #: templates/leads/lead_detail.html:14
 msgid "Lead detail"
@@ -819,6 +830,15 @@ msgstr "Feuille de temps globale pour "
 msgid "Next months"
 msgstr "Mois suivants"
 
+#: templates/staffing/all_timesheet.html:29
+msgid "No timesheet data for this month"
+msgstr "Pas de feuille de temps définie pour ce mois-ci"
+
+#: templates/staffing/all_timesheet.html:35
+#: templates/staffing/consultant_timesheet.html:50
+msgid "Export this timesheet in a spreadsheet"
+msgstr "Exporter cette feuille de temps dans un tableur"
+
 #: templates/staffing/consultant_base.html:16
 msgid "Consultant's missions"
 msgstr "Missions du consultant"
@@ -877,22 +897,12 @@ msgid "See also forecast staffing of this consultant"
 msgstr "Voir aussi la charge prévisionnelle de ce consultant"
 
 #: templates/staffing/consultant_timesheet.html:23
-#: templates/staffing/mission_timesheet.html:15
-#: templates/staffing/mission_timesheet.html:20
-msgid "Total"
-msgstr "Total"
-
-#: templates/staffing/consultant_timesheet.html:23
 msgid "Forecast"
 msgstr "Prévisions"
 
 #: templates/staffing/consultant_timesheet.html:48
 msgid "Working days balance: "
 msgstr "Balance de jours travaillés : "
-
-#: templates/staffing/consultant_timesheet.html:50
-msgid "Export this timesheet in a spreadsheet"
-msgstr "Exporter cette feuille de temps dans un tableur"
 
 #: templates/staffing/mission_base.html:16
 msgid "Deal id: "

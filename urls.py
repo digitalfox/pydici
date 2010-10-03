@@ -25,6 +25,8 @@ feeds = {
         "all" :   AllChanges
         }
 
+# Models needed for generic views
+from pydici.crm.models import ClientCompany
 
 pydici_patterns = patterns('',
     # Admin
@@ -89,10 +91,14 @@ pydici_patterns += patterns('pydici.people.views',
     (r'^people/consultant/(?P<consultant_id>\d+)/$', 'consultant_detail'),
 )
 
+
 pydici_patterns += patterns('pydici.crm.views',
-    # CRM module
+    # CRM module 
     (r'^crm/company/(?P<company_id>\d+)/$', 'company_detail'),
 )
+pydici_patterns += patterns('',
+            url(r'^crm/company/?$', 'django.views.generic.list_detail.object_list',
+                                {'queryset': ClientCompany.objects.all(), }, 'clientcompany_list'),)
 
 
 # Application prefix
