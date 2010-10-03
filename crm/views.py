@@ -18,7 +18,7 @@ def company_detail(request, company_id):
 
     # Find missions of this company
     missions = Mission.objects.filter(lead__client__organisation__company=company)
-    missions = missions.order_by("lead__client").order_by("lead__state").order_by("lead__start_date")
+    missions = missions.order_by("lead__client", "lead__state", "lead__start_date")
 
     # Find consultant that work (=declare timesheet) for this company
     consultants = [ s.consultant for s in Timesheet.objects.filter(mission__lead__client__organisation__company=company)]
