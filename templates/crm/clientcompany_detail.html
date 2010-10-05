@@ -20,7 +20,7 @@
     {% ifchanged mission.lead.state %}
         <h3>{{ mission.lead.get_state_display }}</h3>    
     {% endifchanged %}
-    <h4>{{ mission.lead.name }} ({{ mission.lead.start_date|date:"F Y" }})</h4>
+    <h4>{{ mission.full_name }} - {{ mission.lead.start_date|date:"F Y" }}</h4>
     <ul>
     <li><a href='{% url pydici.leads.views.detail mission.lead_id %}'>{% trans "Lead of this mission" %}</a></li>
     {% if mission.active %}
