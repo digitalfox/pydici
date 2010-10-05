@@ -20,10 +20,7 @@ def consultant_detail(request, consultant_id):
         consultant = Consultant.objects.get(id=consultant_id)
         staff = consultant.consultant_set.exclude(id=consultant.id)
         # Compute user current mission based on forecast
-        staffings = Staffing.objects.filter(consultant=consultant)
-        staffings = staffings.filter(mission__nature="PROD")
-        staffings = staffings.filter(mission__probability=100)
-        missions = list(set([s.mission for s in staffings if s.mission.active]))
+        missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
         missionsFromTimesheets = list(set([t.mission for t in Timesheet.objects.filter(consultant=consultant).select_related() if t.mission.lead]))
         companies = [m.lead.client.organisation.company for m in missionsFromTimesheets]
         companies = list(set(companies))

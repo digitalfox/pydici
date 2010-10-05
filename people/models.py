@@ -43,6 +43,12 @@ class Consultant(models.Model):
         self.trigramme = self.trigramme.upper()
         super(Consultant, self).save(force_insert, force_update)
 
+    def active_missions(self):
+        """Returns consultant active missions based on forecast staffing"""
+        # Get Mission class by introspecting FK instead of import to avoid circular imports
+        Mission = self.manager.staffing_set.model.mission.field.related.parent_model
+        return Mission.objects.filter(active=True).filter(staffing__consultant=self).distinct()
+
     class Meta:
         ordering = ["name", ]
         verbose_name = _("Consultant")

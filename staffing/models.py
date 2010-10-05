@@ -70,7 +70,6 @@ class Mission(models.Model):
         consultants.sort(cmp=lambda x, y: cmp(x.name, y.name))
         return consultants
 
-
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "description"]
         verbose_name = _("Mission")
