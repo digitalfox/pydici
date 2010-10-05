@@ -339,12 +339,13 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
     writer.writerow([("%s - %s" % (unicode(consultant), month)).encode("ISO-8859-15"), ])
 
     # Days
-    writer.writerow([""] + [d.day for d in days])
-    writer.writerow([""] + [_(d.strftime("%a")) for d in days] + [_("total")])
+    writer.writerow(["", ""] + [d.day for d in days])
+    writer.writerow([_("Mission").encode("ISO-8859-15", "ignore"), _("Deal id").encode("ISO-8859-15", "ignore")]
+                     + [_(d.strftime("%a")) for d in days] + [_("total")])
 
     for mission in missions:
         total = 0
-        row = [unicode(mission).encode("ISO-8859-15", "ignore"), ]
+        row = [i.encode("ISO-8859-15", "ignore") for i in [unicode(mission), mission.deal_id]]
         timesheets = Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission)
         for day in days:
             try:
