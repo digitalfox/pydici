@@ -413,7 +413,7 @@ def all_timesheet(request, year=None, month=None):
         # drill down link
         data = [mark_safe("<a href='%s'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.consultant_timesheet", args=[consultant.id, month.year, month.month]),
                                         escape(unicode(consultant)))) for consultant in consultants]
-    data = [[""] + data]
+    data = [[_("Mission"), _("Deal id")] + data]
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = timesheet["sum"]
     for mission in missions:
@@ -421,10 +421,10 @@ def all_timesheet(request, year=None, month=None):
                                         escape(unicode(mission)))
         if "csv" in request.GET:
             # Simple mission name
-            consultantData = [unicode(mission)]
+            consultantData = [unicode(mission), mission.deal_id]
         else:
             # Drill down link
-            consultantData = [mark_safe(missionUrl)]
+            consultantData = [mark_safe(missionUrl), mission.deal_id]
         for consultant in consultants:
             consultantData.append(charges.get((mission.id, consultant.id), 0))
         data.append(consultantData)
@@ -432,10 +432,10 @@ def all_timesheet(request, year=None, month=None):
 
     # Compute total per consultant
     if len(charges) > 1:
-        total = [i[1:] for i in charges[1:]]
+        total = [i[2:] for i in charges[1:]]
         total = zip(*total) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
         total = [sum(t) for t in total]
-        charges.append([_("Total")] + total)
+        charges.append([_("Total"), ""] + total)
     else:
         # Set charges to None to allow proper message on template
         charges = None
