@@ -37,7 +37,7 @@ class Mission(models.Model):
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
 
     def __unicode__(self):
-        if self.description:
+        if self.description and not self.lead:
             return unicode(self.description)
         else:
             # As lead name computation generate lots of sql request, cache it to avoid
@@ -46,14 +46,10 @@ class Mission(models.Model):
             if not name:
                 name = unicode(self.lead)
                 cache.set("missionName-%s" % self.id, name, 3)
-            return name
-
-    def short_name(self):
-        """Client name if defined, else first words of description"""
-        if self.lead:
-            return unicode(self.lead.client.organisation.company)
-        else:
-            return self.description.split(":")[0]
+            if self.description:
+                return u"%s/%s" % (name, self.description)
+            else:
+                return name
 
     def no_more_staffing_since(self, refDate=datetime.now()):
         """@return: True if at least one staffing is defined after refDate. Zero charge staffing are considered."""
