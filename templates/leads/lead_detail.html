@@ -71,10 +71,15 @@
 {% endif %}
 
 
-<br><a href='{% url index %}'>{% trans "Back to home page" %}</a>
+<br/>
 {% if lead.mission_set.count %}
-    &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-    <a href='{% url pydici.staffing.views.mission_staffing lead.mission_set.get.id %}'>{% trans "Workload schedule" %}</a>
+    <h4>{% trans "Missions linked to this lead:" %}</h4>
+    <ul>
+    {% for mission in lead.mission_set.all %}
+        <li>{{ mission }} (<a href='{% url pydici.staffing.views.mission_staffing mission.id %}'>{% trans "Workload schedule" %})</a></li>
+    {% endfor %}
+    </ul>
 {% endif %}
-
+<br/>
+<a href='{% url index %}'>{% trans "Back to home page" %}</a>
 {% endblock %}
