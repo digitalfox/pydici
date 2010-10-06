@@ -58,7 +58,6 @@ class Mission(models.Model):
         else:
             return unicode(self)
 
-
     def no_more_staffing_since(self, refDate=datetime.now()):
         """@return: True if at least one staffing is defined after refDate. Zero charge staffing are considered."""
         return not bool(self.staffing_set.filter(staffing_date__gt=refDate).count())
@@ -69,6 +68,19 @@ class Mission(models.Model):
         consultants = list(consultants)
         consultants.sort(cmp=lambda x, y: cmp(x.name, y.name))
         return consultants
+
+    def create_default_staffing(self):
+        """Initialize mission staffing based on lead hypothesis and current month"""
+        now = datetime.now()
+        for consultant in self.lead.staffing.all():
+            staffing = Staffing()
+            staffing.mission = self
+            staffing.consultant = consultant
+            staffing.staffing_date = now
+            staffing.update_date = now
+            staffing.last_user = "-"
+            staffing.save()
+
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "description"]

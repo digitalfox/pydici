@@ -496,6 +496,7 @@ def create_new_mission_from_lead(request, lead_id):
     mission.nature = modelMission.nature
     mission.probability = modelMission.probability
     mission.save()
+    mission.create_default_staffing() # Initialize default staffing
 
     # Redirect user to change page of the mission 
     # in order to type description and deal id

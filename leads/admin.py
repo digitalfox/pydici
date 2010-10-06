@@ -60,37 +60,25 @@ class LeadAdmin(AjaxSelectAdmin):
                 request.user.message_set.create(message=ugettext("Failed to send mail: %s") % e)
 
         # Create or update mission object if needed
-        try:
-            mission = Mission.objects.get(lead=obj)
-            mission_does_not_exist = False
-        except Mission.DoesNotExist:
-            mission = Mission(lead=obj) # Mission is saved below if needed
-            mission_does_not_exist = True
+        if obj.mission_set.count() == 0:
+            if obj.state in ("OFFER_SENT", "NEGOTIATION", "WON"):
+                mission = Mission(lead=obj)
+                mission.save()
+                # Create default staffing
+                mission.create_default_staffing()
+                request.user.message_set.create(message=ugettext("A mission has been initialized for this lead."))
 
-        if obj.state in ("OFFER_SENT", "NEGOTIATION", "WON") and mission_does_not_exist:
-            currentMonth = datetime.now()
-            mission.lead = obj
-            mission.save()
-            # Create default staffing
-            for consultant in obj.staffing.all():
-                staffing = Staffing()
-                staffing.mission = mission
-                staffing.consultant = consultant
-                staffing.staffing_date = currentMonth
-                staffing.update_date = currentMonth
-                staffing.last_user = "-"
-                staffing.save()
-            request.user.message_set.create(message=ugettext("A mission has been initialized for this lead."))
-        if obj.state == "WON":
-            mission.probability = 100
-            mission.active = True
-            mission.save()
-            request.user.message_set.create(message=ugettext("Mission's probability has been set to 100%"))
-        elif obj.state in ("LOST", "FORGIVEN", "SLEEPING"):
-            mission.probability = 0
-            mission.active = False
-            mission.save()
-            request.user.message_set.create(message=ugettext("According mission has been archived"))
+        for mission in obj.mission_set.all():
+            if obj.state == "WON":
+                mission.probability = 100
+                mission.active = True
+                mission.save()
+                request.user.message_set.create(message=ugettext("Mission's probability has been set to 100%"))
+            elif obj.state in ("LOST", "FORGIVEN", "SLEEPING"):
+                mission.probability = 0
+                mission.active = False
+                mission.save()
+                request.user.message_set.create(message=ugettext("According mission has been archived"))
 
 
 admin.site.register(Lead, LeadAdmin)
