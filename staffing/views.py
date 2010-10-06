@@ -9,7 +9,7 @@ from datetime import date, timedelta, datetime
 import csv
 
 from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
@@ -23,6 +23,7 @@ from django.utils.html import escape
 
 from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet
 from pydici.people.models import Consultant
+from pydici.leads.models import Lead
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
 from pydici.core.utils import working_days, to_int_or_round
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog
@@ -470,3 +471,31 @@ def all_csv_timesheet(request, charges, month):
         writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in charge])
     return response
 
+def create_new_mission_from_lead(request, lead_id):
+    """Create a new mission on the given lead. Mission are created with same nature
+    and probability than the fist mission. 
+    Used when a lead has more than one mission as only the default (first) mission
+    is created during standard lead workflow.
+    An error message will be returned if the given lead does not already have a mission"""
+    try:
+        lead = Lead.objects.get(id=lead_id)
+    except Lead.DoesNotExist:
+        raise Http404
+
+    if lead.mission_set.count() == 0:
+        # No mission defined, return an error
+        return HttpResponse(_("This lead has no mission defined"))
+
+    # We use first mission as model to create to new one
+    modelMission = lead.mission_set.all()[0]
+
+    # Create new mission on this lead
+    mission = Mission()
+    mission.lead = lead
+    mission.nature = modelMission.nature
+    mission.probability = modelMission.probability
+    mission.save()
+
+    # Redirect user to change page of the mission 
+    # in order to type description and deal id
+    return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_mission_change", args=[mission.id, ]))
