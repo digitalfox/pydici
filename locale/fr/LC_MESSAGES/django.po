@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-06 08:00+0200\n"
-"PO-Revision-Date: 2010-10-06 08:00+0200\n"
+"POT-Creation-Date: 2010-10-06 22:29+0200\n"
+"PO-Revision-Date: 2010-10-06 22:29+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -103,15 +103,15 @@ msgstr "Opportunité envoyée à la liste de diffusion de suivi des affaires"
 msgid "Failed to send mail: %s"
 msgstr "Échec lors de l'envoi du courriel : %s"
 
-#: leads/admin.py:83
+#: leads/admin.py:69
 msgid "A mission has been initialized for this lead."
 msgstr "Une mission a été créée pour cette affaire."
 
-#: leads/admin.py:88
+#: leads/admin.py:76
 msgid "Mission's probability has been set to 100%"
 msgstr "La probabilité de la mission a été mise à 100 %"
 
-#: leads/admin.py:93
+#: leads/admin.py:81
 msgid "According mission has been archived"
 msgstr "La mission correspondante a été archivée"
 
@@ -206,7 +206,7 @@ msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
 #: leads/models.py:86 leads/views.py:101 staffing/models.py:33
-#: staffing/models.py:80
+#: staffing/models.py:92
 msgid "Description"
 msgstr "Description"
 
@@ -229,7 +229,7 @@ msgstr "Géré par"
 msgid "Due date"
 msgstr "Date d'échéance"
 
-#: leads/views.py:103 staffing/models.py:105 templates/leads/review.html:25
+#: leads/views.py:103 staffing/models.py:117 templates/leads/review.html:25
 #: templates/leads/review.html.py:54
 #: templates/staffing/mission_staffing.html:5
 msgid "Staffing"
@@ -301,7 +301,7 @@ msgstr "Haute"
 msgid "Certain"
 msgstr "Certaine"
 
-#: staffing/models.py:32 staffing/views.py:343 staffing/views.py:416
+#: staffing/models.py:32 staffing/views.py:344 staffing/views.py:417
 #: templates/staffing/consultant_base.html:19
 #: templates/staffing/missions.html:21
 msgid "Deal id"
@@ -315,52 +315,56 @@ msgstr "Type"
 msgid "Proba"
 msgstr "Proba"
 
-#: staffing/models.py:75 staffing/views.py:343 staffing/views.py:416
+#: staffing/models.py:87 staffing/views.py:344 staffing/views.py:417
 #: templates/staffing/consultant_staffing.html:15
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/models.py:79 staffing/models.py:89 staffing/models.py:111
+#: staffing/models.py:91 staffing/models.py:101 staffing/models.py:123
 msgid "Date"
 msgstr "Date"
 
-#: staffing/models.py:83
+#: staffing/models.py:95
 msgid "Holiday"
 msgstr "Congé"
 
-#: staffing/models.py:90 staffing/models.py:112
+#: staffing/models.py:102 staffing/models.py:124
 #: templates/staffing/consultant_staffing.html:17
 #: templates/staffing/mission_staffing.html:16
 msgid "Load"
 msgstr "Charge"
 
-#: staffing/models.py:91 templates/staffing/consultant_staffing.html:18
+#: staffing/models.py:103 templates/staffing/consultant_staffing.html:18
 #: templates/staffing/mission_staffing.html:17
 msgid "Comments"
 msgstr "Remarques"
 
-#: staffing/models.py:120 templates/staffing/consultant_timesheet.html:7
+#: staffing/models.py:132 templates/staffing/consultant_timesheet.html:7
 #: templates/staffing/mission_timesheet.html:5
 msgid "Timesheet"
 msgstr "Feuille de temps"
 
-#: staffing/views.py:114
+#: staffing/views.py:115
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:335 staffing/views.py:464
+#: staffing/views.py:336 staffing/views.py:465
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:344
+#: staffing/views.py:345
 msgid "total"
 msgstr "total"
 
-#: staffing/views.py:438 templates/staffing/consultant_timesheet.html:23
+#: staffing/views.py:439 templates/staffing/consultant_timesheet.html:23
 #: templates/staffing/mission_timesheet.html:15
 #: templates/staffing/mission_timesheet.html:20
 msgid "Total"
 msgstr "Total"
+
+#: staffing/views.py:488
+msgid "This lead has no mission defined"
+msgstr "Cette affaire n'a aucune mission définie"
 
 #: templates/404.html:12
 #, python-format
@@ -619,7 +623,7 @@ msgid "Leads"
 msgstr "Opportunités commerciales"
 
 #: templates/crm/clientcompany_detail.html:25
-#: templates/staffing/mission_base.html:41
+#: templates/staffing/mission_base.html:39
 msgid "Lead of this mission"
 msgstr "Opportunité de cette mission"
 
@@ -722,9 +726,11 @@ msgstr "j F Y, G:i"
 msgid "Missions linked to this lead:"
 msgstr "Missions liées à cette affaire : "
 
-#: templates/leads/lead_detail.html:84
-#: templates/staffing/consultant_base.html:40
-#: templates/staffing/mission_base.html:38 templates/staffing/missions.html:52
+#: templates/leads/lead_detail.html:82
+msgid "Create a new mission for this lead"
+msgstr "Créer une nouvelle mission pour cette affaire"
+
+#: templates/leads/lead_detail.html:87 templates/staffing/missions.html:52
 msgid "Back to home page"
 msgstr "Retour à la page d'accueil"
 
@@ -937,6 +943,10 @@ msgstr "Consultants impliqués actuellement dans cette mission"
 #: templates/staffing/mission_base.html:36
 msgid "Back to mission list"
 msgstr "Retour à la liste des missions"
+
+#: templates/staffing/mission_base.html:43
+msgid "Create another mission for this lead"
+msgstr "Créer une autre mission pour cette affaire"
 
 #: templates/staffing/mission_staffing.html:6
 msgid "See also the timesheet of this mission"
