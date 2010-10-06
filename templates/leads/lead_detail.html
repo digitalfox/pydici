@@ -78,6 +78,9 @@
     {% for mission in lead.mission_set.all %}
         <li>{{ mission }} (<a href='{% url pydici.staffing.views.mission_staffing mission.id %}'>{% trans "Workload schedule" %})</a></li>
     {% endfor %}
+    {% if perms.staffing.Can_add_Mission %}
+        <li><a href='{% url pydici.staffing.views.create_new_mission_from_lead lead.id %}'><i>{% trans "Create a new mission for this lead" %}</i></a></li>
+    {% endif %}        
     </ul>
 {% endif %}
 <br/>

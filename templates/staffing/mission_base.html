@@ -18,7 +18,7 @@
     <h3>{% trans "Probability:" %} {{ mission.get_probability_display }} </h3>
     <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}', title='{% trans "Change"%} {{ mission }}', target='_blank', class='changelink'><em>{% trans "Change"%}</em></a></td>
     <br>
-    
+
     <h2>{% trans "Consultants currently implicated in this mission" %}</h1>
     <table>
     {% for consultant in consultants %}
@@ -34,12 +34,17 @@
 <br>
 <br>
 <a href='{% url missions %}'>{% trans "Back to mission list" %}</a>
-&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='{% url index %}'>{% trans "Back to home page" %}</a>
 {% if mission.lead %}
     &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
     <a href='{% url pydici.leads.views.detail mission.lead_id %}'>{% trans "Lead of this mission" %}</a>
 {% endif %}
+{% if perms.staffing.Can_add_Mission %}
+    &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+    <a href='{% url pydici.staffing.views.create_new_mission_from_lead mission.lead.id %}'>{% trans "Create another mission for this lead" %}</a></li>
+{% endif %}        
+
+        
+
 
 </div>
 {% endblock %}

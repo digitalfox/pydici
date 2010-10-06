@@ -471,6 +471,7 @@ def all_csv_timesheet(request, charges, month):
         writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in charge])
     return response
 
+@permission_required("staffing.add_mission")
 def create_new_mission_from_lead(request, lead_id):
     """Create a new mission on the given lead. Mission are created with same nature
     and probability than the fist mission. 
