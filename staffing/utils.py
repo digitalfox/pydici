@@ -11,7 +11,7 @@ from datetime import datetime
 
 from django.db import transaction
 
-from pydici.staffing.models import Timesheet, Mission
+from pydici.staffing.models import Timesheet, Mission, LunchTicket
 from pydici.core.utils import month_days
 
 def gatherTimesheetData(consultant, missions, month):
@@ -33,6 +33,12 @@ def gatherTimesheetData(consultant, missions, month):
                 else:
                     timesheetTotal[mission.id] = timesheet.charge
                 totalPerDay[timesheet.working_date.day - 1] += timesheet.charge
+    # Gather lunck ticket data
+    totalTicket = 0
+    for lunchTicket in LunchTicket.objects.filter(consultant=consultant).filter(lunch_date__gte=month):
+        timesheetData["lunch_ticket_%s" % lunchTicket.lunch_date.day] = lunchTicket.no_ticket
+        totalTicket += 1
+    timesheetTotal["ticket"] = totalTicket
     # Compute overbooking
     for i in totalPerDay:
         if i > 1:
@@ -55,20 +61,33 @@ def saveTimesheetData(consultant, month, data, oldData):
             continue
         (foo, missionId, day) = key.split("_")
         day = int(day)
-        if missionId != previousMissionId:
-            mission = Mission.objects.get(id=missionId)
-            previousMissionId = missionId
         working_date = month.replace(day=day)
-        timesheet, created = Timesheet.objects.get_or_create(consultant=consultant,
-                                                             mission=mission,
-                                                             working_date=working_date)
-        if charge:
-            # create/update new data
-            timesheet.charge = charge
-            timesheet.save()
+        if missionId == "ticket":
+            # Lunch ticket handling
+            print "ticket"
+            lunchTicket, created = LunchTicket.objects.get_or_create(consultant=consultant,
+                                                                    lunch_date=working_date)
+            if charge:
+                # Create/update new data
+                lunchTicket.no_ticket = True
+                lunchTicket.save()
+            else:
+                lunchTicket.delete()
         else:
-            # remove data user just deleted
-            timesheet.delete()
+            # Standard mission handling
+            if missionId != previousMissionId:
+                mission = Mission.objects.get(id=missionId)
+                previousMissionId = missionId
+            timesheet, created = Timesheet.objects.get_or_create(consultant=consultant,
+                                                                 mission=mission,
+                                                                 working_date=working_date)
+            if charge:
+                # create/update new data
+                timesheet.charge = charge
+                timesheet.save()
+            else:
+                # remove data user just deleted
+                timesheet.delete()
 
 def saveFormsetAndLog(formset, request):
     """Save the given staffing formset and log last user"""

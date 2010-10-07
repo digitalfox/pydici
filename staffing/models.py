@@ -133,3 +133,14 @@ class Timesheet(models.Model):
         unique_together = (("consultant", "mission", "working_date"),)
         ordering = ["working_date", "consultant"]
         verbose_name = _("Timesheet")
+
+class LunchTicket(models.Model):
+    """Default is to give a lunck ticket every working day.
+    Days without ticket (ie when lunch is paid by company) are tracked"""
+    consultant = models.ForeignKey(Consultant)
+    lunch_date = models.DateField(_("Date"))
+    no_ticket = models.BooleanField(_("No lunch ticket"))
+
+    class Meta:
+        unique_together = (("consultant", "lunch_date"),)
+        verbose_name = _("Lunch ticket")

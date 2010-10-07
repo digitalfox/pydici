@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.db.models import Q
+from django.utils.translation import ugettext as _
 
 from ajax_select.fields import AutoCompleteSelectField
 
@@ -76,3 +77,16 @@ class TimesheetForm(forms.Form):
             # Mission id is added to ensure field key is uniq.
             key = "%s %s %s" % (timesheetTotal.get(mission.id, 0), mission.id, forecastTotal[mission.id])
             self.fields[key] = forms.CharField(widget=hwidget, required=False)
+
+        # Add lunch ticket line
+        for day in days:
+            key = "lunch_ticket_%s" % day.day
+            self.fields[key] = forms.BooleanField(required=False)
+            self.fields[key].widget.attrs.setdefault("size", 2) # Reduce default size
+            if day.day == 1: # Only show label for first day
+                self.fields[key].label = _("Days without lunch ticket")
+            else:
+                self.fields[key].label = "" # Squash label 
+        # extra space is important - it is for forecast total (which does not exist for ticket...)
+        key = "%s total-ticket " % timesheetTotal.get("ticket", 0)
+        self.fields[key] = forms.CharField(widget=hwidget, required=False)
