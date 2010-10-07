@@ -76,7 +76,7 @@
     <h4>{% trans "Missions linked to this lead:" %}</h4>
     <ul>
     {% for mission in lead.mission_set.all %}
-        <li>{{ mission }} (<a href='{% url pydici.staffing.views.mission_staffing mission.id %}'>{% trans "Workload schedule" %})</a></li>
+        <li>{{ mission }} (<a href='{% url admin:staffing_mission_change mission.id %}', title='{% trans "Change"%} {{ mission }}', target='_blank', class='changelink'>{% trans "change this mission" %}  -  <a href='{% url pydici.staffing.views.mission_staffing mission.id %}' class='changelink'>{% trans "workload schedule of this mission" %})</a></li>
     {% endfor %}
     {% if perms.staffing.Can_add_Mission %}
         <li><a href='{% url pydici.staffing.views.create_new_mission_from_lead lead.id %}'><i>{% trans "Create a new mission for this lead" %}</i></a></li>

@@ -81,6 +81,9 @@ class Mission(models.Model):
             staffing.last_user = "-"
             staffing.save()
 
+    def sister_missions(self):
+        """Return other missions linked to the same deal"""
+        return self.lead.mission_set.exclude(id=self.id)
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "description"]

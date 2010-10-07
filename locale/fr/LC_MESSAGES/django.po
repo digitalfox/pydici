@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-06 22:29+0200\n"
-"PO-Revision-Date: 2010-10-06 22:29+0200\n"
+"POT-Creation-Date: 2010-10-07 17:22+0200\n"
+"PO-Revision-Date: 2010-10-07 17:22+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -206,7 +206,7 @@ msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
 #: leads/models.py:86 leads/views.py:101 staffing/models.py:33
-#: staffing/models.py:92
+#: staffing/models.py:95
 msgid "Description"
 msgstr "Description"
 
@@ -229,7 +229,7 @@ msgstr "Géré par"
 msgid "Due date"
 msgstr "Date d'échéance"
 
-#: leads/views.py:103 staffing/models.py:117 templates/leads/review.html:25
+#: leads/views.py:103 staffing/models.py:120 templates/leads/review.html:25
 #: templates/leads/review.html.py:54
 #: templates/staffing/mission_staffing.html:5
 msgid "Staffing"
@@ -315,31 +315,31 @@ msgstr "Type"
 msgid "Proba"
 msgstr "Proba"
 
-#: staffing/models.py:87 staffing/views.py:344 staffing/views.py:417
+#: staffing/models.py:90 staffing/views.py:344 staffing/views.py:417
 #: templates/staffing/consultant_staffing.html:15
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/models.py:91 staffing/models.py:101 staffing/models.py:123
+#: staffing/models.py:94 staffing/models.py:104 staffing/models.py:126
 msgid "Date"
 msgstr "Date"
 
-#: staffing/models.py:95
+#: staffing/models.py:98
 msgid "Holiday"
 msgstr "Congé"
 
-#: staffing/models.py:102 staffing/models.py:124
+#: staffing/models.py:105 staffing/models.py:127
 #: templates/staffing/consultant_staffing.html:17
 #: templates/staffing/mission_staffing.html:16
 msgid "Load"
 msgstr "Charge"
 
-#: staffing/models.py:103 templates/staffing/consultant_staffing.html:18
+#: staffing/models.py:106 templates/staffing/consultant_staffing.html:18
 #: templates/staffing/mission_staffing.html:17
 msgid "Comments"
 msgstr "Remarques"
 
-#: staffing/models.py:132 templates/staffing/consultant_timesheet.html:7
+#: staffing/models.py:135 templates/staffing/consultant_timesheet.html:7
 #: templates/staffing/mission_timesheet.html:5
 msgid "Timesheet"
 msgstr "Feuille de temps"
@@ -442,7 +442,7 @@ msgstr "Flux ATOM des mes opportunités"
 msgid "Current leads review"
 msgstr "Revue des opportunités en cours"
 
-#: templates/admin/base.html:46 templates/leads/lead_detail.html:79
+#: templates/admin/base.html:46
 msgid "Workload schedule"
 msgstr "Plan de charge"
 
@@ -480,7 +480,8 @@ msgstr "Modèles disponibles dans l'application %(name)s."
 msgid "Add"
 msgstr "Ajouter"
 
-#: templates/admin/index.html:35 templates/staffing/consultant_base.html:27
+#: templates/admin/index.html:35 templates/leads/lead_detail.html:79
+#: templates/staffing/consultant_base.html:27
 #: templates/staffing/mission_base.html:19 templates/staffing/missions.html:35
 msgid "Change"
 msgstr "Modifier"
@@ -623,7 +624,7 @@ msgid "Leads"
 msgstr "Opportunités commerciales"
 
 #: templates/crm/clientcompany_detail.html:25
-#: templates/staffing/mission_base.html:39
+#: templates/staffing/mission_base.html:49
 msgid "Lead of this mission"
 msgstr "Opportunité de cette mission"
 
@@ -725,6 +726,14 @@ msgstr "j F Y, G:i"
 #: templates/leads/lead_detail.html:76
 msgid "Missions linked to this lead:"
 msgstr "Missions liées à cette affaire : "
+
+#: templates/leads/lead_detail.html:79
+msgid "change this mission"
+msgstr "modifier cette mission"
+
+#: templates/leads/lead_detail.html:79
+msgid "workload schedule of this mission"
+msgstr "prévisions de charge de cette mission"
 
 #: templates/leads/lead_detail.html:82
 msgid "Create a new mission for this lead"
@@ -940,11 +949,15 @@ msgstr "Probabilité :"
 msgid "Consultants currently implicated in this mission"
 msgstr "Consultants impliqués actuellement dans cette mission"
 
-#: templates/staffing/mission_base.html:36
+#: templates/staffing/mission_base.html:32
+msgid "Other missions linked to this lead"
+msgstr "Autres missions liées à cette affaire"
+
+#: templates/staffing/mission_base.html:46
 msgid "Back to mission list"
 msgstr "Retour à la liste des missions"
 
-#: templates/staffing/mission_base.html:43
+#: templates/staffing/mission_base.html:53
 msgid "Create another mission for this lead"
 msgstr "Créer une autre mission pour cette affaire"
 
