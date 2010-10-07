@@ -165,9 +165,9 @@
         <h3><a href="{% url admin:index %}">{% trans "Admin console" %}</a></h3>
         <ul class="actionlist">
 	        <li><a href="{% url admin:leads_lead_changelist %}">{% trans "All leads" %}</a></li>
-	        <li><a href="{% url admin:staffing_mission_changelist %}">{% trans "All missions" %}</a></li>
-	        <li><a href="{% url admin:crm_client_changelist %}">{% trans "All clients" %}</a></li>
-	        <li><a href="{% url admin:crm_clientcontact_changelist %}">{% trans "All client contacts" %}</a></li>
+	        <li><a href="{% url all-missions %}">{% trans "All missions" %}</a></li>
+	        <li><a href="{% url clientcompany_list %}">{% trans "All clients" %}</a></li>
+
         </ul>
     </div>
 </div>
