@@ -9,7 +9,7 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
-from pydici.staffing.models import Mission, Holiday, Timesheet
+from pydici.staffing.models import Mission, Holiday, Timesheet, FinancialCondition
 
 
 class MissionAdmin(admin.ModelAdmin):
@@ -26,7 +26,13 @@ class HolidayAdmin(admin.ModelAdmin):
     date_hierarchy = "day"
     actions = None
 
+class FinancialConditionAdmin(admin.ModelAdmin):
+    list_display = ("mission", "consultant", "daily_rate")
+    search_fileds = ("mission__lead__name", "mission__description", "mission__deal_id", "mission__lead__client__organisation__company__name",
+                   "mission__lead__client__contact__name", "consultant__name", "consultant__trigramme")
+    actions = None
 
 admin.site.register(Mission, MissionAdmin)
 admin.site.register(Holiday, HolidayAdmin)
+admin.site.register(FinancialCondition, FinancialConditionAdmin)
 admin.site.register(Timesheet)

@@ -144,3 +144,13 @@ class LunchTicket(models.Model):
     class Meta:
         unique_together = (("consultant", "lunch_date"),)
         verbose_name = _("Lunch ticket")
+
+class FinancialCondition(models.Model):
+    """Mission financial condition"""
+    consultant = models.ForeignKey(Consultant)
+    mission = models.ForeignKey(Mission, limit_choices_to=Q(active=True))
+    daily_rate = models.IntegerField(_("Daily rate"))
+
+    class Meta:
+        unique_together = (("consultant", "mission", "daily_rate"),)
+        verbose_name = _("Financial condition")
