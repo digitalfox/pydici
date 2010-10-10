@@ -85,6 +85,17 @@ class Mission(models.Model):
         """Return other missions linked to the same deal"""
         return self.lead.mission_set.exclude(id=self.id)
 
+    def consultant_rates(self):
+        """@return: dict with consultant as key and daily rate as value or 0 if not defined"""
+        rates = {}
+        for condition in FinancialCondition.objects.filter(mission=self):
+            rates[condition.consultant] = condition.daily_rate
+        # Put 0 for consultant forecasted on this mission but with daily rate
+        for consultant in self.staffed_consultant():
+            if not consultant in rates:
+                rates[consultant] = 0
+        return rates
+
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "description"]
         verbose_name = _("Mission")

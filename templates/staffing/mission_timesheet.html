@@ -12,7 +12,8 @@
         {% for month in months %}
             <th>{{ month|date:"M y" }}</th>
         {% endfor %}
-        <th>{% trans "Total" %}</th>
+        <th>{% trans "Days" %}</th>
+         <th>{% trans "Total (k€)" %}</th>
     </tr>
     {% for consultant, data in timesheet %}
         {% ifequal consultant None %}

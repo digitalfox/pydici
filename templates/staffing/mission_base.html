@@ -21,9 +21,11 @@
 
     <h2>{% trans "Consultants currently implicated in this mission" %}</h1>
     <table>
-    {% for consultant in consultants %}
+    <tr><td>{% trans "Consultant" %}</td><td>{% trans "Daily rate (€)" %}</td></tr>
+    {% for consultant, rate in consultant_rates.items %}
         <tr {%cycle 'class="row1"' 'class="row2"' %}>
-            <th scope="row"><a href='{% url pydici.staffing.views.consultant_staffing consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></th>
+            <td><a href='{% url pydici.staffing.views.consultant_staffing consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
+            <td align="right"><a href='{% url pydici.staffing.views.mission_consultant_rate mission.id consultant.id %}' target='_blanck'>{{ rate }}</a></td>
         </tr>
     {% endfor %}
     </table>

@@ -21,7 +21,7 @@ from django.utils.html import escape
 
 
 
-from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet
+from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition
 from pydici.people.models import Consultant
 from pydici.leads.models import Lead
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
@@ -57,14 +57,12 @@ def mission_staffing(request, mission_id):
             saveFormsetAndLog(formset, request)
             formset = StaffingFormSet(instance=mission) # Recreate a new form for next update
     else:
-        formset = StaffingFormSet(instance=mission) # An unbound form
-
-    consultants = mission.staffed_consultant()
+        formset = StaffingFormSet(instance=mission) # An unbound form 
 
     return render_to_response('staffing/mission_staffing.html',
                               {"formset": formset,
                                "mission": mission,
-                               "consultants": consultants,
+                               "consultant_rates": mission.consultant_rates(),
                                "user": request.user},
                                RequestContext(request))
 
@@ -368,12 +366,14 @@ def mission_timesheet(request, mission_id):
     months = [t.working_date.replace(day=1) for t in timesheets.distinct("working_date")]
     months = list(set(months)) # uniq instance
     months.sort()
+    consultant_rates = mission.consultant_rates()
     timesheetData = [] # list of tuple (consultant, (charge month 1, charge month 2))
     for consultant in consultants:
         data = []
         for month in months:
             data.append(sum([t.charge for t in timesheets.filter(consultant=consultant) if t.working_date.month == month.month]))
         data.append(sum(data)) # Add total per consultant
+        data.append(data[-1] * consultant_rates[consultant] / 1000) # Add total in money
         timesheetData.append((consultant, data))
     # Compute total per month
     total = [data for consultant, data in timesheetData]
@@ -384,8 +384,8 @@ def mission_timesheet(request, mission_id):
     return render_to_response("staffing/mission_timesheet.html", {
                                 "mission": mission,
                                 "months": list(months),
-                                "consultants": consultants,
                                 "timesheet": timesheetData,
+                                "consultant_rates" : consultant_rates,
                                "user": request.user },
                                RequestContext(request))
 
@@ -501,3 +501,11 @@ def create_new_mission_from_lead(request, lead_id):
     # Redirect user to change page of the mission 
     # in order to type description and deal id
     return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_mission_change", args=[mission.id, ]))
+
+def mission_consultant_rate(request, mission_id, consultant_id):
+    """Select or create financial condition for this consultant/mission tuple and redirect to admin change page"""
+    mission = Mission.objects.get(id=mission_id)
+    consultant = Consultant.objects.get(id=consultant_id)
+    condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
+                                                                  defaults={"daily_rate":0})
+    return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_financialcondition_change", args=[condition.id, ]))
