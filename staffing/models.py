@@ -72,6 +72,7 @@ class Mission(models.Model):
     def create_default_staffing(self):
         """Initialize mission staffing based on lead hypothesis and current month"""
         now = datetime.now()
+        now = now.replace(microsecond=0) # Remove useless microsecond that pollute form validation in callback
         for consultant in self.lead.staffing.all():
             staffing = Staffing()
             staffing.mission = self
