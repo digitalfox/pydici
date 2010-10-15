@@ -362,29 +362,57 @@ def mission_timesheet(request, mission_id):
     """Mission timesheet"""
     mission = Mission.objects.get(id=mission_id)
     consultants = mission.staffed_consultant()
-    timesheets = Timesheet.objects.filter(mission=mission)
-    months = [t.working_date.replace(day=1) for t in timesheets.distinct("working_date")]
-    months = list(set(months)) # uniq instance
-    months.sort()
     consultant_rates = mission.consultant_rates()
-    timesheetData = [] # list of tuple (consultant, (charge month 1, charge month 2))
+    timesheets = Timesheet.objects.filter(mission=mission)
+
+    # Gather timesheet months
+    timesheetMonths = [t.working_date.replace(day=1) for t in timesheets.distinct("working_date")]
+    timesheetMonths = list(set(timesheetMonths)) # uniq instance
+    timesheetMonths.sort()
+
+    # Gather forecaster months
+    staffings = Staffing.objects.filter(mission=mission)
+    print staffings
+    if timesheetMonths:
+        # If timesheet data is given, only starts forecaster after last timesheet month
+        staffings = staffings.filter(staffing_date__gt=timesheetMonths[-1])
+        print staffings
+    staffingMonths = [t.staffing_date.replace(day=1) for t in staffings.distinct("staffing_date")]
+    staffingMonths = list(set(staffingMonths)) # uniq instance
+    staffingMonths.sort()
+    print staffingMonths
+
+    missionData = [] # list of tuple (consultant, (charge month 1, charge month 2), (forecast month 1, forcast month2)
     for consultant in consultants:
-        data = []
-        for month in months:
-            data.append(sum([t.charge for t in timesheets.filter(consultant=consultant) if t.working_date.month == month.month]))
-        data.append(sum(data)) # Add total per consultant
-        data.append(data[-1] * consultant_rates[consultant] / 1000) # Add total in money
-        timesheetData.append((consultant, data))
+        # Timesheet data
+        timesheetData = []
+        for month in timesheetMonths:
+            timesheetData.append(sum([t.charge for t in timesheets.filter(consultant=consultant) if t.working_date.month == month.month]))
+        timesheetData.append(sum(timesheetData)) # Add total per consultant
+        timesheetData.append(timesheetData[-1] * consultant_rates[consultant] / 1000) # Add total in money
+
+        # Forecast staffing data
+        staffingData = []
+        for month in staffingMonths:
+            staffingData.append(sum([t.charge for t in staffings.filter(consultant=consultant) if t.staffing_date.month == month.month]))
+        staffingData.append(sum(staffingData)) # Add total per consultant
+        staffingData.append(staffingData[-1] * consultant_rates[consultant] / 1000) # Add total in money
+
+        missionData.append((consultant, timesheetData, staffingData))
     # Compute total per month
-    total = [data for consultant, data in timesheetData]
-    total = zip(*total) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
-    total = [sum(t) for t in total]
-    timesheetData.append((None, total))
+    timesheetTotal = [timesheet for consultant, timesheet, staffing in missionData]
+    timesheetTotal = zip(*timesheetTotal) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
+    timesheetTotal = [sum(t) for t in timesheetTotal]
+    staffingTotal = [staffing for consultant, timesheet, staffing in missionData]
+    staffingTotal = zip(*staffingTotal) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
+    staffingTotal = [sum(t) for t in staffingTotal]
+    missionData.append((None, timesheetTotal, staffingTotal))
 
     return render_to_response("staffing/mission_timesheet.html", {
                                 "mission": mission,
-                                "months": list(months),
-                                "timesheet": timesheetData,
+                                "timesheet_months": timesheetMonths,
+                                "staffing_months": staffingMonths,
+                                "mission_data": missionData,
                                 "consultant_rates" : consultant_rates,
                                "user": request.user },
                                RequestContext(request))

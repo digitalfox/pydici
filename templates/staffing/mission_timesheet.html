@@ -9,21 +9,31 @@
     <table>
     <tr>
         <th></th>
-        {% for month in months %}
+        {% for month in timesheet_months %}
             <th>{{ month|date:"M y" }}</th>
         {% endfor %}
-        <th>{% trans "Days" %}</th>
-         <th>{% trans "Total (k€)" %}</th>
+        <th>{% trans "Done days" %}</th>
+        <th>{% trans "Total (k€)" %}</th>
+        <th></th>
+        {% for month in staffing_months %}
+            <th>{{ month|date:"M y" }}</th>
+        {% endfor %}
+        <th>{% trans "Days to be done" %}</th>
+        <th>{% trans "Total (k€)" %}</th>
     </tr>
-    {% for consultant, data in timesheet %}
+    {% for consultant, timesheet, staffing in mission_data %}
         {% ifequal consultant None %}
             <tr style="font-weight:bold">
             <td>{% trans "Total" %}</td>
-            <td>{{ data|join:"</td><td>" }}</td>
+            <td>{{ timesheet|join:"</td><td>" }}</td>
+            <td></td>
+            <td>{{ staffing|join:"</td><td>" }}</td>
         {% else %}
             <tr>        
             <td>{{ consultant }}</td>
-            <td>{{ data|join:"</td><td>" }}</td>
+            <td>{{ timesheet|join:"</td><td>" }}</td>
+            <td></td>
+            <td>{{ staffing|join:"</td><td>" }}</td>
         {% endifequal %}
         </tr>
     {% endfor %}
