@@ -15,6 +15,7 @@ from django.db.models import Q
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant, SalesMan
 from pydici.crm.models import ClientCompany
+from pydici.staffing.models import Mission
 
 from pydici.core.forms import SearchForm
 
@@ -59,6 +60,7 @@ def search(request):
     consultants = None
     clientCompanies = None
     leads = None
+    missions = None
 
     if request.method == "POST":
         form = SearchForm(request.POST)
@@ -83,12 +85,24 @@ def search(request):
                 leads = leads.filter(Q(name__icontains=word) |
                                      Q(description__icontains=word))
 
+            # Missions
+            missions = Mission.objects.filter(active=True)
+            for word in words:
+                missions = missions.filter(description__icontains=word)
+
+            # Add missions from lead
+            missions = set(missions)
+            for lead in leads:
+                for mission in lead.mission_set.all():
+                    missions.add(mission)
+            missions = list(missions)
 
     return render_to_response("core/search.html",
                               {"form" : form,
                                "consultants": consultants,
                                "client_companies" : clientCompanies,
                                "leads" : leads,
+                               "missions" : missions,
                                "user": request.user },
                                RequestContext(request))
 
