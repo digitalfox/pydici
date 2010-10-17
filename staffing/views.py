@@ -361,9 +361,12 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
 def mission_timesheet(request, mission_id):
     """Mission timesheet"""
     mission = Mission.objects.get(id=mission_id)
+    month = datetime.today().replace(day=1) # Current month
     consultants = mission.staffed_consultant()
     consultant_rates = mission.consultant_rates()
-    timesheets = Timesheet.objects.filter(mission=mission)
+
+    # Only consider timesheet of completed month
+    timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=month)
 
     # Gather timesheet months
     timesheetMonths = [t.working_date.replace(day=1) for t in timesheets.distinct("working_date")]
@@ -371,16 +374,10 @@ def mission_timesheet(request, mission_id):
     timesheetMonths.sort()
 
     # Gather forecaster months
-    staffings = Staffing.objects.filter(mission=mission)
-    print staffings
-    if timesheetMonths:
-        # If timesheet data is given, only starts forecaster after last timesheet month
-        staffings = staffings.filter(staffing_date__gt=timesheetMonths[-1])
-        print staffings
+    staffings = Staffing.objects.filter(mission=mission).filter(staffing_date__gte=month)
     staffingMonths = [t.staffing_date.replace(day=1) for t in staffings.distinct("staffing_date")]
     staffingMonths = list(set(staffingMonths)) # uniq instance
     staffingMonths.sort()
-    print staffingMonths
 
     missionData = [] # list of tuple (consultant, (charge month 1, charge month 2), (forecast month 1, forcast month2)
     for consultant in consultants:
@@ -406,10 +403,15 @@ def mission_timesheet(request, mission_id):
     staffingTotal = [staffing for consultant, timesheet, staffing in missionData]
     staffingTotal = zip(*staffingTotal) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
     staffingTotal = [sum(t) for t in staffingTotal]
+    if mission.price:
+        margin = float(mission.price) - timesheetTotal[-1] - staffingTotal[-1]
+    else:
+        margin = 0
     missionData.append((None, timesheetTotal, staffingTotal))
 
     return render_to_response("staffing/mission_timesheet.html", {
                                 "mission": mission,
+                                "margin": margin,
                                 "timesheet_months": timesheetMonths,
                                 "staffing_months": staffingMonths,
                                 "mission_data": missionData,

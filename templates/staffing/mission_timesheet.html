@@ -23,13 +23,13 @@
     </tr>
     {% for consultant, timesheet, staffing in mission_data %}
         {% ifequal consultant None %}
-            <tr style="font-weight:bold">
+            <tr align="right" style="font-weight:bold">
             <td>{% trans "Total" %}</td>
             <td>{{ timesheet|join:"</td><td>" }}</td>
             <td></td>
             <td>{{ staffing|join:"</td><td>" }}</td>
         {% else %}
-            <tr>        
+            <tr align="right">        
             <td>{{ consultant }}</td>
             <td>{{ timesheet|join:"</td><td>" }}</td>
             <td></td>
@@ -39,4 +39,16 @@
     {% endfor %}
     </table>
     </div>
+    <br/>
+    {% ifequal mission.nature "PROD" %}
+    <h2>{% trans "Profitability" %}</h2>
+    <table>
+        <tr><td>{% trans "Sold" %}</td>
+        <td>{% if mission.price %}{{ mission.price }}  k€
+            {% else %} <a href='{% url admin:staffing_mission_change mission.id %}'>{% trans "To be defined" %}</a>
+            {% endif %}</td></tr>
+        <tr><td>{% trans "Margin" %}</td><td>{{ margin }}  k€</td></tr>
+    </table>
+    {% endifequal %}
+    
 {% endblock %}

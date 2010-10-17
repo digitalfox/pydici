@@ -63,6 +63,7 @@ class LeadAdmin(AjaxSelectAdmin):
         if obj.mission_set.count() == 0:
             if obj.state in ("OFFER_SENT", "NEGOTIATION", "WON"):
                 mission = Mission(lead=obj)
+                mission.price = obj.sales # Initialise with lead price
                 mission.save()
                 # Create default staffing
                 mission.create_default_staffing()

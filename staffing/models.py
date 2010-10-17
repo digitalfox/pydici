@@ -9,9 +9,8 @@ from django.db import models
 from django.db.models import Q
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 
-from datetime import datetime, date
+from datetime import datetime
 
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant
@@ -34,6 +33,7 @@ class Mission(models.Model):
     nature = models.CharField(_("Type"), max_length=30, choices=MISSION_NATURE, default="PROD")
     active = models.BooleanField(_("Active"), default=True)
     probability = models.IntegerField(_("Proba"), default=50, choices=PROBABILITY)
+    price = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
 
     def __unicode__(self):
