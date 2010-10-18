@@ -28,7 +28,7 @@
             "name": "and a small project for a change", 
             "update_date": "2010-02-21 22:54:50", 
             "responsible": null, 
-            "sales": null, 
+            "sales": 100, 
             "external_staffing": "",  
             "send_email": false, 
             "state": "QUALIF", 

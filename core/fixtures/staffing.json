@@ -7,7 +7,8 @@
             "description": null, 
             "probability": 50, 
             "nature": "PROD", 
-            "lead": 1, 
+            "lead": 1,
+            "price" : 10, 
             "deal_id": "1234",
             "active": true
         }
@@ -24,7 +25,21 @@
             "deal_id": "4321",
             "active": true
         }
+    },
+    {
+        "pk": 3, 
+        "model": "staffing.mission", 
+        "fields": {
+            "update_date": "2010-02-21 22:54:18", 
+            "description": "ploum", 
+            "probability": 50, 
+            "nature": "PROD", 
+            "lead": 2, 
+            "deal_id": "4322",
+            "active": true
+        }
     }, 
+     
     {
         "pk": 1, 
         "model": "staffing.staffing", 

@@ -27,7 +27,11 @@ class SimpleTest(TestCase):
 
     def test_basic_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        for page in ("/leads/3/",
+        for page in ("/",
+                     "/search",
+                     "/leads/1/",
+                     "/leads/2/",
+                     "/leads/3/",
                      "/admin/",
                      "/leads/csv/all",
                      "/leads/csv/active",
@@ -41,16 +45,30 @@ class SimpleTest(TestCase):
                      "/feeds/won/",
                      "/staffing/pdcreview/",
                      "/staffing/pdcreview/2009/07",
-                     "/forbiden",
                      "/staffing/mission/",
                      "/staffing/mission/all",
                      "/staffing/forecast/mission/1/",
+                     "/staffing/forecast/mission/2/",
+                     "/staffing/forecast/mission/3/",
                      "/staffing/forecast/consultant/1/",
                      "/staffing/timesheet/mission/1/",
+                     "/staffing/timesheet/mission/2/",
+                     "/staffing/timesheet/mission/3/",
                      "/staffing/timesheet/consultant/1/",
+                     "/staffing/timesheet/consultant/1/?csv",
+                     "/staffing/timesheet/consultant/1/2010/10",
+                     "/staffing/timesheet/all",
+                     "/staffing/timesheet/all/?csv",
+                     "/staffing/timesheet/all/2010/11",
                      "/leads/graph/pie",
                      "/leads/graph/bar",
                      "/leads/graph/salesmen",
+                     "/people/consultant/1/",
+                     "/people/consultant/2/",
+                     "/people/consultant/3/",
+                     "/crm/company/1/",
+                     "/crm/company/",
+                     "/forbiden",
                      ):
             response = self.client.get(PREFIX + page)
             self.failUnlessEqual(response.status_code, 200,
@@ -58,10 +76,14 @@ class SimpleTest(TestCase):
 
     def test_redirect(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        response = self.client.get(PREFIX + "/staffing/mission/1/deactivate")
-        self.failUnlessEqual(response.status_code, 302)
         response = self.client.get(PREFIX + "/help")
         self.failUnlessEqual(response.status_code, 301)
+        for page in ("/staffing/mission/newfromdeal/1/",
+                     "/staffing/mission/newfromdeal/2/",
+                     "/staffing/mission/1/deactivate",
+                     "/staffing/rate/mission/1/consultant/1/"):
+            response = self.client.get(PREFIX + page)
+            self.failUnlessEqual(response.status_code, 302)
 
     def test_not_found_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
