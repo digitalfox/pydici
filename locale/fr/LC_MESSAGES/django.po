@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-17 20:36+0200\n"
-"PO-Revision-Date: 2010-10-17 20:35+0200\n"
+"POT-Creation-Date: 2010-10-18 21:51+0200\n"
+"PO-Revision-Date: 2010-10-18 21:51+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -203,7 +203,7 @@ msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
 #: leads/models.py:86 leads/views.py:101 staffing/models.py:33
-#: staffing/models.py:108
+#: staffing/models.py:111
 msgid "Description"
 msgstr "Description"
 
@@ -226,7 +226,7 @@ msgstr "Géré par"
 msgid "Due date"
 msgstr "Date d'échéance"
 
-#: leads/views.py:103 staffing/models.py:133 templates/leads/review.html:25
+#: leads/views.py:103 staffing/models.py:136 templates/leads/review.html:25
 #: templates/leads/review.html.py:54
 #: templates/staffing/mission_staffing.html:5
 msgid "Staffing"
@@ -310,7 +310,7 @@ msgstr "Haute"
 msgid "Certain"
 msgstr "Certaine"
 
-#: staffing/models.py:32 staffing/views.py:344 staffing/views.py:449
+#: staffing/models.py:32 staffing/views.py:352 staffing/views.py:457
 #: templates/staffing/consultant_base.html:19
 #: templates/staffing/missions.html:21
 msgid "Deal id"
@@ -324,70 +324,70 @@ msgstr "Type"
 msgid "Proba"
 msgstr "Proba"
 
-#: staffing/models.py:103 staffing/views.py:344 staffing/views.py:449
+#: staffing/models.py:106 staffing/views.py:352 staffing/views.py:457
 #: templates/staffing/consultant_staffing.html:15
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/models.py:107 staffing/models.py:117 staffing/models.py:139
-#: staffing/models.py:154
+#: staffing/models.py:110 staffing/models.py:120 staffing/models.py:142
+#: staffing/models.py:157
 msgid "Date"
 msgstr "Date"
 
-#: staffing/models.py:111
+#: staffing/models.py:114
 msgid "Holiday"
 msgstr "Congé"
 
-#: staffing/models.py:118 staffing/models.py:140
+#: staffing/models.py:121 staffing/models.py:143
 #: templates/staffing/consultant_staffing.html:17
 #: templates/staffing/mission_staffing.html:16
 msgid "Load"
 msgstr "Charge"
 
-#: staffing/models.py:119 templates/staffing/consultant_staffing.html:18
+#: staffing/models.py:122 templates/staffing/consultant_staffing.html:18
 #: templates/staffing/mission_staffing.html:17
 msgid "Comments"
 msgstr "Remarques"
 
-#: staffing/models.py:148 templates/staffing/consultant_timesheet.html:7
+#: staffing/models.py:151 templates/staffing/consultant_timesheet.html:7
 #: templates/staffing/mission_timesheet.html:5
 msgid "Timesheet"
 msgstr "Feuille de temps"
 
-#: staffing/models.py:155
+#: staffing/models.py:158
 msgid "No lunch ticket"
 msgstr "Pas de ticket restaurant"
 
-#: staffing/models.py:159
+#: staffing/models.py:162
 msgid "Lunch ticket"
 msgstr "Ticket restaurant"
 
-#: staffing/models.py:165
+#: staffing/models.py:168
 msgid "Daily rate"
 msgstr "Taux journalier"
 
-#: staffing/models.py:169
+#: staffing/models.py:172
 msgid "Financial condition"
 msgstr "Condition financière"
 
-#: staffing/views.py:115
+#: staffing/views.py:113
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:336 staffing/views.py:497
+#: staffing/views.py:344 staffing/views.py:505
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:345
+#: staffing/views.py:353
 msgid "total"
 msgstr "total"
 
-#: staffing/views.py:471 templates/staffing/consultant_timesheet.html:23
+#: staffing/views.py:479 templates/staffing/consultant_timesheet.html:23
 #: templates/staffing/mission_timesheet.html:27
 msgid "Total"
 msgstr "Total"
 
-#: staffing/views.py:520
+#: staffing/views.py:528
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
@@ -645,6 +645,10 @@ msgstr "Entreprises"
 msgid "Leads"
 msgstr "Opportunités commerciales"
 
+#: templates/core/search.html:52
+msgid "Missions"
+msgstr "Missions"
+
 #: templates/crm/clientcompany_detail.html:25
 #: templates/staffing/mission_base.html:51
 msgid "Lead of this mission"
@@ -843,12 +847,6 @@ msgstr "Clients"
 msgid "Current missions"
 msgstr "Missions actuelles"
 
-#: templates/people/consultant_detail.html:40
-#: templates/staffing/consultant_base.html:24
-#, python-format
-msgid "Change mission %(mission)s staffing "
-msgstr "Modifier le staffing de la mission %(mission)s "
-
 #: templates/people/consultant_detail.html:48
 msgid "Current leads as responsible"
 msgstr "Opportunités en tant que responsable"
@@ -890,7 +888,7 @@ msgid "No timesheet data for this month"
 msgstr "Pas de feuille de temps définie pour ce mois-ci"
 
 #: templates/staffing/all_timesheet.html:35
-#: templates/staffing/consultant_timesheet.html:50
+#: templates/staffing/consultant_timesheet.html:54
 msgid "Export this timesheet in a spreadsheet"
 msgstr "Exporter cette feuille de temps dans un tableur"
 
@@ -902,6 +900,11 @@ msgstr "Missions du consultant"
 #: templates/staffing/missions.html:21
 msgid "Probability"
 msgstr "Probabilité"
+
+#: templates/staffing/consultant_base.html:24
+#, python-format
+msgid "Change mission %(mission)s staffing "
+msgstr "Modifier le staffing de la mission %(mission)s "
 
 #: templates/staffing/consultant_base.html:27
 #: templates/staffing/missions.html:35
@@ -942,7 +945,7 @@ msgid "New staffing:"
 msgstr "Nouveau staffing : "
 
 #: templates/staffing/consultant_staffing.html:65
-#: templates/staffing/consultant_timesheet.html:44
+#: templates/staffing/consultant_timesheet.html:47
 #: templates/staffing/mission_staffing.html:64
 msgid "Save"
 msgstr "Enregistrer"
@@ -955,7 +958,12 @@ msgstr "Voir aussi la charge prévisionnelle de ce consultant"
 msgid "Forecast"
 msgstr "Prévisions"
 
-#: templates/staffing/consultant_timesheet.html:48
+#: templates/staffing/consultant_timesheet.html:44
+msgid "Note: Past month timesheet are read only"
+msgstr ""
+"Remarque : les feuilles de temps des mois passés sont en lecture seule."
+
+#: templates/staffing/consultant_timesheet.html:52
 msgid "Working days balance: "
 msgstr "Balance de jours travaillés : "
 
