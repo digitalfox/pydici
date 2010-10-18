@@ -271,6 +271,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     next_date = month + timedelta(days=40)
 
     consultant = Consultant.objects.get(id=consultant_id)
+    readOnly = False # Wether timesheet is readonly or not
 
     if not (request.user.has_perm("staffing.add_timesheet") and
             request.user.has_perm("staffing.change_timesheet") and
@@ -278,6 +279,10 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
         # Only forbid access if the user try to edit someone else staffing
         if request.user.username.upper() != consultant.trigramme:
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+
+        # A consultant can only edit his own timesheet on current month and 5 days after
+        if (date.today() - month).days > 5:
+            readOnly = True
 
 
     staffings = Staffing.objects.filter(consultant=consultant)
@@ -296,6 +301,10 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     timesheetData, timesheetTotal, overbooking = gatherTimesheetData(consultant, missions, month)
 
     if request.method == 'POST': # If the form has been submitted...
+        if readOnly:
+            # We should never go here as validate button is not displayed when read only...
+            # This is just a security control
+            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
         form = TimesheetForm(request.POST, days=days, missions=missions,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
         if form.is_valid(): # All validation rules pass
@@ -317,6 +326,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     return render_to_response("staffing/consultant_timesheet.html", {
                                 "consultant": consultant,
                                "form": form,
+                                "read_only" : readOnly,
                                "days": days,
                                "month": month,
                                "missions": missions,

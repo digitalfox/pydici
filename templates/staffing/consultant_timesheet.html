@@ -40,9 +40,13 @@
             </tr>
     </table>
     <br/>
+    {% if read_only %}
+        <em>{% trans "Note: Past month timesheet are read only" %}</em>
+    {% else %}
         <div class="submit-row">
             <input type="submit" value="{% trans 'Save' %}"/>
         </div>
+    {% endif %}
     </form>
     {% if working_days_balance %}
     <br/><p>{% trans "Working days balance: " %} {{ working_days_balance }}</p>
