@@ -98,3 +98,4 @@ def saveFormsetAndLog(formset, request):
         staffing.last_user = unicode(request.user)
         staffing.update_date = now
         staffing.save()
+

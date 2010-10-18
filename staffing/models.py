@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models import Q
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.signals import post_save
 
 from datetime import datetime
 
@@ -84,7 +85,10 @@ class Mission(models.Model):
 
     def sister_missions(self):
         """Return other missions linked to the same deal"""
-        return self.lead.mission_set.exclude(id=self.id)
+        if self.lead:
+            return self.lead.mission_set.exclude(id=self.id)
+        else:
+            return []
 
     def consultant_rates(self):
         """@return: dict with consultant as key and daily rate as value or 0 if not defined"""
@@ -166,3 +170,19 @@ class FinancialCondition(models.Model):
     class Meta:
         unique_together = (("consultant", "mission", "daily_rate"),)
         verbose_name = _("Financial condition")
+
+
+# Signal definition
+def updateLeadPrice(sender, **kwargs):
+    """Called by mission update signal to update lead total price"""
+    mission = kwargs["instance"]
+    price = 0
+    if mission.lead:
+        for sisterMission in mission.lead.mission_set.all():
+            if sisterMission.price:
+                price += sisterMission.price
+        mission.lead.sales = price
+        mission.lead.save()
+
+# Connecting signals
+post_save.connect(updateLeadPrice, sender=Mission)
