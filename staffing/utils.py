@@ -26,14 +26,15 @@ def gatherTimesheetData(consultant, missions, month):
     totalPerDay = [0] * month_days(month)
     next_month = (month + timedelta(days=40)).replace(day=1)
     for mission in missions:
-        for timesheet in Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission):
-            if timesheet.working_date.month == month.month:
-                timesheetData["charge_%s_%s" % (timesheet.mission.id, timesheet.working_date.day)] = timesheet.charge
-                if mission.id in timesheetTotal:
-                    timesheetTotal[mission.id] += timesheet.charge
-                else:
-                    timesheetTotal[mission.id] = timesheet.charge
-                totalPerDay[timesheet.working_date.day - 1] += timesheet.charge
+        timesheets = Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission)
+        timesheets = timesheets.filter(working_date__gte=month).filter(working_date__lt=next_month)
+        for timesheet in timesheets:
+            timesheetData["charge_%s_%s" % (timesheet.mission.id, timesheet.working_date.day)] = timesheet.charge
+            if mission.id in timesheetTotal:
+                timesheetTotal[mission.id] += timesheet.charge
+            else:
+                timesheetTotal[mission.id] = timesheet.charge
+            totalPerDay[timesheet.working_date.day - 1] += timesheet.charge
     # Gather lunck ticket data
     totalTicket = 0
     lunchTickets = LunchTicket.objects.filter(consultant=consultant)
