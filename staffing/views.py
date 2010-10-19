@@ -21,7 +21,7 @@ from django.utils.html import escape
 
 
 
-from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition
+from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from pydici.people.models import Consultant
 from pydici.leads.models import Lead
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
@@ -441,8 +441,8 @@ def all_timesheet(request, year=None, month=None):
     else:
         month = date.today().replace(day=1) # We use the first day to represent month
 
-    previous_date = month - timedelta(days=5)
-    next_date = month + timedelta(days=40)
+    previous_date = (month - timedelta(days=5)).replace(day=1)
+    next_date = (month + timedelta(days=40)).replace(day=1)
 
     timesheets = Timesheet.objects.filter(working_date__gte=month) # Filter on current month
     timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1)) # Discard next month
@@ -487,9 +487,20 @@ def all_timesheet(request, year=None, month=None):
         # Set charges to None to allow proper message on template
         charges = None
 
+    # Add days without lunch ticket
+    ticketData = []
+    for consultant in consultants:
+        lunchTickets = LunchTicket.objects.filter(consultant=consultant)
+        lunchTickets = lunchTickets.filter(lunch_date__gte=month).filter(lunch_date__lt=next_date)
+        ticketData.append(lunchTickets.count())
+
+    if charges:
+        charges.append([_("Days without lunch ticket"), ""] + ticketData)
+
     #          , Cons1, Cons2, Cons3
     # Mission 1, M1/C1, M1/C2, M1/C3
     # Mission 2, M2/C1, M2/C2, M2/C3
+    # with. tk   C1,    C2,    C3...     
 
     if "csv" in request.GET and charges:
         # Return CSV timesheet
