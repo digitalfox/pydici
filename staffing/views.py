@@ -62,6 +62,7 @@ def mission_staffing(request, mission_id):
     return render_to_response('staffing/mission_staffing.html',
                               {"formset": formset,
                                "mission": mission,
+                               "link_to_staffing" : True, # for mission_base template links
                                "consultant_rates": mission.consultant_rates(),
                                "user": request.user},
                                RequestContext(request))
@@ -98,6 +99,7 @@ def consultant_staffing(request, consultant_id):
                               {"formset": formset,
                                "consultant": consultant,
                                "missions": missions,
+                               "link_to_staffing" : True, # for consultant_base template links
                                "user": request.user },
                                RequestContext(request))
 
@@ -334,6 +336,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
                                "overbooking": overbooking,
                                "next_date": next_date,
                                "previous_date": previous_date,
+                               "link_to_staffing" : False, # for consultant_base template links
                                "user": request.user },
                                RequestContext(request))
 
@@ -426,6 +429,7 @@ def mission_timesheet(request, mission_id):
                                 "staffing_months": staffingMonths,
                                 "mission_data": missionData,
                                 "consultant_rates" : consultant_rates,
+                                "link_to_staffing" : False, # for mission_base template links
                                "user": request.user },
                                RequestContext(request))
 
