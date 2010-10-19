@@ -90,13 +90,21 @@ def compact_text(text):
 
 def to_int_or_round(x):
     """Convert a float to int if decimal part is equal to 0
-    else round it with one decimal
-    @param x: float to be converted
-    @requires: int or float"""
-    if (int(x) - x) == 0:
-        return int(x)
+    else round it with one decimal.
+    If list/tuple is given, recurse on it.
+    Objects other than float are leaved as is.
+    @param x: object to be converted"""
+    if isinstance(x, (list, tuple)):
+        # Recurse
+        return map(to_int_or_round, x)
+    if isinstance(x, float):
+        if (int(x) - x) == 0:
+            return int(x)
+        else:
+            return round(x, 1)
     else:
-        return round(x, 1)
+        # Return as is
+        return x
 
 def working_days(monthDate, holidays=[]):
     """Compute the number of working days of a month

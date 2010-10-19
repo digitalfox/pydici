@@ -422,6 +422,8 @@ def mission_timesheet(request, mission_id):
         margin = 0
     missionData.append((None, timesheetTotal, staffingTotal))
 
+    missionData = map(to_int_or_round, missionData)
+
     return render_to_response("staffing/mission_timesheet.html", {
                                 "mission": mission,
                                 "margin": margin,
