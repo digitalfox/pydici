@@ -283,7 +283,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
 
         # A consultant can only edit his own timesheet on current month and 5 days after
-        if (date.today() - month).days > 5:
+        if (date.today() - next_date.replace(day=1)).days > 5:
             readOnly = True
 
 
