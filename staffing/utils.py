@@ -7,7 +7,7 @@ appropriate to live in Staffing models or view
 @license: GPL v3 or newer
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import transaction
 
@@ -24,6 +24,7 @@ def gatherTimesheetData(consultant, missions, month):
     timesheetTotal = {}
     overbooking = []
     totalPerDay = [0] * month_days(month)
+    next_month = (month + timedelta(days=40)).replace(day=1)
     for mission in missions:
         for timesheet in Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission):
             if timesheet.working_date.month == month.month:
@@ -35,7 +36,9 @@ def gatherTimesheetData(consultant, missions, month):
                 totalPerDay[timesheet.working_date.day - 1] += timesheet.charge
     # Gather lunck ticket data
     totalTicket = 0
-    for lunchTicket in LunchTicket.objects.filter(consultant=consultant).filter(lunch_date__gte=month):
+    lunchTickets = LunchTicket.objects.filter(consultant=consultant)
+    lunchTickets = lunchTickets.filter(lunch_date__gte=month).filter(lunch_date__lt=next_month)
+    for lunchTicket in lunchTickets:
         timesheetData["lunch_ticket_%s" % lunchTicket.lunch_date.day] = lunchTicket.no_ticket
         totalTicket += 1
     timesheetTotal["ticket"] = totalTicket
