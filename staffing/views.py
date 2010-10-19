@@ -213,7 +213,7 @@ def pdc_review(request, year=None, month=None):
                 rate.append(100.0 * total[month][indicator] / ndays)
             else:
                 rate.append(100.0 * total[month][indicator] / (ndays - total[month]["holidays"]))
-        rates.append(map(lambda x: to_int_or_round(x), rate))
+        rates.append(map(to_int_or_round, rate))
 
     # Format total dict into list
     total = total.items()
