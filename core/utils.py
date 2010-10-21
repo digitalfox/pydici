@@ -88,9 +88,9 @@ def compact_text(text):
     text = EXTRA_NLINE.sub("\n\n", text)
     return text
 
-def to_int_or_round(x):
+def to_int_or_round(x, precision=1):
     """Convert a float to int if decimal part is equal to 0
-    else round it with one decimal.
+    else round it with "precision" (default 1) decimal.
     If list/tuple is given, recurse on it.
     Objects other than float are leaved as is.
     @param x: object to be converted"""
@@ -101,7 +101,7 @@ def to_int_or_round(x):
         if (int(x) - x) == 0:
             return int(x)
         else:
-            return round(x, 1)
+            return round(x, precision)
     else:
         # Return as is
         return x

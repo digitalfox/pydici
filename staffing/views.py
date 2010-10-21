@@ -420,6 +420,7 @@ def mission_timesheet(request, mission_id):
     staffingTotal = [sum(t) for t in staffingTotal]
     if mission.price:
         margin = float(mission.price) - timesheetTotal[-1] - staffingTotal[-1]
+        margin = to_int_or_round(margin, 3)
     else:
         margin = 0
     missionData.append((None, timesheetTotal, staffingTotal))
