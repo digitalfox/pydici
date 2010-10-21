@@ -302,27 +302,29 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
 
     timesheetData, timesheetTotal, overbooking = gatherTimesheetData(consultant, missions, month)
 
+    holiday_days = [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=next_date)]
+
     if request.method == 'POST': # If the form has been submitted...
         if readOnly:
             # We should never go here as validate button is not displayed when read only...
             # This is just a security control
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
-        form = TimesheetForm(request.POST, days=days, missions=missions,
+        form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
         if form.is_valid(): # All validation rules pass
             # Process the data in form.cleaned_data
             saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
             # Recreate a new form for next update and compute again totals
             timesheetData, timesheetTotal, overbooking = gatherTimesheetData(consultant, missions, month)
-            form = TimesheetForm(days=days, missions=missions, forecastTotal=forecastTotal,
-                                 timesheetTotal=timesheetTotal, initial=timesheetData)
+            form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days,
+                                 forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData)
     else:
         # An unbound form
-        form = TimesheetForm(days=days, missions=missions, forecastTotal=forecastTotal,
-                             timesheetTotal=timesheetTotal, initial=timesheetData)
+        form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days,
+                             forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData)
 
     # Compute workings days of this month and compare it to declared days
-    wDays = working_days(month, [h.day for h in Holiday.objects.all()])
+    wDays = working_days(month, holiday_days)
     wDaysBalance = wDays - sum(timesheetTotal.values())
 
     return render_to_response("staffing/consultant_timesheet.html", {

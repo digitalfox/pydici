@@ -52,6 +52,7 @@ class TimesheetForm(forms.Form):
         missions = kwargs.pop("missions", None)
         forecastTotal = kwargs.pop("forecastTotal", [])
         timesheetTotal = kwargs.pop("timesheetTotal", [])
+        holiday_days = kwargs.pop("holiday_days", [])
         super(TimesheetForm, self).__init__(*args, **kwargs)
 
         for mission in missions:
@@ -60,14 +61,14 @@ class TimesheetForm(forms.Form):
                 self.fields[key] = forms.DecimalField(required=False, min_value=0, max_value=1, decimal_places=2)
                 self.fields[key].widget.attrs.setdefault("size", 2) # Reduce default size
                 # Order tabindex by day
-                if day.isoweekday() in (6, 7):
+                if day.isoweekday() in (6, 7) or day in holiday_days:
                     tabIndex = 100000 # Skip week-end from tab path
+                    # Color week ends in grey
+                    self.fields[key].widget.attrs.setdefault("style", "background-color: LightGrey;")
                 else:
                     tabIndex = day.day
                 self.fields[key].widget.attrs.setdefault("tabindex", tabIndex)
-                if day.weekday() in (5, 6):
-                    # Color week ends in grey
-                    self.fields[key].widget.attrs.setdefault("style", "background-color: LightGrey;")
+
                 if day.day == 1: # Only show label for first day
                     self.fields[key].label = unicode(mission)
                 else:
