@@ -45,12 +45,12 @@ def gatherTimesheetData(consultant, missions, month):
     timesheetTotal["ticket"] = totalTicket
     # Compute warnings (overbooking and no data)
     for i in totalPerDay:
-        if i > 1:
+        if i > 1: # Surbooking
             warning.append(1)
-        elif i == 0:
-            warning.append(2)
-        else:
+        elif i == 1: # Ok
             warning.append(0)
+        else: # warning (no data, or half day)
+            warning.append(2)
     return (timesheetData, timesheetTotal, warning)
 
 @transaction.commit_on_success
