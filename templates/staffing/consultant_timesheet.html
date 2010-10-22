@@ -10,13 +10,13 @@
     <a href="{% url pydici.staffing.views.consultant_staffing consultant.id %}" class='changelink'>{% trans "See also forecast staffing of this consultant" %}</a>
     <br/><br/>
     <form action="" method="POST">
-    <table class='small-form-row'>
-            <tr style="text-align:center">
+    <table class='small-form-row' style="text-align:center">
+            <tr>
             {% for day in days %}
                 <td></td><td>{{ day|date:"j" }}</td>
             {% endfor %}
             <td></td><td></td></tr>
-            <tr style="text-align:center">
+            <tr>
             {% for day in days %}
                 <td></td><td>{{ day|date:"D" }}</td>
             {% endfor %}
@@ -24,16 +24,16 @@
             <tr>
             {% for field in form  %}
                 {% if field.is_hidden %}
-	               <td style="text-align:center; font-weight:bold;">{{ field.label|split:" "|first }}</td>
-	               <td style="text-align:center">{{ field.label|split:" "|last }}</td>
+	               <td style="font-weight:bold;">{{ field.label|split:" "|first|floatformat }}</td>
+	               <td>{{ field.label|split:" "|last|floatformat }}</td>
 	               </tr><tr>
                 {% else %}
-	               <td>{{ field.label }}{{ field.errors }}</td>
+	               <td style="text-align:left">{{ field.label }}{{ field.errors }}</td>
 	               <td>{{ field }}</td>
                 {% endif %}
             {% endfor %}
             </tr>
-            <tr style="text-align:center">
+            <tr>
             {% for i in warning %}
                 <td></td><td>
                 {% ifequal i 0 %}<img src="{{ MEDIA_URL }}/img/admin/icon_success.gif"/>{% endifequal %}
@@ -53,7 +53,7 @@
     {% endif %}
     </form>
     {% if working_days_balance %}
-    <br/><p>{% trans "Working days balance: " %} {{ working_days_balance }}</p>
+    <br/><p>{% trans "Working days balance: " %} {{ working_days_balance|floatformat }}</p>
     {% endif %}
     <a href="{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=month.year, month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a> 
 {% endblock %}
