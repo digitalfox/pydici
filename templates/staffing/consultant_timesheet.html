@@ -34,8 +34,12 @@
             {% endfor %}
             </tr>
             <tr style="text-align:center">
-            {% for i in overbooking %}
-                <td></td><td> {% if i %}<img src="{{ MEDIA_URL }}/img/admin/icon_alert.gif"/>{% endif %}</td>
+            {% for i in warning %}
+                <td></td><td>
+                {% ifequal i 0 %}<img src="{{ MEDIA_URL }}/img/admin/icon_success.gif"/>{% endifequal %}
+                {% ifequal i 1 %}<img src="{{ MEDIA_URL }}/img/admin/icon_alert.gif"/>  {% endifequal %}
+                {% ifequal i 2 %}<img src="{{ MEDIA_URL }}/img/admin/icon-no.gif"/>  {% endifequal %}
+                </td>
             {% endfor %}
             </tr>
     </table>

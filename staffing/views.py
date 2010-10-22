@@ -300,7 +300,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     if "csv" in request.GET:
         return consultant_csv_timesheet(request, consultant, days, month, missions)
 
-    timesheetData, timesheetTotal, overbooking = gatherTimesheetData(consultant, missions, month)
+    timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
 
     holiday_days = [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=next_date)]
 
@@ -315,7 +315,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
             # Process the data in form.cleaned_data
             saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
             # Recreate a new form for next update and compute again totals
-            timesheetData, timesheetTotal, overbooking = gatherTimesheetData(consultant, missions, month)
+            timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
             form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days,
                                  forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData)
     else:
@@ -327,6 +327,11 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     wDays = working_days(month, holiday_days)
     wDaysBalance = wDays - sum(timesheetTotal.values())
 
+    # Don't emit warning for no data during week ends and holydays
+    for day in days:
+        if day.isoweekday() in (6, 7) or day in holiday_days:
+            warning[day.day - 1] = None
+
     return render_to_response("staffing/consultant_timesheet.html", {
                                 "consultant": consultant,
                                "form": form,
@@ -335,7 +340,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
                                "month": month,
                                "missions": missions,
                                "working_days_balance" : wDaysBalance,
-                               "overbooking": overbooking,
+                               "warning": warning,
                                "next_date": next_date,
                                "previous_date": previous_date,
                                "link_to_staffing" : False, # for consultant_base template links

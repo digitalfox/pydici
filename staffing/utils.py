@@ -16,13 +16,13 @@ from pydici.core.utils import month_days
 
 def gatherTimesheetData(consultant, missions, month):
     """Gather existing timesheet timesheetData
-    @returns: (timesheetData, timesheetTotal, overbooking)
+    @returns: (timesheetData, timesheetTotal, warning)
     timesheetData represent timesheet form post timesheetData as a dict
     timesheetTotal is a fffddict of total charge (key is mission id)
-    overbooking is a list of 0 (no surbooking) or 1 (surbooking). One entry per day"""
+    warning is a list of 0 (ok) or 1 (surbooking) or 2 (no data). One entry per day"""
     timesheetData = {}
     timesheetTotal = {}
-    overbooking = []
+    warning = []
     totalPerDay = [0] * month_days(month)
     next_month = (month + timedelta(days=40)).replace(day=1)
     for mission in missions:
@@ -43,13 +43,15 @@ def gatherTimesheetData(consultant, missions, month):
         timesheetData["lunch_ticket_%s" % lunchTicket.lunch_date.day] = lunchTicket.no_ticket
         totalTicket += 1
     timesheetTotal["ticket"] = totalTicket
-    # Compute overbooking
+    # Compute warnings (overbooking and no data)
     for i in totalPerDay:
         if i > 1:
-            overbooking.append(1)
+            warning.append(1)
+        elif i == 0:
+            warning.append(2)
         else:
-            overbooking.append(0)
-    return (timesheetData, timesheetTotal, overbooking)
+            warning.append(0)
+    return (timesheetData, timesheetTotal, warning)
 
 @transaction.commit_on_success
 def saveTimesheetData(consultant, month, data, oldData):
