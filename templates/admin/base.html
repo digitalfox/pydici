@@ -10,6 +10,9 @@
 {% load i18n %}
 {% load pydici_filters %}
 
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% admin_media_prefix %}{% endfilter %}";</script>
+
+
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.autocomplete.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/admin/ajax_select.js"></script>
