@@ -325,7 +325,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
 
     # Compute workings days of this month and compare it to declared days
     wDays = working_days(month, holiday_days)
-    wDaysBalance = wDays - sum(timesheetTotal.values())
+    wDaysBalance = wDays - (sum(timesheetTotal.values()) - timesheetTotal["ticket"])
 
     # Don't emit warning for no data during week ends and holydays
     for day in days:
