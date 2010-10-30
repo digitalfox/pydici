@@ -14,8 +14,10 @@ from email.MIMEText import MIMEText
 from email.Encoders import encode_7or8bit
 from email.Header import Header
 import re
+import os
 from datetime import date, timedelta
 
+os.environ['MPLCONFIGDIR'] = '/tmp' # Needed for matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 from django.template.loader import get_template

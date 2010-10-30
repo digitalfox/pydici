@@ -7,10 +7,8 @@ Pydici leads views. Http request are processed here.
 
 import csv
 from datetime import datetime, timedelta, date
-import os
 import itertools
 
-os.environ['MPLCONFIGDIR'] = '/tmp' # Needed for matplotlib
 from matplotlib.figure import Figure
 
 from django.core import urlresolvers
