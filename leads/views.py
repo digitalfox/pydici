@@ -8,19 +8,18 @@ Pydici leads views. Http request are processed here.
 import csv
 from datetime import datetime, timedelta, date
 import os
-from django.core import urlresolvers
+import itertools
 
 os.environ['MPLCONFIGDIR'] = '/tmp' # Needed for matplotlib
 from matplotlib.figure import Figure
 
-
+from django.core import urlresolvers
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.models import LogEntry
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext as _
-from django.db import connection
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.template import RequestContext
 
 from pydici.core.utils import send_lead_mail, print_png
@@ -142,17 +141,16 @@ def review(request):
 def graph_stat_pie(request):
     """Nice graph pie of lead state repartition using matplotlib
     @todo: per year, with start-end date"""
-    stateDict = dict(Lead.STATES)
-    states = [i[0] for i in Lead.STATES]
-    cursor = connection.cursor()
-    cursor.execute("select  state, count(*) from leads_lead  group by state")
-    data = list(cursor.fetchall())
-    data.sort(cmp=lambda x, y: cmp(states.index(x[0]), states.index(y[0])))
+    statesCount = Lead.objects.values("state").annotate(count=Count("state")).order_by("state")
+    statesCount = dict([[i["state"], i["count"]] for i in statesCount]) # Transform it to dict
+    data = []
+    for state, stateName in Lead.STATES:
+        data.append([stateName, statesCount.get(state, 0)])
     fig = Figure(figsize=(8, 8))
     fig.set_facecolor("white")
     ax = fig.add_subplot(111)
     ax.pie([x[1] for x in data], colors=COLORS,
-           labels=["%s\n(%s)" % (stateDict[x[0]], x[1]) for x in data],
+           labels=["%s\n(%s)" % (x[0], x[1]) for x in data],
            shadow=True, autopct='%1.1f%%')
 
     return print_png(fig)
@@ -162,7 +160,7 @@ def graph_stat_bar(request):
     @todo: per year, with start-end date"""
     data = {} # Graph data
     bars = [] # List of bars - needed to add legend
-    colors = list(COLORS)
+    colors = itertools.cycle(COLORS)
 
     # Gathering data
     for lead in Lead.objects.all():
@@ -182,7 +180,7 @@ def graph_stat_bar(request):
     for state in Lead.STATES:
         ydata = [len([i for i in x if i.state == state[0]]) for x in data.values()]
         b = ax.bar(data.keys(), ydata, bottom=bottom, align="center", width=15,
-               color=colors.pop(0))
+               color=colors.next())
         bars.append(b[0])
         for i in range(len(ydata)):
             bottom[i] += ydata[i] # Update bottom
