@@ -11,7 +11,6 @@ import os
 from django.core import urlresolvers
 
 os.environ['MPLCONFIGDIR'] = '/tmp' # Needed for matplotlib
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 
@@ -24,7 +23,7 @@ from django.db import connection
 from django.db.models import Q
 from django.template import RequestContext
 
-from pydici.core.utils import send_lead_mail
+from pydici.core.utils import send_lead_mail, print_png
 from pydici.leads.models import Lead
 from pydici.people.models import SalesMan
 import pydici.settings
@@ -196,99 +195,3 @@ def graph_stat_bar(request):
     fig.autofmt_xdate()
 
     return print_png(fig)
-
-def graph_stat_salesmen(request):
-    """Nice graph bar of lead per IA during time using matplotlib
-    @todo: per year, with start-end date"""
-    data = {} # Graph data
-    lines = [] # List of lines - needed to add legend
-    colors = list(COLORS)
-
-    # Gathering data
-    for lead in Lead.objects.all():
-        #Using first day of each month as key date
-        kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
-        if not data.has_key(kdate):
-            data[kdate] = [] # Create key with empty list
-        data[kdate].append(lead)
-
-    # Setting up graph
-    fig = Figure(figsize=(8, 8))
-    ax = fig.add_subplot(111)
-
-    ymax = 0
-    # Draw a bar for each state
-    salesMen = list(SalesMan.objects.all()) + [None]
-    for salesMan in salesMen:
-        if len(colors) == 0:
-            colors = list(COLORS)
-        color = colors.pop()
-        for state, style in (("LOST", "--^"), ("WON", "-o")):
-            ydata = [len([i for i in x if (i.state == state and i.salesman == salesMan)]) for x in data.values()]
-            line = ax.plot(data.keys(), ydata, style, color=color)
-            if max(ydata) > ymax:
-                ymax = max(ydata)
-        lines.append(line)
-
-    # Add Legend and setup axes
-    ax.set_xticks(data.keys())
-    ax.set_xticklabels(data.keys())
-    ax.set_ylim(ymax=ymax + 10)
-    ax.legend(lines, [i.name for i in SalesMan.objects.all()] + ["Aucun"])
-    ax.set_title(_("Leads per salesmen (solid line: won. Dotted line: lost)"))
-
-    return print_png(fig)
-
-
-def IA_stats(request):
-    """Statistics about IA performance (hé hé)
-    @todo: make it per year"""
-
-    leadData = {} # Lead data group by month
-    salesMenData = {} # Leads by state group by month for each salesman
-    salesMen = list(SalesMan.objects.all()) + [None]
-
-    # Gathering data
-    for lead in Lead.objects.all():
-        #Using first day of each month as key date
-        kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
-        if not leadData.has_key(kdate):
-            leadData[kdate] = [] # Create key with empty list
-        leadData[kdate].append(lead)
-
-    # Years of data
-    years = range(min(leadData.keys()).year, max(leadData.keys()).year + 1)
-
-    data = {}
-    for year in years:
-        data[year] = {}
-        leadSum = {}
-        for salesMan in salesMen:
-            data[year][salesMan] = {}
-            for month in range(1, 13):
-                if not leadSum.has_key(month):
-                    leadSum[month] = {}
-                data[year][salesMan][month] = {}
-                for state, label in (("LOST", "P"), ("WON", "G"), ("FORGIVEN", "A")):
-                    leads = leadData.get(date(year=year, month=month, day=1), [])
-                    n = len([lead for lead in leads if (lead.state == state and lead.salesman == salesMan)])
-                    data[year][salesMan][month][label] = n
-                    if not leadSum[month].has_key(label):
-                        leadSum[month][label] = 0
-                    leadSum[month][label] += n
-        data[year]["Total"] = leadSum
-
-    return render_to_response("leads/IA_stats.html",
-                              {"data": data},
-                              RequestContext(request))
-
-
-def print_png(fig):
-    """Return http response with fig rendered as png
-    @param fig: fig to render
-    @type fig: matplotlib.Figure
-    @return: HttpResponse"""
-    canvas = FigureCanvas(fig)
-    response = HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response

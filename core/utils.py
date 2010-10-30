@@ -16,8 +16,11 @@ from email.Header import Header
 import re
 from datetime import date, timedelta
 
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
 from django.template.loader import get_template
 from django.template import RequestContext
+from django.http import HttpResponse
 
 import pydici.settings
 
@@ -131,3 +134,13 @@ def month_days(monthDate):
         n += 1
         monthDate += day
     return n
+
+def print_png(fig):
+    """Return http response with fig rendered as png
+    @param fig: fig to render
+    @type fig: matplotlib.Figure
+    @return: HttpResponse"""
+    canvas = FigureCanvas(fig)
+    response = HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    return response

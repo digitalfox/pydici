@@ -59,7 +59,6 @@ pydici_patterns += patterns('pydici.core.views',
 pydici_patterns += patterns('pydici.leads.views',
     # Lead module
     (r'^leads/review', 'review'),
-    (r'^leads/IA_stats', 'IA_stats'),
     (r'^leads/csv/(?P<target>.*)', 'csv_export'),
     (r'^leads/(?P<lead_id>\d+)/$', 'detail'),
     (r'^leads/sendmail/(?P<lead_id>\d+)/$', 'mail_lead'),
@@ -67,7 +66,6 @@ pydici_patterns += patterns('pydici.leads.views',
     url(r'^leads/mail/html', 'summary_mail', { "html" : True  }, name="lead-mail-html"),
     (r'^leads/graph/pie', 'graph_stat_pie'),
     (r'^leads/graph/bar', 'graph_stat_bar'),
-    (r'^leads/graph/salesmen', 'graph_stat_salesmen'),
 )
 
 pydici_patterns += patterns('pydici.staffing.views',

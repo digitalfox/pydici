@@ -62,7 +62,6 @@ class SimpleTest(TestCase):
                      "/staffing/timesheet/all/2010/11",
                      "/leads/graph/pie",
                      "/leads/graph/bar",
-                     "/leads/graph/salesmen",
                      "/people/consultant/1/",
                      "/people/consultant/2/",
                      "/people/consultant/3/",
