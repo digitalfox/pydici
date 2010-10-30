@@ -5,9 +5,9 @@
 .dashboard .module table td { white-space:nowrap; }
 .dashboard .module table td a { display:block; padding-right:.6em; }
 
-.dashboard .imodule table th { width:100%; }
+.dashboard .imodule table { width:100%; }
 .dashboard .imodule table td { white-space:wrap; }
-.dashboard .imodule table td a { display:block; padding-right:.6em; }
+.dashboard .imodule table td a { display:block; }
 
 /*  RECENT ACTIONS MODULE  */
 .module ul.actionlist { margin-left:0; }
