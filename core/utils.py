@@ -15,7 +15,7 @@ from email.Encoders import encode_7or8bit
 from email.Header import Header
 import re
 import os
-from datetime import date, timedelta
+from datetime import timedelta
 
 os.environ['MPLCONFIGDIR'] = '/tmp' # Needed for matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas

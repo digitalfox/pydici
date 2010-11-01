@@ -56,49 +56,46 @@ def index(request):
 def search(request):
     """Very simple search function on all major pydici objects"""
 
-    form = SearchForm()
     consultants = None
     clientCompanies = None
     leads = None
     missions = None
 
-    if request.method == "POST":
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            words = request.POST["search"]
-            words = words.split()
+    words = request.GET.get("q", "")
+    words = words.split()
 
-            # Consultant
-            consultants = Consultant.objects.filter(active=True)
-            for word in words:
-                consultants = consultants.filter(Q(name__icontains=word) |
-                                                 Q(trigramme__icontains=word))
+    if words:
+        # Consultant
+        consultants = Consultant.objects.filter(active=True)
+        for word in words:
+            consultants = consultants.filter(Q(name__icontains=word) |
+                                             Q(trigramme__icontains=word))
 
-            # Client Company
-            clientCompanies = ClientCompany.objects.all()
-            for word in words:
-                clientCompanies = clientCompanies.filter(name__icontains=word)
+        # Client Company
+        clientCompanies = ClientCompany.objects.all()
+        for word in words:
+            clientCompanies = clientCompanies.filter(name__icontains=word)
 
-            # Leads
-            leads = Lead.objects.all()
-            for word in words:
-                leads = leads.filter(Q(name__icontains=word) |
-                                     Q(description__icontains=word))
+        # Leads
+        leads = Lead.objects.all()
+        for word in words:
+            leads = leads.filter(Q(name__icontains=word) |
+                                 Q(description__icontains=word))
 
-            # Missions
-            missions = Mission.objects.filter(active=True)
-            for word in words:
-                missions = missions.filter(description__icontains=word)
+        # Missions
+        missions = Mission.objects.filter(active=True)
+        for word in words:
+            missions = missions.filter(description__icontains=word)
 
-            # Add missions from lead
-            missions = set(missions)
-            for lead in leads:
-                for mission in lead.mission_set.all():
-                    missions.add(mission)
-            missions = list(missions)
+        # Add missions from lead
+        missions = set(missions)
+        for lead in leads:
+            for mission in lead.mission_set.all():
+                missions.add(mission)
+        missions = list(missions)
 
     return render_to_response("core/search.html",
-                              {"form" : form,
+                              {"query" : " ".join(words),
                                "consultants": consultants,
                                "client_companies" : clientCompanies,
                                "leads" : leads,

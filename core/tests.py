@@ -29,6 +29,9 @@ class SimpleTest(TestCase):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         for page in ("/",
                      "/search",
+                     "/search?q=lala",
+                     "/search?q=a",
+                     "/search?q=a+e",
                      "/leads/1/",
                      "/leads/2/",
                      "/leads/3/",

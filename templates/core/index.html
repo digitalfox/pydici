@@ -128,11 +128,10 @@
         <h3>{% trans "Search" %}</h3>
         <div id="toolbar">
         
-	    <form action="{% url search %}" method="POST">        
-	        <div>
-	            
+	    <form action="{% url search %}" method="GET">        
+	        <div>	            
 	            <label for="searchbar"><img src="/media/img/admin/icon_searchbox.png" alt="Search" /></label>
-	            <input id="id_search" type="text" name="search" maxlength="100" />
+	            <input type="text" name="q" maxlength="100" />
 	        
 	        <input type="submit" value="{% trans 'Go' %}"/>
 	        </div>

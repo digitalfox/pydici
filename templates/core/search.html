@@ -12,15 +12,22 @@
 <div id="content-main">
     <h1>{% trans "Pydici search" %}</h1>
 
-    <form action="{% url search %}" method="POST">        
-        {% for field in form %}
-            {{ field.errors }}
+    <form action="{% url search %}" method="GET">        
             <label for="searchbar"><img src="{% admin_media_prefix %}img/admin/icon_searchbox.png" alt="Search" /></label>
-            {{ field }}
-        {% endfor %}
-        <input type="submit" value="{% trans 'Go' %}"/>
+            <input type="text", name="q", value="{{ query|escape }}", maxlength="100" />
+            <input type="submit" value="{% trans 'Go' %}"/>
     </form>
 
+<br/><br/>
+
+{% if query %}
+    {% if consultants or companies or leads or missions %}
+        <h1>{% blocktrans with query|escape as value %}Search results for <em>{{ value }}</em>:{% endblocktrans %}</h1>
+    {% else %}
+        <h1>{% blocktrans with query|escape as value %}No results for <em>{{ value }}</em>{% endblocktrans %}</h1>
+    {% endif %}
+{% endif %}
+    
 {% if consultants %}
     <h2>{% trans "Consultants"%}</h2>
     <ul>
