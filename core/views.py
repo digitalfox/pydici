@@ -30,19 +30,19 @@ def index(request):
     consultants = Consultant.objects.filter(trigramme__iexact=request.user.username)
     if consultants:
         consultant = consultants[0]
-        myLeadsAsResponsible = set(consultant.lead_responsible.active())
-        myLeadsAsStaffee = consultant.lead_set.active()
-        myLatestArchivedLeads = set((consultant.lead_responsible.passive().order_by("-update_date")
-                                  | consultant.lead_set.passive().order_by("-update_date"))[:10])
+        myLeadsAsResponsible = set(consultant.lead_responsible.active().select_related())
+        myLeadsAsStaffee = consultant.lead_set.active().select_related()
+        myLatestArchivedLeads = set((consultant.lead_responsible.passive().select_related().order_by("-update_date")
+                                  | consultant.lead_set.passive().select_related().order_by("-update_date"))[:10])
 
     salesmen = SalesMan.objects.filter(trigramme__iexact=request.user.username)
     if salesmen:
         salesman = salesmen[0]
-        myLeadsAsResponsible.update(salesman.lead_set.active())
-        myLatestArchivedLeads.update(salesman.lead_set.passive().order_by("-update_date")[:10])
+        myLeadsAsResponsible.update(salesman.lead_set.active().select_related())
+        myLatestArchivedLeads.update(salesman.lead_set.passive().select_related().order_by("-update_date")[:10])
 
 
-    latestLeads = Lead.objects.all().order_by("-update_date")[:10]
+    latestLeads = Lead.objects.all().select_related().order_by("-update_date")[:10]
 
     return render_to_response("core/index.html",
                               {"latest_leads": latestLeads,
