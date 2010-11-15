@@ -13,6 +13,7 @@ from django.template import RequestContext
 
 from pydici.people.models import Consultant
 from pydici.staffing.models import Mission, Staffing, Timesheet
+from pydici.crm.models import ClientCompany
 
 def consultant_detail(request, consultant_id):
     """Summary page of consultant activity"""
@@ -21,9 +22,7 @@ def consultant_detail(request, consultant_id):
         staff = consultant.consultant_set.exclude(id=consultant.id)
         # Compute user current mission based on forecast
         missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
-        missionsFromTimesheets = list(set([t.mission for t in Timesheet.objects.filter(consultant=consultant).select_related() if t.mission.lead]))
-        companies = [m.lead.client.organisation.company for m in missionsFromTimesheets]
-        companies = list(set(companies))
+        companies = ClientCompany.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
         leads_as_responsible = set(consultant.lead_responsible.active())
         leads_as_staffee = consultant.lead_set.active()
     except Consultant.DoesNotExist:
