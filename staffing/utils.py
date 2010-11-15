@@ -105,3 +105,31 @@ def saveFormsetAndLog(formset, request):
         staffing.update_date = now
         staffing.save()
 
+def sortMissions(missions):
+    """Sort mission list in the following way:
+        - first, holidays missions, alpha sorted on description
+        - second, non prod mission, alpha sorted on description
+        - last, prod mission, alpha sort on __unicode__ repr
+    @param missions: list of missions
+    @return: sorted mission list"""
+    holidaysMissions = []
+    nonProdMissions = []
+    prodMissions = []
+    # Separate missions according nature
+    for mission in missions:
+        if mission.nature == "HOLIDAYS":
+            holidaysMissions.append(mission)
+        elif mission.nature == "NONPROD":
+            nonProdMissions.append(mission)
+        elif mission.nature == "PROD":
+            prodMissions.append(mission)
+        else:
+            #Oups, we should never go here. Just log, in case of
+            print "Unknown mission nature (%s). Cannot sort" % mission.nature
+
+    # Sort each list
+    holidaysMissions.sort(key=lambda x: x.description)
+    nonProdMissions.sort(key=lambda x: x.description)
+    prodMissions.sort(key=lambda x: unicode(x))
+
+    return holidaysMissions + nonProdMissions + prodMissions

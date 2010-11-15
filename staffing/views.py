@@ -26,7 +26,7 @@ from pydici.people.models import Consultant
 from pydici.leads.models import Lead
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
 from pydici.core.utils import working_days, to_int_or_round
-from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog
+from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, sortMissions
 
 def missions(request, onlyActive=True):
     """List of missions"""
@@ -93,7 +93,7 @@ def consultant_staffing(request, consultant_id):
 
     missions = set([s.mission for s in consultant.staffing_set.all() if s.mission.active])
     missions = list(missions)
-    missions.sort(cmp=lambda x, y: cmp(x.lead, y.lead))
+    missions = sortMissions(missions)
 
     return render_to_response('staffing/consultant_staffing.html',
                               {"formset": formset,
@@ -296,6 +296,9 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
             forecastTotal[staffing.mission.id] += staffing.charge
         else:
             forecastTotal[staffing.mission.id] = staffing.charge
+
+    # Sort missions
+    missions = sortMissions(missions)
 
     if "csv" in request.GET:
         return consultant_csv_timesheet(request, consultant, days, month, missions)
