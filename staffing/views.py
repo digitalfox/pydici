@@ -91,8 +91,7 @@ def consultant_staffing(request, consultant_id):
     else:
         formset = StaffingFormSet(instance=consultant) # An unbound form
 
-    missions = set([s.mission for s in consultant.staffing_set.all() if s.mission.active])
-    missions = list(missions)
+    missions = consultant.active_missions()
     missions = sortMissions(missions)
 
     return render_to_response('staffing/consultant_staffing.html',
