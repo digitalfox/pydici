@@ -19,12 +19,14 @@ from pydici.staffing.models import Staffing
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
     def get_queryset(self):
-        lastMonth = datetime.today() - timedelta(days=30)
-        qs = super(ConsultantStaffingInlineFormset, self).get_queryset()
-        qs = qs.filter(mission__active=True) # Remove archived mission
-        qs = qs.exclude(Q(staffing_date__lte=lastMonth) &
-                  ~ Q(mission__nature="PROD")) # Remove past non prod mission
-        return qs
+        if not hasattr(self, '_queryset'):
+            lastMonth = datetime.today() - timedelta(days=30)
+            qs = super(ConsultantStaffingInlineFormset, self).get_queryset()
+            qs = qs.filter(mission__active=True) # Remove archived mission
+            qs = qs.exclude(Q(staffing_date__lte=lastMonth) &
+                      ~ Q(mission__nature="PROD")) # Remove past non prod mission
+            self._queryset = qs
+        return self._queryset
 
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
