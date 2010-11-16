@@ -27,6 +27,10 @@
       href="{% url feed 'won' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my leads' %}"
       href="{% url feed 'mine' %}" />
+<link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of latest staffing forecast' %}"
+      href="{% url feed 'latestStaffing' %}" />
+<link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my latest staffing forecast' %}"
+      href="{% url feed 'myLatestStaffing' %}" />
 </head>
 
 

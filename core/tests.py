@@ -46,6 +46,8 @@ class SimpleTest(TestCase):
                      "/feeds/mine/",
                      "/feeds/new/",
                      "/feeds/won/",
+                     "/feeds/latestStaffing/",
+                     "/feeds/myLatestStaffing/",
                      "/staffing/pdcreview/",
                      "/staffing/pdcreview/2009/07",
                      "/staffing/mission/",

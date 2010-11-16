@@ -1,0 +1,20 @@
+{% load i18n %}
+<b>{% trans "Mission: " %}</b>{{ obj.mission }}<br/>
+<b>{% trans "Consultant: " %}</b> {{ obj.consultant }}<br/>
+<b>{% trans "Staffing date: " %}</b> {{ obj.staffing_date }}<br/>
+<b>{% trans "Charge: " %}</b> {{ obj.charge }}<br/>
+{% if obj.comment %}
+<b>{% trans "Comment: " %}</b> {{ obj.comment }}<br/>
+{% endif %}
+{% if obj.last_user %}
+    <br/>
+    {% trans "Updated by " %} {{ obj.last_user }} ({{ obj.update_date }})
+{% endif %}
+<br/>
+
+
+<br><i>
+<a href='{% url pydici.staffing.views.consultant_staffing obj.consultant.id %}'>{% trans "Change this consultant staffing" %}</a>
+<br/>
+<a href='{% url pydici.staffing.views.mission_staffing obj.mission.id %}'>{% trans "Change this mission staffing" %}</a>
+</i>

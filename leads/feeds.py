@@ -65,6 +65,3 @@ class MyLatestLeads(LeadFeed):
             return set(consultant.lead_responsible.active() | consultant.lead_set.active())
         else:
             return []
-
-class AllChanges(LeadFeed):
-    pass

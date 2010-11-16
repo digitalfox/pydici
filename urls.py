@@ -15,14 +15,16 @@ import pydici.settings
 admin_contact = { "ADMINS" : pydici.settings.ADMINS }
 
 # Feeds definition
-from pydici.leads.feeds import LatestLeads, NewLeads, MyLatestLeads, AllChanges, WonLeads
+from pydici.leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
+from pydici.staffing.feeds import LatestStaffing, MyLatestStaffing
 
 feeds = {
         "latest": LatestLeads,
         "new" :   NewLeads,
         "won" :   WonLeads,
         "mine":   MyLatestLeads,
-        "all" :   AllChanges
+        "latestStaffing" : LatestStaffing,
+        "myLatestStaffing" : MyLatestStaffing
         }
 
 # Models needed for generic views
