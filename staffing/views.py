@@ -460,8 +460,8 @@ def all_timesheet(request, year=None, month=None):
     timesheets = timesheets.annotate(sum=Sum('charge')).order_by("mission", "consultant") # Sum and clean order by (else, group by won't work because of default ordering)
     consultants = list(set([i["consultant"] for i in timesheets]))
     missions = list(set([i["mission"] for i in timesheets]))
-    consultants = Consultant.objects.filter(id__in=consultants).order_by("id")
-    missions = Mission.objects.filter(id__in=missions).order_by("id")
+    consultants = Consultant.objects.filter(id__in=consultants).order_by("name")
+    missions = sortMissions(Mission.objects.filter(id__in=missions))
     charges = {}
     if "csv" in request.GET:
         # Simple consultant list
