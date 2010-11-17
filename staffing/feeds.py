@@ -6,6 +6,7 @@
 
 from django.contrib.syndication.feeds import Feed, FeedDoesNotExist
 from django.utils.feedgenerator import Atom1Feed
+from django.utils.translation import ugettext as _
 
 from pydici.staffing.models import Staffing
 from pydici.people.models import Consultant
@@ -32,15 +33,15 @@ class StaffingFeed(Feed):
         return "%s-%s" % (item.id, item.update_date)
 
 class LatestStaffing(StaffingFeed):
-    title = "Les dernières mises à jour de staffing"
-    description = "Les derniers staffing crées/modifiés"
+    title = _("Latest staffing update")
+    description = _("Last consultant forecast staffing updated or created")
 
     def items(self):
         return Staffing.objects.order_by('-update_date')[:50]
 
 class MyLatestStaffing(StaffingFeed):
-    title = "Mes prévisions de staffing"
-    description = "Toutes les prévisions de staffing me concernant"
+    title = _("My lastest staffing update")
+    description = _("Last forecast staffing updated or created about myself")
 
     def items(self):
         consultants = Consultant.objects.filter(trigramme__iexact=self.request.user.username)

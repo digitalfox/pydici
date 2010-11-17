@@ -6,6 +6,7 @@
 
 from django.contrib.syndication.feeds import Feed, FeedDoesNotExist
 from django.utils.feedgenerator import Atom1Feed
+from django.utils.translation import ugettext as _
 
 from pydici.leads.models import Consultant, Lead
 import pydici.settings
@@ -30,15 +31,15 @@ class LeadFeed(Feed):
         return "%s-%s" % (item.id, item.update_date)
 
 class LatestLeads(LeadFeed):
-    title = "Les leads récents"
-    description = "Les 20 derniers leads modifiés"
+    title = _("Latest leads")
+    description = _("Last modified or created leads")
 
     def items(self):
         return Lead.objects.order_by('-update_date')[:50]
 
 class NewLeads(LeadFeed):
-    title = "Les nouveaux Leads"
-    description = "Les 20 derniers leads crées"
+    title = _("New leads")
+    description = _("Last new lead created")
 
     def item_guid(self, item):
         """Overload std guid to make it unchanged when lead is updated"""
@@ -48,15 +49,15 @@ class NewLeads(LeadFeed):
         return Lead.objects.order_by('-creation_date')[:50]
 
 class WonLeads(LeadFeed):
-    title = "Les leads gagnés"
-    description = "Les 20 derniers leads gagnés"
+    title = _("Won leads")
+    description = _("Last won leads")
 
     def items(self):
         return Lead.objects.filter(state="WON").order_by('-update_date')[:50]
 
 class MyLatestLeads(LeadFeed):
-    title = "Mes Leads"
-    description = "Tous les leads actifs dont je suis responsable ou ressource pressentie"
+    title = _("My leads")
+    description = _("Last active leads that I am responsible or resource")
 
     def items(self):
         consultants = Consultant.objects.filter(trigramme__iexact=self.request.user.username)
