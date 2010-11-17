@@ -107,9 +107,9 @@ def saveFormsetAndLog(formset, request):
 
 def sortMissions(missions):
     """Sort mission list in the following way:
-        - first, holidays missions, alpha sorted on description
-        - second, non prod mission, alpha sorted on description
-        - last, prod mission, alpha sort on __unicode__ repr
+         - first, prod mission, alpha sort on __unicode__ repr
+         - second, non prod mission, alpha sorted on description
+         - last, holidays missions, alpha sorted on description
     @param missions: list of missions
     @return: sorted mission list"""
     holidaysMissions = []
@@ -132,4 +132,4 @@ def sortMissions(missions):
     nonProdMissions.sort(key=lambda x: x.description)
     prodMissions.sort(key=lambda x: unicode(x))
 
-    return holidaysMissions + nonProdMissions + prodMissions
+    return prodMissions + nonProdMissions + holidaysMissions
