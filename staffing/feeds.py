@@ -32,6 +32,10 @@ class StaffingFeed(Feed):
     def item_guid(self, item):
         return "%s-%s" % (item.id, item.update_date)
 
+    def item_author_name(self, item):
+        if item.last_user:
+            return item.last_user
+
 class LatestStaffing(StaffingFeed):
     title = _("Latest staffing update")
     description = _("Last consultant forecast staffing updated or created")

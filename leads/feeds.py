@@ -30,6 +30,9 @@ class LeadFeed(Feed):
     def item_guid(self, item):
         return "%s-%s" % (item.id, item.update_date)
 
+    def item_author_name(self, item):
+        return item.responsible
+
 class LatestLeads(LeadFeed):
     title = _("Latest leads")
     description = _("Last modified or created leads")
