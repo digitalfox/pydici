@@ -15,7 +15,11 @@
 
 {% for mission in missions %}
     {% ifchanged mission.lead.client %}
-        <h2>{{ mission.lead.client }}</h2>    
+        {% if mission.lead.client.contact %}
+            <h2>{{ mission.lead.client.organisation }} (<a href="{% url admin:crm_clientcontact_change mission.lead.client.contact.id %}">{{ mission.lead.client.contact }}</a>)</h2>
+        {% else %}
+            <h2>{{ mission.lead.client }}</h2>
+        {% endif %}
     {% endifchanged %}
     {% ifchanged mission.lead.state %}
         <h3>{{ mission.lead.get_state_display }}</h3>    
