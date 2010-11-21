@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-21 17:33+0100\n"
-"PO-Revision-Date: 2010-11-21 17:33+0100\n"
+"POT-Creation-Date: 2010-11-21 22:23+0100\n"
+"PO-Revision-Date: 2010-11-21 22:23+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -102,7 +102,7 @@ msgstr "Client"
 
 #: leads/admin.py:58
 msgid "Lead sent to business mailing list"
-msgstr "Opportunité envoyée à la liste de diffusion de suivi des affaires"
+msgstr "Affaire envoyée à la liste de diffusion de suivi des affaires"
 
 #: leads/admin.py:60 leads/views.py:124
 #, python-format
@@ -123,37 +123,37 @@ msgstr "La mission correspondante a été archivée"
 
 #: leads/feeds.py:37
 msgid "Latest leads"
-msgstr "Dernières opportunités"
+msgstr "Dernières affaires"
 
 #: leads/feeds.py:38
 msgid "Last modified or created leads"
-msgstr "Dernières opportunités commerciales modifiées ou créées"
+msgstr "Dernières affaires modifiées ou créées"
 
 #: leads/feeds.py:44
 msgid "New leads"
-msgstr "Nouvelles opportunités"
+msgstr "Nouvelles affaires"
 
 #: leads/feeds.py:45
 msgid "Last new lead created"
-msgstr "Dernières opportunités commerciales créées"
+msgstr "Dernières affaires créées"
 
 #: leads/feeds.py:55
 msgid "Won leads"
-msgstr "Opportunités gagnées"
+msgstr "Affaires gagnées"
 
 #: leads/feeds.py:56
 msgid "Last won leads"
-msgstr "Dernières opportunités commerciales gagnées"
+msgstr "Dernières affaires gagnées"
 
 #: leads/feeds.py:62
 msgid "My leads"
-msgstr "Mes opportunités"
+msgstr "Mes affaires"
 
 #: leads/feeds.py:63
 msgid "Last active leads that I am responsible or resource"
 msgstr ""
-"Les dernières opportunités commerciales actives dont je suis responsable ou "
-"ressource pressentie"
+"Les dernières affaires actives dont je suis responsable ou ressource "
+"pressentie"
 
 #: leads/models.py:33
 msgid "Qualifying"
@@ -253,7 +253,7 @@ msgstr "Description"
 #: templates/core/index.html.py:92 templates/leads/review.html:22
 #: templates/leads/review.html.py:51
 msgid "Lead"
-msgstr "Opportunité"
+msgstr "Affaire"
 
 #: leads/views.py:95
 msgid "leads.csv"
@@ -283,7 +283,7 @@ msgstr "C.A. (k€)"
 #: leads/views.py:121
 #, python-format
 msgid "Lead %(id)s was sent to %(mail)s !"
-msgstr "L'opportunité %(id)s a été envoyée à %(mail)s !"
+msgstr "L'affaire %(id)s a été envoyée à %(mail)s !"
 
 #: people/models.py:18
 msgid "Level"
@@ -490,9 +490,8 @@ msgstr ""
 "<p>Si vous pensez qu'il s'agit d'une anomalie, merci d'envoyer\n"
 "un mail à un administrateur pour mettre à jour vos droits :</p>\n"
 
-#: templates/admin/app_index.html:8 templates/admin/base.html:51
-#: templates/admin/base.html.py:60 templates/admin/change_list.html:8
-#: templates/leads/lead_mail.html:47
+#: templates/admin/app_index.html:8 templates/admin/base.html:48
+#: templates/admin/change_list.html:8 templates/leads/lead_mail.html:47
 msgid "Home"
 msgstr "Accueil"
 
@@ -503,19 +502,19 @@ msgstr "%(name)s"
 
 #: templates/admin/base.html:22
 msgid "ATOM feed of last modified leads"
-msgstr "Flux ATOM des dernières opportunités modifiées"
+msgstr "Flux ATOM des dernières affaires modifiées"
 
 #: templates/admin/base.html:24
 msgid "ATOM feed of last created leads"
-msgstr "Flux ATOM des dernières opportunités créées"
+msgstr "Flux ATOM des dernières affaires créées"
 
 #: templates/admin/base.html:26
 msgid "ATOM feed of last won leads"
-msgstr "Flux ATOM des dernières opportunités gagnées"
+msgstr "Flux ATOM des dernières affaires gagnées"
 
 #: templates/admin/base.html:28
 msgid "ATOM feed of my leads"
-msgstr "Flux ATOM des mes opportunités"
+msgstr "Flux ATOM des mes affaires"
 
 #: templates/admin/base.html:30
 msgid "ATOM feed of latest staffing forecast"
@@ -525,29 +524,46 @@ msgstr "Flux ATOM des dernières prévisions de staffing"
 msgid "ATOM feed of my latest staffing forecast"
 msgstr "Flux ATOM de mes dernières prévisions de staffing"
 
-#: templates/admin/base.html:52
-msgid "Current leads review"
-msgstr "Revue des opportunités en cours"
-
-#: templates/admin/base.html:53
-msgid "Workload schedule"
-msgstr "Plan de charge"
-
-#: templates/admin/base.html:54
-msgid "Help"
-msgstr "Aide"
-
-#: templates/admin/base.html:55
+#: templates/admin/base_site.html:18
 msgid "Welcome,"
 msgstr "Bienvenue, "
 
-#: templates/admin/base_site.html:4
-msgid "Pydici - Lead and workload schedule management"
-msgstr "Pydici - Gestion des opportunités commerciales et du plan de charge"
+#: templates/admin/base_site.html:21 templates/core/search.html:59
+#: templates/people/consultant_detail.html:45
+msgid "Leads"
+msgstr "Affaires"
 
-#: templates/admin/base_site.html:8
-msgid "Lead and workload schedule management"
-msgstr "Gestion des opportunités commerciales et du plan de charge"
+#: templates/admin/base_site.html:22 templates/core/index.html:166
+msgid "All leads"
+msgstr "Toutes les affaires"
+
+#: templates/admin/base_site.html:24
+msgid "Current leads review"
+msgstr "Revue des affaires en cours"
+
+#: templates/admin/base_site.html:25
+msgid "Workload schedule"
+msgstr "Plan de charge"
+
+#: templates/admin/base_site.html:26 templates/admin/index.html:29
+msgid "Add"
+msgstr "Ajouter"
+
+#: templates/admin/base_site.html:30 templates/core/index.html:146
+msgid "new lead"
+msgstr "Nouvelle affaire"
+
+#: templates/admin/base_site.html:33 templates/core/index.html:147
+msgid "new client"
+msgstr "Nouveau client"
+
+#: templates/admin/base_site.html:34 templates/core/index.html:148
+msgid "new client contact"
+msgstr "Nouveau contact client"
+
+#: templates/admin/base_site.html:42
+msgid "Help"
+msgstr "Aide"
 
 #: templates/admin/change_list.html:16
 #, python-format
@@ -562,10 +578,6 @@ msgstr "Filtre"
 #, python-format
 msgid "Models available in the %(name)s application."
 msgstr "Modèles disponibles dans l'application %(name)s."
-
-#: templates/admin/index.html:29
-msgid "Add"
-msgstr "Ajouter"
 
 #: templates/admin/index.html:35 templates/leads/lead_detail.html:79
 #: templates/staffing/consultant_base.html:31
@@ -591,7 +603,7 @@ msgstr "Aucun(e) disponible"
 
 #: templates/core/index.html:16
 msgid "My leads as responsible"
-msgstr "Les opportunités dont je suis le responsable"
+msgstr "Les affaires dont je suis le responsable"
 
 #: templates/core/index.html:23 templates/core/index.html.py:48
 #: templates/core/index.html:72 templates/core/index.html.py:96
@@ -611,16 +623,16 @@ msgstr "À définir"
 
 #: templates/core/index.html:41
 msgid "My leads as a resource"
-msgstr "Les opportunités où je suis une ressource"
+msgstr "Les affaires où je suis une ressource"
 
 #: templates/core/index.html:65
 msgid "Last modified leads"
-msgstr "Dernières opportunités modifiées"
+msgstr "Dernières affaires modifiées"
 
 #: templates/core/index.html:89
 msgid "My last archived leads (won, lost, forgiven or sleeping)"
 msgstr ""
-"Mes dernières opportunités archivées (gagnées, perdues, abandonnées ou en "
+"Mes dernières affaires archivées (gagnées, perdues, abandonnées ou en "
 "sommeil)"
 
 #: templates/core/index.html:112
@@ -629,11 +641,11 @@ msgstr "Rapports"
 
 #: templates/core/index.html:113
 msgid "Active leads as csv file"
-msgstr "Opportunités en cours sous forme de fichier CSV"
+msgstr "Affaires en cours sous forme de fichier CSV"
 
 #: templates/core/index.html:114
 msgid "All leads as csv file"
-msgstr "Toutes les opportunités sous forme de fichier CSV"
+msgstr "Toutes les affaires sous forme de fichier CSV"
 
 #: templates/core/index.html:115
 msgid "Week summary mail (html)"
@@ -659,18 +671,6 @@ msgstr "Envoyer"
 msgid "Add..."
 msgstr "Ajouter..."
 
-#: templates/core/index.html:146
-msgid "new lead"
-msgstr "Nouvelle opportunité"
-
-#: templates/core/index.html:147
-msgid "new client"
-msgstr "Nouveau client"
-
-#: templates/core/index.html:148
-msgid "new client contact"
-msgstr "Nouveau contact client"
-
 #: templates/core/index.html:151
 msgid "My last actions"
 msgstr "Mes dernières actions"
@@ -678,10 +678,6 @@ msgstr "Mes dernières actions"
 #: templates/core/index.html:164
 msgid "Admin console"
 msgstr "Console d'administration"
-
-#: templates/core/index.html:166
-msgid "All leads"
-msgstr "Toutes les opportunités"
 
 #: templates/core/index.html:167 templates/staffing/missions.html:15
 msgid "All missions"
@@ -721,10 +717,6 @@ msgstr "Contacts clients"
 msgid "Clients companies"
 msgstr "Entreprises"
 
-#: templates/core/search.html:59 templates/people/consultant_detail.html:45
-msgid "Leads"
-msgstr "Opportunités commerciales"
-
 #: templates/core/search.html:68
 msgid "Missions"
 msgstr "Missions"
@@ -732,7 +724,7 @@ msgstr "Missions"
 #: templates/crm/clientcompany_detail.html:29
 #: templates/staffing/mission_base.html:59
 msgid "Lead of this mission"
-msgstr "Opportunité de cette mission"
+msgstr "Affaire de cette mission"
 
 #: templates/crm/clientcompany_detail.html:31
 msgid "Forecast staffing of this mission"
@@ -753,7 +745,7 @@ msgstr "Liste de toutes les entreprises clientes"
 
 #: templates/leads/lead_detail.html:14
 msgid "Lead detail"
-msgstr "Détail de l'opportunité"
+msgstr "Détail de l'affaire"
 
 #: templates/leads/lead_detail.html:32 templates/leads/lead_mail.html:4
 #: templates/leads/lead_mail.txt:5
@@ -867,11 +859,11 @@ msgstr "C.A. (k): "
 
 #: templates/leads/lead_mail.html:47
 msgid "Change this lead"
-msgstr "Modifier cette opportunité"
+msgstr "Modifier cette affaire"
 
 #: templates/leads/lead_mail.txt:22
 msgid "Change this lead: "
-msgstr "Modifier cette opportunité : "
+msgstr "Modifier cette affaire : "
 
 #: templates/leads/lead_mail.txt:23
 msgid "Home: "
@@ -891,11 +883,11 @@ msgstr "Mise à jour : "
 
 #: templates/leads/review.html:20
 msgid "All active leads"
-msgstr "Toutes les opportunités actives"
+msgstr "Toutes les affaires actives"
 
 #: templates/leads/review.html:49
 msgid "Recent won, lost or forgiven leads"
-msgstr "Opportunités récemment gagnées, perdues ou abandonnées"
+msgstr "Affaires récemment gagnées, perdues ou abandonnées"
 
 #: templates/people/consultant_detail.html:16
 msgid "This consultant does not work anymore for the company"
@@ -923,11 +915,11 @@ msgstr "Missions actuelles"
 
 #: templates/people/consultant_detail.html:48
 msgid "Current leads as responsible"
-msgstr "Opportunités en tant que responsable"
+msgstr "Affaires en tant que responsable"
 
 #: templates/people/consultant_detail.html:57
 msgid "Current leads as resource"
-msgstr "Opportunités en tant que ressource"
+msgstr "Affaires en tant que ressource"
 
 #: templates/people/consultant_detail.html:66
 msgid "Change this consultant"
@@ -1167,6 +1159,12 @@ msgstr "Afficher toutes les missions"
 #: templates/staffing/missions.html:50
 msgid "Missions administration"
 msgstr "Administration des missions"
+
+#~ msgid "Pydici - Lead and workload schedule management"
+#~ msgstr "Pydici - Gestion des affaires et du plan de charge"
+
+#~ msgid "Lead and workload schedule management"
+#~ msgstr "Gestion des affaires et du plan de charge"
 
 #~ msgid "Leads per salesmen (solid line: won. Dotted line: lost)"
 #~ msgstr ""
