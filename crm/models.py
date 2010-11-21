@@ -59,6 +59,12 @@ class ClientContact(ThirdPartyContact):
     """A contact in client organization"""
     function = models.CharField(_("Function"), max_length=200, blank=True)
 
+    def company(self):
+        """Return the company for whom this contact works"""
+        #return ClientCompany.objects.get(clientorganisation__client__contact__id=self.id)
+        return ClientOrganisation.objects.get(client__contact__id=self.id)
+    company.short_description = _("Company")
+
     class Meta:
         verbose_name = _("Client contact")
 

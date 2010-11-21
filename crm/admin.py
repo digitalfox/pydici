@@ -14,9 +14,10 @@ from pydici.crm.models import Client, ClientOrganisation, ClientCompany, \
                               ClientContact, BusinessBroker
 
 class ClientContactAdmin(admin.ModelAdmin):
-    list_display = ("name", "function", "email", "phone", "mobile_phone")
-    odering = ("name")
-    search_fields = ["name", "function"]
+    list_display = ("name", "company", "function", "email", "phone", "mobile_phone", "fax")
+    odering = ("name",)
+    search_fields = ["name", "email", "function", "client__organisation__company__name",
+                     "client__organisation__name"]
     actions = None
 
 class BusinessBrokerAdmin(admin.ModelAdmin):
