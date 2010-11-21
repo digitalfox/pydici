@@ -62,7 +62,14 @@ class ClientContact(ThirdPartyContact):
     def company(self):
         """Return the company for whom this contact works"""
         #return ClientCompany.objects.get(clientorganisation__client__contact__id=self.id)
-        return ClientOrganisation.objects.get(client__contact__id=self.id)
+        companies = ClientOrganisation.objects.filter(client__contact__id=self.id)
+        if companies.count() == 0:
+            return _("None")
+        elif companies.count() == 1:
+            return companies[0]
+        elif companies.count() > 1:
+            return u", ".join([unicode(i) for i in companies])
+
     company.short_description = _("Company")
 
     class Meta:
