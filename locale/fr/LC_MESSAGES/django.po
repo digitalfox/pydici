@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-17 08:56+0100\n"
-"PO-Revision-Date: 2010-11-17 08:56+0100\n"
+"POT-Creation-Date: 2010-11-21 14:51+0100\n"
+"PO-Revision-Date: 2010-11-21 14:51+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -64,31 +64,31 @@ msgstr "Fax"
 msgid "Function"
 msgstr "Fonction"
 
-#: crm/models.py:63
-msgid "Client contact"
-msgstr "Contact client"
-
-#: crm/models.py:68
+#: crm/models.py:66 crm/models.py:74
 msgid "Company"
 msgstr "Société"
 
-#: crm/models.py:77 leads/models.py:50
+#: crm/models.py:69
+msgid "Client contact"
+msgstr "Contact client"
+
+#: crm/models.py:83 leads/models.py:50
 msgid "Business broker"
 msgstr "Apporteur d'affaire"
 
-#: crm/models.py:81
+#: crm/models.py:87
 msgid "Organisation"
 msgstr "Département"
 
-#: crm/models.py:82
+#: crm/models.py:88
 msgid "Contact"
 msgstr "Contact"
 
-#: crm/models.py:83
+#: crm/models.py:89
 msgid "Sales owner"
 msgstr "Propriété commerciale"
 
-#: crm/models.py:93 leads/views.py:97 templates/core/index.html:18
+#: crm/models.py:99 leads/views.py:97 templates/core/index.html:18
 #: templates/core/index.html.py:43 templates/core/index.html:67
 #: templates/core/index.html.py:91
 msgid "Client"
@@ -115,35 +115,35 @@ msgstr "La probabilité de la mission a été mise à 100 %"
 msgid "According mission has been archived"
 msgstr "La mission correspondante a été archivée"
 
-#: leads/feeds.py:34
+#: leads/feeds.py:37
 msgid "Latest leads"
 msgstr "Dernières opportunités"
 
-#: leads/feeds.py:35
+#: leads/feeds.py:38
 msgid "Last modified or created leads"
 msgstr "Dernières opportunités commerciales modifiées ou créées"
 
-#: leads/feeds.py:41
+#: leads/feeds.py:44
 msgid "New leads"
 msgstr "Nouvelles opportunités"
 
-#: leads/feeds.py:42
+#: leads/feeds.py:45
 msgid "Last new lead created"
 msgstr "Dernières opportunités commerciales créées"
 
-#: leads/feeds.py:52
+#: leads/feeds.py:55
 msgid "Won leads"
 msgstr "Opportunités gagnées"
 
-#: leads/feeds.py:53
+#: leads/feeds.py:56
 msgid "Last won leads"
 msgstr "Dernières opportunités commerciales gagnées"
 
-#: leads/feeds.py:59
+#: leads/feeds.py:62
 msgid "My leads"
 msgstr "Mes opportunités"
 
-#: leads/feeds.py:60
+#: leads/feeds.py:63
 msgid "Last active leads that I am responsible or resource"
 msgstr ""
 "Les dernières opportunités commerciales actives dont je suis responsable ou "
@@ -182,6 +182,7 @@ msgid "Sleeping"
 msgstr "En sommeil"
 
 #: leads/models.py:44 templates/leads/lead_detail.html:58
+#: templates/leads/lead_mail.html:29
 msgid "Action"
 msgstr "Action"
 
@@ -307,20 +308,20 @@ msgstr "Consultant"
 msgid "Salesmen"
 msgstr "Commerciaux"
 
-#: staffing/feeds.py:36
+#: staffing/feeds.py:40
 msgid "Latest staffing update"
 msgstr "Dernières mises à jour de staffing"
 
-#: staffing/feeds.py:37
+#: staffing/feeds.py:41
 msgid "Last consultant forecast staffing updated or created"
 msgstr ""
 "Dernières mise à jour ou création de staffing prévisionnel pour un consultant"
 
-#: staffing/feeds.py:43
+#: staffing/feeds.py:47
 msgid "My lastest staffing update"
 msgstr "Mes dernières mise à jour de staffing"
 
-#: staffing/feeds.py:44
+#: staffing/feeds.py:48
 msgid "Last forecast staffing updated or created about myself"
 msgstr ""
 "Dernières mise à jour ou création de staffing prévisionnel me concernant"
@@ -485,7 +486,7 @@ msgstr ""
 
 #: templates/admin/app_index.html:8 templates/admin/base.html:51
 #: templates/admin/base.html.py:60 templates/admin/change_list.html:8
-#: templates/leads/lead_mail.html:21
+#: templates/leads/lead_mail.html:47
 msgid "Home"
 msgstr "Accueil"
 
@@ -684,6 +685,10 @@ msgstr "Toutes les missions"
 msgid "All clients"
 msgstr "Tous les clients"
 
+#: templates/core/index.html:169
+msgid "All client contacts"
+msgstr "Tous les contacts clients"
+
 #: templates/core/search.html:13
 msgid "Pydici search"
 msgstr "Recherche Pydici"
@@ -798,19 +803,19 @@ msgstr "Action : "
 msgid "Nothing"
 msgstr "Rien"
 
-#: templates/leads/lead_detail.html:52
+#: templates/leads/lead_detail.html:52 templates/leads/lead_mail.html:23
 msgid "Change history"
 msgstr "Historique des changements"
 
-#: templates/leads/lead_detail.html:56
+#: templates/leads/lead_detail.html:56 templates/leads/lead_mail.html:27
 msgid "Date/time"
 msgstr "Date/heure"
 
-#: templates/leads/lead_detail.html:57
+#: templates/leads/lead_detail.html:57 templates/leads/lead_mail.html:28
 msgid "User"
 msgstr "Utilisateur"
 
-#: templates/leads/lead_detail.html:64
+#: templates/leads/lead_detail.html:64 templates/leads/lead_mail.html:35
 msgid "DATETIME_FORMAT"
 msgstr "j F Y, G:i"
 
@@ -856,7 +861,7 @@ msgstr "Date de démarrage"
 msgid "Sales (kEuros): "
 msgstr "C.A. (k): "
 
-#: templates/leads/lead_mail.html:21
+#: templates/leads/lead_mail.html:47
 msgid "Change this lead"
 msgstr "Modifier cette opportunité"
 
@@ -1170,9 +1175,6 @@ msgstr "Administration des missions"
 
 #~ msgid "Cost (k€)"
 #~ msgstr "Prix (k€)"
-
-#~ msgid "All client contacts"
-#~ msgstr "Tous les contacts clients"
 
 #~ msgid "Responsable"
 #~ msgstr "Responsable"
