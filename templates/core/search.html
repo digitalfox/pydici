@@ -37,6 +37,15 @@
     </ul>
 {% endif %}
 
+{% if client_contacts %}
+    <h2>{% trans "Clients contacts"%}</h2>
+    <ul>
+    {% for contact in client_contacts %}
+        <li><a href="{% url admin:crm_clientcontact_change contact.id %}">{{ contact }} ({{ contact.company }})</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
 {% if client_companies %}
     <h2>{% trans "Clients companies"%}</h2>
     <ul>

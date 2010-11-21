@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-21 14:51+0100\n"
-"PO-Revision-Date: 2010-11-21 14:51+0100\n"
+"POT-Creation-Date: 2010-11-21 17:33+0100\n"
+"PO-Revision-Date: 2010-11-21 17:33+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -64,31 +64,37 @@ msgstr "Fax"
 msgid "Function"
 msgstr "Fonction"
 
-#: crm/models.py:66 crm/models.py:74
+#: crm/models.py:67 templates/leads/lead_mail.html:10
+#: templates/leads/lead_mail.txt:11 templates/leads/lead_mail.txt.py:19
+#: templates/leads/mail.html:9 templates/leads/mail.html.py:11
+msgid "None"
+msgstr "Aucun(e)"
+
+#: crm/models.py:73 crm/models.py:81
 msgid "Company"
 msgstr "Société"
 
-#: crm/models.py:69
+#: crm/models.py:76
 msgid "Client contact"
 msgstr "Contact client"
 
-#: crm/models.py:83 leads/models.py:50
+#: crm/models.py:90 leads/models.py:50
 msgid "Business broker"
 msgstr "Apporteur d'affaire"
 
-#: crm/models.py:87
+#: crm/models.py:94
 msgid "Organisation"
 msgstr "Département"
 
-#: crm/models.py:88
+#: crm/models.py:95
 msgid "Contact"
 msgstr "Contact"
 
-#: crm/models.py:89
+#: crm/models.py:96
 msgid "Sales owner"
 msgstr "Propriété commerciale"
 
-#: crm/models.py:99 leads/views.py:97 templates/core/index.html:18
+#: crm/models.py:106 leads/views.py:97 templates/core/index.html:18
 #: templates/core/index.html.py:43 templates/core/index.html:67
 #: templates/core/index.html.py:91
 msgid "Client"
@@ -708,35 +714,39 @@ msgid "Consultants"
 msgstr "Consultants"
 
 #: templates/core/search.html:41
+msgid "Clients contacts"
+msgstr "Contacts clients"
+
+#: templates/core/search.html:50
 msgid "Clients companies"
 msgstr "Entreprises"
 
-#: templates/core/search.html:50 templates/people/consultant_detail.html:45
+#: templates/core/search.html:59 templates/people/consultant_detail.html:45
 msgid "Leads"
 msgstr "Opportunités commerciales"
 
-#: templates/core/search.html:59
+#: templates/core/search.html:68
 msgid "Missions"
 msgstr "Missions"
 
-#: templates/crm/clientcompany_detail.html:25
+#: templates/crm/clientcompany_detail.html:29
 #: templates/staffing/mission_base.html:59
 msgid "Lead of this mission"
 msgstr "Opportunité de cette mission"
 
-#: templates/crm/clientcompany_detail.html:27
+#: templates/crm/clientcompany_detail.html:31
 msgid "Forecast staffing of this mission"
 msgstr "Charge prévisionnelle de cette mission"
 
-#: templates/crm/clientcompany_detail.html:30
+#: templates/crm/clientcompany_detail.html:34
 msgid "Timesheet of this mission"
 msgstr "Feuille de temps de cette mission"
 
-#: templates/crm/clientcompany_detail.html:36
+#: templates/crm/clientcompany_detail.html:40
 msgid "Consultants that work for this company:"
 msgstr "Les consultants qui ont travaillé pour cette société :"
 
-#: templates/crm/clientcompany_detail.html:44
+#: templates/crm/clientcompany_detail.html:48
 #: templates/crm/clientcompany_list.html:15
 msgid "All companies list"
 msgstr "Liste de toutes les entreprises clientes"
@@ -842,12 +852,6 @@ msgstr "Retour à la page d'accueil"
 #: templates/leads/lead_mail.html:6 templates/leads/lead_mail.txt:7
 msgid "Description: "
 msgstr "Description : "
-
-#: templates/leads/lead_mail.html:10 templates/leads/lead_mail.txt:11
-#: templates/leads/lead_mail.txt.py:19 templates/leads/mail.html:9
-#: templates/leads/mail.html.py:11
-msgid "None"
-msgstr "Aucun(e)"
 
 #: templates/leads/lead_mail.html:12 templates/leads/lead_mail.txt:13
 msgid "Status: "
