@@ -10,15 +10,7 @@
 
 {% block content %}
 <div id="content-main">
-    <h1>{% trans "Pydici search" %}</h1>
-
-    <form action="{% url search %}" method="GET">        
-            <label for="searchbar"><img src="{% admin_media_prefix %}img/admin/icon_searchbox.png" alt="Search" /></label>
-            <input type="text", name="q", value="{{ query|escape }}", maxlength="100" />
-            <input type="submit" value="{% trans 'Go' %}"/>
-    </form>
-
-<br/><br/>
+<br/>
 
 {% if query %}
     {% if consultants or companies or leads or missions %}

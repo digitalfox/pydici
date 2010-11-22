@@ -67,40 +67,43 @@ def search(request):
 
     if words:
         # Consultant
-        consultants = Consultant.objects.filter(active=True)
-        for word in words:
-            consultants = consultants.filter(Q(name__icontains=word) |
-                                             Q(trigramme__icontains=word))
+        if request.GET.get("consultant"):
+            consultants = Consultant.objects.filter(active=True)
+            for word in words:
+                consultants = consultants.filter(Q(name__icontains=word) |
+                                                 Q(trigramme__icontains=word))
 
         # Client Company
-        clientCompanies = ClientCompany.objects.all()
-        for word in words:
-            clientCompanies = clientCompanies.filter(name__icontains=word)
+        if request.GET.get("company"):
+            clientCompanies = ClientCompany.objects.all()
+            for word in words:
+                clientCompanies = clientCompanies.filter(name__icontains=word)
 
         # Client contact
-        clientContacts = ClientContact.objects.all()
-        for word in words:
-            clientContacts = clientContacts.filter(name__icontains=word)
-
+        if request.GET.get("contact"):
+            clientContacts = ClientContact.objects.all()
+            for word in words:
+                clientContacts = clientContacts.filter(name__icontains=word)
 
         # Leads
-        leads = Lead.objects.all()
-        for word in words:
-            leads = leads.filter(Q(name__icontains=word) |
-                                 Q(description__icontains=word))
+        if request.GET.get("lead"):
+            leads = Lead.objects.all()
+            for word in words:
+                leads = leads.filter(Q(name__icontains=word) |
+                                     Q(description__icontains=word))
 
         # Missions
-        missions = Mission.objects.filter(active=True)
-        for word in words:
-            missions = missions.filter(description__icontains=word)
+        if request.GET.get("mission"):
+            missions = Mission.objects.filter(active=True)
+            for word in words:
+                missions = missions.filter(description__icontains=word)
 
-        # Add missions from lead
-        missions = set(missions)
-        for lead in leads:
-            for mission in lead.mission_set.all():
-                missions.add(mission)
-        missions = list(missions)
-
+            # Add missions from lead
+            missions = set(missions)
+            for lead in leads:
+                for mission in lead.mission_set.all():
+                    missions.add(mission)
+            missions = list(missions)
 
     return render_to_response("core/search.html",
                               {"query" : " ".join(words),
