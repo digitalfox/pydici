@@ -13,7 +13,7 @@
 <br/>
 
 {% if query %}
-    {% if consultants or companies or leads or missions %}
+    {% if consultants or client_companies or leads or missions or client_contacts %}
         <h1>{% blocktrans with query|escape as value %}Search results for <em>{{ value }}</em>:{% endblocktrans %}</h1>
     {% else %}
         <h1>{% blocktrans with query|escape as value %}No results for <em>{{ value }}</em>{% endblocktrans %}</h1>
