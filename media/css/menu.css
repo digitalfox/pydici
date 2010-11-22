@@ -6,10 +6,10 @@ from http://www.jankoatwarpspeed.com/post/2009/01/19/Create-Vimeo-like-top-navig
 
 /* menu */
 #menu{ margin:0px; padding:0px; list-style:none; color:#fff; line-height:45px; display:inline-block; float:left; z-index:1000; position:relative}
-/*#menu body { font-family:Arial, Helvetica, Sans-Serif; font-size:12px; margin:0px 20px;}*/
 #menu a { color:#fff; text-decoration:none; }
-#menu > li {list-style-type:none; background:#332B2A none repeat scroll 0 0; line-height:45px; cursor:pointer; float:left; position:relative;padding:0px 10px;}
+#menu > li {list-style-type:none; background:#332B2A none repeat scroll 0 0; line-height:45px; float:left; position:relative;padding:0px 10px;}
 #menu > li a:hover {color:#D0956A;}
+#menu li:hover {color:#D0956A; }
 #menu .logo {background:transparent none repeat scroll 0% 0%; padding:0px; background-color:Transparent;}
 /* sub-menus*/
 #menu ul { padding:0px; margin:0px; display:block; display:inline;}
