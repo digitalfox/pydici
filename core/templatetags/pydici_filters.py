@@ -11,8 +11,8 @@ from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
-
 from pydici.people.models import Consultant
+import pydici.settings
 
 register = template.Library()
 
@@ -73,3 +73,11 @@ def link_to_staffing(value, arg=None):
         return mark_safe(url)
     except Consultant.DoesNotExist:
         return value
+
+@register.filter
+def get_admin_mail(value, arg=None):
+    # Config to get admin conctat
+    if pydici.settings.ADMINS:
+        return mark_safe("<a href='mailto:%s'>%s</a>" % (pydici.settings.ADMINS[0][1],
+                                                         _("Mail to support")))
+

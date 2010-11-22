@@ -95,7 +95,7 @@
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>                
                 <li><a href="{% url help %}">{% trans "Help page" %}</a></li>
-                <li><a href='mailto:{{ admin.1 }}'>{% trans "Support" %}</a></li>        
+                <li>{{ foo|get_admin_mail }}</li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
