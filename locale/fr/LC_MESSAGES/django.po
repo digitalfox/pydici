@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-21 22:23+0100\n"
-"PO-Revision-Date: 2010-11-21 22:23+0100\n"
+"POT-Creation-Date: 2010-11-21 22:36+0100\n"
+"PO-Revision-Date: 2010-11-21 22:36+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -533,35 +533,52 @@ msgstr "Bienvenue, "
 msgid "Leads"
 msgstr "Affaires"
 
-#: templates/admin/base_site.html:22 templates/core/index.html:166
-msgid "All leads"
-msgstr "Toutes les affaires"
-
-#: templates/admin/base_site.html:24
+#: templates/admin/base_site.html:25
 msgid "Current leads review"
 msgstr "Revue des affaires en cours"
 
-#: templates/admin/base_site.html:25
-msgid "Workload schedule"
-msgstr "Plan de charge"
+#: templates/admin/base_site.html:28
+msgid "All leads"
+msgstr "Toutes les affaires"
 
-#: templates/admin/base_site.html:26 templates/admin/index.html:29
-msgid "Add"
-msgstr "Ajouter"
-
-#: templates/admin/base_site.html:30 templates/core/index.html:146
+#: templates/admin/base_site.html:29 templates/core/index.html:146
 msgid "new lead"
 msgstr "Nouvelle affaire"
 
-#: templates/admin/base_site.html:33 templates/core/index.html:147
+#: templates/admin/base_site.html:38 templates/core/search.html:68
+msgid "Missions"
+msgstr "Missions"
+
+#: templates/admin/base_site.html:42
+msgid "Workload schedule"
+msgstr "Plan de charge"
+
+#: templates/admin/base_site.html:45 templates/staffing/missions.html:15
+msgid "All missions"
+msgstr "Toutes les missions"
+
+#: templates/admin/base_site.html:54
+#: templates/people/consultant_detail.html:30
+msgid "Clients"
+msgstr "Clients"
+
+#: templates/admin/base_site.html:58
+msgid "All clients"
+msgstr "Tous les clients"
+
+#: templates/admin/base_site.html:61
+msgid "Contact adress directory"
+msgstr "Carnet d'adresse client"
+
+#: templates/admin/base_site.html:62 templates/core/index.html:147
 msgid "new client"
 msgstr "Nouveau client"
 
-#: templates/admin/base_site.html:34 templates/core/index.html:148
+#: templates/admin/base_site.html:63 templates/core/index.html:148
 msgid "new client contact"
 msgstr "Nouveau contact client"
 
-#: templates/admin/base_site.html:42
+#: templates/admin/base_site.html:73
 msgid "Help"
 msgstr "Aide"
 
@@ -578,6 +595,10 @@ msgstr "Filtre"
 #, python-format
 msgid "Models available in the %(name)s application."
 msgstr "Modèles disponibles dans l'application %(name)s."
+
+#: templates/admin/index.html:29
+msgid "Add"
+msgstr "Ajouter"
 
 #: templates/admin/index.html:35 templates/leads/lead_detail.html:79
 #: templates/staffing/consultant_base.html:31
@@ -679,18 +700,6 @@ msgstr "Mes dernières actions"
 msgid "Admin console"
 msgstr "Console d'administration"
 
-#: templates/core/index.html:167 templates/staffing/missions.html:15
-msgid "All missions"
-msgstr "Toutes les missions"
-
-#: templates/core/index.html:168
-msgid "All clients"
-msgstr "Tous les clients"
-
-#: templates/core/index.html:169
-msgid "All client contacts"
-msgstr "Tous les contacts clients"
-
 #: templates/core/search.html:13
 msgid "Pydici search"
 msgstr "Recherche Pydici"
@@ -716,10 +725,6 @@ msgstr "Contacts clients"
 #: templates/core/search.html:50
 msgid "Clients companies"
 msgstr "Entreprises"
-
-#: templates/core/search.html:68
-msgid "Missions"
-msgstr "Missions"
 
 #: templates/crm/clientcompany_detail.html:29
 #: templates/staffing/mission_base.html:59
@@ -904,10 +909,6 @@ msgstr "Manager : "
 #: templates/people/consultant_detail.html:22
 msgid "Staff"
 msgstr "Équipe"
-
-#: templates/people/consultant_detail.html:30
-msgid "Clients"
-msgstr "Clients"
 
 #: templates/people/consultant_detail.html:37
 msgid "Current missions"
@@ -1159,6 +1160,9 @@ msgstr "Afficher toutes les missions"
 #: templates/staffing/missions.html:50
 msgid "Missions administration"
 msgstr "Administration des missions"
+
+#~ msgid "All client contacts"
+#~ msgstr "Tous les contacts clients"
 
 #~ msgid "Pydici - Lead and workload schedule management"
 #~ msgstr "Pydici - Gestion des affaires et du plan de charge"

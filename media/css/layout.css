@@ -1,6 +1,6 @@
 /* PAGE STRUCTURE */
 #container { position:relative; width:100%; min-width:760px; padding:0; }
-#content { margin:10px 15px; }
+#content { margin:0 10px 10px 10px; }
 #header { width:100%; }
 #content-main { float:left; width:100%; }
 #content-staffing { float:left; width:120%; }

@@ -1,12 +1,135 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
+{% load pydici_filters %}
 
-{% block title %}{{ title }}{% trans "Pydici - Lead and workload schedule management" %}{% endblock %}
 
-{% block branding %}
-<h1 id="site-name">
-    <a href='{% url index %}'><img src="{{ MEDIA_URL }}pydici/company_logo.png">  {% trans "Lead and workload schedule management" %}</a>
-</h1>
+{% block menu %}
+<!-- Begin menu -->
+    <div style="margin-left:10px;">
+    <ul id="menu">
+            
+        <div style="float:left; background:#332B2A; height: 40px; padding-top:5px">
+        <a href="{% url index %}">
+           <img alt="" src="{{ MEDIA_URL }}pydici/company_logo.png"/>
+        </a>
+        </div>
+
+        {% if user.is_authenticated %}
+            <li>{% trans "Welcome," %} <strong>{{ user.username|link_to_consultant }}</strong></li>
+        {% endif%}
+        
+        <li>{% trans "Leads" %}
+            <ul>
+                <li>
+                    <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
+                     <a href="{% url pydici.leads.views.review %}">{% trans "Current leads review" %}</a>
+                     <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
+                </li>
+                <li><a href="{% url admin:leads_lead_changelist %}">{% trans "All leads" %}</a></li>
+                <li><a href='{% url admin:leads_lead_add %}'>{% trans "new lead" %}</a></li>
+                <li class="last">
+                    <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
+                    <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
+                    <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
+                </li>    
+            </ul>
+        </li>
+        <li>{% trans "Missions" %}
+            <ul>
+                <li>
+                    <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
+                     <a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a>
+                     <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
+                </li>
+                <li><a href="{% url all-missions %}">{% trans "All missions" %}</a></li>
+                <li class="last">
+                    <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
+                    <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
+                    <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
+                </li>    
+            </ul>
+        </li>
+
+        <li>{% trans "Clients" %}
+            <ul>
+                <li>
+                    <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
+                        <li><a href="{% url clientcompany_list %}">{% trans "All clients" %}</a></li>
+                     <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
+                </li>
+                <li><a href="{% url admin:crm_clientcontact_changelist %}">{% trans "Contact adress directory" %}</a></li>
+                <li><a href='{% url admin:crm_client_add %}'>{% trans "new client" %}</a></li>
+                <li><a href='{% url admin:crm_clientcontact_add %}'>{% trans "new client contact" %}</a></li>
+                <li class="last">
+                    <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
+                    <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
+                    <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
+                </li>    
+            </ul>
+        </li>
+        <li>{% trans "Reports" %}
+            <ul>
+                <li>
+                    <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
+                        <li><a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads as csv file" %}</a></li>
+                     <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
+                </li>                
+                <li><a href='{% url pydici.leads.views.csv_export target="all" %}'>{% trans "All leads as csv file" %}</a></li>
+                <li><a href='{% url lead-mail-html %}'>{% trans "Week summary mail (html)" %}</a></li>
+                <li><a href='{% url lead-mail-text %}'>{% trans "Week summary mail (text)" %}</a></li>
+                <li><a href='{% url pydici.staffing.views.all_timesheet %}'>{% trans "All people timesheet" %}</a></li>
+                <li class="last">
+                    <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
+                    <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
+                    <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
+                </li>    
+            </ul>
+        </li>
+        <li>{% trans "Help" %}
+            <ul>
+                <li>
+                    <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
+                        <li><a href="{% url admin:index %}">{% trans "Admin console" %}</a></li>
+                     <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
+                </li>                
+                <li><a href="{% url help %}">{% trans "Help page" %}</a></li>
+                <li><a href='mailto:{{ admin.1 }}'>{% trans "Support" %}</a></li>        
+                <li class="last">
+                    <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
+                    <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
+                    <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
+                </li>    
+            </ul>
+        </li>
+        <li class="searchContainer">
+            <form action="{% url search %}" method="GET">
+	            <input type="text", name="q", value="{{ query|escape }}", maxlength="100" />
+	            <img src="{{ MEDIA_URL }}pydici/menu/magnifier.png" alt="Search" onclick="submit"/>
+	            <ul id="search">
+	                <li>
+	                    <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
+	                    <input name="lead" type="checkbox" checked="checked" />{% trans "Leads" %}
+	                    <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
+	                </li>
+	                <li><input name="mission" type="checkbox"    checked="checked" />{% trans "Missions" %}</li>
+	                <li><input name="company" type="checkbox"    checked="checked"/>{% trans "Company" %}</li>
+	                <li><input name="contact" type="checkbox"    checked="checked"/>{% trans "Client contacts" %}</li>
+	                <li><input name="consultant" type="checkbox" checked="checked"/>{% trans "Consultants" %}</li>
+	                <li class="last">
+	                    <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
+	                    <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
+	                    <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
+	                </li>
+	            </ul>
+	       </form>
+        </li>
+    </ul>
+    <img alt="" src="{{ MEDIA_URL }}pydici/menu/menu_right.png"/>
+</div>
+    
+<!-- End menu -->
 {% endblock %}
+
+
 
 {% block nav-global %}{% endblock %}

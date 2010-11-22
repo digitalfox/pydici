@@ -109,66 +109,7 @@
             </tr>
         {% endfor %}
     {% endif %}
-        <tr><th colspan=7>{% trans "Reports" %}</th></tr>
-        <tr><td colspan=2><a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads as csv file" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='{% url pydici.leads.views.csv_export target="all" %}'>{% trans "All leads as csv file" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='{% url lead-mail-html %}'>{% trans "Week summary mail (html)" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='{% url lead-mail-text %}'>{% trans "Week summary mail (text)" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td colspan=2><a href='{% url pydici.staffing.views.all_timesheet %}'>{% trans "All people timesheet" %}</a></td><td></td><td></td><td></td><td></td><td></td></tr>
-        </table>
-    </div>
-</div>
-{% endblock %}
-
-
-{% block sidebar %}
-<div id="content-related">
-    <div class="module" id="recent-actions-module">
-        <h2></h2>
-        <h3>{% trans "Search" %}</h3>
-        <div id="toolbar">
-        
-	    <form action="{% url search %}" method="GET">        
-	        <div>	            
-	            <label for="searchbar"><img src="/media/img/admin/icon_searchbox.png" alt="Search" /></label>
-	            <input type="text" name="q" maxlength="100" />
-	        
-	        <input type="submit" value="{% trans 'Go' %}"/>
-	        </div>
-	    </form>
-        
-
-        </div>
-		<script type="text/javascript">document.getElementById("searchbar").focus();</script>
-		<br/>
-		<h3>{% trans "Add..." %}</h3>
-		    <ul class="actionlist">
-		    <li><a href='{% url admin:leads_lead_add %}'>{% trans "new lead" %}</a></li>
-		    <li><a href='{% url admin:crm_client_add %}'>{% trans "new client" %}</a></li>
-		    <li><a href='{% url admin:crm_clientcontact_add %}'>{% trans "new client contact" %}</a></li>
-		    </ul>
-		 <br/>
-        <h3>{% trans "My last actions" %}</h3>
-            {% load log %}
-            {% get_admin_log 10 as admin_log for_user user %}
-            {% if not admin_log %}
-            <p>{% trans 'None available' %}</p>
-            {% else %}
-            <ul class="actionlist">
-            {% for entry in admin_log %}
-            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">{% if not entry.is_deletion %}<a href="{% url admin:index %}{{ entry.content_type.app_label }}/{{ entry.content_type.model }}/{{ entry.object_id }}/">{% endif %}{{ entry.object_repr|escape }}{% if not entry.is_deletion %}</a>{% endif %}<br /><span class="mini quiet">{% filter capfirst %}{% trans entry.content_type.name %}{% endfilter %}</span></li>
-            {% endfor %}
-            </ul>
-            {% endif %}
-        <br/>
-        <h3><a href="{% url admin:index %}">{% trans "Admin console" %}</a></h3>
-        <ul class="actionlist">
-	        <li><a href="{% url admin:leads_lead_changelist %}">{% trans "All leads" %}</a></li>
-	        <li><a href="{% url all-missions %}">{% trans "All missions" %}</a></li>
-	        <li><a href="{% url clientcompany_list %}">{% trans "All clients" %}</a></li>
-            <li><a href="{% url admin:crm_clientcontact_changelist %}">{% trans "All client contacts" %}</a></li>
-
-        </ul>
+    </table>
     </div>
 </div>
 {% endblock %}
