@@ -99,11 +99,12 @@ def search(request):
                 missions = missions.filter(description__icontains=word)
 
             # Add missions from lead
-            missions = set(missions)
-            for lead in leads:
-                for mission in lead.mission_set.all():
-                    missions.add(mission)
-            missions = list(missions)
+            if leads:
+                missions = set(missions)
+                for lead in leads:
+                    for mission in lead.mission_set.all():
+                        missions.add(mission)
+                missions = list(missions)
 
     return render_to_response("core/search.html",
                               {"query" : " ".join(words),
