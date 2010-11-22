@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-21 22:36+0100\n"
-"PO-Revision-Date: 2010-11-21 22:36+0100\n"
+"POT-Creation-Date: 2010-11-22 19:37+0100\n"
+"PO-Revision-Date: 2010-11-22 19:37+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -31,6 +31,14 @@ msgstr "Filiale"
 #: core/models.py:22
 msgid "Subsidiaries"
 msgstr "Filiales"
+
+#: core/templatetags/pydici_filters.py:60
+msgid "My timesheet"
+msgstr "Ma feuille de temps"
+
+#: core/templatetags/pydici_filters.py:72
+msgid "My staffing"
+msgstr "Mon staffing"
 
 #: crm/models.py:27
 msgid "Client Company"
@@ -70,7 +78,7 @@ msgstr "Fonction"
 msgid "None"
 msgstr "Aucun(e)"
 
-#: crm/models.py:73 crm/models.py:81
+#: crm/models.py:73 crm/models.py:81 templates/admin/base_site.html:117
 msgid "Company"
 msgstr "Société"
 
@@ -528,8 +536,8 @@ msgstr "Flux ATOM de mes dernières prévisions de staffing"
 msgid "Welcome,"
 msgstr "Bienvenue, "
 
-#: templates/admin/base_site.html:21 templates/core/search.html:59
-#: templates/people/consultant_detail.html:45
+#: templates/admin/base_site.html:21 templates/admin/base_site.html.py:113
+#: templates/core/search.html:59 templates/people/consultant_detail.html:45
 msgid "Leads"
 msgstr "Affaires"
 
@@ -541,46 +549,91 @@ msgstr "Revue des affaires en cours"
 msgid "All leads"
 msgstr "Toutes les affaires"
 
-#: templates/admin/base_site.html:29 templates/core/index.html:146
+#: templates/admin/base_site.html:29
 msgid "new lead"
 msgstr "Nouvelle affaire"
 
-#: templates/admin/base_site.html:38 templates/core/search.html:68
+#: templates/admin/base_site.html:37 templates/admin/base_site.html.py:116
+#: templates/core/search.html:68
 msgid "Missions"
 msgstr "Missions"
 
-#: templates/admin/base_site.html:42
+#: templates/admin/base_site.html:41
 msgid "Workload schedule"
 msgstr "Plan de charge"
 
-#: templates/admin/base_site.html:45 templates/staffing/missions.html:15
+#: templates/admin/base_site.html:44 templates/staffing/missions.html:15
 msgid "All missions"
 msgstr "Toutes les missions"
 
-#: templates/admin/base_site.html:54
+#: templates/admin/base_site.html:55
 #: templates/people/consultant_detail.html:30
 msgid "Clients"
 msgstr "Clients"
 
-#: templates/admin/base_site.html:58
+#: templates/admin/base_site.html:59
 msgid "All clients"
 msgstr "Tous les clients"
 
-#: templates/admin/base_site.html:61
+#: templates/admin/base_site.html:62
 msgid "Contact adress directory"
 msgstr "Carnet d'adresse client"
 
-#: templates/admin/base_site.html:62 templates/core/index.html:147
+#: templates/admin/base_site.html:63
 msgid "new client"
 msgstr "Nouveau client"
 
-#: templates/admin/base_site.html:63 templates/core/index.html:148
+#: templates/admin/base_site.html:64
 msgid "new client contact"
 msgstr "Nouveau contact client"
 
-#: templates/admin/base_site.html:73
+#: templates/admin/base_site.html:72
+msgid "Reports"
+msgstr "Rapports"
+
+#: templates/admin/base_site.html:76
+msgid "Active leads as csv file"
+msgstr "Affaires en cours sous forme de fichier CSV"
+
+#: templates/admin/base_site.html:79
+msgid "All leads as csv file"
+msgstr "Toutes les affaires sous forme de fichier CSV"
+
+#: templates/admin/base_site.html:80
+msgid "Week summary mail (html)"
+msgstr "Courriel de bilan hebdomadaire (html)"
+
+#: templates/admin/base_site.html:81
+msgid "Week summary mail (text)"
+msgstr "Courriel de bilan hebdomadaire (texte)"
+
+#: templates/admin/base_site.html:82
+msgid "All people timesheet"
+msgstr "Feuille de temps globale"
+
+#: templates/admin/base_site.html:90
 msgid "Help"
 msgstr "Aide"
+
+#: templates/admin/base_site.html:94
+msgid "Admin console"
+msgstr "Console d'administration"
+
+#: templates/admin/base_site.html:97
+msgid "Help page"
+msgstr "Page d'aide"
+
+#: templates/admin/base_site.html:98
+msgid "Support"
+msgstr "Support"
+
+#: templates/admin/base_site.html:118
+msgid "Client contacts"
+msgstr "Contacts clients"
+
+#: templates/admin/base_site.html:119 templates/core/search.html:32
+msgid "Consultants"
+msgstr "Consultants"
 
 #: templates/admin/change_list.html:16
 #, python-format
@@ -618,7 +671,7 @@ msgstr "Actions récentes"
 msgid "My Actions"
 msgstr "Mes actions"
 
-#: templates/admin/index.html:58 templates/core/index.html:155
+#: templates/admin/index.html:58
 msgid "None available"
 msgstr "Aucun(e) disponible"
 
@@ -656,53 +709,13 @@ msgstr ""
 "Mes dernières affaires archivées (gagnées, perdues, abandonnées ou en "
 "sommeil)"
 
-#: templates/core/index.html:112
-msgid "Reports"
-msgstr "Rapports"
-
-#: templates/core/index.html:113
-msgid "Active leads as csv file"
-msgstr "Affaires en cours sous forme de fichier CSV"
-
-#: templates/core/index.html:114
-msgid "All leads as csv file"
-msgstr "Toutes les affaires sous forme de fichier CSV"
-
-#: templates/core/index.html:115
-msgid "Week summary mail (html)"
-msgstr "Courriel de bilan hebdomadaire (html)"
-
-#: templates/core/index.html:116
-msgid "Week summary mail (text)"
-msgstr "Courriel de bilan hebdomadaire (texte)"
-
-#: templates/core/index.html:117
-msgid "All people timesheet"
-msgstr "Feuille de temps globale"
-
-#: templates/core/index.html:128
-msgid "Search"
-msgstr "Recherche"
-
-#: templates/core/index.html:136 templates/core/search.html:18
-msgid "Go"
-msgstr "Envoyer"
-
-#: templates/core/index.html:144
-msgid "Add..."
-msgstr "Ajouter..."
-
-#: templates/core/index.html:151
-msgid "My last actions"
-msgstr "Mes dernières actions"
-
-#: templates/core/index.html:164
-msgid "Admin console"
-msgstr "Console d'administration"
-
 #: templates/core/search.html:13
 msgid "Pydici search"
 msgstr "Recherche Pydici"
+
+#: templates/core/search.html:18
+msgid "Go"
+msgstr "Envoyer"
 
 #: templates/core/search.html:25
 #, python-format
@@ -713,10 +726,6 @@ msgstr "Résultats de la recherche pour <em>%(value)s</em> :"
 #, python-format
 msgid "No results for <em>%(value)s</em>"
 msgstr "Aucun résultat pour <em>%(value)s</em>"
-
-#: templates/core/search.html:32
-msgid "Consultants"
-msgstr "Consultants"
 
 #: templates/core/search.html:41
 msgid "Clients contacts"
@@ -1160,6 +1169,15 @@ msgstr "Afficher toutes les missions"
 #: templates/staffing/missions.html:50
 msgid "Missions administration"
 msgstr "Administration des missions"
+
+#~ msgid "Search"
+#~ msgstr "Recherche"
+
+#~ msgid "Add..."
+#~ msgstr "Ajouter..."
+
+#~ msgid "My last actions"
+#~ msgstr "Mes dernières actions"
 
 #~ msgid "All client contacts"
 #~ msgstr "Tous les contacts clients"

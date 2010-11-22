@@ -42,6 +42,8 @@
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
                 <li><a href="{% url all-missions %}">{% trans "All missions" %}</a></li>
+                <li>{{ user.username|link_to_timesheet }}</li>
+                <li>{{ user.username|link_to_staffing }}</li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
@@ -54,7 +56,7 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                        <li><a href="{% url clientcompany_list %}">{% trans "All clients" %}</a></li>
+                        <a href="{% url clientcompany_list %}">{% trans "All clients" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
                 <li><a href="{% url admin:crm_clientcontact_changelist %}">{% trans "Contact adress directory" %}</a></li>
@@ -71,7 +73,7 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                        <li><a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads as csv file" %}</a></li>
+                        <a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads as csv file" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>                
                 <li><a href='{% url pydici.leads.views.csv_export target="all" %}'>{% trans "All leads as csv file" %}</a></li>
@@ -89,7 +91,7 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                        <li><a href="{% url admin:index %}">{% trans "Admin console" %}</a></li>
+                        <a href="{% url admin:index %}">{% trans "Admin console" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>                
                 <li><a href="{% url help %}">{% trans "Help page" %}</a></li>
