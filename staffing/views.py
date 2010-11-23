@@ -383,20 +383,21 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
 def mission_timesheet(request, mission_id):
     """Mission timesheet"""
     mission = Mission.objects.get(id=mission_id)
-    month = datetime.today().replace(day=1) # Current month
+    current_month = date.today().replace(day=1) # Current month
+    next_month = (current_month + timedelta(days=40)).replace(day=1)
     consultants = mission.staffed_consultant()
     consultant_rates = mission.consultant_rates()
 
-    # Only consider timesheet of completed month
-    timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=month)
+    # Only consider timesheet up to current month
+    timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=next_month)
 
     # Gather timesheet months
     timesheetMonths = [t.working_date.replace(day=1) for t in timesheets.distinct("working_date")]
     timesheetMonths = list(set(timesheetMonths)) # uniq instance
     timesheetMonths.sort()
 
-    # Gather forecaster months
-    staffings = Staffing.objects.filter(mission=mission).filter(staffing_date__gte=month)
+    # Gather forecaster months (till current month)
+    staffings = Staffing.objects.filter(mission=mission).filter(staffing_date__gte=current_month)
     staffingMonths = [t.staffing_date.replace(day=1) for t in staffings.distinct("staffing_date")]
     staffingMonths = list(set(staffingMonths)) # uniq instance
     staffingMonths.sort()
@@ -413,11 +414,15 @@ def mission_timesheet(request, mission_id):
         # Forecast staffing data
         staffingData = []
         for month in staffingMonths:
-            staffingData.append(sum([t.charge for t in staffings.filter(consultant=consultant) if t.staffing_date.month == month.month]))
+            data = sum([t.charge for t in staffings.filter(consultant=consultant) if t.staffing_date.month == month.month])
+            if timesheetMonths  and month == current_month:
+                # Remove timesheet days from current month forecast days
+                data -= timesheetData[-3] # Last is total in money, the one before is total in days
+            staffingData.append(data)
         staffingData.append(sum(staffingData)) # Add total per consultant
         staffingData.append(staffingData[-1] * consultant_rates[consultant] / 1000) # Add total in money
-
         missionData.append((consultant, timesheetData, staffingData))
+
     # Compute total per month
     timesheetTotal = [timesheet for consultant, timesheet, staffing in missionData]
     timesheetTotal = zip(*timesheetTotal) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
