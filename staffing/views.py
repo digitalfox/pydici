@@ -388,19 +388,13 @@ def mission_timesheet(request, mission_id):
     consultants = mission.staffed_consultant()
     consultant_rates = mission.consultant_rates()
 
-    # Only consider timesheet up to current month
-    timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=next_month)
+    # Gather timesheet (Only consider timesheet up to current month)
+    timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=next_month).order_by("working_date")
+    timesheetMonths = timesheets.dates("working_date", "month")
 
-    # Gather timesheet months
-    timesheetMonths = [t.working_date.replace(day=1) for t in timesheets.distinct("working_date")]
-    timesheetMonths = list(set(timesheetMonths)) # uniq instance
-    timesheetMonths.sort()
-
-    # Gather forecaster months (till current month)
-    staffings = Staffing.objects.filter(mission=mission).filter(staffing_date__gte=current_month)
-    staffingMonths = [t.staffing_date.replace(day=1) for t in staffings.distinct("staffing_date")]
-    staffingMonths = list(set(staffingMonths)) # uniq instance
-    staffingMonths.sort()
+    # Gather forecaster (till current month)
+    staffings = Staffing.objects.filter(mission=mission).filter(staffing_date__gte=current_month).order_by("staffing_date")
+    staffingMonths = staffings.dates("staffing_date", "month")
 
     missionData = [] # list of tuple (consultant, (charge month 1, charge month 2), (forecast month 1, forcast month2)
     for consultant in consultants:
