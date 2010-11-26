@@ -29,6 +29,7 @@ AJAX_LOOKUP_CHANNELS = {
     'business_broker' : dict(model='crm.businessbroker', search_field='name'),
     'client' : ('crm.lookups', 'ClientLookup'),
     'mission' : ('staffing.lookups', 'MissionLookup'),
+    'lead' : ('leads.lookups', 'LeadLookup'),
 }
 
 
@@ -115,6 +116,7 @@ INSTALLED_APPS = (
     'pydici.leads',
     'pydici.staffing',
     'pydici.crm',
+    'pydici.billing',
     'ajax_select'
 )
 

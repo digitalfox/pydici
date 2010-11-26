@@ -27,7 +27,9 @@
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
                 <li><a href="{% url admin:leads_lead_changelist %}">{% trans "All leads" %}</a></li>
-                <li><a href='{% url admin:leads_lead_add %}'>{% trans "new lead" %}</a></li>
+                <li><a href='{% url admin:leads_lead_add %}'>{% trans "New lead" %}</a></li>
+                <li><a href="{% url admin:billing_bill_changelist %}">{% trans "All bills" %}</a></li>
+                <li><a href='{% url admin:billing_bill_add %}'>{% trans "New bill" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
