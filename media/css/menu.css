@@ -23,10 +23,10 @@ from http://www.jankoatwarpspeed.com/post/2009/01/19/Create-Vimeo-like-top-navig
 /* main submenu */
 /*#menu #main { left:0px; top:-20px; padding-top:20px; background-color:#332B2A; color:#fff; z-index:999;}*/
 /* search */
-.searchContainer div { background-color:#fff; display:inline; padding:5px;}
-.searchContainer input[type="text"] {border:none;}
-.searchContainer input, textarea, select { margin:2px 10px; padding:2px 3px; vertical-align:middle; font-family:"Lucida Grande", Verdana, Arial, sans-serif; font-weight:normal; font-size:11px; }
-.searchContainer img { vertical-align:middle;}
+#menu .searchContainer div { background-color:#fff; display:inline; padding:5px;}
+#menu .searchContainer input[type="text"] {border:none;}
+#menu .searchContainer input { margin:2px 10px; padding:2px 3px; vertical-align:middle; font-family:"Lucida Grande", Verdana, Arial, sans-serif; font-weight:normal; font-size:11px; }
+#menu .searchContainer img { vertical-align:middle;}
 /* corners*/
 #menu .corner_inset_left { position:absolute; top:0px; left:-12px;}
 #menu .corner_inset_right { position:absolute; top:0px; left:200px;}
