@@ -409,7 +409,7 @@ def mission_timesheet(request, mission_id):
         staffingData = []
         for month in staffingMonths:
             data = sum([t.charge for t in staffings.filter(consultant=consultant) if t.staffing_date.month == month.month])
-            if timesheetMonths  and month == current_month:
+            if timesheetMonths  and date(month.year, month.month, 1) == current_month:
                 # Remove timesheet days from current month forecast days
                 data -= timesheetData[-3] # Last is total in money, the one before is total in days
             staffingData.append(data)
