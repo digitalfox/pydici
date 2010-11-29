@@ -48,6 +48,13 @@ class Bill(models.Model):
             wait = date.today() - self.due_date
         return wait.days
 
+    def payment_delay(self):
+        if self.payment_date:
+            wait = self.payment_date - self.creation_date
+        else:
+            wait = date.today() - self.creation_date
+        return wait.days
+
     class Meta:
         ordering = ["lead__client__organisation__company"]
         verbose_name = _("Bill")

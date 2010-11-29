@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-29 21:55+0100\n"
-"PO-Revision-Date: 2010-11-29 21:55+0100\n"
+"POT-Creation-Date: 2010-11-29 22:11+0100\n"
+"PO-Revision-Date: 2010-11-29 22:11+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -80,7 +80,7 @@ msgstr "Facture de l'année N-1"
 msgid "Comments"
 msgstr "Remarques"
 
-#: billing/models.py:53
+#: billing/models.py:60
 msgid "Bill"
 msgstr "Facture"
 
@@ -740,8 +740,8 @@ msgid "Overdue bills"
 msgstr "Facture en retard"
 
 #: templates/billing/bill_review.html:20 templates/billing/bill_review.html:45
-#: templates/billing/bill_review.html:70 templates/billing/bill_review.html:96
-msgid "Delay"
+#: templates/billing/bill_review.html:70
+msgid "Wait"
 msgstr "Retard"
 
 #: templates/billing/bill_review.html:31 templates/billing/bill_review.html:56
@@ -760,6 +760,10 @@ msgstr "Factures en litige"
 #: templates/billing/bill_review.html:90
 msgid "Recently paid bills"
 msgstr "Factures réglées récemment"
+
+#: templates/billing/bill_review.html:96
+msgid "Payment delay"
+msgstr "Délai de règlement"
 
 #: templates/core/index.html:16
 msgid "My leads as responsible"
@@ -1248,6 +1252,9 @@ msgstr "Afficher toutes les missions"
 #: templates/staffing/missions.html:50
 msgid "Missions administration"
 msgstr "Administration des missions"
+
+#~ msgid "Delay"
+#~ msgstr "Retard"
 
 #, fuzzy
 #~ msgid "Amount (kE excl tax)"

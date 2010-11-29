@@ -18,7 +18,7 @@ from pydici.billing.forms import BillForm
 
 #class BillAdmin(AjaxSelectAdmin):
 class BillAdmin(AjaxSelectAdmin):
-    list_display = ("id", "bill_id", "lead", "state", "amount", "creation_date", "due_date", "payment_wait", "comment")
+    list_display = ("id", "bill_id", "lead", "state", "amount", "creation_date", "due_date", "payment_date", "comment")
     ordering = ("creation_date",)
     actions = None
     list_filter = ["state", "creation_date", "due_date", "payment_date", "previous_year_bill"]

@@ -17,7 +17,7 @@
                 <td><b>{% trans "Bill id" %}</b></td>
                 <td><b>{% trans "Client" %}</b></td>
                 <td><b>{% trans "Amount (k€ excl tax)" %}</b></td>
-                <td><b>{% trans "Delay" %}</b></td>
+                <td><b>{% trans "Wait" %}</b></td>
                 <td><b>{% trans "Comments" %}</b></td>
                 <td></td>
         </tr>
@@ -42,7 +42,7 @@
                 <td><b>{% trans "Bill id" %}</b></td>
                 <td><b>{% trans "Client" %}</b></td>
                 <td><b>{% trans "Amount (k€ excl tax)" %}</b></td>
-                <td><b>{% trans "Delay" %}</b></td>
+                <td><b>{% trans "Wait" %}</b></td>
                 <td><b>{% trans "Comments" %}</b></td>
                 <td></td>
         </tr>
@@ -67,7 +67,7 @@
                 <td><b>{% trans "Bill id" %}</b></td>
                 <td><b>{% trans "Client" %}</b></td>
                 <td><b>{% trans "Amount (k€ excl tax)" %}</b></td>
-                <td><b>{% trans "Delay" %}</b></td>
+                <td><b>{% trans "Wait" %}</b></td>
                 <td><b>{% trans "Comments" %}</b></td>
                 <td></td>
         </tr>
@@ -93,7 +93,7 @@
                 <td><b>{% trans "Client" %}</b></td>
                 <td><b>{% trans "Amount (k€ excl tax)" %}</b></td>
                 <td><b>{% trans "Creation date" %}</b></td>
-                <td><b>{% trans "Delay" %}</b></td>
+                <td><b>{% trans "Payment delay" %}</b></td>
                 <td><b>{% trans "Comments" %}</b></td>
         </tr>
         {% for bill in recent_bills %}
@@ -102,7 +102,7 @@
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
                 <td>{{ bill.amount }}</td>
                 <td>{{ bill.creation_date }}</td>
-                <td>{{ bill.payment_wait }}</td>
+                <td>{{ bill.payment_delay }}</td>
                 <td>{{ bill.Comments }}</td>
             </tr>
         {% endfor %}
