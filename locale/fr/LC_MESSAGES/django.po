@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-29 16:15+0100\n"
-"PO-Revision-Date: 2010-11-29 16:15+0100\n"
+"POT-Creation-Date: 2010-11-29 21:21+0100\n"
+"PO-Revision-Date: 2010-11-29 21:20+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -40,11 +40,15 @@ msgstr "Annulée"
 msgid "Lead"
 msgstr "Affaire"
 
-#: billing/models.py:24
+#: billing/models.py:24 templates/billing/bill_review.html:17
+#: templates/billing/bill_review.html:42 templates/billing/bill_review.html:67
+#: templates/billing/bill_review.html:92
 msgid "Bill id"
 msgstr "N° facture"
 
-#: billing/models.py:25
+#: billing/models.py:25 templates/billing/bill_review.html:19
+#: templates/billing/bill_review.html:44 templates/billing/bill_review.html:69
+#: templates/billing/bill_review.html:94
 msgid "Amount (k€ excl tax)"
 msgstr "Montant (k€ HT)"
 
@@ -52,7 +56,7 @@ msgstr "Montant (k€ HT)"
 msgid "Due date"
 msgstr "Date d'échéance"
 
-#: billing/models.py:27
+#: billing/models.py:27 templates/billing/bill_review.html:95
 msgid "Creation date"
 msgstr "Date de création"
 
@@ -69,22 +73,12 @@ msgid "Previous year bill"
 msgstr "Facture de l'année N-1"
 
 #: billing/models.py:31 staffing/models.py:122
+#: templates/billing/bill_review.html:21 templates/billing/bill_review.html:46
+#: templates/billing/bill_review.html:71 templates/billing/bill_review.html:97
 #: templates/staffing/consultant_staffing.html:18
 #: templates/staffing/mission_staffing.html:17
 msgid "Comments"
 msgstr "Remarques"
-
-#: billing/models.py:44 templates/core/index.html:31
-#: templates/core/index.html.py:56 templates/core/index.html:80
-#: templates/core/index.html.py:104 templates/leads/lead_detail.html:34
-#: templates/leads/lead_mail.html:8 templates/leads/lead_mail.html.py:12
-#: templates/leads/lead_mail.txt:9 templates/leads/lead_mail.txt.py:13
-#: templates/leads/mail.html:8 templates/leads/mail.txt:7
-#: templates/leads/mail.txt.py:8 templates/leads/review.html:34
-#: templates/leads/review.html.py:63
-#: templates/staffing/mission_timesheet.html:48
-msgid "To be defined"
-msgstr "À définir"
 
 #: billing/models.py:53
 msgid "Bill"
@@ -155,7 +149,7 @@ msgstr "Fonction"
 msgid "None"
 msgstr "Aucun(e)"
 
-#: crm/models.py:73 crm/models.py:81 templates/admin/base_site.html:120
+#: crm/models.py:73 crm/models.py:81 templates/admin/base_site.html:121
 msgid "Company"
 msgstr "Société"
 
@@ -179,7 +173,9 @@ msgstr "Contact"
 msgid "Sales owner"
 msgstr "Propriété commerciale"
 
-#: crm/models.py:106 leads/views.py:97 templates/core/index.html:18
+#: crm/models.py:106 leads/views.py:97 templates/billing/bill_review.html:18
+#: templates/billing/bill_review.html:43 templates/billing/bill_review.html:68
+#: templates/billing/bill_review.html:93 templates/core/index.html:18
 #: templates/core/index.html.py:43 templates/core/index.html:67
 #: templates/core/index.html.py:91
 msgid "Client"
@@ -592,7 +588,7 @@ msgstr "Flux ATOM de mes dernières prévisions de staffing"
 msgid "Welcome,"
 msgstr "Bienvenue, "
 
-#: templates/admin/base_site.html:22 templates/admin/base_site.html.py:116
+#: templates/admin/base_site.html:22 templates/admin/base_site.html.py:117
 #: templates/core/search.html:51 templates/people/consultant_detail.html:45
 msgid "Leads"
 msgstr "Affaires"
@@ -617,7 +613,7 @@ msgstr "Toutes les factures"
 msgid "New bill"
 msgstr "Nouvelle facture"
 
-#: templates/admin/base_site.html:40 templates/admin/base_site.html.py:119
+#: templates/admin/base_site.html:40 templates/admin/base_site.html.py:120
 #: templates/core/search.html:60
 msgid "Missions"
 msgstr "Missions"
@@ -656,12 +652,12 @@ msgid "Reports"
 msgstr "Rapports"
 
 #: templates/admin/base_site.html:79
-msgid "Active leads as csv file"
-msgstr "Affaires en cours sous forme de fichier CSV"
+msgid "Active leads (csv)"
+msgstr "Affaires en cours (csv)"
 
 #: templates/admin/base_site.html:82
-msgid "All leads as csv file"
-msgstr "Toutes les affaires sous forme de fichier CSV"
+msgid "All leads (csv)"
+msgstr "Toutes les affaires (csv)"
 
 #: templates/admin/base_site.html:83
 msgid "Week summary mail (html)"
@@ -675,23 +671,27 @@ msgstr "Courriel de bilan hebdomadaire (texte)"
 msgid "All people timesheet"
 msgstr "Feuille de temps globale"
 
-#: templates/admin/base_site.html:93
+#: templates/admin/base_site.html:86
+msgid "Bills review"
+msgstr "Suivi de facturation"
+
+#: templates/admin/base_site.html:94
 msgid "Help"
 msgstr "Aide"
 
-#: templates/admin/base_site.html:97
+#: templates/admin/base_site.html:98
 msgid "Admin console"
 msgstr "Console d'administration"
 
-#: templates/admin/base_site.html:100
+#: templates/admin/base_site.html:101
 msgid "Help page"
 msgstr "Page d'aide"
 
-#: templates/admin/base_site.html:121
+#: templates/admin/base_site.html:122
 msgid "Client contacts"
 msgstr "Contacts clients"
 
-#: templates/admin/base_site.html:122 templates/core/search.html:24
+#: templates/admin/base_site.html:123 templates/core/search.html:24
 msgid "Consultants"
 msgstr "Consultants"
 
@@ -735,6 +735,32 @@ msgstr "Mes actions"
 msgid "None available"
 msgstr "Aucun(e) disponible"
 
+#: templates/billing/bill_review.html:15
+msgid "Overdue bills"
+msgstr "Facture en retard"
+
+#: templates/billing/bill_review.html:20 templates/billing/bill_review.html:45
+#: templates/billing/bill_review.html:70 templates/billing/bill_review.html:96
+msgid "Delay"
+msgstr "Retard"
+
+#: templates/billing/bill_review.html:31 templates/billing/bill_review.html:56
+#: templates/billing/bill_review.html:81
+msgid "Mark this bill as paid"
+msgstr "Marquer cette facture comme payée"
+
+#: templates/billing/bill_review.html:40
+msgid "Bills due soon"
+msgstr "Factures bientôt à échéance"
+
+#: templates/billing/bill_review.html:65
+msgid "Litigious bills"
+msgstr "Factures en litige"
+
+#: templates/billing/bill_review.html:90
+msgid "Recently paid bills"
+msgstr "Factures réglées récemment"
+
 #: templates/core/index.html:16
 msgid "My leads as responsible"
 msgstr "Les affaires dont je suis le responsable"
@@ -744,6 +770,17 @@ msgstr "Les affaires dont je suis le responsable"
 #: templates/leads/review.html:27 templates/leads/review.html.py:56
 msgid "Status"
 msgstr "État"
+
+#: templates/core/index.html:31 templates/core/index.html.py:56
+#: templates/core/index.html:80 templates/core/index.html.py:104
+#: templates/leads/lead_detail.html:34 templates/leads/lead_mail.html:8
+#: templates/leads/lead_mail.html.py:12 templates/leads/lead_mail.txt:9
+#: templates/leads/lead_mail.txt.py:13 templates/leads/mail.html:8
+#: templates/leads/mail.txt:7 templates/leads/mail.txt.py:8
+#: templates/leads/review.html:34 templates/leads/review.html.py:63
+#: templates/staffing/mission_timesheet.html:48
+msgid "To be defined"
+msgstr "À définir"
 
 #: templates/core/index.html:41
 msgid "My leads as a resource"
@@ -1211,6 +1248,13 @@ msgstr "Afficher toutes les missions"
 #: templates/staffing/missions.html:50
 msgid "Missions administration"
 msgstr "Administration des missions"
+
+#, fuzzy
+#~ msgid "Comment"
+#~ msgstr "Remarques"
+
+#~ msgid "All leads as csv file"
+#~ msgstr "Toutes les affaires sous forme de fichier CSV"
 
 #, fuzzy
 #~ msgid "Undefined"

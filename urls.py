@@ -52,14 +52,14 @@ pydici_patterns += patterns('',
             {'feed_dict': feeds}, name='feed'),
 )
 
+# core module
 pydici_patterns += patterns('pydici.core.views',
-    # core module
     url(r'^$', 'index', name='index'),
     url(r'^search$', 'search', name='search'),
 )
 
+# Lead module
 pydici_patterns += patterns('pydici.leads.views',
-    # Lead module
     (r'^leads/review', 'review'),
     (r'^leads/csv/(?P<target>.*)', 'csv_export'),
     (r'^leads/(?P<lead_id>\d+)/$', 'detail'),
@@ -70,8 +70,8 @@ pydici_patterns += patterns('pydici.leads.views',
     (r'^leads/graph/bar', 'graph_stat_bar'),
 )
 
+# Staffing module
 pydici_patterns += patterns('pydici.staffing.views',
-    # Staffing module
     url(r'^staffing/pdcreview/?$', 'pdc_review', name='pdcreview-index'),
     url(r'^staffing/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', name='pdcreview'),
     url(r'^staffing/mission/$', 'missions', name='missions'),
@@ -89,19 +89,24 @@ pydici_patterns += patterns('pydici.staffing.views',
 
 )
 
+# People module
 pydici_patterns += patterns('pydici.people.views',
-    # People module
     (r'^people/consultant/(?P<consultant_id>\d+)/$', 'consultant_detail'),
 )
 
-
+# CRM module
 pydici_patterns += patterns('pydici.crm.views',
-    # CRM module 
     (r'^crm/company/(?P<company_id>\d+)/$', 'company_detail'),
 )
 pydici_patterns += patterns('',
             url(r'^crm/company/?$', 'django.views.generic.list_detail.object_list',
                                 {'queryset': ClientCompany.objects.all(), }, 'clientcompany_list'),)
+
+# Billing module
+pydici_patterns += patterns('pydici.billing.views',
+    (r'^billing/bill_review', 'bill_review'),
+    (r'^billing/bill/(?P<bill_id>\d+)/mark_bill_paid$', 'mark_bill_paid'),
+)
 
 
 # Application prefix

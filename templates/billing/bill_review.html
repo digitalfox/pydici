@@ -1,0 +1,119 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    {% if overdue_bills %}
+    <div class="module">
+        <table>
+        <caption>{% trans "Overdue bills" %}</caption>
+        <tr>
+                <td><b>{% trans "Bill id" %}</b></td>
+                <td><b>{% trans "Client" %}</b></td>
+                <td><b>{% trans "Amount (k€ excl tax)" %}</b></td>
+                <td><b>{% trans "Delay" %}</b></td>
+                <td><b>{% trans "Comments" %}</b></td>
+                <td></td>
+        </tr>
+        {% for bill in overdue_bills %}
+            <tr>
+                <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
+                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td>{{ bill.amount }}</td>
+                <td>{{ bill.payment_wait }}</td>
+                <td>{{ bill.Comments }}</td>
+                <td><a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    {% if soondue_bills %}
+    <div class="module">
+        <table>
+        <caption>{% trans "Bills due soon" %}</caption>
+        <tr>
+                <td><b>{% trans "Bill id" %}</b></td>
+                <td><b>{% trans "Client" %}</b></td>
+                <td><b>{% trans "Amount (k€ excl tax)" %}</b></td>
+                <td><b>{% trans "Delay" %}</b></td>
+                <td><b>{% trans "Comments" %}</b></td>
+                <td></td>
+        </tr>
+        {% for bill in soondue_bills %}
+            <tr>
+                <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
+                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td>{{ bill.amount }}</td>
+                <td>{{ bill.payment_wait }}</td>
+                <td>{{ bill.Comments }}</td>
+                <td><a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    {% if litigious_bills %}
+    <div class="module">
+        <table>
+        <caption>{% trans "Litigious bills" %}</caption>
+        <tr>
+                <td><b>{% trans "Bill id" %}</b></td>
+                <td><b>{% trans "Client" %}</b></td>
+                <td><b>{% trans "Amount (k€ excl tax)" %}</b></td>
+                <td><b>{% trans "Delay" %}</b></td>
+                <td><b>{% trans "Comments" %}</b></td>
+                <td></td>
+        </tr>
+        {% for bill in litigious_bills %}
+            <tr>
+                <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
+                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td>{{ bill.amount }}</td>
+                <td>{{ bill.payment_wait }}</td>
+                <td>{{ bill.Comments }}</td>
+                <td><a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    {% if recent_bills %}
+    <div class="module">
+        <table>
+        <caption>{% trans "Recently paid bills" %}</caption>
+        <tr>
+                <td><b>{% trans "Bill id" %}</b></td>
+                <td><b>{% trans "Client" %}</b></td>
+                <td><b>{% trans "Amount (k€ excl tax)" %}</b></td>
+                <td><b>{% trans "Creation date" %}</b></td>
+                <td><b>{% trans "Delay" %}</b></td>
+                <td><b>{% trans "Comments" %}</b></td>
+        </tr>
+        {% for bill in recent_bills %}
+            <tr>
+                <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
+                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td>{{ bill.amount }}</td>
+                <td>{{ bill.creation_date }}</td>
+                <td>{{ bill.payment_wait }}</td>
+                <td>{{ bill.Comments }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    
+    
+    
+    
+    
+    
+</div>
+{% endblock %}

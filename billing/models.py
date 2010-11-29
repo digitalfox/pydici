@@ -22,7 +22,7 @@ class Bill(models.Model):
 
     lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
     bill_id = models.CharField(_("Bill id"), max_length=500, blank=True, null=True)
-    amount = models.DecimalField(_(u"Amount (k€ excl tax)"), max_digits=10, decimal_places=3)
+    amount = models.DecimalField(_("Amount (k€ excl tax)"), max_digits=10, decimal_places=3)
     due_date = models.DateField(_("Due date"))
     creation_date = models.DateField(_("Creation date"), default=date.today())
     payment_date = models.DateField(_("Payment date"), blank=True, null=True)

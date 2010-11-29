@@ -76,13 +76,14 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                        <a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads as csv file" %}</a>
+                        <a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads (csv)" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>                
-                <li><a href='{% url pydici.leads.views.csv_export target="all" %}'>{% trans "All leads as csv file" %}</a></li>
+                <li><a href='{% url pydici.leads.views.csv_export target="all" %}'>{% trans "All leads (csv)" %}</a></li>
                 <li><a href='{% url lead-mail-html %}'>{% trans "Week summary mail (html)" %}</a></li>
                 <li><a href='{% url lead-mail-text %}'>{% trans "Week summary mail (text)" %}</a></li>
                 <li><a href='{% url pydici.staffing.views.all_timesheet %}'>{% trans "All people timesheet" %}</a></li>
+                <li><a href='{% url pydici.billing.views.bill_review %}'>{% trans "Bills review" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
