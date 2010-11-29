@@ -37,7 +37,7 @@ class Bill(models.Model):
             return unicode(self.id)
 
     def save(self, force_insert=False, force_update=False):
-        if self.state == "2_PAID":
+        if self.state == "2_PAID" and not self.payment_date:
             self.payment_date = date.today()
         super(Bill, self).save(force_insert, force_update)
 
