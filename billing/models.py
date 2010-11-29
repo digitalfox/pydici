@@ -20,7 +20,7 @@ class Bill(models.Model):
             ('3_LITIGIOUS', _("Litigious")),
             ('4_CANCELED', _("Canceled")),)
 
-    lead = models.ForeignKey(Lead)
+    lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
     bill_id = models.CharField(_("Bill id"), max_length=500, blank=True, null=True)
     amount = models.DecimalField(_(u"Amount (k€ excl tax)"), max_digits=10, decimal_places=3)
     due_date = models.DateField(_("Due date"))
@@ -40,3 +40,14 @@ class Bill(models.Model):
         if self.state == "2_PAID":
             self.payment_date = date.today()
         super(Bill, self).save(force_insert, force_update)
+
+    def payment_wait(self):
+        if self.payment_date:
+            wait = self.payment_date - self.due_date
+        else:
+            wait = date.today() - self.due_date
+        return wait.days
+
+    class Meta:
+        ordering = ["lead__client__organisation__company"]
+        verbose_name = _("Bill")
