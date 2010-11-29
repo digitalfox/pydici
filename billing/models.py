@@ -37,8 +37,13 @@ class Bill(models.Model):
             return unicode(self.id)
 
     def save(self, force_insert=False, force_update=False):
+        # Automatically set payment date for paid bills
         if self.state == "2_PAID" and not self.payment_date:
             self.payment_date = date.today()
+        # Automatically switch as paid bills with payment date
+        elif self.state == "1_SENT" and self.payment_date:
+            self.state = "2_PAID"
+
         super(Bill, self).save(force_insert, force_update)
 
     def payment_wait(self):
