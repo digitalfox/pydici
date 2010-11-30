@@ -50,5 +50,33 @@
         <tr><td>{% trans "Margin" %}</td><td>{{ margin }}  k€</td></tr>
     </table>
     {% endifequal %}
-    
+    {% if mission.lead %}
+        <h2>{% trans "Billing" %}</h2>
+        <div class="timesheet">
+        {% if mission.lead.bill_set.all %}
+            <table>
+            <th>{% trans "Bill id" %}</th>
+            <th>{% trans "State" %}</th>
+            <th>{% trans "Amount (k€ excl tax)" %}</th>
+            <th>{% trans "Creation date" %}</th>
+            <th>{% trans "Due date" %}</th>
+            <th>{% trans "Payment date" %}</th>
+            {% for bill in mission.lead.bill_set.all %}
+                <tr>
+                    <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
+                    <td>{{ bill.get_state_display }}</td>
+                    <td>{{ bill.amount }}</td>
+                    <td>{{ bill.creation_date }}</td>
+                    <td>{{ bill.due_date }}</td>
+                    <td>{{ bill.payment_date }}</td>
+                </tr>
+            {% endfor %}
+            </table>
+        {% else %}
+            <p>{% trans "No bill yet" %}</p>
+        {% endif %}
+        <br/>
+        <a href="{% url pydici.billing.views.create_new_bill_from_lead mission.lead.id %}" target="_blank">{% trans "Add a bill for this mission" %}</a>
+    </div>
+    {% endif %}
 {% endblock %}

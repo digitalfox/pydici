@@ -13,6 +13,7 @@ from django.core import urlresolvers
 from django.http import HttpResponseRedirect
 
 from pydici.billing.models import Bill
+from pydici.leads.models import Lead
 
 def bill_review(request):
     """Review of bills: bills overdue, due soon, or to be created"""
@@ -40,3 +41,14 @@ def mark_bill_paid(request, bill_id):
     bill.state = "2_PAID"
     bill.save()
     return HttpResponseRedirect(urlresolvers.reverse("pydici.billing.views.bill_review"))
+
+def create_new_bill_from_lead(request, lead_id):
+    """Create a new bill for this lead"""
+    bill = Bill()
+    bill.lead = Lead.objects.get(id=lead_id)
+    # Define mandatory field - user will have choice to change this after
+    bill.amount = 0
+    bill.due_date = date.today() + timedelta(30)
+    bill.state = "1_SENT"
+    bill.save()
+    return HttpResponseRedirect(urlresolvers.reverse("admin:billing_bill_change", args=[bill.id, ]))
