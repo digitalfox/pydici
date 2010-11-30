@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-29 22:11+0100\n"
-"PO-Revision-Date: 2010-11-29 22:11+0100\n"
+"POT-Creation-Date: 2010-11-30 22:26+0100\n"
+"PO-Revision-Date: 2010-11-30 22:24+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -41,30 +41,35 @@ msgid "Lead"
 msgstr "Affaire"
 
 #: billing/models.py:24 templates/billing/bill_review.html:17
-#: templates/billing/bill_review.html:42 templates/billing/bill_review.html:67
-#: templates/billing/bill_review.html:92
+#: templates/billing/bill_review.html:45 templates/billing/bill_review.html:73
+#: templates/billing/bill_review.html:101
+#: templates/staffing/mission_timesheet.html:58
 msgid "Bill id"
 msgstr "N° facture"
 
 #: billing/models.py:25 templates/billing/bill_review.html:19
-#: templates/billing/bill_review.html:44 templates/billing/bill_review.html:69
-#: templates/billing/bill_review.html:94
-msgid "Amount (k€ excl tax)"
-msgstr "Montant (k€ HT)"
+#: templates/billing/bill_review.html:47 templates/billing/bill_review.html:75
+#: templates/billing/bill_review.html:103
+#: templates/staffing/mission_timesheet.html:60
+msgid "Amount (€ excl tax)"
+msgstr "Montant (€ HT)"
 
-#: billing/models.py:26 leads/views.py:99 templates/leads/review.html:28
-msgid "Due date"
-msgstr "Date d'échéance"
-
-#: billing/models.py:27 templates/billing/bill_review.html:95
+#: billing/models.py:26 templates/billing/bill_review.html:104
+#: templates/staffing/mission_timesheet.html:61
 msgid "Creation date"
 msgstr "Date de création"
 
-#: billing/models.py:28
+#: billing/models.py:27 leads/views.py:99 templates/leads/review.html:28
+#: templates/staffing/mission_timesheet.html:62
+msgid "Due date"
+msgstr "Date d'échéance"
+
+#: billing/models.py:28 templates/staffing/mission_timesheet.html:63
 msgid "Payment date"
 msgstr "Date de paiement"
 
 #: billing/models.py:29 leads/models.py:53 leads/views.py:99
+#: templates/staffing/mission_timesheet.html:59
 msgid "State"
 msgstr "État"
 
@@ -73,14 +78,15 @@ msgid "Previous year bill"
 msgstr "Facture de l'année N-1"
 
 #: billing/models.py:31 staffing/models.py:122
-#: templates/billing/bill_review.html:21 templates/billing/bill_review.html:46
-#: templates/billing/bill_review.html:71 templates/billing/bill_review.html:97
+#: templates/billing/bill_review.html:21 templates/billing/bill_review.html:49
+#: templates/billing/bill_review.html:77
+#: templates/billing/bill_review.html:106
 #: templates/staffing/consultant_staffing.html:18
 #: templates/staffing/mission_staffing.html:17
 msgid "Comments"
 msgstr "Remarques"
 
-#: billing/models.py:60
+#: billing/models.py:65
 msgid "Bill"
 msgstr "Facture"
 
@@ -174,8 +180,8 @@ msgid "Sales owner"
 msgstr "Propriété commerciale"
 
 #: crm/models.py:106 leads/views.py:97 templates/billing/bill_review.html:18
-#: templates/billing/bill_review.html:43 templates/billing/bill_review.html:68
-#: templates/billing/bill_review.html:93 templates/core/index.html:18
+#: templates/billing/bill_review.html:46 templates/billing/bill_review.html:74
+#: templates/billing/bill_review.html:102 templates/core/index.html:18
 #: templates/core/index.html.py:43 templates/core/index.html:67
 #: templates/core/index.html.py:91
 msgid "Client"
@@ -739,29 +745,29 @@ msgstr "Aucun(e) disponible"
 msgid "Overdue bills"
 msgstr "Facture en retard"
 
-#: templates/billing/bill_review.html:20 templates/billing/bill_review.html:45
-#: templates/billing/bill_review.html:70
+#: templates/billing/bill_review.html:20 templates/billing/bill_review.html:48
+#: templates/billing/bill_review.html:76
 msgid "Wait"
 msgstr "Retard"
 
-#: templates/billing/bill_review.html:31 templates/billing/bill_review.html:56
-#: templates/billing/bill_review.html:81
+#: templates/billing/bill_review.html:32 templates/billing/bill_review.html:60
+#: templates/billing/bill_review.html:88
 msgid "Mark this bill as paid"
 msgstr "Marquer cette facture comme payée"
 
-#: templates/billing/bill_review.html:40
+#: templates/billing/bill_review.html:43
 msgid "Bills due soon"
 msgstr "Factures bientôt à échéance"
 
-#: templates/billing/bill_review.html:65
+#: templates/billing/bill_review.html:71
 msgid "Litigious bills"
 msgstr "Factures en litige"
 
-#: templates/billing/bill_review.html:90
+#: templates/billing/bill_review.html:99
 msgid "Recently paid bills"
 msgstr "Factures réglées récemment"
 
-#: templates/billing/bill_review.html:96
+#: templates/billing/bill_review.html:105
 msgid "Payment delay"
 msgstr "Délai de règlement"
 
@@ -1219,6 +1225,18 @@ msgstr "Vendu"
 msgid "Margin"
 msgstr "Marge"
 
+#: templates/staffing/mission_timesheet.html:54
+msgid "Billing"
+msgstr "Facturation"
+
+#: templates/staffing/mission_timesheet.html:76
+msgid "No bill yet"
+msgstr "Aucune facture"
+
+#: templates/staffing/mission_timesheet.html:79
+msgid "Add a bill for this mission"
+msgstr "Ajouter une facture pour cette affaire"
+
 #: templates/staffing/missions.html:17
 msgid "Active missions"
 msgstr "Liste des missions actives"
@@ -1252,6 +1270,9 @@ msgstr "Afficher toutes les missions"
 #: templates/staffing/missions.html:50
 msgid "Missions administration"
 msgstr "Administration des missions"
+
+#~ msgid "Amount (k€ excl tax)"
+#~ msgstr "Montant (k€ HT)"
 
 #~ msgid "Delay"
 #~ msgstr "Retard"
