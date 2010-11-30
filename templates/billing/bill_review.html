@@ -25,7 +25,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
-                <td>{{ bill.amount }}</td>
+                <td>{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.Comments }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
@@ -53,7 +53,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
-                <td>{{ bill.amount }}</td>
+                <td>{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.Comments }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
@@ -81,7 +81,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
-                <td>{{ bill.amount }}</td>
+                <td>{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.Comments }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
@@ -109,7 +109,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
-                <td>{{ bill.amount }}</td>
+                <td>{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_delay }}</td>
                 <td>{{ bill.Comments }}</td>
