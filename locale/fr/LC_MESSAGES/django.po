@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-05 15:25+0100\n"
-"PO-Revision-Date: 2010-12-02 19:36+0100\n"
+"POT-Creation-Date: 2010-12-05 15:36+0100\n"
+"PO-Revision-Date: 2010-12-05 15:36+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -719,8 +719,7 @@ msgstr "Modèles disponibles dans l'application %(name)s."
 msgid "Add"
 msgstr "Ajouter"
 
-#: templates/admin/index.html:35 templates/leads/lead_detail.html:79
-#: templates/staffing/consultant_base.html:31
+#: templates/admin/index.html:35 templates/staffing/consultant_base.html:31
 #: templates/staffing/mission_base.html:19 templates/staffing/missions.html:35
 msgid "Change"
 msgstr "Modifier"
@@ -934,10 +933,6 @@ msgid "Missions linked to this lead:"
 msgstr "Missions liées à cette affaire : "
 
 #: templates/leads/lead_detail.html:79
-msgid "change this mission"
-msgstr "modifier cette mission"
-
-#: templates/leads/lead_detail.html:79
 msgid "workload schedule of this mission"
 msgstr "prévisions de charge de cette mission"
 
@@ -945,7 +940,11 @@ msgstr "prévisions de charge de cette mission"
 msgid "Create a new mission for this lead"
 msgstr "Créer une nouvelle mission pour cette affaire"
 
-#: templates/leads/lead_detail.html:87 templates/staffing/missions.html:52
+#: templates/leads/lead_detail.html:85
+msgid "Add a bill for this lead"
+msgstr "Ajouter une facture pour cette affaire"
+
+#: templates/leads/lead_detail.html:90 templates/staffing/missions.html:52
 msgid "Back to home page"
 msgstr "Retour à la page d'accueil"
 
@@ -1275,6 +1274,9 @@ msgstr "Afficher toutes les missions"
 #: templates/staffing/missions.html:50
 msgid "Missions administration"
 msgstr "Administration des missions"
+
+#~ msgid "change this mission"
+#~ msgstr "modifier cette mission"
 
 #~ msgid "Total amount for soon due bills (€ exc. tax.): "
 #~ msgstr "Montant total pour les factures en retard (€ HT) : "
