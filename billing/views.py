@@ -6,6 +6,9 @@ Pydici billing views. Http request are processed here.
 """
 
 from datetime import date, timedelta
+import itertools
+
+from matplotlib.figure import Figure
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -15,6 +18,7 @@ from django.db.models import Sum
 
 from pydici.billing.models import Bill
 from pydici.leads.models import Lead
+from pydici.core.utils import print_png, COLORS
 
 def bill_review(request):
     """Review of bills: bills overdue, due soon, or to be created"""
@@ -61,3 +65,42 @@ def create_new_bill_from_lead(request, lead_id):
     bill.state = "1_SENT"
     bill.save()
     return HttpResponseRedirect(urlresolvers.reverse("admin:billing_bill_change", args=[bill.id, ]))
+
+def graph_stat_bar(request):
+    """Nice graph bar of incomming cash from bills
+    @todo: per year, with start-end date"""
+    data = {} # Graph data
+    bars = [] # List of bars - needed to add legend
+    colors = itertools.cycle(COLORS)
+
+    # Gathering data
+    for bill in Bill.objects.all():
+        #Using first day of each month as key date
+        kdate = date(bill.creation_date.year, bill.creation_date.month, 1)
+        if not data.has_key(kdate):
+            data[kdate] = [] # Create key with empty list
+        data[kdate].append(bill)
+
+    # Setting up graph
+    fig = Figure(figsize=(12, 8))
+    fig.set_facecolor("white")
+    ax = fig.add_subplot(111)
+    bottom = [0] * len(data.keys()) # Bottom of each graph. Starts if [0, 0, 0, ...]
+
+    # Draw a bar for each state
+    for state in Bill.BILL_STATE:
+        ydata = [sum([i.amount for i in x if i.state == state[0]]) for x in data.values()]
+        b = ax.bar(data.keys(), ydata, bottom=bottom, align="center", width=15,
+               color=colors.next())
+        bars.append(b[0])
+        for i in range(len(ydata)):
+            bottom[i] += ydata[i] # Update bottom
+
+    # Add Legend and setup axes
+    ax.set_xticks(data.keys())
+    ax.set_xticklabels(data.keys())
+    ax.set_ylim(ymax=int(max(bottom)) + 10)
+    ax.legend(bars, [i[1] for i in Bill.BILL_STATE])
+    fig.autofmt_xdate()
+
+    return print_png(fig)

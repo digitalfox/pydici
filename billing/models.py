@@ -8,6 +8,7 @@ Database access layer for pydici billing module
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
 
 from datetime import date
 
@@ -15,10 +16,10 @@ from pydici.leads.models import Lead
 
 class Bill(models.Model):
     BILL_STATE = (
-            ('1_SENT', _("Sent")),
-            ('2_PAID', _("Paid")),
-            ('3_LITIGIOUS', _("Litigious")),
-            ('4_CANCELED', _("Canceled")),)
+            ('1_SENT', ugettext("Sent")),
+            ('2_PAID', ugettext("Paid")),
+            ('3_LITIGIOUS', ugettext("Litigious")),
+            ('4_CANCELED', ugettext("Canceled")),)
 
     lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
     bill_id = models.CharField(_("Bill id"), max_length=500, blank=True, null=True)

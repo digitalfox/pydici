@@ -20,14 +20,10 @@ from django.utils.translation import ugettext as _
 from django.db.models import Q, Count
 from django.template import RequestContext
 
-from pydici.core.utils import send_lead_mail, print_png
+from pydici.core.utils import send_lead_mail, print_png, COLORS
 from pydici.leads.models import Lead
 from pydici.people.models import SalesMan
 import pydici.settings
-
-
-# Graph colors
-COLORS = ["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFFF6D", "#AAFF86", "#D972FF", "#FF8D8F"]
 
 
 def summary_mail(request, html=True):

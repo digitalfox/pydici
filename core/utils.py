@@ -26,6 +26,10 @@ from django.http import HttpResponse
 
 import pydici.settings
 
+# Graph colors
+COLORS = ["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFFF6D", "#AAFF86", "#D972FF", "#FF8D8F"]
+
+
 def send_lead_mail(lead, request, fromAddr=pydici.settings.LEADS_MAIL_FROM, fromName=""):
     """ Send a mail with lead detailed description.
     @param lead: the lead to send by mail
