@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-30 22:26+0100\n"
-"PO-Revision-Date: 2010-11-30 22:24+0100\n"
+"POT-Creation-Date: 2010-12-05 15:25+0100\n"
+"PO-Revision-Date: 2010-12-02 19:36+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -41,20 +41,20 @@ msgid "Lead"
 msgstr "Affaire"
 
 #: billing/models.py:24 templates/billing/bill_review.html:17
-#: templates/billing/bill_review.html:45 templates/billing/bill_review.html:73
-#: templates/billing/bill_review.html:101
+#: templates/billing/bill_review.html:50 templates/billing/bill_review.html:83
+#: templates/billing/bill_review.html:116
 #: templates/staffing/mission_timesheet.html:58
 msgid "Bill id"
 msgstr "N° facture"
 
 #: billing/models.py:25 templates/billing/bill_review.html:19
-#: templates/billing/bill_review.html:47 templates/billing/bill_review.html:75
-#: templates/billing/bill_review.html:103
+#: templates/billing/bill_review.html:52 templates/billing/bill_review.html:85
+#: templates/billing/bill_review.html:118
 #: templates/staffing/mission_timesheet.html:60
 msgid "Amount (€ excl tax)"
 msgstr "Montant (€ HT)"
 
-#: billing/models.py:26 templates/billing/bill_review.html:104
+#: billing/models.py:26 templates/billing/bill_review.html:119
 #: templates/staffing/mission_timesheet.html:61
 msgid "Creation date"
 msgstr "Date de création"
@@ -78,9 +78,9 @@ msgid "Previous year bill"
 msgstr "Facture de l'année N-1"
 
 #: billing/models.py:31 staffing/models.py:122
-#: templates/billing/bill_review.html:21 templates/billing/bill_review.html:49
-#: templates/billing/bill_review.html:77
-#: templates/billing/bill_review.html:106
+#: templates/billing/bill_review.html:21 templates/billing/bill_review.html:54
+#: templates/billing/bill_review.html:87
+#: templates/billing/bill_review.html:121
 #: templates/staffing/consultant_staffing.html:18
 #: templates/staffing/mission_staffing.html:17
 msgid "Comments"
@@ -180,8 +180,8 @@ msgid "Sales owner"
 msgstr "Propriété commerciale"
 
 #: crm/models.py:106 leads/views.py:97 templates/billing/bill_review.html:18
-#: templates/billing/bill_review.html:46 templates/billing/bill_review.html:74
-#: templates/billing/bill_review.html:102 templates/core/index.html:18
+#: templates/billing/bill_review.html:51 templates/billing/bill_review.html:84
+#: templates/billing/bill_review.html:117 templates/core/index.html:18
 #: templates/core/index.html.py:43 templates/core/index.html:67
 #: templates/core/index.html.py:91
 msgid "Client"
@@ -745,29 +745,34 @@ msgstr "Aucun(e) disponible"
 msgid "Overdue bills"
 msgstr "Facture en retard"
 
-#: templates/billing/bill_review.html:20 templates/billing/bill_review.html:48
-#: templates/billing/bill_review.html:76
+#: templates/billing/bill_review.html:20 templates/billing/bill_review.html:53
+#: templates/billing/bill_review.html:86
 msgid "Wait"
 msgstr "Retard"
 
-#: templates/billing/bill_review.html:32 templates/billing/bill_review.html:60
-#: templates/billing/bill_review.html:88
+#: templates/billing/bill_review.html:32 templates/billing/bill_review.html:65
+#: templates/billing/bill_review.html:98
 msgid "Mark this bill as paid"
 msgstr "Marquer cette facture comme payée"
 
-#: templates/billing/bill_review.html:43
+#: templates/billing/bill_review.html:38 templates/billing/bill_review.html:71
+#: templates/billing/bill_review.html:104
+msgid "Total amount (€ exc. tax.): "
+msgstr "Montant total (€ HT) : "
+
+#: templates/billing/bill_review.html:48
 msgid "Bills due soon"
 msgstr "Factures bientôt à échéance"
 
-#: templates/billing/bill_review.html:71
+#: templates/billing/bill_review.html:81
 msgid "Litigious bills"
 msgstr "Factures en litige"
 
-#: templates/billing/bill_review.html:99
+#: templates/billing/bill_review.html:114
 msgid "Recently paid bills"
 msgstr "Factures réglées récemment"
 
-#: templates/billing/bill_review.html:105
+#: templates/billing/bill_review.html:120
 msgid "Payment delay"
 msgstr "Délai de règlement"
 
@@ -1270,6 +1275,9 @@ msgstr "Afficher toutes les missions"
 #: templates/staffing/missions.html:50
 msgid "Missions administration"
 msgstr "Administration des missions"
+
+#~ msgid "Total amount for soon due bills (€ exc. tax.): "
+#~ msgstr "Montant total pour les factures en retard (€ HT) : "
 
 #~ msgid "Amount (k€ excl tax)"
 #~ msgstr "Montant (k€ HT)"

@@ -11,6 +11,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core import urlresolvers
 from django.http import HttpResponseRedirect
+from django.db.models import Sum
 
 from pydici.billing.models import Bill
 from pydici.leads.models import Lead
@@ -26,11 +27,19 @@ def bill_review(request):
     recent_bills = Bill.objects.filter(state="2_PAID").order_by("-payment_date")[:20]
     litigious_bills = Bill.objects.filter(state="3_LITIGIOUS")
 
+    # Compute totals
+    soondue_bills_total = soondue_bills.aggregate(Sum("amount"))["amount__sum"]
+    overdue_bills_total = overdue_bills.aggregate(Sum("amount"))["amount__sum"]
+    litigious_bills_total = litigious_bills.aggregate(Sum("amount"))["amount__sum"]
+
     return render_to_response("billing/bill_review.html",
                               {"overdue_bills" : overdue_bills,
                                "soondue_bills" : soondue_bills,
                                "recent_bills" : recent_bills,
                                "litigious_bills" : litigious_bills,
+                               "soondue_bills_total" : soondue_bills_total,
+                               "overdue_bills_total" : overdue_bills_total,
+                               "litigious_bills_total" : litigious_bills_total,
                                "user": request.user},
                               RequestContext(request))
 

@@ -10,7 +10,7 @@
 {% block content %}
 <div id="content-main">
     {% if overdue_bills %}
-    <div class="module">
+    <div class="imodule">
         <table>
         <caption>{% trans "Overdue bills" %}</caption>
         <tr>
@@ -34,11 +34,16 @@
                  </td>
             </tr>
         {% endfor %}
+        <tr><td></td>
+            <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
+            <td><b>{{ overdue_bills_total }}</b></td>
+            <td></td><td></td>
+        </tr>
         </table>
     </div>
     {% endif %}
     {% if soondue_bills %}
-    <div class="module">
+    <div class="imodule">
         <table>
         <caption>{% trans "Bills due soon" %}</caption>
         <tr>
@@ -61,12 +66,17 @@
                     {% endif %}
                  </td>
             </tr>
-        {% endfor %}
+        {% endfor %}        
+        <tr><td></td>
+            <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
+            <td><b>{{ soondue_bills_total }}</b></td>
+            <td></td><td></td>
+        </tr>
         </table>
     </div>
     {% endif %}
     {% if litigious_bills %}
-    <div class="module">
+    <div class="imodule">
         <table>
         <caption>{% trans "Litigious bills" %}</caption>
         <tr>
@@ -90,11 +100,16 @@
                  </td>
             </tr>
         {% endfor %}
+        <tr><td></td>
+            <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
+            <td><b>{{ litigious_bills_total }}</b></td>
+            <td></td><td></td>
+        </tr>
         </table>
     </div>
     {% endif %}
     {% if recent_bills %}
-    <div class="module">
+    <div class="imodule">
         <table>
         <caption>{% trans "Recently paid bills" %}</caption>
         <tr>
