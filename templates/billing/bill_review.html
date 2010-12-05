@@ -36,7 +36,7 @@
         {% endfor %}
         <tr><td></td>
             <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
-            <td><b>{{ overdue_bills_total }}</b></td>
+            <td><b>{{ overdue_bills_total|floatformat:-2 }}</b></td>
             <td></td><td></td>
         </tr>
         </table>
@@ -69,7 +69,7 @@
         {% endfor %}        
         <tr><td></td>
             <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
-            <td><b>{{ soondue_bills_total }}</b></td>
+            <td><b>{{ soondue_bills_total|floatformat:-2 }}</b></td>
             <td></td><td></td>
         </tr>
         </table>
@@ -102,7 +102,7 @@
         {% endfor %}
         <tr><td></td>
             <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
-            <td><b>{{ litigious_bills_total }}</b></td>
+            <td><b>{{ litigious_bills_total|floatformat:-2 }}</b></td>
             <td></td><td></td>
         </tr>
         </table>
