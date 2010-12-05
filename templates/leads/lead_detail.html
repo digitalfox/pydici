@@ -85,8 +85,10 @@
 {% endif %}
 <br/>
 <a href='{% url index %}'>{% trans "Back to home page" %}</a>
-{% if perms.billing.Can_add_Bill %}
+{% ifequal lead.state "WON" %}
+    {% if perms.billing.Can_add_Bill %}
         &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
         <a href="{% url pydici.billing.views.create_new_bill_from_lead lead.id %}" target="_blank">{% trans "Add a bill for this lead" %}</a>
-{% endif %}                
+    {% endif %}
+{% endifequal %}
 {% endblock %}
