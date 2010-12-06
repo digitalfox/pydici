@@ -390,11 +390,11 @@ def mission_timesheet(request, mission_id):
 
     # Gather timesheet (Only consider timesheet up to current month)
     timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=next_month).order_by("working_date")
-    timesheetMonths = timesheets.dates("working_date", "month")
+    timesheetMonths = list(timesheets.dates("working_date", "month"))
 
     # Gather forecaster (till current month)
     staffings = Staffing.objects.filter(mission=mission).filter(staffing_date__gte=current_month).order_by("staffing_date")
-    staffingMonths = staffings.dates("staffing_date", "month")
+    staffingMonths = list(staffings.dates("staffing_date", "month"))
 
     missionData = [] # list of tuple (consultant, (charge month 1, charge month 2), (forecast month 1, forcast month2)
     for consultant in consultants:
@@ -409,7 +409,9 @@ def mission_timesheet(request, mission_id):
         staffingData = []
         for month in staffingMonths:
             data = sum([t.charge for t in staffings.filter(consultant=consultant) if t.staffing_date.month == month.month])
-            if timesheetMonths  and date(month.year, month.month, 1) == current_month:
+            if timesheetMonths  and \
+               date(timesheetMonths[-1].year, timesheetMonths[-1].month, 1) == current_month and \
+               date(month.year, month.month, 1) == current_month:
                 # Remove timesheet days from current month forecast days
                 data -= timesheetData[-3] # Last is total in money, the one before is total in days
             staffingData.append(data)
