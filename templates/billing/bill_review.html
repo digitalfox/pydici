@@ -25,7 +25,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
-                <td>{{ bill.amount|floatformat }}</td>
+                <td style="text-align: right">{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
@@ -36,7 +36,7 @@
         {% endfor %}
         <tr><td></td>
             <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
-            <td><b>{{ overdue_bills_total|floatformat:-2 }}</b></td>
+            <td style="text-align: right"><b>{{ overdue_bills_total|floatformat:-2 }}</b></td>
             <td></td><td></td>
         </tr>
         </table>
@@ -58,7 +58,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
-                <td>{{ bill.amount|floatformat }}</td>
+                <td style="text-align: right">{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
@@ -69,7 +69,7 @@
         {% endfor %}        
         <tr><td></td>
             <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
-            <td><b>{{ soondue_bills_total|floatformat:-2 }}</b></td>
+            <td style="text-align: right"><b>{{ soondue_bills_total|floatformat:-2 }}</b></td>
             <td></td><td></td>
         </tr>
         </table>
@@ -91,7 +91,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
-                <td>{{ bill.amount|floatformat }}</td>
+                <td style="text-align: right">{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
@@ -102,7 +102,7 @@
         {% endfor %}
         <tr><td></td>
             <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
-            <td><b>{{ litigious_bills_total|floatformat:-2 }}</b></td>
+            <td style="text-align: right"><b>{{ litigious_bills_total|floatformat:-2 }}</b></td>
             <td></td><td></td>
         </tr>
         </table>
@@ -124,7 +124,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
-                <td>{{ bill.amount|floatformat }}</td>
+                <td style="text-align: right">{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_delay }}</td>
                 <td>{{ bill.comment }}</td>
