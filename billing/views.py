@@ -73,19 +73,25 @@ def graph_stat_bar(request):
     bars = [] # List of bars - needed to add legend
     colors = itertools.cycle(COLORS)
 
+    # Setting up graph
+    fig = Figure(figsize=(12, 8))
+    fig.set_facecolor("white")
+    ax = fig.add_subplot(111)
+
     # Gathering data
-    for bill in Bill.objects.all():
+    bills = Bill.objects.all()
+    if bills.count() == 0:
+        return print_png(fig)
+
+    for bill in bills:
         #Using first day of each month as key date
         kdate = date(bill.creation_date.year, bill.creation_date.month, 1)
         if not data.has_key(kdate):
             data[kdate] = [] # Create key with empty list
         data[kdate].append(bill)
 
-    # Setting up graph
-    fig = Figure(figsize=(12, 8))
-    fig.set_facecolor("white")
-    ax = fig.add_subplot(111)
-    bottom = [0] * len(data.keys()) # Bottom of each graph. Starts if [0, 0, 0, ...]
+    # Set bottom of each graph. Starts if [0, 0, 0, ...]
+    bottom = [0] * len(data.keys())
 
     # Draw a bar for each state
     for state in Bill.BILL_STATE:

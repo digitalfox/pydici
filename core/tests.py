@@ -72,6 +72,8 @@ class SimpleTest(TestCase):
                      "/people/consultant/3/",
                      "/crm/company/1/",
                      "/crm/company/",
+                     "/billing/graph/bar",
+                     "/billing/bill_review",
                      "/forbiden",
                      ):
             response = self.client.get(PREFIX + page)
