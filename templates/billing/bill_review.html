@@ -27,7 +27,7 @@
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
                 <td>{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
-                <td>{{ bill.Comments }}</td>
+                <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
@@ -60,7 +60,7 @@
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
                 <td>{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
-                <td>{{ bill.Comments }}</td>
+                <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
@@ -93,7 +93,7 @@
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
                 <td>{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
-                <td>{{ bill.Comments }}</td>
+                <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
@@ -127,7 +127,7 @@
                 <td>{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_delay }}</td>
-                <td>{{ bill.Comments }}</td>
+                <td>{{ bill.comment }}</td>
             </tr>
         {% endfor %}
         </table>
