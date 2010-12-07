@@ -37,6 +37,12 @@ class Bill(models.Model):
         else:
             return unicode(self.id)
 
+    def client(self):
+        if self.lead.business_broker:
+            return u"%s via %s" % (self.lead, self.lead.business_broker)
+        else:
+            return unicode(self.lead)
+
     def save(self, force_insert=False, force_update=False):
         # Automatically set payment date for paid bills
         if self.state == "2_PAID" and not self.payment_date:

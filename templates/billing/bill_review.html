@@ -24,7 +24,7 @@
         {% for bill in overdue_bills %}
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
-                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
@@ -57,7 +57,7 @@
         {% for bill in soondue_bills %}
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
-                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
@@ -90,7 +90,7 @@
         {% for bill in litigious_bills %}
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
-                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
@@ -123,7 +123,7 @@
         {% for bill in recent_bills %}
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
-                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_delay }}</td>
