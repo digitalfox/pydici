@@ -33,11 +33,15 @@
     <br><br><hr>
     <b>{% trans "Responsible: " %}</b>{% if lead.responsible %}<a href="{% url pydici.people.views.consultant_detail lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}<br>
     {% if lead.salesman %}
-        <b>{% trans "Salesman: " %}</b>{{ lead.salesman }}
+        <b>{% trans "Salesman: " %}</b>{{ lead.salesman }}<br/>
     {% endif %}
     {% if lead.business_broker %}
-        <b>{% trans "Broker: " %}</b>{{ lead.business_broker }}
+        <b>{% trans "Broker: " %}</b>{{ lead.business_broker }}<br/>
     {% endif %}
+    {% if lead.paying_authority %}
+        <b>{% trans "Paying authority: " %}</b>{{ lead.paying_authority }}
+    {% endif %}
+    
     <br><br><hr>
     <b>{% trans "Due date: " %}</b><span {% if lead.is_late %}style='color:red'{% endif %}>{{ lead.due_date|default_if_none:_("Unknown") }}</span><br>
     <b>{% trans "Start date: " %} </b>{{ lead.start_date|default_if_none:_("Unknown") }}

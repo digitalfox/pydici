@@ -85,6 +85,11 @@ class BusinessBroker(ThirdPartyContact):
             return "%s (%s)" % (self.name, self.company)
         else:
             return self.name
+    def short_name(self):
+        if self.company:
+            return self.company
+        else:
+            return self.name
 
     class Meta:
         verbose_name = _("Business broker")

@@ -38,8 +38,8 @@ class Bill(models.Model):
             return unicode(self.id)
 
     def client(self):
-        if self.lead.business_broker:
-            return u"%s via %s" % (self.lead, self.lead.business_broker)
+        if self.lead.paying_authority:
+            return u"%s via %s" % (self.lead, self.lead.paying_authority.short_name())
         else:
             return unicode(self.lead)
 

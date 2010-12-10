@@ -48,6 +48,7 @@ class Lead(models.Model):
     external_staffing = models.CharField(_("External staffing"), max_length=300, blank=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True)
     business_broker = models.ForeignKey(BusinessBroker, related_name="%(class)s_broker", verbose_name=_("Business broker"), blank=True, null=True)
+    paying_authority = models.ForeignKey(BusinessBroker, related_name="%(class)s_paying", verbose_name=_("Paying authority"), blank=True, null=True)
     start_date = models.DateField(_("Starting"), blank=True, null=True)
     due_date = models.DateField(_("Due"), blank=True, null=True)
     state = models.CharField(_("State"), max_length=30, choices=STATES)

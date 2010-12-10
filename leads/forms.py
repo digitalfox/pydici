@@ -18,4 +18,5 @@ class LeadForm(models.ModelForm):
     responsible = AutoCompleteSelectField('consultant', required=False)
     salesman = AutoCompleteSelectField('salesman', required=False)
     business_broker = AutoCompleteSelectField('business_broker', required=False)
+    paying_authority = AutoCompleteSelectField('business_broker', required=False)
     client = AutoCompleteSelectField('client', required=True)
