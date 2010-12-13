@@ -23,7 +23,7 @@ class BillAdmin(AjaxSelectAdmin):
     actions = None
     list_filter = ["state", "creation_date", "due_date", "payment_date", "previous_year_bill"]
     search_fields = ["lead__name", "lead__client__organisation__name", "comment",
-                     "lead_paying_authority__name", "lead_paying_authority__company",
+                     "lead__paying_authority__name", "lead__paying_authority__company",
                      "lead__client__contact__name", "lead__client__organisation__company__name"]
     form = BillForm
 
