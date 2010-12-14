@@ -9,7 +9,10 @@ from django.db import models
 from django.db.models import Q
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
 from django.db.models.signals import post_save
+from django.contrib.admin.models import LogEntry, User, CHANGE
+from django.contrib.contenttypes.models import ContentType
 
 from datetime import datetime
 
@@ -175,14 +178,31 @@ class FinancialCondition(models.Model):
 # Signal definition
 def updateLeadPrice(sender, **kwargs):
     """Called by mission update signal to update lead total price"""
+    batch_username = "auto"
     mission = kwargs["instance"]
     price = 0
+    try:
+        user_id = user_id = User.objects.get(username=batch_username).id
+    except User.DoesNotExist:
+        # Create it
+        user = User()
+        user.username = batch_username
+        user.save()
+        user_id = user.id
     if mission.lead:
         for sisterMission in mission.lead.mission_set.all():
             if sisterMission.price:
                 price += sisterMission.price
         mission.lead.sales = price
         mission.lead.save()
+        # Log it
+        LogEntry.objects.log_action(
+                user_id=user_id,
+                content_type_id=ContentType.objects.get_for_model(mission.lead).id,
+                object_id=mission.lead.id,
+                object_repr=unicode(mission.lead),
+                change_message=ugettext("Price updated from mission"),
+                action_flag=CHANGE)
 
 # Connecting signals
 post_save.connect(updateLeadPrice, sender=Mission)
