@@ -6,6 +6,7 @@ Leads form setup
 """
 
 from django.forms import models
+from django.utils.translation import ugettext_lazy as _
 
 from ajax_select.fields import AutoCompleteSelectField
 
@@ -15,8 +16,8 @@ class LeadForm(models.ModelForm):
     class Meta:
         model = Lead
     # declare a field and specify the named channel that it uses
-    responsible = AutoCompleteSelectField('consultant', required=False)
-    salesman = AutoCompleteSelectField('salesman', required=False)
-    business_broker = AutoCompleteSelectField('business_broker', required=False)
-    paying_authority = AutoCompleteSelectField('business_broker', required=False)
-    client = AutoCompleteSelectField('client', required=True)
+    responsible = AutoCompleteSelectField('consultant', required=False, label=_("Responsible"))
+    salesman = AutoCompleteSelectField('salesman', required=False, label=_("Salesman"))
+    business_broker = AutoCompleteSelectField('business_broker', required=False, label=_("Business broker"))
+    paying_authority = AutoCompleteSelectField('business_broker', required=False, label=_("Paying authority"))
+    client = AutoCompleteSelectField('client', required=True, label=_("Client"))

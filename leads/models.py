@@ -52,7 +52,7 @@ class Lead(models.Model):
     start_date = models.DateField(_("Starting"), blank=True, null=True)
     due_date = models.DateField(_("Due"), blank=True, null=True)
     state = models.CharField(_("State"), max_length=30, choices=STATES)
-    client = models.ForeignKey(Client)
+    client = models.ForeignKey(Client, verbose_name=_("Client"))
     creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     send_email = models.BooleanField(_("Send lead by email"), default=True)

@@ -6,6 +6,7 @@ Bill form setup
 """
 
 from django.forms import models
+from django.utils.translation import ugettext_lazy as _
 
 from ajax_select.fields import AutoCompleteSelectField
 
@@ -15,4 +16,4 @@ class BillForm(models.ModelForm):
     class Meta:
         model = Bill
     # declare a field and specify the named channel that it uses
-    lead = AutoCompleteSelectField('lead', required=True)
+    lead = AutoCompleteSelectField('lead', required=True, label=_("Lead"))
