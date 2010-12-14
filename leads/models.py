@@ -10,6 +10,7 @@ from django.db.models import Q
 from datetime import datetime, date
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.contrib.admin.models import LogEntry
 
 from pydici.core.utils import capitalize, compact_text
 import pydici.settings
@@ -93,6 +94,14 @@ class Lead(models.Model):
             return True
         else:
             return False
+
+    def get_change_history(self):
+        """Return object history action as an action List"""
+        actionList = LogEntry.objects.filter(object_id=self.id,
+                                              content_type__name="Lead")
+        actionList = actionList.select_related().order_by('action_time')
+        return actionList
+
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]

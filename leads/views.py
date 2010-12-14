@@ -13,7 +13,6 @@ from matplotlib.figure import Figure
 
 from django.core import urlresolvers
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.models import LogEntry
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext as _
@@ -49,9 +48,6 @@ def detail(request, lead_id):
     """Lead detailed description"""
     try:
         lead = Lead.objects.get(id=lead_id)
-        actionList = LogEntry.objects.filter(object_id=lead_id,
-                                              content_type__name="lead")
-        actionList = actionList.select_related().order_by('action_time')
         # Lead rank in active list
         active_leads = Lead.objects.active().order_by("creation_date")
         try:
@@ -82,7 +78,7 @@ def detail(request, lead_id):
                                "next_lead" : next_lead,
                                "previous_lead" : previous_lead,
                                "link_root": urlresolvers.reverse("index"),
-                               "action_list": actionList,
+                               "action_list": lead.get_change_history(),
                                "user": request.user},
                                RequestContext(request))
 
