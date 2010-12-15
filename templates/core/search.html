@@ -65,6 +65,15 @@
     </ul>
 {% endif %}
 
+{% if bills %}
+    <h2>{% trans "Bills" %}</h2>
+    <ul>
+    {% for bill in bills %}
+        <li><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }} - {{ bill.lead }} ({{ bill.get_state_display }})</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
 
 </div>
 {% endblock %}

@@ -16,6 +16,7 @@ from pydici.leads.models import Lead
 from pydici.people.models import Consultant, SalesMan
 from pydici.crm.models import ClientCompany, ClientContact
 from pydici.staffing.models import Mission
+from pydici.billing.models import Bill
 
 from pydici.core.forms import SearchForm
 
@@ -61,6 +62,7 @@ def search(request):
     leads = None
     missions = None
     clientContacts = None
+    bills = None
 
     words = request.GET.get("q", "")
     words = words.split()
@@ -106,6 +108,22 @@ def search(request):
                         missions.add(mission)
                 missions = list(missions)
 
+        # Bills
+        if request.GET.get("bill"):
+            bills = Bill.objects.all()
+            for word in words:
+                bills = bills.filter(Q(bill_id__icontains=word) |
+                                     Q(comment__icontains=word))
+
+            # Add bills from lead
+            if leads:
+                bills = set(bills)
+                for lead in leads:
+                    for bill in lead.bill_set.all():
+                        bills.add(bill)
+                bills = list(bills)
+            print bills
+
     return render_to_response("core/search.html",
                               {"query" : " ".join(words),
                                "consultants": consultants,
@@ -113,5 +131,6 @@ def search(request):
                                "client_contacts" : clientContacts,
                                "leads" : leads,
                                "missions" : missions,
+                               "bills" : bills,
                                "user": request.user },
                                RequestContext(request))
