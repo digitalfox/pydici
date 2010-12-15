@@ -25,7 +25,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.client }}</a></td>
-                <td style="text-align: right">{{ bill.amount|floatformat }}</td>
+                <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
@@ -58,7 +58,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.client }}</a></td>
-                <td style="text-align: right">{{ bill.amount|floatformat }}</td>
+                <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
@@ -91,7 +91,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.client }}</a></td>
-                <td style="text-align: right">{{ bill.amount|floatformat }}</td>
+                <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.Can_change_Bill %}
@@ -124,7 +124,7 @@
             <tr>
                 <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                 <td><a href="{% url pydici.leads.views.detail bill.lead.id %}">{{ bill.client }}</a></td>
-                <td style="text-align: right">{{ bill.amount|floatformat }}</td>
+                <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_delay }}</td>
                 <td>{{ bill.comment }}</td>
