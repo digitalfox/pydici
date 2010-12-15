@@ -202,6 +202,9 @@ def updateLeadPrice(sender, **kwargs):
         for sisterMission in mission.lead.mission_set.all():
             if sisterMission.price:
                 price += sisterMission.price
+        if price == 0:
+            # Don't erase lead price if nothing is defined on mission side
+            return
         mission.lead.sales = price
         mission.lead.save()
         # Log it
