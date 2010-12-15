@@ -56,11 +56,8 @@ class Mission(models.Model):
                 return name
 
     def full_name(self):
-        """Full mission name with deal id if defined"""
-        if self.deal_id:
-            return u"%s (%s)" % (unicode(self), self.deal_id)
-        else:
-            return unicode(self)
+        """Full mission name with deal id"""
+        return u"%s (%s)" % (unicode(self), self.mission_id())
 
     def no_more_staffing_since(self, refDate=datetime.now()):
         """@return: True if at least one staffing is defined after refDate. Zero charge staffing are considered."""
@@ -103,6 +100,18 @@ class Mission(models.Model):
             if not consultant in rates:
                 rates[consultant] = 0
         return rates
+
+    def mission_id(self):
+        """Compute mission id :
+            if mission has lead, it is based on lead deal_id if exists
+            else if mission deal_id is used or default to pk (id)"""
+        if self.lead and self.lead.deal_id:
+            rank = list(self.lead.mission_set.order_by("id")).index(self) # compute mission rank
+            return self.lead.deal_id + chr(97 + rank) # chr(97) is 'a' 
+        elif self.deal_id:
+            return self.deal_id
+        else:
+            return unicode(self.id)
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "description"]

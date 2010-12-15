@@ -13,7 +13,7 @@ from pydici.staffing.models import Mission, Holiday, Timesheet, FinancialConditi
 
 
 class MissionAdmin(admin.ModelAdmin):
-    list_display = ("lead", "description", "nature", "probability", "deal_id", "active", "update_date")
+    list_display = ("lead", "description", "nature", "probability", "mission_id", "active", "update_date")
     search_fields = ("lead__name", "description", "deal_id", "lead__client__organisation__company__name",
                    "lead__client__contact__name")
     ordering = ("lead", "description")

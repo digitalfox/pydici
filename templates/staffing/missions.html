@@ -18,14 +18,14 @@
 {% endif %}
 
 <table>
-<tr><th>{% trans "Name" %}</th><th>{% trans "Deal id" %}</th><th>{% trans "Probability" %}</th><th></th></tr>
+<tr><th>{% trans "Name" %}</th><th>{% trans "Mission id" %}</th><th>{% trans "Probability" %}</th><th></th></tr>
 {% for mission in missions %}
 	{% ifchanged mission.nature %}
 	   <tr><th>{{ mission.get_nature_display }}</th></tr>
 	{% endifchanged %}
 	<tr {%cycle 'class="row1"' 'class="row2"' %}>
 	    <td scope="row"><a href='{% url pydici.staffing.views.mission_staffing mission.id %}', title='{% blocktrans %}Defines {{ mission }} staffing{% endblocktrans %}'>{{ mission }}</a></td>
-	    <td>{{ mission.deal_id }}</td>
+	    <td>{{ mission.mission_id }}</td>
 	    <td>{{ mission.get_probability_display }} </td>
 	    <td scope="row">
 	       {% if mission.active %}

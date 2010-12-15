@@ -26,7 +26,7 @@ class LeadAdmin(AjaxSelectAdmin):
     list_display = ("name", "client", "responsible", "salesman", "business_broker", "state", "due_date", "update_date_strf")
     fieldsets = [
         (None, {"fields": ["name", "client", "description", "action"]}),
-        (_("State and tracking"), {"fields": ["responsible", "state", "due_date", "start_date"]}),
+        (_("State and tracking"), {"fields": ["responsible", "state", "due_date", "start_date", "deal_id"]}),
         (_("Commercial"), {"fields": ["sales", "business_broker", "paying_authority", "salesman", ]}),
         (_("Staffing"), {"fields": ["staffing", "external_staffing"]}),
         (None, {"fields": ["send_email", ]})

@@ -55,6 +55,7 @@ class Lead(models.Model):
     state = models.CharField(_("State"), max_length=30, choices=STATES)
     client = models.ForeignKey(Client, verbose_name=_("Client"))
     creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
+    deal_id = models.CharField(_("Deal id"), max_length=100, blank=True)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     send_email = models.BooleanField(_("Send lead by email"), default=True)
 

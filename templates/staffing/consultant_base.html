@@ -16,7 +16,7 @@
     <h2>{% trans "Consultant's missions" %}</h2>
 		<table>
 		<tr><th>{% trans "Name" %}</th>
-		    <th>{% trans "Deal id" %}</th>
+		    <th>{% trans "Mission id" %}</th>
 		    <th>{% trans "Probability" %}</th>
 		</tr>
 		{% for mission in missions %}
@@ -26,7 +26,7 @@
                 {% else %}
                     <th scope="row"><a href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a></th>
                 {% endif %}
-		        <td>{{ mission.deal_id }}</td>
+		        <td>{{ mission.mission_id }}</td>
 		        <td>{{ mission.get_probability_display }}</td>
 		        <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', target='_blank', class='changelink'><em>{% trans "Change" %}</em></a></td>
 		    </tr>
