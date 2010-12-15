@@ -15,7 +15,7 @@
                 <tr>
                     <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                     <td>{{ bill.get_state_display }}</td>
-                    <td>{{ bill.amount|floatformat }}</td>
+                    <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                     <td>{{ bill.creation_date }}</td>
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date }}</td>
