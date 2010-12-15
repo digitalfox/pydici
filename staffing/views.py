@@ -479,10 +479,10 @@ def all_timesheet(request, year=None, month=None):
                                         escape(unicode(mission)))
         if "csv" in request.GET:
             # Simple mission name
-            consultantData = [unicode(mission), mission.mission_id]
+            consultantData = [unicode(mission), mission.mission_id()]
         else:
             # Drill down link
-            consultantData = [mark_safe(missionUrl), mission.mission_id]
+            consultantData = [mark_safe(missionUrl), mission.mission_id()]
         for consultant in consultants:
             consultantData.append(charges.get((mission.id, consultant.id), 0))
         data.append(consultantData)
