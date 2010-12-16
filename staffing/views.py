@@ -42,16 +42,22 @@ def missions(request, onlyActive=True):
                                "user": request.user },
                                RequestContext(request))
 
-
-@permission_required("staffing.add_staffing")
-@permission_required("staffing.change_staffing")
-@permission_required("staffing.delete_staffing")
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
+    if (request.user.has_perm("staffing.add_staffing") and
+        request.user.has_perm("staffing.change_staffing") and
+        request.user.has_perm("staffing.delete_staffing")):
+        readOnly = False
+    else:
+        readOnly = True
+
     StaffingFormSet = inlineformset_factory(Mission, Staffing,
                                             formset=MissionStaffingInlineFormset)
     mission = Mission.objects.get(id=mission_id)
     if request.method == "POST":
+        if readOnly:
+            # Readonly users should never go here !
+            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
         formset = StaffingFormSet(request.POST, instance=mission)
         if formset.is_valid():
             saveFormsetAndLog(formset, request)
@@ -64,6 +70,7 @@ def mission_staffing(request, mission_id):
                                "mission": mission,
                                "link_to_staffing" : True, # for mission_base template links
                                "consultant_rates": mission.consultant_rates(),
+                               "read_only" : readOnly,
                                "user": request.user},
                                RequestContext(request))
 
@@ -337,7 +344,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     return render_to_response("staffing/consultant_timesheet.html", {
                                 "consultant": consultant,
                                "form": form,
-                                "read_only" : readOnly,
+                               "read_only" : readOnly,
                                "days": days,
                                "month": month,
                                "missions": missions,

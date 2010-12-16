@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-15 21:17+0100\n"
-"PO-Revision-Date: 2010-12-15 21:16+0100\n"
+"POT-Creation-Date: 2010-12-16 08:44+0100\n"
+"PO-Revision-Date: 2010-12-16 08:44+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -218,7 +218,7 @@ msgstr "Une mission a été créée pour cette affaire."
 
 #: leads/admin.py:78
 msgid "Mission's probability has been set to 100%"
-msgstr "La probabilité de la mission a été mise à 100 %"
+msgstr "La probabilité de la mission a été mise à 100 %"
 
 #: leads/admin.py:83
 msgid "According mission has been archived"
@@ -334,8 +334,8 @@ msgstr "Échéance"
 msgid "Creation"
 msgstr "Création"
 
-#: leads/models.py:58 staffing/models.py:35 staffing/views.py:364
-#: staffing/views.py:474
+#: leads/models.py:58 staffing/models.py:35 staffing/views.py:371
+#: staffing/views.py:481
 msgid "Deal id"
 msgstr "N° affaire"
 
@@ -423,12 +423,12 @@ msgid "Last forecast staffing updated or created about myself"
 msgstr ""
 "Dernières mise à jour ou création de staffing prévisionnel me concernant"
 
-#: staffing/forms.py:34 staffing/models.py:118 staffing/views.py:364
-#: staffing/views.py:474 templates/staffing/consultant_staffing.html:15
+#: staffing/forms.py:34 staffing/models.py:118 staffing/views.py:371
+#: staffing/views.py:481 templates/staffing/consultant_staffing.html:15
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/forms.py:90 staffing/views.py:509
+#: staffing/forms.py:90 staffing/views.py:516
 msgid "Days without lunch ticket"
 msgstr "Jours sans ticket restaurant"
 
@@ -504,28 +504,28 @@ msgstr "Taux journalier"
 msgid "Financial condition"
 msgstr "Condition financière"
 
-#: staffing/models.py:213
+#: staffing/models.py:216
 msgid "Price updated from mission"
 msgstr "Prix mis à jour à partir de la mission"
 
-#: staffing/views.py:114
+#: staffing/views.py:121
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:356 staffing/views.py:533
+#: staffing/views.py:363 staffing/views.py:540
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:365
+#: staffing/views.py:372
 msgid "total"
 msgstr "total"
 
-#: staffing/views.py:496 templates/staffing/consultant_timesheet.html:23
+#: staffing/views.py:503 templates/staffing/consultant_timesheet.html:23
 #: templates/staffing/mission_timesheet.html:27
 msgid "Total"
 msgstr "Total"
 
-#: staffing/views.py:556
+#: staffing/views.py:563
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
@@ -997,7 +997,7 @@ msgstr "Date de démarrage"
 
 #: templates/leads/lead_mail.html:14 templates/leads/lead_mail.txt:15
 msgid "Sales (kEuros): "
-msgstr "C.A. (k): "
+msgstr "C.A. (k€) : "
 
 #: templates/leads/lead_mail.html:49
 msgid "Change this lead"
@@ -1155,7 +1155,7 @@ msgstr "Nouveau staffing : "
 
 #: templates/staffing/consultant_staffing.html:65
 #: templates/staffing/consultant_timesheet.html:51
-#: templates/staffing/mission_staffing.html:64
+#: templates/staffing/mission_staffing.html:67
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -1239,6 +1239,12 @@ msgstr "Créer une autre mission pour cette affaire"
 #: templates/staffing/mission_staffing.html:6
 msgid "See also the timesheet of this mission"
 msgstr "Voir aussi la feuille de temps de cette mission"
+
+#: templates/staffing/mission_staffing.html:64
+msgid "Note: you are not allowed to change mission staffing"
+msgstr ""
+"Remarque : votre profil ne vous permet pas de modifier le staffing d'une "
+"mission"
 
 #: templates/staffing/mission_timesheet.html:6
 msgid "See also the forecast staffing of this mission"
