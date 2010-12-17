@@ -18,6 +18,7 @@ from django.db.models import Sum
 
 from pydici.billing.models import Bill
 from pydici.leads.models import Lead
+from pydici.staffing.models import Timesheet
 from pydici.core.utils import print_png, COLORS
 
 def bill_review(request):
@@ -36,6 +37,14 @@ def bill_review(request):
     overdue_bills_total = overdue_bills.aggregate(Sum("amount"))["amount__sum"]
     litigious_bills_total = litigious_bills.aggregate(Sum("amount"))["amount__sum"]
 
+    # Get leads with done timesheet in past three month that don't have bill yet
+    leadsWithoutBill = []
+    threeMonthAgo = date.today() - timedelta(90)
+    for lead in Lead.objects.filter(state="WON"):
+        if lead.bill_set.count() == 0:
+            if Timesheet.objects.filter(mission__lead=lead, working_date__gte=threeMonthAgo).count() != 0:
+                leadsWithoutBill.append(lead)
+
     return render_to_response("billing/bill_review.html",
                               {"overdue_bills" : overdue_bills,
                                "soondue_bills" : soondue_bills,
@@ -44,6 +53,7 @@ def bill_review(request):
                                "soondue_bills_total" : soondue_bills_total,
                                "overdue_bills_total" : overdue_bills_total,
                                "litigious_bills_total" : litigious_bills_total,
+                               "leads_without_bill" : leadsWithoutBill,
                                "user": request.user},
                               RequestContext(request))
 

@@ -6,7 +6,7 @@ Database access layer for pydici staffing module
 """
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
@@ -112,6 +112,26 @@ class Mission(models.Model):
             return self.deal_id
         else:
             return unicode(self.id)
+
+    def done_work(self):
+        """Compute done work according to timesheet for this mission
+        Result is cached for few seconds
+        @return: (done work in days, done work in euros)"""
+        CACHE_DELAY = 5
+        res = cache.get("missionDoneWork-%s" % self.id)
+        if res:
+            return res
+        rates = dict([ (i.id, j) for i, j in self.consultant_rates().items()]) # switch to consultant id
+        days = 0
+        amount = 0
+        timesheets = Timesheet.objects.filter(mission=self)
+        timesheets = timesheets.values_list("consultant").annotate(Sum("charge")).order_by()
+        for consultant_id, charge in timesheets:
+            days += charge
+            if consultant_id in rates:
+                amount += charge * rates[consultant_id]
+        cache.set("missionDoneWork-%s" % self.id, (days, amount), CACHE_DELAY)
+        return (days, amount)
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "description"]

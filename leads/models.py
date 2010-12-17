@@ -103,6 +103,18 @@ class Lead(models.Model):
         actionList = actionList.select_related().order_by('action_time')
         return actionList
 
+    def done_work(self):
+        """Compute done work according to timesheet for all missions of this lead
+        @return: (done work in days, done work in euros)"""
+        days = 0
+        amount = 0
+        for mission in self.mission_set.all():
+            mDays, mAmount = mission.done_work()
+            days += mDays
+            amount += mAmount
+
+        return (days, amount)
+
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]

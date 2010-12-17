@@ -133,8 +133,34 @@
         </table>
     </div>
     {% endif %}
-    
+    {% if leads_without_bill %}
+    <div class="imodule">
+        <table>
+        <caption>{% trans "Recent leads without bill" %}</caption>
+
+        <tr>
+                <td><b>{% trans "Lead" %}</b></td>
+                <td><b>{% trans "Responsible" %}</b></td>
+                <td><b>{% trans "Staffing" %}</b></td>
+                <td><b>{% trans "Sales (k€)" %}</b></td>
+                <td><b>{% trans "Done days" %}</b></td>
+                <td><b>{% trans "Done work (€)" %}</b></td>
+        </tr>
+        {% for lead in leads_without_bill %}
+            <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <td><a href='{% url pydici.leads.views.detail lead.id %}' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
+                <td>{% if lead.responsible %}<a href="{% url pydici.people.views.consultant_detail lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
+                <td>{{ lead.staffing_list }}</td>
+                <td>{{ lead.sales }}</td>
+                <td>{{ lead.done_work.0 }}</td>
+                <td>{{ lead.done_work.1 }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
     <img src="{% url pydici.billing.views.graph_stat_bar %}"/>
-    
+
 </div>
 {% endblock %}
