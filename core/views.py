@@ -124,7 +124,7 @@ def search(request):
                     for bill in lead.bill_set.all():
                         bills.add(bill)
                 bills = list(bills)
-            print bills
+            bills.sort(key=lambda x: x.creation_date)
 
     return render_to_response("core/search.html",
                               {"query" : " ".join(words),
