@@ -52,8 +52,9 @@
         </div>
     {% endif %}
     </form>
+    <br/><p>{% trans "Working days in this month: " %} {{ working_days }}</p>
     {% if working_days_balance %}
-    <br/><p>{% trans "Working days balance: " %} {{ working_days_balance|floatformat:-2 }}</p>
+    <p>{% trans "Working days balance: " %} {{ working_days_balance|floatformat:-2 }}</p>
     {% endif %}
     <a href="{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=month.year, month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a> 
 {% endblock %}

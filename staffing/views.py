@@ -349,6 +349,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
                                "month": month,
                                "missions": missions,
                                "working_days_balance" : wDaysBalance,
+                               "working_days" : wDays,
                                "warning": warning,
                                "next_date": next_date,
                                "previous_date": previous_date,
