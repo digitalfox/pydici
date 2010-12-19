@@ -68,5 +68,5 @@ class Bill(models.Model):
         return wait.days
 
     class Meta:
-        ordering = ["lead__client__organisation__company"]
+        ordering = ["lead__client__organisation__company", "creation_date"]
         verbose_name = _("Bill")
