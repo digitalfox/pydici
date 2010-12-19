@@ -92,13 +92,15 @@ def search(request):
             leads = Lead.objects.all()
             for word in words:
                 leads = leads.filter(Q(name__icontains=word) |
-                                     Q(description__icontains=word))
+                                     Q(description__icontains=word) |
+                                     Q(deal_id__icontains=word[:-1])) # Squash last letter that could be mission letter
 
         # Missions
         if request.GET.get("mission"):
             missions = Mission.objects.filter(active=True)
             for word in words:
-                missions = missions.filter(description__icontains=word)
+                missions = missions.filter(Q(deal_id__icontains=word) |
+                                           Q(description__icontains=word))
 
             # Add missions from lead
             if leads:
