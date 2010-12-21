@@ -123,7 +123,8 @@ def search(request):
                 for lead in leads:
                     for bill in lead.bill_set.all():
                         bills.add(bill)
-                bills = list(bills)
+            # Sort
+            bills = list(bills)
             bills.sort(key=lambda x: x.creation_date)
 
     return render_to_response("core/search.html",
