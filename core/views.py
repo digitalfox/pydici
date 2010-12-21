@@ -137,3 +137,8 @@ def search(request):
                                "bills" : bills,
                                "user": request.user },
                                RequestContext(request))
+
+def internal_error(request):
+    """Custom internal error view.
+    Like the default builtin one, but with context to allow proper menu display with correct media path"""
+    return render_to_response("500.html", {}, RequestContext(request))

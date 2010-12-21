@@ -30,6 +30,9 @@ feeds = {
 # Models needed for generic views
 from pydici.crm.models import ClientCompany
 
+# Overide internal server error view
+handler500 = "pydici.core.views.internal_error"
+
 pydici_patterns = patterns('',
     # Admin
     (r'^admin/', include(admin.site.urls)),
