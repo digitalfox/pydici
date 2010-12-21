@@ -374,7 +374,7 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
 
     for mission in missions:
         total = 0
-        row = [i.encode("ISO-8859-15", "ignore") for i in [unicode(mission), mission.mission_id]]
+        row = [i.encode("ISO-8859-15", "ignore") for i in [unicode(mission), mission.mission_id()]]
         timesheets = Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission)
         for day in days:
             try:
