@@ -99,11 +99,17 @@ def saveFormsetAndLog(formset, request):
     """Save the given staffing formset and log last user"""
     now = datetime.now()
     now = now.replace(microsecond=0) # Remove useless microsecond that pollute form validation in callback
-    staffings = formset.save(commit=False)
-    for staffing in staffings:
-        staffing.last_user = unicode(request.user)
-        staffing.update_date = now
-        staffing.save()
+    formset.save()
+    deleted_forms = list(formset.deleted_forms)
+    for form in formset.forms:
+        if form in deleted_forms:
+            # Don't consider forms marked for deletion
+            continue
+        if form.changed_data and form.changed_data != ["update_date"]:  # don't consider update_date as L10N formating mess up has_changed widget method
+            staffing = form.save()
+            staffing.last_user = unicode(request.user)
+            staffing.update_date = now
+            staffing.save()
 
 def sortMissions(missions):
     """Sort mission list in the following way:
