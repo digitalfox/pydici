@@ -18,6 +18,7 @@ from django.template import RequestContext
 from django.db.models import Sum
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
+from django.utils import formats
 
 
 
@@ -379,11 +380,11 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
         for day in days:
             try:
                 timesheet = timesheets.get(working_date=day)
-                row.append(timesheet.charge)
+                row.append(formats.number_format(timesheet.charge))
                 total += timesheet.charge
             except Timesheet.DoesNotExist:
                 row.append("")
-        row.append(total)
+        row.append(formats.number_format(total))
         writer.writerow(row)
 
     return response
@@ -544,7 +545,14 @@ def all_csv_timesheet(request, charges, month):
     # Header
     writer.writerow([unicode(month).encode("ISO-8859-15"), ])
     for charge in charges:
-        writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in charge])
+        row = []
+        for i in charge:
+            if isinstance(i, float):
+                i = formats.number_format(i)
+            else:
+                i = unicode(i).encode("ISO-8859-15", "ignore")
+            row.append(i)
+        writer.writerow(row)
     return response
 
 @permission_required("staffing.add_mission")
