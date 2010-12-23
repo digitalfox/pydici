@@ -101,20 +101,7 @@ class SimpleTest(TestCase):
 
     def test_create_lead(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        lead = Lead(name="laala",
-                  due_date="2008-11-01",
-                  update_date="2008-11-01 16:14:16",
-                  creation_date="2008-11-01 15:43:43",
-                  start_date="2008-11-01",
-                  responsible=None,
-                  sales=None,
-                  external_staffing="JCF",
-                  state="QUALIF",
-                  client=Client.objects.get(pk=1),
-                  salesman=None,
-                  description="A wonderfull lead that as a so so long description")
-
-        lead.save()
+        lead = create_lead()
         self.failUnlessEqual(lead.staffing.count(), 0)
         lead.staffing.add(Consultant.objects.get(pk=1))
         self.failUnlessEqual(lead.staffing.count(), 1)
@@ -138,3 +125,23 @@ class SimpleTest(TestCase):
             response = self.client.get(url, arg)
             self.failUnlessEqual(response.status_code, 200,
                 "Failed to test pdc_review with arg %s (got %s instead of 200" % (arg, response.status_code))
+
+def create_lead():
+    """Create test lead
+    @return: lead object"""
+    lead = Lead(name="laala",
+          due_date="2008-11-01",
+          update_date="2008-11-01 16:14:16",
+          creation_date="2008-11-01 15:43:43",
+          start_date="2008-11-01",
+          responsible=None,
+          sales=None,
+          external_staffing="JCF",
+          state="QUALIF",
+          deal_id="123456",
+          client=Client.objects.get(pk=1),
+          salesman=None,
+          description="A wonderfull lead that as a so so long description")
+
+    lead.save()
+    return lead
