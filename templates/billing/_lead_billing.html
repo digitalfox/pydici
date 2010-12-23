@@ -1,5 +1,5 @@
 {# This template fragment can be included to display lead billing #}
-{# Context/Agument: lead object #}
+{# Context/Argument: lead object #}
 
 {% load i18n %}
 <div class="timesheet">
@@ -25,8 +25,8 @@
     {% else %}
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
-    <br/>
+
     {% if perms.billing.Can_add_Bill %}
-        <a href="{% url pydici.billing.views.create_new_bill_from_lead lead.id %}" target="_blank">{% trans "Add a bill for this lead" %}</a>
+        <i><a href="{% url pydici.billing.views.create_new_bill_from_lead lead.id %}" target="_blank">{% trans "Add a bill for this lead" %}</a></i>
     {% endif %}
 </div>

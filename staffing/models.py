@@ -133,6 +133,14 @@ class Mission(models.Model):
         cache.set("missionDoneWork-%s" % self.id, (days, amount), CACHE_DELAY)
         return (days, amount)
 
+    def margin(self):
+        """Compute mission margin"""
+        if self.price:
+            days, amount = self.done_work()
+            return self.price - amount / 1000
+        else:
+            return 0
+
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "description"]
         verbose_name = _("Mission")

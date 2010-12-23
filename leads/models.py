@@ -115,6 +115,13 @@ class Lead(models.Model):
 
         return (days, amount)
 
+    def margin(self):
+        """Return mission current margin in euros"""
+        if self.sales:
+            days, amount = self.done_work()
+            return self.sales - amount / 1000
+        else:
+            return 0
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]

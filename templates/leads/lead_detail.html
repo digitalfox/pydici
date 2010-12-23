@@ -53,6 +53,52 @@
     <br><br><hr>
 </div>
 
+<br/>
+{% if lead.mission_set.count %}
+    <h2>{% trans "Missions of this lead:" %}</h2>
+    <div class="imodule">
+    <table>    
+    <tr>
+        <td>{% trans "Mission" %}</td>
+        <td>{% trans "id" %}</td>
+        <td>{% trans "Sold" %}</td>
+        <td>{% trans "Done (days)" %}</td>
+        <td>{% trans "Done (€)" %}</td>
+        <td>{% trans "Margin" %}</td>
+        <td></td>
+    </tr>  
+    {% for mission in lead.mission_set.all %}
+    <tr>
+        <td><a href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a></td>
+        <td>{{ mission.mission_id }}</td>
+        <td>{{ mission.price }}</td>
+        <td>{{ mission.done_work.0 }}</td>
+        <td>{{ mission.done_work.1 }}</td>
+        <td>{{ mission.margin }}</td>        
+        <td><i><a href='{% url pydici.staffing.views.mission_staffing mission.id %}' class='changelink'>{% trans "workload schedule of this mission" %}</a></i></td>
+    </tr>
+    {% endfor %}
+    </table>
+    </div>
+    {% if perms.staffing.Can_add_Mission %}
+        <a href='{% url pydici.staffing.views.create_new_mission_from_lead lead.id %}'><i>{% trans "Create a new mission for this lead" %}</i></a>
+    {% endif %}    
+{% endif %}
+<br/>
+
+{% ifequal lead.state "WON" %}
+<h2>{% trans "Profitability" %}</h2>
+    <table>
+        <tr><td>{% trans "Sold" %}</td>
+        <td>{% if lead.sales %}{{ lead.sales }}  k€
+            {% else %} <a href='{% url admin:leads_lead_change lead.id %}'>{% trans "To be defined" %}</a>
+            {% endif %}</td></tr>
+        <tr><td>{% trans "Margin" %}</td><td>{{ lead.margin }}  k€</td></tr>
+    </table>
+<h2>{% trans "Billing" %}</h2>        
+    {% include "billing/_lead_billing.html" %}
+{% endifequal %}    
+
 {% if action_list %}
     <h2>{% trans "Change history" %}</h2>
     <table id="change-history">
@@ -75,24 +121,5 @@
     </table>
 {% endif %}
 
-
-<br/>
-{% if lead.mission_set.count %}
-    <h4>{% trans "Missions linked to this lead:" %}</h4>
-    <ul>
-    {% for mission in lead.mission_set.all %}
-        <li><a href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a> (<i><a href='{% url pydici.staffing.views.mission_staffing mission.id %}' class='changelink'>{% trans "workload schedule of this mission" %}</a></i>)</li>
-    {% endfor %}
-    {% if perms.staffing.Can_add_Mission %}
-        <li><a href='{% url pydici.staffing.views.create_new_mission_from_lead lead.id %}'><i>{% trans "Create a new mission for this lead" %}</i></a></li>
-    {% endif %}
-    </ul>    
-{% endif %}
-<br/>
-
-{% ifequal lead.state "WON" %}
-<h2>{% trans "Billing" %}</h2>        
-    {% include "billing/_lead_billing.html" %}
-{% endifequal %}    
 
 {% endblock %}
