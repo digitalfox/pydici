@@ -82,7 +82,7 @@ class BusinessBroker(ThirdPartyContact):
 
     def __unicode__(self):
         if self.company:
-            return "%s (%s)" % (self.name, self.company)
+            return "%s (%s)" % (self.company, self.name)
         else:
             return self.name
     def short_name(self):
