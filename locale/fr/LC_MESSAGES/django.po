@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-30 08:28+0100\n"
+"POT-Creation-Date: 2010-12-30 08:41+0100\n"
 "PO-Revision-Date: 2010-12-30 08:27+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
@@ -429,6 +429,7 @@ msgstr ""
 #: staffing/forms.py:34 staffing/models.py:146 staffing/views.py:373
 #: staffing/views.py:483 templates/leads/lead_detail.html:62
 #: templates/staffing/consultant_staffing.html:15
+#: templates/staffing/mission_base.html:38
 msgid "Mission"
 msgstr "Mission"
 
@@ -894,7 +895,7 @@ msgid "Clients companies"
 msgstr "Entreprises"
 
 #: templates/crm/clientcompany_detail.html:29
-#: templates/staffing/mission_base.html:57
+#: templates/staffing/mission_base.html:59
 msgid "Lead of this mission"
 msgstr "Affaire de cette mission"
 
@@ -989,7 +990,7 @@ msgstr "Rien"
 msgid "Missions of this lead:"
 msgstr "Missions de cette affaire : "
 
-#: templates/leads/lead_detail.html:63
+#: templates/leads/lead_detail.html:63 templates/staffing/mission_base.html:38
 msgid "id"
 msgstr "n°"
 
@@ -1286,11 +1287,11 @@ msgstr "Taux journalier (€)"
 msgid "Other missions linked to this lead"
 msgstr "Autres missions liées à cette affaire"
 
-#: templates/staffing/mission_base.html:54
+#: templates/staffing/mission_base.html:56
 msgid "Back to mission list"
 msgstr "Retour à la liste des missions"
 
-#: templates/staffing/mission_base.html:62
+#: templates/staffing/mission_base.html:64
 msgid "Create another mission for this lead"
 msgstr "Créer une autre mission pour cette affaire"
 

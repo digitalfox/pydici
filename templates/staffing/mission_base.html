@@ -35,13 +35,15 @@
     {% if mission.sister_missions %}
         <h2>{% trans "Other missions linked to this lead" %}</h2>
         <table>
+        <tr><td>{% trans "Mission" %}</td><td>{% trans "id" %}</td></tr>
         {% for sister_mission in mission.sister_missions %}
         <tr {%cycle 'class="row1"' 'class="row2"' %}>
             {% if link_to_staffing %}
-                <th scope="row"><a href='{% url pydici.staffing.views.mission_staffing sister_mission.id %}' class='changelink'>{{ sister_mission }}</a></th>
+                <td><a href='{% url pydici.staffing.views.mission_staffing sister_mission.id %}' class='changelink'>{{ sister_mission }}</a></td>
             {% else %}
-                <th scope="row"><a href='{% url pydici.staffing.views.mission_timesheet sister_mission.id %}' class='changelink'>{{ sister_mission }}</a></th>
+                <td><a href='{% url pydici.staffing.views.mission_timesheet sister_mission.id %}' class='changelink'>{{ sister_mission }}</a></td>
             {% endif %}
+            <td>{{ sister_mission.mission_id }}</td>
         </tr>
         {% endfor %}
         </table> 
