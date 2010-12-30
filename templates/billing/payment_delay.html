@@ -1,0 +1,42 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="imodule">
+        <table>
+        <caption>{% trans "Direct clients" %}</caption>
+        <tr>
+                <td><b>{% trans "Client" %}</b></td>
+                <td><b>{% trans "Average payment delay" %}</b></td>
+        </tr>
+        {% for company, delay in direct_delays %}
+            <tr>
+                <td><a href='{% url crm.views.company_detail company.id %}'>{{ company }}</a></td>
+                <td>{{ delay }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    <div class="imodule">
+        <table>
+        <caption>{% trans "Paying authorities" %}</caption>
+        <tr>
+                <td><b>{% trans "Paying authority" %}</b></td>
+                <td><b>{% trans "Average payment delay" %}</b></td>
+        </tr>
+        {% for authority, delay in indirect_delays %}
+            <tr>
+                <td>{{ authority }}</td>
+                <td>{{ delay }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+{% endblock %}

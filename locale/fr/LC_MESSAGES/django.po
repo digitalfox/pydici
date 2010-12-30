@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-25 12:51+0100\n"
-"PO-Revision-Date: 2010-12-25 12:50+0100\n"
+"POT-Creation-Date: 2010-12-30 08:28+0100\n"
+"PO-Revision-Date: 2010-12-30 08:27+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -156,7 +156,7 @@ msgstr "Fonction"
 msgid "None"
 msgstr "Aucun(e)"
 
-#: crm/models.py:73 crm/models.py:81 templates/admin/base_site.html:121
+#: crm/models.py:73 crm/models.py:81 templates/admin/base_site.html:122
 msgid "Company"
 msgstr "Société"
 
@@ -183,7 +183,8 @@ msgstr "Propriété commerciale"
 #: crm/models.py:111 leads/forms.py:23 leads/models.py:56 leads/views.py:89
 #: templates/billing/bill_review.html:18 templates/billing/bill_review.html:51
 #: templates/billing/bill_review.html:84
-#: templates/billing/bill_review.html:117 templates/core/index.html:18
+#: templates/billing/bill_review.html:117
+#: templates/billing/payment_delay.html:16 templates/core/index.html:18
 #: templates/core/index.html.py:43 templates/core/index.html:67
 #: templates/core/index.html.py:91
 msgid "Client"
@@ -274,6 +275,7 @@ msgid "Salesman"
 msgstr "Commercial"
 
 #: leads/forms.py:22 leads/models.py:52
+#: templates/billing/payment_delay.html:31
 msgid "Paying authority"
 msgstr "Organisme payeur"
 
@@ -614,7 +616,7 @@ msgstr "Flux ATOM de mes dernières prévisions de staffing"
 msgid "Welcome,"
 msgstr "Bienvenue, "
 
-#: templates/admin/base_site.html:22 templates/admin/base_site.html.py:117
+#: templates/admin/base_site.html:22 templates/admin/base_site.html.py:118
 #: templates/core/search.html:51 templates/people/consultant_detail.html:45
 msgid "Leads"
 msgstr "Affaires"
@@ -639,7 +641,7 @@ msgstr "Toutes les factures"
 msgid "New bill"
 msgstr "Nouvelle facture"
 
-#: templates/admin/base_site.html:40 templates/admin/base_site.html.py:120
+#: templates/admin/base_site.html:40 templates/admin/base_site.html.py:121
 #: templates/core/search.html:60
 msgid "Missions"
 msgstr "Missions"
@@ -701,27 +703,31 @@ msgstr "Feuille de temps globale"
 msgid "Bills review"
 msgstr "Suivi de facturation"
 
-#: templates/admin/base_site.html:94
+#: templates/admin/base_site.html:87
+msgid "Payment delay review"
+msgstr "Délais de règlement"
+
+#: templates/admin/base_site.html:95
 msgid "Help"
 msgstr "Aide"
 
-#: templates/admin/base_site.html:98
+#: templates/admin/base_site.html:99
 msgid "Admin console"
 msgstr "Console d'administration"
 
-#: templates/admin/base_site.html:101
+#: templates/admin/base_site.html:102
 msgid "Help page"
 msgstr "Page d'aide"
 
-#: templates/admin/base_site.html:122
+#: templates/admin/base_site.html:123
 msgid "Client contacts"
 msgstr "Contacts clients"
 
-#: templates/admin/base_site.html:123 templates/core/search.html:24
+#: templates/admin/base_site.html:124 templates/core/search.html:24
 msgid "Consultants"
 msgstr "Consultants"
 
-#: templates/admin/base_site.html:124 templates/core/search.html:69
+#: templates/admin/base_site.html:125 templates/core/search.html:69
 msgid "Bills"
 msgstr "Factures"
 
@@ -831,6 +837,19 @@ msgstr "Montant réalisé (€)"
 #: templates/staffing/mission_timesheet.html:48
 msgid "To be defined"
 msgstr "À définir"
+
+#: templates/billing/payment_delay.html:14
+msgid "Direct clients"
+msgstr "Clients directs"
+
+#: templates/billing/payment_delay.html:17
+#: templates/billing/payment_delay.html:32
+msgid "Average payment delay"
+msgstr "Délai moyen de règlement"
+
+#: templates/billing/payment_delay.html:29
+msgid "Paying authorities"
+msgstr "Organismes payeurs"
 
 #: templates/core/index.html:16
 msgid "My leads as responsible"

@@ -19,6 +19,7 @@ from django.db.models import Sum
 from pydici.billing.models import Bill
 from pydici.leads.models import Lead
 from pydici.staffing.models import Timesheet
+from pydici.crm.models import ClientCompany, BusinessBroker
 from pydici.core.utils import print_png, COLORS
 
 def bill_review(request):
@@ -54,6 +55,29 @@ def bill_review(request):
                                "overdue_bills_total" : overdue_bills_total,
                                "litigious_bills_total" : litigious_bills_total,
                                "leads_without_bill" : leadsWithoutBill,
+                               "user": request.user},
+                              RequestContext(request))
+
+def bill_payment_delay(request):
+    """Report on client bill payment delay"""
+    #List of tuple (company, avg delay in days)
+    directDelays = list() # for direct client
+    indirectDelays = list() # for client with paying authority
+    for company in ClientCompany.objects.all():
+        bills = Bill.objects.filter(lead__client__organisation__company=company, lead__paying_authority__isnull=True)
+        res = [i.payment_delay() for i in bills]
+        if res:
+            directDelays.append((company, sum(res) / len(res)))
+
+    for authority in BusinessBroker.objects.all():
+        bills = Bill.objects.filter(lead__paying_authority=authority)
+        res = [i.payment_delay() for i in bills]
+        if res:
+            indirectDelays.append((authority, sum(res) / len(res)))
+
+    return render_to_response("billing/payment_delay.html",
+                              {"direct_delays" : directDelays,
+                               "indirect_delays" : indirectDelays,
                                "user": request.user},
                               RequestContext(request))
 
