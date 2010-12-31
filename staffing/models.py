@@ -117,7 +117,7 @@ class Mission(models.Model):
         """Compute done work according to timesheet for this mission
         Result is cached for few seconds
         @return: (done work in days, done work in euros)"""
-        CACHE_DELAY = 5
+        CACHE_DELAY = 10
         res = cache.get("missionDoneWork-%s" % self.id)
         if res:
             return res
@@ -133,11 +133,16 @@ class Mission(models.Model):
         cache.set("missionDoneWork-%s" % self.id, (days, amount), CACHE_DELAY)
         return (days, amount)
 
+    def done_work_k(self):
+        """Same as done_work, but with amount in keur"""
+        days, amount = self.done_work()
+        return days, amount / 1000
+
     def margin(self):
         """Compute mission margin"""
         if self.price:
-            days, amount = self.done_work()
-            return self.price - amount / 1000
+            days, amount = self.done_work_k()
+            return float(self.price) - amount
         else:
             return 0
 

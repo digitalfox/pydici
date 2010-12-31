@@ -115,6 +115,11 @@ class Lead(models.Model):
 
         return (days, amount)
 
+    def done_work_k(self):
+        """Same as done_work, but with amount in keur"""
+        days, amount = self.done_work()
+        return days, amount / 1000
+
     def margin(self):
         """Return mission current margin in euros"""
         if self.sales:

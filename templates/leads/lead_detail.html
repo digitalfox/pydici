@@ -61,23 +61,32 @@
     <tr>
         <td>{% trans "Mission" %}</td>
         <td>{% trans "id" %}</td>
-        <td>{% trans "Sold" %}</td>
         <td>{% trans "Done days" %}</td>
-        <td>{% trans "Done work (€)" %}</td>
-        <td>{% trans "Margin" %}</td>
+        <td>{% trans "Done work (k€)" %}</td>
+        <td>{% trans "Sold (k€)" %}</td>
+        <td>{% trans "Margin (k€)" %}</td>
         <td></td>
     </tr>  
     {% for mission in lead.mission_set.all %}
     <tr>
         <td><a href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a></td>
         <td>{{ mission.mission_id }}</td>
+        <td>{{ mission.done_work_k.0 }}</td>
+        <td>{{ mission.done_work_k.1|floatformat }}</td>
         <td>{{ mission.price }}</td>
-        <td>{{ mission.done_work.0 }}</td>
-        <td>{{ mission.done_work.1 }}</td>
-        <td>{{ mission.margin }}</td>        
+        <td>{{ mission.margin|floatformat }}</td>
         <td><i><a href='{% url pydici.staffing.views.mission_staffing mission.id %}' class='changelink'>{% trans "workload schedule of this mission" %}</a></i></td>
     </tr>
     {% endfor %}
+    <tr>
+        <td>{% trans "Total" %}</td>
+        <td></td>
+        <td>{{ lead.done_work_k.0 }}</td>
+        <td>{{ lead.done_work_k.1|floatformat }}</td>
+        <td>{{ lead.sales }}</td>
+        <td>{{ lead.margin|floatformat }}</td>
+        <td></td>
+    </tr>
     </table>
     </div>
     {% if perms.staffing.Can_add_Mission %}
