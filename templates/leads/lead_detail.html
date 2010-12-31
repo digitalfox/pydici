@@ -78,15 +78,17 @@
         <td><i><a href='{% url pydici.staffing.views.mission_staffing mission.id %}' class='changelink'>{% trans "workload schedule of this mission" %}</a></i></td>
     </tr>
     {% endfor %}
-    <tr>
-        <td>{% trans "Total" %}</td>
-        <td></td>
-        <td>{{ lead.done_work_k.0 }}</td>
-        <td>{{ lead.done_work_k.1|floatformat }}</td>
-        <td>{{ lead.sales }}</td>
-        <td>{{ lead.margin|floatformat }}</td>
-        <td></td>
-    </tr>
+    {% ifnotequal lead.mission_set.count 1 %}
+	    <tr>
+	        <td>{% trans "Total" %}</td>
+	        <td></td>
+	        <td>{{ lead.done_work_k.0 }}</td>
+	        <td>{{ lead.done_work_k.1|floatformat }}</td>
+	        <td>{{ lead.sales }}</td>
+	        <td>{{ lead.margin|floatformat }}</td>
+	        <td></td>
+	    </tr>
+	{% endifnotequal %}
     </table>
     </div>
     {% if perms.staffing.Can_add_Mission %}
