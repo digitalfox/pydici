@@ -147,7 +147,7 @@ class Mission(models.Model):
             return 0
 
     class Meta:
-        ordering = ["nature", "lead__client__organisation__company", "description"]
+        ordering = ["nature", "lead__client__organisation__company", "id", "description"]
         verbose_name = _("Mission")
 
 class Holiday(models.Model):
