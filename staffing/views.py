@@ -659,7 +659,7 @@ def graph_timesheet_rates_bar(request):
     ax.set_xticks(kdates)
     ax.set_xticklabels(kdates)
     ax.set_ylim(ymax=int(max(bottom)) + 10)
-    ax.legend(bars, [i[1] for i in Mission.MISSION_NATURE])
+    ax.legend(bars, [i[1] for i in Mission.MISSION_NATURE], loc="center left")
     ax.grid(True)
     fig.autofmt_xdate()
 
