@@ -666,13 +666,17 @@ def graph_timesheet_rates_bar(request):
                 ydata.append(50)
         except KeyError:
             ydata.append(0)
+        ax.text(kdate, ydata[-1] + 2, "%.1f" % ydata[-1])
 
     b = ax.plot(kdates, ydata, '--o', ms=10, lw=2, alpha=0.7, color="green", mfc="green")
     plots.append(b[0])
 
+
     # Add Legend and setup axes
+    ax.set_yticks(range(0, 101, 5))
     ax.set_xticks(kdates)
     ax.set_xticklabels(kdates)
+    ax.set_ylabel("%")
     ax.set_ylim(ymax=int(max(bottom)) + 10)
     ax.legend(plots, [i[1] for i in Mission.MISSION_NATURE] + [_("Prod. rate")], loc="center left")
     ax.grid(True)
