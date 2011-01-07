@@ -90,7 +90,10 @@
     {% endfor %}
 </tr>
 </table>
-<br>
+<br/><br/>
+<h1>{% trans "Production rates review" %}</h1>
+<img src="{% url pydici.staffing.views.graph_timesheet_rates_bar %}"/>
+<br/>
 <a href='{% url missions %}'>Liste des missions</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 <a href='{% url index %}'>Retour page d'accueil</a></i>

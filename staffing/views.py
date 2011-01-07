@@ -7,6 +7,9 @@ Pydici staffing views. Http request are processed here.
 
 from datetime import date, timedelta, datetime
 import csv
+import itertools
+
+from matplotlib.figure import Figure
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse, Http404
@@ -26,7 +29,7 @@ from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet, Financ
 from pydici.people.models import Consultant
 from pydici.leads.models import Lead
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
-from pydici.core.utils import working_days, to_int_or_round
+from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, sortMissions
 
 def missions(request, onlyActive=True):
@@ -593,3 +596,68 @@ def mission_consultant_rate(request, mission_id, consultant_id):
     condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
                                                                   defaults={"daily_rate":0})
     return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_financialcondition_change", args=[condition.id, ]))
+
+def graph_timesheet_rates_bar(request):
+    """Nice graph bar of timesheet prod/holidays/nonprod rates
+    @todo: per year, with start-end date"""
+    data = {} # Graph data
+    natures = [i[0] for i in Mission.MISSION_NATURE] # Mission natures
+    kdates = set() # List of uniq month
+    nConsultant = {} # Set of working consultant id per month
+    bars = [] # List of bars - needed to add legend
+    colors = itertools.cycle(COLORS)
+
+    # Setting up graph
+    fig = Figure(figsize=(12, 8))
+    fig.set_facecolor("white")
+    ax = fig.add_subplot(111)
+
+    # Create dict per mission nature
+    for nature in natures:
+        data[nature] = {}
+
+    # Gathering data
+    timesheets = Timesheet.objects.all()
+    if timesheets.count() == 0:
+        return print_png(fig)
+
+    for timesheet in timesheets:
+        #Using first day of each month as key date
+        kdate = date(timesheet.working_date.year, timesheet.working_date.month, 1)
+        kdates.add(kdate)
+        if kdate in data[timesheet.mission.nature]:
+            data[timesheet.mission.nature][kdate] += timesheet.charge
+        else:
+            data[timesheet.mission.nature][kdate] = timesheet.charge
+        if not kdate in nConsultant:
+            nConsultant[kdate] = set()
+        nConsultant[kdate].add(timesheet.consultant.id)
+
+    # Set bottom of each graph. Starts if [0, 0, 0, ...]
+    bottom = [0] * len(kdates)
+
+    # Draw a bar for each nature
+    kdates = list(kdates)
+    kdates.sort() # Convert kdates to list and sort it
+    for nature in natures:
+        ydata = []
+        for kdate in kdates:
+            if data[nature].has_key(kdate):
+                ydata.append(100 * data[nature][kdate] / (working_days(kdate) * len(nConsultant[kdate])))
+            else:
+                ydata.append(0)
+
+        b = ax.bar(kdates, ydata, bottom=bottom, align="center", width=15,
+               color=colors.next())
+        bars.append(b[0])
+        for i in range(len(ydata)):
+            bottom[i] += ydata[i] # Update bottom
+
+    # Add Legend and setup axes
+    ax.set_xticks(kdates)
+    ax.set_xticklabels(kdates)
+    ax.set_ylim(ymax=int(max(bottom)) + 10)
+    ax.legend(bars, [i[1] for i in Mission.MISSION_NATURE])
+    fig.autofmt_xdate()
+
+    return print_png(fig)

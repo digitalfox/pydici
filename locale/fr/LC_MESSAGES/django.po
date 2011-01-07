@@ -2,13 +2,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Sebastien Renard <Sebastien.Renard@digitalfox.org>, 2010.
-# Sébastien Renard <renard@kde.org>, 2010.
+# Sébastien Renard <renard@kde.org>, 2010, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-31 09:06+0100\n"
-"PO-Revision-Date: 2010-12-31 09:06+0100\n"
+"POT-Creation-Date: 2011-01-07 18:35+0100\n"
+"PO-Revision-Date: 2011-01-07 18:34+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -311,7 +311,7 @@ msgstr "Abandonnée"
 msgid "Sleeping"
 msgstr "En sommeil"
 
-#: leads/models.py:45 templates/leads/lead_detail.html:118
+#: leads/models.py:45 templates/leads/lead_detail.html:120
 #: templates/leads/lead_mail.html:30
 msgid "Action"
 msgstr "Action"
@@ -337,8 +337,8 @@ msgstr "Échéance"
 msgid "Creation"
 msgstr "Création"
 
-#: leads/models.py:58 staffing/models.py:35 staffing/views.py:373
-#: staffing/views.py:483
+#: leads/models.py:58 staffing/models.py:35 staffing/views.py:376
+#: staffing/views.py:486
 msgid "Deal id"
 msgstr "N° affaire"
 
@@ -426,14 +426,14 @@ msgid "Last forecast staffing updated or created about myself"
 msgstr ""
 "Dernières mise à jour ou création de staffing prévisionnel me concernant"
 
-#: staffing/forms.py:34 staffing/models.py:151 staffing/views.py:373
-#: staffing/views.py:483 templates/leads/lead_detail.html:62
+#: staffing/forms.py:34 staffing/models.py:151 staffing/views.py:376
+#: staffing/views.py:486 templates/leads/lead_detail.html:62
 #: templates/staffing/consultant_staffing.html:15
 #: templates/staffing/mission_base.html:38
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/forms.py:90 staffing/views.py:518
+#: staffing/forms.py:90 staffing/views.py:521
 msgid "Days without lunch ticket"
 msgstr "Jours sans ticket restaurant"
 
@@ -513,25 +513,25 @@ msgstr "Condition financière"
 msgid "Price updated from mission"
 msgstr "Prix mis à jour à partir de la mission"
 
-#: staffing/views.py:122
+#: staffing/views.py:125
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:365 staffing/views.py:542
+#: staffing/views.py:368 staffing/views.py:545
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:374
+#: staffing/views.py:377
 msgid "total"
 msgstr "total"
 
-#: staffing/views.py:505 templates/leads/lead_detail.html:82
+#: staffing/views.py:508 templates/leads/lead_detail.html:83
 #: templates/staffing/consultant_timesheet.html:23
 #: templates/staffing/mission_timesheet.html:27
 msgid "Total"
 msgstr "Total"
 
-#: staffing/views.py:572
+#: staffing/views.py:575
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
@@ -831,7 +831,7 @@ msgstr "Montant réalisé (€)"
 #: templates/billing/bill_review.html:152 templates/core/index.html:31
 #: templates/core/index.html.py:56 templates/core/index.html:80
 #: templates/core/index.html.py:104 templates/leads/lead_detail.html:35
-#: templates/leads/lead_detail.html:103 templates/leads/lead_mail.html:8
+#: templates/leads/lead_detail.html:105 templates/leads/lead_mail.html:8
 #: templates/leads/lead_mail.html.py:12 templates/leads/lead_mail.txt:9
 #: templates/leads/lead_mail.txt.py:13 templates/leads/mail.html:8
 #: templates/leads/mail.txt:7 templates/leads/mail.txt.py:8
@@ -1011,43 +1011,43 @@ msgstr "Marge (k€)"
 msgid "workload schedule of this mission"
 msgstr "prévisions de charge de cette mission"
 
-#: templates/leads/lead_detail.html:93
+#: templates/leads/lead_detail.html:95
 msgid "Create a new mission for this lead"
 msgstr "Créer une nouvelle mission pour cette affaire"
 
-#: templates/leads/lead_detail.html:99
+#: templates/leads/lead_detail.html:101
 #: templates/staffing/mission_timesheet.html:44
 msgid "Profitability"
 msgstr "Rentabilité"
 
-#: templates/leads/lead_detail.html:101
+#: templates/leads/lead_detail.html:103
 #: templates/staffing/mission_timesheet.html:46
 msgid "Sold"
 msgstr "Vendu"
 
-#: templates/leads/lead_detail.html:105
+#: templates/leads/lead_detail.html:107
 #: templates/staffing/mission_timesheet.html:50
 msgid "Margin"
 msgstr "Marge"
 
-#: templates/leads/lead_detail.html:107
+#: templates/leads/lead_detail.html:109
 #: templates/staffing/mission_timesheet.html:54
 msgid "Billing"
 msgstr "Facturation"
 
-#: templates/leads/lead_detail.html:112 templates/leads/lead_mail.html:24
+#: templates/leads/lead_detail.html:114 templates/leads/lead_mail.html:24
 msgid "Change history"
 msgstr "Historique des changements"
 
-#: templates/leads/lead_detail.html:116 templates/leads/lead_mail.html:28
+#: templates/leads/lead_detail.html:118 templates/leads/lead_mail.html:28
 msgid "Date/time"
 msgstr "Date/heure"
 
-#: templates/leads/lead_detail.html:117 templates/leads/lead_mail.html:29
+#: templates/leads/lead_detail.html:119 templates/leads/lead_mail.html:29
 msgid "User"
 msgstr "Utilisateur"
 
-#: templates/leads/lead_detail.html:124 templates/leads/lead_mail.html:36
+#: templates/leads/lead_detail.html:126 templates/leads/lead_mail.html:36
 msgid "DATETIME_FORMAT"
 msgstr "j F Y, G:i"
 
@@ -1368,6 +1368,10 @@ msgstr "Administration des missions"
 #: templates/staffing/missions.html:52
 msgid "Back to home page"
 msgstr "Retour à la page d'accueil"
+
+#: templates/staffing/pdc_review.html:94
+msgid "Production rates review"
+msgstr "Suivi du taux de production"
 
 #, fuzzy
 #~ msgid "Done (days)"

@@ -22,9 +22,9 @@ from pydici.people.models import Consultant
 
 class Mission(models.Model):
     MISSION_NATURE = (
-            ('PROD', _("Productive")),
-            ('NONPROD', _("Unproductive")),
-            ('HOLIDAYS', _("Holidays")))
+            ('PROD', ugettext("Productive")),
+            ('NONPROD', ugettext("Unproductive")),
+            ('HOLIDAYS', ugettext("Holidays")))
     PROBABILITY = (
             (0, _("Null")),
             (25, _("Low")),
