@@ -608,6 +608,7 @@ def graph_timesheet_rates_bar(request):
     nConsultant = {} # Set of working consultant id per month
     bars = [] # List of bars - needed to add legend
     colors = itertools.cycle(COLORS)
+    holiday_days = [h.day for h in  Holiday.objects.all()]
 
     # Setting up graph
     fig = Figure(figsize=(12, 8))
@@ -645,7 +646,7 @@ def graph_timesheet_rates_bar(request):
         ydata = []
         for kdate in kdates:
             if data[nature].has_key(kdate):
-                ydata.append(100 * data[nature][kdate] / (working_days(kdate) * len(nConsultant[kdate])))
+                ydata.append(100 * data[nature][kdate] / (working_days(kdate, holiday_days) * len(nConsultant[kdate])))
             else:
                 ydata.append(0)
 
