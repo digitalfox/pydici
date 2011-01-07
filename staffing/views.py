@@ -606,7 +606,7 @@ def graph_timesheet_rates_bar(request):
     natures = [i[0] for i in Mission.MISSION_NATURE] # Mission natures
     kdates = set() # List of uniq month
     nConsultant = {} # Set of working consultant id per month
-    bars = [] # List of bars - needed to add legend
+    plots = [] # List of plots - needed to add legend
     colors = itertools.cycle(COLORS)
     holiday_days = [h.day for h in  Holiday.objects.all()]
 
@@ -652,15 +652,29 @@ def graph_timesheet_rates_bar(request):
 
         b = ax.bar(kdates, ydata, bottom=bottom, align="center", width=15,
                color=colors.next())
-        bars.append(b[0])
+        plots.append(b[0])
         for i in range(len(ydata)):
             bottom[i] += ydata[i] # Update bottom
+
+    # Prod rate
+    ydata = []
+    for kdate in kdates:
+        try:
+            if kdate in data["NONPROD"]:
+                ydata.append(100 * data["PROD"][kdate] / (data["PROD"][kdate] + data["NONPROD"][kdate]))
+            else:
+                ydata.append(50)
+        except KeyError:
+            ydata.append(0)
+
+    b = ax.plot(kdates, ydata, '--o', ms=10, lw=2, alpha=0.7, color="green", mfc="green")
+    plots.append(b[0])
 
     # Add Legend and setup axes
     ax.set_xticks(kdates)
     ax.set_xticklabels(kdates)
     ax.set_ylim(ymax=int(max(bottom)) + 10)
-    ax.legend(bars, [i[1] for i in Mission.MISSION_NATURE], loc="center left")
+    ax.legend(plots, [i[1] for i in Mission.MISSION_NATURE] + [_("Prod. rate")], loc="center left")
     ax.grid(True)
     fig.autofmt_xdate()
 
