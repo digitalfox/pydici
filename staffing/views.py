@@ -22,6 +22,7 @@ from django.db.models import Sum
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
+from django.views.decorators.cache import cache_page
 
 
 
@@ -597,6 +598,7 @@ def mission_consultant_rate(request, mission_id, consultant_id):
                                                                   defaults={"daily_rate":0})
     return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_financialcondition_change", args=[condition.id, ]))
 
+@cache_page(60 * 10)
 def graph_timesheet_rates_bar(request):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
     @todo: per year, with start-end date"""
@@ -658,6 +660,7 @@ def graph_timesheet_rates_bar(request):
     ax.set_xticklabels(kdates)
     ax.set_ylim(ymax=int(max(bottom)) + 10)
     ax.legend(bars, [i[1] for i in Mission.MISSION_NATURE])
+    ax.grid(True)
     fig.autofmt_xdate()
 
     return print_png(fig)

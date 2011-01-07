@@ -18,6 +18,7 @@ from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext as _
 from django.db.models import Q, Count
 from django.template import RequestContext
+from django.views.decorators.cache import cache_page
 
 from pydici.core.utils import send_lead_mail, print_png, COLORS
 from pydici.leads.models import Lead
@@ -127,7 +128,7 @@ def review(request):
                                "user": request.user },
                                RequestContext(request))
 
-
+@cache_page(60 * 10)
 def graph_stat_pie(request):
     """Nice graph pie of lead state repartition using matplotlib
     @todo: per year, with start-end date"""
@@ -145,6 +146,7 @@ def graph_stat_pie(request):
 
     return print_png(fig)
 
+@cache_page(60 * 10)
 def graph_stat_bar(request):
     """Nice graph bar of lead state during time using matplotlib
     @todo: per year, with start-end date"""
