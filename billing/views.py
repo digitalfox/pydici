@@ -140,7 +140,10 @@ def graph_stat_bar(request):
     ax.set_xticks(data.keys())
     ax.set_xticklabels(data.keys())
     ax.set_ylim(ymax=int(max(bottom)) + 10)
-    ax.legend(bars, [i[1] for i in Bill.BILL_STATE])
+    ax.legend(bars, [i[1] for i in Bill.BILL_STATE],
+              bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
+              ncol=4, borderaxespad=0.)
+    ax.grid(True)
     fig.autofmt_xdate()
 
     return print_png(fig)

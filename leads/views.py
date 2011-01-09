@@ -181,7 +181,8 @@ def graph_stat_bar(request):
     ax.set_xticks(data.keys())
     ax.set_xticklabels(data.keys())
     ax.set_ylim(ymax=max(bottom) + 10)
-    ax.legend(bars, [i[1] for i in Lead.STATES])
+    ax.legend(bars, [i[1] for i in Lead.STATES], ncol=3, loc=2)
+    ax.grid(True)
     fig.autofmt_xdate()
 
     return print_png(fig)
