@@ -679,8 +679,8 @@ def graph_timesheet_rates_bar(request):
     ax.set_ylabel("%")
     ax.set_ylim(ymax=int(max(bottom)) + 10)
     ax.legend(plots, [i[1] for i in Mission.MISSION_NATURE] + [_("Prod. rate")],
-              bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-              ncol=2, mode="expand", borderaxespad=0.)
+              bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
+              ncol=4, borderaxespad=0.)
     ax.grid(True)
     fig.autofmt_xdate()
 
