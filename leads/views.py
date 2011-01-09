@@ -180,7 +180,7 @@ def graph_stat_bar(request):
     # Add Legend and setup axes
     ax.set_xticks(data.keys())
     ax.set_xticklabels(data.keys())
-    ax.set_ylim(ymax=max(bottom) + 10)
+    ax.set_ylim(ymax=max(bottom) + 4)
     ax.legend(bars, [i[1] for i in Lead.STATES], ncol=3, loc=2)
     ax.grid(True)
     fig.autofmt_xdate()
