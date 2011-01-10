@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-07 22:58+0100\n"
+"POT-Creation-Date: 2011-01-10 21:39+0100\n"
 "PO-Revision-Date: 2011-01-07 22:58+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
@@ -337,8 +337,8 @@ msgstr "Échéance"
 msgid "Creation"
 msgstr "Création"
 
-#: leads/models.py:58 staffing/models.py:35 staffing/views.py:377
-#: staffing/views.py:487
+#: leads/models.py:58 staffing/models.py:35 staffing/views.py:378
+#: staffing/views.py:488
 msgid "Deal id"
 msgstr "N° affaire"
 
@@ -426,14 +426,14 @@ msgid "Last forecast staffing updated or created about myself"
 msgstr ""
 "Dernières mise à jour ou création de staffing prévisionnel me concernant"
 
-#: staffing/forms.py:34 staffing/models.py:151 staffing/views.py:377
-#: staffing/views.py:487 templates/leads/lead_detail.html:62
+#: staffing/forms.py:34 staffing/models.py:151 staffing/views.py:378
+#: staffing/views.py:488 templates/leads/lead_detail.html:62
 #: templates/staffing/consultant_staffing.html:15
 #: templates/staffing/mission_base.html:38
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/forms.py:90 staffing/views.py:522
+#: staffing/forms.py:90 staffing/views.py:523
 msgid "Days without lunch ticket"
 msgstr "Jours sans ticket restaurant"
 
@@ -513,29 +513,38 @@ msgstr "Condition financière"
 msgid "Price updated from mission"
 msgstr "Prix mis à jour à partir de la mission"
 
-#: staffing/views.py:126
+#: staffing/views.py:127
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:369 staffing/views.py:546
+#: staffing/views.py:370 staffing/views.py:547
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:378
+#: staffing/views.py:379
 msgid "total"
 msgstr "total"
 
-#: staffing/views.py:509 templates/leads/lead_detail.html:83
+#: staffing/views.py:510 templates/leads/lead_detail.html:83
 #: templates/staffing/consultant_timesheet.html:23
 #: templates/staffing/mission_timesheet.html:27
 msgid "Total"
 msgstr "Total"
 
-#: staffing/views.py:576
+#: staffing/views.py:577
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
-#: staffing/views.py:677
+#: staffing/views.py:708
+#, fuzzy
+msgid "prod. Rate"
+msgstr "Taux de prod."
+
+#: staffing/views.py:723 templates/staffing/mission_base.html:22
+msgid "Daily rate (€)"
+msgstr "Taux journalier (€)"
+
+#: staffing/views.py:724
 msgid "Prod. rate"
 msgstr "Taux de prod."
 
@@ -1295,10 +1304,6 @@ msgstr "Probabilité :"
 #: templates/staffing/mission_base.html:20
 msgid "Consultants currently implicated in this mission"
 msgstr "Consultants impliqués actuellement dans cette mission"
-
-#: templates/staffing/mission_base.html:22
-msgid "Daily rate (€)"
-msgstr "Taux journalier (€)"
 
 #: templates/staffing/mission_base.html:36
 msgid "Other missions linked to this lead"
