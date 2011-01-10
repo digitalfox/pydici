@@ -632,11 +632,10 @@ def graph_timesheet_rates_bar(request):
         nDays[profilId] = {}
 
     # Gather data
-    timesheets = Timesheet.objects.all()
+    timesheets = Timesheet.objects.select_related().all()
     if timesheets.count() == 0:
         return print_png(fig)
 
-    #TODO: test if select_related give better perf
     for timesheet in timesheets:
         #Using first day of each month as key date
         kdate = date(timesheet.working_date.year, timesheet.working_date.month, 1)
