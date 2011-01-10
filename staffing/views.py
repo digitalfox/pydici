@@ -606,20 +606,25 @@ def graph_timesheet_rates_bar(request):
     natures = [i[0] for i in Mission.MISSION_NATURE] # Mission natures
     kdates = set() # List of uniq month
     nConsultant = {} # Set of working consultant id per month
-    plots = [] # List of plots - needed to add legend
+    avgDailyRate = {} # daily rate sum per month
+    nDays = {} # number of days with valid rate per month
+    plots = [] # List of plots for prod rate - needed to add legend
+    plots2 = [] # List of plots for daily rate - needed to add legend
     colors = itertools.cycle(COLORS)
     holiday_days = [h.day for h in  Holiday.objects.all()]
 
     # Setting up graph
-    fig = Figure(figsize=(12, 8))
+    fig = Figure(figsize=(12, 12))
     fig.set_facecolor("white")
-    ax = fig.add_subplot(111)
+    ax = fig.add_subplot(311) # Main graph for prod rate and days
+    ax2 = fig.add_subplot(312, sharex=ax) # Second graph for avg daily rate
+    fig.subplots_adjust(hspace=0.3)
 
     # Create dict per mission nature
     for nature in natures:
         data[nature] = {}
 
-    # Gathering data
+    # Gather data
     timesheets = Timesheet.objects.all()
     if timesheets.count() == 0:
         return print_png(fig)
@@ -628,13 +633,25 @@ def graph_timesheet_rates_bar(request):
         #Using first day of each month as key date
         kdate = date(timesheet.working_date.year, timesheet.working_date.month, 1)
         kdates.add(kdate)
+        # Init dict with kdate if not already done
+        if not kdate in nConsultant:
+            nConsultant[kdate] = set()
+        if not kdate in avgDailyRate:
+            avgDailyRate[kdate] = 0
+        if not kdate in nDays:
+            nDays[kdate] = 0
+        # Gather data
         if kdate in data[timesheet.mission.nature]:
             data[timesheet.mission.nature][kdate] += timesheet.charge
         else:
             data[timesheet.mission.nature][kdate] = timesheet.charge
-        if not kdate in nConsultant:
-            nConsultant[kdate] = set()
         nConsultant[kdate].add(timesheet.consultant.id)
+        try:
+            fc = FinancialCondition.objects.get(mission=timesheet.mission, consultant=timesheet.consultant)
+            avgDailyRate[kdate] += timesheet.charge * fc.daily_rate
+            nDays[kdate] += timesheet.charge
+        except FinancialCondition.DoesNotExist:
+            pass
 
     # Set bottom of each graph. Starts if [0, 0, 0, ...]
     bottom = [0] * len(kdates)
@@ -656,32 +673,44 @@ def graph_timesheet_rates_bar(request):
         for i in range(len(ydata)):
             bottom[i] += ydata[i] # Update bottom
 
-    # Prod rate
-    ydata = []
+    ydata = []  # Prod rate 
+    y2data = [] # Average daily rate
     for kdate in kdates:
         try:
             if kdate in data["NONPROD"]:
                 ydata.append(100 * data["PROD"][kdate] / (data["PROD"][kdate] + data["NONPROD"][kdate]))
             else:
-                ydata.append(50)
+                ydata.append(100)
         except KeyError:
             ydata.append(0)
+        if kdate in avgDailyRate and kdate in nDays:
+            y2data.append(avgDailyRate[kdate] / nDays[kdate])
+        else:
+            y2data.append(0)
+
         ax.text(kdate, ydata[-1] + 2, "%.1f" % ydata[-1])
+        ax2.text(kdate, y2data[-1] + 2, "%.1f" % y2data[-1])
 
     b = ax.plot(kdates, ydata, '--o', ms=10, lw=2, alpha=0.7, color="green", mfc="green")
     plots.append(b[0])
+    b = ax2.plot(kdates, y2data, '-o', ms=10, lw=2, alpha=0.7, color="red", mfc="red")
+    plots2.append(b[0])
 
-
-    # Add Legend and setup axes
-    ax.set_yticks(range(0, 101, 5))
+    # Add Legend and setup axes    
+    #ax.set_yticks(range(0, 101, 5))
+    ax.set_ylim(ymax=110)
     ax.set_xticks(kdates)
-    ax.set_xticklabels(kdates)
+    ax2.set_xticks(kdates)
+    ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
     ax.set_ylabel("%")
-    ax.set_ylim(ymax=int(max(bottom)) + 10)
+    ax2.set_ylabel(u"€")
     ax.legend(plots, [i[1] for i in Mission.MISSION_NATURE] + [_("Prod. rate")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
               ncol=4, borderaxespad=0.)
+    ax2.legend(plots2, [_("Daily rate")],
+              bbox_to_anchor=(0., 1.02, 1., .102), loc=4, ncol=4, borderaxespad=0.)
+    ax.legend()
     ax.grid(True)
-    fig.autofmt_xdate()
+    ax2.grid(True)
 
     return print_png(fig)
