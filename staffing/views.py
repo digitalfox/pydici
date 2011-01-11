@@ -616,10 +616,10 @@ def graph_timesheet_rates_bar(request):
     profils = dict(ConsultantProfile.objects.all().values_list("id", "name")) # Consultant Profiles
 
     # Setting up graph
-    fig = Figure(figsize=(12, 12))
+    fig = Figure(figsize=(12, 8))
     fig.set_facecolor("white")
-    ax = fig.add_subplot(311) # Main graph for prod rate and days
-    ax2 = fig.add_subplot(312, sharex=ax) # Second graph for avg daily rate
+    ax = fig.add_subplot(211) # Main graph for prod rate and days
+    ax2 = fig.add_subplot(212, sharex=ax) # Second graph for avg daily rate
     fig.subplots_adjust(hspace=0.3)
 
     # Create dict per mission nature
