@@ -20,10 +20,10 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
     def get_queryset(self):
         if not hasattr(self, '_queryset'):
-            lastMonth = datetime.today() - timedelta(days=30)
+            beforeLastMonth = datetime.today() - timedelta(days=60)
             qs = super(ConsultantStaffingInlineFormset, self).get_queryset()
             qs = qs.filter(mission__active=True) # Remove archived mission
-            qs = qs.exclude(Q(staffing_date__lte=lastMonth) &
+            qs = qs.exclude(Q(staffing_date__lte=beforeLastMonth) &
                       ~ Q(mission__nature="PROD")) # Remove past non prod mission
             self._queryset = qs
         return self._queryset
