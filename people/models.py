@@ -9,6 +9,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
+from datetime import date, timedelta
+
 from pydici.core.utils import capitalize
 from pydici.core.models import Subsidiary
 
@@ -46,8 +48,39 @@ class Consultant(models.Model):
     def active_missions(self):
         """Returns consultant active missions based on forecast staffing"""
         # Get Mission class by introspecting FK instead of import to avoid circular imports
-        Mission = self.manager.staffing_set.model.mission.field.related.parent_model
+        Mission = self.staffing_set.model.mission.field.related.parent_model
         return Mission.objects.filter(active=True).filter(staffing__consultant=self).distinct()
+
+    def forecasted_missions(self, month=None):
+        """Returns consultant active missions on given month based on forecasted staffing
+        If month is not defined, current month is used"""
+        if month:
+            month = month.replace(day=1)
+        else:
+            month = date.today().replace(day=1)
+        nextMonth = (month + timedelta(40)).replace(day=1)
+        # Get Mission class by introspecting FK instead of import to avoid circular imports
+        Mission = self.staffing_set.model.mission.field.related.parent_model
+        missions = Mission.objects.filter(active=True)
+        missions = missions.filter(staffing__staffing_date__gte=month, staffing__staffing_date__lt=nextMonth, staffing__consultant=self)
+        missions = missions.distinct()
+        print missions
+        return missions
+
+    def timesheet_missions(self, month=None):
+        """Returns consultant active missions on given month based on timesheet
+        If month is not defined, current month is used"""
+        if month:
+            month = month.replace(day=1)
+        else:
+            month = date.today().replace(day=1)
+        nextMonth = (month + timedelta(40)).replace(day=1)
+        # Get Mission class by introspecting FK instead of import to avoid circular imports
+        Mission = self.staffing_set.model.mission.field.related.parent_model
+        missions = Mission.objects.filter(active=True)
+        missions = missions.filter(timesheet__working_date__gte=month, timesheet__working_date__lt=nextMonth, timesheet__consultant=self)
+        missions = missions.distinct()
+        return missions
 
     class Meta:
         ordering = ["name", ]

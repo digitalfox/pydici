@@ -277,12 +277,12 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     tmpDate = month
     days = [] # List of days in month
     currentMonth = tmpDate.month
-    while tmpDate.month == currentMonth:
+    while tmpDate.month == month.month:
         days.append(tmpDate)
         tmpDate += day
 
-    previous_date = month - timedelta(days=5)
-    next_date = month + timedelta(days=40)
+    previous_date = (month - timedelta(days=5)).replace(day=1)
+    next_date = (month + timedelta(days=40)).replace(day=1)
 
     consultant = Consultant.objects.get(id=consultant_id)
     readOnly = False # Wether timesheet is readonly or not
@@ -295,7 +295,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
 
         # A consultant can only edit his own timesheet on current month and 5 days after
-        if (date.today() - next_date.replace(day=1)).days > 5:
+        if (date.today() - next_date).days > 5:
             readOnly = True
 
 
@@ -303,14 +303,19 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     staffings = staffings.filter(staffing_date__gte=days[0]).filter(staffing_date__lte=days[-1])
     staffings = staffings.filter(mission__probability=100)
     for staffing in staffings:
-        missions.add(staffing.mission)
         if staffing.mission.id in forecastTotal:
             forecastTotal[staffing.mission.id] += staffing.charge
         else:
             forecastTotal[staffing.mission.id] = staffing.charge
 
-    # Sort missions
+    # Missions with already defined timesheet or forecasted for this month
+    missions = set(list(consultant.forecasted_missions(month=month)) + list(consultant.timesheet_missions(month=month)))
     missions = sortMissions(missions)
+
+    # Add zero forecast for mission with active timesheet but no more forecast
+    for mission in missions:
+        if not mission.id in forecastTotal:
+            forecastTotal[mission.id] = 0
 
     if "csv" in request.GET:
         return consultant_csv_timesheet(request, consultant, days, month, missions)

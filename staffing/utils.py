@@ -18,7 +18,7 @@ def gatherTimesheetData(consultant, missions, month):
     """Gather existing timesheet timesheetData
     @returns: (timesheetData, timesheetTotal, warning)
     timesheetData represent timesheet form post timesheetData as a dict
-    timesheetTotal is a fffddict of total charge (key is mission id)
+    timesheetTotal is a dict of total charge (key is mission id)
     warning is a list of 0 (ok) or 1 (surbooking) or 2 (no data). One entry per day"""
     timesheetData = {}
     timesheetTotal = {}
