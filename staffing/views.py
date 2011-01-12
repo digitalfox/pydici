@@ -688,6 +688,7 @@ def graph_timesheet_rates_bar(request):
         y2data[profilId] = []
 
     for kdate in kdates:
+        # Days repart per type
         try:
             if kdate in data["NONPROD"]:
                 ydata.append(100 * data["PROD"][kdate] / (data["PROD"][kdate] + data["NONPROD"][kdate]))
@@ -697,12 +698,13 @@ def graph_timesheet_rates_bar(request):
             ydata.append(0)
         ax.text(kdate, ydata[-1] + 4, "%.1f" % ydata[-1])
 
+        # Rate per profil
         for profilId in profils.keys():
             if kdate in avgDailyRate[profilId] and kdate in nDays[profilId] and nDays[profilId][kdate] > 0:
                 y2data[profilId].append(avgDailyRate[profilId][kdate] / nDays[profilId][kdate])
+                ax2.text(kdate, y2data[profilId][-1] + 50, "%.1f" % y2data[profilId][-1])
             else:
                 y2data[profilId].append(0)
-            ax2.text(kdate, y2data[profilId][-1] + 50, "%.1f" % y2data[profilId][-1])
 
     b = ax.plot(kdates, ydata, '--o', ms=10, lw=2, alpha=0.7, color="green", mfc="green")
     plots.append(b[0])
@@ -714,7 +716,9 @@ def graph_timesheet_rates_bar(request):
 
     # Add Legend and setup axes
     ax.set_ylim(ymax=115)
-    ax2.set_ylim(ymax=max([max(i) for i in y2data.values()]) + 200)
+    # ymin is set as the min non null rate minus 200. Sum is used to flatten list of list 
+    ax2.set_ylim(ymin=min([i for i in sum(y2data.values(), []) if i > 0]) - 200,
+                 ymax=max([max(i) for i in y2data.values()]) + 200)
     ax.set_xticks(kdates)
     ax2.set_xticks(kdates)
     ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
@@ -725,7 +729,6 @@ def graph_timesheet_rates_bar(request):
               ncol=4, borderaxespad=0.)
     ax2.legend(plots2, [v for k, v in profils.items() if sum(y2data[k]) != 0],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4, ncol=4, borderaxespad=0.)
-    ax.legend()
     ax.grid(True)
     ax2.grid(True)
 
