@@ -7,11 +7,11 @@ appropriate to live in Staffing models or view
 @license: GPL v3 or newer
 """
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from django.db import transaction
 
-from pydici.staffing.models import Timesheet, Mission, LunchTicket
+from pydici.staffing.models import Timesheet, Mission, LunchTicket, Holiday
 from pydici.core.utils import month_days
 
 def gatherTimesheetData(consultant, missions, month):
@@ -51,6 +51,12 @@ def gatherTimesheetData(consultant, missions, month):
             warning.append(0)
         else: # warning (no data, or half day)
             warning.append(2)
+    # Don't emit warning for no data during week ends and holidays
+    holiday_days = holidayDays(month)
+    for day in daysOfMonth(month):
+        if day.isoweekday() in (6, 7) or day in holiday_days:
+            warning[day.day - 1] = None
+
     return (timesheetData, timesheetTotal, warning)
 
 @transaction.commit_on_success
@@ -139,3 +145,24 @@ def sortMissions(missions):
     prodMissions.sort(key=lambda x: unicode(x))
 
     return prodMissions + nonProdMissions + holidaysMissions
+
+def holidayDays(month=None):
+    """
+    @param month: month (datetime) to consider for holidays. Current month if None
+    @return: list of holidays days of given month """
+    if not month:
+        month = date.today()
+    month = month.replace(day=1)
+    nextMonth = (month + timedelta(40)).replace(day=1)
+    return [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth)]
+
+def daysOfMonth(month):
+    """Return list of days (datetime object) for given month (datetime object of any day in the month"""
+    days = []
+    day = timedelta(1)
+    month = month.replace(day=1)
+    tmpDate = month
+    while tmpDate.month == month.month:
+        days.append(tmpDate)
+        tmpDate += day
+    return days

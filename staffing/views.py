@@ -32,7 +32,8 @@ from pydici.leads.models import Lead
 from pydici.people.models import ConsultantProfile
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
 from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
-from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, sortMissions
+from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
+                                  sortMissions, holidayDays, daysOfMonth
 
 def missions(request, onlyActive=True):
     """List of missions"""
@@ -266,20 +267,15 @@ def deactivate_mission(request, mission_id):
 
 def consultant_timesheet(request, consultant_id, year=None, month=None):
     """Consultant timesheet"""
+    # We use the first day to represent month
     if year and month:
         month = date(int(year), int(month), 1)
     else:
-        month = date.today().replace(day=1) # We use the first day to represent month
+        month = date.today().replace(day=1)
 
     forecastTotal = {} # forecast charge (value) per mission (key is mission.id)
-    missions = set()   # Set of all consultant missions for this month
-    day = timedelta(1)
-    tmpDate = month
-    days = [] # List of days in month
-    currentMonth = tmpDate.month
-    while tmpDate.month == month.month:
-        days.append(tmpDate)
-        tmpDate += day
+    missions = set()   # Set of all consultant missions for this month    
+    days = daysOfMonth(month) # List of days in month
 
     previous_date = (month - timedelta(days=5)).replace(day=1)
     next_date = (month + timedelta(days=40)).replace(day=1)
@@ -322,7 +318,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
 
     timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
 
-    holiday_days = [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=next_date)]
+    holiday_days = holidayDays(month=month)
 
     if request.method == 'POST': # If the form has been submitted...
         if readOnly:
@@ -346,11 +342,6 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     # Compute workings days of this month and compare it to declared days
     wDays = working_days(month, holiday_days)
     wDaysBalance = wDays - (sum(timesheetTotal.values()) - timesheetTotal["ticket"])
-
-    # Don't emit warning for no data during week ends and holydays
-    for day in days:
-        if day.isoweekday() in (6, 7) or day in holiday_days:
-            warning[day.day - 1] = None
 
     return render_to_response("staffing/consultant_timesheet.html", {
                                 "consultant": consultant,
