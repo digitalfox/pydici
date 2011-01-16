@@ -130,3 +130,5 @@ if PYDICI_PREFIX:
 else:
     LOGIN_URL = "/forbiden"
 
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
