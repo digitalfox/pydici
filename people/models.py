@@ -70,7 +70,7 @@ class Consultant(models.Model):
         return missions
 
     def timesheet_missions(self, month=None):
-        """Returns consultant active missions on given month based on timesheet
+        """Returns consultant missions on given month based on timesheet
         If month is not defined, current month is used"""
         if month:
             month = month.replace(day=1)
@@ -79,8 +79,7 @@ class Consultant(models.Model):
         nextMonth = (month + timedelta(40)).replace(day=1)
         # Get Mission class by introspecting FK instead of import to avoid circular imports
         Mission = self.staffing_set.model.mission.field.related.parent_model
-        missions = Mission.objects.filter(active=True)
-        missions = missions.filter(timesheet__working_date__gte=month, timesheet__working_date__lt=nextMonth, timesheet__consultant=self)
+        missions = Mission.objects.filter(timesheet__working_date__gte=month, timesheet__working_date__lt=nextMonth, timesheet__consultant=self)
         missions = missions.distinct()
         return missions
 
