@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-10 21:39+0100\n"
-"PO-Revision-Date: 2011-01-07 22:58+0100\n"
+"POT-Creation-Date: 2011-01-16 18:39+0100\n"
+"PO-Revision-Date: 2011-01-16 18:39+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Lokalize 1.0\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: batch/timesheet_check.py:82
+msgid "[pydici] Your timesheet is not correct"
+msgstr "[pydici] Votre pointage n'est pas correct"
+
+#: batch/timesheet_check.py:85
+msgid "[pydici] User has no email"
+msgstr "[pydici] L'utilisateur n'a pas de d'adresse de courriel"
+
+#: batch/timesheet_check.py:86
+#, python-format
+msgid ""
+"User %s has an incomplete timesheet but cannot be warned because he has no "
+"email."
+msgstr ""
+"L'utilisateur %s a un pointage incomplet mais il n'est pas possible de "
+"l'avertir car il n'a pas d'adresse de courriel."
 
 #: billing/forms.py:19 billing/models.py:24 leads/models.py:133
 #: staffing/models.py:34 templates/billing/bill_review.html:142
@@ -92,13 +109,13 @@ msgid "Bill"
 msgstr "Facture"
 
 #: core/models.py:16 crm/models.py:21 crm/models.py:42 leads/models.py:43
-#: leads/views.py:90 people/models.py:17 people/models.py:59
+#: leads/views.py:90 people/models.py:21 people/models.py:102
 #: templates/staffing/consultant_base.html:18
 #: templates/staffing/missions.html:21
 msgid "Name"
 msgstr "Nom"
 
-#: core/models.py:21 people/models.py:31 people/models.py:61
+#: core/models.py:21 people/models.py:35 people/models.py:104
 msgid "Subsidiary"
 msgstr "Filiale"
 
@@ -134,7 +151,7 @@ msgstr "Entreprise"
 msgid "Client organisation"
 msgstr "Département"
 
-#: crm/models.py:44 people/models.py:64
+#: crm/models.py:44 people/models.py:107
 msgid "Phone"
 msgstr "Téléphone"
 
@@ -267,7 +284,7 @@ msgstr ""
 msgid "Responsible"
 msgstr "Responsable"
 
-#: leads/forms.py:20 leads/models.py:47 leads/views.py:91 people/models.py:75
+#: leads/forms.py:20 leads/models.py:47 leads/views.py:91 people/models.py:118
 #: templates/core/index.html:21 templates/core/index.html.py:46
 #: templates/core/index.html:70 templates/core/index.html.py:94
 #: templates/leads/review.html:24 templates/leads/review.html.py:53
@@ -337,8 +354,8 @@ msgstr "Échéance"
 msgid "Creation"
 msgstr "Création"
 
-#: leads/models.py:58 staffing/models.py:35 staffing/views.py:378
-#: staffing/views.py:488
+#: leads/models.py:58 staffing/models.py:35 staffing/views.py:373
+#: staffing/views.py:483
 msgid "Deal id"
 msgstr "N° affaire"
 
@@ -378,33 +395,33 @@ msgstr "C.A. (k€)"
 msgid "Lead %(id)s was sent to %(mail)s !"
 msgstr "L'affaire %(id)s a été envoyée à %(mail)s !"
 
-#: people/models.py:18
+#: people/models.py:22
 msgid "Level"
 msgstr "Niveau"
 
-#: people/models.py:24
+#: people/models.py:28
 msgid "Consultant profile"
 msgstr "Profile du consultant"
 
-#: people/models.py:32 staffing/models.py:25
+#: people/models.py:36 staffing/models.py:25
 msgid "Productive"
 msgstr "Productif"
 
-#: people/models.py:33 people/models.py:62 staffing/models.py:38
+#: people/models.py:37 people/models.py:105 staffing/models.py:38
 msgid "Active"
 msgstr "Active"
 
-#: people/models.py:35
+#: people/models.py:39
 msgid "Profil"
 msgstr "Profile"
 
-#: people/models.py:54 staffing/forms.py:44
+#: people/models.py:97 staffing/forms.py:44
 #: templates/staffing/mission_base.html:22
 #: templates/staffing/mission_staffing.html:13
 msgid "Consultant"
 msgstr "Consultant"
 
-#: people/models.py:76
+#: people/models.py:119
 msgid "Salesmen"
 msgstr "Commerciaux"
 
@@ -426,14 +443,14 @@ msgid "Last forecast staffing updated or created about myself"
 msgstr ""
 "Dernières mise à jour ou création de staffing prévisionnel me concernant"
 
-#: staffing/forms.py:34 staffing/models.py:151 staffing/views.py:378
-#: staffing/views.py:488 templates/leads/lead_detail.html:62
+#: staffing/forms.py:34 staffing/models.py:151 staffing/views.py:373
+#: staffing/views.py:483 templates/leads/lead_detail.html:62
 #: templates/staffing/consultant_staffing.html:15
 #: templates/staffing/mission_base.html:38
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/forms.py:90 staffing/views.py:523
+#: staffing/forms.py:90 staffing/views.py:518
 msgid "Days without lunch ticket"
 msgstr "Jours sans ticket restaurant"
 
@@ -513,38 +530,33 @@ msgstr "Condition financière"
 msgid "Price updated from mission"
 msgstr "Prix mis à jour à partir de la mission"
 
-#: staffing/views.py:127
+#: staffing/views.py:128
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:370 staffing/views.py:547
+#: staffing/views.py:365 staffing/views.py:542
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:379
+#: staffing/views.py:374
 msgid "total"
 msgstr "total"
 
-#: staffing/views.py:510 templates/leads/lead_detail.html:83
+#: staffing/views.py:505 templates/leads/lead_detail.html:83
 #: templates/staffing/consultant_timesheet.html:23
 #: templates/staffing/mission_timesheet.html:27
 msgid "Total"
 msgstr "Total"
 
-#: staffing/views.py:577
+#: staffing/views.py:572
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
-#: staffing/views.py:708
-#, fuzzy
-msgid "prod. Rate"
-msgstr "Taux de prod."
-
-#: staffing/views.py:723 templates/staffing/mission_base.html:22
+#: staffing/views.py:721 templates/staffing/mission_base.html:22
 msgid "Daily rate (€)"
 msgstr "Taux journalier (€)"
 
-#: staffing/views.py:724
+#: staffing/views.py:722
 msgid "Prod. rate"
 msgstr "Taux de prod."
 
@@ -784,6 +796,45 @@ msgstr "Mes actions"
 #: templates/admin/index.html:58
 msgid "None available"
 msgstr "Aucun(e) disponible"
+
+#: templates/batch/timesheet_warning_email.txt:3
+#, python-format
+msgid ""
+"\n"
+"Hello %(consultant)s,\n"
+"\n"
+"This is an automatic email from the pydici software application.\n"
+"\n"
+"Your timesheet for %(month)s is not correct:"
+msgstr ""
+"\n"
+"Bonjour %(consultant)s,\n"
+"\n"
+"Ceci est un courriel automatique de l'application pydici.\n"
+"\n"
+"Votre pointage pour le mois de %(month)s n'est pas correct :"
+
+#: templates/batch/timesheet_warning_email.txt:9
+#, python-format
+msgid "- days incomplete: %(incomplete_days)s"
+msgstr "- %(incomplete_days)s jour(s) incomplet(s)"
+
+#: templates/batch/timesheet_warning_email.txt:10
+#, python-format
+msgid "- days in surbooking: %(surbooking_days)s"
+msgstr "- %(surbooking_days)s jour(s) en dépassement"
+
+#: templates/batch/timesheet_warning_email.txt:11
+msgid ""
+"\n"
+"Please correct your timesheet quickly.\n"
+"\n"
+"Regards\n"
+msgstr ""
+"\n"
+"Merci de corriger votre pointage rapidement.\n"
+"\n"
+"Cordialement\n"
 
 #: templates/billing/_lead_billing.html:26
 msgid "No bill yet"
@@ -1381,6 +1432,10 @@ msgstr "Retour à la page d'accueil"
 #: templates/staffing/pdc_review.html:94
 msgid "Production rates review"
 msgstr "Suivi du taux de production"
+
+#, fuzzy
+#~ msgid "prod. Rate"
+#~ msgstr "Taux de prod."
 
 #, fuzzy
 #~ msgid "Done (days)"
