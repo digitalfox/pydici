@@ -8,6 +8,8 @@ Database access layer for pydici people module
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.contrib.admin.models import User
+from django.db.models import Q
 
 from datetime import date, timedelta
 
@@ -81,6 +83,14 @@ class Consultant(models.Model):
         missions = missions.filter(timesheet__working_date__gte=month, timesheet__working_date__lt=nextMonth, timesheet__consultant=self)
         missions = missions.distinct()
         return missions
+
+    def getUser(self):
+        """Return django user behind this consultant
+        Current algorithm check only for equal trigramme
+        First match is returned"""
+        users = User.objects.filter(username__iexact=self.trigramme)
+        if users.count() >= 1:
+            return users[0]
 
     class Meta:
         ordering = ["name", ]
