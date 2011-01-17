@@ -15,23 +15,23 @@
 <div id="content-main">
 	<h1>
 	<a href='{% url pdcreview year=previous_slice_date|date:"Y",month=previous_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
-	Revue du plan de charge
+	{% trans "Workload shedule review" %}
 	<a href='{% url pdcreview year=next_slice_date|date:"Y",month=next_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
 	</h1>
 {% if projected %}
-    <strong>Projections de staffing prises en compte </strong>
-    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby={{groupby}}'><em>enlever les projections</em></a>)
+    <strong>{% trans "With staffing projection" %}</strong>
+    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby={{groupby}}'><em>{% trans "remove projections" %}</em></a>)
 {% else %}
-    <strong>Projections de staffing <em>non</em> prises en compte </strong>
-    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby={{groupby}};projected'><em>ajouter les projections</em></a>)
+    <strong>{% trans "Without staffing projection" %}</strong>
+    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby={{groupby}};projected'><em>{% trans "add projections" %}</em></a>)
 {% endif %}
 <br>
 {% ifequal groupby "manager" %}
-    <strong>Groupement par manager</strong>
-    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby=position;projected'><em>grouper par position</em></a>)
+    <strong>{% trans "Grouped by manager" %}</strong>
+    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby=position;projected'><em>{% trans "group by level" %}</em></a>)
 {% else %}
-    <strong>Groupement par position</strong>
-    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby=manager;projected'><em>grouper par manager</em></a>)
+    <strong>{% trans "Grouped by level" %}</strong>
+    (<a href='{% url pdcreview year=start_date|date:"Y",month=start_date|date:"m" %}/?groupby=manager;projected'><em>{% trans "group by manager" %}</em></a>)
 {% endifequal %}
 <br>
 <br>
@@ -45,15 +45,15 @@
 </tr>
     <th></th>
     {% for month in months %}
-        <th style="border-left:1px solid #C3C3C3;">prod</th>
-        <th>imprd</th>
-        <th>cngs</th>
-        <th>disp</th>
+        <th style="border-left:1px solid #C3C3C3;">{% trans "prod" %}</th>
+        <th>{% trans "unprod" %}</th>
+        <th>{% trans "hol." %}</th>
+        <th>{% trans "avai." %}</th>
     {% endfor %}
-    <th style="border-left:1px solid #C3C3C3;">Clients</th>
+    <th style="border-left:1px solid #C3C3C3;">{% trans "Clients" %}</th>
 </tr>
 <tr>
-    <th>Taux (%)</th>
+    <th>{% trans "Rates"%} (%)</th>
     {% for month_rates in rates %}
         <th style="border-left:2px solid #C3C3C3;">{{ month_rates|join:" %</th><th>" }} %</th>
     {% endfor %}
@@ -61,7 +61,7 @@
 {% for consultant, charges in staffing %}
     {% ifequal groupby "manager" %}
 	    {% ifchanged consultant.manager %}
-	        <tr><th>Équipe {{consultant.manager}}</th></tr>
+	        <tr><th>{% blocktrans with consultant.manager as manager %}{{manager}} staff{% endblocktrans %}</th></tr>
 	    {% endifchanged %}
 	{% endifequal %}
     {% ifequal groupby "position" %}
@@ -80,13 +80,13 @@
     </tr>
 {% endfor %}
 <tr>
-    <th>Totaux</th>
+    <th>{% trans "Totals" %}</th>
     {% for month_total in total %}
         <th style="border-left:2px solid #C3C3C3;">{{ month_total|join:"</th><th>" }}</th>
     {% endfor %}
 </tr>
 <tr>
-    <th>Taux (%)</th>
+    <th>{% trans "Rates" %} (%)</th>
     {% for month_rates in rates %}
         <th style="border-left:2px solid #C3C3C3;">{{ month_rates|join:" %</th><th>" }} %</th>
     {% endfor %}
