@@ -22,7 +22,8 @@ from django.core.management import setup_environ, execute_manager
 import settings
 setup_environ(settings)
 
-# Django import 
+# Django import
+from django.core import urlresolvers
 from django.core.mail import send_mass_mail
 from django.utils.translation import ugettext as _
 from django.template.loader import get_template
@@ -54,6 +55,7 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
         recipients = []
         missions = consultant.timesheet_missions(month=currentMonth)
         timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, currentMonth)
+        url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("pydici.staffing.views.consultant_timesheet", args=[consultant.id, currentMonth.year, currentMonth.month])
         # Truncate if day parameter was given
         if days:
             warning = warning[:days]
@@ -72,13 +74,13 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
                 if managerUser and managerUser.email:
                     recipients.append(managerUser.email)
 
-
             if recipients:
                 msgText = emailTemplate.render(Context(
                                             {"month": currentMonth,
                                              "surbooking_days" : surbookingDays,
                                              "incomplete_days" : incompleteDays,
-                                             "consultant" : consultant }))
+                                             "consultant" : consultant,
+                                             "url": url }))
                 mails.append(((_("[pydici] Your timesheet is not correct"), msgText,
                           pydici.settings.LEADS_MAIL_FROM, recipients)))
             else:

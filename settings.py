@@ -18,6 +18,11 @@ MANAGERS = ADMINS
 # Use '' for no prerix. Index url will be http://my-site.com/
 PYDICI_PREFIX = "pydici"
 
+# Host base URL (without any prefix and trailing slash) used for absolute link
+# used in email
+# Ex. "http://www.my-site.com" or "http://localhost:8080"
+PYDICI_HOST = "http://localhost:8888"
+
 LEADS_MAIL_FROM = "sebastien.renard@digitalfox.org"
 LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
 LEADS_MAIL_SMTP = "www.digitalfox.org"

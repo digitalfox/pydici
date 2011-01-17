@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-17 19:36+0100\n"
-"PO-Revision-Date: 2011-01-17 19:33+0100\n"
+"POT-Creation-Date: 2011-01-17 21:25+0100\n"
+"PO-Revision-Date: 2011-01-17 21:07+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,15 +17,15 @@ msgstr ""
 "X-Generator: Lokalize 1.0\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: batch/timesheet_check.py:82
+#: batch/timesheet_check.py:84
 msgid "[pydici] Your timesheet is not correct"
 msgstr "[pydici] Votre pointage n'est pas correct"
 
-#: batch/timesheet_check.py:85
+#: batch/timesheet_check.py:87
 msgid "[pydici] User has no email"
 msgstr "[pydici] L'utilisateur n'a pas de d'adresse de courriel"
 
-#: batch/timesheet_check.py:86
+#: batch/timesheet_check.py:88
 #, python-format
 msgid ""
 "User %s has an incomplete timesheet but cannot be warned because he has no "
@@ -799,7 +799,7 @@ msgstr "Mes actions"
 msgid "None available"
 msgstr "Aucun(e) disponible"
 
-#: templates/batch/timesheet_warning_email.txt:3
+#: templates/batch/timesheet_warning_email.txt:1
 #, python-format
 msgid ""
 "\n"
@@ -816,25 +816,28 @@ msgstr ""
 "\n"
 "Votre pointage pour le mois de %(month)s n'est pas correct :"
 
-#: templates/batch/timesheet_warning_email.txt:9
+#: templates/batch/timesheet_warning_email.txt:7
 #, python-format
 msgid "- days incomplete: %(incomplete_days)s"
 msgstr "- %(incomplete_days)s jour(s) incomplet(s)"
 
-#: templates/batch/timesheet_warning_email.txt:10
+#: templates/batch/timesheet_warning_email.txt:8
 #, python-format
 msgid "- days in surbooking: %(surbooking_days)s"
 msgstr "- %(surbooking_days)s jour(s) en dépassement"
 
-#: templates/batch/timesheet_warning_email.txt:11
+#: templates/batch/timesheet_warning_email.txt:9
+#, python-format
 msgid ""
 "\n"
-"Please correct your timesheet quickly.\n"
+"Please correct your timesheet quickly at the following address:\n"
+"%(url)s\n"
 "\n"
 "Regards\n"
 msgstr ""
 "\n"
-"Merci de corriger votre pointage rapidement.\n"
+"Merci de corriger votre pointage rapidement à l'adresse suivante :\n"
+"%(url)s\n"
 "\n"
 "Cordialement\n"
 
