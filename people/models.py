@@ -66,7 +66,6 @@ class Consultant(models.Model):
         missions = Mission.objects.filter(active=True)
         missions = missions.filter(staffing__staffing_date__gte=month, staffing__staffing_date__lt=nextMonth, staffing__consultant=self)
         missions = missions.distinct()
-        print missions
         return missions
 
     def timesheet_missions(self, month=None):

@@ -76,7 +76,6 @@ def saveTimesheetData(consultant, month, data, oldData):
         working_date = month.replace(day=day)
         if missionId == "ticket":
             # Lunch ticket handling
-            print "ticket"
             lunchTicket, created = LunchTicket.objects.get_or_create(consultant=consultant,
                                                                     lunch_date=working_date)
             if charge:
