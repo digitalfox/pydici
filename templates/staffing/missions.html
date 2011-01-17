@@ -8,6 +8,14 @@
 
 {% block breadcrumbs %}{% endblock %}
 
+{% block title %}
+	{% if all %}
+	    {% trans "All missions" %}
+	{% else %}
+	    {% trans "Active missions" %}
+	{% endif %}
+{% endblock %}
+
 {% block content %}
 
 <div id="content-main">

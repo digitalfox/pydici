@@ -7,6 +7,8 @@
 
 {% block breadcrumbs %}{% endblock %}
 
+{% block title %}{% trans "Current leads review" %}{% endblock %}
+
 {% block content %}
 <center>
 <a href="{% url pydici.leads.views.graph_stat_bar %}"><img src="{% url pydici.leads.views.graph_stat_bar %}" height="400"></a>
