@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-17 21:25+0100\n"
-"PO-Revision-Date: 2011-01-17 21:07+0100\n"
+"POT-Creation-Date: 2011-01-18 18:47+0100\n"
+"PO-Revision-Date: 2011-01-18 18:47+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,15 +17,15 @@ msgstr ""
 "X-Generator: Lokalize 1.0\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: batch/timesheet_check.py:84
+#: batch/timesheet_check.py:85
 msgid "[pydici] Your timesheet is not correct"
 msgstr "[pydici] Votre pointage n'est pas correct"
 
-#: batch/timesheet_check.py:87
+#: batch/timesheet_check.py:88
 msgid "[pydici] User has no email"
 msgstr "[pydici] L'utilisateur n'a pas de d'adresse de courriel"
 
-#: batch/timesheet_check.py:88
+#: batch/timesheet_check.py:89
 #, python-format
 msgid ""
 "User %s has an incomplete timesheet but cannot be warned because he has no "
@@ -109,13 +109,13 @@ msgid "Bill"
 msgstr "Facture"
 
 #: core/models.py:16 crm/models.py:21 crm/models.py:42 leads/models.py:43
-#: leads/views.py:90 people/models.py:21 people/models.py:101
+#: leads/views.py:90 people/models.py:21 people/models.py:100
 #: templates/staffing/consultant_base.html:20
 #: templates/staffing/missions.html:29
 msgid "Name"
 msgstr "Nom"
 
-#: core/models.py:21 people/models.py:35 people/models.py:103
+#: core/models.py:21 people/models.py:35 people/models.py:102
 msgid "Subsidiary"
 msgstr "Filiale"
 
@@ -151,7 +151,7 @@ msgstr "Entreprise"
 msgid "Client organisation"
 msgstr "Département"
 
-#: crm/models.py:44 people/models.py:106
+#: crm/models.py:44 people/models.py:105
 msgid "Phone"
 msgstr "Téléphone"
 
@@ -284,7 +284,7 @@ msgstr ""
 msgid "Responsible"
 msgstr "Responsable"
 
-#: leads/forms.py:20 leads/models.py:47 leads/views.py:91 people/models.py:117
+#: leads/forms.py:20 leads/models.py:47 leads/views.py:91 people/models.py:116
 #: templates/core/index.html:21 templates/core/index.html.py:46
 #: templates/core/index.html:70 templates/core/index.html.py:94
 #: templates/leads/review.html:26 templates/leads/review.html.py:55
@@ -407,7 +407,7 @@ msgstr "Profile du consultant"
 msgid "Productive"
 msgstr "Productif"
 
-#: people/models.py:37 people/models.py:104 staffing/models.py:38
+#: people/models.py:37 people/models.py:103 staffing/models.py:38
 msgid "Active"
 msgstr "Active"
 
@@ -415,13 +415,13 @@ msgstr "Active"
 msgid "Profil"
 msgstr "Profile"
 
-#: people/models.py:96 staffing/forms.py:44
+#: people/models.py:95 staffing/forms.py:44
 #: templates/staffing/mission_base.html:24
 #: templates/staffing/mission_staffing.html:13
 msgid "Consultant"
 msgstr "Consultant"
 
-#: people/models.py:118
+#: people/models.py:117
 msgid "Salesmen"
 msgstr "Commerciaux"
 
@@ -806,27 +806,42 @@ msgid ""
 "Hello %(consultant)s,\n"
 "\n"
 "This is an automatic email from the pydici software application.\n"
-"\n"
-"Your timesheet for %(month)s is not correct:"
 msgstr ""
 "\n"
 "Bonjour %(consultant)s,\n"
 "\n"
 "Ceci est un courriel automatique de l'application pydici.\n"
+
+#: templates/batch/timesheet_warning_email.txt:5
+#, python-format
+msgid ""
+"\n"
+"Your timesheet for the %(days)s days of %(month)s is not correct:"
+msgstr ""
+"\n"
+"Votre pointage pour les %(days)s premiers jours du mois de %(month)s n'est "
+"pas correct :"
+
+#: templates/batch/timesheet_warning_email.txt:6
+#, python-format
+msgid ""
+"\n"
+"Your timesheet for %(month)s is not correct:"
+msgstr ""
 "\n"
 "Votre pointage pour le mois de %(month)s n'est pas correct :"
 
-#: templates/batch/timesheet_warning_email.txt:7
+#: templates/batch/timesheet_warning_email.txt:8
 #, python-format
 msgid "- days incomplete: %(incomplete_days)s"
 msgstr "- %(incomplete_days)s jour(s) incomplet(s)"
 
-#: templates/batch/timesheet_warning_email.txt:8
+#: templates/batch/timesheet_warning_email.txt:9
 #, python-format
 msgid "- days in surbooking: %(surbooking_days)s"
 msgstr "- %(surbooking_days)s jour(s) en dépassement"
 
-#: templates/batch/timesheet_warning_email.txt:9
+#: templates/batch/timesheet_warning_email.txt:10
 #, python-format
 msgid ""
 "\n"

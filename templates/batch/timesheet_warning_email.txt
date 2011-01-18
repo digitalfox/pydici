@@ -1,9 +1,10 @@
-{% load i18n %}{% autoescape off %}{% blocktrans with month|date:"F Y" as month %}
+{% load i18n %}{% autoescape off %}{% blocktrans %}
 Hello {{ consultant }},
 
 This is an automatic email from the pydici software application.
-
-Your timesheet for {{ month }} is not correct:{% endblocktrans %}
+{% endblocktrans %}{% if days %}{% blocktrans with month|date:"F Y" as month %}
+Your timesheet for the {{ days }} days of {{ month }} is not correct:{% endblocktrans %}{% else %}{% blocktrans with month|date:"F Y" as month %}
+Your timesheet for {{ month }} is not correct:{% endblocktrans %}{% endif %}
 {% if incomplete_days %}{% blocktrans %}- days incomplete: {{ incomplete_days }}{% endblocktrans %}{% endif %}
 {% if surbooking_days %}{% blocktrans %}- days in surbooking: {{ surbooking_days }}{% endblocktrans %}{% endif %}
 {% blocktrans %}

@@ -80,6 +80,7 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
                                              "surbooking_days" : surbookingDays,
                                              "incomplete_days" : incompleteDays,
                                              "consultant" : consultant,
+                                             "days" : days,
                                              "url": url }))
                 mails.append(((_("[pydici] Your timesheet is not correct"), msgText,
                           pydici.settings.LEADS_MAIL_FROM, recipients)))
