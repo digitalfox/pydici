@@ -59,9 +59,11 @@ class Mission(models.Model):
         """Full mission name with deal id"""
         return u"%s (%s)" % (unicode(self), self.mission_id())
 
-    def no_more_staffing_since(self, refDate=datetime.now()):
+    def no_more_staffing_since(self, refDate=None):
         """@return: True if at least one staffing is defined after refDate. Zero charge staffing are considered."""
-        return not bool(self.staffing_set.filter(staffing_date__gt=refDate).count())
+        if not refDate:
+            refDate = datetime.now().replace(day=1) # Current month
+        return not bool(self.staffing_set.filter(staffing_date__gte=refDate).count())
 
     def staffed_consultant(self):
         """@return: sorted list of consultant forecasted for this mission"""
