@@ -18,6 +18,7 @@ from django.template.loader import get_template
 from django.template import RequestContext
 from django.http import HttpResponse
 from django.core.mail import EmailMultiAlternatives
+from django.core import urlresolvers
 
 import pydici.settings
 
@@ -32,9 +33,12 @@ def send_lead_mail(lead, request, fromAddr=pydici.settings.LEADS_MAIL_FROM, from
     @param request: http request of user - used to determine full URL
     @raise exception: if SMTP errors occurs. It is up to the caller to catch that.
     """
+    url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("admin:leads_lead_change", args=[lead.id, ])
     subject = u"[AVV] %s : %s" % (lead.client.organisation, lead.name)
-    msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj" : lead }))
-    msgHtml = get_template("leads/lead_mail.html").render(RequestContext(request, {"obj" : lead }))
+    msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj" : lead,
+                                                                                  "lead_url" : url }))
+    msgHtml = get_template("leads/lead_mail.html").render(RequestContext(request, {"obj" : lead,
+                                                                                   "lead_url" : url }))
     msg = EmailMultiAlternatives(subject, msgText, fromAddr, [pydici.settings.LEADS_MAIL_TO, ])
     msg.attach_alternative(msgHtml, "text/html")
     msg.send()
