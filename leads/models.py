@@ -12,6 +12,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.admin.models import LogEntry
 
+from taggit.managers import TaggableManager
+
 from pydici.core.utils import capitalize, compact_text
 import pydici.settings
 
@@ -58,6 +60,7 @@ class Lead(models.Model):
     deal_id = models.CharField(_("Deal id"), max_length=100, blank=True)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     send_email = models.BooleanField(_("Send lead by email"), default=True)
+    tags = TaggableManager()
 
     objects = LeadManager() # Custom manager that factorise active/passive lead code
 

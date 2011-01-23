@@ -93,6 +93,7 @@ def search(request):
             for word in words:
                 leads = leads.filter(Q(name__icontains=word) |
                                      Q(description__icontains=word) |
+                                     Q(tags__name=word) |
                                      Q(deal_id__icontains=word[:-1])) # Squash last letter that could be mission letter
 
         # Missions

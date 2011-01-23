@@ -1,0 +1,19 @@
+{# This template fragment can be included to display lead tag cloud #}
+{# Context/Argument: None #}
+
+{% load i18n %}
+{% load taggit_extras %}
+
+<br/>
+<h1>{% trans "All lead tags" %}</h1>
+
+{% get_tagcloud as tags for 'leads.lead' %}
+
+<ul style='float: left; width: 64em;'>
+{% for tag in tags %}
+    <li style='float: left; width: 16em;'>
+        <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }} ({{tag.num_times}})</a>
+    </li>
+{% endfor %}
+</ul>
+<div style="clear:both;"></div>

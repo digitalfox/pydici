@@ -124,7 +124,9 @@ INSTALLED_APPS = (
     'pydici.staffing',
     'pydici.crm',
     'pydici.billing',
-    'ajax_select'
+    'ajax_select',
+    'taggit',
+    'taggit_templatetags',
 )
 
 INTERNAL_IPS = ('127.0.0.1',)

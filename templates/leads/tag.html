@@ -1,0 +1,31 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{% trans "All lead tags" %}{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+
+<h1>{% blocktrans %}Leads for tag <em>{{ tag }}</em>{% endblocktrans %}</h1>
+
+<ul style='float: left; width: 64em;'>
+{% for lead in leads %}
+    <li style='float: left; width: 32em;'>
+        <a href='{% url pydici.leads.views.detail lead.id %}'>{{ lead }}</a>
+    </li>
+{% endfor %}
+</ul>
+<div style="clear:both;"></div>
+
+{% include "leads/_tag_cloud.html" %}
+
+</div>
+{% endblock %}

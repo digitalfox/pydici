@@ -25,7 +25,7 @@ from pydici.core.utils import send_lead_mail, capitalize
 class LeadAdmin(AjaxSelectAdmin):
     list_display = ("name", "client", "responsible", "salesman", "business_broker", "state", "due_date", "update_date_strf")
     fieldsets = [
-        (None, {"fields": ["name", "client", "description", "action"]}),
+        (None, {"fields": ["name", "client", "description", "action", "tags"]}),
         (_("State and tracking"), {"fields": ["responsible", "state", "due_date", "start_date", "deal_id"]}),
         (_("Commercial"), {"fields": ["sales", "business_broker", "paying_authority", "salesman", ]}),
         (_("Staffing"), {"fields": ["staffing", "external_staffing"]}),

@@ -20,6 +20,8 @@ from django.db.models import Q, Count
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 
+from taggit.models import Tag
+
 from pydici.core.utils import send_lead_mail, print_png, COLORS
 from pydici.leads.models import Lead
 from pydici.people.models import SalesMan
@@ -125,6 +127,14 @@ def review(request):
     return render_to_response("leads/review.html",
                               {"recent_archived_leads" : recentArchivedLeads,
                                "active_leads" : Lead.objects.active().order_by("creation_date"),
+                               "user": request.user },
+                               RequestContext(request))
+
+def tag(request, tag_id):
+    """Displays leads for given tag"""
+    return render_to_response("leads/tag.html",
+                              {"leads" : Lead.objects.filter(tags=tag_id),
+                               "tag" : Tag.objects.get(id=tag_id),
                                "user": request.user },
                                RequestContext(request))
 

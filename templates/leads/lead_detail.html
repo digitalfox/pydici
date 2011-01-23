@@ -25,6 +25,11 @@
 
     <div class="form-row name  ">
     <h2><a href='{% url admin:leads_lead_change lead.id %}' class='changelink' title='Cliquez pour modifier ce lead', target='_blank'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
+
+    {% for tag in lead.tags.all %}
+        <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>&nbsp;&nbsp;
+    {% endfor %}
+
     {% if lead.description %}
     <div class='system-message'>{{ lead.description|urlize|linebreaksbr }} </div>
     {% endif %}
