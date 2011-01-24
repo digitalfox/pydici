@@ -146,6 +146,10 @@
 <!--
 $(document).ready(function() {
     // Function to add new tags asynchronously
+
+    // Add autocomplete on existings tags
+    $("#newtag").autocomplete("{{ completion_url }}");
+
     // Connect form validation to ajax request
     $("#tag_form").submit(function(e) {
         e.preventDefault();
@@ -156,7 +160,7 @@ $(document).ready(function() {
                     if (data.tag_created) {
                         // Add new tag on list
                         $("#newtags").append("<a href='"+ data.tag_url + "'>" + $("#newtag").val() + "</a>&nbsp;&nbsp;");
-                        $("#newtag").val("{% trans 'Tag added' %}");
+                        $("#newtag").val("");
                     }
                     else {
                         $("#newtag").val("{% trans 'Tag already exists' %}");

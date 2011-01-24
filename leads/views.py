@@ -83,6 +83,7 @@ def detail(request, lead_id):
                                "previous_lead" : previous_lead,
                                "link_root": urlresolvers.reverse("index"),
                                "action_list": lead.get_change_history(),
+                               "completion_url" : urlresolvers.reverse("pydici.leads.views.tags", args=[lead.id, ]),
                                "user": request.user},
                                RequestContext(request))
 
@@ -154,6 +155,11 @@ def add_tag(request):
         tag = Tag.objects.get(name=request.POST["tag"])
         answer["tag_url"] = urlresolvers.reverse("pydici.leads.views.tag", args=[tag.id, ])
     return HttpResponse(json.dumps(answer), mimetype="application/json")
+
+def tags(request, lead_id):
+    """@return: all tags that are not already associated to this lead as a simple text list"""
+    tags = Tag.objects.all().exclude(lead__id=lead_id).values_list("name", flat=True)
+    return HttpResponse("\n".join(tags))
 
 
 @cache_page(60 * 10)
