@@ -28,11 +28,10 @@
     {% for tag in lead.tags.all %}
         <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>&nbsp;&nbsp;
     {% endfor %}
-    <div id="newtags"></div>
+    <div id="newtags" style="display:inline;"></div>
 
-    <form id="tag_form">
+    <form id="tag_form" style="display:inline;">
         <input type="text", id="newtag", value="", maxlength="100" onclick="this.value='';"/>
-        <a href='#'>{% trans "Add tag" %}</a>
     </form>
 
     {% if lead.description %}
