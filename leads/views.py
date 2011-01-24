@@ -157,8 +157,10 @@ def add_tag(request):
     return HttpResponse(json.dumps(answer), mimetype="application/json")
 
 def tags(request, lead_id):
-    """@return: all tags that are not already associated to this lead as a simple text list"""
-    tags = Tag.objects.all().exclude(lead__id=lead_id).values_list("name", flat=True)
+    """@return: all tags that contains q parameter and are not already associated to this lead as a simple text list"""
+    tags = Tag.objects.all().exclude(lead__id=lead_id) # Exclude existing tags
+    tags = tags.filter(name__icontains=request.GET["q"])
+    tags = tags.values_list("name", flat=True)
     return HttpResponse("\n".join(tags))
 
 
