@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'pydici.billing',
     'ajax_select',
     'taggit',
+    'taggit_suggest',
     'taggit_templatetags',
 )
 

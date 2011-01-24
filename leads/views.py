@@ -22,6 +22,7 @@ from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 
 from taggit.models import Tag
+from taggit_suggest.utils import suggest_tags
 
 from pydici.core.utils import send_lead_mail, print_png, COLORS
 from pydici.leads.models import Lead
@@ -73,6 +74,9 @@ def detail(request, lead_id):
             previous_lead = None
             active_count = None
 
+        # Find suggested tags for this lead
+        suggestedTags = set(suggest_tags(content=u"%s %s" % (lead.name, lead.description)))
+        suggestedTags -= set(lead.tags.all())
     except Lead.DoesNotExist:
         raise Http404
     return render_to_response("leads/lead_detail.html",
@@ -84,6 +88,7 @@ def detail(request, lead_id):
                                "link_root": urlresolvers.reverse("index"),
                                "action_list": lead.get_change_history(),
                                "completion_url" : urlresolvers.reverse("pydici.leads.views.tags", args=[lead.id, ]),
+                               "suggested_tags" : suggestedTags,
                                "user": request.user},
                                RequestContext(request))
 
@@ -146,6 +151,7 @@ def add_tag(request):
     answer = {}
     answer["tag_created"] = True # indicate if a tag was reused or created
     answer["tag_url"] = ""       # url on tag
+    answer["tag_name"] = ""      # tag name
 
     if request.POST["tag"]:
         lead = Lead.objects.get(id=int(request.POST["lead_id"]))
@@ -154,6 +160,7 @@ def add_tag(request):
         lead.tags.add(request.POST["tag"])
         tag = Tag.objects.get(name=request.POST["tag"])
         answer["tag_url"] = urlresolvers.reverse("pydici.leads.views.tag", args=[tag.id, ])
+        answer["tag_name"] = tag.name
     return HttpResponse(json.dumps(answer), mimetype="application/json")
 
 def tags(request, lead_id):

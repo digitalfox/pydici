@@ -33,7 +33,15 @@
     <form id="tag_form" style="display:inline;">
         <input type="text", id="newtag", value="", maxlength="100" onclick="this.value='';"/>
     </form>
-
+    <br/>
+    <div id="suggested">
+    {% if suggested_tags %}
+    {% trans "Suggested tags: " %}
+    {% for tag in suggested_tags %}
+        <a href="">{{ tag }}</a>&nbsp;&nbsp;
+    {% endfor %}
+    {% endif %}
+    </div>
     {% if lead.description %}
     <div class='system-message'>{{ lead.description|urlize|linebreaksbr }} </div>
     {% endif %}
@@ -159,13 +167,27 @@ $(document).ready(function() {
                 function(data) {
                     if (data.tag_created) {
                         // Add new tag on list
-                        $("#newtags").append("<a href='"+ data.tag_url + "'>" + $("#newtag").val() + "</a>&nbsp;&nbsp;");
+                        $("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>&nbsp;&nbsp;");
                         $("#newtag").val("");
                     }
                     else {
                         $("#newtag").val("{% trans 'Tag already exists' %}");
                     }
                 });
+    });
+
+    // Connect suggested tag to ajax request
+    $("#suggested a").click(function(e){
+        e.preventDefault();
+        // send requests
+        $.post("{% url pydici.leads.views.add_tag %}",
+                { tag : $(this).text(), lead_id : {{lead.id}} },
+                function(data) {
+	                // Add new tag on list
+	                $("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>&nbsp;&nbsp;");
+                });
+        // Remove from suggested list
+        $(this).remove();
     });
 });
 //-->
