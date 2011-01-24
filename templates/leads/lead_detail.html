@@ -22,13 +22,18 @@
 	    {% endif %}
     {% endif %}
 
-
     <div class="form-row name  ">
     <h2><a href='{% url admin:leads_lead_change lead.id %}' class='changelink' title='Cliquez pour modifier ce lead', target='_blank'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
     {% for tag in lead.tags.all %}
         <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>&nbsp;&nbsp;
     {% endfor %}
+    <div id="newtags"></div>
+
+    <form id="tag_form">
+        <input type="text", id="newtag", value="", maxlength="100" onclick="this.value='';"/>
+        <a href='#'>{% trans "Add tag" %}</a>
+    </form>
 
     {% if lead.description %}
     <div class='system-message'>{{ lead.description|urlize|linebreaksbr }} </div>
@@ -137,5 +142,30 @@
     </table>
 {% endif %}
 
+
+<script type="text/javascript">
+<!--
+$(document).ready(function() {
+    // Function to add new tags asynchronously
+    // Connect form validation to ajax request
+    $("#tag_form").submit(function(e) {
+        e.preventDefault();
+        // send requests
+        $.post("{% url pydici.leads.views.add_tag %}",
+                { tag : $("#newtag").val(), lead_id : {{lead.id}} },
+                function(data) {
+                    if (data.tag_created) {
+                        // Add new tag on list
+                        $("#newtags").append("<a href='"+ data.tag_url + "'>" + $("#newtag").val() + "</a>&nbsp;&nbsp;");
+                        $("#newtag").val("Etiquette ajoutée");
+                    }
+                    else {
+                        $("#newtag").val("Etiquette existante");
+                    }
+                });
+    });
+});
+//-->
+</script>
 
 {% endblock %}

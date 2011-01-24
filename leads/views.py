@@ -8,6 +8,7 @@ Pydici leads views. Http request are processed here.
 import csv
 from datetime import datetime, timedelta, date
 import itertools
+import json
 
 from matplotlib.figure import Figure
 
@@ -137,6 +138,23 @@ def tag(request, tag_id):
                                "tag" : Tag.objects.get(id=tag_id),
                                "user": request.user },
                                RequestContext(request))
+
+def add_tag(request):
+    #TODO: add some permission control
+    """Add a tag to a lead. Create the tag if needed"""
+    answer = {}
+    answer["tag_created"] = True # indicate if a tag was reused or created
+    answer["tag_url"] = ""       # url on tag
+
+    if request.POST["tag"]:
+        lead = Lead.objects.get(id=int(request.POST["lead_id"]))
+        if request.POST["tag"] in lead.tags.all().values_list("name", flat=True):
+            answer["tag_created"] = False
+        lead.tags.add(request.POST["tag"])
+        tag = Tag.objects.get(name=request.POST["tag"])
+        answer["tag_url"] = urlresolvers.reverse("pydici.leads.views.tag", args=[tag.id, ])
+    return HttpResponse(json.dumps(answer), mimetype="application/json")
+
 
 @cache_page(60 * 10)
 def graph_stat_pie(request):
