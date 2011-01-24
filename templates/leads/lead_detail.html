@@ -156,10 +156,10 @@ $(document).ready(function() {
                     if (data.tag_created) {
                         // Add new tag on list
                         $("#newtags").append("<a href='"+ data.tag_url + "'>" + $("#newtag").val() + "</a>&nbsp;&nbsp;");
-                        $("#newtag").val("Etiquette ajoutée");
+                        $("#newtag").val("{% trans 'Tag added' %}");
                     }
                     else {
-                        $("#newtag").val("Etiquette existante");
+                        $("#newtag").val("{% trans 'Tag already exists' %}");
                     }
                 });
     });
