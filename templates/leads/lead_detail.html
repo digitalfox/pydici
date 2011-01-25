@@ -164,18 +164,20 @@ $(document).ready(function() {
     $("#tag_form").submit(function(e) {
         e.preventDefault();
         // send requests
-        $.post("{% url pydici.leads.views.add_tag %}",
-                { tag : $("#newtag").val(), lead_id : {{lead.id}} },
-                function(data) {
-                    if (data.tag_created) {
-                        // Add new tag on list
-                        $("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>&nbsp;&nbsp;");
-                        $("#newtag").val("");
-                    }
-                    else {
-                        $("#newtag").val("{% trans 'Tag already exists' %}");
-                    }
-                });
+        if ($("#newtag").val()) {
+	        $.post("{% url pydici.leads.views.add_tag %}",
+	                { tag : $("#newtag").val(), lead_id : {{lead.id}} },
+	                function(data) {
+	                    if (data.tag_created) {
+	                        // Add new tag on list
+	                        $("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>&nbsp;&nbsp;");
+	                        $("#newtag").val("");
+	                    }
+	                    else {
+	                        $("#newtag").val("{% trans 'Tag already exists' %}");
+	                    }
+	                });
+	         }
     });
 
     // Connect suggested tag to ajax request
