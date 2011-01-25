@@ -160,3 +160,19 @@ a.deletelink:hover { color:#993333; }
 /* OBJECT HISTORY */
 table#change-history { width:100%; }
 table#change-history tbody th { width:16em; }
+
+/* Text frame */
+.tag_banner {
+    background:#F6F6F6;
+    margin: 10px;
+    padding: 6px 8px;
+    border-radius: 8px 8px 8px 8px;
+}
+
+.lead_description {
+	background: #ffc;
+	margin: 10px;
+	padding: 6px 8px;
+	border-radius: 8px 8px 8px 8px;
+	font-size: .8em;
+}

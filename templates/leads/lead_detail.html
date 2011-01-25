@@ -25,25 +25,27 @@
     <div class="form-row name  ">
     <h2><a href='{% url admin:leads_lead_change lead.id %}' class='changelink' title='Cliquez pour modifier ce lead', target='_blank'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
-    {% for tag in lead.tags.all %}
-        <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>&nbsp;&nbsp;
-    {% endfor %}
-    <div id="newtags" style="display:inline;"></div>
+    <div class="tag_banner">
+	    {% for tag in lead.tags.all %}
+	        <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>&nbsp;&nbsp;
+	    {% endfor %}
+	    <div id="newtags" style="display:inline;"></div>
 
-    <form id="tag_form" style="display:inline;">
-        <input type="text", id="newtag", value="", maxlength="100" onclick="this.value='';"/>
-    </form>
-    <br/>
-    <div id="suggested">
-    {% if suggested_tags %}
-    {% trans "Suggested tags: " %}
-    {% for tag in suggested_tags %}
-        <a href="">{{ tag }}</a>&nbsp;&nbsp;
-    {% endfor %}
-    {% endif %}
+	    <form id="tag_form" style="display:inline;">
+	        <input type="text", id="newtag", value="", maxlength="100" onclick="this.value='';"/>
+	    </form>
+	    <br/>
+	    <div id="suggested">
+		    {% if suggested_tags %}
+		    {% trans "Suggested tags: " %}
+		    {% for tag in suggested_tags %}
+		        <a href="">{{ tag }}</a>&nbsp;&nbsp;
+		    {% endfor %}
+		    {% endif %}
+	    </div>
     </div>
     {% if lead.description %}
-    <div class='system-message'>{{ lead.description|urlize|linebreaksbr }} </div>
+        <div class='lead_description'>{{ lead.description|urlize|linebreaksbr }} </div>
     {% endif %}
     <hr>
     <b>{% trans "Contact: " %}</b>{{ lead.client.contact|default_if_none:_("Unknown")}} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}<br/>
