@@ -9,10 +9,12 @@
 
 {% get_tagcloud as tags for 'leads.lead' %}
 
-<ul style='float: left; width: 64em;'>
+<ul style='float: left; width: 80em;'>
 {% for tag in tags %}
-    <li style='float: left; width: 16em;'>
-        <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }} ({{tag.num_times}})</a>
+    <li style='float: left; width: 20em;'>
+        <font size={{tag.weight|floatformat:0}}>
+            <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }} ({{tag.num_times}})</a>
+        </font>
     </li>
 {% endfor %}
 </ul>
