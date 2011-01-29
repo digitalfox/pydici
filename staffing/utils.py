@@ -10,9 +10,11 @@ appropriate to live in Staffing models or view
 from datetime import date, datetime, timedelta
 
 from django.db import transaction
+from django.utils import formats
 
 from pydici.staffing.models import Timesheet, Mission, LunchTicket, Holiday
 from pydici.core.utils import month_days
+
 
 def gatherTimesheetData(consultant, missions, month):
     """Gather existing timesheet timesheetData
@@ -156,7 +158,7 @@ def holidayDays(month=None):
     return [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth)]
 
 def daysOfMonth(month):
-    """Return list of days (datetime object) for given month (datetime object of any day in the month"""
+    """Returns list of days (datetime object) for given month (datetime object of any day in the month"""
     days = []
     day = timedelta(1)
     month = month.replace(day=1)
@@ -165,3 +167,13 @@ def daysOfMonth(month):
         days.append(tmpDate)
         tmpDate += day
     return days
+
+def staffingDates(n=12):
+    """Returns a list of dict() with short/long format dates for the n next month"""
+    staffingDate = date.today().replace(day=1)
+    dates = []
+    fortyDays = timedelta(40)
+    for i in range(n):
+        dates.append({ "short" : formats.localize_input(staffingDate), "long" : formats.date_format(staffingDate, format="YEAR_MONTH_FORMAT").encode("latin-1")})
+        staffingDate = (staffingDate + fortyDays).replace(day=1)
+    return dates

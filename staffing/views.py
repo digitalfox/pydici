@@ -33,7 +33,7 @@ from pydici.people.models import ConsultantProfile
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
 from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
-                                  sortMissions, holidayDays, daysOfMonth
+                                  sortMissions, holidayDays, daysOfMonth, staffingDates
 
 def missions(request, onlyActive=True):
     """List of missions"""
@@ -78,6 +78,7 @@ def mission_staffing(request, mission_id):
                                "link_to_staffing" : True, # for mission_base template links
                                "consultant_rates": mission.consultant_rates(),
                                "read_only" : readOnly,
+                               "staffing_dates" : staffingDates(),
                                "user": request.user},
                                RequestContext(request))
 
@@ -113,6 +114,7 @@ def consultant_staffing(request, consultant_id):
                                "consultant": consultant,
                                "missions": missions,
                                "link_to_staffing" : True, # for consultant_base template links
+                               "staffing_dates" : staffingDates(),
                                "user": request.user },
                                RequestContext(request))
 
