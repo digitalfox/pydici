@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-24 19:27+0100\n"
-"PO-Revision-Date: 2011-01-24 19:27+0100\n"
+"POT-Creation-Date: 2011-02-02 23:02+0100\n"
+"PO-Revision-Date: 2011-02-02 23:02+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -77,7 +77,7 @@ msgstr "Montant (€ HT)"
 msgid "Creation date"
 msgstr "Date de création"
 
-#: billing/models.py:28 leads/views.py:95
+#: billing/models.py:28 leads/views.py:101
 #: templates/billing/_lead_billing.html:12 templates/leads/review.html:30
 msgid "Due date"
 msgstr "Date d'échéance"
@@ -86,7 +86,7 @@ msgstr "Date d'échéance"
 msgid "Payment date"
 msgstr "Date de paiement"
 
-#: billing/models.py:30 leads/models.py:57 leads/views.py:95
+#: billing/models.py:30 leads/models.py:57 leads/views.py:101
 #: templates/billing/_lead_billing.html:9
 msgid "State"
 msgstr "État"
@@ -109,7 +109,7 @@ msgid "Bill"
 msgstr "Facture"
 
 #: core/models.py:16 crm/models.py:21 crm/models.py:42 leads/models.py:45
-#: leads/views.py:93 people/models.py:21 people/models.py:100
+#: leads/views.py:99 people/models.py:21 people/models.py:100
 #: templates/staffing/consultant_base.html:20
 #: templates/staffing/missions.html:29
 msgid "Name"
@@ -197,7 +197,7 @@ msgstr "Contact"
 msgid "Sales owner"
 msgstr "Propriété commerciale"
 
-#: crm/models.py:111 leads/forms.py:23 leads/models.py:58 leads/views.py:93
+#: crm/models.py:111 leads/forms.py:23 leads/models.py:58 leads/views.py:99
 #: templates/billing/bill_review.html:20 templates/billing/bill_review.html:53
 #: templates/billing/bill_review.html:86
 #: templates/billing/bill_review.html:119
@@ -215,7 +215,7 @@ msgstr "État et suivi"
 msgid "Commercial"
 msgstr "Commercial"
 
-#: leads/admin.py:31 leads/views.py:95 staffing/models.py:183
+#: leads/admin.py:31 leads/views.py:101 staffing/models.py:183
 #: templates/billing/bill_review.html:146 templates/leads/review.html:27
 #: templates/leads/review.html.py:56
 #: templates/staffing/mission_staffing.html:5
@@ -226,7 +226,7 @@ msgstr "Staffing"
 msgid "Lead sent to business mailing list"
 msgstr "Affaire envoyée à la liste de diffusion de suivi des affaires"
 
-#: leads/admin.py:61 leads/views.py:120
+#: leads/admin.py:61 leads/views.py:126
 #, python-format
 msgid "Failed to send mail: %s"
 msgstr "Échec lors de l'envoi du courriel : %s"
@@ -284,10 +284,11 @@ msgstr ""
 msgid "Responsible"
 msgstr "Responsable"
 
-#: leads/forms.py:20 leads/models.py:49 leads/views.py:94 people/models.py:116
-#: templates/core/index.html:21 templates/core/index.html.py:46
-#: templates/core/index.html:70 templates/core/index.html.py:94
-#: templates/leads/review.html:26 templates/leads/review.html.py:55
+#: leads/forms.py:20 leads/models.py:49 leads/views.py:100
+#: people/models.py:116 templates/core/index.html:21
+#: templates/core/index.html.py:46 templates/core/index.html:70
+#: templates/core/index.html.py:94 templates/leads/review.html:26
+#: templates/leads/review.html.py:55
 msgid "Salesman"
 msgstr "Commercial"
 
@@ -328,7 +329,7 @@ msgstr "Abandonnée"
 msgid "Sleeping"
 msgstr "En sommeil"
 
-#: leads/models.py:47 templates/leads/lead_detail.html:129
+#: leads/models.py:47 templates/leads/lead_detail.html:139
 #: templates/leads/lead_mail.html:30
 msgid "Action"
 msgstr "Action"
@@ -341,7 +342,7 @@ msgstr "Montant (k€)"
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:55 leads/views.py:94 templates/leads/review.html:31
+#: leads/models.py:55 leads/views.py:100 templates/leads/review.html:31
 #: templates/leads/review.html.py:60
 msgid "Starting"
 msgstr "Démarrage"
@@ -350,16 +351,16 @@ msgstr "Démarrage"
 msgid "Due"
 msgstr "Échéance"
 
-#: leads/models.py:59 leads/views.py:96
+#: leads/models.py:59 leads/views.py:102
 msgid "Creation"
 msgstr "Création"
 
-#: leads/models.py:60 staffing/models.py:35 staffing/views.py:373
-#: staffing/views.py:483
+#: leads/models.py:60 staffing/models.py:35 staffing/views.py:375
+#: staffing/views.py:485
 msgid "Deal id"
 msgstr "N° affaire"
 
-#: leads/models.py:61 leads/models.py:84 leads/views.py:97
+#: leads/models.py:61 leads/models.py:84 leads/views.py:103
 #: staffing/models.py:41 templates/core/index.html:24
 #: templates/core/index.html.py:49 templates/core/index.html:73
 #: templates/core/index.html.py:97 templates/leads/review.html:59
@@ -370,27 +371,27 @@ msgstr "Mise à jour"
 msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
-#: leads/models.py:92 leads/views.py:93 staffing/models.py:36
+#: leads/models.py:92 leads/views.py:99 staffing/models.py:36
 #: staffing/models.py:158
 msgid "Description"
 msgstr "Description"
 
-#: leads/views.py:91
+#: leads/views.py:97
 msgid "leads.csv"
 msgstr "affaires.csv"
 
-#: leads/views.py:94
+#: leads/views.py:100
 msgid "Managed by"
 msgstr "Géré par"
 
-#: leads/views.py:96 templates/billing/bill_review.html:147
+#: leads/views.py:102 templates/billing/bill_review.html:147
 #: templates/core/index.html:22 templates/core/index.html.py:47
 #: templates/core/index.html:71 templates/core/index.html.py:95
 #: templates/leads/review.html:28 templates/leads/review.html.py:57
 msgid "Sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/views.py:117
+#: leads/views.py:123
 #, python-format
 msgid "Lead %(id)s was sent to %(mail)s !"
 msgstr "L'affaire %(id)s a été envoyée à %(mail)s !"
@@ -443,14 +444,14 @@ msgid "Last forecast staffing updated or created about myself"
 msgstr ""
 "Dernières mise à jour ou création de staffing prévisionnel me concernant"
 
-#: staffing/forms.py:34 staffing/models.py:153 staffing/views.py:373
-#: staffing/views.py:483 templates/leads/lead_detail.html:71
+#: staffing/forms.py:34 staffing/models.py:153 staffing/views.py:375
+#: staffing/views.py:485 templates/leads/lead_detail.html:81
 #: templates/staffing/consultant_staffing.html:15
 #: templates/staffing/mission_base.html:40
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/forms.py:90 staffing/views.py:518
+#: staffing/forms.py:90 staffing/views.py:520
 msgid "Days without lunch ticket"
 msgstr "Jours sans ticket restaurant"
 
@@ -530,33 +531,33 @@ msgstr "Condition financière"
 msgid "Price updated from mission"
 msgstr "Prix mis à jour à partir de la mission"
 
-#: staffing/views.py:128
+#: staffing/views.py:130
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:365 staffing/views.py:542
+#: staffing/views.py:367 staffing/views.py:544
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:374
+#: staffing/views.py:376
 msgid "total"
 msgstr "total"
 
-#: staffing/views.py:505 templates/leads/lead_detail.html:92
+#: staffing/views.py:507 templates/leads/lead_detail.html:102
 #: templates/staffing/consultant_timesheet.html:23
 #: templates/staffing/mission_timesheet.html:27
 msgid "Total"
 msgstr "Total"
 
-#: staffing/views.py:572
+#: staffing/views.py:574
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
-#: staffing/views.py:721 templates/staffing/mission_base.html:24
+#: staffing/views.py:723 templates/staffing/mission_base.html:24
 msgid "Daily rate (€)"
 msgstr "Taux journalier (€)"
 
-#: staffing/views.py:722
+#: staffing/views.py:724
 msgid "Prod. rate"
 msgstr "Taux de prod."
 
@@ -903,7 +904,7 @@ msgstr "Délai de règlement"
 msgid "Recent leads without bill"
 msgstr "Affaires récentes sans facture"
 
-#: templates/billing/bill_review.html:148 templates/leads/lead_detail.html:73
+#: templates/billing/bill_review.html:148 templates/leads/lead_detail.html:83
 #: templates/staffing/mission_timesheet.html:15
 msgid "Done days"
 msgstr "Jours réalisés"
@@ -914,8 +915,8 @@ msgstr "Montant réalisé (€)"
 
 #: templates/billing/bill_review.html:154 templates/core/index.html:31
 #: templates/core/index.html.py:56 templates/core/index.html:80
-#: templates/core/index.html.py:104 templates/leads/lead_detail.html:44
-#: templates/leads/lead_detail.html:114 templates/leads/lead_mail.html:8
+#: templates/core/index.html.py:104 templates/leads/lead_detail.html:54
+#: templates/leads/lead_detail.html:124 templates/leads/lead_mail.html:8
 #: templates/leads/lead_mail.html.py:12 templates/leads/lead_mail.txt:9
 #: templates/leads/lead_mail.txt.py:13 templates/leads/mail.html:8
 #: templates/leads/mail.txt:7 templates/leads/mail.txt.py:8
@@ -1010,141 +1011,141 @@ msgstr "Toutes les étiquettes des affaires"
 msgid "Lead detail"
 msgstr "Détail de l'affaire"
 
-#: templates/leads/lead_detail.html:41 templates/leads/lead_mail.html:4
+#: templates/leads/lead_detail.html:40
+msgid "Suggested tags: "
+msgstr "Étiquette(s) suggérée(s) : "
+
+#: templates/leads/lead_detail.html:51 templates/leads/lead_mail.html:4
 #: templates/leads/lead_mail.txt:5
 msgid "Contact: "
 msgstr "Contact : "
 
-#: templates/leads/lead_detail.html:41 templates/leads/lead_detail.html:56
-#: templates/leads/lead_detail.html:57 templates/leads/lead_detail.html:59
+#: templates/leads/lead_detail.html:51 templates/leads/lead_detail.html:66
+#: templates/leads/lead_detail.html:67 templates/leads/lead_detail.html:69
 #: templates/leads/lead_mail.html:14 templates/leads/lead_mail.txt:15
 #: templates/leads/mail.html:8 templates/leads/mail.txt:8
 msgid "Unknown"
 msgstr "Inconnu"
 
-#: templates/leads/lead_detail.html:42
+#: templates/leads/lead_detail.html:52
 msgid "Deal id:"
 msgstr "N° affaire : "
 
-#: templates/leads/lead_detail.html:44 templates/leads/lead_mail.html:8
+#: templates/leads/lead_detail.html:54 templates/leads/lead_mail.html:8
 #: templates/leads/lead_mail.txt:9 templates/leads/mail.html:9
 #: templates/leads/mail.txt:8
 msgid "Responsible: "
 msgstr "Responsable : "
 
-#: templates/leads/lead_detail.html:46 templates/leads/lead_mail.html:10
+#: templates/leads/lead_detail.html:56 templates/leads/lead_mail.html:10
 #: templates/leads/lead_mail.txt:11 templates/leads/mail.html:9
 #: templates/leads/mail.txt:8
 msgid "Salesman: "
 msgstr "Commercial : "
 
-#: templates/leads/lead_detail.html:49
+#: templates/leads/lead_detail.html:59
 msgid "Broker: "
 msgstr "Apporteur : "
 
-#: templates/leads/lead_detail.html:52
+#: templates/leads/lead_detail.html:62
 msgid "Paying authority: "
 msgstr "Organisme payeur : "
 
-#: templates/leads/lead_detail.html:56 templates/leads/mail.html:8
+#: templates/leads/lead_detail.html:66 templates/leads/mail.html:8
 #: templates/leads/mail.txt:7
 msgid "Due date: "
 msgstr "Date d'échéance : "
 
-#: templates/leads/lead_detail.html:57 templates/leads/mail.html:8
+#: templates/leads/lead_detail.html:67 templates/leads/mail.html:8
 #: templates/leads/mail.txt:7
 msgid "Start date: "
 msgstr "Date de début : "
 
-#: templates/leads/lead_detail.html:59
+#: templates/leads/lead_detail.html:69
 msgid "Sales (k€): "
 msgstr "C.A. (k€) : "
 
-#: templates/leads/lead_detail.html:60 templates/leads/lead_mail.html:16
+#: templates/leads/lead_detail.html:70 templates/leads/lead_mail.html:16
 #: templates/leads/lead_mail.txt:17
 msgid "Potential resource(s): "
 msgstr "Ressources potentielles : "
 
-#: templates/leads/lead_detail.html:61 templates/leads/lead_mail.html:18
+#: templates/leads/lead_detail.html:71 templates/leads/lead_mail.html:18
 #: templates/leads/lead_mail.txt:19 templates/leads/mail.html:11
 #: templates/leads/mail.txt:10
 msgid "Action: "
 msgstr "Action : "
 
-#: templates/leads/lead_detail.html:61 templates/leads/lead_mail.html:18
+#: templates/leads/lead_detail.html:71 templates/leads/lead_mail.html:18
 #: templates/leads/mail.txt:10
 msgid "Nothing"
 msgstr "Rien"
 
-#: templates/leads/lead_detail.html:67
+#: templates/leads/lead_detail.html:77
 msgid "Missions of this lead:"
 msgstr "Missions de cette affaire : "
 
-#: templates/leads/lead_detail.html:72 templates/staffing/mission_base.html:40
+#: templates/leads/lead_detail.html:82 templates/staffing/mission_base.html:40
 msgid "id"
 msgstr "n°"
 
-#: templates/leads/lead_detail.html:74
+#: templates/leads/lead_detail.html:84
 msgid "Done work (k€)"
 msgstr "Montant réalisé (k€)"
 
-#: templates/leads/lead_detail.html:75
+#: templates/leads/lead_detail.html:85
 msgid "Sold (k€)"
 msgstr "Vendu (k€)"
 
-#: templates/leads/lead_detail.html:76
+#: templates/leads/lead_detail.html:86
 msgid "Margin (k€)"
 msgstr "Marge (k€)"
 
-#: templates/leads/lead_detail.html:87
+#: templates/leads/lead_detail.html:97
 msgid "workload schedule of this mission"
 msgstr "prévisions de charge de cette mission"
 
-#: templates/leads/lead_detail.html:104
+#: templates/leads/lead_detail.html:114
 msgid "Create a new mission for this lead"
 msgstr "Créer une nouvelle mission pour cette affaire"
 
-#: templates/leads/lead_detail.html:110
+#: templates/leads/lead_detail.html:120
 #: templates/staffing/mission_timesheet.html:44
 msgid "Profitability"
 msgstr "Rentabilité"
 
-#: templates/leads/lead_detail.html:112
+#: templates/leads/lead_detail.html:122
 #: templates/staffing/mission_timesheet.html:46
 msgid "Sold"
 msgstr "Vendu"
 
-#: templates/leads/lead_detail.html:116
+#: templates/leads/lead_detail.html:126
 #: templates/staffing/mission_timesheet.html:50
 msgid "Margin"
 msgstr "Marge"
 
-#: templates/leads/lead_detail.html:118
+#: templates/leads/lead_detail.html:128
 #: templates/staffing/mission_timesheet.html:54
 msgid "Billing"
 msgstr "Facturation"
 
-#: templates/leads/lead_detail.html:123 templates/leads/lead_mail.html:24
+#: templates/leads/lead_detail.html:133 templates/leads/lead_mail.html:24
 msgid "Change history"
 msgstr "Historique des changements"
 
-#: templates/leads/lead_detail.html:127 templates/leads/lead_mail.html:28
+#: templates/leads/lead_detail.html:137 templates/leads/lead_mail.html:28
 msgid "Date/time"
 msgstr "Date/heure"
 
-#: templates/leads/lead_detail.html:128 templates/leads/lead_mail.html:29
+#: templates/leads/lead_detail.html:138 templates/leads/lead_mail.html:29
 msgid "User"
 msgstr "Utilisateur"
 
-#: templates/leads/lead_detail.html:135 templates/leads/lead_mail.html:36
+#: templates/leads/lead_detail.html:145 templates/leads/lead_mail.html:36
 msgid "DATETIME_FORMAT"
 msgstr "j F Y, G:i"
 
-#: templates/leads/lead_detail.html:159
-msgid "Tag added"
-msgstr "Étiquette ajoutée"
-
-#: templates/leads/lead_detail.html:162
+#: templates/leads/lead_detail.html:177
 msgid "Tag already exists"
 msgstr "Étiquette existante"
 
@@ -1541,6 +1542,9 @@ msgstr "Totaux"
 #: templates/staffing/pdc_review.html:96
 msgid "Production rates review"
 msgstr "Suivi du taux de production"
+
+#~ msgid "Tag added"
+#~ msgstr "Étiquette ajoutée"
 
 #~ msgid "Home: "
 #~ msgstr "Accueil : "
