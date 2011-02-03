@@ -28,6 +28,7 @@ from pydici.core.utils import send_lead_mail, print_png, COLORS
 from pydici.leads.models import Lead
 from pydici.people.models import SalesMan
 import pydici.settings
+from pydici.core.utils import capitalize
 
 
 def summary_mail(request, html=True):
@@ -152,13 +153,13 @@ def add_tag(request):
     answer["tag_created"] = True # indicate if a tag was reused or created
     answer["tag_url"] = ""       # url on tag
     answer["tag_name"] = ""      # tag name
-
     if request.POST["tag"]:
+        tagName = capitalize(request.POST["tag"], keepUpper=True)
         lead = Lead.objects.get(id=int(request.POST["lead_id"]))
-        if request.POST["tag"] in lead.tags.all().values_list("name", flat=True):
+        if tagName in lead.tags.all().values_list("name", flat=True):
             answer["tag_created"] = False
-        lead.tags.add(request.POST["tag"])
-        tag = Tag.objects.get(name=request.POST["tag"])
+        lead.tags.add(tagName)
+        tag = Tag.objects.get(name=tagName)
         answer["tag_url"] = urlresolvers.reverse("pydici.leads.views.tag", args=[tag.id, ])
         answer["tag_name"] = tag.name
     return HttpResponse(json.dumps(answer), mimetype="application/json")
