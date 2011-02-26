@@ -97,6 +97,9 @@ def search(request):
                 leads = leads.filter(Q(name__icontains=word) |
                                      Q(description__icontains=word) |
                                      Q(tags__name=word) |
+                                     Q(client__contact__name__icontains=word) |
+                                     Q(client__organisation__company__name__icontains=word) |
+                                     Q(client__organisation__name__iexact=word) |
                                      Q(deal_id__icontains=word[:-1])) # Squash last letter that could be mission letter
             leads = leads.distinct()
 
