@@ -74,18 +74,21 @@ def search(request):
             for word in words:
                 consultants = consultants.filter(Q(name__icontains=word) |
                                                  Q(trigramme__icontains=word))
+            consultants = consultants.distinct()
 
         # Client Company
         if request.GET.get("company"):
             clientCompanies = ClientCompany.objects.all()
             for word in words:
                 clientCompanies = clientCompanies.filter(name__icontains=word)
+            clientCompanies = clientCompanies.distinct()
 
         # Client contact
         if request.GET.get("contact"):
             clientContacts = ClientContact.objects.all()
             for word in words:
                 clientContacts = clientContacts.filter(name__icontains=word)
+            clientContacts = clientContacts.distinct()
 
         # Leads
         if request.GET.get("lead"):
@@ -95,6 +98,7 @@ def search(request):
                                      Q(description__icontains=word) |
                                      Q(tags__name=word) |
                                      Q(deal_id__icontains=word[:-1])) # Squash last letter that could be mission letter
+            leads = leads.distinct()
 
         # Missions
         if request.GET.get("mission"):
