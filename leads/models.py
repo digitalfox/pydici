@@ -60,7 +60,7 @@ class Lead(models.Model):
     deal_id = models.CharField(_("Deal id"), max_length=100, blank=True)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     send_email = models.BooleanField(_("Send lead by email"), default=True)
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     objects = LeadManager() # Custom manager that factorise active/passive lead code
 
