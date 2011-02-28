@@ -27,7 +27,7 @@
 
     <div class="tag_banner">
 	    {% for tag in lead.tags.all %}
-	        <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>&nbsp;&nbsp;
+	        <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>&nbsp;<font color='LightGrey'>|</font>&nbsp;
 	    {% endfor %}
 	    <div id="newtags" style="display:inline;"></div>
 
