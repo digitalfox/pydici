@@ -11,10 +11,11 @@ from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.db.models import Q
 from django.utils.translation import ugettext as _
+from django.core.exceptions import ValidationError
 
 from ajax_select.fields import AutoCompleteSelectField
 
-from pydici.staffing.models import Staffing
+from pydici.staffing.models import Staffing, Mission
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
@@ -93,3 +94,28 @@ class TimesheetForm(forms.Form):
         # extra space is important - it is for forecast total (which does not exist for ticket...)
         key = "%s total-ticket " % timesheetTotal.get("ticket", 0)
         self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+class MissionAdminForm(forms.ModelForm):
+    """Form used to validate mission price field in admin"""
+    class Meta:
+        model = Mission
+
+    def clean_price(self):
+        """Ensure mission price don't exceed remaining lead amount"""
+        if not self.instance.lead:
+            raise ValidationError(_("Cannot add price to mission without lead"))
+
+        if not self.instance.lead.sales:
+            raise ValidationError(_("Mission's lead has no sales price. Define lead sales price."))
+
+        total = 0 # Total price for all missions except current one
+        for mission in self.instance.lead.mission_set.exclude(id=self.instance.id):
+            if mission.price:
+                total += mission.price
+
+        remaining = self.instance.lead.sales - total
+        if self.cleaned_data["price"] > remaining:
+            raise ValidationError(_(u"Only %s k€ are remaining on this lead. Define a lower price" % remaining))
+
+        # No error, we return data as is
+        return self.cleaned_data["price"]

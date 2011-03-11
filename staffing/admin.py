@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
 from pydici.staffing.models import Mission, Holiday, Timesheet, FinancialCondition
-
+from pydici.staffing.forms import MissionAdminForm
 
 class MissionAdmin(admin.ModelAdmin):
     list_display = ("lead", "description", "nature", "probability", "mission_id", "active", "update_date")
@@ -20,6 +20,8 @@ class MissionAdmin(admin.ModelAdmin):
     date_hierarchy = "update_date"
     list_filter = ["nature", "probability", "active"]
     actions = None
+    form = MissionAdminForm
+
 
 class HolidayAdmin(admin.ModelAdmin):
     list_display = ("day", "description")
