@@ -217,39 +217,3 @@ class FinancialCondition(models.Model):
     class Meta:
         unique_together = (("consultant", "mission", "daily_rate"),)
         verbose_name = _("Financial condition")
-
-
-# Signal definition
-def updateLeadPrice(sender, **kwargs):
-    """Called by mission update signal to update lead total price"""
-    batch_username = "auto"
-    mission = kwargs["instance"]
-    price = 0
-    try:
-        user_id = user_id = User.objects.get(username=batch_username).id
-    except User.DoesNotExist:
-        # Create it
-        user = User()
-        user.username = batch_username
-        user.save()
-        user_id = user.id
-    if mission.lead:
-        for sisterMission in mission.lead.mission_set.all():
-            if sisterMission.price:
-                price += sisterMission.price
-        if price == 0:
-            # Don't erase lead price if nothing is defined on mission side
-            return
-        mission.lead.sales = price
-        mission.lead.save()
-        # Log it
-        LogEntry.objects.log_action(
-                user_id=user_id,
-                content_type_id=ContentType.objects.get_for_model(mission.lead).id,
-                object_id=mission.lead.id,
-                object_repr=unicode(mission.lead),
-                change_message=ugettext("Price updated from mission"),
-                action_flag=CHANGE)
-
-# Connecting signals
-post_save.connect(updateLeadPrice, sender=Mission)
