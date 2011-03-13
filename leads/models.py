@@ -124,12 +124,22 @@ class Lead(models.Model):
         return days, amount / 1000
 
     def margin(self):
-        """Return mission current margin in euros"""
+        """Returns mission current margin in euros"""
         if self.sales:
             days, amount = self.done_work()
             return self.sales - amount / 1000
         else:
             return 0
+
+    def unused(self):
+        """Returns unused money. ie. sales price minus all planned missions"""
+        unused = 0
+        if self.sales:
+            unused = self.sales
+            for mission in self.mission_set.all():
+                if mission.price:
+                    unused -= mission.price
+        return unused
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]

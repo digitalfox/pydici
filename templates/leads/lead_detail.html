@@ -120,10 +120,11 @@
 <h2>{% trans "Profitability" %}</h2>
     <table>
         <tr><td>{% trans "Sold" %}</td>
-        <td>{% if lead.sales %}{{ lead.sales }}  k€
+        <td>{% if lead.sales %}{{ lead.sales }} k€
             {% else %} <a href='{% url admin:leads_lead_change lead.id %}'>{% trans "To be defined" %}</a>
             {% endif %}</td></tr>
-        <tr><td>{% trans "Margin" %}</td><td>{{ lead.margin }}  k€</td></tr>
+        <tr><td>{% trans "Unused" %}</td><td>{{ lead.unused }} k€</td></tr>
+        <tr><td>{% trans "Margin" %}</td><td>{{ lead.margin }} k€</td></tr>
     </table>
 <h2>{% trans "Billing" %}</h2>        
     {% include "billing/_lead_billing.html" %}
