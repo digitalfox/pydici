@@ -159,7 +159,7 @@ def add_tag(request):
         if tagName in lead.tags.all().values_list("name", flat=True):
             answer["tag_created"] = False
         lead.tags.add(tagName)
-        tag = Tag.objects.get(name=tagName)
+        tag = Tag.objects.filter(name=tagName)[0] # We should have only one, but in case of bad data, just take the first one
         answer["tag_url"] = urlresolvers.reverse("pydici.leads.views.tag", args=[tag.id, ])
         answer["tag_name"] = tag.name
     return HttpResponse(json.dumps(answer), mimetype="application/json")
