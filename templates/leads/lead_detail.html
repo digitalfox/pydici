@@ -30,19 +30,20 @@
 	        <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>&nbsp;<font color='LightGrey'>|</font>&nbsp;
 	    {% endfor %}
 	    <div id="newtags" style="display:inline;"></div>
-
-	    <form id="tag_form" style="display:inline;">
-	        <input type="text", id="newtag", value="", maxlength="100" onclick="this.value='';"/>
-	    </form>
-	    <br/>
-	    <div id="suggested">
-		    {% if suggested_tags %}
-		    {% trans "Suggested tags: " %}
-		    {% for tag in suggested_tags %}
-		        <a href="">{{ tag }}</a>&nbsp;&nbsp;
-		    {% endfor %}
-		    {% endif %}
-	    </div>
+        {% if perms.leads.Can_change_lead %}
+    	    <form id="tag_form" style="display:inline;">
+    	        <input type="text", id="newtag", value="", maxlength="100" onclick="this.value='';"/>
+    	    </form>
+    	    <br/>
+    	    <div id="suggested">
+    		    {% if suggested_tags %}
+    		    {% trans "Suggested tags: " %}
+    		    {% for tag in suggested_tags %}
+    		        <a href="">{{ tag }}</a>&nbsp;&nbsp;
+    		    {% endfor %}
+    		    {% endif %}
+    	    </div>
+	    {% endif %}
     </div>
     {% if lead.description %}
         <div class='lead_description'>{{ lead.description|urlize|linebreaksbr }} </div>

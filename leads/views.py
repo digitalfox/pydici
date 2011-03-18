@@ -20,6 +20,7 @@ from django.utils.translation import ugettext as _
 from django.db.models import Q, Count
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page
+from django.contrib.auth.decorators import permission_required
 
 from taggit.models import Tag
 from taggit_suggest.utils import suggest_tags
@@ -146,8 +147,8 @@ def tag(request, tag_id):
                                "user": request.user },
                                RequestContext(request))
 
+@permission_required("leads.change_lead")
 def add_tag(request):
-    #TODO: add some permission control
     """Add a tag to a lead. Create the tag if needed"""
     answer = {}
     answer["tag_created"] = True # indicate if a tag was reused or created
