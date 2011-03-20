@@ -157,16 +157,62 @@ def holidayDays(month=None):
     nextMonth = (month + timedelta(40)).replace(day=1)
     return [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth)]
 
-def daysOfMonth(month):
-    """Returns list of days (datetime object) for given month (datetime object of any day in the month"""
+def daysOfMonth(month, week=None):
+    """
+    @param month: datetime object of any day in the month: 
+    @param week:week number of week to consider (1 is first etc.). All is none
+    @return: list of days (datetime object) for given month"""
     days = []
     day = timedelta(1)
     month = month.replace(day=1)
     tmpDate = month
+    nWeek = 1 # Week count
     while tmpDate.month == month.month:
-        days.append(tmpDate)
+        if week:
+            # Only add days if we are in the given week
+            if nWeek == week:
+                days.append(tmpDate)
+            elif nWeek > week:
+                # No need to browse remaining days
+                break
+        else:
+            # No week given, we count all days
+            days.append(tmpDate)
+        if tmpDate.isoweekday() == 7:
+            # Sunday, this is next week
+            nWeek += 1
+                # increment days
         tmpDate += day
+
     return days
+
+def nextWeek(cDate):
+    """    
+    @return: next monday"""
+    day = timedelta(1)
+    cDate += day
+    while cDate.isoweekday() != 1 and cDate.day != 1: cDate += day
+    return cDate
+
+def previousWeek(cDate):
+    """
+    @return: previous week first day. Weeks are split if across two month"""
+    day = timedelta(1)
+    while cDate.isoweekday() != 1 and cDate.day != 1:  cDate -= day # Begining of current week
+    cDate -= day # Go to previous week
+    while cDate.isoweekday() != 1 and cDate.day != 1:  cDate -= day # Begining of current week
+    return cDate
+
+def monthWeekNumber(cDate):
+    """@return: month week number of given date. First week of month is 1"""
+    day = timedelta(1)
+    nWeek = 1
+    tDate = cDate.replace(day=1)
+    while tDate < cDate:
+        tDate += day
+        if tDate.isoweekday() == 1:
+            nWeek += 1
+    return nWeek
 
 def staffingDates(n=12):
     """Returns a list of dict() with short/long format dates for the n next month"""

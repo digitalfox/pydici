@@ -3,9 +3,20 @@
 {% load pydici_filters %}
 
 {% block consultant_detail %}
-    <h2><a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m" %}' title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
+    <h2>
+    {% if week %}
+        <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m", week=previous_week %}' title="{% trans 'Previous week' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
+    {% else %}
+        <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m" %}' title="{% trans 'Previous month' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
+    {% endif %}
     {% trans "Timesheet" %} {{ month|date:"F Y"}}
-    <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m" %}' title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a></h2>
+    {% if week %}
+        {% trans "Week " %} {{ week }}
+        <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m", week=next_week %}' title="{% trans 'Next week' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
+    {% else %}
+        <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m" %}' title="{% trans 'Next month' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
+    {% endif %}
+    </h2>
     
     <a href="{% url pydici.staffing.views.consultant_staffing consultant.id %}" class='changelink'>{% trans "See also forecast staffing of this consultant" %}</a>
     <br/><br/>

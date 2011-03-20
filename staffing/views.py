@@ -33,7 +33,8 @@ from pydici.people.models import ConsultantProfile
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
 from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
-                                  sortMissions, holidayDays, daysOfMonth, staffingDates
+                                  sortMissions, holidayDays, daysOfMonth, staffingDates, \
+                                  previousWeek, nextWeek, monthWeekNumber
 
 def missions(request, onlyActive=True):
     """List of missions"""
@@ -267,7 +268,7 @@ def deactivate_mission(request, mission_id):
     mission.save()
     return HttpResponseRedirect(urlresolvers.reverse("missions"))
 
-def consultant_timesheet(request, consultant_id, year=None, month=None):
+def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
     """Consultant timesheet"""
     # We use the first day to represent month
     if year and month:
@@ -275,12 +276,23 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     else:
         month = date.today().replace(day=1)
 
+    if week:
+        week = int(week)
+
     forecastTotal = {} # forecast charge (value) per mission (key is mission.id)
     missions = set()   # Set of all consultant missions for this month    
-    days = daysOfMonth(month) # List of days in month
+    days = daysOfMonth(month, week=week) # List of days in month
 
-    previous_date = (month - timedelta(days=5)).replace(day=1)
-    next_date = (month + timedelta(days=40)).replace(day=1)
+    if week:
+        previous_date = previousWeek(days[0])
+        next_date = nextWeek(days[0])
+        previous_week = monthWeekNumber(previous_date)
+        next_week = monthWeekNumber(next_date)
+    else:
+        previous_date = (month - timedelta(days=5)).replace(day=1)
+        next_date = (month + timedelta(days=40)).replace(day=1)
+        previous_week = 0
+        next_week = 0
 
     consultant = Consultant.objects.get(id=consultant_id)
     readOnly = False # Wether timesheet is readonly or not
@@ -344,18 +356,25 @@ def consultant_timesheet(request, consultant_id, year=None, month=None):
     wDays = working_days(month, holiday_days)
     wDaysBalance = wDays - (sum(timesheetTotal.values()) - timesheetTotal["ticket"])
 
+    # Shrink warning list to given week if week number is given
+    if week:
+        warning = warning[days[0].day - 1:days[-1].day]
+
     return render_to_response("staffing/consultant_timesheet.html", {
                                 "consultant": consultant,
                                "form": form,
                                "read_only" : readOnly,
                                "days": days,
                                "month": month,
+                               "week" : week,
                                "missions": missions,
                                "working_days_balance" : wDaysBalance,
                                "working_days" : wDays,
                                "warning": warning,
                                "next_date": next_date,
                                "previous_date": previous_date,
+                               "previous_week" : previous_week,
+                               "next_week" : next_week,
                                "link_to_staffing" : False, # for consultant_base template links
                                "user": request.user },
                                RequestContext(request))

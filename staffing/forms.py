@@ -72,7 +72,7 @@ class TimesheetForm(forms.Form):
                     tabIndex = day.day
                 self.fields[key].widget.attrs.setdefault("tabindex", tabIndex)
 
-                if day.day == 1: # Only show label for first day
+                if day == days[0]: # Only show label for first day
                     self.fields[key].label = unicode(mission)
                 else:
                     self.fields[key].label = ""
