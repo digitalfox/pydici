@@ -102,6 +102,10 @@ class MissionAdminForm(forms.ModelForm):
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
+        if not self.cleaned_data["price"]:
+            # Don't check anything if not price given
+            return self.cleaned_data["price"]
+
         if not self.instance.lead:
             raise ValidationError(_("Cannot add price to mission without lead"))
 
