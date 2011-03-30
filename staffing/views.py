@@ -456,7 +456,7 @@ def mission_timesheet(request, mission_id):
     staffingTotal = [staffing for consultant, timesheet, staffing in missionData]
     staffingTotal = zip(*staffingTotal) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
     staffingTotal = [sum(t) for t in staffingTotal]
-    if mission.price:
+    if mission.price and timesheetTotal and staffingTotal:
         margin = float(mission.price) - timesheetTotal[-1] - staffingTotal[-1]
         margin = to_int_or_round(margin, 3)
     else:
