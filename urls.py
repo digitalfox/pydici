@@ -93,7 +93,8 @@ pydici_patterns += patterns('pydici.staffing.views',
     (r'^staffing/timesheet/consultant/(?P<consultant_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/(?P<week>\d+)/?$', 'consultant_timesheet'),
     (r'^staffing/timesheet/mission/(?P<mission_id>\d+)/$', 'mission_timesheet'),
     (r'^staffing/rate/mission/(?P<mission_id>\d+)/consultant/(?P<consultant_id>\d+)/?$', 'mission_consultant_rate'),
-    (r'^staffing/graph/rates', 'graph_timesheet_rates_bar'),
+    (r'^staffing/graph/rates/?$', 'graph_timesheet_rates_bar'),
+    (r'^staffing/graph/rates/consultant/(?P<consultant_id>\d+)', 'graph_consultant_rates'),
 )
 
 # People module

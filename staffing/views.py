@@ -18,7 +18,7 @@ from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
@@ -747,5 +747,35 @@ def graph_timesheet_rates_bar(request):
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4, ncol=4, borderaxespad=0.)
     ax.grid(True)
     ax2.grid(True)
+
+    return print_png(fig)
+
+@cache_page(60 * 10)
+def graph_consultant_rates(request, consultant_id):
+    """Nice graph of consultant rates
+    @todo: per year, with start-end date"""
+    dateRange = ((_("Last 3 months"), date.today() - timedelta(90)),
+                 (_("Last 6 months"), date.today() - timedelta(180)),
+                 (_("Last 12 months"), date.today() - timedelta(365)),
+                 (_("Forever"), date(1970, 1, 1)))
+    consultant = Consultant.objects.get(id=consultant_id)
+
+    fig = Figure(figsize=(8, 8))
+    fig.set_facecolor("white")
+
+    for i, (title, refDate) in enumerate(dateRange):
+        fc = FinancialCondition.objects.filter(consultant=consultant,
+                                               consultant__timesheet__charge__gt=0, # exclude null charge
+                                               consultant__timesheet__working_date__gte=refDate,
+                                               consultant__timesheet=F("mission__timesheet")) # Join to avoid duplicate entries
+        fc = fc.values("daily_rate").annotate(Sum("consultant__timesheet__charge")) # nb days at this rate group by timesheet
+        fc = fc.values_list("daily_rate", "consultant__timesheet__charge__sum")
+        fc = fc.order_by("daily_rate")
+
+        ax = fig.add_subplot(2, 2, i + 1)
+        ax.pie([x[1] for x in fc], colors=COLORS,
+           labels=[u"%s €\n(%s)" % (x[0], x[1]) for x in fc],
+           shadow=True, autopct='%1.1f%%')
+        ax.set_title(title)
 
     return print_png(fig)
