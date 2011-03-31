@@ -800,5 +800,6 @@ def graph_consultant_rates_graph(request, consultant_id):
               loc=4, ncol=4, borderaxespad=0.)
     ax.set_xticks(kdates)
     ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
+    ax.set_ylim(ymin=min(i for i in ydata if i > 0) - 100, ymax=max(ydata) + 100)
 
     return print_png(fig)
