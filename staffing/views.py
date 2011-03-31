@@ -22,8 +22,7 @@ from django.db.models import Sum, F
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
-from django.views.decorators.cache import cache_page
-
+from django.views.decorators.cache import cache_page, cache_control
 
 
 from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
@@ -50,6 +49,7 @@ def missions(request, onlyActive=True):
                                "user": request.user },
                                RequestContext(request))
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
     if (request.user.has_perm("staffing.add_staffing") and
@@ -84,7 +84,7 @@ def mission_staffing(request, mission_id):
                                RequestContext(request))
 
 
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
     consultant = Consultant.objects.get(id=consultant_id)
@@ -268,6 +268,8 @@ def deactivate_mission(request, mission_id):
     mission.save()
     return HttpResponseRedirect(urlresolvers.reverse("missions"))
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
     """Consultant timesheet"""
     # We use the first day to represent month
@@ -476,6 +478,7 @@ def mission_timesheet(request, mission_id):
                                "user": request.user },
                                RequestContext(request))
 
+
 def all_timesheet(request, year=None, month=None):
     if year and month:
         month = date(int(year), int(month), 1)
@@ -558,6 +561,7 @@ def all_timesheet(request, year=None, month=None):
                                "charges" : charges },
                                RequestContext(request))
 
+
 def all_csv_timesheet(request, charges, month):
     response = HttpResponse(mimetype="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
@@ -575,6 +579,7 @@ def all_csv_timesheet(request, charges, month):
             row.append(i)
         writer.writerow(row)
     return response
+
 
 @permission_required("staffing.add_mission")
 def create_new_mission_from_lead(request, lead_id):
@@ -614,6 +619,7 @@ def mission_consultant_rate(request, mission_id, consultant_id):
     condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
                                                                   defaults={"daily_rate":0})
     return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_financialcondition_change", args=[condition.id, ]))
+
 
 @cache_page(60 * 10)
 def graph_timesheet_rates_bar(request):
@@ -749,6 +755,7 @@ def graph_timesheet_rates_bar(request):
     ax2.grid(True)
 
     return print_png(fig)
+
 
 @cache_page(60 * 10)
 def graph_consultant_rates_pie(request, consultant_id):
