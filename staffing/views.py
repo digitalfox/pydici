@@ -751,31 +751,54 @@ def graph_timesheet_rates_bar(request):
     return print_png(fig)
 
 @cache_page(60 * 10)
-def graph_consultant_rates(request, consultant_id):
-    """Nice graph of consultant rates
-    @todo: per year, with start-end date"""
-    dateRange = ((_("Last 3 months"), date.today() - timedelta(90)),
-                 (_("Last 6 months"), date.today() - timedelta(180)),
-                 (_("Last 12 months"), date.today() - timedelta(365)),
+def graph_consultant_rates_pie(request, consultant_id):
+    """Nice graph of consultant rates"""
+    today = date.today()
+    dateRange = ((_("Last 3 months"), today - timedelta(90)),
+                 (_("Last 6 months"), today - timedelta(180)),
+                 (_("Last 12 months"), today - timedelta(365)),
                  (_("Forever"), date(1970, 1, 1)))
     consultant = Consultant.objects.get(id=consultant_id)
 
     fig = Figure(figsize=(8, 8))
     fig.set_facecolor("white")
 
+    # Rates pies
     for i, (title, refDate) in enumerate(dateRange):
-        fc = FinancialCondition.objects.filter(consultant=consultant,
-                                               consultant__timesheet__charge__gt=0, # exclude null charge
-                                               consultant__timesheet__working_date__gte=refDate,
-                                               consultant__timesheet=F("mission__timesheet")) # Join to avoid duplicate entries
-        fc = fc.values("daily_rate").annotate(Sum("consultant__timesheet__charge")) # nb days at this rate group by timesheet
-        fc = fc.values_list("daily_rate", "consultant__timesheet__charge__sum")
-        fc = fc.order_by("daily_rate")
-
+        fc = consultant.getFinancialConditions(refDate, today)
         ax = fig.add_subplot(2, 2, i + 1)
         ax.pie([x[1] for x in fc], colors=COLORS,
            labels=[u"%s €\n(%s)" % (x[0], x[1]) for x in fc],
            shadow=True, autopct='%1.1f%%')
         ax.set_title(title)
+
+    return print_png(fig)
+
+
+@cache_page(60 * 10)
+def graph_consultant_rates_graph(request, consultant_id):
+    """Nice graph of consultant rates"""
+    consultant = Consultant.objects.get(id=consultant_id)
+    ydata = []
+    fig = Figure(figsize=(8, 8))
+    fig.set_facecolor("white")
+    ax = fig.add_subplot(1, 1, 1)
+
+    # Avg rate / month
+    ts = Timesheet.objects.filter(consultant=consultant, charge__gt=0)
+    kdates = ts.dates("working_date", "month")
+    for refDate in kdates:
+        nextMonth = (refDate + timedelta(40)).replace(day=1)
+        fc = consultant.getFinancialConditions(refDate, nextMonth)
+        if fc:
+            ydata.append(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc]))
+        else:
+            ydata.append(0)
+
+    b = ax.plot(kdates, ydata, '-o', ms=10, lw=4, color=COLORS[0], mfc=COLORS[0])
+    ax.legend(b, [_(u"Average daily rate (€)")], bbox_to_anchor=(0., 1.02, 1., .102),
+              loc=4, ncol=4, borderaxespad=0.)
+    ax.set_xticks(kdates)
+    ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
 
     return print_png(fig)

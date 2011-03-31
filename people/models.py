@@ -9,7 +9,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.admin.models import User
-from django.db.models import Q
+from django.db.models import Q, F, Sum
 
 from datetime import date, timedelta
 
@@ -81,6 +81,22 @@ class Consultant(models.Model):
         missions = Mission.objects.filter(timesheet__working_date__gte=month, timesheet__working_date__lt=nextMonth, timesheet__consultant=self)
         missions = missions.distinct()
         return missions
+
+    def getFinancialConditions(self, startDate, endDate):
+        """Get consultant's financial condition between startDate (included) and enDate (excluded)
+        @return: ((rate1, #days), (rate2, #days)...)"""
+        from pydici.staffing.models import FinancialCondition
+        fc = FinancialCondition.objects.filter(consultant=self,
+                                               consultant__timesheet__charge__gt=0, # exclude null charge
+                                               consultant__timesheet__working_date__gte=startDate,
+                                               consultant__timesheet__working_date__lt=endDate,
+                                               consultant__timesheet=F("mission__timesheet")) # Join to avoid duplicate entries
+        fc = fc.values("daily_rate").annotate(Sum("consultant__timesheet__charge")) # nb days at this rate group by timesheet
+        fc = fc.values_list("daily_rate", "consultant__timesheet__charge__sum")
+        fc = fc.order_by("daily_rate")
+        return fc
+
+
 
     def getUser(self):
         """Return django user behind this consultant
