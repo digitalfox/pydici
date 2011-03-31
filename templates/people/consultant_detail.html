@@ -19,7 +19,7 @@
 {% endif %}
 <h4>{% trans "Profil: " %} {{consultant.profil }}</h4>
 <p>{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href='{% url pydici.people.views.consultant_detail consultant.manager.id %}'>{{ consultant.manager.full_name }}</a>{% endifnotequal %}</p>
-
+<div id="leftcol" style="float:left;">
 {% if staff %}
     <h2>{% trans "Staff" %}</h2>
     <ul>
@@ -65,10 +65,20 @@
 {% endif %}
 
 <br/>
+
+</div>
+<div id="rightCol" style="float:left; width:'30%';">
+    <a href="{% url staffing.views.graph_consultant_rates_pie consultant.id %}"><img src="{% url staffing.views.graph_consultant_rates_pie consultant.id %}" width="500"/></a>
+    <br/>
+    <a href="{% url staffing.views.graph_consultant_rates_graph consultant.id %}"><img src="{% url staffing.views.graph_consultant_rates_graph consultant.id %}" width="500"/></a>
+</div>
+
+<div style="clear:both;">
 <a href='{% url admin:people_consultant_change consultant.id %}'>{% trans "Change this consultant" %}</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 <a href='{% url pydici.staffing.views.consultant_staffing consultant.id %}'>{% trans "Consultant's staffing" %}</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 <a href='{% url pydici.staffing.views.consultant_timesheet consultant.id %}'>{% trans "Consultant's timesheet" %}</a>
+</div>
 </div>
 {% endblock %}
