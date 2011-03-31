@@ -766,6 +766,10 @@ def graph_consultant_rates_pie(request, consultant_id):
     # Rates pies
     for i, (title, refDate) in enumerate(dateRange):
         fc = consultant.getFinancialConditions(refDate, today)
+        fc = fc.order_by('consultant__timesheet__charge__sum').reverse()[:6] # Only keep more important one
+        fc = list(fc) # Swich to list because sliced qs cannot be sorted
+        fc.sort(key=lambda x: x[0]) # sort on daily rates
+
         ax = fig.add_subplot(2, 2, i + 1)
         ax.pie([x[1] for x in fc], colors=COLORS,
            labels=[u"%s €\n(%s)" % (x[0], x[1]) for x in fc],
