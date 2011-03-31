@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-20 17:47+0100\n"
-"PO-Revision-Date: 2011-03-20 17:47+0100\n"
+"POT-Creation-Date: 2011-03-31 22:37+0200\n"
+"PO-Revision-Date: 2011-03-31 22:37+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -110,13 +110,13 @@ msgid "Bill"
 msgstr "Facture"
 
 #: core/models.py:16 crm/models.py:21 crm/models.py:42 leads/models.py:45
-#: leads/views.py:101 people/models.py:21 people/models.py:100
+#: leads/views.py:101 people/models.py:21 people/models.py:116
 #: templates/staffing/consultant_base.html:20
 #: templates/staffing/missions.html:29
 msgid "Name"
 msgstr "Nom"
 
-#: core/models.py:21 people/models.py:35 people/models.py:102
+#: core/models.py:21 people/models.py:35 people/models.py:118
 msgid "Subsidiary"
 msgstr "Filiale"
 
@@ -152,7 +152,7 @@ msgstr "Entreprise"
 msgid "Client organisation"
 msgstr "Département"
 
-#: crm/models.py:44 people/models.py:105
+#: crm/models.py:44 people/models.py:121
 msgid "Phone"
 msgstr "Téléphone"
 
@@ -286,7 +286,7 @@ msgid "Responsible"
 msgstr "Responsable"
 
 #: leads/forms.py:20 leads/models.py:49 leads/views.py:102
-#: people/models.py:116 templates/core/index.html:21
+#: people/models.py:132 templates/core/index.html:21
 #: templates/core/index.html.py:46 templates/core/index.html:70
 #: templates/core/index.html.py:94 templates/leads/review.html:26
 #: templates/leads/review.html.py:55
@@ -409,7 +409,7 @@ msgstr "Profile du consultant"
 msgid "Productive"
 msgstr "Productif"
 
-#: people/models.py:37 people/models.py:103 staffing/models.py:38
+#: people/models.py:37 people/models.py:119 staffing/models.py:38
 msgid "Active"
 msgstr "Active"
 
@@ -417,13 +417,13 @@ msgstr "Active"
 msgid "Profil"
 msgstr "Profile"
 
-#: people/models.py:95 staffing/forms.py:45
+#: people/models.py:111 staffing/forms.py:45
 #: templates/staffing/mission_base.html:24
 #: templates/staffing/mission_staffing.html:13
 msgid "Consultant"
 msgstr "Consultant"
 
-#: people/models.py:117
+#: people/models.py:133
 msgid "Salesmen"
 msgstr "Commerciaux"
 
@@ -456,17 +456,17 @@ msgstr "Mission"
 msgid "Days without lunch ticket"
 msgstr "Jours sans ticket restaurant"
 
-#: staffing/forms.py:106
+#: staffing/forms.py:110
 msgid "Cannot add price to mission without lead"
 msgstr "Impossible d'ajouter un montant à une mission sans affaire"
 
-#: staffing/forms.py:109
+#: staffing/forms.py:113
 msgid "Mission's lead has no sales price. Define lead sales price."
 msgstr ""
 "L'affaire de cette mission n'a pas de prix de vente. Il faut en définir un "
 "au préalable."
 
-#: staffing/forms.py:118
+#: staffing/forms.py:122
 #, python-format
 msgid "Only %s k€ are remaining on this lead. Define a lower price"
 msgstr ""
@@ -573,6 +573,26 @@ msgstr "Taux journalier (€)"
 #: staffing/views.py:743
 msgid "Prod. rate"
 msgstr "Taux de prod."
+
+#: staffing/views.py:757
+msgid "Last 3 months"
+msgstr "3 derniers mois"
+
+#: staffing/views.py:758
+msgid "Last 6 months"
+msgstr "6 derniers mois"
+
+#: staffing/views.py:759
+msgid "Last 12 months"
+msgstr "12 derniers mois"
+
+#: staffing/views.py:760
+msgid "Forever"
+msgstr "Depuis toujours"
+
+#: staffing/views.py:803
+msgid "Average daily rate (€)"
+msgstr "Taux journalier moyen (€)"
 
 #: templates/404.html:12
 #, python-format
@@ -1247,15 +1267,15 @@ msgstr "Affaires en tant que responsable"
 msgid "Current leads as resource"
 msgstr "Affaires en tant que ressource"
 
-#: templates/people/consultant_detail.html:68
+#: templates/people/consultant_detail.html:77
 msgid "Change this consultant"
 msgstr "Modifier ce consultant"
 
-#: templates/people/consultant_detail.html:70
+#: templates/people/consultant_detail.html:79
 msgid "Consultant's staffing"
 msgstr "Prévisions de charge du consultant"
 
-#: templates/people/consultant_detail.html:72
+#: templates/people/consultant_detail.html:81
 msgid "Consultant's timesheet"
 msgstr "Feuille de temps du consultant"
 
