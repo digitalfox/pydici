@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 # Django settings for pydici project.
 
+import os
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -12,6 +14,9 @@ MANAGERS = ADMINS
 
 
 # Pydici specific parameters
+
+# Root dir
+PYDICI_ROOTDIR = os.path.abspath(os.path.dirname(__file__))
 
 # Application prefix without leading or trailing slash
 # Ex. if defined to 'pydici', index url will be http://my-site.com/pydici/
@@ -107,7 +112,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/home/fox/prog/workspace/pydici/templates'
+    os.path.join(PYDICI_ROOTDIR, 'templates'),
 )
 
 INSTALLED_APPS = (

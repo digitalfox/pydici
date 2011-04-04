@@ -3,6 +3,9 @@
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: GPL v3 or newer
 """
+# Python import
+import os
+
 # Django import
 from django.conf.urls.defaults import *
 from django.contrib import admin
@@ -48,7 +51,7 @@ pydici_patterns += patterns('',
 
     # Media
     (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-            {'document_root': '/home/fox/prog/workspace/pydici/media/'}),
+            {'document_root': os.path.join(pydici.settings.PYDICI_ROOTDIR, 'media')}),
 
     # Feeds
     url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',

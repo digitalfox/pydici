@@ -1,2 +1,2 @@
 #!/bin/sh
-./manage.py runserver --adminmedia=/home/fox/prog/workspace/pydici/media/ $* 8888
+./manage.py runserver --adminmedia=$(dirname $0)/media/ $* 8888
