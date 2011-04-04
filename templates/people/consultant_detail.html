@@ -13,65 +13,80 @@
 {% block content %}
 
 <div id="content-main">
-<h1>{{ consultant.full_name }}</h1>
+<h1>{{ consultant.full_name }} - {{consultant.profil }}</h1>
 {% if not consultant.active %}
 <h3>{% trans "This consultant does not work anymore for the company" %}</h3>
 {% endif %}
-<h4>{% trans "Profil: " %} {{consultant.profil }}</h4>
-<p>{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href='{% url pydici.people.views.consultant_detail consultant.manager.id %}'>{{ consultant.manager.full_name }}</a>{% endifnotequal %}</p>
-<div id="leftcol" style="float:left;">
-{% if staff %}
-    <h2>{% trans "Staff" %}</h2>
-    <ul>
-    {% for people in staff %}
-        <li><a href='{% url pydici.people.views.consultant_detail people.id %}'>{{ people.full_name }}</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
 
-<h2>{% trans "Clients" %}</h2>
+<div class="pydici-grid">
 <ul>
-{% for company in companies %}
-    <li><a href="{% url pydici.crm.views.company_detail company.id %}">{{ company }}</a></li>
-{% endfor %}
+<li>
+    <div class="pydici-grid-item">
+	<p>{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href='{% url pydici.people.views.consultant_detail consultant.manager.id %}'>{{ consultant.manager.full_name }}</a>{% endifnotequal %}</p>
+	{% if staff %}
+	    <h3>{% trans "Staff" %}</h3>
+	    <ul>
+	    {% for people in staff %}
+	        <li><a href='{% url pydici.people.views.consultant_detail people.id %}'>{{ people.full_name }}</a></li>
+	    {% endfor %}
+	    </ul>
+	{% endif %}
+	</div>
+</li>
+<li>
+    <div class="pydici-grid-item">
+	<h3>{% trans "Clients" %}</h3>
+	<ul>
+	{% for company in companies %}
+	    <li><a href="{% url pydici.crm.views.company_detail company.id %}">{{ company }}</a></li>
+	{% endfor %}
+	</ul>
+	</div>
+</li>
+<li>
+    <div class="pydici-grid-long-item">
+	<h3>{% trans "Current missions" %}</h3>
+	<ul>
+	{% for mission in missions %}
+	    <li><a href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a></li>
+	{% endfor %}
+	</ul>
+	</div>
+</li>
+<li>
+    <div class="pydici-grid-long-item">
+	{% if leads_as_responsible %}
+	<h3>{% trans "Current leads as responsible" %}</h3>
+	<ul>
+	{% for lead in leads_as_responsible %}
+	    <li><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead }}</a></li>
+	{% endfor %}
+	</ul>
+	{% endif %}
+	</div>
+</li>
+<li>
+    <div class="pydici-grid-long-item">
+	{% if leads_as_staffee %}
+	<h3>{% trans "Current leads as resource" %}</h3>
+	<ul>
+	{% for lead in leads_as_staffee %}
+	    <li><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead }}</a></li>
+	{% endfor %}
+	</ul>
+	{% endif %}	
+	</div>
+</li>
+<div style="clear:both">&nbsp;</div>
+<li>    
+    <a href="{% url staffing.views.graph_consultant_rates_pie consultant.id %}"><img src="{% url staffing.views.graph_consultant_rates_pie consultant.id %}" width="280"/></a>
+</li>
+<li>
+    <a href="{% url staffing.views.graph_consultant_rates_graph consultant.id %}"><img src="{% url staffing.views.graph_consultant_rates_graph consultant.id %}" width="280"/></a>
+</li>    
 </ul>
-
-<h2>{% trans "Current missions" %}</h2>
-<ul>
-{% for mission in missions %}
-    <li><a href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a></li>
-{% endfor %}
-</ul>
-
-
-<h2>{% trans "Leads" %}</h2>
-
-{% if leads_as_responsible %}
-<h3>{% trans "Current leads as responsible" %}</h3>
-<ul>
-{% for lead in leads_as_responsible %}
-    <li><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead }}</a></li>
-{% endfor %}
-</ul>
-{% endif %}
-
-{% if leads_as_staffee %}
-<h3>{% trans "Current leads as resource" %}</h3>
-<ul>
-{% for lead in leads_as_staffee %}
-    <li><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead }}</a></li>
-{% endfor %}
-</ul>
-{% endif %}
-
+</div>
 <br/>
-
-</div>
-<div id="rightCol" style="float:left; width:'30%';">
-    <a href="{% url staffing.views.graph_consultant_rates_pie consultant.id %}"><img src="{% url staffing.views.graph_consultant_rates_pie consultant.id %}" width="500"/></a>
-    <br/>
-    <a href="{% url staffing.views.graph_consultant_rates_graph consultant.id %}"><img src="{% url staffing.views.graph_consultant_rates_graph consultant.id %}" width="500"/></a>
-</div>
 
 <div style="clear:both;">
 <a href='{% url admin:people_consultant_change consultant.id %}'>{% trans "Change this consultant" %}</a>
