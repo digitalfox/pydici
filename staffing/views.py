@@ -806,7 +806,7 @@ def graph_consultant_rates_graph(request, consultant_id):
         else:
             ydata.append(None)
 
-    if not ydata:
+    if len([i for i in ydata if i > 0]) == 0:
         return print_png(fig)
 
     b = ax.plot(kdates, ydata, '-o', ms=10, lw=4, color=COLORS[0], mfc=COLORS[0])
