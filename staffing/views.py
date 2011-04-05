@@ -738,20 +738,25 @@ def graph_timesheet_rates_bar(request):
 
     # Add Legend and setup axes
     ax.set_ylim(ymax=115)
-    # ymin is set as the min non null rate minus 200. Sum is used to flatten list of list 
-    ax2.set_ylim(ymin=min([i for i in sum(y2data.values(), []) if i > 0]) - 200,
-                 ymax=max([max(i) for i in y2data.values()]) + 200)
     ax.set_xticks(kdates)
-    ax2.set_xticks(kdates)
     ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
     ax.set_ylabel("%")
-    ax2.set_ylabel(_(u"Daily rate (€)"))
     ax.legend(plots, [i[1] for i in Mission.MISSION_NATURE] + [_("Prod. rate")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
               ncol=4, borderaxespad=0.)
+    ax.grid(True)
+
+    if len([i for i in sum(y2data.values(), []) if i > 0]) == 0:
+        # Second graph (ax2) is empty
+        return print_png(fig)
+
+    # ymin is set as the min non null rate minus 200. Sum is used to flatten list of list
+    ax2.set_ylim(ymin=min([i for i in sum(y2data.values(), []) if i > 0]) - 200,
+                 ymax=max([max(i) for i in y2data.values()]) + 200)
+    ax2.set_xticks(kdates)
+    ax2.set_ylabel(_(u"Daily rate (€)"))
     ax2.legend(plots2, [v for k, v in profils.items() if sum(y2data[k]) != 0],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4, ncol=4, borderaxespad=0.)
-    ax.grid(True)
     ax2.grid(True)
 
     return print_png(fig)
