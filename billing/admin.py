@@ -6,10 +6,7 @@ Django administration setup
 """
 
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 
-from ajax_select import make_ajax_form
 from ajax_select.admin import AjaxSelectAdmin
 
 from pydici.billing.models import Bill

@@ -4,15 +4,14 @@
 @license: GPL v3 or newer
 """
 
-from django.contrib.syndication.feeds import Feed, FeedDoesNotExist
+from django.contrib.syndication.feeds import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import ugettext as _
+from django.core import urlresolvers
 
 from pydici.staffing.models import Staffing
 from pydici.people.models import Consultant
 
-import pydici.settings
-from django.core import urlresolvers
 
 class StaffingFeed(Feed):
     feed_type = Atom1Feed

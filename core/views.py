@@ -5,8 +5,6 @@ Pydici core views. Http request are processed here.
 @license: GPL v3 or newer
 """
 
-import pydici.settings
-
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -17,8 +15,6 @@ from pydici.people.models import Consultant, SalesMan
 from pydici.crm.models import ClientCompany, ClientContact
 from pydici.staffing.models import Mission
 from pydici.billing.models import Bill
-
-from pydici.core.forms import SearchForm
 
 
 @login_required

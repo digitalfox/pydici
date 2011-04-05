@@ -6,8 +6,6 @@ Django administration setup for pydici core module
 """
 
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 
 from pydici.core.models import Subsidiary
 

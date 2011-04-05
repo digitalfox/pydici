@@ -5,7 +5,6 @@ Core form setup
 @license: GPL v3 or newer
 """
 
-from django.utils.translation import ugettext as _
 from django import forms
 
 class SearchForm(forms.Form):

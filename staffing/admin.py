@@ -6,8 +6,6 @@ Django administration setup
 """
 
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 
 from pydici.staffing.models import Mission, Holiday, Timesheet, FinancialCondition
 from pydici.staffing.forms import MissionAdminForm

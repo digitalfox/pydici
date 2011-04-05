@@ -6,9 +6,6 @@ Django administration setup for pydici CRM module
 """
 
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
-
 
 from pydici.crm.models import Client, ClientOrganisation, ClientCompany, \
                               ClientContact, BusinessBroker

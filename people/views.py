@@ -5,14 +5,11 @@ Pydici people views. Http request are processed here.
 @license: GPL v3 or newer
 """
 
-from datetime import datetime
-
 from django.shortcuts import render_to_response
 from django.http import Http404
 from django.template import RequestContext
 
 from pydici.people.models import Consultant
-from pydici.staffing.models import Mission, Staffing, Timesheet
 from pydici.crm.models import ClientCompany
 
 def consultant_detail(request, consultant_id):

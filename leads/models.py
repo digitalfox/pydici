@@ -14,10 +14,8 @@ from django.contrib.admin.models import LogEntry
 
 from taggit.managers import TaggableManager
 
-from pydici.core.utils import capitalize, compact_text
-import pydici.settings
+from pydici.core.utils import compact_text
 
-from pydici.core.models import Subsidiary
 from pydici.crm.models import Client, BusinessBroker
 from pydici.people.models import Consultant, SalesMan
 

@@ -31,10 +31,8 @@ from django.template.loader import get_template
 from django.template import Context
 
 # Pydici imports
-from pydici.staffing.models import Timesheet, Mission
 from pydici.people.models import Consultant
 from pydici.staffing.utils import gatherTimesheetData
-import pydici.settings
 
 
 

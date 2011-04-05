@@ -9,17 +9,12 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
-from ajax_select import make_ajax_form
 from ajax_select.admin import AjaxSelectAdmin
 
-from datetime import datetime
-
 from pydici.leads.models import Lead
-from pydici.staffing.models import Mission, Staffing
-
+from pydici.staffing.models import Mission
 from pydici.leads.forms import LeadForm
-
-from pydici.core.utils import send_lead_mail, capitalize
+from pydici.core.utils import send_lead_mail
 
 
 class LeadAdmin(AjaxSelectAdmin):

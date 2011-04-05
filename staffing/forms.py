@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 
 from ajax_select.fields import AutoCompleteSelectField
 
-from pydici.staffing.models import Staffing, Mission
+from pydici.staffing.models import Mission
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""

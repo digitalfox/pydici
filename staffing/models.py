@@ -10,9 +10,6 @@ from django.db.models import Q, Sum
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
-from django.db.models.signals import post_save
-from django.contrib.admin.models import LogEntry, User, CHANGE
-from django.contrib.contenttypes.models import ContentType
 
 from datetime import datetime
 

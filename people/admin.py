@@ -6,8 +6,6 @@ Django administration setup
 """
 
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 
 from pydici.people.models import SalesMan, Consultant, ConsultantProfile
 

@@ -7,10 +7,8 @@ Database access layer for pydici CRM module
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 
 from pydici.core.utils import capitalize
-import pydici.settings
 
 from pydici.core.models import Subsidiary
 

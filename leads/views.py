@@ -27,7 +27,6 @@ from taggit_suggest.utils import suggest_tags
 
 from pydici.core.utils import send_lead_mail, print_png, COLORS
 from pydici.leads.models import Lead
-from pydici.people.models import SalesMan
 import pydici.settings
 from pydici.core.utils import capitalize
 

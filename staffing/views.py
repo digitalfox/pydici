@@ -5,7 +5,7 @@ Pydici staffing views. Http request are processed here.
 @license: GPL v3 or newer
 """
 
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 import csv
 import itertools
 
@@ -18,7 +18,7 @@ from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
-from django.db.models import Sum, F
+from django.db.models import Sum
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
