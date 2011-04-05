@@ -15,6 +15,7 @@ import pydici.settings
 
 # Python modules used by tests
 from urllib2 import urlparse
+from datetime import date
 
 TEST_USERNAME = "fox"
 TEST_PASSWORD = "rototo"
@@ -127,6 +128,54 @@ class SimpleTest(TestCase):
             self.failUnlessEqual(response.status_code, 200,
                 "Failed to test pdc_review with arg %s (got %s instead of 200" % (arg, response.status_code))
 
+class UtilsTest(TestCase):
+    def test_monthWeekNumber(self):
+        from pydici.staffing.utils import monthWeekNumber
+        # Week number, date
+        dates = ((1, date(2011, 4, 1)),
+                 (1, date(2011, 4, 3)),
+                 (2, date(2011, 4, 4)),
+                 (2, date(2011, 4, 10)),
+                 (5, date(2011, 4, 30)))
+        for weekNum, weekDate in dates:
+            self.assertEqual(weekNum, monthWeekNumber(weekDate))
+
+    def test_previousWeek(self):
+        from pydici.staffing.utils import previousWeek
+        # Previous week first day, week day
+        dates = ((date(2011, 3, 28), date(2011, 4, 1)),
+                 (date(2011, 3, 28), date(2011, 4, 2)),
+                 (date(2011, 3, 28), date(2011, 4, 3)),
+                 (date(2011, 4, 1), date(2011, 4, 4)),
+                 (date(2011, 4, 1), date(2011, 4, 10)),
+                 (date(2011, 4, 18), date(2011, 4, 30)),
+                 (date(2010, 12, 27), date(2011, 1, 1)),
+                 (date(2010, 12, 27), date(2011, 1, 2)),
+                 (date(2011, 1, 1), date(2011, 1, 3)),
+                 )
+        for firstDay, weekDay in dates:
+            self.assertEqual(firstDay, previousWeek(weekDay))
+
+    def test_nextWeek(self):
+        from pydici.staffing.utils import nextWeek
+        # Previous week first day, week day
+        dates = ((date(2011, 4, 4), date(2011, 4, 1)),
+                 (date(2011, 4, 4), date(2011, 4, 2)),
+                 (date(2011, 4, 4), date(2011, 4, 3)),
+                 (date(2011, 4, 11), date(2011, 4, 4)),
+                 (date(2011, 4, 11), date(2011, 4, 10)),
+                 (date(2011, 5, 1), date(2011, 4, 30)),
+                 (date(2011, 5, 2), date(2011, 5, 1)),
+                 (date(2011, 1, 1), date(2010, 12, 31)),
+                 (date(2011, 1, 3), date(2011, 1, 1)),
+                 (date(2011, 1, 3), date(2011, 1, 2)),
+                 (date(2011, 1, 10), date(2011, 1, 3)),
+                 )
+        for firstDay, weekDay in dates:
+            self.assertEqual(firstDay, nextWeek(weekDay))
+
+
+#######
 def create_lead():
     """Create test lead
     @return: lead object"""
