@@ -17,22 +17,25 @@ import pydici.settings
 from urllib2 import urlparse
 from datetime import date
 
-TEST_USERNAME = "fox"
+TEST_USERNAME = "sre"
 TEST_PASSWORD = "rototo"
 PREFIX = "/" + pydici.settings.PYDICI_PREFIX
 
 class SimpleTest(TestCase):
     fixtures = ["auth.json", "core.json", "people.json", "crm.json",
-                "leads.json", "staffing.json"]
+                "leads.json", "staffing.json", "billing.json"]
 
 
     def test_basic_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        searchParams = "&lead=on&mission=on&company=on&contact=on&consultant=on&bill=on"
         for page in ("/",
                      "/search",
                      "/search?q=lala",
-                     "/search?q=a",
-                     "/search?q=a+e",
+                     "/search?q=a" + searchParams,
+                     "/search?q=sre" + searchParams,
+                     "/search?q=wonderful" + searchParams,
+                     "/search?q=a+e" + searchParams,
                      "/leads/1/",
                      "/leads/2/",
                      "/leads/3/",
@@ -121,7 +124,7 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(response.status_code, 200)
         context = response.context[-1]
         self.failUnlessEqual(unicode(context["lead"]), u"World company : DSI  - laala")
-        self.failUnlessEqual(unicode(context["user"]), "fox")
+        self.failUnlessEqual(unicode(context["user"]), "sre")
 
     def test_pdc_review(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)

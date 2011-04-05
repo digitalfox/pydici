@@ -1,0 +1,92 @@
+[
+    {
+        "pk": 2, 
+        "model": "billing.bill", 
+        "fields": {
+            "comment": "poupoupou", 
+            "payment_date": "2010-11-30", 
+            "lead": 3, 
+            "due_date": "2010-11-10", 
+            "previous_year_bill": false, 
+            "state": "2_PAID", 
+            "creation_date": "2010-11-29", 
+            "amount": "25", 
+            "bill_id": "A101010"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "billing.bill", 
+        "fields": {
+            "comment": "", 
+            "payment_date": "2010-11-29", 
+            "lead": 3, 
+            "due_date": "2010-11-29", 
+            "previous_year_bill": false, 
+            "state": "2_PAID", 
+            "creation_date": "2010-11-29", 
+            "amount": "11110010", 
+            "bill_id": ""
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "billing.bill", 
+        "fields": {
+            "comment": "", 
+            "payment_date": "2010-11-29", 
+            "lead": 3, 
+            "due_date": "2010-11-29", 
+            "previous_year_bill": false, 
+            "state": "2_PAID", 
+            "creation_date": "2010-11-29", 
+            "amount": "1000", 
+            "bill_id": ""
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "billing.bill", 
+        "fields": {
+            "comment": "", 
+            "payment_date": null, 
+            "lead": 1, 
+            "due_date": "2010-11-30", 
+            "previous_year_bill": false, 
+            "state": "1_SENT", 
+            "creation_date": "2010-09-29", 
+            "amount": "10.5", 
+            "bill_id": "A201001"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "billing.bill", 
+        "fields": {
+            "comment": "", 
+            "payment_date": null, 
+            "lead": 2, 
+            "due_date": "2010-12-30", 
+            "previous_year_bill": false, 
+            "state": "1_SENT", 
+            "creation_date": "2010-11-30", 
+            "amount": "20", 
+            "bill_id": ""
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "billing.bill", 
+        "fields": {
+            "comment": "", 
+            "payment_date": "2010-11-29", 
+            "lead": 1, 
+            "due_date": "2010-11-29", 
+            "previous_year_bill": false, 
+            "state": "2_PAID", 
+            "creation_date": "2010-10-29", 
+            "amount": "50.2", 
+            "bill_id": "A101010"
+        }
+    }
+]
