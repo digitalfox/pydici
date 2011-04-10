@@ -115,14 +115,13 @@ TEMPLATE_DIRS = (
     os.path.join(PYDICI_ROOTDIR, 'templates'),
 )
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'debug_toolbar',
     'pydici.core',
     'pydici.people',
     'pydici.leads',
@@ -133,7 +132,12 @@ INSTALLED_APPS = (
     'taggit',
     'taggit_suggest',
     'taggit_templatetags',
-)
+]
+
+if DEBUG:
+    INSTALLED_APPS.extend((
+			'debug_toolbar',
+			'test_utils'))
 
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_CONFIG = { "INTERCEPT_REDIRECTS" : False }
