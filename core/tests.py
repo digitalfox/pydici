@@ -8,9 +8,14 @@ Test cases
 # Python/Django test modules
 from django.test import TestCase
 from django.core import urlresolvers
+from django.contrib.admin.models import User
 
 # Pydici modules
-from pydici.leads.models import Consultant, Client, Lead
+from pydici.core.models import Subsidiary
+from pydici.leads.models import Lead
+from pydici.people.models import Consultant, ConsultantProfile
+from pydici.crm.models import Client
+from pydici.staffing.models import Mission
 import pydici.settings
 
 # Python modules used by tests
@@ -66,6 +71,7 @@ class SimpleTest(TestCase):
                      "/staffing/timesheet/consultant/1/",
                      "/staffing/timesheet/consultant/1/?csv",
                      "/staffing/timesheet/consultant/1/2010/10",
+                     "/staffing/timesheet/consultant/1/2010/10/2",
                      "/staffing/timesheet/all",
                      "/staffing/timesheet/all/?csv",
                      "/staffing/timesheet/all/2010/11",
@@ -117,9 +123,9 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(len(lead.update_date_strf()), 14)
         self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
         self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
-        self.failUnlessEqual(urlresolvers.reverse(pydici.leads.views.detail, args=[4]), PREFIX + "/leads/4/")
+        self.failUnlessEqual(urlresolvers.reverse("pydici.leads.views.detail", args=[4]), PREFIX + "/leads/4/")
 
-        url = "".join(urlparse.urlsplit(urlresolvers.reverse(pydici.leads.views.detail, args=[4]))[2:])
+        url = "".join(urlparse.urlsplit(urlresolvers.reverse("pydici.leads.views.detail", args=[4]))[2:])
         response = self.client.get(url)
         self.failUnlessEqual(response.status_code, 200)
         context = response.context[-1]
@@ -129,7 +135,8 @@ class SimpleTest(TestCase):
     def test_pdc_review(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         url = PREFIX + "/staffing/pdcreview/2009/07"
-        for arg in ({}, {"projected":None}, {"groupby": "manager"}, {"groupby": "position"}):
+        for arg in ({}, {"projected":None}, {"groupby": "manager"}, {"groupby": "position"},
+                    {"n_month":"5"}, {"n_month":"50"}):
             response = self.client.get(url, arg)
             self.failUnlessEqual(response.status_code, 200,
                 "Failed to test pdc_review with arg %s (got %s instead of 200" % (arg, response.status_code))
@@ -180,6 +187,30 @@ class UtilsTest(TestCase):
         for firstDay, weekDay in dates:
             self.assertEqual(firstDay, nextWeek(weekDay))
 
+class ModelTest(TestCase):
+    fixtures = ["auth.json", "core.json", "people.json", "crm.json",
+                "leads.json", "staffing.json", "billing.json"]
+
+    def test_people_consultant_save(self):
+        c = Consultant()
+        c.company = Subsidiary.objects.get(id=1)
+        c.profil = ConsultantProfile.objects.get(id=1)
+        c.name = "john doe"
+        c.trigramme = "jdo"
+        c.save()
+        self.assertEqual(c.name, "John Doe")
+        self.assertEqual(c.trigramme, "JDO")
+
+    def test_people_consultant_active_missions(self):
+        c = Consultant.objects.get(trigramme="SRE")
+        self.assertEqual(list(c.active_missions()), list(Mission.objects.filter(id=1)))
+
+    def test_getUser(self):
+        c = Consultant.objects.get(trigramme="SRE")
+        u = User.objects.get(username="sre")
+        self.assertEqual(c.getUser(), u)
+        c = Consultant.objects.get(trigramme="GBA")
+        self.assertEqual(c.getUser(), None)
 
 #######
 def create_lead():
