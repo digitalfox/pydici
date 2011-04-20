@@ -68,7 +68,7 @@ tr.row-label td { font-size:9px; padding-top:2px; padding-bottom:0; border-botto
 tr.alt { background:#f6f6f6; }
 .row1 { background:#FFF2ED; }
 .row2 { background:white; }
-table.small-form-row td { padding:0px; font-size:10px; margin:0px; vertical-align: middle;}
+table.small-form-row td { padding:0px; font-size:9px; margin:0px; vertical-align: middle;}
 
 /* SORTABLE TABLES */
 thead th a:link, thead th a:visited { color:#666; display:block; }
