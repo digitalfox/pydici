@@ -52,6 +52,11 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
     mails = [] # List of mail to be sent
     for consultant in Consultant.objects.filter(active=True):
         recipients = []
+        if not consultant.forecasted_missions(currentMonth):
+            # No mission forecasted on current month
+            # Consultant may have just started
+            # No check needed. Skip it
+            continue
         missions = consultant.timesheet_missions(month=currentMonth)
         timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, currentMonth)
         url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("pydici.staffing.views.consultant_timesheet", args=[consultant.id, currentMonth.year, currentMonth.month])
