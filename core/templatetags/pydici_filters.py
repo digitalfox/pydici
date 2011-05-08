@@ -5,6 +5,7 @@ Pydici custom filters
 @license: GPL v3 or newer
 """
 
+import re
 
 from django import template
 from django.core.urlresolvers import reverse
@@ -15,6 +16,12 @@ from pydici.people.models import Consultant
 import pydici.settings
 
 register = template.Library()
+
+# *star* word
+stared_text = re.compile(r"\*(\w+)\*", re.UNICODE)
+# _underlined_ work
+underlined_text = re.compile(r"_(\w+)_", re.UNICODE)
+
 
 @register.filter
 def truncate_by_chars(value, arg):
@@ -81,3 +88,28 @@ def get_admin_mail(value, arg=None):
         return mark_safe("<a href='mailto:%s'>%s</a>" % (pydici.settings.ADMINS[0][1],
                                                          _("Mail to support")))
 
+@register.filter
+def pydici_simple_format(value, arg=None):
+    """Very simple markup formating.
+    Markdown and rst are too much complicated"""
+    # format *word* and _word_
+    value = stared_text.sub(r"<strong>\1</strong>", value)
+    value = underlined_text.sub(r"<em>\1</em>", value)
+    result = []
+    listHtml = []
+    inList = False # Flag to indicate we are in a list
+    for line in value.split("\n"):
+        if line.startswith("*") or line.startswith("-"):
+            if not inList:
+                listHtml.append("<ul>")
+            listHtml.append(u"<li>%s</li>" % line.strip().lstrip("*").lstrip("-"))
+            inList = True
+        else:
+            if inList:
+                listHtml.append("</ul>")
+                result.append("".join(listHtml))
+                listHtml = []
+            result.append(line)
+            inList = False
+    value = "\n".join(result)
+    return mark_safe(value)

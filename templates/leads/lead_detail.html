@@ -1,6 +1,7 @@
 {% extends "admin/base_site.html" %}
 
 {% load i18n %}
+{% load pydici_filters %}
 
 {% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
 
@@ -46,7 +47,7 @@
 	    {% endif %}
     </div>
     {% if lead.description %}
-        <div class='lead_description'>{{ lead.description|urlize|linebreaksbr }} </div>
+        <div class='lead_description'>{{ lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
     {% endif %}
     <hr>
     <b>{% trans "Contact: " %}</b>{{ lead.client.contact|default_if_none:_("Unknown")}} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}<br/>
