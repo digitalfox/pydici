@@ -33,14 +33,9 @@ class SimpleTest(TestCase):
 
     def test_basic_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        searchParams = "&lead=on&mission=on&company=on&contact=on&consultant=on&bill=on"
         for page in ("/",
                      "/search",
                      "/search?q=lala",
-                     "/search?q=a" + searchParams,
-                     "/search?q=sre" + searchParams,
-                     "/search?q=wonderful" + searchParams,
-                     "/search?q=a+e" + searchParams,
                      "/leads/1/",
                      "/leads/2/",
                      "/leads/3/",
@@ -91,6 +86,19 @@ class SimpleTest(TestCase):
                      "/forbiden",
                      ):
             response = self.client.get(PREFIX + page)
+            self.failUnlessEqual(response.status_code, 200,
+                                 "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
+
+    def test_page_with_args(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        searchParams = {"lead":"on", "mission":"on", "company":"on", "contact":"on",
+                        "consultant":"on", "bill":"on"}
+        for page, args in  (("/search", {"q":"a"}),
+                            ("/search", {"q":"sre"}),
+                            ("/search", {"q":"a+e"})
+                            ):
+            args.update(searchParams)
+            response = self.client.get(PREFIX + page, args)
             self.failUnlessEqual(response.status_code, 200,
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
 
