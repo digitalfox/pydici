@@ -181,6 +181,6 @@ table#change-history tbody th { width:16em; }
 .pydici-grid ul { float: left; list-style: none outside none; }
 .pydici-grid li { float: left; width:400px; margin-bottom:20px; margin-right:5px; list-style-type: none;}
 .pydici-grid-item ul      { float: left; width:50%px; list-style: none outside none}
-.pydici-grid-item li      { float: left; width:100px; margin-bottom:10px; margin-right:10px; list-style-type: square}
+.pydici-grid-item li      { float: left; width:100px; margin-bottom:0px; margin-right:10px; list-style-type: square}
 .pydici-grid-long-item ul { float: left; width:50%; list-style: none outside none}
-.pydici-grid-long-item li { float: left; margin-bottom:10px; margin-right:10px; list-style-type: square}
+.pydici-grid-long-item li { float: left; margin-bottom:0px; margin-right:10px; list-style-type: square}
