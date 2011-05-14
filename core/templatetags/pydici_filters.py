@@ -21,7 +21,8 @@ register = template.Library()
 stared_text = re.compile(r"\*(\w+)\*", re.UNICODE)
 # _underlined_ work
 underlined_text = re.compile(r"_(\w+)_", re.UNICODE)
-
+# bullet point
+bullet_point = re.compile(r"\s*[*-]{1,2}[^*-]", re.UNICODE)
 
 @register.filter
 def truncate_by_chars(value, arg):
@@ -99,7 +100,7 @@ def pydici_simple_format(value, arg=None):
     listHtml = []
     inList = False # Flag to indicate we are in a list
     for line in value.split("\n"):
-        if line.startswith("*") or line.startswith("-"):
+        if bullet_point.match(line):
             if not inList:
                 listHtml.append("<ul>")
             listHtml.append(u"<li>%s</li>" % line.strip().lstrip("*").lstrip("-"))
