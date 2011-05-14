@@ -6,7 +6,7 @@ Database access layer for pydici staffing module
 """
 
 from django.db import models
-from django.db.models import Q, Sum
+from django.db.models import Sum
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
@@ -160,7 +160,7 @@ class Holiday(models.Model):
 class Staffing(models.Model):
     """The staffing fact forecasting table: charge per month per consultant per mission"""
     consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to=Q(active=True))
+    mission = models.ForeignKey(Mission, limit_choices_to={"active":True})
     staffing_date = models.DateField(_("Date"))
     charge = models.FloatField(_("Load"), default=0)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
@@ -182,7 +182,7 @@ class Staffing(models.Model):
 class Timesheet(models.Model):
     """The staffing table: charge per day per consultant per mission"""
     consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to=Q(active=True))
+    mission = models.ForeignKey(Mission, limit_choices_to={"active":True})
     working_date = models.DateField(_("Date"))
     charge = models.FloatField(_("Load"), default=0)
 
@@ -208,7 +208,7 @@ class LunchTicket(models.Model):
 class FinancialCondition(models.Model):
     """Mission financial condition"""
     consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to=Q(active=True))
+    mission = models.ForeignKey(Mission, limit_choices_to={"active":True})
     daily_rate = models.IntegerField(_("Daily rate"))
 
     class Meta:
