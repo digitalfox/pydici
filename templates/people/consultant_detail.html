@@ -13,7 +13,17 @@
 {% block content %}
 
 <div id="content-main">
-<h1>{{ consultant.full_name }} - {{consultant.profil }}</h1>
+<h1>{{ consultant.full_name }} - {{consultant.profil }}
+&nbsp;&nbsp;
+<a href='{% url pydici.staffing.views.consultant_staffing consultant.id %}'><img title='{% trans "staffing" %}' src='{{ MEDIA_URL }}pydici/staffing.png'/></a>
+&nbsp;&nbsp;
+<a href='{% url pydici.staffing.views.consultant_timesheet consultant.id %}'><img title='{% trans "timesheet" %}' src='{{ MEDIA_URL }}pydici/timesheet.png'/></a>
+&nbsp;&nbsp;
+{% if perms.people.Can_change_Consultant %}
+<a href='{% url admin:people_consultant_change consultant.id %}'><img title='{% trans "Change" %}' src='{{ MEDIA_URL }}pydici/configure.png'/></a>
+{% endif %}
+
+</h1>
 {% if not consultant.active %}
 <h3>{% trans "This consultant does not work anymore for the company" %}</h3>
 {% endif %}
@@ -88,12 +98,7 @@
 </div>
 <br/>
 
-<div style="clear:both;">
-<a href='{% url admin:people_consultant_change consultant.id %}'>{% trans "Change this consultant" %}</a>
-&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='{% url pydici.staffing.views.consultant_staffing consultant.id %}'>{% trans "Consultant's staffing" %}</a>
-&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='{% url pydici.staffing.views.consultant_timesheet consultant.id %}'>{% trans "Consultant's timesheet" %}</a>
-</div>
+<div style="clear:both;"></div>
+{% include "leads/_tag_cloud.html" %}
 </div>
 {% endblock %}
