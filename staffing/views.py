@@ -184,7 +184,8 @@ def pdc_review(request, year=None, month=None):
         missions = set()
         for month in months:
             if projected:
-                current_staffings = consultant.staffing_set.filter(staffing_date=month).order_by()
+                # Only exclude null (0%) mission
+                current_staffings = consultant.staffing_set.filter(staffing_date=month, mission__probability__gt=0).order_by()
             else:
                 # Only keep 100% mission
                 current_staffings = consultant.staffing_set.filter(staffing_date=month, mission__probability=100).order_by()
