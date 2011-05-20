@@ -43,7 +43,7 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
     emailTemplate = get_template("batch/timesheet_warning_email.txt")
     if month == "current":
         nextMonth = (date.today().replace(day=1) + timedelta(days=40)).replace(day=1)
-        currentMonth = (nextMonth - timedelta(days=5)).replace(day=1)
+        currentMonth = date.today().replace(day=1)
     else:
         # Checking past month
         nextMonth = date.today().replace(day=1)
