@@ -2,8 +2,6 @@
 
 {% load i18n %}
 
-{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
-
 {% block bodyclass %}dashboard{% endblock %}
 
 {% block breadcrumbs %}{% endblock %}
@@ -12,6 +10,21 @@
 
 {% block content %}
 
+{% if request.session.mobile %}
+<div data-role="page" data-theme="c">
+    <div data-role="header">
+        <a href="{% url mobile_index %}" data-rel="back">{% trans "Home" %}</a>
+        <h1>{% trans "Workload shedule" %}</h1>
+        <div data-role="navbar">
+            <ul>
+               <li><a class="whiteButton" href='{% url pdcreview year=previous_slice_date|date:"Y",month=previous_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' data-direction="reverse">{% trans 'Previous months' %}</a></li>    
+               <li><a class="whiteButton" href='{% url pdcreview year=next_slice_date|date:"Y",month=next_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' >{% trans 'Next months' %}</a></li>
+            </ul>
+        </div><!-- /navbar -->
+    </div>
+    <div data-role="content">
+    <table>              
+{% else %}
 <div id="content-main">
 	<h1>
 	<a href='{% url pdcreview year=previous_slice_date|date:"Y",month=previous_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
@@ -36,6 +49,8 @@
 <br>
 <br>
 <table style="white-space: nowrap;">
+{% endif %}
+
 <tr>
     <th></th>
 	{% for month in months %}
@@ -50,7 +65,9 @@
         <th>{% trans "hol." %}</th>
         <th>{% trans "avai." %}</th>
     {% endfor %}
-    <th style="border-left:1px solid #C3C3C3;">{% trans "Clients" %}</th>
+    {% if not request.session.mobile %}
+        <th style="border-left:1px solid #C3C3C3;">{% trans "Clients" %}</th>
+    {% endif %}
 </tr>
 <tr>
     <th>{% trans "Rates"%} (%)</th>
@@ -93,12 +110,15 @@
 </tr>
 </table>
 <br/><br/>
-<h1>{% trans "Production rates review" %}</h1>
-<img src="{% url pydici.staffing.views.graph_timesheet_rates_bar %}"/>
-<br/>
-<a href='{% url missions %}'>Liste des missions</a>
-&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='{% url index %}'>Retour page d'accueil</a></i>
+
+{% if not request.session.mobile %}
+	<h1>{% trans "Production rates review" %}</h1>
+	<img src="{% url pydici.staffing.views.graph_timesheet_rates_bar %}"/>
+	<br/>
+	<a href='{% url missions %}'>Liste des missions</a>
+	&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+	<a href='{% url index %}'>Retour page d'accueil</a></i>
+{% endif %}
 
 </div>
 

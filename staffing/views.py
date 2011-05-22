@@ -125,12 +125,19 @@ def pdc_review(request, year=None, month=None):
     @param year: start date year. None means current year
     @param year: start date year. None means curre    nt month"""
 
+    #TODO: factorise this code in a decorator
+    mobile = request.session.get("mobile", False)
+
     # Don't display this page if no productive consultant are defined
     if Consultant.objects.filter(productive=True).filter(active=True).count() == 0:
         #TODO: make this message nice
         return HttpResponse(_("No productive consultant defined !"))
 
-    n_month = 3
+    if mobile:
+        n_month = 1
+    else:
+        n_month = 3
+
     if "n_month" in request.GET:
         try:
             n_month = int(request.GET["n_month"])
@@ -215,11 +222,11 @@ def pdc_review(request, year=None, month=None):
             total[month]["holidays"] += holidays
             total[month]["available"] += available
         # Add client synthesis to staffing dict
-        company = set([m.lead.client.organisation.company for m in list(missions)])
-
-        staffing[consultant].append([", ".join(["<a href='%s'>%s</a>" %
-                                        (urlresolvers.reverse("pydici.crm.views.company_detail", args=[c.id]),
-                                        unicode(c)) for c in company])])
+        if not mobile:
+            company = set([m.lead.client.organisation.company for m in list(missions)])
+            staffing[consultant].append([", ".join(["<a href='%s'>%s</a>" %
+                                                    (urlresolvers.reverse("pydici.crm.views.company_detail", args=[c.id]),
+                                                     unicode(c)) for c in company])])
 
     # Compute indicator rates
     for month in months:

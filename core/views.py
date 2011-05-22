@@ -20,6 +20,8 @@ from pydici.billing.models import Bill
 @login_required
 def index(request):
 
+    request.session["mobile"] = False
+
     myLeadsAsResponsible = set()
     myLatestArchivedLeads = set()
     myLeadsAsStaffee = set()
@@ -48,6 +50,21 @@ def index(request):
                                "my_latest_archived_leads": myLatestArchivedLeads,
                                "user": request.user },
                                RequestContext(request))
+
+
+
+@login_required
+def mobile_index(request):
+    """Mobile device index page"""
+    # Mark session as "mobile"
+    request.session["mobile"] = True
+    consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+    companies = ClientCompany.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
+    return render_to_response("core/m.index.html",
+                              {"user": request.user,
+                               "consultant" : consultant,
+                               "companies" : companies },
+                              RequestContext(request))
 
 @login_required
 def search(request):

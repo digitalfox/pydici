@@ -62,6 +62,7 @@ pydici_patterns += patterns('',
 pydici_patterns += patterns('pydici.core.views',
     url(r'^$', 'index', name='index'),
     url(r'^search$', 'search', name='search'),
+    url(r'^mobile$', 'mobile_index', name='mobile_index'),
 )
 
 # Lead module
@@ -81,6 +82,8 @@ pydici_patterns += patterns('pydici.leads.views',
 
 # Staffing module
 pydici_patterns += patterns('pydici.staffing.views',
+    #url(r'^staffing/pdcreview/mobile$', 'pdc_review', { "mobile" : True }, name='m.pdcreview-index'),
+    #url(r'^staffing/pdcreview/mobile/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', { "mobile" : True }, name='m.pdcreview'),
     url(r'^staffing/pdcreview/?$', 'pdc_review', name='pdcreview-index'),
     url(r'^staffing/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', name='pdcreview'),
     url(r'^staffing/mission/$', 'missions', name='missions'),

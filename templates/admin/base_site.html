@@ -5,6 +5,8 @@
 {% block title %}Pydici{% endblock %}
 
 {% block menu %}
+
+{% if not request.session.mobile %}
 <!-- Begin menu -->
     <div style="margin-left:10px;">
     <ul id="menu">
@@ -137,6 +139,7 @@
 </div>
     
 <!-- End menu -->
+{% endif %}
 {% endblock %}
 
 
