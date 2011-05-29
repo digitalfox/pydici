@@ -63,7 +63,8 @@ def mobile_index(request):
     return render_to_response("core/m.index.html",
                               {"user": request.user,
                                "consultant" : consultant,
-                               "companies" : companies },
+                               "companies" : companies,
+                               "leads" : Lead.objects.active().order_by("creation_date") },
                               RequestContext(request))
 
 @login_required

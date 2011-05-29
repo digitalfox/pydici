@@ -26,6 +26,7 @@
 		    <li data-role="list-divider">{% trans "Mobile pydici" %}</li>
 		    <li><a href="#companies">{% trans "My clients" %}</a></li>
 		    <li><a href="#missions">{% trans "Current missions" %}</a></li>
+		    <li><a href="#leads">{% trans "Current leads review" %}</a></li>
 		    <li><a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a></li>
 		    <li><a href="{% url pydici.staffing.views.consultant_timesheet consultant.id %}">{% trans "Timesheet" %}</a></li>
 		</ul>
@@ -61,6 +62,19 @@
         {% endfor %}  
         </ul>
     </div>  
+</div>
+
+<div data-role="page" id="leads" data-theme="c">
+        <div data-role="header">
+            <h1>{% trans "Leads" %}</h1>
+        </div>
+    <div data-role="content">
+        <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
+        {% for lead in leads %}
+            <li><a href='{% url pydici.leads.views.detail lead.id %}'>{{ lead }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
 </div>
 
 {% endblock %}

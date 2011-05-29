@@ -11,6 +11,31 @@
 
 {% block content %}
 
+{% if request.session.mobile %}
+<div data-role="page" data-theme="c">
+    <div data-role="header">
+        <a href="{% url mobile_index %}" data-transition="flip">{% trans "Home" %}</a>
+        <h1>{% trans "Lead detail" %} ({{ active_rank }} / {{ active_count }})</h1>
+        {% if active_count %}
+            <div data-role="navbar">
+                <ul>
+                    <li>
+	                   {% if previous_lead %}
+		                  <a href='{% url pydici.leads.views.detail previous_lead.id %}' data-direction="reverse">{% trans "Previous" %}</a>
+		               {% endif %}
+		              </li>
+		              <li>
+		                {% if next_lead %}
+		                   <a href='{% url pydici.leads.views.detail next_lead.id %}'>{% trans "Next" %}</a>
+	                    {% endif %}
+	                  </li>
+	             </ul>
+	         </div><!-- /navbar -->
+        {% endif %}
+    </div>
+    <div data-role="content">
+{% else %}
+
 <div id="content-main">
     <h1>{% trans "Lead detail" %}</h1>
     {% if active_count %}
@@ -46,6 +71,7 @@
     	    </div>
 	    {% endif %}
     </div>
+{% endif %} <!-- end non-mobile header -->
     {% if lead.description %}
         <div class='lead_description'>{{ lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
     {% endif %}
