@@ -18,7 +18,7 @@
 {% block content %}
 
 <div data-role="page" data-theme="c">
-	<div data-role="header">
+	<div data-role="header" data-backbtn="false">
 	    <h1>Pydici</h1>
 	</div>
     <div data-role="content">
@@ -26,7 +26,7 @@
 		    <li data-role="list-divider">{% trans "Mobile pydici" %}</li>
 		    <li><a href="#companies">{% trans "My clients" %}</a></li>
 		    <li><a href="#missions">{% trans "Current missions" %}</a></li>
-		    <li><a href="{% url pdcreview-index %}">{% trans "Workload" %}</a></li>
+		    <li><a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a></li>
 		    <li><a href="{% url pydici.staffing.views.consultant_timesheet consultant.id %}">{% trans "Timesheet" %}</a></li>
 		    <li data-role="list-divider">{% trans "Full pydici" %}</li>
 		    <li><a target="_blank" href="{% url index %}">{% trans "Home" %}</a></li>

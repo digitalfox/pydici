@@ -13,8 +13,8 @@
 {% if request.session.mobile %}
 <div data-role="page" data-theme="c">
     <div data-role="header">
-        <a href="{% url mobile_index %}" data-rel="back">{% trans "Home" %}</a>
-        <h1>{% trans "Workload shedule" %}</h1>
+        <a href="{% url mobile_index %}" data-direction="flip">{% trans "Home" %}</a>
+        <h1>{% trans "Workload schedule" %}</h1>
         <div data-role="navbar">
             <ul>
                <li><a href='{% url pdcreview year=previous_slice_date|date:"Y",month=previous_slice_date|date:"m" %}/?groupby={{groupby}};{% if projected %}projected{% endif %}' data-direction="reverse">{% trans 'Previous months' %}</a></li>
