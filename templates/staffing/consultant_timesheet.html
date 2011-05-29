@@ -7,7 +7,7 @@
 <h1>{% trans "Timesheet" %} {{ month|date:"F Y"}} {% trans "Week " %} {{ week }}</h1>
 <div data-role="navbar">
     <ul>
-       <li><a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m", week=previous_week %}'>{% trans 'Previous week' %}</a></li>
+       <li><a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m", week=previous_week %}' data-direction="reverse">{% trans 'Previous week' %}</a></li>
        <li><a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m", week=next_week %}'>{% trans 'Next week' %}</a></li>
     </ul>
 </div><!-- /navbar -->

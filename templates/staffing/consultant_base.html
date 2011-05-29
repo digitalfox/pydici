@@ -14,7 +14,7 @@
 {% if request.session.mobile %}
 <div data-role="page" data-theme="c">
     <div data-role="header">
-        <a href="{% url mobile_index %}" data-direction="flip">{% trans "Home" %}</a>
+        <a href="{% url mobile_index %}" data-transition="flip">{% trans "Home" %}</a>
         {% block mobile-page-header %}
         {% endblock %}
     </div>

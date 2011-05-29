@@ -13,7 +13,7 @@
 {% if request.session.mobile %}
 <div data-role="page" data-theme="c">
     <div data-role="header">
-        <a href="{% url mobile_index %}" data-direction="flip">{% trans "Home" %}</a>
+        <a href="{% url mobile_index %}" data-transition="flip">{% trans "Home" %}</a>
         <h1>{% trans "Workload schedule" %}</h1>
         <div data-role="navbar">
             <ul>
