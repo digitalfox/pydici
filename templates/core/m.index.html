@@ -4,7 +4,7 @@
 
 {% block mobileheader %}
 
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.css" />
     <link rel="stylesheet" href="/media/css/mobile.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.5.min.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.js"></script>
@@ -22,12 +22,15 @@
 	    <h1>Pydici</h1>
 	</div>
     <div data-role="content">
-		<ul data-role="listview" data-insert="true" data-theme="c" data-dividertheme="c">
+		<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
 		    <li data-role="list-divider">{% trans "Mobile pydici" %}</li>
 		    <li><a href="#companies">{% trans "My clients" %}</a></li>
 		    <li><a href="#missions">{% trans "Current missions" %}</a></li>
 		    <li><a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a></li>
 		    <li><a href="{% url pydici.staffing.views.consultant_timesheet consultant.id %}">{% trans "Timesheet" %}</a></li>
+		</ul>
+
+		<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
 		    <li data-role="list-divider">{% trans "Full pydici" %}</li>
 		    <li><a target="_blank" href="{% url index %}">{% trans "Home" %}</a></li>
 		</ul>
@@ -39,7 +42,7 @@
         <h1>{% trans "My clients" %}</h1>
     </div>
     <div data-role="content">
-	    <ul data-role="listview" data-insert="true" data-theme="c" data-dividertheme="c">
+	    <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
 	    {% for company in companies %}
 	        <li><a href="{% url pydici.crm.views.company_detail company.id %}">{{ company }}</a></li>
 	    {% endfor %}
@@ -52,7 +55,7 @@
             <h1>{% trans "Missions" %}</h1>                                        
         </div>
     <div data-role="content">    
-        <ul data-role="listview" data-insert="true" data-theme="c" data-dividertheme="c">
+        <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
         {% for mission in missions %}
             <li><a target="_blank" href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a></li>
         {% endfor %}  
