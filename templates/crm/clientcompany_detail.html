@@ -12,8 +12,16 @@
 
 {% block content %}
 
+{% if request.session.mobile %}
+<div data-role="page" data-theme="c">
+    <div data-role="header">
+        <h1>{{ company }}</h1>
+    </div>
+    <div data-role="content">
+{% else %}
 <div id="content-main">
 <h1>{{ company }}</h1>
+{% endif %}
 
 {% for mission in missions %}
     {% ifchanged mission.lead.client %}

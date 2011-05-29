@@ -123,7 +123,7 @@ def consultant_staffing(request, consultant_id):
 def pdc_review(request, year=None, month=None):
     """PDC overview
     @param year: start date year. None means current year
-    @param year: start date year. None means curre    nt month"""
+    @param year: start date year. None means current month"""
 
     #TODO: factorise this code in a decorator
     mobile = request.session.get("mobile", False)
@@ -280,6 +280,9 @@ def deactivate_mission(request, mission_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
     """Consultant timesheet"""
+
+    mobile = request.session.get("mobile", False)
+
     # We use the first day to represent month
     if year and month:
         month = date(int(year), int(month), 1)
@@ -288,6 +291,9 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
 
     if week:
         week = int(week)
+    elif mobile:
+        # Force week display
+        week = monthWeekNumber(date.today())
 
     forecastTotal = {} # forecast charge (value) per mission (key is mission.id)
     missions = set()   # Set of all consultant missions for this month    

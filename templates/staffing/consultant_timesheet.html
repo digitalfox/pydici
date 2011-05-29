@@ -2,7 +2,21 @@
 {% load i18n %}
 {% load pydici_filters %}
 
+
+{% block mobile-page-header %}
+<h1>{% trans "Timesheet" %} {{ month|date:"F Y"}} {% trans "Week " %} {{ week }}</h1>
+<div data-role="navbar">
+    <ul>
+       <li><a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m", week=previous_week %}'>{% trans 'Previous week' %}</a></li>
+       <li><a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m", week=next_week %}'>{% trans 'Next week' %}</a></li>
+    </ul>
+</div><!-- /navbar -->
+{% endblock %}
+
+
 {% block consultant_detail %}
+
+{% if not request.session.mobile %}
     <h2>
     {% if week %}
         <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m", week=previous_week %}' title="{% trans 'Previous week' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
@@ -17,9 +31,11 @@
         <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m" %}' title="{% trans 'Next month' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
     {% endif %}
     </h2>
-    
+
     <a href="{% url pydici.staffing.views.consultant_staffing consultant.id %}" class='changelink'>{% trans "See also forecast staffing of this consultant" %}</a>
     <br/><br/>
+{% endif %}
+
     <form action="" method="POST">
     <table class='small-form-row' style="text-align:center">
             <tr>
