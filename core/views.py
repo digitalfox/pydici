@@ -71,10 +71,12 @@ def mobile_index(request):
     request.session["mobile"] = True
     consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
     companies = ClientCompany.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
+    missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
     return render_to_response("core/m.index.html",
                               {"user": request.user,
                                "consultant" : consultant,
                                "companies" : companies,
+                               "missions" : missions,
                                "leads" : Lead.objects.active().order_by("creation_date") },
                               RequestContext(request))
 
