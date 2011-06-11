@@ -16,11 +16,22 @@ from pydici.crm.models import ClientCompany, ClientContact
 from pydici.staffing.models import Mission
 from pydici.billing.models import Bill
 
+from pydici.people.views import consultant_detail
 
 @login_required
 def index(request):
 
     request.session["mobile"] = False
+
+    try:
+        # If user is an existing consultant, return personal home page
+        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+        return consultant_detail(request, consultant.id)
+    except Consultant.DoesNotExist:
+        # Display classical home page for now...
+        # TODO: this index page should be simplifed (remove "my" stuff that don't hav
+        # any sens now
+        pass
 
     myLeadsAsResponsible = set()
     myLatestArchivedLeads = set()
