@@ -11,6 +11,15 @@
 {% block title %}{% trans "Forecast/timesheet " %}{{ mission }}{% endblock %}
 
 {% block content %}
+{% if request.session.mobile %}
+<div data-role="page" data-theme="c">
+    <div data-role="header">
+        {% block mobile-page-header %}
+            <h1>{{ mission }}</h1>
+        {% endblock %}
+    </div>
+    <div data-role="content">
+{% else %}
 
 <div id="content-staffing">
     <h1>{{ mission }}</h1>
@@ -50,25 +59,24 @@
         {% endfor %}
         </table> 
     {% endif %}
+
+{% endif %}
+
 {% block mission_detail %} {% endblock %}
- 
-<br><hr>
-<br>
-<br>
-<a href='{% url missions %}'>{% trans "Back to mission list" %}</a>
-{% if mission.lead %}
-    &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-    <a href='{% url pydici.leads.views.detail mission.lead_id %}'>{% trans "Lead of this mission" %}</a>
-{% endif %}
-{% if perms.staffing.Can_add_Mission %}
-{% if mission.lead %}
-    &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-    <a href='{% url pydici.staffing.views.create_new_mission_from_lead mission.lead.id %}'>{% trans "Create another mission for this lead" %}</a></li>
-{% endif %}
-{% endif %}
 
-        
-
-
+{% if not request.session.mobile %}
+    <br><hr><br><br>
+    <a href='{% url missions %}'>{% trans "Back to mission list" %}</a>
+	{% if mission.lead %}
+	    &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+	    <a href='{% url pydici.leads.views.detail mission.lead_id %}'>{% trans "Lead of this mission" %}</a>
+	{% endif %}
+	{% if perms.staffing.Can_add_Mission %}
+	{% if mission.lead %}
+	    &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+	    <a href='{% url pydici.staffing.views.create_new_mission_from_lead mission.lead.id %}'>{% trans "Create another mission for this lead" %}</a></li>
+	{% endif %}
+	{% endif %}
+{% endif %}
 </div>
 {% endblock %}

@@ -63,13 +63,18 @@ def index(request):
                                RequestContext(request))
 
 
-
 @login_required
 def mobile_index(request):
     """Mobile device index page"""
     # Mark session as "mobile"
     request.session["mobile"] = True
-    consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+    try:
+        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+    except Consultant.DoesNotExist:
+        # Mobile pydici does not exist for non consultant users
+        # switch back to classical home page
+        request.session["mobile"] = False
+        return index(request)
     companies = ClientCompany.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
     missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
     return render_to_response("core/m.index.html",
