@@ -90,7 +90,7 @@ class TimesheetForm(forms.Form):
             self.fields[key] = forms.BooleanField(required=False)
             self.fields[key].widget.attrs.setdefault("size", 1) # Reduce default size
             self.fields[key].widget.attrs.setdefault("data-role", "none") # Don't apply jquery theme
-            if day.day == 1: # Only show label for first day
+            if day == days[0]: # Only show label for first day
                 self.fields[key].label = _("Days without lunch ticket")
             else:
                 self.fields[key].label = "" # Squash label 
