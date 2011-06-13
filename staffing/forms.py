@@ -6,6 +6,7 @@ Staffing form setup
 """
 
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from django import forms
 from django.forms.models import BaseInlineFormSet
@@ -61,8 +62,8 @@ class TimesheetForm(forms.Form):
         for mission in missions:
             for day in days:
                 key = "charge_%s_%s" % (mission.id, day.day)
-                self.fields[key] = forms.DecimalField(required=False, min_value=0, max_value=1, decimal_places=2)
-                self.fields[key].widget.attrs.setdefault("size", 2) # Reduce default size
+                self.fields[key] = TimesheetField(required=False)
+                self.fields[key].widget.attrs.setdefault("size", 1) # Reduce default size
                 self.fields[key].widget.attrs.setdefault("readonly", 1) # Avoid direct input for mobile
                 # Order tabindex by day
                 if day.isoweekday() in (6, 7) or day in holiday_days:
@@ -124,3 +125,42 @@ class MissionAdminForm(forms.ModelForm):
 
         # No error, we return data as is
         return self.cleaned_data["price"]
+
+class TimesheetField(forms.ChoiceField):
+    widget = forms.widgets.TextInput
+    TS_VALUES = {u"0" : None,
+                u"¼" : "0.25",
+                u"½" : "0.5",
+                u"¾" : "0.75",
+                u"1" : "1"
+                }
+    TS_VALUES_R = {0 : "",
+                   0.25 : u"¼",
+                   0.5 : u"½",
+                   0.75 : u"¾",
+                   1 : u"1"}
+
+
+    def __init__(self, choices=(), required=True, widget=None, label=None,
+                 initial=None, help_text=None, *args, **kwargs):
+        super(TimesheetField, self).__init__(required=required, widget=widget, label=label,
+                                        initial=initial, help_text=help_text, *args, **kwargs)
+        self.choices = self.TS_VALUES.items()
+
+    def prepare_value(self, value):
+        return self.TS_VALUES_R.get(value, None)
+
+    def validate(self, value):
+        if value in self.TS_VALUES.keys():
+            return True
+
+    def to_python(self, value):
+        if not value and not self.required:
+            return None
+        if value is None or value == u"0":
+            return None
+        try:
+            return Decimal(self.TS_VALUES.get(value))
+        except KeyError:
+            raise forms.ValidationError("Please enter a valid input (%s)." %
+                                        ", ".join(self.TS_VALUES.keys()))

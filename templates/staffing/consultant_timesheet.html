@@ -95,11 +95,11 @@ $(document).ready(function()
 {
 	$("input[name^='charge_']").click(function()
 	    {
-	        if      ($(this).val() == 0)   { i=0.5; }
-	        else if ($(this).val() == 0.5) { i=1; }
-	        else if ($(this).val() == 1)   { i=0.25; }
-	        else if ($(this).val() == 0.25)   { i=0.75; }
-	        else if ($(this).val() == 0.75)   { i=0; }
+	        if      ($(this).val() == 0)   { i="½"; }
+	        else if ($(this).val() == "½") { i=1; }
+	        else if ($(this).val() == 1)   { i="¼"; }
+	        else if ($(this).val() == "¼")   { i="¾"; }
+	        else if ($(this).val() == "¾")   { i=0; }
 	        $(this).val(i);
 	    }
 	);
