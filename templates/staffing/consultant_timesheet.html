@@ -51,7 +51,7 @@
             {% for day in days %}
                 <td></td><td>{{ day|date:"D" }}</td>
             {% endfor %}
-            <td>{% trans "Total" %}</td><td>{% trans "Forecast" %}</td></tr>
+            <td>{% trans "Tot." %}</td><td>{% trans "Forec." %}</td></tr>
             <tr>
             {% for field in form  %}
                 {% if field.is_hidden %}
