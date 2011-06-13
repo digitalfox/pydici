@@ -63,6 +63,7 @@ class TimesheetForm(forms.Form):
                 key = "charge_%s_%s" % (mission.id, day.day)
                 self.fields[key] = forms.DecimalField(required=False, min_value=0, max_value=1, decimal_places=2)
                 self.fields[key].widget.attrs.setdefault("size", 2) # Reduce default size
+                self.fields[key].widget.attrs.setdefault("readonly", 1) # Avoid direct input for mobile
                 # Order tabindex by day
                 if day.isoweekday() in (6, 7) or day in holiday_days:
                     tabIndex = 100000 # Skip week-end from tab path
