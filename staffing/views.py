@@ -730,7 +730,7 @@ def graph_timesheet_rates_bar(request):
                 ydata.append(100 * data["PROD"][kdate] / (data["PROD"][kdate] + data["NONPROD"][kdate]))
             else:
                 ydata.append(100)
-        except KeyError:
+        except (KeyError, ZeroDivisionError):
             ydata.append(0)
         ax.text(kdate, ydata[-1] + 4, "%.1f" % ydata[-1])
 
@@ -738,7 +738,7 @@ def graph_timesheet_rates_bar(request):
         for profilId in profils.keys():
             if kdate in avgDailyRate[profilId] and kdate in nDays[profilId] and nDays[profilId][kdate] > 0:
                 y2data[profilId].append(avgDailyRate[profilId][kdate] / nDays[profilId][kdate])
-                ax2.text(kdate, y2data[profilId][-1] + 50, "%.1f" % y2data[profilId][-1])
+                ax2.text(kdate, y2data[profilId][-1] + 50, "%d" % y2data[profilId][-1])
             else:
                 y2data[profilId].append(0)
 
