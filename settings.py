@@ -137,16 +137,20 @@ INSTALLED_APPS = [
     'pydici.staffing',
     'pydici.crm',
     'pydici.billing',
+    'pydici.expense',
     'ajax_select',
     'taggit',
     'taggit_suggest',
     'taggit_templatetags',
+    'permissions',
+    'workflows',
 ]
 
 if DEBUG:
     INSTALLED_APPS.extend((
 			'debug_toolbar',
 			'test_utils',
+    			'django_extensions',
 			'mockups'))
 
 INTERNAL_IPS = ('127.0.0.1',)

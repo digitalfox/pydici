@@ -126,6 +126,13 @@ pydici_patterns += patterns('pydici.billing.views',
     (r'^billing/graph/bar', 'graph_stat_bar'),
 )
 
+# Expense module
+pydici_patterns += patterns('pydici.expense.views',
+    (r'^expense/?$', 'expenses'),
+    (r'^expense/(?P<expense_id>\d+)$', 'expenses'),
+    (r'^expense/(?P<expense_id>\d+)/(?P<transition_id>\w+)', 'update_expense_state'),
+)
+
 
 # Application prefix
 if pydici.settings.PYDICI_PREFIX:
