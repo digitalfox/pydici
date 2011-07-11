@@ -14,7 +14,7 @@
 .colSM #content-main { float:right; }
 .popup .colM { width:95%; }
 .subcol { float:left; width:46%; margin-right:15px; }
-.dashboard #content { width:80%; }
+/* .dashboard #content { width:80%; }*/
 
 /*  HEADER  */
 #header { background-image:url(../pydici/header.png); background-repeat:repeat-x; color:#ffc; overflow:hidden; }
