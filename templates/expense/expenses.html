@@ -1,0 +1,97 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+{% load permissions_tags %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{{ company }}{% endblock %}
+
+{% block content %}
+
+{% if modify_expense %}
+    <h1>{% trans "Modify the expense" %}</h1>
+{% else %}
+    <h1>{% trans "Add an expense" %}</h1>
+{% endif %}
+
+<form action='' method="POST">
+    {{ form.non_field_errors }}
+    <div class="pydici-expense-col1">
+    <div class="pydici-expense">
+            <p>{{ form.description.errors }}
+            <label>{{ form.description.label_tag }} :</label> 
+            {{ form.description }}</p>            
+            <p>{{ form.amount.errors }}
+            <label>{{ form.amount.label_tag }} :</label> 
+            {{ form.amount }} ({{ form.chargeable.label }}&nbsp;{{ form.chargeable }})</p>
+     </div></div>
+     <div class="pydici-expense-col2">
+     <div class="pydici-expense">
+            <p>{{ form.category.errors }}
+            <label>{{ form.category.label_tag }} :</label> 
+            {{ form.category }}</p>                        
+            <p>{{ form.lead.errors }}
+            <label>{{ form.lead.label_tag }} :</label> 
+            {{ form.lead }}</p>
+    </div></div>
+    <div style="clear:both"></div>
+    <input type="submit" value="{% trans 'Save' %}"/>
+
+</form>
+
+<br/><hr/><br/>
+
+<h1>{% trans "My expenses" %}</h1>
+<ul>
+    {% for expense, state, transitions in user_expenses %}
+        {% ifchanged state %}
+            <h2>{{ state.name }}</h2>
+        {% endifchanged %}
+        <li>{{ expense }}
+        {% if transitions %}
+        (
+            {% for transition in transitions %}
+                <a href='{% url pydici.expense.views.update_expense_state expense.id transition.id %}'>{{ transition }}</a>
+                {% if not forloop.last %} / {% endif %}
+            {% endfor %}
+        )            
+        {% endif %}
+        {% with expense as obj %}{% ifhasperm expense_edit %}
+                    <a href='{% url pydici.expense.views.expenses expense.id %}'>{% trans "update" %}</a>
+        {% endifhasperm %}{% endwith %}
+        </li>
+    {% endfor %}
+</ul>
+
+<br/><hr/><br/>
+
+{% if team_expenses %}
+    <h1>{% trans "My team expenses" %}</h1>
+    <ul>
+    {% for expense, state, transitions in team_expenses %}
+        {% ifchanged expense.consultant %}
+            <h2>{{ expense.consultant }}</h2>
+        {% endifchanged %}
+        {% ifchanged state %}
+            <h3>{{ state.name }}</h3>
+        {% endifchanged %}
+        <li>{{ expense }}
+        {% if transitions %}
+        (
+            {% for transition in transitions %}
+                <a href='{% url pydici.expense.views.update_expense_state expense.id transition.id %}'>{{ transition }}</a>
+                {% if not forloop.last %} / {% endif %}
+            {% endfor %}
+        )            
+        {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}

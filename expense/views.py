@@ -7,6 +7,7 @@ Pydici expense views. Http request are processed here.
 
 from datetime import date, timedelta
 import workflows.utils as wf
+import permissions.utils as perm
 from workflows.models import Transition
 
 from django.shortcuts import render_to_response
@@ -24,10 +25,14 @@ from pydici.people.models import Consultant
 def expenses(request, expense_id=None):
     """Display user expenses and expenses that he can validate"""
     consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+
     try:
         if expense_id:
             expense = Expense.objects.get(id=expense_id)
-            #TODO: check that user has permission to edit this expense
+            if not (perm.has_permission(expense, request.user, "expense_edit") and expense.consultant == consultant):
+                request.user.message_set.create(message=_("You are not allowed to edit that expense"))
+                expense_id = None
+                expense = None
     except Expense.DoesNotExist:
         request.user.message_set.create(message=_("Expense %s does not exist" % expense_id))
         expense_id = None
