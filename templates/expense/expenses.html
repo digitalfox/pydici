@@ -24,19 +24,19 @@
     <div class="pydici-expense-col1">
     <div class="pydici-expense">
             <p>{{ form.description.errors }}
-            <label>{{ form.description.label_tag }} :</label> 
+            {{ form.description.label_tag }} :
             {{ form.description }}</p>            
             <p>{{ form.amount.errors }}
-            <label>{{ form.amount.label_tag }} :</label> 
+            {{ form.amount.label_tag }} :
             {{ form.amount }} ({{ form.chargeable.label }}&nbsp;{{ form.chargeable }})</p>
      </div></div>
      <div class="pydici-expense-col2">
      <div class="pydici-expense">
             <p>{{ form.category.errors }}
-            <label>{{ form.category.label_tag }} :</label> 
+            {{ form.category.label_tag }} :
             {{ form.category }}</p>                        
             <p>{{ form.lead.errors }}
-            <label>{{ form.lead.label_tag }} :</label> 
+            {{ form.lead.label_tag }} :
             {{ form.lead }}</p>
     </div></div>
     <div style="clear:both"></div>
