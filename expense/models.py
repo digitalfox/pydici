@@ -8,6 +8,7 @@ Database access layer for pydici expense module
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.contrib.auth.models import User
 
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant
@@ -21,7 +22,7 @@ class ExpenseCategory(models.Model):
 class Expense(models.Model):
     """Consultant expense"""
     description = models.CharField(_("Description"), max_length=200)
-    consultant = models.ForeignKey(Consultant)
+    user = models.ForeignKey(User)
     lead = models.ForeignKey(Lead, null=True, blank=True)
     chargeable = models.BooleanField(_("Chargeable"))
     creation_date = models.DateField(_("Date"))

@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load permissions_tags %}
+{% load pydici_filters %}
 
 {% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
 
@@ -46,36 +47,29 @@
 
 <br/><hr/><br/>
 
+{% if user_expenses %}
 <h1>{% trans "My expenses" %}</h1>
 <ul>
     {% for expense, state, transitions in user_expenses %}
         {% ifchanged state %}
             <h2>{{ state.name }}</h2>
         {% endifchanged %}
-        <li>{{ expense }}
-        {% if transitions %}
-        (
-            {% for transition in transitions %}
-                <a href='{% url pydici.expense.views.update_expense_state expense.id transition.id %}'>{{ transition }}</a>
-                {% if not forloop.last %} / {% endif %}
-            {% endfor %}
-        )            
-        {% endif %}
+        <li>{{ expense }} 
         {% with expense as obj %}{% ifhasperm expense_edit %}
-                    <a href='{% url pydici.expense.views.expenses expense.id %}'>{% trans "update" %}</a>
+                    (<a href='{% url pydici.expense.views.expenses expense.id %}'>{% trans "update" %}</a>)
         {% endifhasperm %}{% endwith %}
         </li>
     {% endfor %}
 </ul>
-
 <br/><hr/><br/>
+{% endif %}
 
-{% if team_expenses %}
-    <h1>{% trans "My team expenses" %}</h1>
+{% if managed_expenses %}
+    <h1>{% trans "Expenses I manage" %}</h1>
     <ul>
-    {% for expense, state, transitions in team_expenses %}
-        {% ifchanged expense.consultant %}
-            <h2>{{ expense.consultant }}</h2>
+    {% for expense, state, transitions in managed_expenses %}
+        {% ifchanged expense.user %}
+            <h2>{{ expense.user|link_to_consultant }}</h2>
         {% endifchanged %}
         {% ifchanged state %}
             <h3>{{ state.name }}</h3>

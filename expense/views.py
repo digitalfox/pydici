@@ -24,12 +24,11 @@ from pydici.people.models import Consultant
 
 def expenses(request, expense_id=None):
     """Display user expenses and expenses that he can validate"""
-    consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
 
     try:
         if expense_id:
             expense = Expense.objects.get(id=expense_id)
-            if not (perm.has_permission(expense, request.user, "expense_edit") and expense.consultant == consultant):
+            if not (perm.has_permission(expense, request.user, "expense_edit") and expense.user == request.user):
                 request.user.message_set.create(message=_("You are not allowed to edit that expense"))
                 expense_id = None
                 expense = None
@@ -44,7 +43,7 @@ def expenses(request, expense_id=None):
             form = ExpenseForm(request.POST)
         if form.is_valid():
             expense = form.save(commit=False)
-            expense.consultant = consultant
+            expense.user = request.user
             expense.creation_date = date.today()
             expense.save()
             wf.set_initial_state(expense)
@@ -55,15 +54,38 @@ def expenses(request, expense_id=None):
         else:
             form = ExpenseForm() # An unbound form        
 
-    user_expenses = Expense.objects.filter(consultant=consultant, workflow_in_progress=True)
+    # Get user expenses
+    user_expenses = Expense.objects.filter(user=request.user, workflow_in_progress=True)
     user_expenses = user_expenses.select_related()
-    team = Consultant.objects.filter(manager=consultant).exclude(consultant=consultant)
-    team_expenses = Expense.objects.filter(consultant__in=team, workflow_in_progress=True)
-    team_expenses = team_expenses.order_by("consultant").select_related()
 
-    # Add state and allowed transitions    
+    try:
+        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+        team = Consultant.objects.filter(manager=consultant).exclude(consultant=consultant)
+        user_team = [c.getUser() for c in team]
+        team_expenses = Expense.objects.filter(user__in=user_team, workflow_in_progress=True)
+        team_expenses = team_expenses.order_by("user").select_related()
+    except Consultant.DoesNotExist:
+        team_expenses = []
+
+    # Get managed expense for paymaster only
+    managed_expenses = []
+    if perm.has_role(request.user, "expense paymaster"):
+        for managed_expense in Expense.objects.filter(workflow_in_progress=True).exclude(user=request.user):
+            if managed_expense in team_expenses:
+                continue
+            transitions = wf.get_allowed_transitions(managed_expense, request.user)
+            if transitions:
+                managed_expenses.append((managed_expense, wf.get_state(managed_expense), transitions))
+
+    # Add state and allowed transitions
     user_expenses = [(e, wf.get_state(e), wf.get_allowed_transitions(e, request.user)) for e in user_expenses]
     team_expenses = [(e, wf.get_state(e), wf.get_allowed_transitions(e, request.user)) for e in team_expenses]
+
+    # Concatenate managed and team expenses
+    managed_expenses = team_expenses + managed_expenses
+
+    # Sort expenses
+    #TODO: sort expenses on user,state,date
 
     # Prune old expense in terminal state (no more transition)
     for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(30))):
@@ -72,7 +94,7 @@ def expenses(request, expense_id=None):
 
     return render_to_response("expense/expenses.html",
                               {"user_expenses" : user_expenses,
-                               "team_expenses" : team_expenses,
+                               "managed_expenses" : managed_expenses,
                                "modify_expense" : bool(expense_id),
                                "form" : form,
                                "user": request.user },
@@ -82,6 +104,9 @@ def update_expense_state(request, expense_id, transition_id):
     """Do workflow transition for that expense"""
     try:
         expense = Expense.objects.get(id=expense_id)
+        if expense.user == request.user and not perm.has_role(request.user, "expense administrator"):
+            request.user.message_set.create(message=_("You cannot manage your own expense !"))
+            return HttpResponseRedirect(urlresolvers.reverse("pydici.expense.views.expenses"))
     except Expense.DoesNotExist:
         request.user.message_set.create(message=_("Expense %s does not exist" % expense_id))
         return HttpResponseRedirect(urlresolvers.reverse("pydici.expense.views.expenses"))

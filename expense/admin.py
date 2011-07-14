@@ -10,7 +10,7 @@ from django.contrib import admin
 from pydici.expense.models import Expense, ExpenseCategory
 
 class ExpenseAdmin(admin.ModelAdmin):
-    list_display = ("consultant", "description", "lead", "chargeable", "creation_date", "update_date")
+    list_display = ("user", "description", "lead", "chargeable", "creation_date", "update_date")
     odering = ("creation_date")
     search_fields = ["description", "lead__name", "lead__client__organisation__company__name", "consultant__name"]
     actions = None
