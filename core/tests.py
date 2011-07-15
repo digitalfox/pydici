@@ -10,12 +10,18 @@ from django.test import TestCase
 from django.core import urlresolvers
 from django.contrib.admin.models import User
 
+# Third party modules
+import workflows.utils as wf
+import permissions.utils as perm
+from workflows.models import Transition
+
 # Pydici modules
 from pydici.core.models import Subsidiary
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant, ConsultantProfile
 from pydici.crm.models import Client
 from pydici.staffing.models import Mission
+from pydici.expense.models import Expense, ExpenseCategory
 import pydici.settings
 
 # Python modules used by tests
@@ -219,6 +225,59 @@ class ModelTest(TestCase):
         self.assertEqual(c.getUser(), u)
         c = Consultant.objects.get(trigramme="GBA")
         self.assertEqual(c.getUser(), None)
+
+class WorkflowTest(TestCase):
+    """Test pydici workflows"""
+    fixtures = ["auth.json", "core.json", "people.json", "crm.json",
+                "leads.json", "staffing.json", "billing.json"]
+    fixtures.append("workflows.json")
+
+    def test_expense_wf(self):
+        ABR = Consultant.objects.get(trigramme="ABR")
+        TCO = Consultant.objects.get(trigramme="TCO")
+        tco = TCO.getUser()
+        abr = ABR.getUser()
+        fla = User.objects.get(username="fla")
+        category = ExpenseCategory.objects.create(name="repas")
+        e = Expense.objects.create(user=tco, description="une grande bouffe",
+                                   category=category, amount=123, creation_date=date.today())
+        self.assertEqual(wf.get_state(e), None)
+        wf.set_initial_state(e)
+        self.assertNotEqual(wf.get_state(e), None) # Now wf is setup
+
+        # state = requested
+        self.assertEqual(len(wf.get_allowed_transitions(e, tco)), 0) # No transition allowed for user
+        self.assertEqual(len(wf.get_allowed_transitions(e, fla)), 0) # No transition allowed for paymaster
+        self.assertEqual(len(wf.get_allowed_transitions(e, abr)), 2) # But for his manager accept/reject
+
+        # Reject it
+        reject = Transition.objects.get(name="reject")
+        self.assertTrue(wf.do_transition(e, reject, abr))
+        for user in (tco, abr, fla):
+            self.assertEqual(len(wf.get_allowed_transitions(e, user)), 0) # No transition allowed
+
+        # Validate it
+        wf.set_initial_state(e) # Returns to requested state
+        validate = Transition.objects.get(name="validate")
+        self.assertTrue(wf.do_transition(e, validate, abr))
+        for user in (tco, abr):
+            self.assertEqual(len(wf.get_allowed_transitions(e, user)), 0) # No transition allowed
+        self.assertEqual(len(wf.get_allowed_transitions(e, fla)), 2) # Except paymaster accept/ask info
+
+        # Ask information
+        ask = Transition.objects.get(name="ask information")
+        self.assertTrue(wf.do_transition(e, ask, fla))
+        self.assertTrue(perm.has_permission(e, tco, "expense_edit"))
+        wf.set_initial_state(e) # Returns to requested state
+        self.assertEqual(len(wf.get_allowed_transitions(e, tco)), 0) # No transition allowed for user
+        self.assertTrue(wf.do_transition(e, validate, abr)) # Validate it again
+
+        # Pay it
+        pay = Transition.objects.get(name="pay")
+        self.assertTrue(wf.do_transition(e, pay, fla))
+        for user in (tco, abr, fla):
+            self.assertEqual(len(wf.get_allowed_transitions(e, user)), 0) # No transition allowed
+
 
 #######
 def create_lead():

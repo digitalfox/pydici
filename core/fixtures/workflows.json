@@ -1,0 +1,267 @@
+[
+    {
+        "pk": 1, 
+        "model": "workflows.workflow", 
+        "fields": {
+            "initial_state": 1, 
+            "name": "expense"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "workflows.state", 
+        "fields": {
+            "transitions": [
+                1, 
+                3
+            ], 
+            "name": "needs information", 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "workflows.state", 
+        "fields": {
+            "transitions": [], 
+            "name": "paid", 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "workflows.state", 
+        "fields": {
+            "transitions": [], 
+            "name": "rejected", 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "workflows.state", 
+        "fields": {
+            "transitions": [
+                1, 
+                2, 
+                3
+            ], 
+            "name": "requested", 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "workflows.state", 
+        "fields": {
+            "transitions": [
+                2,
+                4
+            ], 
+            "name": "validated", 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "workflows.transition", 
+        "fields": {
+            "permission": 1, 
+            "destination": 2, 
+            "name": "validate", 
+            "condition": "", 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "workflows.transition", 
+        "fields": {
+            "permission": 2, 
+            "destination": 4, 
+            "name": "ask information", 
+            "condition": "", 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "workflows.transition", 
+        "fields": {
+            "permission": 1, 
+            "destination": 3, 
+            "name": "reject", 
+            "condition": "", 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "workflows.transition", 
+        "fields": {
+            "permission": 2, 
+            "destination": 5, 
+            "name": "pay", 
+            "condition": "", 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "workflows.workflowmodelrelation", 
+        "fields": {
+            "content_type": 27, 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "workflows.workflowpermissionrelation", 
+        "fields": {
+            "permission": 1, 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "workflows.workflowpermissionrelation", 
+        "fields": {
+            "permission": 2, 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "workflows.workflowpermissionrelation", 
+        "fields": {
+            "permission": 3, 
+            "workflow": 1
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "workflows.statepermissionrelation", 
+        "fields": {
+            "state": 1, 
+            "role": 2, 
+            "permission": 3
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "workflows.statepermissionrelation", 
+        "fields": {
+            "state": 1, 
+            "role": 1, 
+            "permission": 1
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "workflows.statepermissionrelation", 
+        "fields": {
+            "state": 4, 
+            "role": 2, 
+            "permission": 3
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "workflows.statepermissionrelation", 
+        "fields": {
+            "state": 2, 
+            "role": 3, 
+            "permission": 2
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "permissions.permission", 
+        "fields": {
+            "content_types": [
+                27
+            ], 
+            "codename": "expense_management", 
+            "name": "expense management"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "permissions.permission", 
+        "fields": {
+            "content_types": [], 
+            "codename": "expense_payment", 
+            "name": "expense payment"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "permissions.permission", 
+        "fields": {
+            "content_types": [], 
+            "codename": "expense_edit", 
+            "name": "expense edit"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "permissions.role", 
+        "fields": {
+            "name": "expense administrator"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "permissions.role", 
+        "fields": {
+            "name": "expense manager"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "permissions.role", 
+        "fields": {
+            "name": "expense owner"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "permissions.role", 
+        "fields": {
+            "name": "expense paymaster"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "permissions.principalrolerelation", 
+        "fields": {
+            "role": 2, 
+            "content_id": null, 
+            "group": 9, 
+            "user": null, 
+            "content_type": null
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "permissions.principalrolerelation", 
+        "fields": {
+            "role": 1, 
+            "content_id": null, 
+            "group": 8, 
+            "user": null, 
+            "content_type": null
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "permissions.principalrolerelation", 
+        "fields": {
+            "role": 3, 
+            "content_id": null, 
+            "group": null, 
+            "user": 8, 
+            "content_type": null
+        }
+    }
+]

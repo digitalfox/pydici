@@ -60,7 +60,20 @@
             "name": "Thomas", 
             "company": 1, 
             "profil": 2, 
+            "manager": 5
+        }
+    },
+    {
+        "pk": 5, 
+        "model": "people.consultant", 
+        "fields": {
+            "trigramme": "ABR", 
+            "productive": true, 
+            "name": "Aurèle", 
+            "company": 1, 
+            "profil": 2, 
             "manager": 1
         }
     }
+    
 ]

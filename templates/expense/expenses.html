@@ -81,7 +81,9 @@
                 <a href='{% url pydici.expense.views.update_expense_state expense.id transition.id %}'>{{ transition }}</a>
                 {% if not forloop.last %} / {% endif %}
             {% endfor %}
-        )            
+        ){% with expense as obj %}{% ifhasperm expense_edit %}
+                    &nbsp;<a href='{% url pydici.expense.views.expenses expense.id %}'>{% trans "update" %}</a>
+        {% endifhasperm %}{% endwith %}
         {% endif %}
         </li>
     {% endfor %}

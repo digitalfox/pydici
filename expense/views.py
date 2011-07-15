@@ -12,7 +12,7 @@ from workflows.models import Transition
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse, Http404
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
@@ -21,14 +21,23 @@ from pydici.expense.forms import ExpenseForm
 from pydici.expense.models import Expense
 from pydici.people.models import Consultant
 
-
+@login_required
 def expenses(request, expense_id=None):
     """Display user expenses and expenses that he can validate"""
 
     try:
+        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+        team = Consultant.objects.filter(manager=consultant).exclude(consultant=consultant)
+        user_team = [c.getUser() for c in team]
+    except Consultant.DoesNotExist:
+        team = []
+        user_team = []
+
+    try:
         if expense_id:
             expense = Expense.objects.get(id=expense_id)
-            if not (perm.has_permission(expense, request.user, "expense_edit") and expense.user == request.user):
+            if not (perm.has_permission(expense, request.user, "expense_edit")
+                    and (expense.user == request.user or expense.user in user_team)):
                 request.user.message_set.create(message=_("You are not allowed to edit that expense"))
                 expense_id = None
                 expense = None
@@ -58,13 +67,10 @@ def expenses(request, expense_id=None):
     user_expenses = Expense.objects.filter(user=request.user, workflow_in_progress=True)
     user_expenses = user_expenses.select_related()
 
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-        team = Consultant.objects.filter(manager=consultant).exclude(consultant=consultant)
-        user_team = [c.getUser() for c in team]
+    if user_team:
         team_expenses = Expense.objects.filter(user__in=user_team, workflow_in_progress=True)
         team_expenses = team_expenses.order_by("user").select_related()
-    except Consultant.DoesNotExist:
+    else:
         team_expenses = []
 
     # Get managed expense for paymaster only
