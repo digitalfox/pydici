@@ -29,7 +29,7 @@ from urllib2 import urlparse
 from datetime import date
 
 TEST_USERNAME = "sre"
-TEST_PASSWORD = "rototo"
+TEST_PASSWORD = "sre"
 PREFIX = "/" + pydici.settings.PYDICI_PREFIX
 
 class SimpleTest(TestCase):
