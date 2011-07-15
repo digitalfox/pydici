@@ -22,6 +22,7 @@ from pydici.people.models import Consultant, ConsultantProfile
 from pydici.crm.models import Client
 from pydici.staffing.models import Mission
 from pydici.expense.models import Expense, ExpenseCategory
+from pydici.expense.default_workflows import install_expense_workflow
 import pydici.settings
 
 # Python modules used by tests
@@ -230,9 +231,11 @@ class WorkflowTest(TestCase):
     """Test pydici workflows"""
     fixtures = ["auth.json", "core.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
-    fixtures.append("workflows.json")
 
     def test_expense_wf(self):
+        # Setup default workflow
+        install_expense_workflow()
+
         ABR = Consultant.objects.get(trigramme="ABR")
         TCO = Consultant.objects.get(trigramme="TCO")
         tco = TCO.getUser()
