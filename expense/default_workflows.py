@@ -7,7 +7,7 @@ Default expense workflow with according permissions
 """
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 
 from workflows.models import WorkflowModelRelation, WorkflowPermissionRelation, StatePermissionRelation, \
                              Workflow, State, Transition
@@ -27,13 +27,12 @@ def install_expense_workflow():
     role_paymaster = Role.objects.create(name=u'expense paymaster')
 
     # Roles <=> group relationship
-    #TODO: don't hardcode group. Get it by name
     PrincipalRoleRelation.objects.create(role=role_owner,
-                                         group=Group.objects.get(id=9))
+                                         group=Group.objects.get(name="expense_requester"))
     PrincipalRoleRelation.objects.create(role=role_manager,
-                                         group=Group.objects.get(id=8))
+                                         group=Group.objects.get(name="expense_manager"))
     PrincipalRoleRelation.objects.create(role=role_paymaster,
-                                         user=User.objects.get(id=8))
+                                         group=Group.objects.get(name="expense_paymaster"))
 
     # Create the expense the workflow
     expense_workflow = Workflow.objects.create(name=u"expense")
