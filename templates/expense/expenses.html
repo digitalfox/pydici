@@ -41,7 +41,7 @@
             {{ form.lead.label_tag }} :
             {{ form.lead }}</p>
     </div></div>
-    <div style="clear:both"></div>    
+    <div style="clear:both"></div>
     <input type="submit" value="{% trans 'Save' %}"/>
 
 </form>
@@ -55,7 +55,10 @@
         {% ifchanged state %}
             <h2>{{ state.name }}</h2>
         {% endifchanged %}
-        <li>{{ expense }} 
+        <li>{{ expense }}
+        {% if expense.receipt %}
+            <a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
+        {% endif %}
         {% with expense as obj %}{% ifhasperm expense_edit %}
                     (<a href='{% url pydici.expense.views.expenses expense.id %}'>{% trans "update" %}</a>)
         {% endifhasperm %}{% endwith %}
@@ -76,6 +79,10 @@
             <h3>{{ state.name }}</h3>
         {% endifchanged %}
         <li>{{ expense }}
+        {% if expense.receipt %}
+            <a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
+        {% endif %}
+
         {% if transitions %}
         (
             {% for transition in transitions %}

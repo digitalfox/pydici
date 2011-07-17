@@ -24,7 +24,6 @@ from pydici.people.models import Consultant
 @login_required
 def expenses(request, expense_id=None):
     """Display user expenses and expenses that he can validate"""
-
     try:
         consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
         user_team = consultant.userTeam()
@@ -104,6 +103,23 @@ def expenses(request, expense_id=None):
                                "form" : form,
                                "user": request.user },
                                RequestContext(request))
+
+@login_required
+def expense_receipt(request, expense_id):
+    """Returns expense receipt if authorize to"""
+    response = HttpResponse(content_type='image/png')
+    try:
+        expense = Expense.objects.get(id=expense_id)
+        if expense.user == request.user or\
+           perm.has_role(request.user, "expense paymaster") or\
+           perm.has_role(request.user, "expense manager"):
+            if expense.receipt:
+                for chunk in expense.receipt.chunks():
+                    response.write(chunk)
+    except (Expense.DoesNotExist, OSError):
+        pass
+
+    return response
 
 def update_expense_state(request, expense_id, transition_id):
     """Do workflow transition for that expense"""

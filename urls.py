@@ -130,6 +130,7 @@ pydici_patterns += patterns('pydici.billing.views',
 pydici_patterns += patterns('pydici.expense.views',
     (r'^expense/?$', 'expenses'),
     (r'^expense/(?P<expense_id>\d+)$', 'expenses'),
+    (r'^expense/(?P<expense_id>\d+)/receipt$', 'expense_receipt'),
     (r'^expense/(?P<expense_id>\d+)/(?P<transition_id>\w+)', 'update_expense_state'),
 )
 
