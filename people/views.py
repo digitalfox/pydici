@@ -16,7 +16,7 @@ def consultant_detail(request, consultant_id):
     """Summary page of consultant activity"""
     try:
         consultant = Consultant.objects.get(id=consultant_id)
-        staff = consultant.consultant_set.exclude(id=consultant.id)
+        staff = consultant.team()
         # Compute user current mission based on forecast
         missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
         companies = ClientCompany.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()

@@ -27,10 +27,8 @@ def expenses(request, expense_id=None):
 
     try:
         consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-        team = Consultant.objects.filter(manager=consultant).exclude(consultant=consultant)
-        user_team = [c.getUser() for c in team]
+        user_team = consultant.userTeam()
     except Consultant.DoesNotExist:
-        team = []
         user_team = []
 
     try:
@@ -85,7 +83,7 @@ def expenses(request, expense_id=None):
                 managed_expenses.append((managed_expense, wf.get_state(managed_expense), transitions))
 
     # Add state and allowed transitions
-    user_expenses = [(e, wf.get_state(e), wf.get_allowed_transitions(e, request.user)) for e in user_expenses]
+    user_expenses = [(e, wf.get_state(e), None) for e in user_expenses] # Don't compute transition for user as no one is available
     team_expenses = [(e, wf.get_state(e), wf.get_allowed_transitions(e, request.user)) for e in team_expenses]
 
     # Concatenate managed and team expenses

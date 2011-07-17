@@ -98,12 +98,20 @@ class Consultant(models.Model):
 
 
     def getUser(self):
-        """Return django user behind this consultant
+        """Returns django user behind this consultant
         Current algorithm check only for equal trigramme
         First match is returned"""
         users = User.objects.filter(username__iexact=self.trigramme)
         if users.count() >= 1:
             return users[0]
+
+    def team(self):
+        """Returns Consultant team as a list of consultant"""
+        return self.consultant_set.exclude(id=self.id)
+
+    def userTeam(self):
+        """Returns consultant team as list of pydici user"""
+        return [c.getUser() for c in self.team()]
 
     class Meta:
         ordering = ["name", ]
