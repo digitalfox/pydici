@@ -47,10 +47,11 @@ def expenses(request, expense_id=None):
 
     if request.method == "POST":
         if expense_id:
-            form = ExpenseForm(request.POST, instance=expense)
+            form = ExpenseForm(request.POST, request.FILES, instance=expense)
         else:
-            form = ExpenseForm(request.POST)
+            form = ExpenseForm(request.POST, request.FILES)
         if form.is_valid():
+            print request.FILES
             expense = form.save(commit=False)
             expense.user = request.user
             expense.creation_date = date.today()

@@ -23,7 +23,7 @@ class ExpenseForm(forms.ModelForm):
     """Expense form based on Expense model"""
     class Meta:
         model = Expense
-        fields = ("description", "lead", "chargeable", "amount", "category")
+        fields = ("description", "lead", "chargeable", "amount", "category", "receipt")
         widgets = { "description": TextInput(attrs={"size": 40}), } # Increase default size
 
     lead = AutoCompleteSelectField('lead', required=False, label=_("Lead")) # Ajax it

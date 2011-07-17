@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant
+from pydici.expense.utils import expense_receipt_path
 
 class ExpenseCategory(models.Model):
     """Category of an expense."""
@@ -29,6 +30,7 @@ class Expense(models.Model):
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     amount = models.DecimalField(_("Amount"), max_digits=7, decimal_places=2)
     category = models.ForeignKey(ExpenseCategory, verbose_name=_("Category"))
+    receipt = models.FileField(_("Receipt"), upload_to=expense_receipt_path, null=True, blank=True)
     workflow_in_progress = models.BooleanField(default=True)
 
     def __unicode__(self):
