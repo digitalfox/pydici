@@ -138,6 +138,7 @@ INSTALLED_APPS = [
     'pydici.crm',
     'pydici.billing',
     'pydici.expense',
+    'pydici.actionset',
     'ajax_select',
     'taggit',
     'taggit_suggest',
