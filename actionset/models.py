@@ -11,19 +11,30 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.models import ContentType
+
 
 
 class ActionSet(models.Model):
-    """Set of action that needs to be done at defined step of a process"""
+    """Set of action that needs to be done when triggered by a process"""
+    ACTIONSET_TRIGGERS = (
+            ('START_MISSION', ugettext("Beginning of a mission")),
+            ('END_MISSION', ugettext("End of a mission")),
+           )
     name = models.CharField(_("Name"), max_length=50)
+    description = models.TextField(_("Description"), blank=True)
+    trigger = models.CharField(_("Trigger"), max_length=50, choices=ACTIONSET_TRIGGERS)
 
     def __unicode__(self): return self.name
 
-    def start(self, user):
+    def start(self, user, targetObject=None):
         """Start this action set for given user"""
         for action in self.action_set.all():
-            ActionState.objects.create(action=action, user=user)
-
+            if targetObject:
+                ActionState.objects.create(action=action, user=user, target=targetObject)
+            else:
+                ActionState.objects.create(action=action, user=user)
 
 class Action(models.Model):
     """Single action"""
@@ -43,3 +54,7 @@ class ActionState(models.Model):
     user = models.ForeignKey(User)
     creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
+    target_type = models.ForeignKey(ContentType, verbose_name=_(u"Target content type"), blank=True, null=True)
+    target_id = models.PositiveIntegerField(_(u"Content id"), blank=True, null=True)
+    target = generic.GenericForeignKey(ct_field="target_type", fk_field="target_id")
+

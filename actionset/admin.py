@@ -6,6 +6,7 @@ Django administration setup
 """
 
 from django.contrib import admin
+from django.utils.translation import ugettext
 
 from pydici.actionset.models import ActionSet, Action, ActionState
 
@@ -13,8 +14,8 @@ class ActionInlineAdmin(admin.TabularInline):
     model = Action
 
 class ActionSetAdmin(admin.ModelAdmin):
-    list_display = ("name",)
-    search_fields = ["name", ]
+    list_display = ("name", "trigger")
+    search_fields = ["name", "trigger"]
     actions = None
     inlines = [ActionInlineAdmin, ]
 
@@ -24,8 +25,9 @@ class ActionAdmin(admin.ModelAdmin):
     actions = None
 
 class ActionStateAdmin(admin.ModelAdmin):
-    list_display = ("action", "user", "done", "creation_date", "update_date")
-    fieldsets = [(None, {"fields" : ["done", ] }), ]
+    list_display = ("action", "user", "target", "done", "creation_date", "update_date")
+    fieldsets = [(ugettext("Action state"), {"fields" : ["action", "user", "done" ] }),
+                 (ugettext("Target object"), {"fields" : ["target_type", "target_id"]}) ]
     search_fields = ["action__actionset__name", "action__name", "user"]
     actions = None
     list_filter = ["done", "user"]
