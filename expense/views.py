@@ -6,6 +6,7 @@ Pydici expense views. Http request are processed here.
 """
 
 from datetime import date, timedelta
+import mimetypes
 import workflows.utils as wf
 import permissions.utils as perm
 from workflows.models import Transition
@@ -49,7 +50,9 @@ def expenses(request, expense_id=None):
             form = ExpenseForm(request.POST, request.FILES)
         if form.is_valid():
             expense = form.save(commit=False)
-            expense.user = request.user
+            if not hasattr(expense, "user"):
+                # Don't update user if defined (case of expense updated by manager or adminstrator)
+                expense.user = request.user
             expense.creation_date = date.today()
             expense.save()
             wf.set_initial_state(expense)
@@ -106,13 +109,14 @@ def expenses(request, expense_id=None):
 @login_required
 def expense_receipt(request, expense_id):
     """Returns expense receipt if authorize to"""
-    response = HttpResponse(content_type='image/png')
+    response = HttpResponse()
     try:
         expense = Expense.objects.get(id=expense_id)
         if expense.user == request.user or\
            perm.has_role(request.user, "expense paymaster") or\
            perm.has_role(request.user, "expense manager"):
             if expense.receipt:
+                response['Content-Type'] = mimetypes.guess_type(expense.receipt.name)[0] or "application/stream"
                 for chunk in expense.receipt.chunks():
                     response.write(chunk)
     except (Expense.DoesNotExist, OSError):
