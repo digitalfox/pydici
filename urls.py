@@ -134,6 +134,11 @@ pydici_patterns += patterns('pydici.expense.views',
     (r'^expense/(?P<expense_id>\d+)/(?P<transition_id>\w+)', 'update_expense_state'),
 )
 
+# Actionset module
+pydici_patterns += patterns('pydici.actionset.views',
+    (r'^actionset/(?P<action_state_id>\d+)/(?P<state>\w+)', 'update_action_state'),
+)
+
 
 # Application prefix
 if pydici.settings.PYDICI_PREFIX:

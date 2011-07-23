@@ -14,6 +14,7 @@ from datetime import date, timedelta
 
 from pydici.core.utils import capitalize
 from pydici.core.models import Subsidiary
+from pydici.actionset.models import ActionState
 
 class ConsultantProfile(models.Model):
     """Consultant hierarchy"""
@@ -112,6 +113,10 @@ class Consultant(models.Model):
     def userTeam(self):
         """Returns consultant team as list of pydici user"""
         return [c.getUser() for c in self.team()]
+
+    def actions(self):
+        """Returns pending actions"""
+        return ActionState.objects.filter(user=self.getUser(), state="TO_BE_DONE")
 
     class Meta:
         ordering = ["name", ]

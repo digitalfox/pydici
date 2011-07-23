@@ -189,3 +189,7 @@ table#change-history tbody th { width:16em; }
 .pydici-expense-col1 { width: 40em; float: left}
 .pydici-expense-col2 { width: 40em; float: left}
 .pydici-expense label { width: 5em; float: left; text-align: right; margin-right: 1em; display: block ; vertical-align: middle; }
+
+/* jquery tooltip */
+.tooltip{width:400px;margin:0;padding:5px;font-size:11px;color:#666;background:#fff;border:2px solid #ccc;}
+.tooltip p{margin:0;text-align:justify;}

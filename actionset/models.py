@@ -48,9 +48,13 @@ class Action(models.Model):
 
 class ActionState(models.Model):
     """Track actions done and to be done by users"""
+    ACTION_STATES = (("TO_BE_DONE", _("To be done")),
+                     ("DONE", _("Done")),
+                     ("NA", _("N/A")))
     action = models.ForeignKey(Action)
     done = models.BooleanField(_(u"Réalisation"), default=False)
-    done.db_index = True
+    state = models.CharField(_("State"), max_length=50, choices=ACTION_STATES, default=ACTION_STATES[0][0])
+    state.db_index = True
     user = models.ForeignKey(User)
     creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
@@ -58,3 +62,8 @@ class ActionState(models.Model):
     target_id = models.PositiveIntegerField(_(u"Content id"), blank=True, null=True)
     target = generic.GenericForeignKey(ct_field="target_type", fk_field="target_id")
 
+    def __unicode__(self):
+        if self.target:
+            return u"%s (%s)" % (self.action, self.target)
+        else:
+            return unicode(self.action)
