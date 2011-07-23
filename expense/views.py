@@ -48,7 +48,6 @@ def expenses(request, expense_id=None):
         else:
             form = ExpenseForm(request.POST, request.FILES)
         if form.is_valid():
-            print request.FILES
             expense = form.save(commit=False)
             expense.user = request.user
             expense.creation_date = date.today()

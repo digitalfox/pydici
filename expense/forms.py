@@ -28,3 +28,8 @@ class ExpenseForm(forms.ModelForm):
 
     lead = AutoCompleteSelectField('lead', required=False, label=_("Lead")) # Ajax it
 
+    def clean(self):
+        """Additional check on expense form"""
+        if self.cleaned_data["chargeable"] and not self.cleaned_data["lead"]:
+            raise forms.ValidationError(_("You must define a lead if expense is chargeable"))
+        return self.cleaned_data
