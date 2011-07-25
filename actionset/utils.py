@@ -2,7 +2,7 @@
 """
 Utils for pydici action set module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
-@license: GPL v3 or newer
+@license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
 from pydici.actionset.models import ActionSet

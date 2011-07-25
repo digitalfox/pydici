@@ -3,7 +3,7 @@
 """
 Default expense workflow with according permissions
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
-@license: GPL v3 or newer
+@license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
 from django.contrib.contenttypes.models import ContentType

@@ -9,8 +9,8 @@ It is written in Python using the Django framework.
 LICENSE
 =======
 
-Pydici is available under the GNU Public License v3 or newer (GPL 3+).
-http://www.gnu.org/licenses/gpl.html
+Pydici is available under the GNU Alfero Public License v3 or newer (AGPL 3+).
+http://www.gnu.org/licenses/agpl-3.0.html
 
 AUTHOR
 ======

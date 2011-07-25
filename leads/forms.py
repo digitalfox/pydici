@@ -2,7 +2,7 @@
 """
 Leads form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
-@license: GPL v3 or newer
+@license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
 from django.forms import models
