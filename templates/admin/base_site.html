@@ -30,8 +30,6 @@
                 </li>
                 <li><a href="{% url admin:leads_lead_changelist %}">{% trans "All leads" %}</a></li>
                 <li><a href='{% url admin:leads_lead_add %}'>{% trans "New lead" %}</a></li>
-                <li><a href="{% url admin:billing_bill_changelist %}">{% trans "All bills" %}</a></li>
-                <li><a href='{% url admin:billing_bill_add %}'>{% trans "New bill" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
@@ -46,7 +44,7 @@
                      <a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
-                <li><a href="{% url all-missions %}">{% trans "All missions" %}</a></li>
+                <li><a href="{% url missions %}">{% trans "Active missions" %}</a></li>
                 <li>{{ user.username|link_to_timesheet }}</li>
                 <li>{{ user.username|link_to_staffing }}</li>
                 <li class="last">
@@ -56,7 +54,6 @@
                 </li>    
             </ul>
         </li>
-
         <li><a href="#link">{% trans "Clients" %}</a>
             <ul>
                 <li>
@@ -72,6 +69,23 @@
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
                     <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
                 </li>    
+            </ul>
+        </li>
+        <li><a href="#link">{% trans "Management" %}</a>
+            <ul>
+                <li>
+                    <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
+                        <a href='{% url pydici.actionset.views.actionset_catalog %}'>{% trans "Actionset catalog" %}</a>
+                     <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
+                </li>
+                <li><a href='{% url pydici.expense.views.expenses %}'>{% trans "Expenses" %}</a></li>
+                <li><a href="{% url admin:billing_bill_changelist %}">{% trans "All bills" %}</a></li>
+                <li><a href='{% url admin:billing_bill_add %}'>{% trans "New bill" %}</a></li>
+                <li class="last">
+                    <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
+                    <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
+                    <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
+                </li>
             </ul>
         </li>
         <li><a href="#link">{% trans "Reports" %}</a>
