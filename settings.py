@@ -108,12 +108,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request")
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
+]
+
+if DEBUG:
+    MIDDLEWARE_CLASSES.extend(('userswitch.middleware.UserSwitchMiddleware',
+                               'debug_toolbar.middleware.DebugToolbarMiddleware',))
 
 ROOT_URLCONF = 'pydici.urls'
 
@@ -151,7 +154,7 @@ if DEBUG:
     INSTALLED_APPS.extend((
 			'debug_toolbar',
 			'test_utils',
-    			'django_extensions',
+    		'django_extensions',
 			'mockups'))
 
 INTERNAL_IPS = ('127.0.0.1',)
