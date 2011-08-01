@@ -25,11 +25,14 @@ class ActionSet(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     description = models.TextField(_("Description"), blank=True)
     trigger = models.CharField(_("Trigger"), max_length=50, choices=ACTIONSET_TRIGGERS)
+    active = models.BooleanField(_("Active"), default=True)
 
     def __unicode__(self): return self.name
 
     def start(self, user, targetObject=None):
         """Start this action set for given user"""
+        if not self.active:
+            return
         for action in self.action_set.all():
             if targetObject:
                 ActionState.objects.create(action=action, user=user, target=targetObject)
@@ -52,7 +55,6 @@ class ActionState(models.Model):
                      ("DONE", _("Done")),
                      ("NA", _("N/A")))
     action = models.ForeignKey(Action)
-    done = models.BooleanField(_(u"Réalisation"), default=False)
     state = models.CharField(_("State"), max_length=50, choices=ACTION_STATES, default=ACTION_STATES[0][0])
     state.db_index = True
     user = models.ForeignKey(User)

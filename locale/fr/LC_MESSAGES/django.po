@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-17 21:05+0200\n"
-"PO-Revision-Date: 2011-07-17 21:05+0200\n"
+"POT-Creation-Date: 2011-08-01 19:37+0200\n"
+"PO-Revision-Date: 2011-08-01 17:19+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,87 @@ msgstr ""
 "X-Generator: Lokalize 1.2\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "Language: fr\n"
+
+#: actionset/admin.py:30
+msgid "Action state"
+msgstr "État de l'action : "
+
+#: actionset/admin.py:31
+msgid "Target object"
+msgstr "Objet cible"
+
+#: actionset/models.py:22
+msgid "Beginning of a mission"
+msgstr "Début d'une mission"
+
+#: actionset/models.py:23
+msgid "End of a mission"
+msgstr "Fin d'une mission"
+
+#: actionset/models.py:25 actionset/models.py:44 core/models.py:15
+#: crm/models.py:19 crm/models.py:40 expense/models.py:19 leads/models.py:42
+#: leads/views.py:100 people/models.py:21 people/models.py:128
+#: templates/staffing/consultant_base.html:29
+#: templates/staffing/missions.html:29
+msgid "Name"
+msgstr "Nom"
+
+#: actionset/models.py:26 actionset/models.py:45 expense/models.py:25
+#: leads/models.py:89 leads/views.py:100 staffing/models.py:33
+#: staffing/models.py:163
+msgid "Description"
+msgstr "Description"
+
+#: actionset/models.py:27
+msgid "Trigger"
+msgstr "Déclencheur"
+
+#: actionset/models.py:28 people/models.py:37 people/models.py:131
+#: staffing/models.py:35
+msgid "Active"
+msgstr "Active"
+
+#: actionset/models.py:54
+msgid "To be done"
+msgstr "À faire"
+
+#: actionset/models.py:55 templates/actionset/_consultant_actions.html:17
+msgid "Done"
+msgstr "Faite"
+
+#: actionset/models.py:56 templates/actionset/_consultant_actions.html:22
+msgid "N/A"
+msgstr "N/A"
+
+#: actionset/models.py:58 billing/models.py:30 leads/models.py:54
+#: leads/views.py:102 templates/billing/_lead_billing.html:9
+msgid "State"
+msgstr "État"
+
+#: actionset/models.py:61 leads/models.py:56 leads/views.py:103
+msgid "Creation"
+msgstr "Création"
+
+#: actionset/models.py:62 expense/models.py:30 leads/models.py:58
+#: leads/models.py:81 leads/views.py:104 staffing/models.py:38
+#: templates/core/index.html:24 templates/core/index.html.py:49
+#: templates/core/index.html:73 templates/core/index.html.py:97
+#: templates/leads/review.html:59
+msgid "Updated"
+msgstr "Mise à jour"
+
+#: actionset/models.py:63
+msgid "Target content type"
+msgstr "Type de la cible"
+
+#: actionset/models.py:64
+msgid "Content id"
+msgstr "Identifiant"
+
+#: actionset/utils.py:13
+#, python-format
+msgid "Trigger %s is not defined"
+msgstr "Le déclencheur %s n'est pas défini"
 
 #: batch/timesheet_check.py:89
 msgid "[pydici] Your timesheet is not correct"
@@ -88,11 +169,6 @@ msgstr "Date d'échéance"
 msgid "Payment date"
 msgstr "Date de paiement"
 
-#: billing/models.py:30 leads/models.py:54 leads/views.py:102
-#: templates/billing/_lead_billing.html:9
-msgid "State"
-msgstr "État"
-
 #: billing/models.py:31
 msgid "Previous year bill"
 msgstr "Facture de l'année N-1"
@@ -110,14 +186,7 @@ msgstr "Remarques"
 msgid "Bill"
 msgstr "Facture"
 
-#: core/models.py:15 crm/models.py:19 crm/models.py:40 expense/models.py:19
-#: leads/models.py:42 leads/views.py:100 people/models.py:20
-#: people/models.py:115 templates/staffing/consultant_base.html:29
-#: templates/staffing/missions.html:29
-msgid "Name"
-msgstr "Nom"
-
-#: core/models.py:20 people/models.py:34 people/models.py:117
+#: core/models.py:20 people/models.py:35 people/models.py:130
 msgid "Subsidiary"
 msgstr "Filiale"
 
@@ -153,7 +222,7 @@ msgstr "Entreprise"
 msgid "Client organisation"
 msgstr "Département"
 
-#: crm/models.py:42 people/models.py:120
+#: crm/models.py:42 people/models.py:133
 msgid "Phone"
 msgstr "Téléphone"
 
@@ -209,10 +278,9 @@ msgstr "Propriété commerciale"
 msgid "Client"
 msgstr "Client"
 
-#: expense/models.py:25 leads/models.py:89 leads/views.py:100
-#: staffing/models.py:33 staffing/models.py:163
-msgid "Description"
-msgstr "Description"
+#: expense/forms.py:34
+msgid "You must define a lead if expense is chargeable"
+msgstr "Vous devez définir une affaire si les frais sont refacturables"
 
 #: expense/models.py:28
 msgid "Chargeable"
@@ -222,13 +290,6 @@ msgstr "Refacturable"
 #: staffing/models.py:194 staffing/models.py:209
 msgid "Date"
 msgstr "Date"
-
-#: expense/models.py:30 leads/models.py:58 leads/models.py:81
-#: leads/views.py:104 staffing/models.py:38 templates/core/index.html:24
-#: templates/core/index.html.py:49 templates/core/index.html:73
-#: templates/core/index.html.py:97 templates/leads/review.html:59
-msgid "Updated"
-msgstr "Mise à jour"
 
 #: expense/models.py:31
 msgid "Amount"
@@ -242,29 +303,29 @@ msgstr "Catégorie"
 msgid "Receipt"
 msgstr "Justificatif"
 
-#: expense/views.py:41
+#: expense/views.py:39
 msgid "You are not allowed to edit that expense"
 msgstr "Vous n'êtes pas autorisé à modifier cette note de frais"
 
-#: expense/views.py:45 expense/views.py:118
+#: expense/views.py:43 expense/views.py:135
 #, python-format
 msgid "Expense %s does not exist"
 msgstr "La note de frais %s n'existe pas"
 
-#: expense/views.py:115
+#: expense/views.py:132
 msgid "You cannot manage your own expense !"
 msgstr "Vous ne pouvez pas gérer vos propres notes de frais !"
 
-#: expense/views.py:123
+#: expense/views.py:140
 #, python-format
 msgid "Transition %s does not exist"
 msgstr "La transition %s n'existe pas"
 
-#: expense/views.py:127
+#: expense/views.py:144
 msgid "Successfully update expense"
 msgstr "Note de frais mise à jour avec succès"
 
-#: expense/views.py:129
+#: expense/views.py:146
 msgid "You cannot do this transition"
 msgstr "Vous n'êtes pas autorisé à faire cette transition"
 
@@ -346,7 +407,7 @@ msgid "Responsible"
 msgstr "Responsable"
 
 #: leads/forms.py:20 leads/models.py:46 leads/views.py:101
-#: people/models.py:131 templates/core/index.html:21
+#: people/models.py:144 templates/core/index.html:21
 #: templates/core/index.html.py:46 templates/core/index.html:70
 #: templates/core/index.html.py:94 templates/leads/review.html:26
 #: templates/leads/review.html.py:55
@@ -412,10 +473,6 @@ msgstr "Démarrage"
 msgid "Due"
 msgstr "Échéance"
 
-#: leads/models.py:56 leads/views.py:103
-msgid "Creation"
-msgstr "Création"
-
 #: leads/models.py:57 staffing/models.py:32 staffing/views.py:410
 #: staffing/views.py:521
 msgid "Deal id"
@@ -445,33 +502,29 @@ msgstr "C.A. (k€)"
 msgid "Lead %(id)s was sent to %(mail)s !"
 msgstr "L'affaire %(id)s a été envoyée à %(mail)s !"
 
-#: people/models.py:21
+#: people/models.py:22
 msgid "Level"
 msgstr "Niveau"
 
-#: people/models.py:27
+#: people/models.py:28
 msgid "Consultant profile"
 msgstr "Profile du consultant"
 
-#: people/models.py:35 staffing/models.py:22
+#: people/models.py:36 staffing/models.py:22
 msgid "Productive"
 msgstr "Productif"
 
-#: people/models.py:36 people/models.py:118 staffing/models.py:35
-msgid "Active"
-msgstr "Active"
-
-#: people/models.py:38
+#: people/models.py:39
 msgid "Profil"
 msgstr "Profile"
 
-#: people/models.py:110 staffing/forms.py:46
+#: people/models.py:123 staffing/forms.py:46
 #: templates/staffing/mission_base.html:33
 #: templates/staffing/mission_staffing.html:13
 msgid "Consultant"
 msgstr "Consultant"
 
-#: people/models.py:132
+#: people/models.py:145
 msgid "Salesmen"
 msgstr "Commerciaux"
 
@@ -683,7 +736,31 @@ msgstr ""
 "<p>Si vous pensez qu'il s'agit d'une anomalie, merci d'envoyer\n"
 "un mail à un administrateur pour mettre à jour vos droits :</p>\n"
 
-#: templates/admin/app_index.html:8 templates/admin/base.html:55
+#: templates/actionset/_consultant_actions.html:13
+msgid "Scope: "
+msgstr "Périmètre : "
+
+#: templates/actionset/_consultant_actions.html:24
+msgid "Delegate"
+msgstr "Déléguer"
+
+#: templates/actionset/_consultant_actions.html:29
+msgid "No pending action"
+msgstr "Aucune action en attente"
+
+#: templates/actionset/actionset_catalog.html:13
+msgid "Action sets"
+msgstr "Trains d'action"
+
+#: templates/actionset/actionset_catalog.html:19
+msgid "This actionset is inactive"
+msgstr "Ce train d'action est inactif"
+
+#: templates/actionset/actionset_catalog.html:21
+msgid "Trigger: "
+msgstr "Déclencheur : "
+
+#: templates/admin/app_index.html:8 templates/admin/base.html:57
 #: templates/admin/change_list.html:8 templates/core/m.index.html:35
 #: templates/leads/lead_detail.html:17
 #: templates/staffing/consultant_base.html:17
@@ -696,27 +773,27 @@ msgstr "Accueil"
 msgid "%(name)s"
 msgstr "%(name)s"
 
-#: templates/admin/base.html:27
+#: templates/admin/base.html:29
 msgid "ATOM feed of last modified leads"
 msgstr "Flux ATOM des dernières affaires modifiées"
 
-#: templates/admin/base.html:29
+#: templates/admin/base.html:31
 msgid "ATOM feed of last created leads"
 msgstr "Flux ATOM des dernières affaires créées"
 
-#: templates/admin/base.html:31
+#: templates/admin/base.html:33
 msgid "ATOM feed of last won leads"
 msgstr "Flux ATOM des dernières affaires gagnées"
 
-#: templates/admin/base.html:33
+#: templates/admin/base.html:35
 msgid "ATOM feed of my leads"
 msgstr "Flux ATOM des mes affaires"
 
-#: templates/admin/base.html:35
+#: templates/admin/base.html:37
 msgid "ATOM feed of latest staffing forecast"
 msgstr "Flux ATOM des dernières prévisions de staffing"
 
-#: templates/admin/base.html:37
+#: templates/admin/base.html:39
 msgid "ATOM feed of my latest staffing forecast"
 msgstr "Flux ATOM de mes dernières prévisions de staffing"
 
@@ -766,7 +843,7 @@ msgid "All missions"
 msgstr "Toutes les missions"
 
 #: templates/admin/base_site.html:60
-#: templates/people/consultant_detail.html:48
+#: templates/people/consultant_detail.html:54
 #: templates/staffing/pdc_review.html:69
 msgid "Clients"
 msgstr "Clients"
@@ -1053,7 +1130,7 @@ msgstr "Pydici mobile"
 msgid "My clients"
 msgstr "Mes clients"
 
-#: templates/core/m.index.html:27 templates/people/consultant_detail.html:58
+#: templates/core/m.index.html:27 templates/people/consultant_detail.html:64
 msgid "Current missions"
 msgstr "Missions actuelles"
 
@@ -1102,6 +1179,10 @@ msgstr "Les consultants qui ont travaillé pour cette société :"
 msgid "All companies list"
 msgstr "Liste de toutes les entreprises clientes"
 
+#: templates/expense/expenses.html:13
+msgid "Expense"
+msgstr "Note de frais"
+
 #: templates/expense/expenses.html:18
 msgid "Modify the expense"
 msgstr "Modifier la note de frais"
@@ -1121,11 +1202,11 @@ msgstr "Enregistrer"
 msgid "My expenses"
 msgstr "Mes notes de frais"
 
-#: templates/expense/expenses.html:60 templates/expense/expenses.html.py:86
+#: templates/expense/expenses.html:63 templates/expense/expenses.html.py:93
 msgid "update"
 msgstr "mise à jour"
 
-#: templates/expense/expenses.html:69
+#: templates/expense/expenses.html:72
 msgid "Expenses I manage"
 msgstr "Les notes de frais à traiter"
 
@@ -1361,11 +1442,15 @@ msgstr "Manager : "
 msgid "Staff"
 msgstr "Équipe"
 
-#: templates/people/consultant_detail.html:69
+#: templates/people/consultant_detail.html:48
+msgid "Pending actions"
+msgstr "Actions en attente"
+
+#: templates/people/consultant_detail.html:75
 msgid "Current leads as responsible"
 msgstr "Affaires en tant que responsable"
 
-#: templates/people/consultant_detail.html:81
+#: templates/people/consultant_detail.html:87
 msgid "Current leads as resource"
 msgstr "Affaires en tant que ressource"
 
@@ -1690,6 +1775,9 @@ msgstr "Totaux"
 msgid "Production rates review"
 msgstr "Suivi du taux de production"
 
+#~ msgid "Realization"
+#~ msgstr "Réalisation"
+
 #~ msgid "My team expenses"
 #~ msgstr "Les notes de frais de mon équipe"
 
@@ -1812,9 +1900,6 @@ msgstr "Suivi du taux de production"
 #, fuzzy
 #~ msgid "Change {{ mission }}"
 #~ msgstr "Modifier %(mission)s"
-
-#~ msgid "Sales code: "
-#~ msgstr "N° affaire"
 
 #~ msgid "Summary"
 #~ msgstr "Résumés"

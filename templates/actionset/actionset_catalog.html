@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+{% load permissions_tags %}
+{% load pydici_filters %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{% trans "Action sets" %}{% endblock %}
+
+{% block content %}
+
+{% for actionset in actionsets %}
+    <h1><a href="{% url admin:actionset_actionset_change actionset.id %}">{{ actionset }}</a></h1>
+    {% if not actionset.active %}<p><strong>{% trans "This actionset is inactive" %}</strong></p>{% endif %}
+    <p><em>{{ actionset.description }}</em></p>
+    <p><strong>{% trans "Trigger: " %}</strong> {{ actionset.get_trigger_display }}</p>
+    <ul>
+    {% for action in actionset.action_set.all %}
+        <li><a href="{% url admin:actionset_action_change action.id %}">{{ action.name }}</a> : <em>{{ action.description }}</em></li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+
+{% endblock %}

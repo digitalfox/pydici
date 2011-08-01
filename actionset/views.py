@@ -32,3 +32,9 @@ def update_action_state(request, action_state_id, state):
         return HttpResponse(json.dumps({"error":False, "id":action_state_id}), mimetype="application/json")
     else:
         return error
+
+def actionset_catalog(request):
+    """Catalog of all action set"""
+    return render_to_response("actionset/actionset_catalog.html",
+                              {"actionsets": ActionSet.objects.all() },
+                               RequestContext(request))

@@ -136,6 +136,7 @@ pydici_patterns += patterns('pydici.expense.views',
 
 # Actionset module
 pydici_patterns += patterns('pydici.actionset.views',
+    (r'^actionset/?$', 'actionset_catalog'),
     (r'^actionset/(?P<action_state_id>\d+)/(?P<state>\w+)', 'update_action_state'),
 )
 
