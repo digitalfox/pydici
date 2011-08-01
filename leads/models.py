@@ -9,7 +9,7 @@ from django.db import models
 from datetime import datetime, date
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
-from django.contrib.admin.models import LogEntry
+from django.contrib.admin.models import LogEntry, ContentType
 
 from taggit.managers import TaggableManager
 
@@ -17,6 +17,7 @@ from pydici.core.utils import compact_text
 
 from pydici.crm.models import Client, BusinessBroker
 from pydici.people.models import Consultant, SalesMan
+from pydici.actionset.models import ActionState
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -137,6 +138,12 @@ class Lead(models.Model):
                 if mission.price:
                     unused -= mission.price
         return unused
+
+    def actions(self):
+        """Returns pending actions"""
+        return ActionState.objects.filter(target_id=self.id,
+                                          target_type=ContentType.objects.get_for_model(self),
+                                          state="TO_BE_DONE")
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]

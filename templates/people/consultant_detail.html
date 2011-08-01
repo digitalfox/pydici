@@ -46,7 +46,9 @@
 <li>
     <div class="pydici-grid-long-item">
     <h3>{% trans "Pending actions" %}</h3>
-    {% include "actionset/_consultant_actions.html" %}
+    {% with consultant.actions as actions %}
+        {% include "actionset/_consultant_actions.html" %}
+    {% endwith %}
     </div>
 </li>
 <li>

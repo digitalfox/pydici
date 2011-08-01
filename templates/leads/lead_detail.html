@@ -158,6 +158,11 @@
     {% include "billing/_lead_billing.html" %}
 {% endifequal %}    
 
+<h2>{% trans "Pending actions" %}</h2>
+    {% with lead.actions as actions %}
+        {% include "actionset/_lead_actions.html" %}
+    {% endwith %}
+
 {% if action_list %}
     <h2>{% trans "Change history" %}</h2>
     <table id="change-history">

@@ -1,0 +1,54 @@
+{# This template fragment is the common part between lead and user actions #}
+{# It is not intented to be included directly #}
+{# Context/Argument: actions (list of actionstates) #}
+
+{% load i18n %}
+
+<ul>
+{% for action in actions %}
+    <div id="action_{{action.id}}">
+        <li><a href="#action_tooltip_{{action.id}}" class="tooltiplink">{{ action.action }}</a></li>
+        <div id="action_tooltip_{{action.id}}" class="tooltip">
+        <h4>{{ action.action }}</h4>
+        {% if action.action.description %}<p><em>{{ action.action.description }}</em></p><br/>{% endif %}
+        {% block action_target %}{% if action.target %}<p><strong>{% trans "Scope: " %}</strong>{{ action.target }}</p><br/>{% endif %}{% endblock %}
+        {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
+        {% ifequal request.user action.user %}
+        <p><a href="javascript:;" 
+              onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'DONE' %}')
+                            .success(process_update_action_state);">
+              {% trans "Done" %}</a>
+           &nbsp;-&nbsp;
+           <a href="javascript:;" 
+              onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'NA' %}')
+                            .success(process_update_action_state);">
+              {% trans "N/A" %}</a>
+           &nbsp;-&nbsp;
+           {% trans "Delegate" %}
+         </p>
+         {% endifequal %}
+        </div>
+    </div>
+{% empty %}
+    {% trans "No pending action" %}
+{% endfor %}
+
+</ul>
+
+<script type="text/JavaScript">
+<!--     
+    $("a.tooltiplink").simpletooltip({margin : 100,
+                                      click : true,
+                                      showEffect: "fadeIn", hideEffect: "fadeOut" });
+    // Functions that process ajax callback
+    function process_update_action_state(data) {
+        if (data.error==true) {
+            alert("{% trans 'You are not allowed to do that' %}");
+        }
+        else {            
+            $("#action_" + data.id).hide("slow");
+            $("#action_tooltip_" + data.id).hide("fast");
+        }
+    };
+-->
+</script>
