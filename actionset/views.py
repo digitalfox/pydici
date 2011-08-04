@@ -35,6 +35,11 @@ def update_action_state(request, action_state_id, state):
 
 def actionset_catalog(request):
     """Catalog of all action set"""
+    if request.user.has_perm("actionset.change_action") and request.user.has_perm("actionset.change_actionset"):
+        can_change = True
+    else:
+        can_change = False
     return render_to_response("actionset/actionset_catalog.html",
-                              {"actionsets": ActionSet.objects.all() },
+                              {"actionsets": ActionSet.objects.all(),
+                               "can_change" : can_change },
                                RequestContext(request))
