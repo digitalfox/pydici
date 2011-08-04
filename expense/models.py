@@ -5,14 +5,21 @@ Database access layer for pydici expense module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+from time import strftime
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.auth.models import User
 
 from pydici.leads.models import Lead
-from pydici.people.models import Consultant
-from pydici.expense.utils import expense_receipt_path
+
+# This utils function is here and not in utils module
+# to avoid circular import loop, as utils module import Expense models
+def expense_receipt_path(instance, filename):
+    """Format full path of expense receipt"""
+    return strftime("data/expense/%Y/%m/" + instance.user.username + "/%d-%H%M%S_" + filename)
+
 
 class ExpenseCategory(models.Model):
     """Category of an expense."""

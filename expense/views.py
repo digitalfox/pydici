@@ -22,6 +22,8 @@ from pydici.expense.forms import ExpenseForm
 from pydici.expense.models import Expense
 from pydici.people.models import Consultant
 
+from pydici.expense.utils import get_user_expenses, get_team_expenses
+
 @login_required
 def expenses(request, expense_id=None):
     """Display user expenses and expenses that he can validate"""
@@ -64,12 +66,10 @@ def expenses(request, expense_id=None):
             form = ExpenseForm() # An unbound form        
 
     # Get user expenses
-    user_expenses = Expense.objects.filter(user=request.user, workflow_in_progress=True)
-    user_expenses = user_expenses.select_related()
+    user_expenses = get_user_expenses(request.user)
 
     if user_team:
-        team_expenses = Expense.objects.filter(user__in=user_team, workflow_in_progress=True)
-        team_expenses = team_expenses.order_by("user").select_related()
+        team_expenses = get_team_expenses(request.user, user_team)
     else:
         team_expenses = []
 
@@ -77,15 +77,11 @@ def expenses(request, expense_id=None):
     managed_expenses = []
     if perm.has_role(request.user, "expense paymaster"):
         for managed_expense in Expense.objects.filter(workflow_in_progress=True).exclude(user=request.user):
-            if managed_expense in team_expenses:
+            if managed_expense in [e[0] for e in team_expenses]:
                 continue
             transitions = wf.get_allowed_transitions(managed_expense, request.user)
             if transitions:
                 managed_expenses.append((managed_expense, wf.get_state(managed_expense), transitions))
-
-    # Add state and allowed transitions
-    user_expenses = [(e, wf.get_state(e), None) for e in user_expenses] # Don't compute transition for user as no one is available
-    team_expenses = [(e, wf.get_state(e), wf.get_allowed_transitions(e, request.user)) for e in team_expenses]
 
     # Concatenate managed and team expenses
     managed_expenses = team_expenses + managed_expenses
