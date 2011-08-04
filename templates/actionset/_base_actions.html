@@ -14,7 +14,7 @@
         {% block action_target %}{% if action.target %}<p><strong>{% trans "Scope: " %}</strong>{{ action.target }}</p><br/>{% endif %}{% endblock %}
         {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
         {% ifequal request.user action.user %}
-        <p><a href="javascript:;" 
+        <p><a href="javascript:;"
               onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'DONE' %}')
                             .success(process_update_action_state);">
               {% trans "Done" %}</a>
@@ -24,7 +24,18 @@
                             .success(process_update_action_state);">
               {% trans "N/A" %}</a>
            &nbsp;-&nbsp;
-           {% trans "Delegate" %}
+           <a href="javascript:;" 
+              onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'DELEGUATE' %}?username='+$('#id_deleguate_user').val())
+                            .success(process_update_action_state);">
+              {% trans "Delegate to: " %}</a>
+           <input id="id_deleguate_user" type="text"/>
+           <script><!-- 
+                $("#id_deleguate_user").autocomplete('{% url ajax_lookup "user"%}',
+                                                      { formatItem: function(row) { return row[2]; },
+                                                        formatResult: function(row) { return row[1]; },
+                                                        dataType: "text"
+                                                      });
+            --></script>
          </p>
          {% endifequal %}
         </div>

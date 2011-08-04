@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import permission_required, login_required
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
+from django.contrib.auth.models import User
 
 from pydici.actionset.models import ActionSet, Action, ActionState
 
@@ -26,7 +27,17 @@ def update_action_state(request, action_state_id, state):
         actionState = ActionState.objects.get(id=action_state_id)
     except ActionState.DoesNotExist:
         return error
-    if request.user == actionState.user and state in (i[0] for i in ActionState.ACTION_STATES):
+    if request.user != actionState.user:
+        return error
+    if state == "DELEGUATE" and "username" in request.GET:
+        try:
+            user = User.objects.get(username=request.GET["username"])
+        except User.DoesNotExist:
+            return error
+        actionState.user = user
+        actionState.save()
+        return HttpResponse(json.dumps({"error":False, "id":action_state_id}), mimetype="application/json")
+    elif state in (i[0] for i in ActionState.ACTION_STATES):
         actionState.state = state
         actionState.save()
         return HttpResponse(json.dumps({"error":False, "id":action_state_id}), mimetype="application/json")

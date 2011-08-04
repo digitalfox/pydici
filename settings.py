@@ -40,6 +40,7 @@ AJAX_LOOKUP_CHANNELS = {
     'client' : ('crm.lookups', 'ClientLookup'),
     'mission' : ('staffing.lookups', 'MissionLookup'),
     'lead' : ('leads.lookups', 'LeadLookup'),
+    'user' : ('core.lookups', 'UserLookup'),
 }
 
 
