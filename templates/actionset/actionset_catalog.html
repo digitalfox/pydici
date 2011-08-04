@@ -26,4 +26,8 @@
     </ul>
 {% endfor %}
 
+<br/><hr/><br/>
+{% if perms.actionset.change_actionstate %}
+<a href="{% url admin:actionset_actionstate_changelist %}">{% trans "Pending action tracking" %}</a>
+{% endif %}
 {% endblock %}
