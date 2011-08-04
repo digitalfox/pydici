@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-04 17:00+0200\n"
-"PO-Revision-Date: 2011-08-04 17:00+0200\n"
+"POT-Creation-Date: 2011-08-04 19:30+0200\n"
+"PO-Revision-Date: 2011-08-04 19:30+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -35,16 +35,16 @@ msgid "End of a mission"
 msgstr "Fin d'une mission"
 
 #: actionset/models.py:25 actionset/models.py:44 core/models.py:15
-#: crm/models.py:19 crm/models.py:40 expense/models.py:19 leads/models.py:43
+#: crm/models.py:19 crm/models.py:40 expense/models.py:26 leads/models.py:43
 #: leads/views.py:100 people/models.py:21 people/models.py:128
 #: templates/staffing/consultant_base.html:29
 #: templates/staffing/missions.html:29
 msgid "Name"
 msgstr "Nom"
 
-#: actionset/models.py:26 actionset/models.py:45 expense/models.py:25
+#: actionset/models.py:26 actionset/models.py:45 expense/models.py:32
 #: leads/models.py:90 leads/views.py:100 staffing/models.py:33
-#: staffing/models.py:163
+#: staffing/models.py:163 templates/expense/expenses_history.html:19
 msgid "Description"
 msgstr "Description"
 
@@ -78,7 +78,7 @@ msgstr "État"
 msgid "Creation"
 msgstr "Création"
 
-#: actionset/models.py:62 expense/models.py:30 leads/models.py:59
+#: actionset/models.py:62 expense/models.py:37 leads/models.py:59
 #: leads/models.py:82 leads/views.py:104 staffing/models.py:38
 #: templates/core/index.html:24 templates/core/index.html.py:49
 #: templates/core/index.html:73 templates/core/index.html.py:97
@@ -120,8 +120,8 @@ msgstr ""
 #: leads/models.py:150 staffing/models.py:31
 #: templates/billing/bill_review.html:144 templates/core/index.html:19
 #: templates/core/index.html.py:44 templates/core/index.html:68
-#: templates/core/index.html.py:92 templates/leads/review.html:24
-#: templates/leads/review.html.py:53
+#: templates/core/index.html.py:92 templates/expense/expenses_history.html:20
+#: templates/leads/review.html:24 templates/leads/review.html.py:53
 msgid "Lead"
 msgstr "Affaire"
 
@@ -157,6 +157,7 @@ msgstr "Montant (€ HT)"
 
 #: billing/models.py:27 templates/billing/_lead_billing.html:11
 #: templates/billing/bill_review.html:121
+#: templates/expense/expenses_history.html:23
 msgid "Creation date"
 msgstr "Date de création"
 
@@ -244,7 +245,7 @@ msgstr "Fonction"
 msgid "None"
 msgstr "Aucun(e)"
 
-#: crm/models.py:71 crm/models.py:79 templates/admin/base_site.html:141
+#: crm/models.py:71 crm/models.py:79 templates/admin/base_site.html:142
 msgid "Company"
 msgstr "Société"
 
@@ -282,50 +283,50 @@ msgstr "Client"
 msgid "You must define a lead if expense is chargeable"
 msgstr "Vous devez définir une affaire si les frais sont refacturables"
 
-#: expense/models.py:28
+#: expense/models.py:35 templates/expense/expenses_history.html:21
 msgid "Chargeable"
 msgstr "Refacturable"
 
-#: expense/models.py:29 staffing/models.py:162 staffing/models.py:172
+#: expense/models.py:36 staffing/models.py:162 staffing/models.py:172
 #: staffing/models.py:194 staffing/models.py:209
 msgid "Date"
 msgstr "Date"
 
-#: expense/models.py:31
+#: expense/models.py:38
 msgid "Amount"
 msgstr "Montant"
 
-#: expense/models.py:32
+#: expense/models.py:39
 msgid "Category"
 msgstr "Catégorie"
 
-#: expense/models.py:33
+#: expense/models.py:40 templates/expense/expenses_history.html:22
 msgid "Receipt"
 msgstr "Justificatif"
 
-#: expense/views.py:39
+#: expense/views.py:41
 msgid "You are not allowed to edit that expense"
 msgstr "Vous n'êtes pas autorisé à modifier cette note de frais"
 
-#: expense/views.py:43 expense/views.py:135
+#: expense/views.py:45 expense/views.py:152
 #, python-format
 msgid "Expense %s does not exist"
 msgstr "La note de frais %s n'existe pas"
 
-#: expense/views.py:132
+#: expense/views.py:149
 msgid "You cannot manage your own expense !"
 msgstr "Vous ne pouvez pas gérer vos propres notes de frais !"
 
-#: expense/views.py:140
+#: expense/views.py:157
 #, python-format
 msgid "Transition %s does not exist"
 msgstr "La transition %s n'existe pas"
 
-#: expense/views.py:144
+#: expense/views.py:161
 msgid "Successfully update expense"
 msgstr "Note de frais mise à jour avec succès"
 
-#: expense/views.py:146
+#: expense/views.py:163
 msgid "You cannot do this transition"
 msgstr "Vous n'êtes pas autorisé à faire cette transition"
 
@@ -813,7 +814,7 @@ msgstr "Flux ATOM de mes dernières prévisions de staffing"
 msgid "Welcome,"
 msgstr "Bienvenue, "
 
-#: templates/admin/base_site.html:24 templates/admin/base_site.html.py:137
+#: templates/admin/base_site.html:24 templates/admin/base_site.html.py:138
 #: templates/core/m.index.html:68 templates/core/search.html:51
 msgid "Leads"
 msgstr "Affaires"
@@ -831,7 +832,7 @@ msgstr "Toutes les affaires"
 msgid "New lead"
 msgstr "Nouvelles affaire"
 
-#: templates/admin/base_site.html:40 templates/admin/base_site.html.py:140
+#: templates/admin/base_site.html:40 templates/admin/base_site.html.py:141
 #: templates/core/m.index.html:55 templates/core/search.html:60
 msgid "Missions"
 msgstr "Missions"
@@ -924,27 +925,32 @@ msgstr "Suivi de facturation"
 msgid "Payment delay review"
 msgstr "Délais de règlement"
 
-#: templates/admin/base_site.html:114
+#: templates/admin/base_site.html:107 templates/expense/expenses.html:105
+#: templates/expense/expenses_history.html:12
+msgid "Expenses history"
+msgstr "Historique des notes de frais"
+
+#: templates/admin/base_site.html:115
 msgid "Help"
 msgstr "Aide"
 
-#: templates/admin/base_site.html:118
+#: templates/admin/base_site.html:119
 msgid "Admin console"
 msgstr "Console d'administration"
 
-#: templates/admin/base_site.html:121
+#: templates/admin/base_site.html:122
 msgid "Help page"
 msgstr "Page d'aide"
 
-#: templates/admin/base_site.html:142
+#: templates/admin/base_site.html:143
 msgid "Client contacts"
 msgstr "Contacts clients"
 
-#: templates/admin/base_site.html:143 templates/core/search.html:24
+#: templates/admin/base_site.html:144 templates/core/search.html:24
 msgid "Consultants"
 msgstr "Consultants"
 
-#: templates/admin/base_site.html:144 templates/core/search.html:69
+#: templates/admin/base_site.html:145 templates/core/search.html:69
 msgid "Bills"
 msgstr "Factures"
 
@@ -1230,13 +1236,25 @@ msgstr "Enregistrer"
 msgid "My expenses"
 msgstr "Mes notes de frais"
 
-#: templates/expense/expenses.html:63 templates/expense/expenses.html.py:93
-msgid "update"
-msgstr "mise à jour"
-
-#: templates/expense/expenses.html:72
+#: templates/expense/expenses.html:73
 msgid "Expenses I manage"
 msgstr "Les notes de frais à traiter"
+
+#: templates/expense/expenses_history.html:18
+msgid "People"
+msgstr "Personne"
+
+#: templates/expense/expenses_history.html:24
+msgid "Update date"
+msgstr "Date de mise à jour"
+
+#: templates/expense/expenses_history.html:31
+msgid "Yes"
+msgstr "Oui"
+
+#: templates/expense/expenses_history.html:31
+msgid "No"
+msgstr "Non"
 
 #: templates/leads/_tag_cloud.html:8 templates/leads/tag.html:11
 msgid "All lead tags"
@@ -1803,6 +1821,9 @@ msgstr "Totaux"
 #: templates/staffing/pdc_review.html:115
 msgid "Production rates review"
 msgstr "Suivi du taux de production"
+
+#~ msgid "update"
+#~ msgstr "mise à jour"
 
 #~ msgid "Realization"
 #~ msgstr "Réalisation"

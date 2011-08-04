@@ -132,6 +132,7 @@ pydici_patterns += patterns('pydici.expense.views',
     (r'^expense/(?P<expense_id>\d+)$', 'expenses'),
     (r'^expense/(?P<expense_id>\d+)/receipt$', 'expense_receipt'),
     (r'^expense/(?P<expense_id>\d+)/(?P<transition_id>\w+)', 'update_expense_state'),
+    (r'^expense/history/?$', 'expenses_history'),
 )
 
 # Actionset module

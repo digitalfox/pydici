@@ -1,0 +1,39 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{% trans "Expenses history" %}{% endblock %}
+
+{% block content %}
+
+<table>
+<tr>
+    <th>{% trans "People" %}</th>
+    <th>{% trans "Description" %}</th>
+    <th>{% trans "Lead" %}</th>
+    <th>{% trans "Chargeable" %}</th>
+    <th>{% trans "Receipt" %}</th>
+    <th>{% trans "Creation date" %}</th>
+    <th>{% trans "Update date" %}</th>
+</tr>
+{% for expense, state, transitions in expenses %}
+    <tr>
+    <td>{{ expense.user.username|link_to_consultant }}</td>
+    <td>{{ expense.description }}</td>
+    <td>{{ expense.lead|default:"" }}</td>
+    <td>{% if expense.chargeable %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+    <td>{% if expense.receipt %}<a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}</td>
+    <td>{{ expense.creation_date }}</td>
+    <td>{{ expense.update_date }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

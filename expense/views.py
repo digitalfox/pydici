@@ -120,6 +120,27 @@ def expense_receipt(request, expense_id):
 
     return response
 
+def expenses_history(request):
+    """Display expense history"""
+    #TODO: add time range (year)
+    expenses = []
+    try:
+        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+        user_team = consultant.userTeam()
+    except Consultant.DoesNotExist:
+        user_team = []
+
+    if perm.has_role(request.user, "expense paymaster"):
+        expenses = [(e, wf.get_state(e), None) for e in Expense.objects.all()]
+    else:
+        expenses.extend(get_user_expenses(request.user, only_in_workflow=False))
+        expenses.extend(get_team_expenses(request.user, user_team, no_transition=True, only_in_workflow=False))
+
+    return render_to_response("expense/expenses_history.html",
+                              {"expenses" : expenses,
+                               "user": request.user },
+                               RequestContext(request))
+
 def update_expense_state(request, expense_id, transition_id):
     """Do workflow transition for that expense"""
     try:
