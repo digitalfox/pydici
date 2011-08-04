@@ -55,13 +55,14 @@
         {% ifchanged state %}
             <h2>{{ state.name }}</h2>
         {% endifchanged %}
-        <li>{{ expense }}
+        <li>
+        {% with expense as obj %}{% ifhasperm expense_edit %}
+            <a href='{% url pydici.expense.views.expenses expense.id %}'>{% endifhasperm %}{{ expense }}{% ifhasperm expense_edit %}</a>{% endifhasperm %}
+        {% endwith %}
         {% if expense.receipt %}
             <a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
         {% endif %}
-        {% with expense as obj %}{% ifhasperm expense_edit %}
-                    (<a href='{% url pydici.expense.views.expenses expense.id %}'>{% trans "update" %}</a>)
-        {% endifhasperm %}{% endwith %}
+
         </li>
     {% endfor %}
 </ul>
@@ -78,7 +79,11 @@
         {% ifchanged state %}
             <h3>{{ state.name }}</h3>
         {% endifchanged %}
-        <li>{{ expense }}
+        <li>
+        {% with expense as obj %}{% ifhasperm expense_edit %}
+            <a href='{% url pydici.expense.views.expenses expense.id %}'>{% endifhasperm %}{{ expense }}{% ifhasperm expense_edit %}</a>{% endifhasperm %}
+        {% endwith %}
+
         {% if expense.receipt %}
             <a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
         {% endif %}
@@ -89,9 +94,7 @@
                 <a href='{% url pydici.expense.views.update_expense_state expense.id transition.id %}'>{{ transition }}</a>
                 {% if not forloop.last %} / {% endif %}
             {% endfor %}
-        ){% with expense as obj %}{% ifhasperm expense_edit %}
-                    &nbsp;<a href='{% url pydici.expense.views.expenses expense.id %}'>{% trans "update" %}</a>
-        {% endifhasperm %}{% endwith %}
+        )
         {% endif %}
         </li>
     {% endfor %}
