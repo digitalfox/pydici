@@ -53,7 +53,7 @@
 <ul>
     {% for expense, state, transitions in user_expenses %}
         {% ifchanged state %}
-            <h2>{{ state }}</h2>
+            <h3>{{ state }}</h3>
         {% endifchanged %}
         <li>
         {% with expense as obj %}{% ifhasperm expense_edit %}
@@ -75,10 +75,12 @@
     {% for expense, state, transitions in managed_expenses %}
         {% ifchanged expense.user %}
             <h2>{{ expense.user|link_to_consultant }}</h2>
-        {% endifchanged %}
-        {% ifchanged state %}
             <h3>{{ state }}</h3>
-        {% endifchanged %}
+        {% else %}
+	        {% ifchanged state %}
+	            <h3>{{ state }}</h3>
+	        {% endifchanged %}
+	    {% endifchanged %}
         <li>
         {% with expense as obj %}{% ifhasperm expense_edit %}
             <a href='{% url pydici.expense.views.expenses expense.id %}'>{{ expense }}</a>{% else %}{{ expense }}{% endifhasperm %}

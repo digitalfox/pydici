@@ -78,12 +78,14 @@ def expenses(request, expense_id=None):
     else:
         managed_expenses = team_expenses
 
-    # Sort expenses
-    #TODO: sort expenses on user,state,date
-
     # Add state and transitions to expense list
     user_expenses = [(e, e.state(), None) for e in user_expenses] # Don't compute transitions for user exp.
     managed_expenses = [(e, e.state(), e.transitions(request.user)) for e in managed_expenses]
+
+    # Sort expenses
+    user_expenses.sort(key=lambda x:"%s-%s" % (x[1], x[0].id)) # state, then creation date
+    managed_expenses.sort(key=lambda x:"%s-%s" % (x[0].user, x[1])) # user then state
+
 
     # Prune old expense in terminal state (no more transition)
     for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(30))):
