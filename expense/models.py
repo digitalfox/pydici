@@ -50,3 +50,10 @@ class Expense(models.Model):
     def state(self):
         """expense state according to expense workflow"""
         return wf.get_state(self).name
+
+    def transitions(self, user):
+        """expense allowed transitions in workflows for given user"""
+        if self.workflow_in_progress:
+            return wf.get_allowed_transitions(self, user)
+        else:
+            return []

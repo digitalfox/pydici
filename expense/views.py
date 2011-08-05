@@ -17,12 +17,11 @@ from django.contrib.auth.decorators import permission_required, login_required
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
+from django.db.models import Q
 
 from pydici.expense.forms import ExpenseForm
 from pydici.expense.models import Expense
 from pydici.people.models import Consultant
-
-from pydici.expense.utils import get_user_expenses, get_team_expenses
 
 @login_required
 def expenses(request, expense_id=None):
@@ -66,28 +65,25 @@ def expenses(request, expense_id=None):
             form = ExpenseForm() # An unbound form        
 
     # Get user expenses
-    user_expenses = get_user_expenses(request.user)
+    user_expenses = Expense.objects.filter(user=request.user, workflow_in_progress=True)
 
     if user_team:
-        team_expenses = get_team_expenses(request.user, user_team)
+        team_expenses = Expense.objects.filter(user__in=user_team, workflow_in_progress=True)
     else:
         team_expenses = []
 
-    # Get managed expense for paymaster only
-    managed_expenses = []
+    # Paymaster manage all expenses
     if perm.has_role(request.user, "expense paymaster"):
-        for managed_expense in Expense.objects.filter(workflow_in_progress=True).exclude(user=request.user):
-            if managed_expense in [e[0] for e in team_expenses]:
-                continue
-            transitions = wf.get_allowed_transitions(managed_expense, request.user)
-            if transitions:
-                managed_expenses.append((managed_expense, wf.get_state(managed_expense), transitions))
-
-    # Concatenate managed and team expenses
-    managed_expenses = team_expenses + managed_expenses
+        managed_expenses = Expense.objects.filter(workflow_in_progress=True).exclude(user=request.user)
+    else:
+        managed_expenses = team_expenses
 
     # Sort expenses
     #TODO: sort expenses on user,state,date
+
+    # Add state and transitions to expense list
+    user_expenses = [(e, e.state(), None) for e in user_expenses] # Don't compute transitions for user exp.
+    managed_expenses = [(e, e.state(), e.transitions(request.user)) for e in managed_expenses]
 
     # Prune old expense in terminal state (no more transition)
     for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(30))):
@@ -130,11 +126,9 @@ def expenses_history(request):
     except Consultant.DoesNotExist:
         user_team = []
 
-    if perm.has_role(request.user, "expense paymaster"):
-        expenses = [(e, wf.get_state(e), None) for e in Expense.objects.all()]
-    else:
-        expenses.extend(get_user_expenses(request.user, only_in_workflow=False))
-        expenses.extend(get_team_expenses(request.user, user_team, no_transition=True, only_in_workflow=False))
+    expenses = Expense.objects.all()
+    if not perm.has_role(request.user, "expense paymaster"):
+        expenses = expenses.filter(Q(user=request.user) | Q(user__in=user_team))
 
     return render_to_response("expense/expenses_history.html",
                               {"expenses" : expenses,

@@ -24,7 +24,7 @@
     <th>{% trans "Creation date" %}</th>
     <th>{% trans "Update date" %}</th>
 </tr>
-{% for expense, state, transitions in expenses %}
+{% for expense in expenses %}
     <tr>
     <td>{{ expense.user.username|link_to_consultant }}</td>
     <td>{{ expense.description }}</td>
