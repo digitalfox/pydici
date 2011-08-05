@@ -11,6 +11,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.auth.models import User
+import workflows.utils as wf
 
 from pydici.leads.models import Lead
 
@@ -46,3 +47,6 @@ class Expense(models.Model):
         else:
             return u"%s - %s €" % (self.description, self.amount)
 
+    def state(self):
+        """expense state according to expense workflow"""
+        return wf.get_state(self).name
