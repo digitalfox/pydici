@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-04 19:30+0200\n"
-"PO-Revision-Date: 2011-08-04 19:30+0200\n"
+"POT-Creation-Date: 2011-08-08 22:05+0200\n"
+"PO-Revision-Date: 2011-08-08 22:04+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -35,14 +35,14 @@ msgid "End of a mission"
 msgstr "Fin d'une mission"
 
 #: actionset/models.py:25 actionset/models.py:44 core/models.py:15
-#: crm/models.py:19 crm/models.py:40 expense/models.py:26 leads/models.py:43
+#: crm/models.py:19 crm/models.py:40 expense/models.py:27 leads/models.py:43
 #: leads/views.py:100 people/models.py:21 people/models.py:128
 #: templates/staffing/consultant_base.html:29
 #: templates/staffing/missions.html:29
 msgid "Name"
 msgstr "Nom"
 
-#: actionset/models.py:26 actionset/models.py:45 expense/models.py:32
+#: actionset/models.py:26 actionset/models.py:45 expense/models.py:33
 #: leads/models.py:90 leads/views.py:100 staffing/models.py:33
 #: staffing/models.py:163 templates/expense/expenses_history.html:19
 msgid "Description"
@@ -61,7 +61,7 @@ msgstr "Active"
 msgid "To be done"
 msgstr "À faire"
 
-#: actionset/models.py:55 templates/actionset/_base_actions.html:20
+#: actionset/models.py:55
 msgid "Done"
 msgstr "Faite"
 
@@ -71,6 +71,7 @@ msgstr "N/A"
 
 #: actionset/models.py:58 billing/models.py:30 leads/models.py:55
 #: leads/views.py:102 templates/billing/_lead_billing.html:9
+#: templates/expense/expenses_history.html:23
 msgid "State"
 msgstr "État"
 
@@ -78,7 +79,7 @@ msgstr "État"
 msgid "Creation"
 msgstr "Création"
 
-#: actionset/models.py:62 expense/models.py:37 leads/models.py:59
+#: actionset/models.py:62 expense/models.py:38 leads/models.py:59
 #: leads/models.py:82 leads/views.py:104 staffing/models.py:38
 #: templates/core/index.html:24 templates/core/index.html.py:49
 #: templates/core/index.html:73 templates/core/index.html.py:97
@@ -98,6 +99,20 @@ msgstr "Identifiant"
 #, python-format
 msgid "Trigger %s is not defined"
 msgstr "Le déclencheur %s n'est pas défini"
+
+#: actionset/views.py:67
+#, python-format
+msgid "Action set %s does not exist"
+msgstr "Le train d'action %s n'existe pas"
+
+#: actionset/views.py:72
+#, python-format
+msgid "User %s does not exist"
+msgstr "L'utilisateur %s n'existe pas"
+
+#: actionset/views.py:75
+msgid "Username parameter is missing"
+msgstr "Le paramètre Username est manquant"
 
 #: batch/timesheet_check.py:89
 msgid "[pydici] Your timesheet is not correct"
@@ -157,7 +172,7 @@ msgstr "Montant (€ HT)"
 
 #: billing/models.py:27 templates/billing/_lead_billing.html:11
 #: templates/billing/bill_review.html:121
-#: templates/expense/expenses_history.html:23
+#: templates/expense/expenses_history.html:24
 msgid "Creation date"
 msgstr "Date de création"
 
@@ -283,50 +298,50 @@ msgstr "Client"
 msgid "You must define a lead if expense is chargeable"
 msgstr "Vous devez définir une affaire si les frais sont refacturables"
 
-#: expense/models.py:35 templates/expense/expenses_history.html:21
+#: expense/models.py:36 templates/expense/expenses_history.html:21
 msgid "Chargeable"
 msgstr "Refacturable"
 
-#: expense/models.py:36 staffing/models.py:162 staffing/models.py:172
+#: expense/models.py:37 staffing/models.py:162 staffing/models.py:172
 #: staffing/models.py:194 staffing/models.py:209
 msgid "Date"
 msgstr "Date"
 
-#: expense/models.py:38
+#: expense/models.py:39
 msgid "Amount"
 msgstr "Montant"
 
-#: expense/models.py:39
+#: expense/models.py:40
 msgid "Category"
 msgstr "Catégorie"
 
-#: expense/models.py:40 templates/expense/expenses_history.html:22
+#: expense/models.py:41 templates/expense/expenses_history.html:22
 msgid "Receipt"
 msgstr "Justificatif"
 
-#: expense/views.py:41
+#: expense/views.py:40
 msgid "You are not allowed to edit that expense"
 msgstr "Vous n'êtes pas autorisé à modifier cette note de frais"
 
-#: expense/views.py:45 expense/views.py:152
+#: expense/views.py:44 expense/views.py:148
 #, python-format
 msgid "Expense %s does not exist"
 msgstr "La note de frais %s n'existe pas"
 
-#: expense/views.py:149
+#: expense/views.py:145
 msgid "You cannot manage your own expense !"
 msgstr "Vous ne pouvez pas gérer vos propres notes de frais !"
 
-#: expense/views.py:157
+#: expense/views.py:153
 #, python-format
 msgid "Transition %s does not exist"
 msgstr "La transition %s n'existe pas"
 
-#: expense/views.py:161
+#: expense/views.py:157
 msgid "Successfully update expense"
 msgstr "Note de frais mise à jour avec succès"
 
-#: expense/views.py:163
+#: expense/views.py:159
 msgid "You cannot do this transition"
 msgstr "Vous n'êtes pas autorisé à faire cette transition"
 
@@ -745,15 +760,19 @@ msgstr "Périmètre : "
 msgid "User: "
 msgstr "Utilisateur : "
 
-#: templates/actionset/_base_actions.html:30
+#: templates/actionset/_base_actions.html:20
+msgid "Mark as done"
+msgstr "Marquer comme terminée"
+
+#: templates/actionset/_base_actions.html:29
 msgid "Delegate to: "
 msgstr "Déléguer à : "
 
-#: templates/actionset/_base_actions.html:44
+#: templates/actionset/_base_actions.html:36
 msgid "No pending action"
 msgstr "Aucune action en attente"
 
-#: templates/actionset/_base_actions.html:57
+#: templates/actionset/_base_actions.html:63
 msgid "You are not allowed to do that"
 msgstr "Vous n'êtes pas autorisé à faire cela"
 
@@ -769,9 +788,21 @@ msgstr "Ce train d'action est inactif"
 msgid "Trigger: "
 msgstr "Déclencheur : "
 
-#: templates/actionset/actionset_catalog.html:31
+#: templates/actionset/actionset_catalog.html:23
+msgid "Launch manually this actionset for user: "
+msgstr "Lancer manuellement ce train d'action pour l'utilisateur : "
+
+#: templates/actionset/actionset_catalog.html:25
+msgid "Ok"
+msgstr "Ok"
+
+#: templates/actionset/actionset_catalog.html:50
 msgid "Pending action tracking"
 msgstr "Suivi des actions en cours"
+
+#: templates/actionset/actionset_catalog.html:61
+msgid "Action set launched"
+msgstr "Train d'action lancé"
 
 #: templates/admin/app_index.html:8 templates/admin/base.html:57
 #: templates/admin/change_list.html:8 templates/core/m.index.html:35
@@ -925,7 +956,7 @@ msgstr "Suivi de facturation"
 msgid "Payment delay review"
 msgstr "Délais de règlement"
 
-#: templates/admin/base_site.html:107 templates/expense/expenses.html:105
+#: templates/admin/base_site.html:107 templates/expense/expenses.html:107
 #: templates/expense/expenses_history.html:12
 msgid "Expenses history"
 msgstr "Historique des notes de frais"
@@ -1244,15 +1275,15 @@ msgstr "Les notes de frais à traiter"
 msgid "People"
 msgstr "Personne"
 
-#: templates/expense/expenses_history.html:24
+#: templates/expense/expenses_history.html:25
 msgid "Update date"
 msgstr "Date de mise à jour"
 
-#: templates/expense/expenses_history.html:31
+#: templates/expense/expenses_history.html:32
 msgid "Yes"
 msgstr "Oui"
 
-#: templates/expense/expenses_history.html:31
+#: templates/expense/expenses_history.html:32
 msgid "No"
 msgstr "Non"
 
