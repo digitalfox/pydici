@@ -25,17 +25,9 @@
               {% trans "N/A" %}</a>
            &nbsp;-&nbsp;
            <a href="javascript:;" 
-              onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'DELEGUATE' %}?username='+$('#id_deleguate_user').val())
-                            .success(process_update_action_state);">
+              onClick="call_deleguate_action('{% url pydici.actionset.views.update_action_state action.id 'DELEGUATE' %}', '{{ action.id }}');">
               {% trans "Delegate to: " %}</a>
-           <input id="id_deleguate_user" type="text"/>
-           <script><!-- 
-                $("#id_deleguate_user").autocomplete('{% url ajax_lookup "user"%}',
-                                                      { formatItem: function(row) { return row[2]; },
-                                                        formatResult: function(row) { return row[1]; },
-                                                        dataType: "text"
-                                                      });
-            --></script>
+           <input name="deleguate_user_{{action.id}}" type="text"/>
          </p>
          {% endifequal %}
         </div>
@@ -47,11 +39,25 @@
 </ul>
 
 <script type="text/JavaScript">
-<!--     
+<!--
+
+    $("input[name^='deleguate_user']").autocomplete('{% url ajax_lookup "user"%}',
+                                          { formatItem: function(row) { return row[2]; },
+                                            formatResult: function(row) { return row[1]; },
+                                            dataType: "text"
+                                          });
+
     $("a.tooltiplink").simpletooltip({margin : 100,
                                       click : true,
                                       showEffect: "fadeIn", hideEffect: "fadeOut" });
-    // Functions that process ajax callback
+
+    // Function call URL for deleguate
+    function call_deleguate_action(url, action_id) {
+        var username = $("input[name^='deleguate_user_" + action_id + "']").val();
+        $.get(url + '?username=' + username, process_update_action_state);
+    };
+
+    // Function that process ajax callback
     function process_update_action_state(data) {
         if (data.error==true) {
             alert("{% trans 'You are not allowed to do that' %}");
