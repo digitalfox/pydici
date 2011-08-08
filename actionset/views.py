@@ -54,3 +54,27 @@ def actionset_catalog(request):
                               {"actionsets": ActionSet.objects.all(),
                                "can_change" : can_change },
                                RequestContext(request))
+
+@login_required
+def launch_actionset(request, actionset_id):
+    """Manually launch an actionset for given user (username GET parameter) with ajax query"""
+    #TODO: add optional target object (content and id)
+    data = {"error": False, "id": actionset_id}
+    try:
+        actionset = ActionSet.objects.get(id=actionset_id)
+    except ActionSet.DoesNotExist:
+        data["error"] = True
+        data["errormsg"] = _("Action set %s does not exist" % actionset_id)
+    try:
+        user = User.objects.get(username=request.GET["username"])
+    except User.DoesNotExist:
+        data["error"] = True
+        data["errormsg"] = _("User %s does not exist" % request.GET["username"])
+    except KeyError:
+        data["error"] = True
+        data["errormsg"] = _("Username parameter is missing")
+
+    if not data["error"]:
+        actionset.start(user)
+
+    return HttpResponse(json.dumps(data), mimetype="application/json")
