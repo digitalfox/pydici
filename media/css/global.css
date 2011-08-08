@@ -191,5 +191,5 @@ table#change-history tbody th { width:16em; }
 .pydici-expense label { width: 5em; float: left; text-align: right; margin-right: 1em; display: block ; vertical-align: middle; }
 
 /* jquery tooltip */
-.tooltip{width:400px;margin:0;padding:5px;font-size:11px;color:#666;background:#fff;border:2px solid #ccc;}
+.tooltip{width:500px;margin:0;padding:5px;font-size:11px;color:#666;background:#fff;border:2px solid #ccc;}
 .tooltip p{margin:0;text-align:justify;}

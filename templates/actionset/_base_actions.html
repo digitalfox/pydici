@@ -15,13 +15,13 @@
         {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
         {% ifequal request.user action.user %}
         <p><a href="javascript:;"
-              onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'DONE' %}')
-                            .success(process_update_action_state);">
-              {% trans "Done" %}</a>
+              onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'DONE' %}',
+                              process_update_action_state);">
+              {% trans "Mark as done" %}</a>
            &nbsp;-&nbsp;
            <a href="javascript:;" 
-              onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'NA' %}')
-                            .success(process_update_action_state);">
+              onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'NA' %}',
+                              process_update_action_state);">
               {% trans "N/A" %}</a>
            &nbsp;-&nbsp;
            <a href="javascript:;" 
@@ -49,6 +49,7 @@
 
     $("a.tooltiplink").simpletooltip({margin : 100,
                                       click : true,
+                                      hideDelay : 1,
                                       showEffect: "fadeIn", hideEffect: "fadeOut" });
 
     // Function call URL for deleguate
