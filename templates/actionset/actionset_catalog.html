@@ -19,20 +19,15 @@
     {% if not actionset.active %}<p><strong>{% trans "This actionset is inactive" %}</strong></p>{% endif %}
     <p><em>{{ actionset.description }}</em></p>
     <p><strong>{% trans "Trigger: " %}</strong> {{ actionset.get_trigger_display }}</p>
-    <div><form id='form_actionset_launch'>
+    <div><form id='form_actionset_launch_{{ actionset.id }}'>
        {% trans "Launch manually this actionset for user: " %}
-       <input id="id_actionset_target_user" type="text"/>
-       <input id="id_actionset_target_user" type="submit" value="{% trans 'Ok' %}"/>
+       <input name="actionset_target_user_{{ actionset.id }}" type="text"/>
+       <input type="submit" value="{% trans 'Ok' %}"/>
        <div id="launch_feedback_{{ actionset.id }}" style="display:inline;"></div>
        </form>
            <script><!--
-                $("#id_actionset_target_user").autocomplete('{% url ajax_lookup "user"%}',
-                                                      { formatItem: function(row) { return row[2]; },
-                                                        formatResult: function(row) { return row[1]; },
-                                                        dataType: "text"
-                                                      });
-                $('#form_actionset_launch').submit(function() {
-                    $.get('{% url pydici.actionset.views.launch_actionset actionset.id %}?username='+$('#id_actionset_target_user').val(),
+                $('#form_actionset_launch_{{ actionset.id }}').submit(function() {
+                    $.get('{% url pydici.actionset.views.launch_actionset actionset.id %}?username='+$("input[name^='actionset_target_user_{{ actionset.id }}']").val(),
                            process_launch_actionset);
                     return false; // prevent submiting form to browser (which would reload page...)
                 });
@@ -43,15 +38,21 @@
         <li><strong>{% if can_change %}<a href="{% url admin:actionset_action_change action.id %}">{{ action.name }}</a>{% else %}{{ action.name }}{% endif %}</strong> : <em>{{ action.description }}</em></li>
     {% endfor %}
     </ul>
+    <br/><hr/><br/>
 {% endfor %}
 
-<br/><hr/><br/>
+<br/>
 {% if perms.actionset.change_actionstate %}
 <a href="{% url admin:actionset_actionstate_changelist %}">{% trans "Pending action tracking" %}</a>
 {% endif %}
 
 <script type="text/JavaScript">
 <!--
+    $("input[name^='actionset_target_user']").autocomplete('{% url ajax_lookup "user"%}',
+                                                      { formatItem: function(row) { return row[2]; },
+                                                        formatResult: function(row) { return row[1]; },
+                                                        dataType: "text"
+                                                 });
     // Functions that process ajax callback
     function process_launch_actionset(data) {
         if (data.error==true) {

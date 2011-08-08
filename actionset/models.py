@@ -24,7 +24,7 @@ class ActionSet(models.Model):
            )
     name = models.CharField(_("Name"), max_length=50)
     description = models.TextField(_("Description"), blank=True)
-    trigger = models.CharField(_("Trigger"), max_length=50, choices=ACTIONSET_TRIGGERS)
+    trigger = models.CharField(_("Trigger"), max_length=50, choices=ACTIONSET_TRIGGERS, blank=True, null=True)
     active = models.BooleanField(_("Active"), default=True)
 
     def __unicode__(self): return self.name
