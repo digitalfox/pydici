@@ -21,6 +21,7 @@ class ActionSet(models.Model):
             ('WON_LEAD', ugettext("When a lead is won ")),
             ('NEW_MISSION', ugettext("When a mission is created")),
             ('ARCHIVED_MISSION', ugettext("When mission is archived")),
+            ('NEW_CONSULTANT', ugettext("When a consultant is created")),
            )
     name = models.CharField(_("Name"), max_length=50)
     description = models.TextField(_("Description"), blank=True)

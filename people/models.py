@@ -9,12 +9,15 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.models import User
 from django.db.models import F, Sum
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
 from datetime import date, timedelta
 
 from pydici.core.utils import capitalize
 from pydici.core.models import Subsidiary
 from pydici.actionset.models import ActionState
+from pydici.actionset.utils import launchTrigger
 
 class ConsultantProfile(models.Model):
     """Consultant hierarchy"""
@@ -144,3 +147,23 @@ class SalesMan(models.Model):
         verbose_name = _("Salesman")
         verbose_name_plural = _("Salesmen")
 
+# Signal handling to throw actionset
+def consultantSignalHandler(sender,  **kwargs):
+    """Signal handler for new consultant"""
+
+    if  not kwargs.get("created",  False):
+        return
+
+    consultant = kwargs["instance"]
+    targetUser = None
+    if consultant.manager:
+        targetUser = consultant.manager.getUser()
+
+    if not targetUser:
+        # Default to admin
+        targetUser = User.objects.filter(is_superuser=True)[0]
+
+    launchTrigger("NEW_CONSULTANT",  [targetUser, ],  consultant)
+
+# Signal connection to throw actionset
+post_save.connect(consultantSignalHandler,  sender=Consultant)

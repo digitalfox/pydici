@@ -50,18 +50,6 @@
             "profil": 1, 
             "manager": 1
         }
-    }, 
-    {
-        "pk": 4, 
-        "model": "people.consultant", 
-        "fields": {
-            "trigramme": "TCO", 
-            "productive": true, 
-            "name": "Thomas", 
-            "company": 1, 
-            "profil": 2, 
-            "manager": 5
-        }
     },
     {
         "pk": 5, 
@@ -74,6 +62,17 @@
             "profil": 2, 
             "manager": 1
         }
+    },
+    {
+        "pk": 4, 
+        "model": "people.consultant", 
+        "fields": {
+            "trigramme": "TCO", 
+            "productive": true, 
+            "name": "Thomas", 
+            "company": 1, 
+            "profil": 2, 
+            "manager": 5
+        }
     }
-    
 ]
