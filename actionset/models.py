@@ -14,13 +14,12 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
-
-
 class ActionSet(models.Model):
     """Set of action that needs to be done when triggered by a process"""
     ACTIONSET_TRIGGERS = (
-            ('START_MISSION', ugettext("Beginning of a mission")),
-            ('END_MISSION', ugettext("End of a mission")),
+            ('NEW_LEAD', ugettext("When a lead is created ")),
+            ('WON_LEAD', ugettext("When a lead is won ")),
+            ('ARCHIVED_MISSION', ugettext("When mission is archived")),
            )
     name = models.CharField(_("Name"), max_length=50)
     description = models.TextField(_("Description"), blank=True)

@@ -10,6 +10,8 @@ from datetime import datetime, date
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.admin.models import LogEntry, ContentType
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
 from taggit.managers import TaggableManager
 
@@ -18,6 +20,7 @@ from pydici.core.utils import compact_text
 from pydici.crm.models import Client, BusinessBroker
 from pydici.people.models import Consultant, SalesMan
 from pydici.actionset.models import ActionState
+from pydici.actionset.utils import launchTrigger
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -27,7 +30,6 @@ class LeadManager(models.Manager):
 
     def passive(self):
         return self.get_query_set().filter(state__in=("LOST", "FORGIVEN", "WON", "SLEEPING"))
-
 class Lead(models.Model):
     """A commercial lead"""
     STATES = (
@@ -148,3 +150,21 @@ class Lead(models.Model):
     class Meta:
         ordering = ["client__organisation__company__name", "name"]
         verbose_name = _("Lead")
+
+# Signal handling to throw actionset
+def leadSignalHandler(sender,  **kwargs):
+    """Signal handler for new/updated leads"""
+    lead = kwargs["instance"]
+    targetUser = None
+    if lead.responsible:
+        targetUser= lead.responsible.getUser()
+    if not targetUser:
+        targetUser = User.objects.filter(is_superuser=True)[0]
+
+    if  kwargs.get("created",  False):
+        launchTrigger("NEW_LEAD",  [targetUser, ],  lead)
+    if lead.state == "WON":
+        launchTrigger("WON_LEAD",  [targetUser, ],  lead)
+
+# Signal connection to throw actionset
+post_save.connect(leadSignalHandler,  sender=Lead)
