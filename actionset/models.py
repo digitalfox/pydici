@@ -19,6 +19,7 @@ class ActionSet(models.Model):
     ACTIONSET_TRIGGERS = (
             ('NEW_LEAD', ugettext("When a lead is created ")),
             ('WON_LEAD', ugettext("When a lead is won ")),
+            ('NEW_MISSION', ugettext("When a mission is created")),
             ('ARCHIVED_MISSION', ugettext("When mission is archived")),
            )
     name = models.CharField(_("Name"), max_length=50)

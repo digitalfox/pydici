@@ -159,6 +159,7 @@ def leadSignalHandler(sender,  **kwargs):
     if lead.responsible:
         targetUser= lead.responsible.getUser()
     if not targetUser:
+        # Default to admin
         targetUser = User.objects.filter(is_superuser=True)[0]
 
     if  kwargs.get("created",  False):

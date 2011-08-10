@@ -10,11 +10,14 @@ from django.db.models import Sum
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.db.models.signals import post_save
+from django.contrib.auth.models import User
 
 from datetime import datetime
 
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant
+from pydici.actionset.utils import launchTrigger
 
 
 class Mission(models.Model):
@@ -222,3 +225,31 @@ class FinancialCondition(models.Model):
     class Meta:
         unique_together = (("consultant", "mission", "daily_rate"),)
         verbose_name = _("Financial condition")
+
+# Signal handling to throw actionset
+def missionSignalHandler(sender,  **kwargs):
+    """Signal handler for new/updated leads"""
+    mission = kwargs["instance"]
+    targetUser = None
+    if not mission.nature == "PROD":
+        # Don't throw actions for non prod missions
+        return
+    if mission.lead and mission.lead.responsible:
+        targetUser= mission.lead.responsible.getUser()
+    else:
+        # try to pick up one of staffee
+        for consultant in mission.staffed_consultant():
+            targetUser = consultant.getUser()
+            if targetUser:
+                break
+    if not targetUser:
+        # Default to admin
+        targetUser = User.objects.filter(is_superuser=True)[0]
+
+    if  kwargs.get("created",  False):
+        launchTrigger("NEW_MISSION",  [targetUser, ],  mission)
+    if not mission.active:
+        launchTrigger("ARCHIVED_MISSION",  [targetUser, ],  mission)
+
+# Signal connection to throw actionset
+post_save.connect(missionSignalHandler,  sender=Mission)
