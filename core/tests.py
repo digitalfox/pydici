@@ -80,6 +80,7 @@ class SimpleTest(TestCase):
                      "/staffing/graph/rates/",
                      "/staffing/graph/rates/pie/consultant/1",
                      "/staffing/graph/rates/graph/consultant/1",
+                     "/staffing/mission/1/deactivate",
                      "/leads/graph/pie",
                      "/leads/graph/bar",
                      "/people/consultant/1/",
@@ -115,7 +116,6 @@ class SimpleTest(TestCase):
         self.failUnlessEqual(response.status_code, 301)
         for page in ("/staffing/mission/newfromdeal/1/",
                      "/staffing/mission/newfromdeal/2/",
-                     "/staffing/mission/1/deactivate",
                      "/staffing/rate/mission/1/consultant/1/"):
             response = self.client.get(PREFIX + page)
             self.failUnlessEqual(response.status_code, 302)

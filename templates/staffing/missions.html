@@ -31,13 +31,17 @@
 	{% ifchanged mission.nature %}
 	   <tr><th>{{ mission.get_nature_display }}</th></tr>
 	{% endifchanged %}
-	<tr {%cycle 'class="row1"' 'class="row2"' %}>
+	<tr {%cycle 'class="row1"' 'class="row2"' %} id="mission_{{ mission.id }}">
 	    <td scope="row"><a href='{% url pydici.staffing.views.mission_staffing mission.id %}', title='{% blocktrans %}Defines {{ mission }} staffing{% endblocktrans %}'>{{ mission }}</a></td>
 	    <td>{{ mission.mission_id }}</td>
 	    <td>{{ mission.get_probability_display }} </td>
 	    <td scope="row">
 	       {% if mission.active %}
-	           <a href='{% url pydici.staffing.views.deactivate_mission mission.id %}', title='{% blocktrans %}Archive {{ mission }}{% endblocktrans %}'><em>{% trans "Archive" %}</em></a>
+	           <a href="javascript:;"
+	              onClick="$.get('{% url pydici.staffing.views.deactivate_mission mission.id %}',
+	                               process_mission_archive)"
+	              title='{% blocktrans %}Archive {{ mission }}{% endblocktrans %}'>
+	              <em>{% trans "Archive" %}</em></a>
 	       {% endif %}
 	    </td>
 	    <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', target='_blank', class='changelink'><em>{% trans "Change" %}</em></a></td>
@@ -59,4 +63,19 @@
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 <a href='{% url index %}'>{% trans "Back to home page" %}</a>
 </div>
+
+<script type="text/JavaScript">
+<!--
+    // Function that process ajax callback
+    function process_mission_archive(data) {
+        if (data.error==true) {
+            alert("{% trans 'Archiving failed' %}");
+        }
+        else {
+            $("#mission_" + data.id).hide("fast");
+        }
+    };
+-->
+</script>
+
 {% endblock %}

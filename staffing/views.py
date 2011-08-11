@@ -8,6 +8,7 @@ Pydici staffing views. Http request are processed here.
 from datetime import date, timedelta
 import csv
 import itertools
+import json
 
 from matplotlib.figure import Figure
 
@@ -271,10 +272,15 @@ def pdc_review(request, year=None, month=None):
 
 def deactivate_mission(request, mission_id):
     """Deactivate the given mission"""
-    mission = Mission.objects.get(id=mission_id)
-    mission.active = False
-    mission.save()
-    return HttpResponseRedirect(urlresolvers.reverse("missions"))
+    try:
+        error = False
+        mission = Mission.objects.get(id=mission_id)
+        mission.active = False
+        mission.save()
+    except Mission.DoesNotExist:
+        error = True
+    return HttpResponse(json.dumps({"error" : error, "id": mission_id}),
+                        mimetype="application/json")
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
