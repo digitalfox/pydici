@@ -19,7 +19,7 @@
 &nbsp;&nbsp;
 <a href='{% url pydici.staffing.views.consultant_timesheet consultant.id %}'><img title='{% trans "timesheet" %}' src='{{ MEDIA_URL }}pydici/timesheet.png'/></a>
 &nbsp;&nbsp;
-{% if perms.people.Can_change_Consultant %}
+{% if perms.people.change_consultant %}
 <a href='{% url admin:people_consultant_change consultant.id %}'><img title='{% trans "Change" %}' src='{{ MEDIA_URL }}pydici/configure.png'/></a>
 {% endif %}
 

@@ -78,7 +78,7 @@
                         <a href='{% url pydici.actionset.views.actionset_catalog %}'>{% trans "Actionset catalog" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
-                {% if perms.actionset.can_change_actionstate %}
+                {% if perms.actionset.change_actionstate %}
                 <li><a href='{% url admin:actionset_actionstate_changelist %}'>{% trans "On going actions" %}</a></li>
                 {% endif %}
                 <li><a href='{% url pydici.expense.views.expenses %}'>{% trans "Expenses" %}</a></li>
