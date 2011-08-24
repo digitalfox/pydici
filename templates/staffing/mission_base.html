@@ -69,7 +69,7 @@
 	    &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 	    <a href='{% url pydici.leads.views.detail mission.lead_id %}'>{% trans "Lead of this mission" %}</a>
 	{% endif %}
-	{% if perms.staffing.Can_add_Mission %}
+	{% if perms.staffing.add_mission %}
 	{% if mission.lead %}
 	    &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 	    <a href='{% url pydici.staffing.views.create_new_mission_from_lead mission.lead.id %}'>{% trans "Create another mission for this lead" %}</a></li>

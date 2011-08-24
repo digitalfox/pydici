@@ -56,7 +56,7 @@
 	        <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>&nbsp;<font color='LightGrey'>|</font>&nbsp;
 	    {% endfor %}
 	    <div id="newtags" style="display:inline;"></div>
-        {% if perms.leads.Can_change_lead %}
+        {% if perms.leads.change_lead %}
     	    <form id="tag_form" style="display:inline;">
     	        <input type="text", id="newtag", value="", maxlength="100" onclick="this.value='';"/>
     	    </form>
@@ -138,7 +138,7 @@
 	{% endifnotequal %}
     </table>
     </div>
-    {% if perms.staffing.Can_add_Mission %}
+    {% if perms.staffing.add_mission %}
         <a href='{% url pydici.staffing.views.create_new_mission_from_lead lead.id %}'><i>{% trans "Create a new mission for this lead" %}</i></a>
     {% endif %}    
 {% endif %}

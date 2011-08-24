@@ -30,7 +30,7 @@
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
-                <td>{% if perms.billing.Can_change_Bill %}
+                <td>{% if perms.billing.change_bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
                  </td>
@@ -63,7 +63,7 @@
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
-                <td>{% if perms.billing.Can_change_Bill %}
+                <td>{% if perms.billing.change_bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
                  </td>
@@ -96,7 +96,7 @@
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td>{{ bill.comment }}</td>
-                <td>{% if perms.billing.Can_change_Bill %}
+                <td>{% if perms.billing.change_bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
                  </td>
