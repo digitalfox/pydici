@@ -53,11 +53,14 @@
 
     <div class="tag_banner">
 	    {% for tag in lead.tags.all %}
-	        <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>&nbsp;<font color='LightGrey'>|</font>&nbsp;
+	    <div id="tag_{{ tag.id }}" style="display:inline">
+	    	<a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>
+	    	<a class='tagrlink' href='javascript:;' onClick="$.get('{% url pydici.leads.views.remove_tag tag.id lead.id %}', hide_tag);">[x]</a>&nbsp;
+        </div>
 	    {% endfor %}
-	    <div id="newtags" style="display:inline;"></div>
+	    <div id="newtags" style="display:inline"></div>
         {% if perms.leads.change_lead %}
-    	    <form id="tag_form" style="display:inline;">
+    	    <form id="tag_form" style="display:inline">
     	        <input type="text", id="newtag", value="", maxlength="100" onclick="this.value='';"/>
     	    </form>
     	    <br/>
@@ -188,6 +191,7 @@
 
 <script type="text/javascript">
 <!--
+
 $(document).ready(function() {
     // Function to add new tags asynchronously
 
@@ -204,7 +208,8 @@ $(document).ready(function() {
 	                function(data) {
 	                    if (data.tag_created) {
 	                        // Add new tag on list
-	                        $("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>&nbsp;&nbsp;");
+				var remove_link = "<a class='tagrlink' href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "', hide_tag)\">[x]</a>";
+				$("#newtags").append("<div id='tag_" + data.id + "' style='display:inline'><a href='"+ data.tag_url + "'>" + data.tag_name + "</a>" + remove_link + "&nbsp;&nbsp;");
 	                        $("#newtag").val("");
 	                    }
 	                    else {
@@ -222,13 +227,19 @@ $(document).ready(function() {
                 { tag : $(this).text(), lead_id : {{lead.id}} },
                 function(data) {
 	                // Add new tag on list
-	                $("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>&nbsp;&nbsp;");
+		var remove_link = "<a href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "')\">[x]</a>";
+		$("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>" + remove_link + "&nbsp;&nbsp;");
                 });
         // Remove from suggested list
         $(this).remove();
     });
 });
-//-->
+
+function hide_tag(data) {    
+    $("#tag_"+ data.id).hide("fast");
+};
+
+-->
 </script>
 
 {% endblock %}
