@@ -161,7 +161,23 @@ def add_tag(request):
         lead.tags.add(tagName)
         tag = Tag.objects.filter(name=tagName)[0] # We should have only one, but in case of bad data, just take the first one
         answer["tag_url"] = urlresolvers.reverse("pydici.leads.views.tag", args=[tag.id, ])
+        answer["tag_remove_url"] = urlresolvers.reverse("pydici.leads.views.remove_tag", args=[tag.id, lead.id])
         answer["tag_name"] = tag.name
+        answer["id"] = tag.id
+    return HttpResponse(json.dumps(answer), mimetype="application/json")
+
+@permission_required("leads.change_lead")
+def remove_tag(request, tag_id, lead_id):
+    """Remove a tag to a lead"""
+    answer = {}
+    answer["error"] = False
+    answer["id"] = tag_id
+    try:
+        tag = Tag.objects.get(id=tag_id)
+        lead = Lead.objects.get(id=lead_id)
+        lead.tags.remove(tag)
+    except (Tag.DoesNotExist, Lead.DoesNotExist):
+        answer["error"] = True
     return HttpResponse(json.dumps(answer), mimetype="application/json")
 
 def tags(request, lead_id):

@@ -169,6 +169,8 @@ table#change-history tbody th { width:16em; }
     border-radius: 8px 8px 8px 8px;
 }
 
+a.tagrlink { color: #999999 }
+
 .lead_description {
 	background: #ffc;
 	margin: 10px;
