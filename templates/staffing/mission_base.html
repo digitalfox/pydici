@@ -28,7 +28,7 @@
     <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}', title='{% trans "Change"%} {{ mission }}', target='_blank', class='changelink'><em>{% trans "Change"%}</em></a></td>
     <br>
 
-    <h2>{% trans "Consultants currently implicated in this mission" %}</h1>
+    <h2>{% trans "Consultants currently implicated in this mission" %}</h2>
     <table>
     <tr><td>{% trans "Consultant" %}</td><td>{% trans "Daily rate (€)" %}</td></tr>
     {% for consultant, rate in consultant_rates.items %}
@@ -42,7 +42,6 @@
         </tr>
     {% endfor %}
     </table>    
-
     {% if mission.sister_missions %}
         <h2>{% trans "Other missions linked to this lead" %}</h2>
         <table>
@@ -61,7 +60,6 @@
     {% endif %}
 
 {% endif %}
-
 {% block mission_detail %} {% endblock %}
 
 {% if not request.session.mobile %}
