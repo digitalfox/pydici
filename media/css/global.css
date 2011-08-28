@@ -195,3 +195,6 @@ a.tagrlink { color: #999999 }
 /* jquery tooltip */
 .tooltip{width:500px;margin:0;padding:5px;font-size:11px;color:#666;background:#fff;border:2px solid #ccc;}
 .tooltip p{margin:0;text-align:justify;}
+
+/* jeditable clickable field - need to look like a link */
+.jeditable { color: #883915; text-decoration:none; cursor:pointer;}

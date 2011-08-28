@@ -649,13 +649,25 @@ def create_new_mission_from_lead(request, lead_id):
     # in order to type description and deal id
     return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_mission_change", args=[mission.id, ]))
 
-def mission_consultant_rate(request, mission_id, consultant_id):
-    """Select or create financial condition for this consultant/mission tuple and redirect to admin change page"""
-    mission = Mission.objects.get(id=mission_id)
-    consultant = Consultant.objects.get(id=consultant_id)
-    condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
+
+
+def mission_consultant_rate(request):
+    """Select or create financial condition for this consultant/mission tuple and update it
+    This is intended to be used through a jquery jeditable call"""
+    if not (request.user.has_perm("staffing.add_financialcondition") and
+        request.user.has_perm("staffing.change_financialcondition")):
+        return HttpResponse(_("You are not allowed to do that"))
+    try:
+        mission_id, consultant_id = request.POST["id"].split("-")
+        mission = Mission.objects.get(id=mission_id)
+        consultant = Consultant.objects.get(id=consultant_id)
+        condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
                                                                   defaults={"daily_rate":0})
-    return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_financialcondition_change", args=[condition.id, ]))
+        condition.daily_rate = request.POST["value"]
+        condition.save()
+        return HttpResponse(condition.daily_rate)
+    except (Mission.DoesNotExist, Consultant.DoesNotExist):
+        return HttpResponse(_("Mission or consultant does not exist"))
 
 
 @cache_page(60 * 10)
