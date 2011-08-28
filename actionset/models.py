@@ -17,8 +17,8 @@ from django.contrib.contenttypes.models import ContentType
 class ActionSet(models.Model):
     """Set of action that needs to be done when triggered by a process"""
     ACTIONSET_TRIGGERS = (
-            ('NEW_LEAD', ugettext("When a lead is created ")),
-            ('WON_LEAD', ugettext("When a lead is won ")),
+            ('NEW_LEAD', ugettext("When a lead is created")),
+            ('WON_LEAD', ugettext("When a lead is won")),
             ('NEW_MISSION', ugettext("When a mission is created")),
             ('ARCHIVED_MISSION', ugettext("When mission is archived")),
             ('NEW_CONSULTANT', ugettext("When a consultant is created")),
