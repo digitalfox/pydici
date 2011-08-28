@@ -472,15 +472,15 @@ def mission_timesheet(request, mission_id):
         missionData.append((consultant, timesheetData, staffingData))
 
     # Compute the total daily rate for each month of the mission
-    timesheetAverageRate = []
-    staffingAverageRate = []
+    timesheetTotalRate = []
+    staffingTotalRate = []
     for consultant, timesheet, staffing in missionData:
         rate = consultant_rates[consultant]
         # We don't compute the average rate for total (k€) columns, hence the [:-1]
-        valuedTimesheet = map(lambda days: days * rate, timesheet[:-1])
-        valuedStaffing = map(lambda days: days * rate, staffing[:-1])
-        timesheetAverageRate = map(lambda t, v: t and t + v or v, timesheetAverageRate, valuedTimesheet)
-        staffingAverageRate = map(lambda t, v: t and t + v or v, staffingAverageRate, valuedStaffing)
+        valuedTimesheet = [days * rate for days in  timesheet[:-1]]
+        valuedStaffing = [days * rate for days in staffing[:-1]]
+        timesheetTotalRate = map(lambda t, v: (t + v) if t else v, timesheetTotalRate, valuedTimesheet)
+        staffingTotalRate = map(lambda t, v: (t + v) if t else v, staffingTotalRate, valuedStaffing)
 
     # Compute total per month
     timesheetTotal = [timesheet for consultant, timesheet, staffing in missionData]
@@ -491,8 +491,8 @@ def mission_timesheet(request, mission_id):
     staffingTotal = [sum(t) for t in staffingTotal]
 
     # average = total rate / number of billed days
-    timesheetAverageRate = map(lambda t, d: d and t / d or 0, timesheetAverageRate, timesheetTotal[:-1])
-    staffingAverageRate = map(lambda t, d: d and t / d or 0, staffingAverageRate, staffingTotal[:-1])
+    timesheetAverageRate = map(lambda t, d: (t / d) if d else 0, timesheetTotalRate, timesheetTotal[:-1])
+    staffingAverageRate = map(lambda t, d: (t / d) if d else 0, staffingTotalRate, staffingTotal[:-1])
 
     if mission.price and timesheetTotal and staffingTotal:
         margin = float(mission.price) - timesheetTotal[-1] - staffingTotal[-1]
