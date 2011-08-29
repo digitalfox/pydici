@@ -6,6 +6,21 @@ Default expense workflow with according permissions
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+import os
+import sys
+from os.path import abspath, dirname, join, pardir
+
+## Setup django envt & django imports
+sys.path.append(abspath(join(dirname(__file__), pardir, pardir))) # Add project path to python path
+
+# Ensure we are in the good current working directory (pydici home)
+os.chdir(abspath(join(dirname(__file__), pardir)))
+
+from django.core.management import setup_environ
+import pydici.settings
+setup_environ(pydici.settings)
+
+
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group
 
@@ -111,3 +126,6 @@ def install_expense_workflow():
 
     state_needs_information.transitions.add(transition_validate)
     state_needs_information.transitions.add(transition_reject)
+
+if __name__ == "__main__":
+    install_expense_workflow()
