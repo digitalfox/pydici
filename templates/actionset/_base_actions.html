@@ -13,7 +13,7 @@
         <div style='float:right;'><a href="javascript:;" rel="close">X</a></div>
         <div style="clear:both"></div>
         <hr/><br/>
-        {% if action.action.description %}<p><em>{{ action.action.description }}</em></p><br/>{% endif %}
+        {% if action.action.description %}<p><em>{{ action.action.description|urlize }}</em></p><br/>{% endif %}
         {% block action_target %}{% if action.target %}<p><strong>{% trans "Scope: " %}</strong>{{ action.target }}</p><br/>{% endif %}{% endblock %}
         {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
         {% ifequal request.user action.user %}
