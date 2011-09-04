@@ -115,8 +115,7 @@ class SimpleTest(TestCase):
         response = self.client.get(PREFIX + "/help")
         self.failUnlessEqual(response.status_code, 301)
         for page in ("/staffing/mission/newfromdeal/1/",
-                     "/staffing/mission/newfromdeal/2/",
-                     "/staffing/rate/mission/1/consultant/1/"):
+                     "/staffing/mission/newfromdeal/2/",):
             response = self.client.get(PREFIX + page)
             self.failUnlessEqual(response.status_code, 302)
 
