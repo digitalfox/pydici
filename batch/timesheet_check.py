@@ -52,8 +52,8 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
     mails = [] # List of mail to be sent
     for consultant in Consultant.objects.filter(active=True):
         recipients = []
-        if not consultant.forecasted_missions(currentMonth):
-            # No mission forecasted on current month
+        if not [m for m in consultant.forecasted_missions(currentMonth) if m.nature == "PROD"]:
+            # No productive mission forecasted on current month
             # Consultant may have just started
             # No check needed. Skip it
             continue
