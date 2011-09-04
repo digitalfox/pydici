@@ -146,26 +146,29 @@ class Lead(models.Model):
         return ActionState.objects.filter(target_id=self.id,
                                           target_type=ContentType.objects.get_for_model(self),
                                           state="TO_BE_DONE")
+    @models.permalink
+    def get_absolute_url(self):
+        return ('pydici.leads.views.detail', [str(self.id)])
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]
         verbose_name = _("Lead")
 
 # Signal handling to throw actionset
-def leadSignalHandler(sender,  **kwargs):
+def leadSignalHandler(sender, **kwargs):
     """Signal handler for new/updated leads"""
     lead = kwargs["instance"]
     targetUser = None
     if lead.responsible:
-        targetUser= lead.responsible.getUser()
+        targetUser = lead.responsible.getUser()
     if not targetUser:
         # Default to admin
         targetUser = User.objects.filter(is_superuser=True)[0]
 
-    if  kwargs.get("created",  False):
-        launchTrigger("NEW_LEAD",  [targetUser, ],  lead)
+    if  kwargs.get("created", False):
+        launchTrigger("NEW_LEAD", [targetUser, ], lead)
     if lead.state == "WON":
-        launchTrigger("WON_LEAD",  [targetUser, ],  lead)
+        launchTrigger("WON_LEAD", [targetUser, ], lead)
 
 # Signal connection to throw actionset
-post_save.connect(leadSignalHandler,  sender=Lead)
+post_save.connect(leadSignalHandler, sender=Lead)

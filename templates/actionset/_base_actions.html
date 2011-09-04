@@ -14,7 +14,15 @@
         <div style="clear:both"></div>
         <hr/><br/>
         {% if action.action.description %}<p><em>{{ action.action.description|urlize }}</em></p><br/>{% endif %}
-        {% block action_target %}{% if action.target %}<p><strong>{% trans "Scope: " %}</strong>{{ action.target }}</p><br/>{% endif %}{% endblock %}
+        {% block action_target %}{% if action.target %}
+            <p><strong>{% trans "Scope: " %}</strong>
+            {% if action.target.get_absolute_url %}
+                <a href="{{ action.target.get_absolute_url }}">{{ action.target }}</a>
+            {% else %}
+                {{ action.target }}
+            {% endif %}
+            </p><br/>
+        {% endif %}{% endblock %}
         {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
         {% ifequal request.user action.user %}
         <p><a href="javascript:;"
