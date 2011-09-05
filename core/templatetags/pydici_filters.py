@@ -112,5 +112,10 @@ def pydici_simple_format(value, arg=None):
                 listHtml = []
             result.append(line)
             inList = False
+    if listHtml:
+        # Last line is a bullet point. We have to flush and close it
+        listHtml.append("</ul>")
+        result.append("".join(listHtml))
+
     value = "\n".join(result)
     return mark_safe(value)
