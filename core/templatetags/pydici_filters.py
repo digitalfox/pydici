@@ -97,25 +97,18 @@ def pydici_simple_format(value, arg=None):
     value = stared_text.sub(r"<strong>\1</strong>", value)
     value = underlined_text.sub(r"<em>\1</em>", value)
     result = []
-    listHtml = []
     inList = False # Flag to indicate we are in a list
     for line in value.split("\n"):
         if bullet_point.match(line):
             if not inList:
-                listHtml.append("<ul>")
-            listHtml.append(u"<li>%s</li>" % line.strip().lstrip("*").lstrip("-"))
+                result.append("<ul>")
+            result.append(u"<li>%s</li>" % line.strip().lstrip("*").lstrip("-"))
             inList = True
         else:
             if inList:
-                listHtml.append("</ul>")
-                result.append("".join(listHtml))
-                listHtml = []
-            result.append(line)
+                result.append("</ul>")
+            result.append(line + "\n")
             inList = False
-    if listHtml:
-        # Last line is a bullet point. We have to flush and close it
-        listHtml.append("</ul>")
-        result.append("".join(listHtml))
 
-    value = "\n".join(result)
+    value = "".join(result)
     return mark_safe(value)
