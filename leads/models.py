@@ -69,6 +69,30 @@ class Lead(models.Model):
 
     def save(self, force_insert=False, force_update=False):
         self.description = compact_text(self.description)
+        if self.deal_id == "":
+            # First, subsidiary or broker code
+            if self.business_broker:
+                deal_id = self.business_broker.code
+            else:
+                deal_id = self.client.salesOwner.code
+            # Then, client company code
+            deal_id += self.client.organisation.company.code
+            # Then, year in two digits
+            deal_id += date.today().strftime("%y")
+            # Then, next id available for this prefix
+            other_deal_ids = Lead.objects.filter(deal_id__startswith=deal_id).order_by("deal_id")
+            other_deal_ids = [item for sublist in other_deal_ids.values_list("deal_id") for item in sublist]
+            if other_deal_ids:
+                try:
+                    deal_id += "%02d" % (int(other_deal_ids[-1][-2:]) + 1)
+                except (IndexError, ValueError):
+                    # Start at 1
+                    deal_id += "01"
+            else:
+                deal_id += "01"
+
+            self.deal_id = deal_id
+
         super(Lead, self).save(force_insert, force_update)
 
     def staffing_list(self):

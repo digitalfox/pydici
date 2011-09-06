@@ -17,6 +17,7 @@ SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 class ClientCompany(models.Model):
     """Client company"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
+    code = models.CharField(_("Code"), max_length=3, unique=True)
 
     def __unicode__(self): return self.name
 
@@ -77,6 +78,7 @@ class BusinessBroker(ThirdPartyContact):
     """A business broken: someone that is not a client but an outsider that act
     as a partner to provide some business"""
     company = models.CharField(_("Company"), max_length=200, blank=True)
+    code = models.CharField(_("Code"), max_length=3, unique=True)
 
     def __unicode__(self):
         if self.company:

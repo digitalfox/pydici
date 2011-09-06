@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 class Subsidiary(models.Model):
     """Internal company / organisation unit"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
+    code = models.CharField(_("Code"), max_length=3, unique=True)
 
     def __unicode__(self): return self.name
 
