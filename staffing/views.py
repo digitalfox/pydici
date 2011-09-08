@@ -497,8 +497,16 @@ def mission_timesheet(request, mission_id):
     if mission.price and timesheetTotal and staffingTotal:
         margin = float(mission.price) - timesheetTotal[-1] - staffingTotal[-1]
         margin = to_int_or_round(margin, 3)
+        daysTotal = timesheetTotal[-2] + staffingTotal[-2]
+        if (0 < daysTotal):
+            avgDailyRate = float(mission.price) / daysTotal
+        else:
+            avgDailyRate = 0
+        avgDailyRate = to_int_or_round(avgDailyRate, 3)
     else:
         margin = 0
+        avgDailyRate = 0
+
     missionData.append((None, timesheetTotal, staffingTotal,
                         timesheetAverageRate, staffingAverageRate))
 
@@ -512,7 +520,8 @@ def mission_timesheet(request, mission_id):
                                 "mission_data": missionData,
                                 "consultant_rates" : consultant_rates,
                                 "link_to_staffing" : False, # for mission_base template links
-                               "user": request.user },
+                                "user": request.user,
+                                "avg_daily_rate" : avgDailyRate},
                                RequestContext(request))
 
 
