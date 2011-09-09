@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-28 19:37+0200\n"
+"POT-Creation-Date: 2011-09-09 09:18+0200\n"
 "PO-Revision-Date: 2011-08-28 19:37+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Lokalize 1.2\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"Language: fr\n"
 
 #: actionset/admin.py:30
 msgid "Action state"
@@ -77,7 +77,7 @@ msgstr "À faire"
 msgid "Done"
 msgstr "Faite"
 
-#: actionset/models.py:57 templates/actionset/_base_actions.html:28
+#: actionset/models.py:57 templates/actionset/_base_actions.html:36
 msgid "N/A"
 msgstr "N/A"
 
@@ -144,7 +144,7 @@ msgstr ""
 "l'avertir car il n'a pas d'adresse de courriel."
 
 #: billing/forms.py:19 billing/models.py:24 expense/forms.py:29
-#: leads/models.py:152 staffing/models.py:34
+#: leads/models.py:155 staffing/models.py:34
 #: templates/billing/bill_review.html:144 templates/core/index.html:19
 #: templates/core/index.html.py:44 templates/core/index.html:68
 #: templates/core/index.html.py:92 templates/expense/expenses_history.html:20
@@ -502,7 +502,7 @@ msgid "Due"
 msgstr "Échéance"
 
 #: leads/models.py:60 staffing/models.py:35 staffing/views.py:416
-#: staffing/views.py:544
+#: staffing/views.py:553
 msgid "Deal id"
 msgstr "N° affaire"
 
@@ -575,13 +575,13 @@ msgstr ""
 "Dernières mise à jour ou création de staffing prévisionnel me concernant"
 
 #: staffing/forms.py:36 staffing/models.py:161 staffing/views.py:416
-#: staffing/views.py:544 templates/leads/lead_detail.html:112
+#: staffing/views.py:553 templates/leads/lead_detail.html:112
 #: templates/staffing/consultant_staffing.html:15
 #: templates/staffing/mission_base.html:52
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/forms.py:94 staffing/views.py:579
+#: staffing/forms.py:94 staffing/views.py:588
 msgid "Days without lunch ticket"
 msgstr "Jours sans ticket restaurant"
 
@@ -674,7 +674,7 @@ msgstr "Condition financière"
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:408 staffing/views.py:604
+#: staffing/views.py:408 staffing/views.py:613
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
@@ -682,48 +682,48 @@ msgstr "feuille-de-temps.csv"
 msgid "total"
 msgstr "total"
 
-#: staffing/views.py:566 templates/leads/lead_detail.html:133
+#: staffing/views.py:575 templates/leads/lead_detail.html:133
 #: templates/staffing/mission_timesheet.html:27
 msgid "Total"
 msgstr "Total"
 
-#: staffing/views.py:635
+#: staffing/views.py:644
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
-#: staffing/views.py:659 templates/actionset/_base_actions.html:67
+#: staffing/views.py:668 templates/actionset/_base_actions.html:75
 msgid "You are not allowed to do that"
 msgstr "Vous n'êtes pas autorisé à faire cela"
 
-#: staffing/views.py:670
+#: staffing/views.py:679
 msgid "Mission or consultant does not exist"
 msgstr "La mission ou le consultant n'existe pas"
 
-#: staffing/views.py:793
+#: staffing/views.py:802
 msgid "Prod. rate"
 msgstr "Taux de prod."
 
-#: staffing/views.py:806 templates/staffing/mission_base.html:37
+#: staffing/views.py:815 templates/staffing/mission_base.html:37
 msgid "Daily rate (€)"
 msgstr "Taux journalier (€)"
 
-#: staffing/views.py:818
+#: staffing/views.py:827
 msgid "Last 3 months"
 msgstr "3 derniers mois"
 
-#: staffing/views.py:819
+#: staffing/views.py:828
 msgid "Last 6 months"
 msgstr "6 derniers mois"
 
-#: staffing/views.py:820
+#: staffing/views.py:829
 msgid "Last 12 months"
 msgstr "12 derniers mois"
 
-#: staffing/views.py:821
+#: staffing/views.py:830
 msgid "Forever"
 msgstr "Depuis toujours"
 
-#: staffing/views.py:867 templates/staffing/mission_timesheet.html:32
+#: staffing/views.py:876 templates/staffing/mission_timesheet.html:32
 msgid "Average daily rate (€)"
 msgstr "Taux journalier moyen (€)"
 
@@ -772,23 +772,23 @@ msgstr ""
 "<p>Si vous pensez qu'il s'agit d'une anomalie, merci d'envoyer\n"
 "un mail à un administrateur pour mettre à jour vos droits :</p>\n"
 
-#: templates/actionset/_base_actions.html:17
+#: templates/actionset/_base_actions.html:18
 msgid "Scope: "
 msgstr "Périmètre : "
 
-#: templates/actionset/_base_actions.html:18
+#: templates/actionset/_base_actions.html:26
 msgid "User: "
 msgstr "Utilisateur : "
 
-#: templates/actionset/_base_actions.html:23
+#: templates/actionset/_base_actions.html:31
 msgid "Mark as done"
 msgstr "Marquer comme terminée"
 
-#: templates/actionset/_base_actions.html:32
+#: templates/actionset/_base_actions.html:40
 msgid "Delegate to: "
 msgstr "Déléguer à : "
 
-#: templates/actionset/_base_actions.html:39
+#: templates/actionset/_base_actions.html:47
 msgid "No pending action"
 msgstr "Aucune action en attente"
 
@@ -1438,7 +1438,7 @@ msgid "Margin"
 msgstr "Marge"
 
 #: templates/leads/lead_detail.html:160
-#: templates/staffing/mission_timesheet.html:61
+#: templates/staffing/mission_timesheet.html:62
 msgid "Billing"
 msgstr "Facturation"
 
@@ -1764,6 +1764,11 @@ msgstr "Total (k€)"
 #: templates/staffing/mission_timesheet.html:21
 msgid "Days to be done"
 msgstr "Jours à faire"
+
+#: templates/staffing/mission_timesheet.html:58
+#, fuzzy
+msgid "Average daily rate"
+msgstr "Taux journalier moyen"
 
 #: templates/staffing/missions.html:13 templates/staffing/missions.html:23
 msgid "All missions"
