@@ -55,7 +55,7 @@
             {% else %} <a href='{% url admin:staffing_mission_change mission.id %}'>{% trans "To be defined" %}</a>
             {% endif %}</td></tr>
         <tr><td>{% trans "Margin" %}</td><td>{{ margin }}  k€</td></tr>
-        <tr><td>{% trans "Average daily rate (€)" %}</td><td>{{ avg_daily_rate }}  €</td></tr>
+        <tr><td>{% trans "Average daily rate" %}</td><td>{{ avg_daily_rate }}  €</td></tr>
     </table>
     {% endifequal %}
     {% if mission.lead %}
