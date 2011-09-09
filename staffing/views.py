@@ -498,11 +498,7 @@ def mission_timesheet(request, mission_id):
         margin = float(mission.price) - timesheetTotal[-1] - staffingTotal[-1]
         margin = to_int_or_round(margin, 3)
         daysTotal = timesheetTotal[-2] + staffingTotal[-2]
-        if (0 < daysTotal):
-            avgDailyRate = float(mission.price) / daysTotal
-        else:
-            avgDailyRate = 0
-        avgDailyRate = to_int_or_round(avgDailyRate, 3)
+        avgDailyRate = int((1000.0 * float(mission.price) / daysTotal)) if daysTotal > 0 else 0
     else:
         margin = 0
         avgDailyRate = 0
