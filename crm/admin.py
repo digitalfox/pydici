@@ -18,9 +18,9 @@ class ClientContactAdmin(admin.ModelAdmin):
     actions = None
 
 class BusinessBrokerAdmin(admin.ModelAdmin):
-    list_display = ("name", "company", "email", "phone", "mobile_phone")
+    list_display = ("name", "code", "company", "email", "phone", "mobile_phone")
     odering = ("name")
-    search_fields = ["name", "company"]
+    search_fields = ["name", "code", "company"]
     actions = None
 
 
@@ -36,9 +36,9 @@ class ClientOrganisationAdminInline(admin.TabularInline):
     model = ClientOrganisation
 
 class ClientCompanyAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("name", "code")
     ordering = ("name",)
-    search_fields = ("name",)
+    search_fields = ("name", "code")
     actions = None
 
 class ClientAdmin(admin.ModelAdmin):
