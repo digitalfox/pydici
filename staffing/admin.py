@@ -12,7 +12,7 @@ from pydici.staffing.forms import MissionAdminForm
 
 class MissionAdmin(admin.ModelAdmin):
     list_display = ("lead", "description", "nature", "probability", "mission_id", "active", "update_date")
-    list_display_links = ["description"]
+    list_display_links = ["lead", "description"]
     search_fields = ("lead__name", "description", "deal_id", "lead__client__organisation__company__name",
                    "lead__client__contact__name")
     ordering = ("lead", "description")
