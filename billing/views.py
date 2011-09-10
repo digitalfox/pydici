@@ -28,10 +28,10 @@ def bill_review(request):
     wait_warning = timedelta(15) # wait in days used to warn that a bill is due soon
 
     # Get bills overdue, due soon, litigious and recently paid
-    overdue_bills = Bill.objects.filter(state="1_SENT").filter(due_date__lte=today)
-    soondue_bills = Bill.objects.filter(state="1_SENT").filter(due_date__gt=today).filter(due_date__lte=(today + wait_warning))
-    recent_bills = Bill.objects.filter(state="2_PAID").order_by("-payment_date")[:20]
-    litigious_bills = Bill.objects.filter(state="3_LITIGIOUS")
+    overdue_bills = Bill.objects.filter(state="1_SENT").filter(due_date__lte=today).select_related()
+    soondue_bills = Bill.objects.filter(state="1_SENT").filter(due_date__gt=today).filter(due_date__lte=(today + wait_warning)).select_related()
+    recent_bills = Bill.objects.filter(state="2_PAID").order_by("-payment_date").select_related()[:20]
+    litigious_bills = Bill.objects.filter(state="3_LITIGIOUS").select_related()
 
     # Compute totals
     soondue_bills_total = soondue_bills.aggregate(Sum("amount"))["amount__sum"]
@@ -41,7 +41,7 @@ def bill_review(request):
     # Get leads with done timesheet in past three month that don't have bill yet
     leadsWithoutBill = []
     threeMonthAgo = date.today() - timedelta(90)
-    for lead in Lead.objects.filter(state="WON"):
+    for lead in Lead.objects.filter(state="WON").select_related():
         if lead.bill_set.count() == 0:
             if Timesheet.objects.filter(mission__lead=lead, working_date__gte=threeMonthAgo).count() != 0:
                 leadsWithoutBill.append(lead)
