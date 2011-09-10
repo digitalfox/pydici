@@ -20,7 +20,7 @@ from django.views.decorators.cache import cache_page
 
 from pydici.billing.models import Bill
 from pydici.leads.models import Lead
-from pydici.staffing.models import Timesheet, FinancialCondition
+from pydici.staffing.models import Timesheet, FinancialCondition, Staffing
 from pydici.crm.models import ClientCompany, BusinessBroker
 from pydici.core.utils import print_png, COLORS, sortedValues
 
@@ -107,8 +107,10 @@ def graph_stat_bar(request):
     """Nice graph bar of incomming cash from bills
     @todo: per year, with start-end date"""
     billsData = {} # Bill graph Data
-    tsData = {} # Timesheet  done work graph data
+    tsData = {} # Timesheet done work graph data
+    staffingData = {} # Staffing forecasted work graph data
     plots = [] # List of plots - needed to add legend
+    today = date.today()
     colors = itertools.cycle(COLORS)
 
     # Setting up graph
@@ -135,12 +137,19 @@ def graph_stat_bar(request):
             financialConditions[fc.consultant_id] = {} # Empty dict for missions
         financialConditions[fc.consultant_id][fc.mission_id] = fc.daily_rate
 
-    # Collect billsData for done work according to timesheet billsData
-    for ts in Timesheet.objects.select_related():
+    # Collect data for done work according to timesheet data
+    for ts in Timesheet.objects.filter(working_date__lt=today).select_related():
         kdate = ts.working_date.replace(day=1)
         if not tsData.has_key(kdate):
             tsData[kdate] = 0 # Create key
         tsData[kdate] += ts.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
+
+    # Collect data for forecasted work according to staffing data
+    for staffing in Staffing.objects.filter(staffing_date__gte=today.replace(day=1)).select_related():
+        kdate = staffing.staffing_date.replace(day=1)
+        if not staffingData.has_key(kdate):
+            staffingData[kdate] = 0 # Create key
+        staffingData[kdate] += staffing.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
 
     # Set bottom of each graph. Starts if [0, 0, 0, ...]
     billKdates = billsData.keys()
@@ -159,20 +168,27 @@ def graph_stat_bar(request):
     # Sort keys
     tsKdates = tsData.keys()
     tsKdates.sort()
+    staffingKdates = staffingData.keys()
+    staffingKdates.sort()
     # Sort values according to keys
-    ydata = sortedValues(tsData)
+    tsYData = sortedValues(tsData)
+    staffingYData = sortedValues(staffingData)
     # Draw done work
-    plots.append(ax.plot(tsKdates, ydata, '-o', ms=10, lw=4, color="green", mfc="green"))
+    plots.append(ax.plot(tsKdates, tsYData, '-o', ms=10, lw=4, color="green"))
     for kdate, ydata in tsData.items():
         ax.text(kdate, ydata + 5, int(ydata))
+    # Draw forecasted work
+    plots.append(ax.plot(staffingKdates, staffingYData, ':o', ms=10, lw=2, color="magenta"))
+
     # Add Legend and setup axes
-    ax.set_xticks(tsKdates)
-    ax.set_xticklabels([d.strftime("%b %y") for d in tsKdates])
-    ax.set_ylim(ymax=max(int(max(bottom)), int(max(tsData.values()) + 90)))
+    kdates = set(tsKdates + staffingKdates)
+    ax.set_xticks(kdates)
+    ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
+    ax.set_ylim(ymax=max(int(max(bottom)), int(max(tsYData))) + 10)
     ax.set_ylabel(u"k€")
-    ax.legend(plots, [i[1] for i in Bill.BILL_STATE] + [_(u"Done work")],
+    ax.legend(plots, [i[1] for i in Bill.BILL_STATE] + [_(u"Done work"), _(u"Forecasted work")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
-              ncol=5, borderaxespad=0.)
+              ncol=3, borderaxespad=0.)
     ax.grid(True)
     fig.autofmt_xdate()
 
