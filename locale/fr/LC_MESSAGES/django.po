@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-10 11:31+0200\n"
-"PO-Revision-Date: 2011-09-10 11:31+0200\n"
+"POT-Creation-Date: 2011-09-10 12:33+0200\n"
+"PO-Revision-Date: 2011-09-10 12:33+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -216,7 +216,7 @@ msgstr "Facture"
 
 #: core/models.py:16 crm/models.py:20 crm/models.py:81
 msgid "Code"
-msgstr ""
+msgstr "Code"
 
 #: core/models.py:21 people/models.py:38 people/models.py:133
 msgid "Subsidiary"
@@ -276,7 +276,7 @@ msgstr "Fonction"
 msgid "None"
 msgstr "Aucun(e)"
 
-#: crm/models.py:72 crm/models.py:80 templates/admin/base_site.html:142
+#: crm/models.py:72 crm/models.py:80 templates/admin/base_site.html:143
 msgid "Company"
 msgstr "Société"
 
@@ -873,7 +873,7 @@ msgstr "Flux ATOM de mes dernières prévisions de staffing"
 msgid "Welcome,"
 msgstr "Bienvenue, "
 
-#: templates/admin/base_site.html:24 templates/admin/base_site.html.py:138
+#: templates/admin/base_site.html:24 templates/admin/base_site.html.py:139
 #: templates/core/m.index.html:68 templates/core/search.html:51
 msgid "Leads"
 msgstr "Affaires"
@@ -891,7 +891,7 @@ msgstr "Toutes les affaires"
 msgid "New lead"
 msgstr "Nouvelles affaire"
 
-#: templates/admin/base_site.html:40 templates/admin/base_site.html.py:141
+#: templates/admin/base_site.html:40 templates/admin/base_site.html.py:142
 #: templates/core/m.index.html:55 templates/core/search.html:60
 msgid "Missions"
 msgstr "Missions"
@@ -956,60 +956,64 @@ msgstr "Nouvelle facture"
 msgid "Reports"
 msgstr "Rapports"
 
-#: templates/admin/base_site.html:98
+#: templates/admin/base_site.html:98 templates/core/dashboard.html:11
+msgid "Management dashboard"
+msgstr "Tableau de bord de gestion"
+
+#: templates/admin/base_site.html:101
 msgid "Active leads (csv)"
 msgstr "Affaires en cours (csv)"
 
-#: templates/admin/base_site.html:101
+#: templates/admin/base_site.html:102
 msgid "All leads (csv)"
 msgstr "Toutes les affaires (csv)"
 
-#: templates/admin/base_site.html:102
+#: templates/admin/base_site.html:103
 msgid "Week summary mail (html)"
 msgstr "Courriel de bilan hebdomadaire (html)"
 
-#: templates/admin/base_site.html:103
+#: templates/admin/base_site.html:104
 msgid "Week summary mail (text)"
 msgstr "Courriel de bilan hebdomadaire (texte)"
 
-#: templates/admin/base_site.html:104
+#: templates/admin/base_site.html:105
 msgid "All people timesheet"
 msgstr "Feuille de temps globale"
 
-#: templates/admin/base_site.html:105 templates/billing/bill_review.html:10
+#: templates/admin/base_site.html:106 templates/billing/bill_review.html:10
 msgid "Bills review"
 msgstr "Suivi de facturation"
 
-#: templates/admin/base_site.html:106 templates/billing/payment_delay.html:10
+#: templates/admin/base_site.html:107 templates/billing/payment_delay.html:10
 msgid "Payment delay review"
 msgstr "Délais de règlement"
 
-#: templates/admin/base_site.html:107 templates/expense/expenses.html:107
+#: templates/admin/base_site.html:108 templates/expense/expenses.html:107
 #: templates/expense/expenses_history.html:12
 msgid "Expenses history"
 msgstr "Historique des notes de frais"
 
-#: templates/admin/base_site.html:115
+#: templates/admin/base_site.html:116
 msgid "Help"
 msgstr "Aide"
 
-#: templates/admin/base_site.html:119
+#: templates/admin/base_site.html:120
 msgid "Admin console"
 msgstr "Console d'administration"
 
-#: templates/admin/base_site.html:122
+#: templates/admin/base_site.html:123
 msgid "Help page"
 msgstr "Page d'aide"
 
-#: templates/admin/base_site.html:143
+#: templates/admin/base_site.html:144
 msgid "Client contacts"
 msgstr "Contacts clients"
 
-#: templates/admin/base_site.html:144 templates/core/search.html:24
+#: templates/admin/base_site.html:145 templates/core/search.html:24
 msgid "Consultants"
 msgstr "Consultants"
 
-#: templates/admin/base_site.html:145 templates/core/search.html:69
+#: templates/admin/base_site.html:146 templates/core/search.html:69
 msgid "Bills"
 msgstr "Factures"
 
@@ -1190,6 +1194,14 @@ msgstr "Délai moyen de règlement"
 #: templates/billing/payment_delay.html:31
 msgid "Paying authorities"
 msgstr "Organismes payeurs"
+
+#: templates/core/dashboard.html:18
+msgid "Commercial activity"
+msgstr "Activité commerciale"
+
+#: templates/core/dashboard.html:23 templates/staffing/pdc_review.html:115
+msgid "Production rates and daily rates review"
+msgstr "Suivi du taux de production et des TJM"
 
 #: templates/core/index.html:16
 msgid "My leads as responsible"
@@ -1889,9 +1901,8 @@ msgstr "Équipe %(manager)s"
 msgid "Totals"
 msgstr "Totaux"
 
-#: templates/staffing/pdc_review.html:115
-msgid "Production rates review"
-msgstr "Suivi du taux de production"
+#~ msgid "Production rates review"
+#~ msgstr "Suivi du taux de production"
 
 #, fuzzy
 #~ msgid "You're not allowed to do that"

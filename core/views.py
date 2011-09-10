@@ -178,6 +178,14 @@ def search(request):
                                "user": request.user },
                                RequestContext(request))
 
+def dashboard(request):
+    """Tactical management dashboard. This views is in core module because it aggregates data
+    accross different modules"""
+
+    return render_to_response("core/dashboard.html",
+                              {},
+                              RequestContext(request))
+
 def internal_error(request):
     """Custom internal error view.
     Like the default builtin one, but with context to allow proper menu display with correct media path"""

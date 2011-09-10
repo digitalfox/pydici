@@ -95,9 +95,10 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                        <a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads (csv)" %}</a>
+                        <a href='{% url dashboard %}'>{% trans "Management dashboard" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
-                </li>                
+                </li>
+                <li><a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads (csv)" %}</a></li>
                 <li><a href='{% url pydici.leads.views.csv_export target="all" %}'>{% trans "All leads (csv)" %}</a></li>
                 <li><a href='{% url lead-mail-html %}'>{% trans "Week summary mail (html)" %}</a></li>
                 <li><a href='{% url lead-mail-text %}'>{% trans "Week summary mail (text)" %}</a></li>

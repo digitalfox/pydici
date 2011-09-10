@@ -112,7 +112,7 @@
 <br/><br/>
 
 {% if not request.session.mobile %}
-	<h1>{% trans "Production rates review" %}</h1>
+    <h1>{% trans "Production rates and daily rates review" %}</h1>
 	<img src="{% url pydici.staffing.views.graph_timesheet_rates_bar %}"/>
 	<br/>
 	<a href='{% url missions %}'>Liste des missions</a>

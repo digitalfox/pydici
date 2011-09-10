@@ -63,6 +63,7 @@ pydici_patterns += patterns('pydici.core.views',
     url(r'^$', 'index', name='index'),
     url(r'^search$', 'search', name='search'),
     url(r'^mobile$', 'mobile_index', name='mobile_index'),
+    url(r'^dashboard$', 'dashboard', name='dashboard'),
 )
 
 # Lead module
