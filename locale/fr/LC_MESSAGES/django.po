@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-10 15:52+0200\n"
-"PO-Revision-Date: 2011-09-10 15:51+0200\n"
+"POT-Creation-Date: 2011-09-10 15:55+0200\n"
+"PO-Revision-Date: 2011-09-10 15:58+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -1206,6 +1206,10 @@ msgstr "Activité commerciale"
 #: templates/core/dashboard.html:23 templates/staffing/pdc_review.html:115
 msgid "Production rates and daily rates review"
 msgstr "Suivi du taux de production et des TJM"
+
+#: templates/core/dashboard.html:26
+msgid "Billing review and done work"
+msgstr "Suivi de la facturation comparé au travail réalisé/engagé"
 
 #: templates/core/index.html:16
 msgid "My leads as responsible"

@@ -16,6 +16,7 @@ from django.core import urlresolvers
 from django.http import HttpResponseRedirect
 from django.db.models import Sum
 from django.utils.translation import ugettext as _
+from django.views.decorators.cache import cache_page
 
 from pydici.billing.models import Bill
 from pydici.leads.models import Lead
@@ -101,6 +102,7 @@ def create_new_bill_from_lead(request, lead_id):
     bill.save()
     return HttpResponseRedirect(urlresolvers.reverse("admin:billing_bill_change", args=[bill.id, ]))
 
+@cache_page(60 * 10)
 def graph_stat_bar(request):
     """Nice graph bar of incomming cash from bills
     @todo: per year, with start-end date"""
