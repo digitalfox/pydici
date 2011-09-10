@@ -127,3 +127,9 @@ def print_png(fig):
     response = HttpResponse(content_type='image/png')
     canvas.print_png(response)
     return response
+
+def sortedValues(data):
+    """Sorted value of a dict according to his keys"""
+    items = data.items()
+    items.sort(key=lambda x: x[0])
+    return [x[1] for x in items]

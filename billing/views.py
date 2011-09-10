@@ -21,7 +21,7 @@ from pydici.billing.models import Bill
 from pydici.leads.models import Lead
 from pydici.staffing.models import Timesheet, FinancialCondition
 from pydici.crm.models import ClientCompany, BusinessBroker
-from pydici.core.utils import print_png, COLORS
+from pydici.core.utils import print_png, COLORS, sortedValues
 
 def bill_review(request):
     """Review of bills: bills overdue, due soon, or to be created"""
@@ -147,7 +147,7 @@ def graph_stat_bar(request):
 
     # Draw a bar for each state
     for state in Bill.BILL_STATE:
-        ydata = [sum([i.amount / 1000 for i in x if i.state == state[0]]) for x in billsData.values()]
+        ydata = [sum([i.amount / 1000 for i in x if i.state == state[0]]) for x in sortedValues(billsData)]
         b = ax.bar(billKdates, ydata, bottom=bottom, align="center", width=15,
                color=colors.next())
         plots.append(b[0])
@@ -158,9 +158,7 @@ def graph_stat_bar(request):
     tsKdates = tsData.keys()
     tsKdates.sort()
     # Sort values according to keys
-    ydata = tsData.items()
-    ydata.sort(key=lambda x: x[0])
-    ydata = [x[1] for x in ydata]
+    ydata = sortedValues(tsData)
     # Draw done work
     plots.append(ax.plot(tsKdates, ydata, '--o', ms=5, lw=2, color="blue", mfc="blue"))
     for kdate, ydata in tsData.items():
