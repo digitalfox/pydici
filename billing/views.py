@@ -125,20 +125,22 @@ def graph_stat_bar(request):
         data[kdate].append(bill)
 
     # Set bottom of each graph. Starts if [0, 0, 0, ...]
-    bottom = [0] * len(data.keys())
+    kdates = data.keys()
+    kdates.sort()
+    bottom = [0] * len(kdates)
 
     # Draw a bar for each state
     for state in Bill.BILL_STATE:
         ydata = [sum([i.amount for i in x if i.state == state[0]]) for x in data.values()]
-        b = ax.bar(data.keys(), ydata, bottom=bottom, align="center", width=15,
+        b = ax.bar(kdates, ydata, bottom=bottom, align="center", width=15,
                color=colors.next())
         bars.append(b[0])
         for i in range(len(ydata)):
             bottom[i] += ydata[i] # Update bottom
 
     # Add Legend and setup axes
-    ax.set_xticks(data.keys())
-    ax.set_xticklabels(data.keys())
+    ax.set_xticks(kdates)
+    ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
     ax.set_ylim(ymax=int(max(bottom)) + 10)
     ax.legend(bars, [i[1] for i in Bill.BILL_STATE],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
