@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{% trans "Management dashboard" %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+<center>
+
+<h1>{% trans "Commercial activity" %}</h1>
+<a href="{% url pydici.leads.views.graph_stat_bar %}"><img src="{% url pydici.leads.views.graph_stat_bar %}" height="400"></a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="{% url pydici.leads.views.graph_stat_pie %}"><img src="{% url pydici.leads.views.graph_stat_pie %}" height="400"></a>
+
+<h1>{% trans "Production rates and daily rates review" %}</h1>
+<img src="{% url pydici.staffing.views.graph_timesheet_rates_bar %}"/>
+
+</center>
+
+</div>
+{% endblock %}
