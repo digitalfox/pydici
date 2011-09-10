@@ -134,7 +134,7 @@ def graph_stat_bar(request):
         financialConditions[fc.consultant_id][fc.mission_id] = fc.daily_rate
 
     # Collect billsData for done work according to timesheet billsData
-    for ts in Timesheet.objects.filter(mission__financialcondition__isnull=False).select_related():
+    for ts in Timesheet.objects.select_related():
         kdate = ts.working_date.replace(day=1)
         if not tsData.has_key(kdate):
             tsData[kdate] = 0 # Create key
@@ -160,13 +160,13 @@ def graph_stat_bar(request):
     # Sort values according to keys
     ydata = sortedValues(tsData)
     # Draw done work
-    plots.append(ax.plot(tsKdates, ydata, '--o', ms=5, lw=2, color="blue", mfc="blue"))
+    plots.append(ax.plot(tsKdates, ydata, '-o', ms=10, lw=4, color="green", mfc="green"))
     for kdate, ydata in tsData.items():
         ax.text(kdate, ydata + 5, int(ydata))
     # Add Legend and setup axes
     ax.set_xticks(tsKdates)
     ax.set_xticklabels([d.strftime("%b %y") for d in tsKdates])
-    ax.set_ylim(ymax=int(max(max(bottom), max(tsData.values()))) + 20)
+    ax.set_ylim(ymax=max(int(max(bottom)), int(max(tsData.values()) + 90)))
     ax.set_ylabel(u"k€")
     ax.legend(plots, [i[1] for i in Bill.BILL_STATE] + [_(u"Done work")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
