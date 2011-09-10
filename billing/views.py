@@ -15,10 +15,11 @@ from django.template import RequestContext
 from django.core import urlresolvers
 from django.http import HttpResponseRedirect
 from django.db.models import Sum
+from django.utils.translation import ugettext as _
 
 from pydici.billing.models import Bill
 from pydici.leads.models import Lead
-from pydici.staffing.models import Timesheet
+from pydici.staffing.models import Timesheet, FinancialCondition
 from pydici.crm.models import ClientCompany, BusinessBroker
 from pydici.core.utils import print_png, COLORS
 
@@ -103,8 +104,9 @@ def create_new_bill_from_lead(request, lead_id):
 def graph_stat_bar(request):
     """Nice graph bar of incomming cash from bills
     @todo: per year, with start-end date"""
-    data = {} # Graph data
-    bars = [] # List of bars - needed to add legend
+    billsData = {} # Bill graph Data
+    tsData = {} # Timesheet  done work graph data
+    plots = [] # List of plots - needed to add legend
     colors = itertools.cycle(COLORS)
 
     # Setting up graph
@@ -112,39 +114,65 @@ def graph_stat_bar(request):
     fig.set_facecolor("white")
     ax = fig.add_subplot(111)
 
-    # Gathering data
+    # Gathering billsData
     bills = Bill.objects.all()
     if bills.count() == 0:
         return print_png(fig)
 
     for bill in bills:
         #Using first day of each month as key date
-        kdate = date(bill.creation_date.year, bill.creation_date.month, 1)
-        if not data.has_key(kdate):
-            data[kdate] = [] # Create key with empty list
-        data[kdate].append(bill)
+        kdate = bill.creation_date.replace(day=1)
+        if not billsData.has_key(kdate):
+            billsData[kdate] = [] # Create key with empty list
+        billsData[kdate].append(bill)
+
+    # Collect Financial conditions as a hash for further lookup
+    financialConditions = {} # First key is consultant id, second is mission id. Value is daily rate
+    for fc in FinancialCondition.objects.all():
+        if not fc.consultant_id in financialConditions:
+            financialConditions[fc.consultant_id] = {} # Empty dict for missions
+        financialConditions[fc.consultant_id][fc.mission_id] = fc.daily_rate
+
+    # Collect billsData for done work according to timesheet billsData
+    for ts in Timesheet.objects.filter(mission__financialcondition__isnull=False).select_related():
+        kdate = ts.working_date.replace(day=1)
+        if not tsData.has_key(kdate):
+            tsData[kdate] = 0 # Create key
+        tsData[kdate] += ts.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
 
     # Set bottom of each graph. Starts if [0, 0, 0, ...]
-    kdates = data.keys()
-    kdates.sort()
-    bottom = [0] * len(kdates)
+    billKdates = billsData.keys()
+    billKdates.sort()
+    bottom = [0] * len(billKdates)
 
     # Draw a bar for each state
     for state in Bill.BILL_STATE:
-        ydata = [sum([i.amount for i in x if i.state == state[0]]) for x in data.values()]
-        b = ax.bar(kdates, ydata, bottom=bottom, align="center", width=15,
+        ydata = [sum([i.amount / 1000 for i in x if i.state == state[0]]) for x in billsData.values()]
+        b = ax.bar(billKdates, ydata, bottom=bottom, align="center", width=15,
                color=colors.next())
-        bars.append(b[0])
+        plots.append(b[0])
         for i in range(len(ydata)):
             bottom[i] += ydata[i] # Update bottom
 
+    # Sort keys
+    tsKdates = tsData.keys()
+    tsKdates.sort()
+    # Sort values according to keys
+    ydata = tsData.items()
+    ydata.sort(key=lambda x: x[0])
+    ydata = [x[1] for x in ydata]
+    # Draw done work
+    plots.append(ax.plot(tsKdates, ydata, '--o', ms=5, lw=2, color="blue", mfc="blue"))
+    for kdate, ydata in tsData.items():
+        ax.text(kdate, ydata + 5, int(ydata))
     # Add Legend and setup axes
-    ax.set_xticks(kdates)
-    ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
-    ax.set_ylim(ymax=int(max(bottom)) + 10)
-    ax.legend(bars, [i[1] for i in Bill.BILL_STATE],
+    ax.set_xticks(tsKdates)
+    ax.set_xticklabels([d.strftime("%b %y") for d in tsKdates])
+    ax.set_ylim(ymax=int(max(max(bottom), max(tsData.values()))) + 20)
+    ax.set_ylabel(u"k€")
+    ax.legend(plots, [i[1] for i in Bill.BILL_STATE] + [_(u"Done work")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
-              ncol=4, borderaxespad=0.)
+              ncol=5, borderaxespad=0.)
     ax.grid(True)
     fig.autofmt_xdate()
 
