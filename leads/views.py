@@ -222,27 +222,44 @@ def graph_stat_bar(request):
             data[kdate] = [] # Create key with empty list
         data[kdate].append(lead)
 
+    kdates = data.keys()
+    kdates.sort()
     # Setting up graph
     fig = Figure(figsize=(8, 8))
     fig.set_facecolor("white")
-    ax = fig.add_subplot(111)
-    bottom = [0] * len(data.keys()) # Bottom of each graph. Starts if [0, 0, 0, ...]
+    ax = fig.add_subplot(211)
+    ax2 = fig.add_subplot(212, sharex=ax)
+    fig.subplots_adjust(hspace=0.1)
+    bottom = [0] * len(kdates) # Bottom of each graph. Starts if [0, 0, 0, ...]
 
     # Draw a bar for each state
     for state in Lead.STATES:
         ydata = [len([i for i in x if i.state == state[0]]) for x in data.values()]
-        b = ax.bar(data.keys(), ydata, bottom=bottom, align="center", width=15,
+        b = ax.bar(kdates, ydata, bottom=bottom, align="center", width=15,
                color=colors.next())
         bars.append(b[0])
         for i in range(len(ydata)):
             bottom[i] += ydata[i] # Update bottom
 
+    # Draw lead amount by month
+    yAllLead = [sum([i.sales for i in x if i.sales]) for x in data.values()]
+    yWonLead = [sum([i.sales for i in x if (i.sales and i.state == "WON")]) for x in data.values()]
+    plots = (ax2.plot(kdates, yAllLead, '--o', ms=5, lw=2, color="blue", mfc="blue"),
+             ax2.plot(kdates, yWonLead, '-o', ms=10, lw=4, color="green", mfc="green"))
+
     # Add Legend and setup axes
-    ax.set_xticks(data.keys())
-    ax.set_xticklabels(data.keys())
+    ax.set_xticks(kdates)
+    ax.set_xticklabels(kdates)
+    ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
     ax.set_ylim(ymax=max(bottom) + 4)
     ax.legend(bars, [i[1] for i in Lead.STATES], ncol=3, loc=2)
     ax.grid(True)
+    ax2.set_xticks(kdates)
+    ax2.set_xticklabels(kdates)
+    ax2.set_xticklabels([d.strftime("%b %y") for d in kdates])
+    ax2.set_ylim(ymax=max(yAllLead) + 30)
+    ax2.legend(plots, [_(u"All lead (k€)"), _(u"Order taking (k€)")])
+    ax2.grid(True)
     fig.autofmt_xdate()
 
     return print_png(fig)
