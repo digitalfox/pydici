@@ -227,7 +227,7 @@ class FinancialCondition(models.Model):
         verbose_name = _("Financial condition")
 
 # Signal handling to throw actionset
-def missionSignalHandler(sender,  **kwargs):
+def missionSignalHandler(sender, **kwargs):
     """Signal handler for new/updated leads"""
     mission = kwargs["instance"]
     targetUser = None
@@ -235,7 +235,7 @@ def missionSignalHandler(sender,  **kwargs):
         # Don't throw actions for non prod missions
         return
     if mission.lead and mission.lead.responsible:
-        targetUser= mission.lead.responsible.getUser()
+        targetUser = mission.lead.responsible.getUser()
     else:
         # try to pick up one of staffee
         for consultant in mission.staffed_consultant():
@@ -246,10 +246,10 @@ def missionSignalHandler(sender,  **kwargs):
         # Default to admin
         targetUser = User.objects.filter(is_superuser=True)[0]
 
-    if  kwargs.get("created",  False):
-        launchTrigger("NEW_MISSION",  [targetUser, ],  mission)
+    if  kwargs.get("created", False):
+        launchTrigger("NEW_MISSION", [targetUser, ], mission)
     if not mission.active:
-        launchTrigger("ARCHIVED_MISSION",  [targetUser, ],  mission)
+        launchTrigger("ARCHIVED_MISSION", [targetUser, ], mission)
 
 # Signal connection to throw actionset
-post_save.connect(missionSignalHandler,  sender=Mission)
+post_save.connect(missionSignalHandler, sender=Mission)
