@@ -109,8 +109,10 @@ def graph_stat_bar(request):
     billsData = {} # Bill graph Data
     tsData = {} # Timesheet done work graph data
     staffingData = {} # Staffing forecasted work graph data
+    wStaffingData = {} # Weighted Staffing forecasted work graph data
     plots = [] # List of plots - needed to add legend
     today = date.today()
+    start_date = today - timedelta(18 * 30) # Screen data about 18 month before today
     colors = itertools.cycle(COLORS)
 
     # Setting up graph
@@ -119,7 +121,7 @@ def graph_stat_bar(request):
     ax = fig.add_subplot(111)
 
     # Gathering billsData
-    bills = Bill.objects.all()
+    bills = Bill.objects.filter(creation_date__gt=start_date)
     if bills.count() == 0:
         return print_png(fig)
 
@@ -132,24 +134,27 @@ def graph_stat_bar(request):
 
     # Collect Financial conditions as a hash for further lookup
     financialConditions = {} # First key is consultant id, second is mission id. Value is daily rate
-    for fc in FinancialCondition.objects.all():
+    #TODO: filter FC on timesheet date to forget old fc (perf)
+    for fc in FinancialCondition.objects.filter(mission__nature="PROD"):
         if not fc.consultant_id in financialConditions:
             financialConditions[fc.consultant_id] = {} # Empty dict for missions
         financialConditions[fc.consultant_id][fc.mission_id] = fc.daily_rate
 
     # Collect data for done work according to timesheet data
-    for ts in Timesheet.objects.filter(working_date__lt=today).select_related():
+    for ts in Timesheet.objects.filter(working_date__lt=today, working_date__gt=start_date, mission__nature="PROD").select_related():
         kdate = ts.working_date.replace(day=1)
         if not tsData.has_key(kdate):
             tsData[kdate] = 0 # Create key
         tsData[kdate] += ts.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
 
     # Collect data for forecasted work according to staffing data
-    for staffing in Staffing.objects.filter(staffing_date__gte=today.replace(day=1)).select_related():
+    for staffing in Staffing.objects.filter(staffing_date__gte=today.replace(day=1), mission__nature="PROD").select_related():
         kdate = staffing.staffing_date.replace(day=1)
         if not staffingData.has_key(kdate):
             staffingData[kdate] = 0 # Create key
+            wStaffingData[kdate] = 0 # Create key
         staffingData[kdate] += staffing.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
+        wStaffingData[kdate] += staffing.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) * staffing.mission.probability / 100 / 1000
 
     # Set bottom of each graph. Starts if [0, 0, 0, ...]
     billKdates = billsData.keys()
@@ -170,15 +175,19 @@ def graph_stat_bar(request):
     tsKdates.sort()
     staffingKdates = staffingData.keys()
     staffingKdates.sort()
+    wStaffingKdates = staffingData.keys()
+    wStaffingKdates.sort()
     # Sort values according to keys
     tsYData = sortedValues(tsData)
     staffingYData = sortedValues(staffingData)
+    wStaffingYData = sortedValues(wStaffingData)
     # Draw done work
     plots.append(ax.plot(tsKdates, tsYData, '-o', ms=10, lw=4, color="green"))
     for kdate, ydata in tsData.items():
         ax.text(kdate, ydata + 5, int(ydata))
     # Draw forecasted work
     plots.append(ax.plot(staffingKdates, staffingYData, ':o', ms=10, lw=2, color="magenta"))
+    plots.append(ax.plot(wStaffingKdates, wStaffingYData, ':o', ms=10, lw=2, color="cyan"))
 
     # Add Legend and setup axes
     kdates = set(tsKdates + staffingKdates)
@@ -186,9 +195,9 @@ def graph_stat_bar(request):
     ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
     ax.set_ylim(ymax=max(int(max(bottom)), int(max(tsYData))) + 10)
     ax.set_ylabel(u"k€")
-    ax.legend(plots, [i[1] for i in Bill.BILL_STATE] + [_(u"Done work"), _(u"Forecasted work")],
+    ax.legend(plots, [i[1] for i in Bill.BILL_STATE] + [_(u"Done work"), _(u"Forecasted work"), _(u"Weighted forecasted work")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
-              ncol=3, borderaxespad=0.)
+              ncol=4, borderaxespad=0.)
     ax.grid(True)
     fig.autofmt_xdate()
 
