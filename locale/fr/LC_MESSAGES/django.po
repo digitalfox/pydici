@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-11 11:07+0200\n"
-"PO-Revision-Date: 2011-09-11 11:07+0200\n"
+"POT-Creation-Date: 2011-09-12 21:43+0200\n"
+"PO-Revision-Date: 2011-09-12 21:43+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -214,15 +214,15 @@ msgstr "Remarques"
 msgid "Bill"
 msgstr "Facture"
 
-#: billing/views.py:196
+#: billing/views.py:198
 msgid "Done work"
 msgstr "Montant réalisé"
 
-#: billing/views.py:196
+#: billing/views.py:198
 msgid "Forecasted work"
 msgstr "Montant prévu"
 
-#: billing/views.py:196
+#: billing/views.py:198
 msgid "Weighted forecasted work"
 msgstr "Montant prévu pondéré"
 
@@ -296,7 +296,7 @@ msgstr "Société"
 msgid "Client contact"
 msgstr "Contact client"
 
-#: crm/models.py:95 leads/forms.py:21 leads/models.py:53
+#: crm/models.py:95 leads/forms.py:22 leads/models.py:53
 msgid "Business broker"
 msgstr "Apporteur d'affaire"
 
@@ -312,7 +312,7 @@ msgstr "Contact"
 msgid "Sales owner"
 msgstr "Propriété commerciale"
 
-#: crm/models.py:111 leads/forms.py:23 leads/models.py:58 leads/views.py:100
+#: crm/models.py:111 leads/forms.py:24 leads/models.py:58 leads/views.py:100
 #: templates/billing/bill_review.html:20 templates/billing/bill_review.html:53
 #: templates/billing/bill_review.html:86
 #: templates/billing/bill_review.html:119
@@ -443,14 +443,14 @@ msgstr ""
 "Les dernières affaires actives dont je suis responsable ou ressource "
 "pressentie"
 
-#: leads/forms.py:19 leads/models.py:52 templates/billing/bill_review.html:145
+#: leads/forms.py:20 leads/models.py:52 templates/billing/bill_review.html:145
 #: templates/core/index.html:20 templates/core/index.html.py:45
 #: templates/core/index.html:69 templates/core/index.html.py:93
 #: templates/leads/review.html:25 templates/leads/review.html.py:54
 msgid "Responsible"
 msgstr "Responsable"
 
-#: leads/forms.py:20 leads/models.py:49 leads/views.py:101
+#: leads/forms.py:21 leads/models.py:49 leads/views.py:101
 #: people/models.py:147 templates/core/index.html:21
 #: templates/core/index.html.py:46 templates/core/index.html:70
 #: templates/core/index.html.py:94 templates/leads/review.html:26
@@ -458,10 +458,16 @@ msgstr "Responsable"
 msgid "Salesman"
 msgstr "Commercial"
 
-#: leads/forms.py:22 leads/models.py:54
+#: leads/forms.py:23 leads/models.py:54
 #: templates/billing/payment_delay.html:33
 msgid "Paying authority"
 msgstr "Organisme payeur"
+
+#: leads/forms.py:33
+msgid "Sales amount must be defined at this step of the commercial process"
+msgstr ""
+"Le montant de l'affaire doit être connu à cette étape du processus d'avant-"
+"vente"
 
 #: leads/models.py:36
 msgid "Qualifying"
