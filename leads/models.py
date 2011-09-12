@@ -192,7 +192,12 @@ def leadSignalHandler(sender, **kwargs):
     if  kwargs.get("created", False):
         launchTrigger("NEW_LEAD", [targetUser, ], lead)
     if lead.state == "WON":
-        launchTrigger("WON_LEAD", [targetUser, ], lead)
+        # Ensure actionset has not already be fired for this lead and this user
+        if not ActionState.objects.filter(user=targetUser,
+                                          target_id=lead.id,
+                                          target_type=ContentType.objects.get_for_model(Lead)
+                                          ).exists():
+            launchTrigger("WON_LEAD", [targetUser, ], lead)
 
 # Signal connection to throw actionset
 post_save.connect(leadSignalHandler, sender=Lead)
