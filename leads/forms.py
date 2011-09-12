@@ -31,3 +31,16 @@ class LeadForm(models.ModelForm):
         else:
             # We can't tolerate that sale amount is not known at this step of the process
             raise ValidationError(_("Sales amount must be defined at this step of the commercial process"))
+
+    def clean_deal_id(self):
+        """Ensure deal id is unique. 
+        Cannot be done at database level because we tolerate null/blank value and all db engines are
+        not consistent in the way they handle that. SQL ISO is really fuzzy about that. Sad"""
+        if not self.cleaned_data["deal_id"]:
+            # No value, no pb :-)
+            return self.cleaned_data["deal_id"]
+        else:
+            if Lead.objects.filter(deal_id=self.cleaned_data["deal_id"]).exclude(id=self.instance.id).exists():
+                raise ValidationError(_("Deal id must be unique. Use another value or let the field blank for automatic computation"))
+            else:
+                return self.cleaned_data["deal_id"]
