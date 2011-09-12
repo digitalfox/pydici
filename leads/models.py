@@ -55,9 +55,11 @@ class Lead(models.Model):
     start_date = models.DateField(_("Starting"), blank=True, null=True)
     due_date = models.DateField(_("Due"), blank=True, null=True)
     state = models.CharField(_("State"), max_length=30, choices=STATES)
+    state.db_index = True
     client = models.ForeignKey(Client, verbose_name=_("Client"))
     creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
     deal_id = models.CharField(_("Deal id"), max_length=100, blank=True)
+    deal_id.db_index = True
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     send_email = models.BooleanField(_("Send lead by email"), default=True)
     tags = TaggableManager(blank=True)
