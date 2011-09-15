@@ -322,9 +322,17 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
     if not (request.user.has_perm("staffing.add_timesheet") and
             request.user.has_perm("staffing.change_timesheet") and
             request.user.has_perm("staffing.delete_timesheet")):
-        # Only forbid access if the user try to edit someone else staffing
+        # Only forbid access if the user try to edit someone else staffing. 
+        # But authorise manager to have a look (read only) to their team timesheet
         if request.user.username.upper() != consultant.trigramme:
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+            try:
+                c = Consultant.objects.get(trigramme=request.user.username.upper())
+                if consultant.getUser() in c.userTeam():
+                    readOnly = True
+                else:
+                    return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+            except Consultant.DoesNotExist:
+                return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
 
         # A consultant can only edit his own timesheet on current month and 5 days after
         if (date.today() - next_date).days > 5:

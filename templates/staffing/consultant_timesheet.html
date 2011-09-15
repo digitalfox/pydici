@@ -76,7 +76,7 @@
     </table>
     <br/>
     {% if read_only %}
-        <em>{% trans "Note: Past month timesheet are read only" %}</em>
+        <div id="readonly-warning"><em>{% trans "Note: Past month timesheet and your team timesheets are read only" %}</em></div>
     {% else %}
         <div class="submit-row">
             <input type="submit" value="{% trans 'Save' %}"/>
@@ -103,6 +103,7 @@ $(document).ready(function()
 	        $(this).val(i);
 	        $(this).css("background", "rgba(255,0,0,0.3)");
 	        $(".submit-row input").css("background", "rgba(255,0,0,0.2)");
+	        $('#readonly-warning').css("background", "rgba(255,0,0,0.2)");
 	    });
 })
 </SCRIPT>
