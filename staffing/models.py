@@ -156,6 +156,10 @@ class Mission(models.Model):
         else:
             return 0
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('pydici.staffing.views.mission_timesheet', [str(self.id)])
+
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "id", "description"]
         verbose_name = _("Mission")
