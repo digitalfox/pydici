@@ -24,33 +24,22 @@
 {% endif %}
 
 <ul>
-{% for mission in missions %}
-    {% ifchanged mission.lead.client %}
+{% for lead in leads %}
+    {% ifchanged lead.client %}
         {% if request.session.mobile %}</ul><ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d"><li data-role="list-divider">{% else %}<h2>{% endif %}
-        {% if mission.lead.client.contact %}
-            <a rel=external href="{% url admin:crm_clientcontact_change mission.lead.client.contact.id %}">{{ mission.lead.client.organisation }} ({{ mission.lead.client.contact }})</a>
+        {% if lead.client.contact %}
+            <a rel=external href="{% url admin:crm_clientcontact_change lead.client.contact.id %}">{{ lead.client.organisation }} ({{ lead.client.contact }})</a>
         {% else %}
-            {{ mission.lead.client }}
+            {{ lead.client }}
         {% endif %}
         {% if request.session.mobile %}</li>{% else %}</h2>{% endif %}
     {% endifchanged %}
-    {% ifchanged mission.lead.state %}
+    {% ifchanged lead.state %}
         {% if request.session.mobile %}<li data-role="list-divider">{% else %}<h3>{% endif %}
-            {{ mission.lead.get_state_display }}
+            {{ lead.get_state_display }}
         {% if request.session.mobile %}</li>{% else %}</h3>{% endif %}
     {% endifchanged %}
-    <li>
-    {% if request.session.mobile %}
-    <a href="{% url pydici.staffing.views.mission_timesheet mission.id %}">{{ mission.short_name }} - {{ mission.lead.start_date|date:"F Y" }}</a>
-    {% else %}
-        {{ mission.short_name }} - {{ mission.lead.start_date|date:"F Y" }}
-	    <a href='{% url pydici.leads.views.detail mission.lead_id %}'><img title='{% trans "Lead of this mission" %}' src='{{ MEDIA_URL }}pydici/lead.png'/></a>
-	    {% if mission.active %}
-	        <a href="{% url pydici.staffing.views.mission_staffing mission.id %}"><img title='{% trans "Forecast staffing of this mission" %}' src='{{ MEDIA_URL }}pydici/staffing.png'/></a>
-	    {% endif %}
-        <a href="{% url pydici.staffing.views.mission_timesheet mission.id %}"><img title='{% trans "Timesheet of this mission" %}' src='{{ MEDIA_URL }}pydici/timesheet.png'/></a>
-	{% endif %}
-    </li>
+    <li><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }}</a> - {{ lead.start_date|date:"F Y" }}</li>
 {% endfor %}
 </ul>
 {% if consultants %}
