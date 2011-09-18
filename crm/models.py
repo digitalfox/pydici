@@ -106,6 +106,26 @@ class Client(models.Model):
         else:
             return u"%s" % (self.organisation)
 
+    def getFinancialConditions(self):
+        """Get financial condition for this client by profil
+        @return: ((profil1, avgrate1), (profil2, avgrate2)...)"""
+        from pydici.staffing.models import FinancialCondition
+        data = {}
+        for fc in FinancialCondition.objects.filter(mission__lead__client=self,
+                                               consultant__timesheet__charge__gt=0, # exclude null charge
+                                               consultant__timesheet=models.F("mission__timesheet") # Join to avoid duplicate entries
+                                               ).select_related():
+            profil = fc.consultant.profil
+            if not profil in data:
+                data[profil] = []
+            data[profil].append(fc.daily_rate)
+
+        # compute average
+        data = [(profil, sum(rates) / len(rates)) for profil, rates in data.items()]
+        # Sort by profil
+        data.sort(key=lambda x: x[0].level)
+        return data
+
     class Meta:
         ordering = ["organisation", "contact"]
         verbose_name = _("Client")

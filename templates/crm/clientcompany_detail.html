@@ -50,6 +50,18 @@
     {% endfor %}
     </ul>
 {% endif %}
+<h2>{% trans "Used rates for this company" %}</h2>
+<ul>
+{% for client in clients %}
+<li>{{ client.organisation.name }} {% if client.contact %}({{ client.contact }}){% endif %}<ul>
+    {% for profil, rate in client.getFinancialConditions %}
+        <li>{{ profil }} : {{ rate }} €</li>
+    {% empty %}
+    {% trans "No rate defined" %}
+    {% endfor %}
+    </ul></li>
+{% endfor %}
+</ul>
 <br/>
 <a href='{% url clientcompany_list %}'>{% trans "All companies list" %}</a> 
 </div>

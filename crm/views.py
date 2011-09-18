@@ -8,7 +8,7 @@ Pydici crm views. Http request are processed here.
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
-from pydici.crm.models import ClientCompany
+from pydici.crm.models import ClientCompany, Client
 from pydici.staffing.models import Timesheet
 from pydici.leads.models import Lead
 
@@ -29,6 +29,7 @@ def company_detail(request, company_id):
     return render_to_response("crm/clientcompany_detail.html",
                               {"company": company,
                                "leads": leads,
-                               "consultants": consultants},
+                               "consultants": consultants,
+                               "clients": Client.objects.filter(organisation__company=company)},
                                RequestContext(request))
 
