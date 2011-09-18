@@ -34,12 +34,8 @@
         {% endif %}
         {% if request.session.mobile %}</li>{% else %}</h2>{% endif %}
     {% endifchanged %}
-    {% ifchanged lead.state %}
-        {% if request.session.mobile %}<li data-role="list-divider">{% else %}<h3>{% endif %}
-            {{ lead.get_state_display }}
-        {% if request.session.mobile %}</li>{% else %}</h3>{% endif %}
-    {% endifchanged %}
-    <li><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }}</a> - {{ lead.start_date|date:"F Y" }}</li>
+
+    <li><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }}</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
 {% endfor %}
 </ul>
 {% if consultants %}
