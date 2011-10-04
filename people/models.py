@@ -40,6 +40,8 @@ class Consultant(models.Model):
     active = models.BooleanField(_("Active"), default=True)
     manager = models.ForeignKey("self", null=True, blank=True)
     profil = models.ForeignKey(ConsultantProfile, verbose_name=_("Profil"))
+    subcontractor = models.BooleanField(_("Subcontractor"), default=False)
+    subcontractor_company = models.CharField(max_length=200, blank=True)
 
     def __unicode__(self): return self.name
 
@@ -148,10 +150,10 @@ class SalesMan(models.Model):
         verbose_name_plural = _("Salesmen")
 
 # Signal handling to throw actionset
-def consultantSignalHandler(sender,  **kwargs):
+def consultantSignalHandler(sender, **kwargs):
     """Signal handler for new consultant"""
 
-    if  not kwargs.get("created",  False):
+    if  not kwargs.get("created", False):
         return
 
     consultant = kwargs["instance"]
@@ -163,7 +165,7 @@ def consultantSignalHandler(sender,  **kwargs):
         # Default to admin
         targetUser = User.objects.filter(is_superuser=True)[0]
 
-    launchTrigger("NEW_CONSULTANT",  [targetUser, ],  consultant)
+    launchTrigger("NEW_CONSULTANT", [targetUser, ], consultant)
 
 # Signal connection to throw actionset
-post_save.connect(consultantSignalHandler,  sender=Consultant)
+post_save.connect(consultantSignalHandler, sender=Consultant)

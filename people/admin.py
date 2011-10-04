@@ -6,8 +6,10 @@ Django administration setup
 """
 
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from pydici.people.models import SalesMan, Consultant, ConsultantProfile
+from pydici.people.forms import ConsultantForm
 
 class SalesManAdmin(admin.ModelAdmin):
     list_display = ("name", "company", "trigramme", "email", "phone", "active")
@@ -18,11 +20,16 @@ class SalesManAdmin(admin.ModelAdmin):
 
 
 class ConsultantAdmin(admin.ModelAdmin):
-    list_display = ("name", "trigramme", "profil", "productive", "active")
+    list_display = ("name", "trigramme", "profil", "productive", "active", "subcontractor")
     search_fields = ("name", "trigramme")
     ordering = ("name",)
-    list_filter = ["profil", "productive", "active"]
+    list_filter = ["profil", "productive", "active", "subcontractor"]
     actions = None
+    fieldsets = [
+        (None, {"fields": ["name", "trigramme", "active", "company", "profil", "manager"]}),
+        (_("For subcontractors"), {"fields": ["subcontractor", "subcontractor_company" ]}),
+        ]
+    form = ConsultantForm
 
 class ConsultantProfileAdmin(admin.ModelAdmin):
     ordering = ("level",)
