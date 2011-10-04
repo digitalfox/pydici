@@ -13,7 +13,7 @@
 {% block content %}
 
 <div id="content-main">
-<h1>{{ consultant.full_name }} - {{consultant.profil }}
+<h1>{{ consultant.full_name }} - {{consultant.profil }} {% if consultant.subcontractor %}({% trans "subcontractor" %}) {% endif %}
 &nbsp;&nbsp;
 <a href='{% url pydici.staffing.views.consultant_staffing consultant.id %}'><img title='{% trans "staffing" %}' src='{{ MEDIA_URL }}pydici/staffing.png'/></a>
 &nbsp;&nbsp;

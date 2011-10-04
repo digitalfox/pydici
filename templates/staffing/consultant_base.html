@@ -22,7 +22,7 @@
 {% else %}
 
 <div id="content-staffing">
-    <h1>{{ consultant }}</h1>
+    <h1>{{ consultant.full_name }} {% if consultant.subcontractor %} - {% trans "subcontractor" %} {% endif %}</h1>
 
     <h2>{% trans "Consultant's missions" %}</h2>
 		<table>
