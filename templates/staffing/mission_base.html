@@ -34,7 +34,7 @@
 
     <h2>{% trans "Consultants currently implicated in this mission" %}</h2>
     <table>
-    <tr><td>{% trans "Consultant" %}</td><td>{% trans "Daily rate (€)" %}</td></tr>
+    <tr><td>{% trans "Consultant" %}</td><td>{% trans "Daily rate (€)" %}</td><td></td></tr>
     {% for consultant, rate in consultant_rates.items %}
         <tr {%cycle 'class="row1"' 'class="row2"' %}>
             {% if link_to_staffing %}
@@ -42,7 +42,8 @@
             {% else %}
                 <td><a href='{% url pydici.staffing.views.consultant_timesheet consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
             {% endif %}
-            <td align="right"><div id="{{ mission.id }}-{{ consultant.id }}" class="jeditable" style="display:inline">{{ rate }}</div></td>
+            <td align="right"><div id="sold-{{ mission.id }}-{{ consultant.id }}" class="jeditable" style="display:inline">{{ rate.0 }}</div></td>
+            <td align="right">{% if consultant.subcontractor %}(<div id="bought-{{ mission.id }}-{{ consultant.id }}" class="jeditable" style="display:inline">{{ rate.1 }}</div>){% endif %}</td>
         </tr>
     {% endfor %}
     </table>    
@@ -91,7 +92,6 @@ $(".jeditable").editable("{% url pydici.staffing.views.mission_consultant_rate %
     event     : "click",
     style  : "inherit"
 });
-
 
 -->
 </script>

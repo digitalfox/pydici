@@ -8,7 +8,7 @@ Django administration setup
 from django.contrib import admin
 
 from pydici.staffing.models import Mission, Holiday, Timesheet, FinancialCondition
-from pydici.staffing.forms import MissionAdminForm
+from pydici.staffing.forms import MissionAdminForm, FinancialConditionAdminForm
 
 class MissionAdmin(admin.ModelAdmin):
     list_display = ("lead", "description", "nature", "probability", "mission_id", "active", "update_date")
@@ -32,6 +32,7 @@ class FinancialConditionAdmin(admin.ModelAdmin):
     search_fileds = ("mission__lead__name", "mission__description", "mission__deal_id", "mission__lead__client__organisation__company__name",
                    "mission__lead__client__contact__name", "consultant__name", "consultant__trigramme")
     actions = None
+    form = FinancialConditionAdminForm
 
 admin.site.register(Mission, MissionAdmin)
 admin.site.register(Holiday, HolidayAdmin)

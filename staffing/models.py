@@ -101,14 +101,14 @@ class Mission(models.Model):
             return []
 
     def consultant_rates(self):
-        """@return: dict with consultant as key and daily rate as value or 0 if not defined"""
+        """@return: dict with consultant as key and (daily rate, bought daily rate) as value or 0 if not defined."""
         rates = {}
         for condition in FinancialCondition.objects.filter(mission=self):
-            rates[condition.consultant] = condition.daily_rate
-        # Put 0 for consultant forecasted on this mission but with daily rate
+            rates[condition.consultant] = (condition.daily_rate, condition.bought_daily_rate)
+        # Put 0 for consultant forecasted on this mission but without defined daily rate
         for consultant in self.staffed_consultant():
             if not consultant in rates:
-                rates[consultant] = 0
+                rates[consultant] = (0, 0)
         return rates
 
     def mission_id(self):
@@ -131,7 +131,7 @@ class Mission(models.Model):
         res = cache.get("missionDoneWork-%s" % self.id)
         if res:
             return res
-        rates = dict([ (i.id, j) for i, j in self.consultant_rates().items()]) # switch to consultant id
+        rates = dict([ (i.id, j[0]) for i, j in self.consultant_rates().items()]) # switch to consultant id
         days = 0
         amount = 0
         timesheets = Timesheet.objects.filter(mission=self)
@@ -225,6 +225,7 @@ class FinancialCondition(models.Model):
     consultant = models.ForeignKey(Consultant)
     mission = models.ForeignKey(Mission, limit_choices_to={"active":True})
     daily_rate = models.IntegerField(_("Daily rate"))
+    bought_daily_rate = models.IntegerField(_("Bought daily rate"), null=True, blank=True) # For subcontractor only
 
     class Meta:
         unique_together = (("consultant", "mission", "daily_rate"),)

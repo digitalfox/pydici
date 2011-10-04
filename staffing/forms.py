@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError
 
 from ajax_select.fields import AutoCompleteSelectField
 
-from pydici.staffing.models import Mission
+from pydici.staffing.models import Mission, FinancialCondition
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
@@ -126,6 +126,29 @@ class MissionAdminForm(forms.ModelForm):
 
         # No error, we return data as is
         return self.cleaned_data["price"]
+
+
+class FinancialConditionAdminForm(forms.ModelForm):
+    """Form used to validate financial condition bought price field in admin"""
+    class Meta:
+        model = FinancialCondition
+
+    def clean_bought_daily_rate(self):
+        """Ensure bought daily rate is defined only for subcontractor"""
+        if self.instance.consultant.subcontractor:
+            if self.cleaned_data["bought_daily_rate"]:
+                if 0 < self.cleaned_data["bought_daily_rate"] < self.cleaned_data["daily_rate"]:
+                    return self.cleaned_data["bought_daily_rate"]
+                else:
+                    raise ValidationError(_("Bought daily rate must be positive and lower than daily rate"))
+            else:
+                raise ValidationError(_("Bought daily rate must be defined for subcontractor"))
+        else:
+            if self.cleaned_data["bought_daily_rate"]:
+                raise ValidationError(_("Bought daily rate must be only be defined for subcontractor"))
+            else:
+                return self.cleaned_data["bought_daily_rate"]
+
 
 class TimesheetField(forms.ChoiceField):
     widget = forms.widgets.TextInput
