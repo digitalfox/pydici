@@ -32,10 +32,12 @@ from pydici.leads.models import Lead
 from pydici.people.models import ConsultantProfile
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
 from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
+from pydici.core.decorator import pydici_non_public
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
                                   sortMissions, holidayDays, daysOfMonth, staffingDates, \
                                   previousWeek, nextWeek, monthWeekNumber
 
+@pydici_non_public
 def missions(request, onlyActive=True):
     """List of missions"""
     if onlyActive:
@@ -50,6 +52,8 @@ def missions(request, onlyActive=True):
                                "user": request.user },
                                RequestContext(request))
 
+
+@pydici_non_public
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
@@ -85,6 +89,7 @@ def mission_staffing(request, mission_id):
                                RequestContext(request))
 
 
+@pydici_non_public
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
@@ -121,6 +126,7 @@ def consultant_staffing(request, consultant_id):
                                RequestContext(request))
 
 
+@pydici_non_public
 def pdc_review(request, year=None, month=None):
     """PDC overview
     @param year: start date year. None means current year
@@ -270,6 +276,8 @@ def pdc_review(request, year=None, month=None):
                                "groupby" : groupby},
                                RequestContext(request))
 
+
+@pydici_non_public
 def deactivate_mission(request, mission_id):
     """Deactivate the given mission"""
     try:
@@ -317,6 +325,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         next_week = 0
 
     consultant = Consultant.objects.get(id=consultant_id)
+
     readOnly = False # Wether timesheet is readonly or not
 
     if not (request.user.has_perm("staffing.add_timesheet") and
@@ -412,6 +421,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
 
 def consultant_csv_timesheet(request, consultant, days, month, missions):
     """@return: csv timesheet for a given consultant"""
+    # This "view" is never called directly but only through consultant_timesheet view
     response = HttpResponse(mimetype="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
     writer = csv.writer(response, delimiter=';')
@@ -440,6 +450,8 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
 
     return response
 
+
+@pydici_non_public
 def mission_timesheet(request, mission_id):
     """Mission timesheet"""
     mission = Mission.objects.get(id=mission_id)
@@ -529,6 +541,7 @@ def mission_timesheet(request, mission_id):
                                RequestContext(request))
 
 
+@pydici_non_public
 def all_timesheet(request, year=None, month=None):
     if year and month:
         month = date(int(year), int(month), 1)
@@ -612,6 +625,7 @@ def all_timesheet(request, year=None, month=None):
                                RequestContext(request))
 
 
+@pydici_non_public
 def all_csv_timesheet(request, charges, month):
     response = HttpResponse(mimetype="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
@@ -631,6 +645,7 @@ def all_csv_timesheet(request, charges, month):
     return response
 
 
+@pydici_non_public
 @permission_required("staffing.add_mission")
 def create_new_mission_from_lead(request, lead_id):
     """Create a new mission on the given lead. Mission are created with same nature
@@ -663,6 +678,7 @@ def create_new_mission_from_lead(request, lead_id):
     return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_mission_change", args=[mission.id, ]))
 
 
+@pydici_non_public
 def mission_consultant_rate(request):
     """Select or create financial condition for this consultant/mission tuple and update it
     This is intended to be used through a jquery jeditable call"""
@@ -687,6 +703,7 @@ def mission_consultant_rate(request):
         return HttpResponse(_("Incorrect value"))
 
 
+@pydici_non_public
 @cache_page(60 * 10)
 def graph_timesheet_rates_bar(request):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
@@ -837,6 +854,10 @@ def graph_consultant_rates_pie(request, consultant_id):
                  (_("Last 12 months"), today - timedelta(365)),
                  (_("Forever"), date(1970, 1, 1)))
     consultant = Consultant.objects.get(id=consultant_id)
+    if not request.user.is_staff and consultant.getUser() != request.user:
+        # Non staff member (like subcontractors) are only allow to see their own page
+        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+
 
     fig = Figure(figsize=(8, 8))
     fig.set_facecolor("white")
@@ -860,11 +881,16 @@ def graph_consultant_rates_pie(request, consultant_id):
 @cache_page(60 * 10)
 def graph_consultant_rates_graph(request, consultant_id):
     """Nice graph of consultant rates"""
-    consultant = Consultant.objects.get(id=consultant_id)
     ydata = []
     fig = Figure(figsize=(8, 8))
     fig.set_facecolor("white")
     ax = fig.add_subplot(1, 1, 1)
+
+    consultant = Consultant.objects.get(id=consultant_id)
+    if not request.user.is_staff and consultant.getUser() != request.user:
+        # Non staff member (like subcontractors) are only allow to see their own page
+        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+
 
     # Avg rate / month
     ts = Timesheet.objects.filter(consultant=consultant, charge__gt=0)

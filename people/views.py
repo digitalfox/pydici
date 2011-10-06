@@ -6,7 +6,8 @@ Pydici people views. Http request are processed here.
 """
 
 from django.shortcuts import render_to_response
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
+from django.core import urlresolvers
 from django.template import RequestContext
 
 from pydici.people.models import Consultant
@@ -24,6 +25,9 @@ def consultant_detail(request, consultant_id):
         leads_as_staffee = consultant.lead_set.active()
     except Consultant.DoesNotExist:
         raise Http404
+    if not request.user.is_staff and consultant.getUser() != request.user:
+        # Non staff member (like subcontractors) are only allow to see their own page
+        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
     return render_to_response("people/consultant_detail.html",
                               {"consultant": consultant,
                                "staff" : staff,

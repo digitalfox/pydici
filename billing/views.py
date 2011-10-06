@@ -23,7 +23,9 @@ from pydici.leads.models import Lead
 from pydici.staffing.models import Timesheet, FinancialCondition, Staffing
 from pydici.crm.models import ClientCompany, BusinessBroker
 from pydici.core.utils import print_png, COLORS, sortedValues
+from pydici.core.decorator import pydici_non_public
 
+@pydici_non_public
 def bill_review(request):
     """Review of bills: bills overdue, due soon, or to be created"""
     today = date.today()
@@ -60,6 +62,7 @@ def bill_review(request):
                                "user": request.user},
                               RequestContext(request))
 
+@pydici_non_public
 def bill_payment_delay(request):
     """Report on client bill payment delay"""
     #List of tuple (company, avg delay in days)
@@ -84,6 +87,7 @@ def bill_payment_delay(request):
                               RequestContext(request))
 
 
+@pydici_non_public
 def mark_bill_paid(request, bill_id):
     """Mark the given bill as paid"""
     bill = Bill.objects.get(id=bill_id)
@@ -91,6 +95,8 @@ def mark_bill_paid(request, bill_id):
     bill.save()
     return HttpResponseRedirect(urlresolvers.reverse("pydici.billing.views.bill_review"))
 
+
+@pydici_non_public
 def create_new_bill_from_lead(request, lead_id):
     """Create a new bill for this lead"""
     bill = Bill()
@@ -102,6 +108,7 @@ def create_new_bill_from_lead(request, lead_id):
     bill.save()
     return HttpResponseRedirect(urlresolvers.reverse("admin:billing_bill_change", args=[bill.id, ]))
 
+@pydici_non_public
 @cache_page(60 * 10)
 def graph_stat_bar(request):
     """Nice graph bar of incomming cash from bills

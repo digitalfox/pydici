@@ -12,8 +12,7 @@ import permissions.utils as perm
 from workflows.models import Transition
 
 from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect, HttpResponse, Http404
-from django.contrib.auth.decorators import permission_required, login_required
+from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
@@ -22,8 +21,9 @@ from django.db.models import Q
 from pydici.expense.forms import ExpenseForm
 from pydici.expense.models import Expense
 from pydici.people.models import Consultant
+from pydici.core.decorator import pydici_non_public
 
-@login_required
+@pydici_non_public
 def expenses(request, expense_id=None):
     """Display user expenses and expenses that he can validate"""
     try:
@@ -100,7 +100,8 @@ def expenses(request, expense_id=None):
                                "user": request.user },
                                RequestContext(request))
 
-@login_required
+
+@pydici_non_public
 def expense_receipt(request, expense_id):
     """Returns expense receipt if authorize to"""
     response = HttpResponse()
@@ -118,6 +119,8 @@ def expense_receipt(request, expense_id):
 
     return response
 
+
+@pydici_non_public
 def expenses_history(request):
     """Display expense history"""
     #TODO: add time range (year)
@@ -137,6 +140,8 @@ def expenses_history(request):
                                "user": request.user },
                                RequestContext(request))
 
+
+@pydici_non_public
 def update_expense_state(request, expense_id, transition_id):
     """Do workflow transition for that expense"""
     try:

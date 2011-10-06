@@ -6,10 +6,11 @@ Pydici core views. Http request are processed here.
 """
 
 from django.shortcuts import render_to_response
-from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
+from pydici.core.decorator import pydici_non_public
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant, SalesMan
 from pydici.crm.models import ClientCompany, ClientContact
@@ -63,7 +64,7 @@ def index(request):
                                RequestContext(request))
 
 
-@login_required
+@pydici_non_public
 def mobile_index(request):
     """Mobile device index page"""
     # Mark session as "mobile"
@@ -85,7 +86,7 @@ def mobile_index(request):
                                "leads" : Lead.objects.active().order_by("creation_date") },
                               RequestContext(request))
 
-@login_required
+@pydici_non_public
 def search(request):
     """Very simple search function on all major pydici objects"""
 
@@ -178,6 +179,7 @@ def search(request):
                                "user": request.user },
                                RequestContext(request))
 
+@pydici_non_public
 def dashboard(request):
     """Tactical management dashboard. This views is in core module because it aggregates data
     accross different modules"""

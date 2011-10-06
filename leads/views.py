@@ -13,7 +13,6 @@ import json
 from matplotlib.figure import Figure
 
 from django.core import urlresolvers
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext as _
@@ -29,8 +28,9 @@ from pydici.core.utils import send_lead_mail, print_png, COLORS
 from pydici.leads.models import Lead
 import pydici.settings
 from pydici.core.utils import capitalize
+from pydici.core.decorator import pydici_non_public
 
-
+@pydici_non_public
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""
     today = datetime.today()
@@ -49,7 +49,7 @@ def summary_mail(request, html=True):
                                   RequestContext(request),
                                   mimetype="text/plain; charset=utf-8")
 
-@login_required
+@pydici_non_public
 def detail(request, lead_id):
     """Lead detailed description"""
     try:
@@ -93,6 +93,7 @@ def detail(request, lead_id):
                                "user": request.user},
                                RequestContext(request))
 
+@pydici_non_public
 def csv_export(request, target):
     response = HttpResponse(mimetype="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("leads.csv")
@@ -114,6 +115,7 @@ def csv_export(request, target):
         writer.writerow(row)
     return response
 
+@pydici_non_public
 def mail_lead(request, lead_id=0):
     try:
         lead = Lead.objects.get(id=lead_id)
@@ -126,6 +128,8 @@ def mail_lead(request, lead_id=0):
     except Exception, e:
         return HttpResponse(_("Failed to send mail: %s") % e)
 
+
+@pydici_non_public
 def review(request):
     today = datetime.today()
     delay = timedelta(days=10) #(10 days)
@@ -138,6 +142,7 @@ def review(request):
                                "user": request.user },
                                RequestContext(request))
 
+@pydici_non_public
 def tag(request, tag_id):
     """Displays leads for given tag"""
     return render_to_response("leads/tag.html",
@@ -146,6 +151,7 @@ def tag(request, tag_id):
                                "user": request.user },
                                RequestContext(request))
 
+@pydici_non_public
 @permission_required("leads.change_lead")
 def add_tag(request):
     """Add a tag to a lead. Create the tag if needed"""
@@ -166,6 +172,7 @@ def add_tag(request):
         answer["id"] = tag.id
     return HttpResponse(json.dumps(answer), mimetype="application/json")
 
+@pydici_non_public
 @permission_required("leads.change_lead")
 def remove_tag(request, tag_id, lead_id):
     """Remove a tag to a lead"""
@@ -180,6 +187,7 @@ def remove_tag(request, tag_id, lead_id):
         answer["error"] = True
     return HttpResponse(json.dumps(answer), mimetype="application/json")
 
+@pydici_non_public
 def tags(request, lead_id):
     """@return: all tags that contains q parameter and are not already associated to this lead as a simple text list"""
     tags = Tag.objects.all().exclude(lead__id=lead_id) # Exclude existing tags
@@ -188,6 +196,7 @@ def tags(request, lead_id):
     return HttpResponse("\n".join(tags))
 
 
+@pydici_non_public
 @cache_page(60 * 10)
 def graph_stat_pie(request):
     """Nice graph pie of lead state repartition using matplotlib
@@ -206,6 +215,7 @@ def graph_stat_pie(request):
 
     return print_png(fig)
 
+@pydici_non_public
 @cache_page(60 * 10)
 def graph_stat_bar(request):
     """Nice graph bar of lead state during time using matplotlib

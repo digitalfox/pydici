@@ -8,16 +8,15 @@ Pydici action set views. Http request are processed here.
 import json
 
 from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect, HttpResponse, Http404
-from django.contrib.auth.decorators import permission_required, login_required
+from django.http import HttpResponse
 from django.utils.translation import ugettext as _
-from django.core import urlresolvers
 from django.template import RequestContext
 from django.contrib.auth.models import User
 
 from pydici.actionset.models import ActionSet, Action, ActionState
+from pydici.core.decorator import pydici_non_public
 
-@login_required
+@pydici_non_public
 def update_action_state(request, action_state_id, state):
     """Update action status.
     This view is designed to be called in ajax only
@@ -44,6 +43,8 @@ def update_action_state(request, action_state_id, state):
     else:
         return error
 
+
+@pydici_non_public
 def actionset_catalog(request):
     """Catalog of all action set"""
     if request.user.has_perm("actionset.change_action") and request.user.has_perm("actionset.change_actionset"):
@@ -55,7 +56,8 @@ def actionset_catalog(request):
                                "can_change" : can_change },
                                RequestContext(request))
 
-@login_required
+
+@pydici_non_public
 def launch_actionset(request, actionset_id):
     """Manually launch an actionset for given user (username GET parameter) with ajax query"""
     #TODO: add optional target object (content and id)
