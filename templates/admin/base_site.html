@@ -21,6 +21,7 @@
             <li>{% trans "Welcome," %} <strong>{{ user.username|link_to_consultant }}</strong></li>
         {% endif%}
         
+        {% if user.is_staff %}
         <li><a href="#link">{% trans "Leads" %}</a>
             <ul>
                 <li>
@@ -153,6 +154,11 @@
 	       </form>
         </li>
         <li>&nbsp;</li>
+        {% else %}
+        <li>&nbsp;&nbsp;&nbsp;&nbsp;</li><li>&nbsp;&nbsp;&nbsp;&nbsp;</li><li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
+        <li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li>
+        <li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li>
+        {% endif %} {# End of menu for staff users only #}
     </ul>
     <img alt="" src="{{ MEDIA_URL }}pydici/menu/menu_right.png"/>
 </div>

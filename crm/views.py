@@ -11,7 +11,9 @@ from django.shortcuts import render_to_response
 from pydici.crm.models import ClientCompany, Client
 from pydici.staffing.models import Timesheet
 from pydici.leads.models import Lead
+from pydici.core.decorator import pydici_non_public
 
+@pydici_non_public
 def company_detail(request, company_id):
     """Home page of client company"""
 
