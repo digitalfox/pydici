@@ -845,6 +845,7 @@ def graph_timesheet_rates_bar(request):
     return print_png(fig)
 
 
+@pydici_non_public
 @cache_page(60 * 10)
 def graph_consultant_rates_pie(request, consultant_id):
     """Nice graph of consultant rates"""
@@ -854,10 +855,6 @@ def graph_consultant_rates_pie(request, consultant_id):
                  (_("Last 12 months"), today - timedelta(365)),
                  (_("Forever"), date(1970, 1, 1)))
     consultant = Consultant.objects.get(id=consultant_id)
-    if not request.user.is_staff and consultant.getUser() != request.user:
-        # Non staff member (like subcontractors) are only allow to see their own page
-        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
-
 
     fig = Figure(figsize=(8, 8))
     fig.set_facecolor("white")
@@ -878,6 +875,7 @@ def graph_consultant_rates_pie(request, consultant_id):
     return print_png(fig)
 
 
+@pydici_non_public
 @cache_page(60 * 10)
 def graph_consultant_rates_graph(request, consultant_id):
     """Nice graph of consultant rates"""
@@ -887,10 +885,6 @@ def graph_consultant_rates_graph(request, consultant_id):
     ax = fig.add_subplot(1, 1, 1)
 
     consultant = Consultant.objects.get(id=consultant_id)
-    if not request.user.is_staff and consultant.getUser() != request.user:
-        # Non staff member (like subcontractors) are only allow to see their own page
-        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
-
 
     # Avg rate / month
     ts = Timesheet.objects.filter(consultant=consultant, charge__gt=0)
