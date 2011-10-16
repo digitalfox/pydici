@@ -16,7 +16,7 @@
 
 <h1>{% trans "All companies list" %}</h1>
 <ul style='float: left; width: 64em;'>
-{% for company in object_list %}
+{% for company in companies %}
     <li style='float: left; width: 16em;'>
         <a href='{% url pydici.crm.views.company_detail company.id %}'>{{ company }}</a>
     </li>

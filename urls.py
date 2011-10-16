@@ -30,8 +30,6 @@ feeds = {
         "myLatestStaffing" : MyLatestStaffing
         }
 
-# Models needed for generic views
-from pydici.crm.models import ClientCompany
 
 # Overide internal server error view
 handler500 = "pydici.core.views.internal_error"
@@ -114,11 +112,8 @@ pydici_patterns += patterns('pydici.people.views',
 # CRM module
 pydici_patterns += patterns('pydici.crm.views',
     (r'^crm/company/(?P<company_id>\d+)/$', 'company_detail'),
+    (r'^crm/company/?$', 'company_list'),
 )
-pydici_patterns += patterns('',
-            url(r'^crm/company/?$', 'django.views.generic.list_detail.object_list',
-                                {'queryset': ClientCompany.objects.all(), }, 'clientcompany_list'),)
-
 # Billing module
 pydici_patterns += patterns('pydici.billing.views',
     (r'^billing/bill_review', 'bill_review'),

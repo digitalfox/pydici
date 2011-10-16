@@ -35,3 +35,10 @@ def company_detail(request, company_id):
                                "clients": Client.objects.filter(organisation__company=company)},
                                RequestContext(request))
 
+@pydici_non_public
+def company_list(request):
+    """Client company list"""
+    return render_to_response("crm/clientcompany_list.html",
+                              {"companies": ClientCompany.objects.all() },
+                               RequestContext(request))
+

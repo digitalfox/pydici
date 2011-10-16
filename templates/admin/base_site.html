@@ -59,7 +59,7 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                        <a href="{% url clientcompany_list %}">{% trans "All clients" %}</a>
+                        <a href="{% url pydici.crm.views.company_list %}">{% trans "All clients" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
                 <li><a href="{% url admin:crm_clientcontact_changelist %}">{% trans "Contact adress directory" %}</a></li>
