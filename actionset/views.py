@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 from pydici.actionset.models import ActionSet, Action, ActionState
 from pydici.core.decorator import pydici_non_public
 
-@pydici_non_public
+
 def update_action_state(request, action_state_id, state):
     """Update action status.
     This view is designed to be called in ajax only
