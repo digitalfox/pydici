@@ -72,13 +72,13 @@ class Lead(models.Model):
     def save(self, force_insert=False, force_update=False):
         self.description = compact_text(self.description)
         if self.deal_id == "":
-            # First, subsidiary or broker code
-            if self.business_broker:
-                deal_id = self.business_broker.code
+            # First, subsidiary or paying authority code
+            if self.paying_authority:
+                deal_id = unicode(self.paying_authority.code)
             else:
-                deal_id = self.client.salesOwner.code
+                deal_id = unicode(self.client.salesOwner.code)
             # Then, client company code
-            deal_id += self.client.organisation.company.code
+            deal_id += unicode(self.client.organisation.company.code)
             # Then, year in two digits
             deal_id += date.today().strftime("%y")
             # Then, next id available for this prefix
