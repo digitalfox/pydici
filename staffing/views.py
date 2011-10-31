@@ -737,7 +737,7 @@ def graph_timesheet_rates_bar(request):
         nDays[profilId] = {}
 
     # Gather data
-    timesheets = Timesheet.objects.select_related().filter(consultant__subcontractor=False)
+    timesheets = Timesheet.objects.select_related().filter(consultant__subcontractor=False, consultant__active=True)
     if timesheets.count() == 0:
         return print_png(fig)
 
