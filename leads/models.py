@@ -47,7 +47,7 @@ class Lead(models.Model):
     action = models.CharField(_("Action"), max_length=2000, blank=True, null=True)
     sales = models.IntegerField(_(u"Price (k€)"), blank=True, null=True)
     salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"))
-    staffing = models.ManyToManyField(Consultant, blank=True, limit_choices_to={"active":True})
+    staffing = models.ManyToManyField(Consultant, blank=True, limit_choices_to={"active":True, "productive":True})
     external_staffing = models.CharField(_("External staffing"), max_length=300, blank=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True)
     business_broker = models.ForeignKey(BusinessBroker, related_name="%(class)s_broker", verbose_name=_("Business broker"), blank=True, null=True)
