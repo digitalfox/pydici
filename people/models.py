@@ -41,7 +41,7 @@ class Consultant(models.Model):
     manager = models.ForeignKey("self", null=True, blank=True)
     profil = models.ForeignKey(ConsultantProfile, verbose_name=_("Profil"))
     subcontractor = models.BooleanField(_("Subcontractor"), default=False)
-    subcontractor_company = models.CharField(max_length=200, blank=True)
+    subcontractor_company = models.CharField(max_length=200, null=True, blank=True)
 
     def __unicode__(self): return self.name
 
