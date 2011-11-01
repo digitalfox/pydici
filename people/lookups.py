@@ -31,5 +31,11 @@ class PeopleLookup(object):
 class ConsultantLookup(PeopleLookup):
     People = Consultant
 
+class InternalConsultantLookup(PeopleLookup):
+    People = Consultant
+    def get_query(self, q, request):
+        """Supersede query set by filtering out subcontractors"""
+        return super(InternalConsultantLookup, self).get_query(q, request).filter(subcontractor=False)
+
 class SalesmanLookup(PeopleLookup):
     People = SalesMan

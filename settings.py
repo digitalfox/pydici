@@ -35,6 +35,7 @@ LEADS_HELP_PAGE = "/my_custom_help_page.html" # May be absolute or relative
 
 AJAX_LOOKUP_CHANNELS = {
     'consultant' : ('people.lookups', 'ConsultantLookup'),
+    'internal_consultant' : ('people.lookups', 'InternalConsultantLookup'),
     'salesman' : ('people.lookups', 'SalesmanLookup'),
     'business_broker' : ('crm.lookups', 'BusinessBrokerLookup'),
     'client' : ('crm.lookups', 'ClientLookup'),
