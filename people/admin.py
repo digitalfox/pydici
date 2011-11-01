@@ -26,7 +26,7 @@ class ConsultantAdmin(admin.ModelAdmin):
     list_filter = ["profil", "productive", "active", "subcontractor"]
     actions = None
     fieldsets = [
-        (None, {"fields": ["name", "trigramme", "active", "company", "profil", "manager"]}),
+        (None, {"fields": ["name", "trigramme", "active", "productive", "company", "profil", "manager"]}),
         (_("For subcontractors"), {"fields": ["subcontractor", "subcontractor_company" ]}),
         ]
     form = ConsultantForm
