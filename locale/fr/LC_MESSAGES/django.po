@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-14 19:52+0200\n"
-"PO-Revision-Date: 2011-10-14 19:52+0200\n"
+"POT-Creation-Date: 2011-11-01 21:39+0100\n"
+"PO-Revision-Date: 2011-11-01 21:39+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -91,7 +91,7 @@ msgstr "État"
 msgid "Creation"
 msgstr "Création"
 
-#: actionset/models.py:63 expense/models.py:38 leads/models.py:63
+#: actionset/models.py:63 expense/models.py:39 leads/models.py:63
 #: leads/models.py:110 leads/views.py:105 staffing/models.py:41
 #: templates/core/index.html:24 templates/core/index.html.py:49
 #: templates/core/index.html:73 templates/core/index.html.py:97
@@ -335,15 +335,19 @@ msgstr "Refacturable"
 msgid "Date"
 msgstr "Date"
 
-#: expense/models.py:39
+#: expense/models.py:38 templates/expense/expenses_history.html:25
+msgid "Expense date"
+msgstr "Date de dépense"
+
+#: expense/models.py:40
 msgid "Amount"
 msgstr "Montant"
 
-#: expense/models.py:40
+#: expense/models.py:41
 msgid "Category"
 msgstr "Catégorie"
 
-#: expense/models.py:41 templates/expense/expenses_history.html:22
+#: expense/models.py:42 templates/expense/expenses_history.html:22
 msgid "Receipt"
 msgstr "Justificatif"
 
@@ -774,27 +778,27 @@ msgstr "La mission ou le consultant n'existe pas"
 msgid "Incorrect value"
 msgstr "Valeur incorrecte"
 
-#: staffing/views.py:827
+#: staffing/views.py:833
 msgid "Prod. rate"
 msgstr "Taux de prod."
 
-#: staffing/views.py:840 templates/staffing/mission_base.html:37
+#: staffing/views.py:846 templates/staffing/mission_base.html:37
 msgid "Daily rate (€)"
 msgstr "Taux journalier (€)"
 
-#: staffing/views.py:852
+#: staffing/views.py:859
 msgid "Last 3 months"
 msgstr "3 derniers mois"
 
-#: staffing/views.py:853
+#: staffing/views.py:860
 msgid "Last 6 months"
 msgstr "6 derniers mois"
 
-#: staffing/views.py:854
+#: staffing/views.py:861
 msgid "Last 12 months"
 msgstr "12 derniers mois"
 
-#: staffing/views.py:855
+#: staffing/views.py:862
 msgid "Forever"
 msgstr "Depuis toujours"
 
@@ -970,7 +974,7 @@ msgid "Active missions"
 msgstr "Liste des missions actives"
 
 #: templates/admin/base_site.html:58
-#: templates/people/consultant_detail.html:56
+#: templates/people/consultant_detail.html:58
 #: templates/staffing/pdc_review.html:69
 msgid "Clients"
 msgstr "Clients"
@@ -1051,7 +1055,7 @@ msgstr "Suivi de facturation"
 msgid "Payment delay review"
 msgstr "Délais de règlement"
 
-#: templates/admin/base_site.html:109 templates/expense/expenses.html:107
+#: templates/admin/base_site.html:109 templates/expense/expenses.html:110
 #: templates/expense/expenses_history.html:12
 msgid "Expenses history"
 msgstr "Historique des notes de frais"
@@ -1098,7 +1102,7 @@ msgstr "Modèles disponibles dans l'application %(name)s."
 msgid "Add"
 msgstr "Ajouter"
 
-#: templates/admin/index.html:35 templates/people/consultant_detail.html:23
+#: templates/admin/index.html:35 templates/people/consultant_detail.html:25
 #: templates/staffing/consultant_base.html:42
 #: templates/staffing/mission_base.html:32 templates/staffing/missions.html:47
 msgid "Change"
@@ -1302,7 +1306,7 @@ msgstr "Pydici mobile"
 msgid "My clients"
 msgstr "Mes clients"
 
-#: templates/core/m.index.html:27 templates/people/consultant_detail.html:66
+#: templates/core/m.index.html:27 templates/people/consultant_detail.html:68
 msgid "Current missions"
 msgstr "Missions actuelles"
 
@@ -1358,18 +1362,18 @@ msgstr "Modifier la note de frais"
 msgid "Add an expense"
 msgstr "Ajouter une note de frais"
 
-#: templates/expense/expenses.html:45
+#: templates/expense/expenses.html:48
 #: templates/staffing/consultant_staffing.html:65
 #: templates/staffing/consultant_timesheet.html:82
 #: templates/staffing/mission_staffing.html:67
 msgid "Save"
 msgstr "Enregistrer"
 
-#: templates/expense/expenses.html:52
+#: templates/expense/expenses.html:55
 msgid "My expenses"
 msgstr "Mes notes de frais"
 
-#: templates/expense/expenses.html:73
+#: templates/expense/expenses.html:76
 msgid "Expenses I manage"
 msgstr "Les notes de frais à traiter"
 
@@ -1377,15 +1381,15 @@ msgstr "Les notes de frais à traiter"
 msgid "People"
 msgstr "Personne"
 
-#: templates/expense/expenses_history.html:25
+#: templates/expense/expenses_history.html:26
 msgid "Update date"
 msgstr "Date de mise à jour"
 
-#: templates/expense/expenses_history.html:32
+#: templates/expense/expenses_history.html:33
 msgid "Yes"
 msgstr "Oui"
 
-#: templates/expense/expenses_history.html:32
+#: templates/expense/expenses_history.html:33
 msgid "No"
 msgstr "Non"
 
@@ -1529,7 +1533,7 @@ msgid "Billing"
 msgstr "Facturation"
 
 #: templates/leads/lead_detail.html:165
-#: templates/people/consultant_detail.html:48
+#: templates/people/consultant_detail.html:50
 msgid "Pending actions"
 msgstr "Actions en attente"
 
@@ -1611,31 +1615,31 @@ msgstr "Consultant "
 msgid "subcontractor"
 msgstr "Sous-traitant"
 
-#: templates/people/consultant_detail.html:18
+#: templates/people/consultant_detail.html:19
 msgid "staffing"
 msgstr "Prévisions"
 
-#: templates/people/consultant_detail.html:20
+#: templates/people/consultant_detail.html:22
 msgid "timesheet"
 msgstr "Feuille de temps"
 
-#: templates/people/consultant_detail.html:28
+#: templates/people/consultant_detail.html:30
 msgid "This consultant does not work anymore for the company"
 msgstr "Ce consultant ne travaille plus pour la société"
 
-#: templates/people/consultant_detail.html:35
+#: templates/people/consultant_detail.html:37
 msgid "Manager: "
 msgstr "Manager : "
 
-#: templates/people/consultant_detail.html:37
+#: templates/people/consultant_detail.html:39
 msgid "Staff"
 msgstr "Équipe"
 
-#: templates/people/consultant_detail.html:77
+#: templates/people/consultant_detail.html:79
 msgid "Current leads as responsible"
 msgstr "Affaires en tant que responsable"
 
-#: templates/people/consultant_detail.html:89
+#: templates/people/consultant_detail.html:91
 msgid "Current leads as resource"
 msgstr "Affaires en tant que ressource"
 

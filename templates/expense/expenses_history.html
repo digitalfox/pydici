@@ -22,6 +22,7 @@
     <th>{% trans "Receipt" %}</th>
     <th>{% trans "State" %}</th>
     <th>{% trans "Creation date" %}</th>
+    <th>{% trans "Expense date" %}</th>
     <th>{% trans "Update date" %}</th>
 </tr>
 {% for expense in expenses %}
@@ -33,6 +34,7 @@
     <td>{% if expense.receipt %}<a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}</td>
     <td>{{ expense.state }}</td>
     <td>{{ expense.creation_date }}</td>
+    <td>{{ expense.expense_date }}</td>
     <td>{{ expense.update_date }}</td>
     </tr>
 {% endfor %}

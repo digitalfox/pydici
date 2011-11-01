@@ -35,6 +35,7 @@ class Expense(models.Model):
     lead = models.ForeignKey(Lead, null=True, blank=True)
     chargeable = models.BooleanField(_("Chargeable"))
     creation_date = models.DateField(_("Date"))
+    expense_date = models.DateField(_("Expense date"))
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     amount = models.DecimalField(_("Amount"), max_digits=7, decimal_places=2)
     category = models.ForeignKey(ExpenseCategory, verbose_name=_("Category"))
