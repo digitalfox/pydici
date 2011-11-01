@@ -25,7 +25,7 @@ class LeadForm(models.ModelForm):
 
     def clean_sales(self):
         """Ensure sale amount is defined at lead when commercial proposition has been sent"""
-        if self.cleaned_data["sales"] or self.cleaned_data["state"] in ('QUALIF', 'WRITE_OFFER'):
+        if self.cleaned_data["sales"] or self.cleaned_data["state"] in ('QUALIF', 'WRITE_OFFER', 'SLEEPING', 'LOST', 'FORGIVEN'):
             # Sales is defined or we are in early step, nothing to say
             return self.cleaned_data["sales"]
         else:
