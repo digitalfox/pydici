@@ -737,7 +737,13 @@ def graph_timesheet_rates_bar(request):
         nDays[profilId] = {}
 
     # Gather data
-    timesheets = Timesheet.objects.select_related().filter(consultant__subcontractor=False, consultant__productive=True)
+    timesheetStartDate = date.today() - timedelta(365) # Last year
+    timesheetEndDate = (date.today().replace(day=1) + timedelta(40)).replace(day=1) # First day of next month
+    timesheets = Timesheet.objects.select_related().filter(consultant__subcontractor=False,
+                                                           consultant__productive=True,
+                                                           working_date__gt=timesheetStartDate,
+                                                           working_date__lt=timesheetEndDate)
+
     if timesheets.count() == 0:
         return print_png(fig)
 
