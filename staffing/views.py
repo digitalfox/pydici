@@ -29,7 +29,7 @@ from django.views.decorators.cache import cache_page, cache_control
 from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from pydici.people.models import Consultant
 from pydici.leads.models import Lead
-from pydici.people.models import ConsultantProfile
+from pydici.people.models import ConsultantProfile, RateObjective
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
 from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
 from pydici.core.decorator import pydici_non_public
@@ -896,7 +896,7 @@ def graph_consultant_rates_graph(request, consultant_id):
 
     # Avg rate / month
     ts = Timesheet.objects.filter(consultant=consultant, charge__gt=0)
-    kdates = ts.dates("working_date", "month")
+    kdates = list(ts.dates("working_date", "month"))
     for refDate in kdates:
         nextMonth = (refDate + timedelta(40)).replace(day=1)
         fc = consultant.getFinancialConditions(refDate, nextMonth)
@@ -908,11 +908,37 @@ def graph_consultant_rates_graph(request, consultant_id):
     if len([i for i in ydata if i > 0]) == 0:
         return print_png(fig)
 
-    b = ax.plot(kdates, ydata, '-o', ms=10, lw=4, color=COLORS[0], mfc=COLORS[0])
-    ax.legend(b, [_(u"Average daily rate (€)")], bbox_to_anchor=(0., 1.02, 1., .102),
-              loc=4, ncol=4, borderaxespad=0.)
+
+    # Get rate objectives
+    objectives = RateObjective.objects.filter(consultant=consultant).order_by("start_date")
+    objectiveDates = []
+    objectiveRates = []
+    for objectiveDate, objectiveRate in objectives.values_list("start_date", "daily_rate"):
+        # Add last rate at same date if we are not processing first point
+        if objectiveRates:
+            objectiveDates.append(objectiveDate)
+            objectiveRates.append(objectiveRates[-1])
+        # Add current point
+        objectiveDates.append(objectiveDate)
+        objectiveRates.append(objectiveRate)
+    # Add last point (last date and last known rate)
+    if objectiveRates:
+        objectiveDates.append(kdates[-1])
+        objectiveRates.append(objectiveRates[-1])
+
+    # Compute ymax
+    if objectiveRates:
+        ymax = max(max(ydata), max(objectiveRates)) + 100
+    else:
+        ymax = max(ydata)
+
+    # Graph data
+    rates = ax.plot(kdates, ydata, '-o', ms=10, lw=4, color=COLORS[0], mfc=COLORS[0])
     ax.set_xticks(kdates)
     ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
-    ax.set_ylim(ymin=min(i for i in ydata if i > 0) - 100, ymax=max(ydata) + 100)
+    ax.set_ylim(ymin=min(i for i in ydata if i > 0) - 100, ymax=ymax)
+    objectives = ax.plot(objectiveDates, objectiveRates, '--', ms=0, lw=2, color=COLORS[1], mfc=COLORS[1])
+    ax.legend((rates, objectives), [_(u"Average daily rate (€)"), _(u"Daily rate objective (€)")],
+              bbox_to_anchor=(0., 1.02, 1., .102), loc=4, ncol=2, borderaxespad=0.)
 
     return print_png(fig)

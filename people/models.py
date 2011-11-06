@@ -100,8 +100,6 @@ class Consultant(models.Model):
         fc = fc.order_by("daily_rate")
         return fc
 
-
-
     def getUser(self):
         """Returns django user behind this consultant
         Current algorithm check only for equal trigramme
@@ -126,6 +124,11 @@ class Consultant(models.Model):
         ordering = ["name", ]
         verbose_name = _("Consultant")
 
+class RateObjective(models.Model):
+    """Consultant rate objective"""
+    consultant = models.ForeignKey(Consultant)
+    start_date = models.DateField(_("Starting"))
+    daily_rate = models.IntegerField(_("Daily rate"))
 
 class SalesMan(models.Model):
     """A salesman"""

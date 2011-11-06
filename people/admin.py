@@ -8,7 +8,7 @@ Django administration setup
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from pydici.people.models import SalesMan, Consultant, ConsultantProfile
+from pydici.people.models import SalesMan, Consultant, ConsultantProfile, RateObjective
 from pydici.people.forms import ConsultantForm
 
 class SalesManAdmin(admin.ModelAdmin):
@@ -36,6 +36,15 @@ class ConsultantProfileAdmin(admin.ModelAdmin):
     list_display = ("name", "level")
     actions = None
 
+class RateObjectiveAdmin(admin.ModelAdmin):
+    ordering = ("start_date",)
+    list_display = ("start_date", "consultant", "daily_rate")
+    list_filter = ("consultant",)
+    date_hierarchy = "start_date"
+    actions = None
+
+
 admin.site.register(Consultant, ConsultantAdmin)
 admin.site.register(SalesMan, SalesManAdmin)
 admin.site.register(ConsultantProfile, ConsultantProfileAdmin)
+admin.site.register(RateObjective, RateObjectiveAdmin)
