@@ -31,10 +31,14 @@ class Mission(models.Model):
             (50, _("Normal")),
             (75, _("High")),
             (100, _("Certain")))
+    BILLING_MODES = (
+            (('FIXED_PRICE'), ugettext("Fixed price")),
+            (('TIME_SPENT'), ugettext("Time spent")))
     lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"))
     deal_id = models.CharField(_("Deal id"), max_length=100, blank=True)
     description = models.CharField(_("Description"), max_length=30, blank=True, null=True)
     nature = models.CharField(_("Type"), max_length=30, choices=MISSION_NATURE, default="PROD")
+    billing_mode = models.CharField(_("Type"), max_length=30, choices=BILLING_MODES)
     active = models.BooleanField(_("Active"), default=True)
     probability = models.IntegerField(_("Proba"), default=50, choices=PROBABILITY)
     price = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
