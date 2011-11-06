@@ -926,11 +926,13 @@ def graph_consultant_rates_graph(request, consultant_id):
         objectiveDates.append(kdates[-1])
         objectiveRates.append(objectiveRates[-1])
 
-    # Compute ymax
+    # Compute ymax/ymin
     if objectiveRates:
         ymax = max(max(ydata), max(objectiveRates)) + 50
+        ymin = min(min(i for i in ydata if i > 0), min(objectiveRates)) - 50
     else:
         ymax = max(ydata)
+        ymin = min(i for i in ydata if i > 0) - 50
 
     # Graph data
     rates = ax.plot(kdates, ydata, '-o', ms=10, lw=4, color=COLORS[0], mfc=COLORS[0])
@@ -938,7 +940,7 @@ def graph_consultant_rates_graph(request, consultant_id):
     ax.set_xticks(fKdates)
     ax.set_xticklabels([d.strftime("%b %y") for d in fKdates])
     objectives = ax.plot(objectiveDates, objectiveRates, '--', ms=0, lw=2, color=COLORS[1], mfc=COLORS[1])
-    ax.set_ylim(ymin=min(i for i in ydata if i > 0) - 50, ymax=ymax)
+    ax.set_ylim(ymin=ymin, ymax=ymax)
     ax.legend((rates, objectives), [_(u"Average daily rate (€)"), _(u"Daily rate objective (€)")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4, ncol=2, borderaxespad=0.)
 
