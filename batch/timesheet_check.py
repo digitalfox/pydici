@@ -68,7 +68,7 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
             surbookingDays = warning.count(1)
             incompleteDays = warning.count(2)
             if not warnSurbooking and not incompleteDays:
-                continue # Don't cry if user only have surbooking issue                
+                continue # Don't cry if user only have surbooking issue       
 
             user = consultant.getUser()
             if user and user.email:
@@ -103,7 +103,7 @@ def parseOptions():
 
     # Pages generation
     parser.add_option("-w", "--warnSurbooking", dest="warnSurbooking",
-                      action="store_true", default="False",
+                      action="store_true", default=False,
                       help="Warn even if user has only surbooking issue")
     parser.add_option("-d", "--days", dest="days", type="int", default=None,
                       help="Only check the first n days of the month instead of the whole month.")
@@ -114,6 +114,6 @@ def parseOptions():
 
 if __name__ == "__main__":
     (options, args) = parseOptions()
-    warnForImcompleteTimesheet(warnSurbooking=True,
+    warnForImcompleteTimesheet(warnSurbooking=options.warnSurbooking,
                                days=options.days,
                                month=options.month)
