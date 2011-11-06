@@ -486,6 +486,8 @@ def mission_timesheet(request, mission_id):
                date(month.year, month.month, 1) == current_month:
                 # Remove timesheet days from current month forecast days
                 data -= timesheetData[-3] # Last is total in money, the one before is total in days
+                if data < 0:
+                    data = 0 # If timesheet is superior to forecasted, don't consider negative forecasting staffing
             staffingData.append(data)
         staffingData.append(sum(staffingData)) # Add total per consultant
         staffingData.append(staffingData[-1] * consultant_rates[consultant][0] / 1000) # Add total in money
