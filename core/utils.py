@@ -133,3 +133,13 @@ def sortedValues(data):
     items = data.items()
     items.sort(key=lambda x: x[0])
     return [x[1] for x in items]
+
+def sampleList(data, maxLength):
+    """Sample data list enough to reduce it to maxLength"""
+    while (len(data) > maxLength):
+        step = int(1 + len(data) / maxLength)
+        nData = []
+        for i in range(0, len(data), step):
+            nData.append(data[i])
+        data = nData
+    return data

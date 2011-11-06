@@ -24,7 +24,7 @@ from django.contrib.auth.decorators import permission_required
 from taggit.models import Tag
 from taggit_suggest.utils import suggest_tags
 
-from pydici.core.utils import send_lead_mail, print_png, COLORS, sortedValues
+from pydici.core.utils import send_lead_mail, print_png, COLORS, sortedValues, sampleList
 from pydici.leads.models import Lead
 import pydici.settings
 from pydici.core.utils import capitalize
@@ -258,15 +258,12 @@ def graph_stat_bar(request):
              ax2.plot(kdates, yWonLead, '-o', ms=10, lw=4, color="green", mfc="green"))
 
     # Add Legend and setup axes
-    ax.set_xticks(kdates)
-    ax.set_xticklabels(kdates)
-    ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
     ax.set_ylim(ymax=max(bottom) + 13)
     ax.legend(bars, [i[1] for i in Lead.STATES], ncol=3, loc=2)
     ax.grid(True)
-    ax2.set_xticks(kdates)
-    ax2.set_xticklabels(kdates)
-    ax2.set_xticklabels([d.strftime("%b %y") for d in kdates])
+    fKdates = sampleList(kdates, 10) # Filter kdates to unclutter X axis
+    ax2.set_xticks(fKdates)
+    ax2.set_xticklabels([d.strftime("%b %y") for d in fKdates])
     ax2.set_ylim(ymax=max(yAllLead) + 100)
     ax2.legend(plots, [_(u"All lead (k€)"), _(u"Order taking (k€)")], ncol=2, loc=2)
     ax2.grid(True)

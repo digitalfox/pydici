@@ -22,7 +22,7 @@ from pydici.billing.models import Bill
 from pydici.leads.models import Lead
 from pydici.staffing.models import Timesheet, FinancialCondition, Staffing
 from pydici.crm.models import ClientCompany, BusinessBroker
-from pydici.core.utils import print_png, COLORS, sortedValues
+from pydici.core.utils import print_png, COLORS, sortedValues, sampleList
 from pydici.core.decorator import pydici_non_public
 
 @pydici_non_public
@@ -119,7 +119,7 @@ def graph_stat_bar(request):
     wStaffingData = {} # Weighted Staffing forecasted work graph data
     plots = [] # List of plots - needed to add legend
     today = date.today()
-    start_date = today - timedelta(18 * 30) # Screen data about 18 month before today
+    start_date = today - timedelta(24 * 30) # Screen data about 24 month before today
     colors = itertools.cycle(COLORS)
 
     # Setting up graph
@@ -197,7 +197,7 @@ def graph_stat_bar(request):
     plots.append(ax.plot(wStaffingKdates, wStaffingYData, ':o', ms=10, lw=2, color="cyan"))
 
     # Add Legend and setup axes
-    kdates = set(tsKdates + staffingKdates)
+    kdates = list(set(tsKdates + staffingKdates))
     ax.set_xticks(kdates)
     ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
     ax.set_ylim(ymax=max(int(max(bottom)), int(max(tsYData))) + 10)

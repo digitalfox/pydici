@@ -31,7 +31,7 @@ from pydici.people.models import Consultant
 from pydici.leads.models import Lead
 from pydici.people.models import ConsultantProfile, RateObjective
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
-from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
+from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS, sampleList
 from pydici.core.decorator import pydici_non_public
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
                                   sortMissions, holidayDays, daysOfMonth, staffingDates, \
@@ -928,16 +928,17 @@ def graph_consultant_rates_graph(request, consultant_id):
 
     # Compute ymax
     if objectiveRates:
-        ymax = max(max(ydata), max(objectiveRates)) + 100
+        ymax = max(max(ydata), max(objectiveRates)) + 50
     else:
         ymax = max(ydata)
 
     # Graph data
     rates = ax.plot(kdates, ydata, '-o', ms=10, lw=4, color=COLORS[0], mfc=COLORS[0])
-    ax.set_xticks(kdates)
-    ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
-    ax.set_ylim(ymin=min(i for i in ydata if i > 0) - 100, ymax=ymax)
+    fKdates = sampleList(kdates, 8) # Filter kdates to unclutter X axis
+    ax.set_xticks(fKdates)
+    ax.set_xticklabels([d.strftime("%b %y") for d in fKdates])
     objectives = ax.plot(objectiveDates, objectiveRates, '--', ms=0, lw=2, color=COLORS[1], mfc=COLORS[1])
+    ax.set_ylim(ymin=min(i for i in ydata if i > 0) - 50, ymax=ymax)
     ax.legend((rates, objectives), [_(u"Average daily rate (€)"), _(u"Daily rate objective (€)")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4, ncol=2, borderaxespad=0.)
 
