@@ -253,7 +253,7 @@ def missionSignalHandler(sender, **kwargs):
 
     if  kwargs.get("created", False):
         launchTrigger("NEW_MISSION", [targetUser, ], mission)
-    if not mission.active:
+    if not mission.active and mission.lead and mission.lead.state == "WON":
         launchTrigger("ARCHIVED_MISSION", [targetUser, ], mission)
 
 # Signal connection to throw actionset
