@@ -24,7 +24,7 @@ from django.contrib.auth.decorators import permission_required
 from taggit.models import Tag
 from taggit_suggest.utils import suggest_tags
 
-from pydici.core.utils import send_lead_mail, print_png, COLORS
+from pydici.core.utils import send_lead_mail, print_png, COLORS, sortedValues
 from pydici.leads.models import Lead
 import pydici.settings
 from pydici.core.utils import capitalize
@@ -244,7 +244,7 @@ def graph_stat_bar(request):
 
     # Draw a bar for each state
     for state in Lead.STATES:
-        ydata = [len([i for i in x if i.state == state[0]]) for x in data.values()]
+        ydata = [len([i for i in x if i.state == state[0]]) for x in sortedValues(data)]
         b = ax.bar(kdates, ydata, bottom=bottom, align="center", width=15,
                color=colors.next())
         bars.append(b[0])
@@ -252,8 +252,8 @@ def graph_stat_bar(request):
             bottom[i] += ydata[i] # Update bottom
 
     # Draw lead amount by month
-    yAllLead = [sum([i.sales for i in x if i.sales]) for x in data.values()]
-    yWonLead = [sum([i.sales for i in x if (i.sales and i.state == "WON")]) for x in data.values()]
+    yAllLead = [sum([i.sales for i in x if i.sales]) for x in sortedValues(data)]
+    yWonLead = [sum([i.sales for i in x if (i.sales and i.state == "WON")]) for x in sortedValues(data)]
     plots = (ax2.plot(kdates, yAllLead, '--o', ms=5, lw=2, color="blue", mfc="blue"),
              ax2.plot(kdates, yWonLead, '-o', ms=10, lw=4, color="green", mfc="green"))
 
