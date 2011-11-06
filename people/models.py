@@ -7,7 +7,6 @@ Database access layer for pydici people module
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.admin.models import User
 from django.db.models import F, Sum
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
