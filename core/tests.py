@@ -242,7 +242,8 @@ class WorkflowTest(TestCase):
         fla = User.objects.get(username="fla")
         category = ExpenseCategory.objects.create(name="repas")
         e = Expense.objects.create(user=tco, description="une grande bouffe",
-                                   category=category, amount=123, creation_date=date.today())
+                                   category=category, amount=123,
+                                   creation_date=date.today(), expense_date=date.today())
         self.assertEqual(wf.get_state(e), None)
         wf.set_initial_state(e)
         self.assertNotEqual(wf.get_state(e), None) # Now wf is setup
