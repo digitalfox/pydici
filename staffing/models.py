@@ -13,7 +13,7 @@ from django.utils.translation import ugettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 
-from datetime import datetime
+from datetime import datetime, date
 
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant
@@ -82,14 +82,17 @@ class Mission(models.Model):
 
     def create_default_staffing(self):
         """Initialize mission staffing based on lead hypothesis and current month"""
-        now = datetime.now()
-        now = now.replace(microsecond=0) # Remove useless microsecond that pollute form validation in callback
+        today = date.today()
+        if self.lead and self.lead.start_date and self.lead.start_date > today:
+            staffing_date = self.lead.start_date
+        else:
+            staffing_date = today
         for consultant in self.lead.staffing.all():
             staffing = Staffing()
             staffing.mission = self
             staffing.consultant = consultant
-            staffing.staffing_date = now
-            staffing.update_date = now
+            staffing.staffing_date = staffing_date
+            staffing.update_date = datetime.now().replace(microsecond=0) # Remove useless microsecond that pollute form validation in callback
             staffing.last_user = "-"
             staffing.save()
 
