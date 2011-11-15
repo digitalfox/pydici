@@ -468,7 +468,7 @@ def mission_timesheet(request, mission_id):
     staffings = Staffing.objects.filter(mission=mission).filter(staffing_date__gte=current_month).order_by("staffing_date")
     staffingMonths = list(staffings.dates("staffing_date", "month"))
 
-    missionData = [] # list of tuple (consultant, (charge month 1, charge month 2), (forecast month 1, forcast month2)
+    missionData = [] # list of tuple (consultant, (charge month 1, charge month 2), (forecast month 1, forcast month2), estimated)
     for consultant in consultants:
         # Timesheet data
         timesheetData = []
@@ -491,12 +491,16 @@ def mission_timesheet(request, mission_id):
             staffingData.append(data)
         staffingData.append(sum(staffingData)) # Add total per consultant
         staffingData.append(staffingData[-1] * consultant_rates[consultant][0] / 1000) # Add total in money
-        missionData.append((consultant, timesheetData, staffingData))
+
+        # Estimated (= timesheet + forecast staffing)
+        estimatedData = (timesheetData[-2] + staffingData[-2], timesheetData[-1] + staffingData[-1])
+        # Add tuple to data
+        missionData.append((consultant, timesheetData, staffingData, estimatedData))
 
     # Compute the total daily rate for each month of the mission
     timesheetTotalRate = []
     staffingTotalRate = []
-    for consultant, timesheet, staffing in missionData:
+    for consultant, timesheet, staffing, estimated in missionData:
         rate = consultant_rates[consultant][0]
         # We don't compute the average rate for total (k€) columns, hence the [:-1]
         valuedTimesheet = [days * rate for days in  timesheet[:-1]]
@@ -505,16 +509,19 @@ def mission_timesheet(request, mission_id):
         staffingTotalRate = map(lambda t, v: (t + v) if t else v, staffingTotalRate, valuedStaffing)
 
     # Compute total per month
-    timesheetTotal = [timesheet for consultant, timesheet, staffing in missionData]
+    timesheetTotal = [timesheet for consultant, timesheet, staffing, estimated in missionData]
     timesheetTotal = zip(*timesheetTotal) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
     timesheetTotal = [sum(t) for t in timesheetTotal]
-    staffingTotal = [staffing for consultant, timesheet, staffing in missionData]
+    staffingTotal = [staffing for consultant, timesheet, staffing, estimated in missionData]
     staffingTotal = zip(*staffingTotal) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
     staffingTotal = [sum(t) for t in staffingTotal]
 
     # average = total rate / number of billed days
     timesheetAverageRate = map(lambda t, d: (t / d) if d else 0, timesheetTotalRate, timesheetTotal[:-1])
     staffingAverageRate = map(lambda t, d: (t / d) if d else 0, staffingTotalRate, staffingTotal[:-1])
+
+    # Total estimated (timesheet + staffing)
+    estimatedTotal = (timesheetTotal[-2] + staffingTotal[-2], timesheetTotal[-1] + staffingTotal[-1])
 
     if mission.price and timesheetTotal and staffingTotal:
         margin = float(mission.price) - timesheetTotal[-1] - staffingTotal[-1]
@@ -525,7 +532,7 @@ def mission_timesheet(request, mission_id):
         margin = 0
         avgDailyRate = 0
 
-    missionData.append((None, timesheetTotal, staffingTotal,
+    missionData.append((None, timesheetTotal, staffingTotal, estimatedTotal,
                         timesheetAverageRate, staffingAverageRate))
 
     missionData = map(to_int_or_round, missionData)

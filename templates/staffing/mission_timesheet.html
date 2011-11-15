@@ -13,33 +13,43 @@
             <th>{{ month|date:"M y" }}</th>
         {% endfor %}
         <th>{% trans "Done days" %}</th>
-        <th>{% trans "Total (k€)" %}</th>
+        <th>{% trans "k€" %}</th>
         <th></th>
         {% for month in staffing_months %}
             <th>{{ month|date:"M y" }}</th>
         {% endfor %}
         <th>{% trans "Days to be done" %}</th>
-        <th>{% trans "Total (k€)" %}</th>
+        <th>{% trans "k€" %}</th>
+        <th></th>
+        <th>{% trans "Total days estimated" %}</th>
+        <th>{% trans "k€" %}</th>
     </tr>
-    {% for consultant, timesheet, staffing, timesheetRate, staffingRate in mission_data %}
+    {% for consultant, timesheet, staffing, estimated, timesheetRate, staffingRate in mission_data %}
         {% ifequal consultant None %}
             <tr align="right" style="font-weight:bold">
             <td>{% trans "Total" %}</td>
             <td>{{ timesheet|join:"</td><td>" }}</td>
-            <td></td>
+            <td class="table-separator"></td>
             <td>{{ staffing|join:"</td><td>" }}</td>
+            <td class="table-separator"></td>
+            <td>{{ estimated|join:"</td><td>" }}</td>
+            <td></td>
             <tr align="right">
             <td>{% trans "Average daily rate (€)" %}</td>
             <td>{{ timesheetRate|join:"</td><td>" }}</td>
-            <td></td><td></td>
+            <td></td><td class="table-separator"></td>
             <td>{{ staffingRate|join:"</td><td>" }}</td>
-	    <td></td>
+            <td></td><td class="table-separator"></td>
+	        <td></td>
+	        <td></td>
         {% else %}
             <tr align="right">
             <td>{{ consultant }}</td>
             <td>{{ timesheet|join:"</td><td>" }}</td>
-            <td></td>
+            <td class="table-separator"></td>
             <td>{{ staffing|join:"</td><td>" }}</td>
+            <td class="table-separator"></td>
+            <td>{{ estimated|join:"</td><td>" }}</td>
         {% endifequal %}
         </tr>
     {% endfor %}

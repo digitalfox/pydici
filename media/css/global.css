@@ -121,6 +121,9 @@ input[type=submit].default:active { background-image:url(../img/admin/default-bg
 .timesheet h2, .timesheet caption, .timesheet th, .inline-group h2 { width:auto; margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background: url(../img/admin/default-bg.gif) top left repeat-x; color:white; }
 .timesheet table { border-collapse: collapse; }
 
+/* timesheet table separator */
+.table-separator { border-right:thin solid lightgrey; }
+
 /* MESSAGES & ERRORS */
 ul.messagelist { padding:0 0 5px 0; margin:0; }
 ul.messagelist li { font-size:12px; display:block; padding:4px 5px 4px 25px; margin:0 0 3px 0; border-bottom:1px solid #ddd; color:#666; background:#ffc url(../img/admin/icon_success.gif) 5px .3em no-repeat; }
