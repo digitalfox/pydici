@@ -57,6 +57,7 @@ class TimesheetForm(forms.Form):
         forecastTotal = kwargs.pop("forecastTotal", [])
         timesheetTotal = kwargs.pop("timesheetTotal", [])
         holiday_days = kwargs.pop("holiday_days", [])
+        showLunchTickets = kwargs.pop("showLunchTickets", True)
         super(TimesheetForm, self).__init__(*args, **kwargs)
 
         for mission in missions:
@@ -85,18 +86,19 @@ class TimesheetForm(forms.Form):
             self.fields[key] = forms.CharField(widget=hwidget, required=False)
 
         # Add lunch ticket line
-        for day in days:
-            key = "lunch_ticket_%s" % day.day
-            self.fields[key] = forms.BooleanField(required=False)
-            self.fields[key].widget.attrs.setdefault("size", 1) # Reduce default size
-            self.fields[key].widget.attrs.setdefault("data-role", "none") # Don't apply jquery theme
-            if day == days[0]: # Only show label for first day
-                self.fields[key].label = _("Days without lunch ticket")
-            else:
-                self.fields[key].label = "" # Squash label 
-        # extra space is important - it is for forecast total (which does not exist for ticket...)
-        key = "%s total-ticket " % timesheetTotal.get("ticket", 0)
-        self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
+        if showLunchTickets:
+            for day in days:
+                key = "lunch_ticket_%s" % day.day
+                self.fields[key] = forms.BooleanField(required=False)
+                self.fields[key].widget.attrs.setdefault("size", 1) # Reduce default size
+                self.fields[key].widget.attrs.setdefault("data-role", "none") # Don't apply jquery theme
+                if day == days[0]: # Only show label for first day
+                    self.fields[key].label = _("Days without lunch ticket")
+                else:
+                    self.fields[key].label = "" # Squash label 
+            # extra space is important - it is for forecast total (which does not exist for ticket...)
+            key = "%s total-ticket " % timesheetTotal.get("ticket", 0)
+            self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
 
 class MissionAdminForm(forms.ModelForm):
     """Form used to validate mission price field in admin"""

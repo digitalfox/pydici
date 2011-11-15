@@ -377,18 +377,18 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
             # We should never go here as validate button is not displayed when read only...
             # This is just a security control
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
-        form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days,
+        form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
         if form.is_valid(): # All validation rules pass
             # Process the data in form.cleaned_data
             saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
             # Recreate a new form for next update and compute again totals
             timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
-            form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days,
+            form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                                  forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData)
     else:
         # An unbound form
-        form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days,
+        form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData)
 
     # Compute workings days of this month and compare it to declared days
