@@ -64,7 +64,6 @@ def index(request):
                                RequestContext(request))
 
 
-@pydici_non_public
 def mobile_index(request):
     """Mobile device index page"""
     # Mark session as "mobile"
@@ -76,14 +75,21 @@ def mobile_index(request):
         # switch back to classical home page
         request.session["mobile"] = False
         return index(request)
-    companies = ClientCompany.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
-    missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
+    if consultant.subcontractor:
+        # Don't show that to subcontractors
+        companies = []
+        missions = []
+        leads = []
+    else:
+        companies = ClientCompany.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
+        missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
+        leads = Lead.objects.active().order_by("creation_date")
     return render_to_response("core/m.index.html",
                               {"user": request.user,
                                "consultant" : consultant,
                                "companies" : companies,
                                "missions" : missions,
-                               "leads" : Lead.objects.active().order_by("creation_date") },
+                               "leads" : leads },
                               RequestContext(request))
 
 @pydici_non_public

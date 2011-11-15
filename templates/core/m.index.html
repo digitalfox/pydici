@@ -23,10 +23,12 @@
     <div data-role="content">
 		<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
 		    <li data-role="list-divider">{% trans "Mobile pydici" %}</li>
-		    <li><a href="#companies">{% trans "My clients" %}</a></li>
-		    <li><a href="#missions">{% trans "Current missions" %}</a></li>
-		    <li><a href="#leads">{% trans "Current leads review" %}</a></li>
-		    <li><a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a></li>
+		    {% if not consultant.subcontractor %}
+		      <li><a href="#companies">{% trans "My clients" %}</a></li>
+		      <li><a href="#missions">{% trans "Current missions" %}</a></li>
+		      <li><a href="#leads">{% trans "Current leads review" %}</a></li>
+		      <li><a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a></li>
+		    {% endif %}
 		    <li><a href="{% url pydici.staffing.views.consultant_timesheet consultant.id %}">{% trans "Timesheet" %}</a></li>
 		</ul>
 
