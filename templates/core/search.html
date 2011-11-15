@@ -51,7 +51,7 @@
     <h2>{% trans "Leads" %}</h2>
     <ul>
     {% for lead in leads %}
-        <li><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }}</a></li>
+        <li><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }} ({{ lead.deal_id|default:_("no deal id") }})</a></li>
     {% endfor %}
     </ul>
 {% endif %}
