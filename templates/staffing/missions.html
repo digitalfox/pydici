@@ -45,9 +45,16 @@
 	       {% endif %}
 	    </td>
 	    <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', target='_blank', class='changelink'><em>{% trans "Change" %}</em></a></td>
-	    <td>{% if mission.no_more_staffing_since %}
-	    {% trans "This mission has no staffing in future" %}
-	    {% endif %}</td>
+	    <td>{% if mission.active %}
+	           {% if mission.no_more_staffing_since %}
+	               {% trans "This mission has no staffing in future" %}
+	           {% else %}
+		           {% if mission.no_staffing_update_since %}
+	                   {% trans "Staffing has not been updated recently" %}
+	               {% endif %}
+               {% endif %}
+            {% endif %}
+	    </td>
 	</tr>
 {% endfor %}
 </table>

@@ -13,7 +13,7 @@ from django.utils.translation import ugettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant
@@ -72,6 +72,10 @@ class Mission(models.Model):
         if not refDate:
             refDate = datetime.now().replace(day=1) # Current month
         return not bool(self.staffing_set.filter(staffing_date__gte=refDate).count())
+
+    def no_staffing_update_since(self, days=30):
+        """@return: True if no staffing have been updated since 'days' number of days"""
+        return not bool(self.staffing_set.filter(update_date__gte=(date.today() - timedelta(days))).count())
 
     def staffed_consultant(self):
         """@return: sorted list of consultant forecasted for this mission"""
