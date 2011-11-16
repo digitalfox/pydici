@@ -28,6 +28,11 @@ PYDICI_PREFIX = "pydici"
 # Ex. "http://www.my-site.com" or "http://localhost:8080"
 PYDICI_HOST = "http://localhost:8888"
 
+# Default VAT (Value Added Tax) rate (in %) used for billing.
+# Can be overided for each bills. This is just the default proposed value on form
+# Ex. 19.6
+PYDICI_DEFAULT_VAT_RATE = 19.6
+
 LEADS_MAIL_FROM = "sebastien.renard@digitalfox.org"
 LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
 LEADS_MAIL_SMTP = "www.digitalfox.org"

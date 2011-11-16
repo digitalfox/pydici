@@ -10,7 +10,8 @@
             "previous_year_bill": false, 
             "state": "2_PAID", 
             "creation_date": "2010-11-29", 
-            "amount": "25", 
+            "amount": "25",
+            "vat" : "19.6", 
             "bill_id": "A101010"
         }
     }, 
@@ -25,7 +26,8 @@
             "previous_year_bill": false, 
             "state": "2_PAID", 
             "creation_date": "2010-11-29", 
-            "amount": "11110010", 
+            "amount": "11110010",
+            "vat" : "19.6", 
             "bill_id": ""
         }
     }, 
@@ -40,7 +42,8 @@
             "previous_year_bill": false, 
             "state": "2_PAID", 
             "creation_date": "2010-11-29", 
-            "amount": "1000", 
+            "amount": "1000",
+            "vat" : "19.6", 
             "bill_id": ""
         }
     }, 
@@ -55,7 +58,8 @@
             "previous_year_bill": false, 
             "state": "1_SENT", 
             "creation_date": "2010-09-29", 
-            "amount": "10.5", 
+            "amount": "10.5",
+            "vat" : "19.6", 
             "bill_id": "A201001"
         }
     }, 
@@ -70,7 +74,8 @@
             "previous_year_bill": false, 
             "state": "1_SENT", 
             "creation_date": "2010-11-30", 
-            "amount": "20", 
+            "amount": "20",
+            "vat" : "19.6", 
             "bill_id": ""
         }
     }, 
@@ -85,7 +90,8 @@
             "previous_year_bill": false, 
             "state": "2_PAID", 
             "creation_date": "2010-10-29", 
-            "amount": "50.2", 
+            "amount": "50.2",
+            "vat" : "19.6", 
             "bill_id": "A101010"
         }
     }

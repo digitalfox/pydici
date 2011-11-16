@@ -41,6 +41,9 @@ def bill_review(request):
     soondue_bills_total = soondue_bills.aggregate(Sum("amount"))["amount__sum"]
     overdue_bills_total = overdue_bills.aggregate(Sum("amount"))["amount__sum"]
     litigious_bills_total = litigious_bills.aggregate(Sum("amount"))["amount__sum"]
+    soondue_bills_total_with_vat = sum([bill.amount_with_vat() for bill in soondue_bills])
+    overdue_bills_total_with_vat = sum([bill.amount_with_vat() for bill in overdue_bills])
+    litigious_bills_total_with_vat = sum([bill.amount_with_vat() for bill in litigious_bills])
 
     # Get leads with done timesheet in past three month that don't have bill yet
     leadsWithoutBill = []
@@ -58,6 +61,9 @@ def bill_review(request):
                                "soondue_bills_total" : soondue_bills_total,
                                "overdue_bills_total" : overdue_bills_total,
                                "litigious_bills_total" : litigious_bills_total,
+                               "soondue_bills_total_with_vat" : soondue_bills_total_with_vat,
+                               "overdue_bills_total_with_vat" : overdue_bills_total_with_vat,
+                               "litigious_bills_total_with_vat" : litigious_bills_total_with_vat,
                                "leads_without_bill" : leadsWithoutBill,
                                "user": request.user},
                               RequestContext(request))

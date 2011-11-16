@@ -13,6 +13,7 @@ from django.utils.translation import ugettext
 from datetime import date
 
 from pydici.leads.models import Lead
+import pydici.settings
 
 class Bill(models.Model):
     BILL_STATE = (
@@ -24,6 +25,7 @@ class Bill(models.Model):
     lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
     bill_id = models.CharField(_("Bill id"), max_length=500, blank=True, null=True)
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2)
+    vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=pydici.settings.PYDICI_DEFAULT_VAT_RATE)
     creation_date = models.DateField(_("Creation date"), default=date.today())
     due_date = models.DateField(_("Due date"))
     payment_date = models.DateField(_("Payment date"), blank=True, null=True)
@@ -36,6 +38,10 @@ class Bill(models.Model):
             return u"%s (%s)" % (self.bill_id, self.id)
         else:
             return unicode(self.id)
+
+    def amount_with_vat(self):
+        """Bill amount, tax included"""
+        return self.amount * (1 + self.vat / 100)
 
     def client(self):
         if self.lead.paying_authority:
