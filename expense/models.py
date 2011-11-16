@@ -6,6 +6,7 @@ Database access layer for pydici expense module
 """
 
 from time import strftime
+from os.path import join
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -14,12 +15,15 @@ from django.contrib.auth.models import User
 import workflows.utils as wf
 
 from pydici.leads.models import Lead
+import pydici.settings
 
 # This utils function is here and not in utils module
 # to avoid circular import loop, as utils module import Expense models
 def expense_receipt_path(instance, filename):
     """Format full path of expense receipt"""
-    return strftime("data/expense/%Y/%m/" + instance.user.username + "/%d-%H%M%S_" + filename)
+    return join(pydici.settings.PYDICI_ROOTDIR, "data", "expense",
+                strftime("%Y"), strftime("%m"), instance.user.username,
+                strftime("%d-%H%M%S_" + filename))
 
 
 class ExpenseCategory(models.Model):
