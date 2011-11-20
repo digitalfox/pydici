@@ -28,7 +28,7 @@
 <div id="content-large">
     <h1><a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission }}</a></h1>
     <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
-    <h3>{% trans "Billing mode: " %} <a href='{% url admin:staffing_mission_change mission.id %}' target='_blank' class='changelink'>{{ mission.billing_mode|default:_("To be defined") }}</a></h3>
+    <h3>{% trans "Billing mode: " %} <a href='{% url admin:staffing_mission_change mission.id %}' target='_blank' class='changelink'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</a></h3>
     <h3>{% trans "Probability:" %} <a href='{% url admin:staffing_mission_change mission.id %}' target='_blank' class='changelink'>{{ mission.get_probability_display }} </a></h3>
     <br>
 

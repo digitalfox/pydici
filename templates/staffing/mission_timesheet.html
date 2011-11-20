@@ -61,10 +61,12 @@
     <h2>{% trans "Profitability" %}</h2>
     <table>
         <tr><td>{% trans "Sold" %}</td>
-        <td>{% if mission.price %}{{ mission.price }}  k€
+        <td>{% if mission.price %}{{ mission.price }}  k€ {% ifequal mission.billing_mode "TIME_SPENT" %}{% trans "(maximum)" %}{% endifequal %}
             {% else %} <a href='{% url admin:staffing_mission_change mission.id %}'>{% trans "To be defined" %}</a>
             {% endif %}</td></tr>
-        <tr><td>{% trans "Margin" %}</td><td>{{ margin }}  k€</td></tr>
+        {% ifequal mission.billing_mode "FIXED_PRICE" %}
+            <tr><td>{% trans "Margin" %}</td><td>{{ margin }}  k€</td></tr>
+        {% endifequal %}
         <tr><td>{% trans "Average daily rate" %}</td><td>{{ avg_daily_rate }}  €</td></tr>
     </table>
     {% endifequal %}
