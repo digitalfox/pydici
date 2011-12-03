@@ -87,7 +87,11 @@ def to_int_or_round(x, precision=1):
         if (int(x) - x) == 0:
             return int(x)
         else:
-            return round(x, precision)
+            x = round(x, precision)
+            if (int(x) - x) == 0:
+                return int(x)
+            else:
+                return x
     else:
         # Return as is
         return x
