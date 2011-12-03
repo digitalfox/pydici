@@ -66,9 +66,27 @@
             {% endif %}</td></tr>
         {% ifequal mission.billing_mode "FIXED_PRICE" %}
             <tr><td>{% trans "Margin" %}</td><td>{{ margin }}  k€</td></tr>
+            <tr><td>{% trans "Average daily rate" %}</td><td>{{ avg_daily_rate }}  €</td></tr>
+        {% else %}
+            <tr><td>{% trans "Currently unused" %}</td><td>{{ current_unused }} k€</td></tr>
+            <tr><td>{% trans "Forecasted unused" %}</td><td>{{ forecasted_unused }} k€</td></tr>
         {% endifequal %}
-        <tr><td>{% trans "Average daily rate" %}</td><td>{{ avg_daily_rate }}  €</td></tr>
     </table>
+    <div class="timesheet">
+    <table>
+    <tr><th>{% trans "Consultant" %}</th><th>{% trans "Margin over rate objective (€)" %}</th></tr>
+    {% for consultant, consultant_objective_margin in objective_margin.items %}
+        <tr align="right">
+        <td>{{ consultant }}</td>
+        <td>{{ consultant_objective_margin }}</td>
+        </tr>
+    {% endfor %}
+    <tr align="right" style="font-weight:bold">
+        <td>{% trans "Total" %}</td>
+        <td>{{ objective_margin_total }}</td>
+    </tr>
+    </table>
+    </div>
     {% endifequal %}
     {% if mission.lead %}
         <h2>{% trans "Billing" %}</h2>

@@ -100,6 +100,13 @@ class Consultant(models.Model):
         fc = fc.order_by("daily_rate")
         return fc
 
+    def getRateObjective(self, workingDate=None):
+        if not workingDate:
+            workingDate = date.today()
+        rates = self.rateobjective_set.filter(start_date__lte=workingDate).order_by("-start_date")
+        if rates:
+            return rates[0]
+
     def getUser(self):
         """Returns django user behind this consultant
         Current algorithm check only for equal trigramme

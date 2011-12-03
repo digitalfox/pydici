@@ -469,11 +469,23 @@ def mission_timesheet(request, mission_id):
     staffingMonths = list(staffings.dates("staffing_date", "month"))
 
     missionData = [] # list of tuple (consultant, (charge month 1, charge month 2), (forecast month 1, forcast month2), estimated)
+    objectiveMargin = {} # Dict of margin over objective rate. Key is consultant, value is cumulated margin over objective
     for consultant in consultants:
+        objectiveMargin[consultant] = 0 # Initialize margin over rate objective for this consultant
         # Timesheet data
         timesheetData = []
         for month in timesheetMonths:
-            timesheetData.append(sum([t.charge for t in timesheets.filter(consultant=consultant) if t.working_date.month == month.month]))
+            n_days = sum([t.charge for t in timesheets.filter(consultant=consultant) if t.working_date.month == month.month])
+            timesheetData.append(n_days)
+            if consultant.subcontractor:
+                # Compute objective margin on sold rate
+                objectiveMargin[consultant] += n_days * (consultant_rates[consultant][0] - consultant_rates[consultant][1])
+            else:
+                # Compute objective margin on rate objective for this period
+                objectiveRate = consultant.getRateObjective(workingDate=month)
+                if objectiveRate:
+                    objectiveMargin[consultant] += n_days * (consultant_rates[consultant][0] - objectiveRate.daily_rate)
+
         timesheetData.append(sum(timesheetData)) # Add total per consultant
         timesheetData.append(timesheetData[-1] * consultant_rates[consultant][0] / 1000) # Add total in money
 
@@ -521,9 +533,12 @@ def mission_timesheet(request, mission_id):
     staffingAverageRate = map(lambda t, d: (t / d) if d else 0, staffingTotalRate, staffingTotal[:-1])
 
     # Total estimated (timesheet + staffing)
-    estimatedTotal = (timesheetTotal[-2] + staffingTotal[-2], timesheetTotal[-1] + staffingTotal[-1])
+    if timesheetTotal and staffingTotal:
+        estimatedTotal = (timesheetTotal[-2] + staffingTotal[-2], timesheetTotal[-1] + staffingTotal[-1])
+    else:
+        estimatedTotal = (0, 0)
 
-    if mission.price and timesheetTotal and staffingTotal:
+    if mission.price and timesheetTotal and staffingTotal and mission.billing_mode == "FIXED_PRICE":
         margin = float(mission.price) - timesheetTotal[-1] - staffingTotal[-1]
         margin = to_int_or_round(margin, 3)
         daysTotal = timesheetTotal[-2] + staffingTotal[-2]
@@ -532,14 +547,24 @@ def mission_timesheet(request, mission_id):
         margin = 0
         avgDailyRate = 0
 
+    if mission.price and timesheetTotal and staffingTotal and mission.billing_mode == "TIME_SPENT":
+        currentUnused = to_int_or_round(float(mission.price) - timesheetTotal[-1], 1)
+        forecastedUnused = to_int_or_round(float(mission.price) - timesheetTotal[-1] - staffingTotal[-1], 1)
+    else:
+        currentUnused = 0
+        forecastedUnused = 0
+
     missionData.append((None, timesheetTotal, staffingTotal, estimatedTotal,
                         timesheetAverageRate, staffingAverageRate))
 
     missionData = map(to_int_or_round, missionData)
-
     return render_to_response("staffing/mission_timesheet.html", {
                                 "mission": mission,
                                 "margin": margin,
+                                "objective_margin" : objectiveMargin,
+                                "objective_margin_total" :  sum(objectiveMargin.values()),
+                                "forecasted_unused" : forecastedUnused,
+                                "current_unused" : currentUnused,
                                 "timesheet_months": timesheetMonths,
                                 "staffing_months": staffingMonths,
                                 "mission_data": missionData,
