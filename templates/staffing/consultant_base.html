@@ -35,7 +35,7 @@
 		        {% if link_to_staffing %}
 		            <th scope="row"><a href='{% url pydici.staffing.views.mission_staffing mission.id %}', title='{% blocktrans %}Change mission {{ mission }} staffing {% endblocktrans %}'>{{ mission }}</a></th>
                 {% else %}
-                    <th scope="row"><a href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a></th>
+                    <th scope="row"><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></th>
                 {% endif %}
 		        <td>{{ mission.mission_id }}</td>
 		        <td>{{ mission.get_probability_display }}</td>

@@ -59,7 +59,7 @@
     <div data-role="content">    
         <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
         {% for mission in missions %}
-            <li><a href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a></li>
+            <li><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></li>
         {% endfor %}  
         </ul>
     </div>  

@@ -169,7 +169,7 @@ class Mission(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('pydici.staffing.views.mission_timesheet', [str(self.id)])
+        return ('pydici.staffing.views.mission_home', [str(self.id)])
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "id", "description"]

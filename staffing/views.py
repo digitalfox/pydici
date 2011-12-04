@@ -53,6 +53,15 @@ def missions(request, onlyActive=True):
                                "user": request.user },
                                RequestContext(request))
 
+@pydici_non_public
+def mission_home(request, mission_id):
+    """Home page of mission description - this page loads all others mission sub-pages"""
+    mission = Mission.objects.get(id=mission_id)
+    return render_to_response('staffing/mission.html',
+                              {"mission": mission,
+                               "user": request.user},
+                               RequestContext(request))
+
 
 @pydici_non_public
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -82,8 +91,6 @@ def mission_staffing(request, mission_id):
     return render_to_response('staffing/mission_staffing.html',
                               {"formset": formset,
                                "mission": mission,
-                               "link_to_staffing" : True, # for mission_base template links
-                               "consultant_rates": mission.consultant_rates(),
                                "read_only" : readOnly,
                                "staffing_dates" : staffingDates(),
                                "user": request.user},
@@ -570,7 +577,6 @@ def mission_timesheet(request, mission_id):
                                 "staffing_months": staffingMonths,
                                 "mission_data": missionData,
                                 "consultant_rates" : consultant_rates,
-                                "link_to_staffing" : False, # for mission_base template links
                                 "user": request.user,
                                 "avg_daily_rate" : avgDailyRate},
                                RequestContext(request))
@@ -606,7 +612,7 @@ def all_timesheet(request, year=None, month=None):
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = timesheet["sum"]
     for mission in missions:
-        missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.mission_timesheet", args=[mission.id, ]),
+        missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.mission_home", args=[mission.id, ]),
                                         escape(unicode(mission)))
         if "csv" in request.GET:
             # Simple mission name

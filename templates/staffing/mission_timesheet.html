@@ -1,9 +1,7 @@
-{% extends "staffing/mission_base.html" %}
 {% load i18n %}
+{# Fragment of page to be included in a mission_home tab #}
 
 {% block mission_detail %}
-    <h2>{% trans "Timesheet" %}</h2>
-    <a href="{% url pydici.staffing.views.mission_staffing mission.id %}" class='changelink'>{% trans "See also the forecast staffing of this mission" %}</a>
     <br/><br/><hr/>
     <div class="timesheet">
     <table>
@@ -88,10 +86,4 @@
     </table>
     </div>
     {% endifequal %}
-    {% if mission.lead %}
-        <h2>{% trans "Billing" %}</h2>
-        {% with mission.lead as lead %}
-        {% include "billing/_lead_billing.html" %}
-        {% endwith %}
-    {% endif %}
 {% endblock %}

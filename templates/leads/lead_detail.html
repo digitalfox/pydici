@@ -120,13 +120,13 @@
     </tr>  
     {% for mission in lead.mission_set.all %}
     <tr>
-        <td><a href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a></td>
+        <td><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></td>
         <td>{{ mission.mission_id }}</td>
         <td>{{ mission.done_work_k.0 }}</td>
         <td>{{ mission.done_work_k.1|floatformat }}</td>
         <td>{{ mission.price }}</td>
         <td>{{ mission.margin|floatformat }}</td>
-        <td><i><a href='{% url pydici.staffing.views.mission_staffing mission.id %}' class='changelink'>{% trans "workload schedule of this mission" %}</a></i></td>
+        <td><i><a href='{% url pydici.staffing.views.mission_home mission.id %}#tab-staffing' class='changelink'>{% trans "workload schedule of this mission" %}</a></i></td>
     </tr>
     {% endfor %}
     {% ifnotequal lead.mission_set.count 1 %}

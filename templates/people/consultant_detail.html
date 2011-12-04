@@ -68,7 +68,7 @@
 	<h3>{% trans "Current missions" %}</h3>
 	<ul>
 	{% for mission in missions %}
-	    <li><a href='{% url pydici.staffing.views.mission_timesheet mission.id %}'>{{ mission }}</a></li>
+	    <li><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></li>
 	{% endfor %}
 	</ul>
 	</div>

@@ -1,11 +1,9 @@
-{% extends "staffing/mission_base.html" %}
 {% load i18n %}
+{# Fragment of page to be included in a mission_home tab #}
 
 {% block mission_detail %}
-    <h2>{% trans "Staffing" %}</h2>
-    <a href="{% url pydici.staffing.views.mission_timesheet mission.id %}" class='changelink'>{% trans "See also the timesheet of this mission" %}</a>
-    <br/><br/><hr/>
-    <form action="" method="POST">
+<div id="form-content">
+    <form action="{% url pydici.staffing.views.mission_staffing mission.id %}" method="POST" id="mission_staffing_form">
         {{ formset.management_form }}
         <div class="form-row">
         <table>
@@ -68,6 +66,30 @@
 	        </div>
 	    {% endif %}
     </form>
+</div>
+
+{% if not read_only %}
+<script type="text/javascript">
+/* attach a submit handler to the form */
+    $("#mission_staffing_form").submit(function(event) {
+
+        /* stop form from submitting normally */
+        event.preventDefault(); 
+
+        /* get form data and target url */
+        var $form = $(this),
+        formData = $form.serialize(),
+        url = $form.attr('action');
+
+        /* Send the data using post and put the results inplace */
+        $.post(url, formData,
+        	    function(data) {
+                    $("#form-content").empty().append(data);
+                }
+        );
+    });
+</script>
+{% endif %}
 
 {% include "staffing/_complete_staffing_date.html" %}
 

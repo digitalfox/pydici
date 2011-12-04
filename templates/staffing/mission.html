@@ -1,0 +1,127 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jeditable.mini.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.16.custom.css" />
+{% endblock %}
+
+{% block title %}{{ mission }}{% endblock %}
+
+{% block content %}
+
+<script>
+$(function() {
+    $( "#tabs" ).tabs({
+        ajaxOptions: {
+            error: function( xhr, status, index, anchor ) {
+                $( anchor.hash ).html('{% trans "Could not load this tab. Sorry" %}');
+            }
+        }
+    });
+});
+</script>
+
+<div id="content-large">
+<h1><a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission }} - {{ mission.mission_id }}</a></h1>
+
+<div id="tabs">
+    <ul>
+        <li><a href="#tab-description">{% trans "Description" %}</a></li>
+        <li><a href="#tab-consultants">{% trans "Consultants" %}</a></li>
+        <li><a href="#tab-other-missions">{% trans "Other missions" %}</a></li>
+        <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.mission_timesheet mission.id %}">{% trans "Timesheet" %}</a></li>
+        <li><a title="#tab-staffing" href="{% url pydici.staffing.views.mission_staffing mission.id %}">{% trans "Forecast staffing" %}</a></li>
+        {% if mission.lead %}<li><a href="#tab-billing">{% trans "Billing" %}</a></li>{% endif %}
+    </ul>
+
+    <div id="tab-description">
+        <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
+        <h3>{% trans "Billing mode: " %} <div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></h3>
+        <h3>{% trans "Probability:" %} <div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_probability_display }}</div></h3>
+        {% if mission.lead %}
+            <h3>{% trans "Lead of this mission:" %} <a href="{% url pydici.leads.views.detail mission.lead.id %}">{{ mission.lead }}</a></h3>
+	        {% if mission.lead.description %}
+	            <div class='lead_description'>{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
+	        {% endif %}
+        {% endif %}
+    </div>
+
+    <div id="tab-consultants">
+	    <h2>{% trans "Consultants currently implicated in this mission" %}</h2>
+	    <table>
+	    <tr><td>{% trans "Consultant" %}</td><td>{% trans "Daily rate (€)" %}</td><td></td></tr>
+	    {% for consultant, rate in mission.consultant_rates.items %}
+	        <tr {%cycle 'class="row1"' 'class="row2"' %}>
+	            {% if link_to_staffing %}
+	                <td><a href='{% url pydici.staffing.views.consultant_staffing consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
+	            {% else %}
+	                <td><a href='{% url pydici.staffing.views.consultant_timesheet consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
+	            {% endif %}
+	            <td align="right"><div id="sold-{{ mission.id }}-{{ consultant.id }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
+	            <td align="right">{% if consultant.subcontractor %}(<div id="bought-{{ mission.id }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>){% endif %}</td>
+	        </tr>
+	    {% endfor %}
+	    </table>
+    </div>
+
+    <div id="tab-other-missions">
+        {% if mission.sister_missions %}
+        <h2>{% trans "Other missions linked to this lead" %}</h2>
+        <table>
+        <tr><td>{% trans "Mission" %}</td><td>{% trans "id" %}</td></tr>
+        {% for sister_mission in mission.sister_missions %}
+            <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <td><a href='{% url pydici.staffing.views.mission_home sister_mission.id %}' class='changelink'>{{ sister_mission }}</a></td>
+            <td>{{ sister_mission.mission_id }}</td>
+            </tr>
+        {% endfor %}
+        </table> 
+        {% endif %}
+    </div>
+
+    <div id="tab-billing">
+	    {% if mission.lead %}
+	        <h2>{% trans "Billing" %}</h2>
+	        {% with mission.lead as lead %}
+	        {% include "billing/_lead_billing.html" %}
+	        {% endwith %}
+	    {% endif %}
+    </div>
+
+
+
+</div> <!-- end of tabs -->
+</div>
+
+<script type="text/javascript">
+
+$(".jeditable-rate").editable("{% url pydici.staffing.views.mission_consultant_rate %}", { 
+    indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
+    tooltip   : "{% trans 'click to edit...' %}",
+    event     : "click",
+    style  : "inherit"
+});
+
+$(".jeditable-mission-update").editable("{% url pydici.staffing.views.mission_update %}", { 
+    indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
+    tooltip   : "{% trans 'click to edit...' %}",
+    event     : "click",
+    style  : "inherit",
+    type   : "select",
+    loadurl : "{% url pydici.staffing.views.mission_update %}",
+    submit : 'OK',
+    onblur : 'submit',
+});
+</script>
+
+{% endblock %}
