@@ -25,7 +25,7 @@
     {% else %}
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
-
+    <br/>
     {% if perms.billing.add_bill %}
         <i><a href="{% url pydici.billing.views.create_new_bill_from_lead lead.id %}" target="_blank">{% trans "Add a bill for this lead" %}</a></i>
     {% endif %}

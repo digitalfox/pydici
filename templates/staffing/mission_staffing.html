@@ -1,7 +1,5 @@
 {% load i18n %}
 {# Fragment of page to be included in a mission_home tab #}
-
-{% block mission_detail %}
 <div id="form-content">
     <form action="{% url pydici.staffing.views.mission_staffing mission.id %}" method="POST" id="mission_staffing_form">
         {{ formset.management_form }}
@@ -92,5 +90,3 @@
 {% endif %}
 
 {% include "staffing/_complete_staffing_date.html" %}
-
-{% endblock %}

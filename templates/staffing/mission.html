@@ -91,7 +91,6 @@ $(function() {
 
     <div id="tab-billing">
 	    {% if mission.lead %}
-	        <h2>{% trans "Billing" %}</h2>
 	        {% with mission.lead as lead %}
 	        {% include "billing/_lead_billing.html" %}
 	        {% endwith %}

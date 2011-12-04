@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-04 18:13+0100\n"
-"PO-Revision-Date: 2011-12-04 18:13+0100\n"
+"POT-Creation-Date: 2011-12-04 22:12+0100\n"
+"PO-Revision-Date: 2011-12-04 22:12+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -211,7 +211,7 @@ msgstr "Facture de l'année N-1"
 #: templates/billing/bill_review.html:96
 #: templates/billing/bill_review.html:133
 #: templates/staffing/consultant_staffing.html:18
-#: templates/staffing/mission_staffing.html:15
+#: templates/staffing/mission_staffing.html:13
 msgid "Comments"
 msgstr "Remarques"
 
@@ -607,8 +607,7 @@ msgstr "Sous-traitant"
 
 #: people/models.py:132 staffing/forms.py:46
 #: templates/staffing/mission.html:62
-#: templates/staffing/mission_staffing.html:11
-#: templates/staffing/mission_timesheet.html:75
+#: templates/staffing/mission_staffing.html:9
 msgid "Consultant"
 msgstr "Consultant"
 
@@ -735,7 +734,7 @@ msgstr "Congé"
 
 #: staffing/models.py:191 staffing/models.py:213
 #: templates/staffing/consultant_staffing.html:17
-#: templates/staffing/mission_staffing.html:14
+#: templates/staffing/mission_staffing.html:12
 msgid "Load"
 msgstr "Charge"
 
@@ -775,8 +774,8 @@ msgid "total"
 msgstr "total"
 
 #: staffing/views.py:632 templates/leads/lead_detail.html:134
-#: templates/staffing/mission_timesheet.html:28
-#: templates/staffing/mission_timesheet.html:83
+#: templates/staffing/mission_timesheet.html:27
+#: templates/staffing/mission_timesheet.html:82
 msgid "Total"
 msgstr "Total"
 
@@ -820,7 +819,7 @@ msgstr "12 derniers mois"
 msgid "Forever"
 msgstr "Depuis toujours"
 
-#: staffing/views.py:1017 templates/staffing/mission_timesheet.html:36
+#: staffing/views.py:1017 templates/staffing/mission_timesheet.html:35
 msgid "Average daily rate (€)"
 msgstr "Taux journalier moyen (€)"
 
@@ -1126,7 +1125,7 @@ msgid "Add"
 msgstr "Ajouter"
 
 #: templates/admin/index.html:35 templates/people/consultant_detail.html:25
-#: templates/staffing/consultant_base.html:42
+#: templates/staffing/consultant_base.html:38
 #: templates/staffing/missions.html:47
 msgid "Change"
 msgstr "Modifier"
@@ -1262,7 +1261,7 @@ msgid "Recent leads without bill"
 msgstr "Affaires récentes sans facture"
 
 #: templates/billing/bill_review.html:159 templates/leads/lead_detail.html:115
-#: templates/staffing/mission_timesheet.html:13
+#: templates/staffing/mission_timesheet.html:12
 msgid "Done days"
 msgstr "Jours réalisés"
 
@@ -1279,7 +1278,7 @@ msgstr "Montant réalisé (€)"
 #: templates/leads/mail.txt:7 templates/leads/mail.txt.py:8
 #: templates/leads/review.html:36 templates/leads/review.html.py:65
 #: templates/staffing/mission.html:49
-#: templates/staffing/mission_timesheet.html:63
+#: templates/staffing/mission_timesheet.html:62
 msgid "To be defined"
 msgstr "À définir"
 
@@ -1403,7 +1402,7 @@ msgstr "Ajouter une note de frais"
 #: templates/expense/expenses.html:48
 #: templates/staffing/consultant_staffing.html:65
 #: templates/staffing/consultant_timesheet.html:82
-#: templates/staffing/mission_staffing.html:65
+#: templates/staffing/mission_staffing.html:63
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -1546,12 +1545,12 @@ msgid "Create a new mission for this lead"
 msgstr "Créer une nouvelle mission pour cette affaire"
 
 #: templates/leads/lead_detail.html:152
-#: templates/staffing/mission_timesheet.html:59
+#: templates/staffing/mission_timesheet.html:58
 msgid "Profitability"
 msgstr "Rentabilité"
 
 #: templates/leads/lead_detail.html:154
-#: templates/staffing/mission_timesheet.html:61
+#: templates/staffing/mission_timesheet.html:60
 msgid "Sold"
 msgstr "Vendu"
 
@@ -1560,12 +1559,11 @@ msgid "Unused"
 msgstr "Non utilisé"
 
 #: templates/leads/lead_detail.html:159
-#: templates/staffing/mission_timesheet.html:66
+#: templates/staffing/mission_timesheet.html:65
 msgid "Margin"
 msgstr "Marge"
 
 #: templates/leads/lead_detail.html:161 templates/staffing/mission.html:44
-#: templates/staffing/mission.html.py:94
 msgid "Billing"
 msgstr "Facturation"
 
@@ -1722,18 +1720,13 @@ msgstr "N° de mission"
 msgid "Probability"
 msgstr "Probabilité"
 
-#: templates/staffing/consultant_base.html:36
-#, python-format
-msgid "Change mission %(mission)s staffing "
-msgstr "Modifier le staffing de la mission %(mission)s "
-
-#: templates/staffing/consultant_base.html:42
+#: templates/staffing/consultant_base.html:38
 #: templates/staffing/missions.html:47
 #, python-format
 msgid "Change %(mission)s"
 msgstr "Modifier %(mission)s"
 
-#: templates/staffing/consultant_base.html:53
+#: templates/staffing/consultant_base.html:49
 msgid "Back to work load schedule"
 msgstr "Retour au plan de charge"
 
@@ -1747,22 +1740,22 @@ msgid "See also timesheet of this consultant"
 msgstr "Voir aussi les feuilles de temps de ce consultant"
 
 #: templates/staffing/consultant_staffing.html:16
-#: templates/staffing/mission_staffing.html:13
+#: templates/staffing/mission_staffing.html:11
 msgid "Month"
 msgstr "Mois"
 
 #: templates/staffing/consultant_staffing.html:20
-#: templates/staffing/mission_staffing.html:17
+#: templates/staffing/mission_staffing.html:15
 msgid "Del."
 msgstr "Suppr."
 
 #: templates/staffing/consultant_staffing.html:21
-#: templates/staffing/mission_staffing.html:18
+#: templates/staffing/mission_staffing.html:16
 msgid "Last change"
 msgstr "Dernière modif."
 
 #: templates/staffing/consultant_staffing.html:28
-#: templates/staffing/mission_staffing.html:25
+#: templates/staffing/mission_staffing.html:23
 msgid "New staffing:"
 msgstr "Nouveau staffing : "
 
@@ -1879,49 +1872,53 @@ msgstr "Consultants impliqués actuellement dans cette mission"
 msgid "Other missions linked to this lead"
 msgstr "Autres missions liées à cette affaire"
 
-#: templates/staffing/mission.html:110 templates/staffing/mission.html:117
+#: templates/staffing/mission.html:109 templates/staffing/mission.html:116
 msgid "click to edit..."
 msgstr "Cliquez pour modifier..."
 
-#: templates/staffing/mission_staffing.html:62
+#: templates/staffing/mission_staffing.html:60
 msgid "Note: you are not allowed to change mission staffing"
 msgstr ""
 "Remarque : votre profil ne vous permet pas de modifier le staffing d'une "
 "mission"
 
-#: templates/staffing/mission_timesheet.html:14
-#: templates/staffing/mission_timesheet.html:20
-#: templates/staffing/mission_timesheet.html:23
+#: templates/staffing/mission_timesheet.html:4
+msgid "Mission timesheet and forecast"
+msgstr "Suivi des temps et prévisions"
+
+#: templates/staffing/mission_timesheet.html:13
+#: templates/staffing/mission_timesheet.html:19
+#: templates/staffing/mission_timesheet.html:22
 msgid "k€"
 msgstr "k€"
 
-#: templates/staffing/mission_timesheet.html:19
+#: templates/staffing/mission_timesheet.html:18
 msgid "Days to be done"
 msgstr "Jours à faire"
 
-#: templates/staffing/mission_timesheet.html:22
+#: templates/staffing/mission_timesheet.html:21
 msgid "Total days estimated"
 msgstr "Jours total estimés"
 
-#: templates/staffing/mission_timesheet.html:62
+#: templates/staffing/mission_timesheet.html:61
 msgid "(maximum)"
 msgstr "(maximum)"
 
-#: templates/staffing/mission_timesheet.html:67
+#: templates/staffing/mission_timesheet.html:66
 msgid "Average daily rate"
 msgstr "Taux journalier moyen"
 
-#: templates/staffing/mission_timesheet.html:69
+#: templates/staffing/mission_timesheet.html:68
 msgid "Currently unused"
 msgstr "Montant inutilisé actuel"
 
-#: templates/staffing/mission_timesheet.html:70
+#: templates/staffing/mission_timesheet.html:69
 msgid "Forecasted unused"
 msgstr "Montant inutilisé en projection"
 
-#: templates/staffing/mission_timesheet.html:75
-msgid "Margin over rate objective (€)"
-msgstr "Marge sur objectifs de TJM (€)"
+#: templates/staffing/mission_timesheet.html:72
+msgid "Margin over rate objective"
+msgstr "Marge sur objectifs de TJM"
 
 #: templates/staffing/missions.html:13 templates/staffing/missions.html:23
 msgid "All missions"
@@ -2034,6 +2031,9 @@ msgstr "Équipe %(manager)s"
 #: templates/staffing/pdc_review.html:100
 msgid "Totals"
 msgstr "Totaux"
+
+#~ msgid "Change mission %(mission)s staffing "
+#~ msgstr "Modifier le staffing de la mission %(mission)s "
 
 #~ msgid "Back to mission list"
 #~ msgstr "Retour à la liste des missions"

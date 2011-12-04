@@ -1,8 +1,7 @@
 {% load i18n %}
 {# Fragment of page to be included in a mission_home tab #}
 
-{% block mission_detail %}
-    <br/><br/><hr/>
+    <h2>{% trans "Mission timesheet and forecast" %}</h2>
     <div class="timesheet">
     <table>
     <tr>
@@ -70,20 +69,19 @@
             <tr><td>{% trans "Forecasted unused" %}</td><td>{{ forecasted_unused }} k€</td></tr>
         {% endifequal %}
     </table>
+    <h2>{% trans "Margin over rate objective" %}</h2>
     <div class="timesheet">
     <table>
-    <tr><th>{% trans "Consultant" %}</th><th>{% trans "Margin over rate objective (€)" %}</th></tr>
     {% for consultant, consultant_objective_margin in objective_margin.items %}
         <tr align="right">
         <td>{{ consultant }}</td>
-        <td>{{ consultant_objective_margin }}</td>
+        <td>{{ consultant_objective_margin }} €</td>
         </tr>
     {% endfor %}
     <tr align="right" style="font-weight:bold">
         <td>{% trans "Total" %}</td>
-        <td>{{ objective_margin_total }}</td>
+        <td>{{ objective_margin_total }} €</td>
     </tr>
     </table>
     </div>
     {% endifequal %}
-{% endblock %}
