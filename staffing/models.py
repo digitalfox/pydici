@@ -83,7 +83,7 @@ class Mission(models.Model):
 
     def staffed_consultant(self):
         """@return: sorted list of consultant forecasted for this mission"""
-        consultants = set([s.consultant for s in self.staffing_set.all()])
+        consultants = set([s.consultant for s in self.staffing_set.all().select_related()])
         consultants = list(consultants)
         consultants.sort(cmp=lambda x, y: cmp(x.name, y.name))
         return consultants
@@ -114,7 +114,7 @@ class Mission(models.Model):
     def consultant_rates(self):
         """@return: dict with consultant as key and (daily rate, bought daily rate) as value or 0 if not defined."""
         rates = {}
-        for condition in FinancialCondition.objects.filter(mission=self):
+        for condition in FinancialCondition.objects.filter(mission=self).select_related():
             rates[condition.consultant] = (condition.daily_rate, condition.bought_daily_rate)
         # Put 0 for consultant forecasted on this mission but without defined daily rate
         for consultant in self.staffed_consultant():
