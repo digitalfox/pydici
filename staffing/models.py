@@ -83,10 +83,7 @@ class Mission(models.Model):
 
     def staffed_consultant(self):
         """@return: sorted list of consultant forecasted for this mission"""
-        consultants = set([s.consultant for s in self.staffing_set.all().select_related()])
-        consultants = list(consultants)
-        consultants.sort(cmp=lambda x, y: cmp(x.name, y.name))
-        return consultants
+        return Consultant.objects.filter(staffing__mission=self).distinct().order_by("name")
 
     def create_default_staffing(self):
         """Initialize mission staffing based on lead hypothesis and current month"""
