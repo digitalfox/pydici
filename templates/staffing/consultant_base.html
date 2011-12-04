@@ -32,11 +32,7 @@
 		</tr>
 		{% for mission in missions %}
 		    <tr {%cycle 'class="row1"' 'class="row2"' %}>
-		        {% if link_to_staffing %}
-		            <th scope="row"><a href='{% url pydici.staffing.views.mission_staffing mission.id %}', title='{% blocktrans %}Change mission {{ mission }} staffing {% endblocktrans %}'>{{ mission }}</a></th>
-                {% else %}
-                    <th scope="row"><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></th>
-                {% endif %}
+                <th scope="row"><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></th>
 		        <td>{{ mission.mission_id }}</td>
 		        <td>{{ mission.get_probability_display }}</td>
 		        <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', target='_blank', class='changelink'><em>{% trans "Change" %}</em></a></td>

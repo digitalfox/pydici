@@ -32,7 +32,7 @@
 	   <tr><th>{{ mission.get_nature_display }}</th></tr>
 	{% endifchanged %}
 	<tr {%cycle 'class="row1"' 'class="row2"' %} id="mission_{{ mission.id }}">
-	    <td scope="row"><a href='{% url pydici.staffing.views.mission_staffing mission.id %}', title='{% blocktrans %}Defines {{ mission }} staffing{% endblocktrans %}'>{{ mission }}</a></td>
+	    <td scope="row"><a href='{% url pydici.staffing.views.mission_home mission.id %}', title='{% blocktrans %}Defines {{ mission }} staffing{% endblocktrans %}'>{{ mission }}</a></td>
 	    <td>{{ mission.mission_id }}</td>
 	    <td>{{ mission.get_probability_display }} </td>
 	    <td scope="row">
