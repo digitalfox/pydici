@@ -200,4 +200,4 @@ a.tagrlink { color: #999999 }
 .tooltip p{margin:0;text-align:justify;}
 
 /* jeditable clickable field - need to look like a link */
-.jeditable { color: #883915; text-decoration:none; cursor:pointer;}
+.jeditable-rate, .jeditable-mission-update { color: #883915; text-decoration:none; cursor:pointer; style="display:inline"}

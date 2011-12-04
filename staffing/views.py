@@ -736,6 +736,41 @@ def mission_consultant_rate(request):
     except ValueError:
         return HttpResponse(_("Incorrect value"))
 
+@pydici_non_public
+def mission_update(request):
+    """Update mission attribute (probability and billing_mode).
+    This is intended to be used through a jquery jeditable call"""
+    if request.method == "GET":
+        # Return authorized values
+        if request.GET["id"].startswith("billing_mode"):
+            values = Mission.BILLING_MODES
+        elif request.GET["id"].startswith("probability"):
+            values = Mission.PROBABILITY
+        else:
+            values = {}
+        return HttpResponse(json.dumps(dict(values)))
+    elif request.method == "POST":
+        # Update mission attributes
+        attribute, mission_id = request.POST["id"].split("-")
+        value = request.POST["value"]
+        mission = Mission.objects.get(id=mission_id) # If no mission found, it fails, that's what we want
+        billingModes = dict(Mission.BILLING_MODES)
+        probability = dict(Mission.PROBABILITY)
+        if attribute == "billing_mode":
+            if value in billingModes:
+                mission.billing_mode = value
+                mission.save()
+                return HttpResponse(billingModes[value])
+        elif attribute == "probability":
+            value = int(value)
+            if value in probability:
+                mission.probability = value
+                mission.save()
+                return HttpResponse(probability[value])
+    # Not GET or POST ? Or not explicit attribute ?
+    # Do not answer to garbage question, just return
+    return
+
 
 @pydici_non_public
 @cache_page(60 * 10)

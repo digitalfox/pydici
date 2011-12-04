@@ -26,11 +26,11 @@ class Mission(models.Model):
             ('NONPROD', ugettext("Unproductive")),
             ('HOLIDAYS', ugettext("Holidays")))
     PROBABILITY = (
-            (0, _("Null")),
-            (25, _("Low")),
-            (50, _("Normal")),
-            (75, _("High")),
-            (100, _("Certain")))
+            (0, ugettext("Null")),
+            (25, ugettext("Low")),
+            (50, ugettext("Normal")),
+            (75, ugettext("High")),
+            (100, ugettext("Certain")))
     BILLING_MODES = (
             (('FIXED_PRICE'), ugettext("Fixed price")),
             (('TIME_SPENT'), ugettext("Time spent")))

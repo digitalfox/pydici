@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-03 16:00+0100\n"
+"POT-Creation-Date: 2011-12-04 15:02+0100\n"
 "PO-Revision-Date: 2011-12-03 16:00+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
@@ -796,35 +796,35 @@ msgstr "La mission ou le consultant n'existe pas"
 msgid "Incorrect value"
 msgstr "Valeur incorrecte"
 
-#: staffing/views.py:867
+#: staffing/views.py:903
 msgid "Prod. rate"
 msgstr "Taux de prod."
 
-#: staffing/views.py:880 templates/staffing/mission_base.html:37
+#: staffing/views.py:916 templates/staffing/mission_base.html:37
 msgid "Daily rate (€)"
 msgstr "Taux journalier (€)"
 
-#: staffing/views.py:893
+#: staffing/views.py:929
 msgid "Last 3 months"
 msgstr "3 derniers mois"
 
-#: staffing/views.py:894
+#: staffing/views.py:930
 msgid "Last 6 months"
 msgstr "6 derniers mois"
 
-#: staffing/views.py:895
+#: staffing/views.py:931
 msgid "Last 12 months"
 msgstr "12 derniers mois"
 
-#: staffing/views.py:896
+#: staffing/views.py:932
 msgid "Forever"
 msgstr "Depuis toujours"
 
-#: staffing/views.py:976 templates/staffing/mission_timesheet.html:38
+#: staffing/views.py:1012 templates/staffing/mission_timesheet.html:38
 msgid "Average daily rate (€)"
 msgstr "Taux journalier moyen (€)"
 
-#: staffing/views.py:976
+#: staffing/views.py:1012
 msgid "Daily rate objective (€)"
 msgstr "Objectif de taux journalier (€)"
 
@@ -1880,6 +1880,7 @@ msgid "Create another mission for this lead"
 msgstr "Créer une autre mission pour cette affaire"
 
 #: templates/staffing/mission_base.html:91
+#: templates/staffing/mission_base.html:98
 msgid "click to edit..."
 msgstr "Cliquez pour modifier..."
 

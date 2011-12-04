@@ -28,8 +28,8 @@
 <div id="content-large">
     <h1><a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission }}</a></h1>
     <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
-    <h3>{% trans "Billing mode: " %} <a href='{% url admin:staffing_mission_change mission.id %}' target='_blank' class='changelink'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</a></h3>
-    <h3>{% trans "Probability:" %} <a href='{% url admin:staffing_mission_change mission.id %}' target='_blank' class='changelink'>{{ mission.get_probability_display }} </a></h3>
+    <h3>{% trans "Billing mode: " %} <div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></h3>
+    <h3>{% trans "Probability:" %} <div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_probability_display }}</div></h3>
     <br>
 
     <h2>{% trans "Consultants currently implicated in this mission" %}</h2>
@@ -42,8 +42,8 @@
             {% else %}
                 <td><a href='{% url pydici.staffing.views.consultant_timesheet consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
             {% endif %}
-            <td align="right"><div id="sold-{{ mission.id }}-{{ consultant.id }}" class="jeditable" style="display:inline">{{ rate.0 }}</div></td>
-            <td align="right">{% if consultant.subcontractor %}(<div id="bought-{{ mission.id }}-{{ consultant.id }}" class="jeditable" style="display:inline">{{ rate.1 }}</div>){% endif %}</td>
+            <td align="right"><div id="sold-{{ mission.id }}-{{ consultant.id }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
+            <td align="right">{% if consultant.subcontractor %}(<div id="bought-{{ mission.id }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>){% endif %}</td>
         </tr>
     {% endfor %}
     </table>    
@@ -86,11 +86,22 @@
 <script type="text/javascript">
 <!--
 
-$(".jeditable").editable("{% url pydici.staffing.views.mission_consultant_rate %}", { 
+$(".jeditable-rate").editable("{% url pydici.staffing.views.mission_consultant_rate %}", { 
     indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
     tooltip   : "{% trans 'click to edit...' %}",
     event     : "click",
     style  : "inherit"
+});
+
+$(".jeditable-mission-update").editable("{% url pydici.staffing.views.mission_update %}", { 
+    indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
+    tooltip   : "{% trans 'click to edit...' %}",
+    event     : "click",
+    style  : "inherit",
+    type   : "select",
+    loadurl : "{% url pydici.staffing.views.mission_update %}",
+    submit : 'OK',
+    onblur : 'submit',
 });
 
 -->
