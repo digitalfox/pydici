@@ -1,12 +1,7 @@
-{% extends "staffing/consultant_base.html" %}
 {% load i18n %}
-
-{% block consultant_detail %}
-
-    <h2>{% trans "Forecast staffing" %}</h2>
-    <a href="{% url pydici.staffing.views.consultant_timesheet consultant.id %}" class='changelink'>{% trans "See also timesheet of this consultant" %}</a>
-   <br/><br/><hr/>
-    <form action="" method="POST">
+{# Fragment of page to be included in a consultant_home tab #}
+<div id="pydici-ajax-form-content">
+    <form action="{% url pydici.staffing.views.consultant_staffing consultant.id %}" method="POST" id="pydici-ajax-form">
         {{ formset.management_form }}
         <div class="form-row">
         <table>
@@ -65,7 +60,11 @@
             <input type="submit" value="{% trans 'Save' %}"/>
         </div>
     </form>
+</div>
+
+{% if not read_only %}
+    {% include "core/_ajax_post.html" %}
+{% endif %}
+
 
 {% include "staffing/_complete_staffing_date.html" %}
-
-{% endblock %}

@@ -1,0 +1,12 @@
+{% load i18n %}
+<script>
+$(function() {
+    $( "#tabs" ).tabs({
+        ajaxOptions: {
+            error: function( xhr, status, index, anchor ) {
+                $( anchor.hash ).html('{% trans "Could not load this tab. Sorry" %}');
+            }
+        }
+    });
+});
+</script>

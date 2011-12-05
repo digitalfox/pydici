@@ -1,0 +1,24 @@
+{# JS Fragment to submit form with Ajax POST #}
+{# Form id must be "pydici-ajax-form" #}
+{# Content placeholder id must pydici-ajax-form-content #}
+ 
+<script type="text/javascript">
+/* attach a submit handler to the form */
+    $("#pydici-ajax-form").submit(function(event) {
+
+        /* stop form from submitting normally */
+        event.preventDefault(); 
+
+        /* get form data and target url */
+        var $form = $(this),
+        formData = $form.serialize(),
+        url = $form.attr('action');
+
+        /* Send the data using post and put the results inplace */
+        $.post(url, formData,
+                function(data) {
+                    $("#pydici-ajax-form-content").empty().append(data);
+                }
+        );
+    });
+</script>

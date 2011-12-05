@@ -16,10 +16,10 @@
 <h1>{{ consultant.full_name }} - {{consultant.profil }} {% if consultant.subcontractor %}({% trans "subcontractor" %}) {% endif %}
 &nbsp;&nbsp;
 {% if not consultant.subcontractor %}
-    <a href='{% url pydici.staffing.views.consultant_staffing consultant.id %}'><img title='{% trans "staffing" %}' src='{{ MEDIA_URL }}pydici/staffing.png'/></a>
+    <a href='{% url pydici.staffing.views.consultant_home consultant.id %}#tab-staffing'><img title='{% trans "staffing" %}' src='{{ MEDIA_URL }}pydici/staffing.png'/></a>
 &nbsp;&nbsp;
 {% endif %}
-<a href='{% url pydici.staffing.views.consultant_timesheet consultant.id %}'><img title='{% trans "timesheet" %}' src='{{ MEDIA_URL }}pydici/timesheet.png'/></a>
+<a href='{% url pydici.staffing.views.consultant_home consultant.id %}#tab-timesheet'><img title='{% trans "timesheet" %}' src='{{ MEDIA_URL }}pydici/timesheet.png'/></a>
 &nbsp;&nbsp;
 {% if perms.people.change_consultant %}
 <a href='{% url admin:people_consultant_change consultant.id %}'><img title='{% trans "Change" %}' src='{{ MEDIA_URL }}pydici/configure.png'/></a>

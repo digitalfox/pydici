@@ -56,9 +56,8 @@ def missions(request, onlyActive=True):
 @pydici_non_public
 def mission_home(request, mission_id):
     """Home page of mission description - this page loads all others mission sub-pages"""
-    mission = Mission.objects.get(id=mission_id)
     return render_to_response('staffing/mission.html',
-                              {"mission": mission,
+                              {"mission": Mission.objects.get(id=mission_id),
                                "user": request.user},
                                RequestContext(request))
 
@@ -121,14 +120,9 @@ def consultant_staffing(request, consultant_id):
     else:
         formset = StaffingFormSet(instance=consultant) # An unbound form
 
-    missions = consultant.active_missions()
-    missions = sortMissions(missions)
-
     return render_to_response('staffing/consultant_staffing.html',
                               {"formset": formset,
                                "consultant": consultant,
-                               "missions": missions,
-                               "link_to_staffing" : True, # for consultant_base template links
                                "staffing_dates" : staffingDates(),
                                "user": request.user },
                                RequestContext(request))
@@ -298,6 +292,13 @@ def deactivate_mission(request, mission_id):
     return HttpResponse(json.dumps({"error" : error, "id": mission_id}),
                         mimetype="application/json")
 
+def consultant_home(request, consultant_id):
+    """Home page of consultant staffing/timesheet stuff - this page loads all others mission sub-pages"""
+    return render_to_response('staffing/consultant.html',
+                              {"consultant": Consultant.objects.get(id=consultant_id),
+                               "user": request.user},
+                               RequestContext(request))
+
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
@@ -407,7 +408,13 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
     if week:
         warning = warning[days[0].day - 1:days[-1].day]
 
-    return render_to_response("staffing/consultant_timesheet.html", {
+    # Select proper template if user is mobile
+    if mobile:
+        template = "staffing/m.consultant_timesheet.html"
+    else:
+        template = "staffing/consultant_timesheet.html"
+
+    return render_to_response(template, {
                                 "consultant": consultant,
                                "form": form,
                                "read_only" : readOnly,

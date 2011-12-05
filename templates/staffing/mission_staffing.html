@@ -1,7 +1,7 @@
 {% load i18n %}
 {# Fragment of page to be included in a mission_home tab #}
-<div id="form-content">
-    <form action="{% url pydici.staffing.views.mission_staffing mission.id %}" method="POST" id="mission_staffing_form">
+<div id="pydici-ajax-form-content">
+    <form action="{% url pydici.staffing.views.mission_staffing mission.id %}" method="POST" id="pydici-ajax-form">
         {{ formset.management_form }}
         <div class="form-row">
         <table>
@@ -67,26 +67,7 @@
 </div>
 
 {% if not read_only %}
-<script type="text/javascript">
-/* attach a submit handler to the form */
-    $("#mission_staffing_form").submit(function(event) {
-
-        /* stop form from submitting normally */
-        event.preventDefault(); 
-
-        /* get form data and target url */
-        var $form = $(this),
-        formData = $form.serialize(),
-        url = $form.attr('action');
-
-        /* Send the data using post and put the results inplace */
-        $.post(url, formData,
-        	    function(data) {
-                    $("#form-content").empty().append(data);
-                }
-        );
-    });
-</script>
+    {% include "core/_ajax_post.html" %}
 {% endif %}
 
 {% include "staffing/_complete_staffing_date.html" %}

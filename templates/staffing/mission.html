@@ -19,17 +19,7 @@
 
 {% block content %}
 
-<script>
-$(function() {
-    $( "#tabs" ).tabs({
-        ajaxOptions: {
-            error: function( xhr, status, index, anchor ) {
-                $( anchor.hash ).html('{% trans "Could not load this tab. Sorry" %}');
-            }
-        }
-    });
-});
-</script>
+{% include "core/_init_tabs.html" %}
 
 <div id="content-large">
 <h1><a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission }} - {{ mission.mission_id }}</a></h1>
@@ -62,11 +52,7 @@ $(function() {
 	    <tr><td>{% trans "Consultant" %}</td><td>{% trans "Daily rate (€)" %}</td><td></td></tr>
 	    {% for consultant, rate in mission.consultant_rates.items %}
 	        <tr {%cycle 'class="row1"' 'class="row2"' %}>
-	            {% if link_to_staffing %}
-	                <td><a href='{% url pydici.staffing.views.consultant_staffing consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
-	            {% else %}
-	                <td><a href='{% url pydici.staffing.views.consultant_timesheet consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
-	            {% endif %}
+	            <td><a href='{% url pydici.staffing.views.consultant_home consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
 	            <td align="right"><div id="sold-{{ mission.id }}-{{ consultant.id }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
 	            <td align="right">{% if consultant.subcontractor %}(<div id="bought-{{ mission.id }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>){% endif %}</td>
 	        </tr>

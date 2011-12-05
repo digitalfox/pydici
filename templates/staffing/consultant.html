@@ -1,0 +1,52 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.16.custom.css" />
+{% endblock %}
+
+{% block title %}{% trans "Forecast/timesheet " %}{{ consultant }}{% endblock %}
+
+{% block content %}
+
+{% include "core/_init_tabs.html" %}
+
+<div id="content-large">
+<h1>{{ consultant.full_name }} {% if consultant.subcontractor %} - {% trans "subcontractor" %} {% endif %}</h1>
+
+<div id="tabs">
+    <ul>
+        <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.consultant_timesheet consultant.id %}">{% trans "Timesheet" %}</a></li>
+        <li><a title="#tab-staffing"  href="{% url pydici.staffing.views.consultant_staffing consultant.id %}">{% trans "Forecast staffing" %}</a></li>
+        <li><a href="#tab-missions">{% trans "Missions" %}</a></li>
+    </ul>
+
+    <div id="tab-missions">
+        <h2>{% trans "Consultant's missions" %}</h2>
+        <table>
+        <tr><th>{% trans "Name" %}</th>
+            <th>{% trans "Mission id" %}</th>
+            <th>{% trans "Probability" %}</th>
+        </tr>
+        {% for mission in consultant.active_missions %}
+            <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <th scope="row"><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></th>
+                <td>{{ mission.mission_id }}</td>
+                <td>{{ mission.get_probability_display }}</td>
+                <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', target='_blank', class='changelink'><em>{% trans "Change" %}</em></a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+
+</div> <!-- end of tabs -->
+</div>
+{% endblock %}
