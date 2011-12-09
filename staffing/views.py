@@ -18,6 +18,7 @@ from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
+from django.core.cache import cache
 from django.template import RequestContext
 from django.db.models import Sum
 from django.utils.safestring import mark_safe
@@ -808,10 +809,10 @@ def graph_timesheet_rates_bar(request):
     # Gather data
     timesheetStartDate = date.today() - timedelta(365) # Last year
     timesheetEndDate = (date.today().replace(day=1) + timedelta(40)).replace(day=1) # First day of next month
-    timesheets = Timesheet.objects.select_related().filter(consultant__subcontractor=False,
-                                                           consultant__productive=True,
-                                                           working_date__gt=timesheetStartDate,
-                                                           working_date__lt=timesheetEndDate)
+    timesheets = Timesheet.objects.filter(consultant__subcontractor=False,
+                                          consultant__productive=True,
+                                          working_date__gt=timesheetStartDate,
+                                          working_date__lt=timesheetEndDate).select_related()
 
     if timesheets.count() == 0:
         return print_png(fig)
@@ -833,13 +834,17 @@ def graph_timesheet_rates_bar(request):
         else:
             data[timesheet.mission.nature][kdate] = timesheet.charge
         nConsultant[kdate].add(timesheet.consultant.id)
-        try:
-            fc = FinancialCondition.objects.get(mission=timesheet.mission, consultant=timesheet.consultant)
-            if fc.daily_rate > 0:
-                avgDailyRate[timesheet.consultant.profil.id][kdate] += timesheet.charge * fc.daily_rate
-                nDays[timesheet.consultant.profil.id][kdate] += timesheet.charge
-        except FinancialCondition.DoesNotExist:
-            pass
+        daily_rate = cache.get("fc-%s-%s" % (timesheet.mission_id, timesheet.consultant_id))
+        if not daily_rate:
+            try:
+                fc = FinancialCondition.objects.get(mission=timesheet.mission, consultant=timesheet.consultant)
+                daily_rate = int(fc.daily_rate)
+                cache.set("fc-%s-%s" % (timesheet.mission_id, timesheet.consultant_id), daily_rate, 60)
+            except FinancialCondition.DoesNotExist:
+                daily_rate = 0
+        if daily_rate > 0:
+            avgDailyRate[timesheet.consultant.profil.id][kdate] += timesheet.charge * daily_rate
+            nDays[timesheet.consultant.profil.id][kdate] += timesheet.charge
 
     # Set bottom of each graph. Starts if [0, 0, 0, ...]
     bottom = [0] * len(kdates)
