@@ -3,25 +3,11 @@
 
 <div id="pydici-ajax-form-content">
     <h2>
-    {% if week %}
-        <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m", week=previous_week %}' title="{% trans 'Previous week' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
-    {% else %}
-        <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m" %}' title="{% trans 'Previous month' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
-    {% endif %}
+    <img id="previous-month" src="{{ MEDIA_URL }}pydici/fg.png" border=0 style="cursor:pointer;"  title="{% trans 'Previous month' %}" />
     {% trans "Timesheet" %} {{ month|date:"F Y"}}
-    {% if week %}
-        {% trans "Week " %} {{ week }}
-        <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m", week=next_week %}' title="{% trans 'Next week' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
-    {% else %}
-        <a href='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m" %}' title="{% trans 'Next month' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
-    {% endif %}
+    <img id="next-month" src="{{ MEDIA_URL }}pydici/fd.png" border=0 style="cursor:pointer;" title="{% trans 'Next month' %}" />
     </h2>
-    
-    {% if week %}
-        <form action='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=month|date:"Y",month=month|date:"m",week=week %}' method="POST" id="pydici-ajax-form">
-    {% else %}
-        <form action='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=month|date:"Y",month=month|date:"m" %}' method="POST" id="pydici-ajax-form">
-    {% endif %}
+    <form action='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=month|date:"Y",month=month|date:"m" %}' method="POST" id="pydici-ajax-form">
     <table class='small-form-row' style="text-align:center">
             <tr>
             {% for day in days %}
@@ -70,6 +56,17 @@
     {% endif %}
     <a href="{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=month.year, month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
 </div>
+
+<script type="text/javascript">
+/* Bind time nav bar to ajax calls */
+$('#previous-month').click(function () {
+	$('#pydici-ajax-form-content').load('{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m" %}');
+});
+
+$('#next-month').click(function () {
+    $('#pydici-ajax-form-content').load('{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m" %}');
+});
+</script>
 
 {% if not read_only %}
     {% include "core/_ajax_post.html" %}
