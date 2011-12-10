@@ -1,7 +1,7 @@
 {% load i18n %}
 {# Fragment of page to be included in a consultant_home tab #}
-<div id="pydici-ajax-form-content">
-    <form action="{% url pydici.staffing.views.consultant_staffing consultant.id %}" method="POST" id="pydici-ajax-form">
+<div id="pydici-ajax-form-content-consultant-staffing">
+    <form action="{% url pydici.staffing.views.consultant_staffing consultant.id %}" method="POST" id="pydici-ajax-form-consultant-staffing">
         {{ formset.management_form }}
         <div class="form-row">
         <table>
@@ -54,7 +54,7 @@
                </td>
                </tr>
            {% endfor %}
-        </table>       
+        </table>
         </div>
         <div class="submit-row">
             <input type="submit" value="{% trans 'Save' %}"/>
@@ -62,9 +62,10 @@
     </form>
 </div>
 
-{% if not read_only %}
+{% with "pydici-ajax-form-consultant-staffing" as formid %}
+{% with "pydici-ajax-form-content-consultant-staffing" as formcontent %}
     {% include "core/_ajax_post.html" %}
-{% endif %}
-
+{% endwith %}
+{% endwith %}
 
 {% include "staffing/_complete_staffing_date.html" %}

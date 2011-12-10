@@ -1,7 +1,7 @@
 {% load i18n %}
 {# Fragment of page to be included in a mission_home tab #}
-<div id="pydici-ajax-form-content">
-    <form action="{% url pydici.staffing.views.mission_staffing mission.id %}" method="POST" id="pydici-ajax-form">
+<div id="pydici-ajax-form-content-mission-staffing">
+    <form action="{% url pydici.staffing.views.mission_staffing mission.id %}" method="POST" id="pydici-ajax-form-mission-staffing">
         {{ formset.management_form }}
         <div class="form-row">
         <table>
@@ -54,7 +54,7 @@
                </td>
                </tr>
            {% endfor %}
-        </table>       
+        </table>
         </div>
         {% if read_only %}
             <em>{% trans "Note: you are not allowed to change mission staffing" %}</em>
@@ -67,7 +67,11 @@
 </div>
 
 {% if not read_only %}
-    {% include "core/_ajax_post.html" %}
+    {% with "pydici-ajax-form-mission-staffing" as formid %}
+    {% with "pydici-ajax-form-content-mission-staffing" as formcontent %}
+        {% include "core/_ajax_post.html" %}
+    {% endwith %}
+    {% endwith %}
 {% endif %}
 
 {% include "staffing/_complete_staffing_date.html" %}

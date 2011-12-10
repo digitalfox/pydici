@@ -1,13 +1,13 @@
 {% load i18n %}
 {% load pydici_filters %}
 
-<div id="pydici-ajax-form-content">
+<div id="pydici-ajax-form-content-consultant-timesheet">
     <h2>
     <img id="previous-month" src="{{ MEDIA_URL }}pydici/fg.png" border=0 style="cursor:pointer;"  title="{% trans 'Previous month' %}" />
     {% trans "Timesheet" %} {{ month|date:"F Y"}}
     <img id="next-month" src="{{ MEDIA_URL }}pydici/fd.png" border=0 style="cursor:pointer;" title="{% trans 'Next month' %}" />
     </h2>
-    <form action='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=month|date:"Y",month=month|date:"m" %}' method="POST" id="pydici-ajax-form">
+    <form action='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=month|date:"Y",month=month|date:"m" %}' method="POST" id="pydici-ajax-form-consultant-timesheet">
     <table class='small-form-row' style="text-align:center">
             <tr>
             {% for day in days %}
@@ -60,16 +60,20 @@
 <script type="text/javascript">
 /* Bind time nav bar to ajax calls */
 $('#previous-month').click(function () {
-	$('#pydici-ajax-form-content').load('{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m" %}');
+	$('#pydici-ajax-form-content-consultant-timesheet').load('{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m" %}');
 });
 
 $('#next-month').click(function () {
-    $('#pydici-ajax-form-content').load('{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m" %}');
+    $('#pydici-ajax-form-content-consultant-timesheet').load('{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m" %}');
 });
 </script>
 
 {% if not read_only %}
-    {% include "core/_ajax_post.html" %}
+	{% with "pydici-ajax-form-consultant-timesheet" as formid %}
+	{% with "pydici-ajax-form-content-consultant-timesheet" as formcontent %}
+        {% include "core/_ajax_post.html" %}
+    {% endwith %}
+    {% endwith %}
 {% endif %}
 
 {% include "core/_color_timesheet.html" %}

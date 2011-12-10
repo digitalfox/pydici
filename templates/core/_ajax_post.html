@@ -1,10 +1,10 @@
 {# JS Fragment to submit form with Ajax POST #}
-{# Form id must be "pydici-ajax-form" #}
-{# Content placeholder id must pydici-ajax-form-content #}
+{# Form id must be {{ formid }} (use {% with... %}) #}
+{# Content placeholder id must {{ formcontent }} (use {% with... %}) #}
  
 <script type="text/javascript">
 /* attach a submit handler to the form */
-    $("#pydici-ajax-form").submit(function(event) {
+    $("#{{ formid }}").submit(function(event) {
 
         /* stop form from submitting normally */
         event.preventDefault(); 
@@ -17,7 +17,7 @@
         /* Send the data using post and put the results inplace */
         $.post(url, formData,
                 function(data) {
-                    $("#pydici-ajax-form-content").empty().append(data);
+                    $("#{{ formcontent }}").empty().append(data);
                 }
         );
     });
