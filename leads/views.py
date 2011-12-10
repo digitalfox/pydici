@@ -270,3 +270,41 @@ def graph_stat_bar(request):
     fig.autofmt_xdate()
 
     return print_png(fig)
+
+def graph_bar_jqp(request):
+    """Nice graph bar of lead state during time using jqplot
+    @todo: per year, with start-end date"""
+    data = {} # Raw data collected
+    graph_data = [] # Data that will be returned to jqplot 
+    bars = [] # List of bars - needed to add legend
+
+    # Gathering data
+    for lead in Lead.objects.all():
+        #Using first day of each month as key date
+        kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
+        if not data.has_key(kdate):
+            data[kdate] = [] # Create key with empty list
+        data[kdate].append(lead)
+
+    kdates = data.keys()
+    kdates.sort()
+    isoKdates = [a.isoformat() for a in kdates] # List of date as string in ISO format
+
+    # Draw a bar for each state
+    for state in Lead.STATES:
+        ydata = [len([i for i in x if i.state == state[0]]) for x in sortedValues(data)]
+        graph_data.append(zip(isoKdates, ydata))
+
+    # Draw lead amount by month
+    yAllLead = [sum([i.sales for i in x if i.sales]) for x in sortedValues(data)]
+    yWonLead = [sum([i.sales for i in x if (i.sales and i.state == "WON")]) for x in sortedValues(data)]
+    #plots = (ax2.plot(kdates, yAllLead, '--o', ms=5, lw=2, color="blue", mfc="blue"),
+    #         ax2.plot(kdates, yWonLead, '-o', ms=10, lw=4, color="green", mfc="green"))
+
+    return render_to_response("leads/graph_bar_jqp.html",
+                              {"graph_data" : json.dumps(graph_data),
+                               "series_label" : [i[1] for i in Lead.STATES],
+                               #"x_ticks" : json.dumps(["%s" % i for i in kdates]),
+                               "min_date" : (kdates[0] - timedelta(30)).isoformat(),
+                               "user": request.user },
+                               RequestContext(request))

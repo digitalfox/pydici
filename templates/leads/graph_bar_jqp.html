@@ -1,0 +1,56 @@
+{# Fragment that display leads stat/bar graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_jqplot.html to load according js/css #}
+{% load i18n %}
+
+<div id="leads-stat-graph" style="height:300px;width:600px; "></div>
+
+<script type="text/javascript">
+
+$.jqplot.config.enablePlugins = true;
+$.jqplot('leads-stat-graph',  {{ graph_data|safe }},
+	    {title : '{% trans "Leads tracking" %}',
+         animate : true,
+         stackSeries: true,
+         captureRightClick: true,
+         seriesDefaults:{
+           renderer:$.jqplot.BarRenderer,
+           rendererOptions: {
+               barMargin: 15,
+           },
+           pointLabels: {show: true}
+         },
+         series:[
+               {% for label in series_label %}
+                   {label: '{{ label }}' },
+               {% endfor %}
+             ],
+         axes: {
+           xaxis: {
+               renderer: $.jqplot.DateAxisRenderer,
+               tickOptions:{
+            	   formatString:'%b %y',
+         //   	   angle: -40 
+               },
+               min: '{{ min_date }}',
+               tickInterval: '2 month',
+           },
+           yaxis: {
+             // Don't pad out the bottom of the data range.  By default,
+             // axes scaled as if data extended 10% above and below the
+             // actual range to prevent data points right on grid boundaries.
+             // Don't want to do that here.
+             padMin: 0
+           },
+         },
+         legend: {
+        	 show:true,
+        	  location: 'e',
+        	  placement: 'outside'
+         },
+         highlighter: {
+             tooltipAxes: 'y',
+             showLabel: true,
+             sizeAdjust: 7.5,
+         },
+});
+</script>

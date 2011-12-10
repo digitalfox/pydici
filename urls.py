@@ -76,8 +76,9 @@ pydici_patterns += patterns('pydici.leads.views',
     (r'^leads/sendmail/(?P<lead_id>\d+)/$', 'mail_lead'),
     url(r'^leads/mail/text', 'summary_mail', { "html" : False }, name="lead-mail-text"),
     url(r'^leads/mail/html', 'summary_mail', { "html" : True  }, name="lead-mail-html"),
-    (r'^leads/graph/pie', 'graph_stat_pie'),
-    (r'^leads/graph/bar', 'graph_stat_bar'),
+    (r'^leads/graph/pie$', 'graph_stat_pie'),
+    (r'^leads/graph/bar$', 'graph_stat_bar'),
+    (r'^leads/graph/bar-jqp$', 'graph_bar_jqp'),
 )
 
 # Staffing module
