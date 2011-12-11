@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-11 16:24+0100\n"
-"PO-Revision-Date: 2011-12-11 16:24+0100\n"
+"POT-Creation-Date: 2011-12-11 18:14+0100\n"
+"PO-Revision-Date: 2011-12-11 18:14+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -145,7 +145,7 @@ msgstr ""
 "L'utilisateur %s a un pointage incomplet mais il n'est pas possible de "
 "l'avertir car il n'a pas d'adresse de courriel."
 
-#: billing/forms.py:19 billing/models.py:25 expense/forms.py:29
+#: billing/forms.py:19 billing/models.py:25 expense/forms.py:30
 #: leads/models.py:181 staffing/models.py:37
 #: templates/billing/bill_review.html:155 templates/core/index.html:19
 #: templates/core/index.html.py:44 templates/core/index.html:68
@@ -207,7 +207,7 @@ msgstr "Date de paiement"
 msgid "Previous year bill"
 msgstr "Facture de l'année N-1"
 
-#: billing/models.py:34 staffing/models.py:189
+#: billing/models.py:34 expense/models.py:48 staffing/models.py:189
 #: templates/billing/bill_review.html:24 templates/billing/bill_review.html:60
 #: templates/billing/bill_review.html:96
 #: templates/billing/bill_review.html:133
@@ -328,7 +328,7 @@ msgstr "Propriété commerciale"
 msgid "Client"
 msgstr "Client"
 
-#: expense/forms.py:34
+#: expense/forms.py:35
 msgid "You must define a lead if expense is chargeable"
 msgstr "Vous devez définir une affaire si les frais sont refacturables"
 
@@ -356,6 +356,10 @@ msgstr "Catégorie"
 #: expense/models.py:46 templates/expense/expenses_history.html:22
 msgid "Receipt"
 msgstr "Justificatif"
+
+#: expense/models.py:47
+msgid "Paid with corporate card"
+msgstr "Payé avec la carte société"
 
 #: expense/views.py:40
 msgid "You are not allowed to edit that expense"
@@ -1071,7 +1075,7 @@ msgstr "Suivi de facturation"
 msgid "Payment delay review"
 msgstr "Délais de règlement"
 
-#: templates/admin/base_site.html:109 templates/expense/expenses.html:110
+#: templates/admin/base_site.html:109 templates/expense/expenses.html:104
 #: templates/expense/expenses_history.html:12
 msgid "Expenses history"
 msgstr "Historique des notes de frais"
@@ -1399,7 +1403,7 @@ msgstr "Modifier la note de frais"
 msgid "Add an expense"
 msgstr "Ajouter une note de frais"
 
-#: templates/expense/expenses.html:48
+#: templates/expense/expenses.html:42
 #: templates/staffing/consultant_staffing.html:60
 #: templates/staffing/consultant_timesheet.html:49
 #: templates/staffing/m.consultant_timesheet.html:63
@@ -1407,11 +1411,11 @@ msgstr "Ajouter une note de frais"
 msgid "Save"
 msgstr "Enregistrer"
 
-#: templates/expense/expenses.html:55
+#: templates/expense/expenses.html:49
 msgid "My expenses"
 msgstr "Mes notes de frais"
 
-#: templates/expense/expenses.html:76
+#: templates/expense/expenses.html:70
 msgid "Expenses I manage"
 msgstr "Les notes de frais à traiter"
 
