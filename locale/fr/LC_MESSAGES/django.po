@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-11 14:24+0100\n"
-"PO-Revision-Date: 2011-12-11 14:23+0100\n"
+"POT-Creation-Date: 2011-12-11 16:24+0100\n"
+"PO-Revision-Date: 2011-12-11 16:24+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -48,7 +48,7 @@ msgstr "Quand un consultant est créé"
 
 #: actionset/models.py:26 actionset/models.py:45 core/models.py:15
 #: crm/models.py:19 crm/models.py:41 expense/models.py:31 leads/models.py:45
-#: leads/views.py:101 people/models.py:23 people/models.py:142
+#: leads/views.py:99 people/models.py:23 people/models.py:142
 #: templates/staffing/consultant.html:35
 #: templates/staffing/consultant_base.html:29
 #: templates/staffing/missions.html:29
@@ -56,7 +56,7 @@ msgid "Name"
 msgstr "Nom"
 
 #: actionset/models.py:27 actionset/models.py:46 expense/models.py:37
-#: leads/models.py:118 leads/views.py:101 staffing/models.py:39
+#: leads/models.py:118 leads/views.py:99 staffing/models.py:39
 #: staffing/models.py:178 templates/expense/expenses_history.html:19
 #: templates/staffing/mission.html:29
 msgid "Description"
@@ -84,20 +84,20 @@ msgid "N/A"
 msgstr "N/A"
 
 #: actionset/models.py:59 billing/models.py:32 leads/models.py:57
-#: leads/views.py:103 templates/billing/_lead_billing.html:9
+#: leads/views.py:101 templates/billing/_lead_billing.html:9
 #: templates/expense/expenses_history.html:23
 msgid "State"
 msgstr "État"
 
-#: actionset/models.py:62 leads/models.py:60 leads/views.py:104
+#: actionset/models.py:62 leads/models.py:60 leads/views.py:102
 msgid "Creation"
 msgstr "Création"
 
 #: actionset/models.py:63 expense/models.py:43 leads/models.py:63
-#: leads/models.py:110 leads/views.py:105 staffing/models.py:45
+#: leads/models.py:110 leads/views.py:103 staffing/models.py:45
 #: templates/core/index.html:24 templates/core/index.html.py:49
 #: templates/core/index.html:73 templates/core/index.html.py:97
-#: templates/leads/review.html:68
+#: templates/leads/review.html:65
 msgid "Updated"
 msgstr "Mise à jour"
 
@@ -150,7 +150,7 @@ msgstr ""
 #: templates/billing/bill_review.html:155 templates/core/index.html:19
 #: templates/core/index.html.py:44 templates/core/index.html:68
 #: templates/core/index.html.py:92 templates/expense/expenses_history.html:20
-#: templates/leads/review.html:33 templates/leads/review.html.py:62
+#: templates/leads/review.html:30 templates/leads/review.html.py:59
 msgid "Lead"
 msgstr "Affaire"
 
@@ -194,8 +194,8 @@ msgstr "TVA (%)"
 msgid "Creation date"
 msgstr "Date de création"
 
-#: billing/models.py:30 leads/views.py:103
-#: templates/billing/_lead_billing.html:12 templates/leads/review.html:39
+#: billing/models.py:30 leads/views.py:101
+#: templates/billing/_lead_billing.html:12 templates/leads/review.html:36
 msgid "Due date"
 msgstr "Date d'échéance"
 
@@ -318,7 +318,7 @@ msgstr "Contact"
 msgid "Sales owner"
 msgstr "Propriété commerciale"
 
-#: crm/models.py:131 leads/forms.py:24 leads/models.py:59 leads/views.py:101
+#: crm/models.py:131 leads/forms.py:24 leads/models.py:59 leads/views.py:99
 #: templates/billing/bill_review.html:20 templates/billing/bill_review.html:56
 #: templates/billing/bill_review.html:92
 #: templates/billing/bill_review.html:128
@@ -391,9 +391,9 @@ msgstr "État et suivi"
 msgid "Commercial"
 msgstr "Commercial"
 
-#: leads/admin.py:26 leads/views.py:103 staffing/models.py:203
-#: templates/billing/bill_review.html:157 templates/leads/review.html:36
-#: templates/leads/review.html.py:65
+#: leads/admin.py:26 leads/views.py:101 staffing/models.py:203
+#: templates/billing/bill_review.html:157 templates/leads/review.html:33
+#: templates/leads/review.html.py:62
 msgid "Staffing"
 msgstr "Staffing"
 
@@ -401,7 +401,7 @@ msgstr "Staffing"
 msgid "Lead sent to business mailing list"
 msgstr "Affaire envoyée à la liste de diffusion de suivi des affaires"
 
-#: leads/admin.py:56 leads/views.py:129
+#: leads/admin.py:56 leads/views.py:127
 #, python-format
 msgid "Failed to send mail: %s"
 msgstr "Échec lors de l'envoi du courriel : %s"
@@ -434,7 +434,7 @@ msgstr "Nouvelles affaires"
 msgid "Last new lead created"
 msgstr "Dernières affaires créées"
 
-#: leads/feeds.py:54 templates/leads/graph_bar_jqp.html:37
+#: leads/feeds.py:54 templates/leads/graph_bar_jqp.html:38
 msgid "Won leads"
 msgstr "Affaires gagnées"
 
@@ -455,15 +455,15 @@ msgstr ""
 #: leads/forms.py:20 leads/models.py:52 templates/billing/bill_review.html:156
 #: templates/core/index.html:20 templates/core/index.html.py:45
 #: templates/core/index.html:69 templates/core/index.html.py:93
-#: templates/leads/review.html:34 templates/leads/review.html.py:63
+#: templates/leads/review.html:31 templates/leads/review.html.py:60
 msgid "Responsible"
 msgstr "Responsable"
 
-#: leads/forms.py:21 leads/models.py:49 leads/views.py:102
+#: leads/forms.py:21 leads/models.py:49 leads/views.py:100
 #: people/models.py:158 templates/core/index.html:21
 #: templates/core/index.html.py:46 templates/core/index.html:70
-#: templates/core/index.html.py:94 templates/leads/review.html:35
-#: templates/leads/review.html.py:64
+#: templates/core/index.html.py:94 templates/leads/review.html:32
+#: templates/leads/review.html.py:61
 msgid "Salesman"
 msgstr "Commercial"
 
@@ -531,8 +531,8 @@ msgstr "Montant (k€)"
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:55 leads/views.py:102 people/models.py:137
-#: templates/leads/review.html:40 templates/leads/review.html.py:69
+#: leads/models.py:55 leads/views.py:100 people/models.py:137
+#: templates/leads/review.html:37 templates/leads/review.html.py:66
 msgid "Starting"
 msgstr "Démarrage"
 
@@ -549,33 +549,25 @@ msgstr "N° affaire"
 msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
-#: leads/views.py:99
+#: leads/views.py:97
 msgid "leads.csv"
 msgstr "affaires.csv"
 
-#: leads/views.py:102
+#: leads/views.py:100
 msgid "Managed by"
 msgstr "Géré par"
 
-#: leads/views.py:104 templates/billing/bill_review.html:158
+#: leads/views.py:102 templates/billing/bill_review.html:158
 #: templates/core/index.html:22 templates/core/index.html.py:47
 #: templates/core/index.html:71 templates/core/index.html.py:95
-#: templates/leads/review.html:37 templates/leads/review.html.py:66
+#: templates/leads/review.html:34 templates/leads/review.html.py:63
 msgid "Sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/views.py:126
+#: leads/views.py:124
 #, python-format
 msgid "Lead %(id)s was sent to %(mail)s !"
 msgstr "L'affaire %(id)s a été envoyée à %(mail)s !"
-
-#: leads/views.py:268
-msgid "All lead (k€)"
-msgstr "Toutes les affaires (k€)"
-
-#: leads/views.py:268
-msgid "Order taking (k€)"
-msgstr "Prise de commande (k€)"
 
 #: people/admin.py:30
 msgid "For subcontractors"
@@ -969,17 +961,17 @@ msgid "Leads"
 msgstr "Affaires"
 
 #: templates/admin/base_site.html:29 templates/core/m.index.html:29
-#: templates/leads/review.html:13
+#: templates/leads/review.html:14
 msgid "Current leads review"
 msgstr "Revue des affaires en cours"
 
-#: templates/admin/base_site.html:32 templates/leads/graph_bar_jqp.html:27
+#: templates/admin/base_site.html:32 templates/leads/graph_bar_jqp.html:28
 msgid "All leads"
 msgstr "Toutes les affaires"
 
 #: templates/admin/base_site.html:33
 msgid "New lead"
-msgstr "Nouvelles affaire"
+msgstr "Nouvelle affaire"
 
 #: templates/admin/base_site.html:41 templates/admin/base_site.html.py:143
 #: templates/core/m.index.html:57 templates/core/search.html:60
@@ -1047,7 +1039,7 @@ msgstr "Nouvelle facture"
 msgid "Reports"
 msgstr "Rapports"
 
-#: templates/admin/base_site.html:99 templates/core/dashboard.html:11
+#: templates/admin/base_site.html:99 templates/core/dashboard.html:15
 msgid "Management dashboard"
 msgstr "Tableau de bord de gestion"
 
@@ -1280,7 +1272,7 @@ msgstr "Montant réalisé (€)"
 #: templates/leads/lead_mail.html.py:12 templates/leads/lead_mail.txt:9
 #: templates/leads/lead_mail.txt.py:13 templates/leads/mail.html:8
 #: templates/leads/mail.txt:7 templates/leads/mail.txt.py:8
-#: templates/leads/review.html:45 templates/leads/review.html.py:74
+#: templates/leads/review.html:42 templates/leads/review.html.py:71
 #: templates/staffing/mission.html:39
 #: templates/staffing/mission_timesheet.html:62
 msgid "To be defined"
@@ -1303,15 +1295,15 @@ msgstr "Organismes payeurs"
 msgid "Could not load this tab. Sorry"
 msgstr "Impossible de charger cet onglet. Désolé..."
 
-#: templates/core/dashboard.html:18
+#: templates/core/dashboard.html:20
 msgid "Commercial activity"
 msgstr "Activité commerciale"
 
-#: templates/core/dashboard.html:23 templates/staffing/pdc_review.html:115
+#: templates/core/dashboard.html:27 templates/staffing/pdc_review.html:115
 msgid "Production rates and daily rates review"
 msgstr "Suivi du taux de production et des TJM"
 
-#: templates/core/dashboard.html:26
+#: templates/core/dashboard.html:31
 msgid "Billing review and done work"
 msgstr "Suivi de la facturation comparé au travail réalisé/engagé"
 
@@ -1321,7 +1313,7 @@ msgstr "Les affaires dont je suis le responsable"
 
 #: templates/core/index.html:23 templates/core/index.html.py:48
 #: templates/core/index.html:72 templates/core/index.html.py:96
-#: templates/leads/review.html:38 templates/leads/review.html.py:67
+#: templates/leads/review.html:35 templates/leads/review.html.py:64
 msgid "Status"
 msgstr "État"
 
@@ -1443,7 +1435,7 @@ msgstr "Non"
 msgid "All lead tags"
 msgstr "Toutes les étiquettes des affaires"
 
-#: templates/leads/graph_bar_jqp.html:59
+#: templates/leads/graph_bar_jqp.html:60
 msgid "Number of leads"
 msgstr "Nombre d'affaires"
 
@@ -1641,11 +1633,11 @@ msgstr "Staffing : "
 msgid "updated: "
 msgstr "Mise à jour : "
 
-#: templates/leads/review.html:31
+#: templates/leads/review.html:28
 msgid "All active leads"
 msgstr "Toutes les affaires actives"
 
-#: templates/leads/review.html:60
+#: templates/leads/review.html:57
 msgid "Recent won, lost or forgiven leads"
 msgstr "Affaires récemment gagnées, perdues ou abandonnées"
 
@@ -2039,6 +2031,12 @@ msgstr "Équipe %(manager)s"
 #: templates/staffing/pdc_review.html:100
 msgid "Totals"
 msgstr "Totaux"
+
+#~ msgid "All lead (k€)"
+#~ msgstr "Toutes les affaires (k€)"
+
+#~ msgid "Order taking (k€)"
+#~ msgstr "Prise de commande (k€)"
 
 #~ msgid "See also timesheet of this consultant"
 #~ msgstr "Voir aussi les feuilles de temps de ce consultant"
