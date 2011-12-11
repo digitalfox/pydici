@@ -15,12 +15,12 @@
 
 {% block content %}
 
-<div id="graph_bar_jqp"></div>
-<script type="text/javascript">
-$('#graph_bar_jqp').load('{% url pydici.leads.views.graph_bar_jqp %}')
-</script>
-
 <div id="content-main">
+	<center><div id="graph_bar_jqp"></div></center>
+	<script type="text/javascript">
+	$('#graph_bar_jqp').load('{% url pydici.leads.views.graph_bar_jqp %}')
+	</script>
+
     {% if active_leads %}
     <div class="module">
         <table summary="Leads">
