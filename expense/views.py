@@ -64,7 +64,7 @@ def expenses(request, expense_id=None):
         if expense_id:
             form = ExpenseForm(instance=expense) # A form that edit current expense
         else:
-            form = ExpenseForm() # An unbound form        
+            form = ExpenseForm() # An unbound form
 
     # Get user expenses
     user_expenses = Expense.objects.filter(user=request.user, workflow_in_progress=True)

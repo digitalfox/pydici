@@ -54,7 +54,7 @@
         {% endifchanged %}
         <li>
         {% with expense as obj %}{% ifhasperm expense_edit %}
-            <a href='{% url pydici.expense.views.expenses expense.id %}'>{{ expense }}</a>{% else %}{{ expense }}{% endifhasperm %}
+            <a title='{{ expense.comment }}' href='{% url pydici.expense.views.expenses expense.id %}'>{{ expense }}</a>{% else %}{{ expense }}{% endifhasperm %}
         {% endwith %}
         {% if expense.receipt %}
             <a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
@@ -80,7 +80,7 @@
 	    {% endifchanged %}
         <li>
         {% with expense as obj %}{% ifhasperm expense_edit %}
-            <a href='{% url pydici.expense.views.expenses expense.id %}'>{{ expense }}</a>{% else %}{{ expense }}{% endifhasperm %}
+            <a title='{{ expense.comment }}' href='{% url pydici.expense.views.expenses expense.id %}'>{{ expense }}</a>{% else %}{{ expense }}{% endifhasperm %}
         {% endwith %}
 
         {% if expense.receipt %}
