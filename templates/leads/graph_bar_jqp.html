@@ -26,12 +26,17 @@ $.jqplot('leads-stat-graph',  {{ graph_data|safe }},
                    {
                 	   label: '{% trans "All leads" %}',
                 	   renderer: $.jqplot.LineRenderer,
+                	   rendererOptions: { smooth: true },
+                	   linePattern: 'dashed',
+                	   lineWidth: 1,
+                	   markerOptions : { size : 5},
                 	   yaxis: 'y2axis',
                 	   disableStack : true,
                    },
                    {
                 	   label: '{% trans "Won leads" %}',
                 	   renderer: $.jqplot.LineRenderer,
+                	   rendererOptions: { smooth: true },
                 	   yaxis: 'y2axis',
                 	   disableStack : true,
                    }
