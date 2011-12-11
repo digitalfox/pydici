@@ -21,10 +21,10 @@ $.jqplot('leads-stat-graph',  {{ graph_data|safe }},
          },
          series:[
                {% for label in series_label %}
-                   {label: '{{ label }}'},
+                   {label: "{{ label }}"},
                {% endfor %}
                    {
-                	   label: '{% trans "All leads" %}',
+                	   label: "{% trans 'All leads' %}",
                 	   renderer: $.jqplot.LineRenderer,
                 	   rendererOptions: { smooth: true },
                 	   linePattern: 'dashed',
@@ -34,7 +34,7 @@ $.jqplot('leads-stat-graph',  {{ graph_data|safe }},
                 	   disableStack : true,
                    },
                    {
-                	   label: '{% trans "Won leads" %}',
+                	   label: "{% trans 'Won leads' %}",
                 	   renderer: $.jqplot.LineRenderer,
                 	   rendererOptions: { smooth: true },
                 	   yaxis: 'y2axis',
@@ -56,7 +56,7 @@ $.jqplot('leads-stat-graph',  {{ graph_data|safe }},
            yaxis: {
                padMin: 0,
                numberTicks: 5,
-               label: '{% trans "Number of leads" %}',
+               label: "{% trans 'Number of leads' %}",
                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
            },
