@@ -22,7 +22,7 @@ from django.contrib.auth.decorators import permission_required
 from taggit.models import Tag
 from taggit_suggest.utils import suggest_tags
 
-from pydici.core.utils import send_lead_mail, sortedValues
+from pydici.core.utils import send_lead_mail, sortedValues, COLORS
 from pydici.leads.models import Lead
 import pydici.settings
 from pydici.core.utils import capitalize
@@ -228,7 +228,7 @@ def graph_bar_jqp(request):
     return render_to_response("leads/graph_bar_jqp.html",
                               {"graph_data" : json.dumps(graph_data),
                                "series_label" : [i[1] for i in Lead.STATES],
-                               #"x_ticks" : json.dumps(["%s" % i for i in kdates]),
+                               "series_colors" : COLORS,
                                "min_date" : (kdates[0] - timedelta(30)).isoformat(),
                                "user": request.user },
                                RequestContext(request))

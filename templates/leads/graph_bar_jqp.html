@@ -12,6 +12,7 @@ $.jqplot('leads-stat-graph',  {{ graph_data|safe }},
          animate : true,
          stackSeries: true,
          captureRightClick: true,
+         seriesColors: {{ series_colors|safe }},
          seriesDefaults:{
            renderer:$.jqplot.BarRenderer,
            rendererOptions: {
