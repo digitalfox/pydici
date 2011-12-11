@@ -9,7 +9,7 @@ from datetime import datetime
 
 from django import forms
 from django.forms.models import BaseInlineFormSet
-from django.forms.widgets import TextInput
+from django.forms.widgets import TextInput, Textarea
 from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
@@ -23,8 +23,9 @@ class ExpenseForm(forms.ModelForm):
     """Expense form based on Expense model"""
     class Meta:
         model = Expense
-        fields = ("description", "lead", "chargeable", "amount", "category", "receipt", "expense_date")
-        widgets = {"description": TextInput(attrs={"size": 40}) } # Increase default size
+        fields = ("description", "lead", "chargeable", "amount", "category", "receipt", "expense_date", "corporate_card", "comment")
+        widgets = {"description": TextInput(attrs={"size": 40}), # Increase default size
+                   "comment": Textarea(attrs={'cols': 17, 'rows': 2})} # Reduce height and increase width 
 
     lead = AutoCompleteSelectField('lead', required=False, label=_("Lead")) # Ajax it
 

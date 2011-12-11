@@ -24,27 +24,21 @@
     {{ form.non_field_errors }}
     <div class="pydici-expense-col1">
     <div class="pydici-expense">
-            <p>{{ form.description.errors }}
-            {{ form.description.label_tag }} :
-            {{ form.description }}</p>
-            <p>{{ form.amount.errors }}
-            {{ form.amount.label_tag }} :
-            {{ form.amount }} ({{ form.chargeable.label }}&nbsp;{{ form.chargeable }})</p>
+            <p>{{ form.description.errors }} {{ form.description.label_tag }} : {{ form.description }}</p>
+            <p>{{ form.amount.errors }} {{ form.amount.label_tag }} : {{ form.amount }}</p>
+            <p>{{ form.chargeable.errors }} {{ form.chargeable.label_tag }} : {{ form.chargeable }}</p>
+            <p>{{ form.corporate_card.label_tag }} : {{ form.corporate_card }}</p>
             <p>{{ form.receipt.erros }} {{ form.receipt.label_tag }} : {{ form.receipt }}</p>
      </div></div>
      <div class="pydici-expense-col2">
      <div class="pydici-expense">
-            <p>{{ form.category.errors }}
-            {{ form.category.label_tag }} :
-            {{ form.category }}</p>
-            <p>{{ form.lead.errors }}
-            {{ form.lead.label_tag }} :
-            {{ form.lead }}</p>
-            <p>{{ form.expense_date.errors }}
-            {{ form.expense_date.label_tag }} :
-            {{ form.expense_date }}</p>
+            <p>{{ form.category.errors }} {{ form.category.label_tag }} : {{ form.category }}</p>
+            <p>{{ form.lead.errors }} {{ form.lead.label_tag }} : {{ form.lead }}</p>
+            <p>{{ form.expense_date.errors }} {{ form.expense_date.label_tag }} : {{ form.expense_date }}</p>
+            <p>{{ form.comment.errors }} {{ form.comment.label_tag }} : {{ form.comment }}</p>
     </div></div>
     <div style="clear:both"></div>
+
     <input type="submit" value="{% trans 'Save' %}"/>
 
 </form>

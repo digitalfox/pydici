@@ -13,7 +13,7 @@ class ExpenseAdmin(admin.ModelAdmin):
     list_display = ("user", "description", "lead", "chargeable", "creation_date", "update_date")
     odering = ("creation_date")
     search_fields = ["description", "lead__name", "lead__client__organisation__company__name", "consultant__name"]
-    list_filter = ["workflow_in_progress", "chargeable", "user"]
+    list_filter = ["workflow_in_progress", "chargeable", "corporate_card", "user"]
     actions = None
 
 class ExpenseCategoryAdmin(admin.ModelAdmin):
