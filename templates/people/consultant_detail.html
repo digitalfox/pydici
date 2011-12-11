@@ -6,6 +6,10 @@
 
 {% block bodyclass %}dashboard{% endblock %}
 
+{% block extrajs %}
+    {% include "core/_jqplot.html" %}
+{% endblock %}
+
 {% block breadcrumbs %}{% endblock %}
 
 {% block title %}{% trans "Consultant " %}{{ consultant }}{% endblock %}
@@ -99,11 +103,14 @@
 </li>
 <div style="clear:both">&nbsp;</div>
 {% if not consultant.subcontractor %}
-<li>    
+<li>
     <a href="{% url staffing.views.graph_consultant_rates_pie consultant.id %}"><img src="{% url staffing.views.graph_consultant_rates_pie consultant.id %}" width="280"/></a>
 </li>
 <li>
-    <a href="{% url staffing.views.graph_consultant_rates_graph consultant.id %}"><img src="{% url staffing.views.graph_consultant_rates_graph consultant.id %}" width="280"/></a>
+    <div id="consultant_rate_graph_jqp_content"></div>
+    <script type="text/javascript">
+    $('#consultant_rate_graph_jqp_content').load('{% url pydici.staffing.views.graph_consultant_rates_jqp consultant.id %}')
+    </script>
 </li>
 {% endif %}
 </ul>

@@ -2,12 +2,12 @@
 {# One must include in its extrajs block core/_jqplot.html to load according js/css #}
 {% load i18n %}
 
-<div id="leads-stat-graph" style="height:300px;width:1000px; "></div>
+<div id="#graph_bar_jqp" style="height:300px;width:1000px; "></div>
 
 <script type="text/javascript">
 
 $.jqplot.config.enablePlugins = true;
-$.jqplot('leads-stat-graph',  {{ graph_data|safe }},
+$.jqplot('#graph_bar_jqp',  {{ graph_data|safe }},
 		{
          animate : true,
          stackSeries: true,
@@ -66,9 +66,7 @@ $.jqplot('leads-stat-graph',  {{ graph_data|safe }},
         	   numberTicks: 5,
         	   labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
         	   tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-        	   tickOptions: {
-                   formatString: '%dk€'
-               },
+        	   tickOptions: { formatString: '%dk€' },
            }
          },
          legend: {

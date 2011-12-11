@@ -970,13 +970,11 @@ def graph_consultant_rates_pie(request, consultant_id):
 
 @pydici_non_public
 @cache_page(60 * 10)
-def graph_consultant_rates_graph(request, consultant_id):
+def graph_consultant_rates_jqp(request, consultant_id):
     """Nice graph of consultant rates"""
     ydata = []
-    fig = Figure(figsize=(8, 8))
-    fig.set_facecolor("white")
-    ax = fig.add_subplot(1, 1, 1)
-
+    isoKdates = [] # List of date in iso format
+    graph_data = [] # Data that will be returned to jqplot
     consultant = Consultant.objects.get(id=consultant_id)
 
     # Avg rate / month
@@ -986,13 +984,10 @@ def graph_consultant_rates_graph(request, consultant_id):
         nextMonth = (refDate + timedelta(40)).replace(day=1)
         fc = consultant.getFinancialConditions(refDate, nextMonth)
         if fc:
-            ydata.append(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc]))
-        else:
-            ydata.append(None)
+            ydata.append(int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc])))
+            isoKdates.append(refDate.date().isoformat())
 
-    if len([i for i in ydata if i > 0]) == 0:
-        return print_png(fig)
-
+    graph_data.append(zip(isoKdates, ydata))
 
     # Get rate objectives
     objectives = RateObjective.objects.filter(consultant=consultant).order_by("start_date")
@@ -1008,25 +1003,14 @@ def graph_consultant_rates_graph(request, consultant_id):
         objectiveRates.append(objectiveRate)
     # Add last point (last date and last known rate)
     if objectiveRates:
-        objectiveDates.append(kdates[-1])
+        objectiveDates.append(kdates[-1].date())
         objectiveRates.append(objectiveRates[-1])
 
-    # Compute ymax/ymin
-    if objectiveRates:
-        ymax = max(max(ydata), max(objectiveRates)) + 50
-        ymin = min(min(i for i in ydata if i > 0), min(objectiveRates)) - 50
-    else:
-        ymax = max(ydata)
-        ymin = min(i for i in ydata if i > 0) - 50
+    isoObjectiveDates = [a.isoformat() for a in objectiveDates] # List of date as string in ISO format
+    graph_data.append(zip(isoObjectiveDates, objectiveRates))
 
-    # Graph data
-    rates = ax.plot(kdates, ydata, '-o', ms=10, lw=4, color=COLORS[0], mfc=COLORS[0])
-    fKdates = sampleList(kdates, 8) # Filter kdates to unclutter X axis
-    ax.set_xticks(fKdates)
-    ax.set_xticklabels([d.strftime("%b %y") for d in fKdates])
-    objectives = ax.plot(objectiveDates, objectiveRates, '--', ms=0, lw=2, color=COLORS[1], mfc=COLORS[1])
-    ax.set_ylim(ymin=ymin, ymax=ymax)
-    ax.legend((rates, objectives), [_(u"Average daily rate (€)"), _(u"Daily rate objective (€)")],
-              bbox_to_anchor=(0., 1.02, 1., .102), loc=4, ncol=2, borderaxespad=0.)
-
-    return print_png(fig)
+    return render_to_response("staffing/graph_consultant_rate_jqp.html",
+                              {"graph_data" : json.dumps(graph_data),
+                               "series_colors" : COLORS,
+                               "user": request.user },
+                               RequestContext(request))

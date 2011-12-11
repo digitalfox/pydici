@@ -1,0 +1,55 @@
+{# Fragment that display leads stat/bar graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_jqplot.html to load according js/css #}
+{% load i18n %}
+
+<div id="consultant_rate_graph_jqp" style="height:300px;width:300px; "></div>
+
+<script type="text/javascript">
+
+$.jqplot.config.enablePlugins = true;
+$.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }},
+		{
+         animate : true,
+         captureRightClick: true,
+         seriesColors: {{ series_colors|safe }},
+         series:[
+                   {
+                	   label: "{% trans 'Average daily rate (€)' %}",
+                	   rendererOptions: { smooth: true },
+                	   markerOptions : { size : 7},
+                   },
+                   {
+                	   label: "{% trans 'Daily rate objective (€)' %}",
+                       linePattern: 'dashed',
+                       lineWidth: 1,
+                       markerOptions : { size : 5},
+                   }
+             ],
+         axes: {
+           xaxis: {
+               renderer: $.jqplot.DateAxisRenderer,
+               labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+               tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+               tickOptions:{
+            	   formatString:'%b %y',
+            	   angle: -40 
+               },
+           },
+           yaxis: {
+               labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+               tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+               tickOptions: { formatString: '%d€' },
+           },
+         },
+         legend: {
+        	 show:true,
+        	  location: 'n',
+        	  placement: 'outside',
+         },
+         highlighter: {
+             tooltipAxes: 'xy',
+             showLabel: true,
+             sizeAdjust: 7.5,
+         },
+});
+</script>
