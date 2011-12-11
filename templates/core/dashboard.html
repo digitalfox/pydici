@@ -15,21 +15,22 @@
 {% block title %}{% trans "Management dashboard" %}{% endblock %}
 
 {% block content %}
-<div id="content-main">
+<div id="content-large">
 
 <center><h1>{% trans "Commercial activity" %}</h1></center>
 <div id="graph_bar_jqp"></div>
 <script type="text/javascript">
 $('#graph_bar_jqp').load('{% url pydici.leads.views.graph_bar_jqp %}')
 </script>
-
+<br/>
 
 <center><h1>{% trans "Production rates and daily rates review" %}</h1></center>
 <img src="{% url pydici.staffing.views.graph_timesheet_rates_bar %}"/>
+<br/>
 
 <center><h1>{% trans "Billing review and done work" %}</h1></center>
 <img src="{% url pydici.billing.views.graph_stat_bar %}"/>
-
+<br/>
 
 </div>
 {% endblock %}
