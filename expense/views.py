@@ -26,6 +26,8 @@ from pydici.core.decorator import pydici_non_public
 @pydici_non_public
 def expenses(request, expense_id=None):
     """Display user expenses and expenses that he can validate"""
+    if not request.user.groups.filter(name="expense_requester").exists():
+        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
     try:
         consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
         user_team = consultant.userTeam()
