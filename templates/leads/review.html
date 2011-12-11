@@ -8,6 +8,7 @@
 {% block extrajs %}
     {% include "core/_jqplot.html" %}
 {% endblock %}
+
 {% block breadcrumbs %}{% endblock %}
 
 {% block title %}{% trans "Current leads review" %}{% endblock %}
@@ -19,11 +20,6 @@
 $('#graph_bar_jqp').load('{% url pydici.leads.views.graph_bar_jqp %}')
 </script>
 
-<center>
-<a href="{% url pydici.leads.views.graph_stat_bar %}"><img src="{% url pydici.leads.views.graph_stat_bar %}" height="400"></a>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="{% url pydici.leads.views.graph_stat_pie %}"><img src="{% url pydici.leads.views.graph_stat_pie %}" height="400"></a>
-</center>
 <div id="content-main">
     {% if active_leads %}
     <div class="module">

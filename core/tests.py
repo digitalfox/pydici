@@ -93,8 +93,6 @@ class SimpleTest(TestCase):
                      "/staffing/graph/rates/pie/consultant/1",
                      "/staffing/graph/rates/graph/consultant/1",
                      "/staffing/mission/1/deactivate",
-                     "/leads/graph/pie",
-                     "/leads/graph/bar",
                      "/people/consultant/1/",
                      "/people/consultant/2/",
                      "/people/consultant/3/",

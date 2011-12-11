@@ -6,6 +6,10 @@
 
 {% block bodyclass %}dashboard{% endblock %}
 
+{% block extrajs %}
+    {% include "core/_jqplot.html" %}
+{% endblock %}
+
 {% block breadcrumbs %}{% endblock %}
 
 {% block title %}{% trans "Management dashboard" %}{% endblock %}
@@ -16,9 +20,10 @@
 <center>
 
 <h1>{% trans "Commercial activity" %}</h1>
-<a href="{% url pydici.leads.views.graph_stat_bar %}"><img src="{% url pydici.leads.views.graph_stat_bar %}" height="400"></a>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="{% url pydici.leads.views.graph_stat_pie %}"><img src="{% url pydici.leads.views.graph_stat_pie %}" height="400"></a>
+<div id="graph_bar_jqp"></div>
+<script type="text/javascript">
+$('#graph_bar_jqp').load('{% url pydici.leads.views.graph_bar_jqp %}')
+</script>
 
 <h1>{% trans "Production rates and daily rates review" %}</h1>
 <img src="{% url pydici.staffing.views.graph_timesheet_rates_bar %}"/>

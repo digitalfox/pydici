@@ -7,16 +7,14 @@ Pydici leads views. Http request are processed here.
 
 import csv
 from datetime import datetime, timedelta, date
-import itertools
 import json
 
-from matplotlib.figure import Figure
 
 from django.core import urlresolvers
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext as _
-from django.db.models import Q, Count
+from django.db.models import Q
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
@@ -24,7 +22,7 @@ from django.contrib.auth.decorators import permission_required
 from taggit.models import Tag
 from taggit_suggest.utils import suggest_tags
 
-from pydici.core.utils import send_lead_mail, print_png, COLORS, sortedValues, sampleList
+from pydici.core.utils import send_lead_mail, sortedValues
 from pydici.leads.models import Lead
 import pydici.settings
 from pydici.core.utils import capitalize
@@ -194,82 +192,6 @@ def tags(request, lead_id):
     tags = tags.filter(name__icontains=request.GET["q"])
     tags = tags.values_list("name", flat=True)
     return HttpResponse("\n".join(tags))
-
-
-@pydici_non_public
-@cache_page(60 * 10)
-def graph_stat_pie(request):
-    """Nice graph pie of lead state repartition using matplotlib
-    @todo: per year, with start-end date"""
-    statesCount = Lead.objects.values("state").annotate(count=Count("state")).order_by("state")
-    statesCount = dict([[i["state"], i["count"]] for i in statesCount]) # Transform it to dict
-    data = []
-    for state, stateName in Lead.STATES:
-        data.append([stateName, statesCount.get(state, 0)])
-    fig = Figure(figsize=(8, 8))
-    fig.set_facecolor("white")
-    ax = fig.add_subplot(111)
-    ax.pie([x[1] for x in data], colors=COLORS,
-           labels=["%s\n(%s)" % (x[0], x[1]) for x in data],
-           shadow=True, autopct='%1.1f%%')
-
-    return print_png(fig)
-
-@pydici_non_public
-@cache_page(60 * 10)
-def graph_stat_bar(request):
-    """Nice graph bar of lead state during time using matplotlib
-    @todo: per year, with start-end date"""
-    data = {} # Graph data
-    bars = [] # List of bars - needed to add legend
-    colors = itertools.cycle(COLORS)
-
-    # Gathering data
-    for lead in Lead.objects.all():
-        #Using first day of each month as key date
-        kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
-        if not data.has_key(kdate):
-            data[kdate] = [] # Create key with empty list
-        data[kdate].append(lead)
-
-    kdates = data.keys()
-    kdates.sort()
-    # Setting up graph
-    fig = Figure(figsize=(8, 8))
-    fig.set_facecolor("white")
-    ax = fig.add_subplot(211)
-    ax2 = fig.add_subplot(212, sharex=ax)
-    fig.subplots_adjust(hspace=0.1)
-    bottom = [0] * len(kdates) # Bottom of each graph. Starts if [0, 0, 0, ...]
-
-    # Draw a bar for each state
-    for state in Lead.STATES:
-        ydata = [len([i for i in x if i.state == state[0]]) for x in sortedValues(data)]
-        b = ax.bar(kdates, ydata, bottom=bottom, align="center", width=15,
-               color=colors.next())
-        bars.append(b[0])
-        for i in range(len(ydata)):
-            bottom[i] += ydata[i] # Update bottom
-
-    # Draw lead amount by month
-    yAllLead = [sum([i.sales for i in x if i.sales]) for x in sortedValues(data)]
-    yWonLead = [sum([i.sales for i in x if (i.sales and i.state == "WON")]) for x in sortedValues(data)]
-    plots = (ax2.plot(kdates, yAllLead, '--o', ms=5, lw=2, color="blue", mfc="blue"),
-             ax2.plot(kdates, yWonLead, '-o', ms=10, lw=4, color="green", mfc="green"))
-
-    # Add Legend and setup axes
-    ax.set_ylim(ymax=max(bottom) + 13)
-    ax.legend(bars, [i[1] for i in Lead.STATES], ncol=3, loc=2)
-    ax.grid(True)
-    fKdates = sampleList(kdates, 10) # Filter kdates to unclutter X axis
-    ax2.set_xticks(fKdates)
-    ax2.set_xticklabels([d.strftime("%b %y") for d in fKdates])
-    ax2.set_ylim(ymax=max(yAllLead) + 100)
-    ax2.legend(plots, [_(u"All lead (k€)"), _(u"Order taking (k€)")], ncol=2, loc=2)
-    ax2.grid(True)
-    fig.autofmt_xdate()
-
-    return print_png(fig)
 
 
 @pydici_non_public
