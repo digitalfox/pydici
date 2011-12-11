@@ -2,50 +2,73 @@
 {# One must include in its extrajs block core/_jqplot.html to load according js/css #}
 {% load i18n %}
 
-<div id="leads-stat-graph" style="height:300px;width:600px; "></div>
+<div id="leads-stat-graph" style="height:300px;width:1000px; "></div>
 
 <script type="text/javascript">
 
 $.jqplot.config.enablePlugins = true;
 $.jqplot('leads-stat-graph',  {{ graph_data|safe }},
-	    {title : '{% trans "Leads tracking" %}',
+		{
          animate : true,
          stackSeries: true,
          captureRightClick: true,
          seriesDefaults:{
            renderer:$.jqplot.BarRenderer,
            rendererOptions: {
-               barMargin: 15,
+               barMargin: 20,
            },
            pointLabels: {show: true}
          },
          series:[
                {% for label in series_label %}
-                   {label: '{{ label }}' },
+                   {label: '{{ label }}'},
                {% endfor %}
+                   {
+                	   label: '{% trans "All leads" %}',
+                	   renderer: $.jqplot.LineRenderer,
+                	   yaxis: 'y2axis',
+                	   disableStack : true,
+                   },
+                   {
+                	   label: '{% trans "Won leads" %}',
+                	   renderer: $.jqplot.LineRenderer,
+                	   yaxis: 'y2axis',
+                	   disableStack : true,
+                   }
              ],
          axes: {
            xaxis: {
                renderer: $.jqplot.DateAxisRenderer,
+               labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+               tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                tickOptions:{
             	   formatString:'%b %y',
-         //   	   angle: -40 
+            	   angle: -40 
                },
                min: '{{ min_date }}',
                tickInterval: '2 month',
            },
            yaxis: {
-             // Don't pad out the bottom of the data range.  By default,
-             // axes scaled as if data extended 10% above and below the
-             // actual range to prevent data points right on grid boundaries.
-             // Don't want to do that here.
-             padMin: 0
+               padMin: 0,
+               numberTicks: 5,
+               label: '{% trans "Number of leads" %}',
+               labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+               tickRenderer: $.jqplot.CanvasAxisTickRenderer,
            },
+           y2axis: {
+        	   padMin: 0,
+        	   numberTicks: 5,
+        	   labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+        	   tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+        	   tickOptions: {
+                   formatString: '%dk€'
+               },
+           }
          },
          legend: {
         	 show:true,
         	  location: 'e',
-        	  placement: 'outside'
+        	  placement: 'outsideGrid',
          },
          highlighter: {
              tooltipAxes: 'y',

@@ -271,12 +271,14 @@ def graph_stat_bar(request):
 
     return print_png(fig)
 
+
+@pydici_non_public
+@cache_page(60 * 10)
 def graph_bar_jqp(request):
     """Nice graph bar of lead state during time using jqplot
     @todo: per year, with start-end date"""
     data = {} # Raw data collected
     graph_data = [] # Data that will be returned to jqplot 
-    bars = [] # List of bars - needed to add legend
 
     # Gathering data
     for lead in Lead.objects.all():
@@ -295,11 +297,12 @@ def graph_bar_jqp(request):
         ydata = [len([i for i in x if i.state == state[0]]) for x in sortedValues(data)]
         graph_data.append(zip(isoKdates, ydata))
 
+
     # Draw lead amount by month
     yAllLead = [sum([i.sales for i in x if i.sales]) for x in sortedValues(data)]
     yWonLead = [sum([i.sales for i in x if (i.sales and i.state == "WON")]) for x in sortedValues(data)]
-    #plots = (ax2.plot(kdates, yAllLead, '--o', ms=5, lw=2, color="blue", mfc="blue"),
-    #         ax2.plot(kdates, yWonLead, '-o', ms=10, lw=4, color="green", mfc="green"))
+    graph_data.append(zip(isoKdates, yAllLead))
+    graph_data.append(zip(isoKdates, yWonLead))
 
     return render_to_response("leads/graph_bar_jqp.html",
                               {"graph_data" : json.dumps(graph_data),
