@@ -32,7 +32,7 @@ def company_detail(request, company_id):
                               {"company": company,
                                "leads": leads,
                                "consultants": consultants,
-                               "contacts" : ClientContact.objects.filter(client__organisation__company=company),
+                               "contacts" : ClientContact.objects.filter(client__organisation__company=company).distinct(),
                                "clients": Client.objects.filter(organisation__company=company),
                                "companies": ClientCompany.objects.all()},
                                RequestContext(request))
