@@ -1,7 +1,9 @@
+{# Init jquery ui tabs #}
+{# tab id must be {{ tabs }} (use {% with...%}) #}
 {% load i18n %}
 <script>
 $(function() {
-    $( "#tabs" ).tabs({
+    $( "#{{ tabs }}" ).tabs({
         ajaxOptions: {
             error: function( xhr, status, index, anchor ) {
                 $( anchor.hash ).html('{% trans "Could not load this tab. Sorry" %}');

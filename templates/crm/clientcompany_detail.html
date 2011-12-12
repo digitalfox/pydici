@@ -8,6 +8,12 @@
 
 {% block breadcrumbs %}{% endblock %}
 
+{% block extrajs %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.16.custom.css" />
+{% endblock %}
+
+
 {% block title %}{{ company }}{% endblock %}
 
 {% block content %}
@@ -21,8 +27,23 @@
 {% else %}
 <div id="content-main">
 <h1>{{ company }}</h1>
+
+{% with "company-tabs" as tabs %}
+    {% include "core/_init_tabs.html" %}
+{% endwith %}
+
+<div id="company-tabs">
+    <ul>
+        <li><a href="#tab-leads">{% trans "Leads" %}</a></li>
+        <li><a href="#tab-consultants">{% trans "Consultants" %}</a></li>
+        <li><a href="#tab-contacts">{% trans "Client contacts" %}</a></li>
+        <li><a href="#tab-rates">{% trans "Rates" %}</a></li>
+        <li><a href="#tab-all-companies">{% trans "All companies list" %}</a></li>
+    </ul>
+
 {% endif %}
 
+<div id="tab-leads">
 <ul>
 {% for lead in leads %}
     {% ifchanged lead.client %}
@@ -38,6 +59,9 @@
     <li><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }}</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
 {% endfor %}
 </ul>
+</div>
+
+<div id="tab-consultants">
 {% if consultants %}
     <h2>{% trans "Consultants that work for this company:" %}</h2>
     <ul data-role="listview" data-inset="true" data-theme="c">
@@ -46,6 +70,40 @@
     {% endfor %}
     </ul>
 {% endif %}
+</div>
+
+{% if not request.session.mobile %}
+<div id="tab-contacts">
+<br/>
+<div class="imodule">
+<table>
+	<tr>
+	    <th>{% trans "Name" %}</th>
+	    <th>{% trans "Company" %}</th>
+	    <th>{% trans "Function" %}</th>
+	    <th>{% trans "Email" %}</th>
+	    <th>{% trans "Phone" %}</th>
+	    <th>{% trans "Mobile phone" %}</th>
+	    <th>{% trans "Fax" %}</th>
+	</tr>
+    {% for contact in contacts %}
+	    <tr {%cycle 'class="row1"' 'class="row2"' %}>
+	       <td><a rel=external href="{% url admin:crm_clientcontact_change contact.id %}">{{ contact.name }}</a></td>
+	       <td>{{ contact.company }}</td>
+	       <td>{{ contact.function }}</td>
+	       <td>{{ contact.email }}</td>
+	       <td>{{ contact.phone }}</td>
+	       <td>{{ contact.mobile_phone }}</td>
+	       <td>{{ contact.fax }}</td>
+	    </tr>
+    {% endfor %}
+</table>
+</div>
+</div>
+{% endif %}
+
+
+<div id="tab-rates">
 <h2>{% trans "Used rates for this company" %}</h2>
 <ul>
 {% for client in clients %}
@@ -58,7 +116,20 @@
     </ul></li>
 {% endfor %}
 </ul>
-<br/>
-<a href='{% url pydici.crm.views.company_list %}'>{% trans "All companies list" %}</a> 
+</div>
+
+{% if not request.session.mobile %}
+    <div id="tab-all-companies">
+    <h1>{% trans "All companies list" %}</h1>
+    <ul style='float: left; width: 64em;'>
+    {% for company in companies %}
+        <li style='float: left; width: 16em;'>
+            <a href='{% url pydici.crm.views.company_detail company.id %}'>{{ company }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+    </div>
+    </div> <!-- End of tabs div -->
+{% endif %}
 </div>
 {% endblock %}

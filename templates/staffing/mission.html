@@ -19,12 +19,14 @@
 
 {% block content %}
 
-{% include "core/_init_tabs.html" %}
+{% with "mission-tabs" as tabs %}
+    {% include "core/_init_tabs.html" %}
+{% endwith %}
 
 <div id="content-large">
 <h1><a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission }} - {{ mission.mission_id }}</a></h1>
 
-<div id="tabs">
+<div id="mission-tabs">
     <ul>
         <li><a href="#tab-description">{% trans "Description" %}</a></li>
         <li><a href="#tab-consultants">{% trans "Consultants" %}</a></li>
@@ -91,7 +93,7 @@
         {% else %}
             <script type="text/javascript">
             // Disable other mission tabs
-            $('#tabs').tabs().tabs('remove', '#tab-other-missions');
+            $('#mission-tabs').tabs().tabs('remove', '#tab-other-missions');
             </script>
         {% endif %}
     </div>

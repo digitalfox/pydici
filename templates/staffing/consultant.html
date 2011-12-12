@@ -17,12 +17,14 @@
 
 {% block content %}
 
-{% include "core/_init_tabs.html" %}
+{% with "consultant-tabs" as tabs %}
+    {% include "core/_init_tabs.html" %}
+{% endwith %}
 
 <div id="content-large">
 <h1>{{ consultant.full_name }} {% if consultant.subcontractor %} - {% trans "subcontractor" %} {% endif %}</h1>
 
-<div id="tabs">
+<div id="consultant-tabs">
     <ul>
         <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.consultant_timesheet consultant.id %}">{% trans "Timesheet" %}</a></li>
         <li><a title="#tab-staffing"  href="{% url pydici.staffing.views.consultant_staffing consultant.id %}">{% trans "Forecast staffing" %}</a></li>
