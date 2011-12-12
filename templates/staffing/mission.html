@@ -72,6 +72,11 @@
             </tr>
         {% endfor %}
         </table> 
+        {% else %}
+            <script type="text/javascript">
+            // Disable other mission tabs
+            $('#tabs').tabs().tabs('remove', '#tab-other-missions');
+            </script>
         {% endif %}
     </div>
 
@@ -82,7 +87,6 @@
 	        {% endwith %}
 	    {% endif %}
     </div>
-
 
 </div> <!-- end of tabs -->
 </div>
