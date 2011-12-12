@@ -64,7 +64,7 @@ def link_to_timesheet(value, arg=None):
     @param arg: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
-        url = "<a href='%s'>%s</a>" % (reverse("pydici.staffing.views.consultant_timesheet", args=[c.id, ]),
+        url = "<a href='%s#tab-timesheet'>%s</a>" % (reverse("pydici.staffing.views.consultant_home", args=[c.id, ]),
                                         escape(_("My timesheet")))
         return mark_safe(url)
     except Consultant.DoesNotExist:
@@ -76,7 +76,7 @@ def link_to_staffing(value, arg=None):
     @param arg: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
-        url = "<a href='%s'>%s</a>" % (reverse("pydici.staffing.views.consultant_staffing", args=[c.id, ]),
+        url = "<a href='%s#tab-staffing'>%s</a>" % (reverse("pydici.staffing.views.consultant_home", args=[c.id, ]),
                                         escape(_("My staffing")))
         return mark_safe(url)
     except Consultant.DoesNotExist:
