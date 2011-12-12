@@ -24,7 +24,14 @@
 {% endwith %}
 
 <div id="content-large">
-<h1><a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission }} - {{ mission.mission_id }}</a></h1>
+
+<h1>
+{% if mission.lead.client %}
+    <a href='{% url pydici.crm.views.company_detail mission.lead.client.organisation.company.id %}'>{{ mission.lead.client.organisation }}</a> : <a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission.short_name }}</a>
+{% else %}
+    <a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission }} - {{ mission.mission_id }}</a>
+{% endif %}
+</h1>
 
 <div id="mission-tabs">
     <ul>
