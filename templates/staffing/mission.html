@@ -49,8 +49,9 @@
 
     <div id="tab-consultants">
 	    <h2>{% trans "Consultants currently implicated in this mission" %}</h2>
+	    <div class="timesheet">
 	    <table>
-	    <tr><td>{% trans "Consultant" %}</td><td>{% trans "Daily rate (€)" %}</td><td></td></tr>
+	    <tr><th>{% trans "Consultant" %}</th><th>{% trans "Daily rate (€)" %}</th><th></th></tr>
 	    {% for consultant, rate in mission.consultant_rates.items %}
 	        <tr {%cycle 'class="row1"' 'class="row2"' %}>
 	            <td><a href='{% url pydici.staffing.views.consultant_home consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
@@ -59,20 +60,34 @@
 	        </tr>
 	    {% endfor %}
 	    </table>
+	    </div>
     </div>
 
     <div id="tab-other-missions">
         {% if mission.sister_missions %}
         <h2>{% trans "Other missions linked to this lead" %}</h2>
+        <div class="imodule">
         <table>
-        <tr><td>{% trans "Mission" %}</td><td>{% trans "id" %}</td></tr>
+        <tr>
+	        <th>{% trans "Mission" %}</th>
+	        <th>{% trans "id" %}</th>
+	        <th>{% trans "Done days" %}</th>
+	        <th>{% trans "Done work (k€)" %}</th>
+	        <th>{% trans "Sold (k€)" %}</th>
+	        <th>{% trans "Billing mode" %}</th>
+        </tr>
         {% for sister_mission in mission.sister_missions %}
-            <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><a href='{% url pydici.staffing.views.mission_home sister_mission.id %}' class='changelink'>{{ sister_mission }}</a></td>
-            <td>{{ sister_mission.mission_id }}</td>
-            </tr>
+        <tr {%cycle 'class="row1"' 'class="row2"' %}>
+	        <td><a href='{% url pydici.staffing.views.mission_home sister_mission.id %}'>{{ sister_mission }}</a></td>
+	        <td>{{ sister_mission.mission_id }}</td>
+	        <td>{{ sister_mission.done_work_k.0 }}</td>
+	        <td>{{ sister_mission.done_work_k.1|floatformat }}</td>
+	        <td>{{ sister_mission.price }}</td>
+	        <td>{{ sister_mission.get_billing_mode_display }}</td>
+        </tr>
         {% endfor %}
-        </table> 
+        </table>
+        </div>
         {% else %}
             <script type="text/javascript">
             // Disable other mission tabs

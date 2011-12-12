@@ -12,7 +12,7 @@
             <th>{% trans "Due date" %}</th>
             <th>{% trans "Payment date" %}</th>
             {% for bill in lead.bill_set.all %}
-                <tr>
+                <tr {%cycle 'class="row1"' 'class="row2"' %}>
                     <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
                     <td>{{ bill.get_state_display }}</td>
                     <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
