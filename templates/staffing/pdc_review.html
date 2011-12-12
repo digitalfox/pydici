@@ -23,7 +23,7 @@
         </div><!-- /navbar -->
     </div>
     <div data-role="content">
-    <table>              
+    <table>
 {% else %}
 <div id="content-main">
 	<h1>
@@ -88,7 +88,7 @@
     {% endifequal %}
 
     <tr {%cycle 'class="row1"' 'class="row2"' %}>
-        <td><a href="{% url pydici.staffing.views.consultant_staffing consultant.id %}">{{ consultant }}</a></td>
+        <td><a href="{% url pydici.staffing.views.consultant_home consultant.id %}#tab-staffing">{{ consultant }}</a></td>
         {% autoescape off %}
         {% for charge in charges %}
             <td style="border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td class='charge'>" }}</td>

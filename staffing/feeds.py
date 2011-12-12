@@ -22,7 +22,7 @@ class StaffingFeed(Feed):
         return urlresolvers.reverse("pydici.core.views.index")
 
     def item_link(self, obj):
-        url = urlresolvers.reverse("pydici.staffing.views.consultant_staffing", args=[obj.consultant.id])
+        url = urlresolvers.reverse("pydici.staffing.views.consultant_home", args=[obj.consultant.id]) + "#tab-staffing"
         return  self.request.build_absolute_uri(url)
 
     def item_pubdate(self, item):
