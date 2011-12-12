@@ -149,14 +149,6 @@ class Lead(models.Model):
         days, amount = self.done_work()
         return days, amount / 1000
 
-    def margin(self):
-        """Returns mission current margin in euros"""
-        if self.sales:
-            days, amount = self.done_work()
-            return self.sales - amount / 1000
-        else:
-            return 0
-
     def unused(self):
         """Returns unused money. ie. sales price minus all planned missions"""
         unused = 0
