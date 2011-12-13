@@ -13,6 +13,7 @@
 {% block title %}{% trans "Expense" %}{% endblock %}
 
 {% block content %}
+<div id="content-large">
 
 {% if modify_expense %}
     <h1>{% trans "Modify the expense" %}</h1>
@@ -102,4 +103,5 @@
 
 <br/><hr/><br/>
 <a href='{% url pydici.expense.views.expenses_history %}'>{% trans "Expenses history" %}</a>
+</div>
 {% endblock %}

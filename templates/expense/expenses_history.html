@@ -1,7 +1,6 @@
 {% extends "admin/base_site.html" %}
 
 {% load i18n %}
-{% load pydici_filters %}
 
 {% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
 
@@ -13,31 +12,9 @@
 
 {% block content %}
 
-<table>
-<tr>
-    <th>{% trans "People" %}</th>
-    <th>{% trans "Description" %}</th>
-    <th>{% trans "Lead" %}</th>
-    <th>{% trans "Chargeable" %}</th>
-    <th>{% trans "Receipt" %}</th>
-    <th>{% trans "State" %}</th>
-    <th>{% trans "Expense date" %}</th>
-    <th>{% trans "Update date" %}</th>
-    <th>{% trans "Comments" %}</th>
-</tr>
-{% for expense in expenses %}
-    <tr>
-    <td>{{ expense.user.username|link_to_consultant }}</td>
-    <td>{{ expense.description }}</td>
-    <td>{% if expense.lead %}<a href="{% url pydici.leads.views.detail expense.lead.id %}">{{ expense.lead }}</a>{% endif %}</td>
-    <td>{% if expense.chargeable %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
-    <td>{% if expense.receipt %}<a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}</td>
-    <td>{{ expense.state }}</td>
-    <td>{{ expense.expense_date }}</td>
-    <td>{{ expense.update_date }}</td>
-    <td>{{ expense.comment }}</td>
-    </tr>
-{% endfor %}
-</table>
+<h1>{% trans "Expenses history" %}</h1>
+<div id="content-large">
+{% include "expense/expense_list.html" %}
+</div>
 
 {% endblock %}

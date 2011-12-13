@@ -21,6 +21,7 @@ from django.db.models import Q
 from pydici.expense.forms import ExpenseForm
 from pydici.expense.models import Expense
 from pydici.people.models import Consultant
+from pydici.staffing.models import Mission
 from pydici.core.decorator import pydici_non_public
 
 @pydici_non_public
@@ -142,6 +143,21 @@ def expenses_history(request):
                                "user": request.user },
                                RequestContext(request))
 
+@pydici_non_public
+def mission_expenses(request, mission_id):
+    """Page fragment that display expenses related to given mission"""
+    try:
+        mission = Mission.objects.get(id=mission_id)
+        if mission.lead:
+            expenses = Expense.objects.filter(lead=mission.lead)
+        else:
+            expenses = []
+    except Mission.DoesNotExist:
+        expenses = []
+    return render_to_response("expense/expense_list.html",
+                              {"expenses" : expenses,
+                               "user": request.user },
+                               RequestContext(request))
 
 @pydici_non_public
 def update_expense_state(request, expense_id, transition_id):

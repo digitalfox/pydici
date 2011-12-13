@@ -40,6 +40,7 @@
         <li><a href="#tab-other-missions">{% trans "Other missions" %}</a></li>
         <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.mission_timesheet mission.id %}">{% trans "Timesheet" %}</a></li>
         <li><a title="#tab-staffing" href="{% url pydici.staffing.views.mission_staffing mission.id %}">{% trans "Forecast staffing" %}</a></li>
+        <li><a title="#tab-expenses" href="{% url pydici.expense.views.mission_expenses mission.id %}">{% trans "Expenses" %}</a></li>
         {% if mission.lead %}<li><a href="#tab-billing">{% trans "Billing" %}</a></li>{% endif %}
     </ul>
 
