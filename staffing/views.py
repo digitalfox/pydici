@@ -613,7 +613,7 @@ def all_timesheet(request, year=None, month=None):
         data = list(consultants)
     else:
         # drill down link
-        data = [mark_safe("<a href='%s'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.consultant_timesheet", args=[consultant.id, month.year, month.month]),
+        data = [mark_safe("<a href='%s#tab-timesheet'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.consultant_home", args=[consultant.id]),
                                         escape(unicode(consultant)))) for consultant in consultants]
     data = [[_("Mission"), _("Deal id")] + data]
     for timesheet in timesheets:

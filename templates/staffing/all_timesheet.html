@@ -10,7 +10,7 @@
 {% block title %}{% trans "All people timesheet for " %} {{ month|date:"F Y"}}{% endblock %}
 
 {% block content %}
-    
+
    <h2><a href='{% url pydici.staffing.views.all_timesheet year=previous_date|date:"Y",month=previous_date|date:"m" %}' title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
     {% trans "All people timesheet for " %} {{ month|date:"F Y"}}
     <a href='{% url pydici.staffing.views.all_timesheet year=next_date|date:"Y",month=next_date|date:"m" %}' title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a></h2>
