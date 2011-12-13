@@ -1,17 +1,7 @@
-{% extends "admin/base_site.html" %}
+{# Page fragment included in standard fordiden page #}
+{# and in fordiden ajax load pages #}
 {% load i18n %}
 
-{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/login.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block content_title %}{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
-{% block content %}
-
-<div id="content-main">
 {% blocktrans %}
 <h1>Sorry, this page is not available.<h1>
 <h2>You profil does not allow you to access to this page.</h2>
@@ -19,9 +9,7 @@
 to update your profile:</p>
 {% endblocktrans %}
 <ul> 
-{% for admin in ADMINS %}
+{% for admin in admins %}
     <li><a href='mailto:{{ admin.1 }}'>{{ admin.0 }}</a></li>
 {% endfor %}
 </ul>
-</div>
-{% endblock %}

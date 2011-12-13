@@ -16,8 +16,8 @@ from pydici.people.models import Consultant, SalesMan
 from pydici.crm.models import ClientCompany, ClientContact
 from pydici.staffing.models import Mission
 from pydici.billing.models import Bill
-
 from pydici.people.views import consultant_detail
+import pydici.settings
 
 @login_required
 def index(request):
@@ -198,3 +198,15 @@ def internal_error(request):
     """Custom internal error view.
     Like the default builtin one, but with context to allow proper menu display with correct media path"""
     return render_to_response("500.html", {}, RequestContext(request))
+
+def forbiden(request):
+    """When access is denied..."""
+    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        # Ajax request, use stripped forbiden page
+        template = "core/_access_forbiden.html"
+    else:
+        # Standard request, use full forbiden page with menu
+        template = "core/forbiden.html"
+    return render_to_response(template,
+                              {"admins" : pydici.settings.ADMINS, },
+                              RequestContext(request))

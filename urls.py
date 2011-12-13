@@ -9,13 +9,12 @@ import os
 # Django import
 from django.conf.urls.defaults import *
 from django.contrib import admin
-from django.views.generic.simple import direct_to_template, redirect_to
+from django.views.generic.simple import redirect_to
 
 admin.autodiscover()
 
-# Config to get admin conctat
+# Pydici settings
 import pydici.settings
-admin_contact = { "ADMINS" : pydici.settings.ADMINS }
 
 # Feeds definition
 from pydici.leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
@@ -44,7 +43,6 @@ pydici_patterns = patterns('',
 
 pydici_patterns += patterns('',
     # Direct to template and direct pages
-    url(r'^forbiden', direct_to_template, {'template': 'forbiden.html', 'extra_context': admin_contact}, name='forbiden'),
     url(r'^help', redirect_to, {'url': pydici.settings.LEADS_HELP_PAGE}, name='help'),
 
     # Media
@@ -62,6 +60,7 @@ pydici_patterns += patterns('pydici.core.views',
     url(r'^search$', 'search', name='search'),
     url(r'^mobile$', 'mobile_index', name='mobile_index'),
     url(r'^dashboard$', 'dashboard', name='dashboard'),
+    url(r'^forbiden', 'forbiden', name='forbiden'),
 )
 
 # Lead module
