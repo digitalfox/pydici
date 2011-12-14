@@ -91,7 +91,6 @@ class SimpleTest(TestCase):
                      "/staffing/timesheet/all/?csv",
                      "/staffing/timesheet/all/2010/11",
                      "/staffing/graph/rates/",
-                     "/staffing/graph/rates/pie/consultant/1",
                      "/staffing/graph/rates/graph-jqp/consultant/1",
                      "/staffing/mission/1/deactivate",
                      "/people/consultant/1/",

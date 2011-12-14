@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-13 19:09+0100\n"
-"PO-Revision-Date: 2011-12-13 19:09+0100\n"
+"POT-Creation-Date: 2011-12-14 22:38+0100\n"
+"PO-Revision-Date: 2011-12-14 22:38+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -805,22 +805,6 @@ msgstr "Taux de prod."
 msgid "Daily rate (€)"
 msgstr "Taux journalier (€)"
 
-#: staffing/views.py:946
-msgid "Last 3 months"
-msgstr "3 derniers mois"
-
-#: staffing/views.py:947
-msgid "Last 6 months"
-msgstr "6 derniers mois"
-
-#: staffing/views.py:948
-msgid "Last 12 months"
-msgstr "12 derniers mois"
-
-#: staffing/views.py:949
-msgid "Forever"
-msgstr "Depuis toujours"
-
 #: templates/404.html:12
 #, python-format
 msgid ""
@@ -850,21 +834,6 @@ msgstr ""
 "ont été prévenus par mail de cette erreur</h2><p>N'hésitez pas à contacter "
 "les administrateurs en indiquant les conditions qui ont provoquées cette "
 "erreur afin d'aider au diagnostic.</p>\n"
-
-#: templates/forbiden.html:15
-msgid ""
-"\n"
-"<h1>Sorry, this page is not available.<h1>\n"
-"<h2>You profil does not allow you to access to this page.</h2>\n"
-"<p>If you think that this could be a mistake, please, contact an "
-"administrator\n"
-"to update your profile:</p>\n"
-msgstr ""
-"\n"
-"<h1>Désolé, cette page n'est pas accessible.<h1>\n"
-"<h2>Votre profil ne vous permet pas d'accéder à cette page.</h2>\n"
-"<p>Si vous pensez qu'il s'agit d'une anomalie, merci d'envoyer\n"
-"un mail à un administrateur pour mettre à jour vos droits :</p>\n"
 
 #: templates/actionset/_base_actions.html:18
 msgid "Scope: "
@@ -1296,6 +1265,21 @@ msgstr "Délai moyen de règlement"
 msgid "Paying authorities"
 msgstr "Organismes payeurs"
 
+#: templates/core/_access_forbiden.html:5
+msgid ""
+"\n"
+"<h1>Sorry, this page is not available.<h1>\n"
+"<h2>You profil does not allow you to access to this page.</h2>\n"
+"<p>If you think that this could be a mistake, please, contact an "
+"administrator\n"
+"to update your profile:</p>\n"
+msgstr ""
+"\n"
+"<h1>Désolé, cette page n'est pas accessible.<h1>\n"
+"<h2>Votre profil ne vous permet pas d'accéder à cette page.</h2>\n"
+"<p>Si vous pensez qu'il s'agit d'une anomalie, merci d'envoyer\n"
+"un mail à un administrateur pour mettre à jour vos droits :</p>\n"
+
 #: templates/core/_init_tabs.html:9
 msgid "Could not load this tab. Sorry"
 msgstr "Impossible de charger cet onglet. Désolé..."
@@ -1393,7 +1377,7 @@ msgstr "Les consultants qui ont travaillé pour cette société :"
 
 #: templates/crm/clientcompany_detail.html:84
 msgid "Email"
-msgstr ""
+msgstr "Courriel"
 
 #: templates/crm/clientcompany_detail.html:107
 msgid "Used rates for this company"
@@ -1848,6 +1832,14 @@ msgstr "Taux journalier moyen (€)"
 msgid "Daily rate objective (€)"
 msgstr "Objectif de taux journalier (€)"
 
+#: templates/staffing/graph_consultant_rate_jqp.html:28
+msgid "Min daily rate (€)"
+msgstr "Taux journalier mini (€)"
+
+#: templates/staffing/graph_consultant_rate_jqp.html:35
+msgid "Max daily rate (€)"
+msgstr "Taux journalier maxi (€)"
+
 #: templates/staffing/m.consultant_timesheet.html:9
 msgid "Week "
 msgstr "semaine "
@@ -2050,6 +2042,18 @@ msgstr "Équipe %(manager)s"
 #: templates/staffing/pdc_review.html:100
 msgid "Totals"
 msgstr "Totaux"
+
+#~ msgid "Last 3 months"
+#~ msgstr "3 derniers mois"
+
+#~ msgid "Last 6 months"
+#~ msgstr "6 derniers mois"
+
+#~ msgid "Last 12 months"
+#~ msgstr "12 derniers mois"
+
+#~ msgid "Forever"
+#~ msgstr "Depuis toujours"
 
 #~ msgid "Margin (k€)"
 #~ msgstr "Marge (k€)"

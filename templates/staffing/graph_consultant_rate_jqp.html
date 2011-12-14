@@ -2,7 +2,7 @@
 {# One must include in its extrajs block core/_jqplot.html to load according js/css #}
 {% load i18n %}
 
-<div id="consultant_rate_graph_jqp" style="height:300px;width:300px; "></div>
+<div id="consultant_rate_graph_jqp" style="height:300px;width:800px; "></div>
 
 <script type="text/javascript">
 
@@ -14,17 +14,36 @@ $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }},
          seriesColors: {{ series_colors|safe }},
          series:[
                    {
-                	   label: "{% trans 'Average daily rate (€)' %}",
-                	   rendererOptions: { smooth: true },
-                	   markerOptions : { size : 7},
-                   },
-                   {
-                	   label: "{% trans 'Daily rate objective (€)' %}",
-                       linePattern: 'dashed',
-                       lineWidth: 1,
-                       markerOptions : { size : 5},
-                   }
+	                     label: "{% trans 'Average daily rate (€)' %}",
+	                     rendererOptions: { smooth: true },
+	                     markerOptions : { size : 7},
+	                },
+	                {
+                        label: "{% trans 'Daily rate objective (€)' %}",
+                        linePattern: 'dashed',
+                        lineWidth: 3,
+                        showMarker: false,
+                    },
+					{
+	                	label: "{% trans 'Min daily rate (€)' %}",
+					    rendererOptions: { smooth: true },
+					    linePattern: 'dotted',
+					    showMarker: false,
+					    lineWidth: 0,
+					},
+					{
+					    label: "{% trans 'Max daily rate (€)' %}",
+					    rendererOptions: { smooth: true },
+					    linePattern: 'dotted',
+					    showMarker: false,
+					    lineWidth: 0,
+					},
              ],
+             fillBetween: {
+                 series1: 2, // Serie min
+                 series2: 3, // Serie max
+                 color: "rgba(227, 167, 111, 0.5)",
+             },
          axes: {
            xaxis: {
                renderer: $.jqplot.DateAxisRenderer,
@@ -43,8 +62,8 @@ $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }},
          },
          legend: {
         	 show:true,
-        	  location: 'n',
-        	  placement: 'outside',
+        	  location: 'e',
+        	  placement: 'outsideGrid',
          },
          highlighter: {
              tooltipAxes: 'xy',

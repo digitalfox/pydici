@@ -937,42 +937,13 @@ def graph_timesheet_rates_bar(request):
 
     return print_png(fig)
 
-
-@pydici_non_public
-@cache_page(60 * 10)
-def graph_consultant_rates_pie(request, consultant_id):
-    """Nice graph of consultant rates"""
-    today = date.today()
-    dateRange = ((_("Last 3 months"), today - timedelta(90)),
-                 (_("Last 6 months"), today - timedelta(180)),
-                 (_("Last 12 months"), today - timedelta(365)),
-                 (_("Forever"), date(1970, 1, 1)))
-    consultant = Consultant.objects.get(id=consultant_id)
-
-    fig = Figure(figsize=(8, 8))
-    fig.set_facecolor("white")
-
-    # Rates pies
-    for i, (title, refDate) in enumerate(dateRange):
-        fc = consultant.getFinancialConditions(refDate, today)
-        fc = fc.order_by('consultant__timesheet__charge__sum').reverse()[:6] # Only keep more important one
-        fc = list(fc) # Swich to list because sliced qs cannot be sorted
-        fc.sort(key=lambda x: x[0]) # sort on daily rates
-
-        ax = fig.add_subplot(2, 2, i + 1)
-        ax.pie([x[1] for x in fc], colors=COLORS,
-           labels=[u"%s €\n(%s)" % (x[0], x[1]) for x in fc],
-           shadow=True, autopct='%1.1f%%')
-        ax.set_title(title)
-
-    return print_png(fig)
-
-
 @pydici_non_public
 @cache_page(60 * 10)
 def graph_consultant_rates_jqp(request, consultant_id):
     """Nice graph of consultant rates"""
     ydata = []
+    minYData = [] # Min rate for month
+    maxYData = [] # Max rate for month
     isoKdates = [] # List of date in iso format
     graph_data = [] # Data that will be returned to jqplot
     consultant = Consultant.objects.get(id=consultant_id)
@@ -985,9 +956,9 @@ def graph_consultant_rates_jqp(request, consultant_id):
         fc = consultant.getFinancialConditions(refDate, nextMonth)
         if fc:
             ydata.append(int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc])))
+            minYData.append(int(min([rate for rate, days in fc])))
+            maxYData.append(int(max([rate for rate, days in fc])))
             isoKdates.append(refDate.date().isoformat())
-
-    graph_data.append(zip(isoKdates, ydata))
 
     # Get rate objectives
     objectives = RateObjective.objects.filter(consultant=consultant).order_by("start_date")
@@ -1007,7 +978,12 @@ def graph_consultant_rates_jqp(request, consultant_id):
         objectiveRates.append(objectiveRates[-1])
 
     isoObjectiveDates = [a.isoformat() for a in objectiveDates] # List of date as string in ISO format
+
+    # Add data to graph
+    graph_data.append(zip(isoKdates, ydata))
     graph_data.append(zip(isoObjectiveDates, objectiveRates))
+    graph_data.append(zip(isoKdates, minYData))
+    graph_data.append(zip(isoKdates, maxYData))
 
     return render_to_response("staffing/graph_consultant_rate_jqp.html",
                               {"graph_data" : json.dumps(graph_data),
