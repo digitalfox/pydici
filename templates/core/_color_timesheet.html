@@ -15,5 +15,10 @@ $(document).ready(function()
             $(".submit-row input").css("background", "rgba(255,0,0,0.2)");
             $('#readonly-warning').css("background", "rgba(255,0,0,0.2)");
         });
+	$("input[name^='lunch_ticket_']").click(function() {
+	        $(this).css("background", "rgba(255,0,0,0.3)");
+	        $(".submit-row input").css("background", "rgba(255,0,0,0.2)");
+	        $('#readonly-warning').css("background", "rgba(255,0,0,0.2)");
+	});
 })
 </script>
