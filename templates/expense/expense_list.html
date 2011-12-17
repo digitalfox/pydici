@@ -13,6 +13,7 @@
     <th>{% trans "People" %}</th>
     <th>{% trans "Description" %}</th>
     <th>{% trans "Lead" %}</th>
+    <th>{% trans "Amount" %}</th>
     <th>{% trans "Chargeable" %}</th>
     <th>{% trans "Receipt" %}</th>
     <th>{% trans "State" %}</th>
@@ -25,6 +26,7 @@
     <td>{{ expense.user.username|link_to_consultant }}</td>
     <td>{{ expense.description }}</td>
     <td>{% if expense.lead %}<a href="{% url pydici.leads.views.detail expense.lead.id %}">{{ expense.lead }}</a>{% endif %}</td>
+    <td>{{ expense.amount }}</td>
     <td>{% if expense.chargeable %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
     <td>{% if expense.receipt %}<a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}</td>
     <td>{{ expense.state }}</td>
