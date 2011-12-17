@@ -9,8 +9,7 @@
 {% if not request.session.mobile %}
 <!-- Begin menu -->
     <div style="margin-left:10px;">
-    <ul id="menu">
-            
+    <ul id="menu" class="shadow" style='border-radius: 0px 0px 24px 0px;'>
         <div style="float:left; background:#332B2A; height: 40px; padding-top:5px; padding-left: 5px">
         <a href="{% url index %}">
            <img alt="" src="{{ MEDIA_URL }}pydici/company_logo.png"/>
@@ -20,7 +19,7 @@
         {% if user.is_authenticated %}
             <li>{% trans "Welcome," %} <strong>{{ user.username|link_to_consultant }}</strong></li>
         {% endif%}
-        
+
         {% if user.is_staff %}
         <li><a href="#link">{% trans "Leads" %}</a>
             <ul>
@@ -52,7 +51,7 @@
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
                     <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
-                </li>    
+                </li>
             </ul>
         </li>
         <li><a href="#link">{% trans "Clients" %}</a>
@@ -154,13 +153,13 @@
 	       </form>
         </li>
         <li>&nbsp;</li>
+        <li style='border-radius: 0px 0px 24px 0px;'>&nbsp;</li>
         {% else %}
         <li>&nbsp;&nbsp;&nbsp;&nbsp;</li><li>&nbsp;&nbsp;&nbsp;&nbsp;</li><li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
         <li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li>
         <li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li>
         {% endif %} {# End of menu for staff users only #}
     </ul>
-    <img alt="" src="{{ MEDIA_URL }}pydici/menu/menu_right.png"/>
 </div>
     
 <!-- End menu -->

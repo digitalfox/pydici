@@ -110,7 +110,7 @@ input[type=submit].default:active { background-image:url(../img/admin/default-bg
 .imodule ul, .imodule ol { margin-left:1.5em; }
 .imodule h3 { margin-top:.6em; }
 .imodule h2, .imodule caption, .imodule th, .inline-group h2 { margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background: url(../img/admin/default-bg.gif) top left repeat-x; color:white; }
-.imodule table { border-collapse: collapse; }
+.imodule table { border-collapse: collapse; box-shadow: 1px 1px 2px #555;}
 
 /* timesheet tables */
 .timesheet { }
@@ -119,7 +119,7 @@ input[type=submit].default:active { background-image:url(../img/admin/default-bg
 .timesheet ul, .timesheet ol { margin-left:1.5em; }
 .timesheet h3 { margin-top:.6em; }
 .timesheet h2, .timesheet caption, .timesheet th, .inline-group h2 { width:auto; margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background: url(../img/admin/default-bg.gif) top left repeat-x; color:white; }
-.timesheet table { border-collapse: collapse; }
+.timesheet table { border-collapse: collapse; box-shadow: 1px 1px 2px #555;}
 
 /* timesheet table separator */
 .table-separator { border-right:thin solid lightgrey; }
@@ -170,6 +170,7 @@ table#change-history tbody th { width:16em; }
     margin: 10px;
     padding: 6px 8px;
     border-radius: 8px 8px 8px 8px;
+    box-shadow: 1px 1px 2px #555;
 }
 
 a.tagrlink { color: #999999 }
@@ -180,6 +181,7 @@ a.tagrlink { color: #999999 }
 	padding: 6px 8px;
 	border-radius: 8px 8px 8px 8px;
 	font-size: .8em;
+	box-shadow: 1px 1px 4px #555;
 }
 
 /* home page grid layout */
@@ -201,3 +203,6 @@ a.tagrlink { color: #999999 }
 
 /* jeditable clickable field - need to look like a link */
 .jeditable-rate, .jeditable-mission-update { color: #883915; text-decoration:none; cursor:pointer; style="display:inline"}
+
+/* Shadow */
+.shadow { box-shadow:1px 1px 2px #555; }
