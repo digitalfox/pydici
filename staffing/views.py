@@ -32,26 +32,28 @@ from pydici.people.models import Consultant
 from pydici.leads.models import Lead
 from pydici.people.models import ConsultantProfile, RateObjective
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
-from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS, sampleList
+from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
 from pydici.core.decorator import pydici_non_public
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
                                   sortMissions, holidayDays, daysOfMonth, staffingDates, \
                                   previousWeek, nextWeek, monthWeekNumber
+
 
 @pydici_non_public
 def missions(request, onlyActive=True):
     """List of missions"""
     if onlyActive:
         missions = Mission.objects.filter(active=True)
-        all = False
+        allMissions = False
     else:
         missions = Mission.objects.all()
-        all = True
+        allMissions = True
     return render_to_response("staffing/missions.html",
                               {"missions": missions,
-                               "all": all,
-                               "user": request.user },
+                               "all": allMissions,
+                               "user": request.user},
                                RequestContext(request))
+
 
 @pydici_non_public
 def mission_home(request, mission_id):
@@ -83,15 +85,15 @@ def mission_staffing(request, mission_id):
         formset = StaffingFormSet(request.POST, instance=mission)
         if formset.is_valid():
             saveFormsetAndLog(formset, request)
-            formset = StaffingFormSet(instance=mission) # Recreate a new form for next update
+            formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
     else:
-        formset = StaffingFormSet(instance=mission) # An unbound form 
+        formset = StaffingFormSet(instance=mission)  # An unbound form
 
     return render_to_response('staffing/mission_staffing.html',
                               {"formset": formset,
                                "mission": mission,
-                               "read_only" : readOnly,
-                               "staffing_dates" : staffingDates(),
+                               "read_only": readOnly,
+                               "staffing_dates": staffingDates(),
                                "user": request.user},
                                RequestContext(request))
 
@@ -116,15 +118,15 @@ def consultant_staffing(request, consultant_id):
         formset = StaffingFormSet(request.POST, instance=consultant)
         if formset.is_valid():
             saveFormsetAndLog(formset, request)
-            formset = StaffingFormSet(instance=consultant) # Recreate a new form for next update
+            formset = StaffingFormSet(instance=consultant)  # Recreate a new form for next update
     else:
-        formset = StaffingFormSet(instance=consultant) # An unbound form
+        formset = StaffingFormSet(instance=consultant)  # An unbound form
 
     return render_to_response('staffing/consultant_staffing.html',
                               {"formset": formset,
                                "consultant": consultant,
-                               "staffing_dates" : staffingDates(),
-                               "user": request.user },
+                               "staffing_dates": staffingDates(),
+                               "user": request.user},
                                RequestContext(request))
 
 
@@ -152,7 +154,7 @@ def pdc_review(request, year=None, month=None):
         try:
             n_month = int(request.GET["n_month"])
             if n_month > 12:
-                n_month = 12 # Limit to 12 month to avoid complex and useless month list computation
+                n_month = 12  # Limit to 12 month to avoid complex and useless month list computation
         except ValueError:
             pass
 
@@ -170,12 +172,12 @@ def pdc_review(request, year=None, month=None):
         start_date = date(int(year), int(month), 1)
     else:
         start_date = date.today()
-        start_date = start_date.replace(day=1) # We use the first day to represent month
+        start_date = start_date.replace(day=1)  # We use the first day to represent month
 
-    staffing = {} # staffing data per month and per consultant
-    total = {}    # total staffing data per month
+    staffing = {}  # staffing data per month and per consultant
+    total = {}     # total staffing data per month
     rates = []     # staffing rates per month
-    available_month = {} # available working days per month
+    available_month = {}  # available working days per month
     months = []   # list of month to be displayed
 
     for i in range(n_month):
@@ -191,7 +193,7 @@ def pdc_review(request, year=None, month=None):
     # Initialize total dict and available dict
     holidays_days = [h.day for h in Holiday.objects.all()]
     for month in months:
-        total[month] = {"prod":0, "unprod":0, "holidays":0, "available":0}
+        total[month] = {"prod": 0, "unprod": 0, "holidays": 0, "available": 0}
         available_month[month] = working_days(month, holidays_days)
 
     # Get consultants staffing
@@ -213,7 +215,7 @@ def pdc_review(request, year=None, month=None):
             for current_staffing  in current_staffings:
                 nature = current_staffing.mission.nature
                 if nature == "PROD":
-                    missions.add(current_staffing.mission) # Store prod missions for this consultant
+                    missions.add(current_staffing.mission)  # Store prod missions for this consultant
                     prod.append(current_staffing.charge * current_staffing.mission.probability / 100)
                 elif nature == "NONPROD":
                     unprod.append(current_staffing.charge * current_staffing.mission.probability / 100)
@@ -240,7 +242,7 @@ def pdc_review(request, year=None, month=None):
     # Compute indicator rates
     for month in months:
         rate = []
-        ndays = people * available_month[month] # Total days for this month
+        ndays = people * available_month[month]  # Total days for this month
         for indicator in ("prod", "unprod", "holidays", "available"):
             if indicator == "holidays":
                 rate.append(100.0 * total[month][indicator] / ndays)
@@ -250,7 +252,7 @@ def pdc_review(request, year=None, month=None):
 
     # Format total dict into list
     total = total.items()
-    total.sort(cmp=lambda x, y:cmp(x[0], y[0])) # Sort according date
+    total.sort(cmp=lambda x, y: cmp(x[0], y[0]))  # Sort according date
     # Remove date, and transform dict into ordered list:
     total = [(to_int_or_round(i[1]["prod"]),
             to_int_or_round(i[1]["unprod"]),
@@ -259,11 +261,11 @@ def pdc_review(request, year=None, month=None):
 
     # Order staffing list
     staffing = staffing.items()
-    staffing.sort(cmp=lambda x, y:cmp(x[0].name, y[0].name)) # Sort by name
+    staffing.sort(cmp=lambda x, y: cmp(x[0].name, y[0].name))  # Sort by name
     if groupby == "manager":
-        staffing.sort(cmp=lambda x, y:cmp(unicode(x[0].manager), unicode(y[0].manager))) # Sort by manager
+        staffing.sort(cmp=lambda x, y: cmp(unicode(x[0].manager), unicode(y[0].manager)))  # Sort by manager
     else:
-        staffing.sort(cmp=lambda x, y:cmp(x[0].profil.level, y[0].profil.level)) # Sort by position
+        staffing.sort(cmp=lambda x, y: cmp(x[0].profil.level, y[0].profil.level))  # Sort by position
 
     return render_to_response("staffing/pdc_review.html",
                               {"staffing": staffing,
@@ -289,8 +291,9 @@ def deactivate_mission(request, mission_id):
         mission.save()
     except Mission.DoesNotExist:
         error = True
-    return HttpResponse(json.dumps({"error" : error, "id": mission_id}),
+    return HttpResponse(json.dumps({"error": error, "id": mission_id}),
                         mimetype="application/json")
+
 
 def consultant_home(request, consultant_id):
     """Home page of consultant staffing/timesheet stuff - this page loads all others mission sub-pages"""
@@ -318,9 +321,9 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         # Force week display
         week = monthWeekNumber(date.today())
 
-    forecastTotal = {} # forecast charge (value) per mission (key is mission.id)
-    missions = set()   # Set of all consultant missions for this month    
-    days = daysOfMonth(month, week=week) # List of days in month
+    forecastTotal = {}  # forecast charge (value) per mission (key is mission.id)
+    missions = set()    # Set of all consultant missions for this month
+    days = daysOfMonth(month, week=week)  # List of days in month
 
     if week:
         previous_date = previousWeek(days[0])
@@ -335,12 +338,12 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
 
     consultant = Consultant.objects.get(id=consultant_id)
 
-    readOnly = False # Wether timesheet is readonly or not
+    readOnly = False  # Wether timesheet is readonly or not
 
     if not (request.user.has_perm("staffing.add_timesheet") and
             request.user.has_perm("staffing.change_timesheet") and
             request.user.has_perm("staffing.delete_timesheet")):
-        # Only forbid access if the user try to edit someone else staffing. 
+        # Only forbid access if the user try to edit someone else staffing.
         # But authorise manager to have a look (read only) to their team timesheet
         if request.user.username.upper() != consultant.trigramme:
             try:
@@ -355,7 +358,6 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         # A consultant can only edit his own timesheet on current month and 5 days after
         if (date.today() - next_date).days > 5:
             readOnly = True
-
 
     staffings = Staffing.objects.filter(consultant=consultant)
     staffings = staffings.filter(staffing_date=month)
@@ -381,14 +383,14 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
 
     holiday_days = holidayDays(month=month)
 
-    if request.method == 'POST': # If the form has been submitted...
+    if request.method == 'POST':  # If the form has been submitted...
         if readOnly:
             # We should never go here as validate button is not displayed when read only...
             # This is just a security control
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
         form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
-        if form.is_valid(): # All validation rules pass
+        if form.is_valid():  # All validation rules pass
             # Process the data in form.cleaned_data
             saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
             # Recreate a new form for next update and compute again totals
@@ -417,20 +419,20 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
     return render_to_response(template, {
                                 "consultant": consultant,
                                "form": form,
-                               "read_only" : readOnly,
+                               "read_only": readOnly,
                                "days": days,
                                "month": month,
-                               "week" : week,
+                               "week": week,
                                "missions": missions,
-                               "working_days_balance" : wDaysBalance,
-                               "working_days" : wDays,
+                               "working_days_balance": wDaysBalance,
+                               "working_days": wDays,
                                "warning": warning,
                                "next_date": next_date,
                                "previous_date": previous_date,
-                               "previous_week" : previous_week,
-                               "next_week" : next_week,
-                               "link_to_staffing" : False, # for consultant_base template links
-                               "user": request.user },
+                               "previous_week": previous_week,
+                               "next_week": next_week,
+                               "link_to_staffing": False, # for consultant_base template links
+                               "user": request.user},
                                RequestContext(request))
 
 
@@ -470,7 +472,7 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
 def mission_timesheet(request, mission_id):
     """Mission timesheet"""
     mission = Mission.objects.get(id=mission_id)
-    current_month = date.today().replace(day=1) # Current month
+    current_month = date.today().replace(day=1)  # Current month
     next_month = (current_month + timedelta(days=40)).replace(day=1)
     consultants = mission.staffed_consultant()
     consultant_rates = mission.consultant_rates()
@@ -483,10 +485,10 @@ def mission_timesheet(request, mission_id):
     staffings = Staffing.objects.filter(mission=mission).filter(staffing_date__gte=current_month).order_by("staffing_date")
     staffingMonths = list(staffings.dates("staffing_date", "month"))
 
-    missionData = [] # list of tuple (consultant, (charge month 1, charge month 2), (forecast month 1, forcast month2), estimated)
-    objectiveMargin = {} # Dict of margin over objective rate. Key is consultant, value is cumulated margin over objective
+    missionData = []  # list of tuple (consultant, (charge month 1, charge month 2), (forecast month 1, forcast month2), estimated)
+    objectiveMargin = {}  # Dict of margin over objective rate. Key is consultant, value is cumulated margin over objective
     for consultant in consultants:
-        objectiveMargin[consultant] = 0 # Initialize margin over rate objective for this consultant
+        objectiveMargin[consultant] = 0  # Initialize margin over rate objective for this consultant
         # Timesheet data
         timesheetData = []
         for month in timesheetMonths:
@@ -501,8 +503,8 @@ def mission_timesheet(request, mission_id):
                 if objectiveRate:
                     objectiveMargin[consultant] += n_days * (consultant_rates[consultant][0] - objectiveRate.daily_rate)
 
-        timesheetData.append(sum(timesheetData)) # Add total per consultant
-        timesheetData.append(timesheetData[-1] * consultant_rates[consultant][0] / 1000) # Add total in money
+        timesheetData.append(sum(timesheetData))  # Add total per consultant
+        timesheetData.append(timesheetData[-1] * consultant_rates[consultant][0] / 1000)  # Add total in money
 
         # Forecast staffing data
         staffingData = []
@@ -512,12 +514,12 @@ def mission_timesheet(request, mission_id):
                date(timesheetMonths[-1].year, timesheetMonths[-1].month, 1) == current_month and \
                date(month.year, month.month, 1) == current_month:
                 # Remove timesheet days from current month forecast days
-                data -= timesheetData[-3] # Last is total in money, the one before is total in days
+                data -= timesheetData[-3]  # Last is total in money, the one before is total in days
                 if data < 0:
-                    data = 0 # If timesheet is superior to forecasted, don't consider negative forecasting staffing
+                    data = 0  # If timesheet is superior to forecasted, don't consider negative forecasting staffing
             staffingData.append(data)
-        staffingData.append(sum(staffingData)) # Add total per consultant
-        staffingData.append(staffingData[-1] * consultant_rates[consultant][0] / 1000) # Add total in money
+        staffingData.append(sum(staffingData))  # Add total per consultant
+        staffingData.append(staffingData[-1] * consultant_rates[consultant][0] / 1000)  # Add total in money
 
         # Estimated (= timesheet + forecast staffing)
         estimatedData = (timesheetData[-2] + staffingData[-2], timesheetData[-1] + staffingData[-1])
@@ -576,14 +578,14 @@ def mission_timesheet(request, mission_id):
     return render_to_response("staffing/mission_timesheet.html", {
                                 "mission": mission,
                                 "margin": margin,
-                                "objective_margin" : objectiveMargin,
-                                "objective_margin_total" :  sum(objectiveMargin.values()),
-                                "forecasted_unused" : forecastedUnused,
-                                "current_unused" : currentUnused,
+                                "objective_margin": objectiveMargin,
+                                "objective_margin_total":  sum(objectiveMargin.values()),
+                                "forecasted_unused": forecastedUnused,
+                                "current_unused": currentUnused,
                                 "timesheet_months": timesheetMonths,
                                 "staffing_months": staffingMonths,
                                 "mission_data": missionData,
-                                "consultant_rates" : consultant_rates,
+                                "consultant_rates": consultant_rates,
                                 "user": request.user,
                                 "avg_daily_rate" : avgDailyRate},
                                RequestContext(request))
@@ -594,15 +596,15 @@ def all_timesheet(request, year=None, month=None):
     if year and month:
         month = date(int(year), int(month), 1)
     else:
-        month = date.today().replace(day=1) # We use the first day to represent month
+        month = date.today().replace(day=1)  # We use the first day to represent month
 
     previous_date = (month - timedelta(days=5)).replace(day=1)
     next_date = (month + timedelta(days=40)).replace(day=1)
 
-    timesheets = Timesheet.objects.filter(working_date__gte=month) # Filter on current month
-    timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1)) # Discard next month
-    timesheets = timesheets.values("consultant", "mission") # group by consultant, mission
-    timesheets = timesheets.annotate(sum=Sum('charge')).order_by("mission", "consultant") # Sum and clean order by (else, group by won't work because of default ordering)
+    timesheets = Timesheet.objects.filter(working_date__gte=month)  # Filter on current month
+    timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1))  # Discard next month
+    timesheets = timesheets.values("consultant", "mission")  # group by consultant, mission
+    timesheets = timesheets.annotate(sum=Sum('charge')).order_by("mission", "consultant")  # Sum and clean order by (else, group by won't work because of default ordering)
     consultants = list(set([i["consultant"] for i in timesheets]))
     missions = list(set([i["mission"] for i in timesheets]))
     consultants = Consultant.objects.filter(id__in=consultants).order_by("name")
@@ -666,10 +668,10 @@ def all_timesheet(request, year=None, month=None):
                                "user": request.user,
                                "next_date": next_date,
                                "previous_date": previous_date,
-                               "month" : month,
-                               "consultants" : consultants,
-                               "missions" : missions,
-                               "charges" : charges },
+                               "month": month,
+                               "consultants": consultants,
+                               "missions": missions,
+                               "charges": charges },
                                RequestContext(request))
 
 
@@ -750,6 +752,7 @@ def mission_consultant_rate(request):
     except ValueError:
         return HttpResponse(_("Incorrect value"))
 
+
 @pydici_non_public
 def mission_update(request):
     """Update mission attribute (probability and billing_mode).
@@ -791,14 +794,14 @@ def mission_update(request):
 def graph_timesheet_rates_bar(request):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
     @todo: per year, with start-end date"""
-    data = {} # Graph data
+    data = {}  # Graph data
     natures = [i[0] for i in Mission.MISSION_NATURE] # Mission natures
-    kdates = set() # List of uniq month
-    nConsultant = {} # Set of working consultant id per month
-    avgDailyRate = {} # daily rate sum per month
-    nDays = {} # number of days with valid rate per month
-    plots = [] # List of plots for prod rate - needed to add legend
-    plots2 = [] # List of plots for daily rate - needed to add legend
+    kdates = set()  # List of uniq month
+    nConsultant = {}  # Set of working consultant id per month
+    avgDailyRate = {}  # daily rate sum per month
+    nDays = {}  # number of days with valid rate per month
+    plots = []  # List of plots for prod rate - needed to add legend
+    plots2 = []  # List of plots for daily rate - needed to add legend
     colors = itertools.cycle(COLORS)
     holiday_days = [h.day for h in  Holiday.objects.all()]
     profils = dict(ConsultantProfile.objects.all().values_list("id", "name")) # Consultant Profiles
@@ -806,8 +809,8 @@ def graph_timesheet_rates_bar(request):
     # Setting up graph
     fig = Figure(figsize=(12, 8))
     fig.set_facecolor("white")
-    ax = fig.add_subplot(211) # Main graph for prod rate and days
-    ax2 = fig.add_subplot(212, sharex=ax) # Second graph for avg daily rate
+    ax = fig.add_subplot(211)  # Main graph for prod rate and days
+    ax2 = fig.add_subplot(212, sharex=ax)  # Second graph for avg daily rate
     fig.subplots_adjust(hspace=0.3)
 
     # Create dict per mission nature
@@ -936,6 +939,7 @@ def graph_timesheet_rates_bar(request):
     ax2.grid(True)
 
     return print_png(fig)
+
 
 @pydici_non_public
 @cache_page(60 * 10)

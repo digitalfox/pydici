@@ -24,6 +24,7 @@ from pydici.people.models import Consultant
 from pydici.staffing.models import Mission
 from pydici.core.decorator import pydici_non_public
 
+
 @pydici_non_public
 def expenses(request, expense_id=None):
     """Display user expenses and expenses that he can validate"""
@@ -63,9 +64,9 @@ def expenses(request, expense_id=None):
             return HttpResponseRedirect(urlresolvers.reverse("pydici.expense.views.expenses"))
     else:
         if expense_id:
-            form = ExpenseForm(instance=expense) # A form that edit current expense
+            form = ExpenseForm(instance=expense)  # A form that edit current expense
         else:
-            form = ExpenseForm() # An unbound form
+            form = ExpenseForm()  # An unbound form
 
     # Get user expenses
     user_expenses = Expense.objects.filter(user=request.user, workflow_in_progress=True)
@@ -82,13 +83,12 @@ def expenses(request, expense_id=None):
         managed_expenses = team_expenses
 
     # Add state and transitions to expense list
-    user_expenses = [(e, e.state(), None) for e in user_expenses] # Don't compute transitions for user exp.
+    user_expenses = [(e, e.state(), None) for e in user_expenses]  # Don't compute transitions for user exp.
     managed_expenses = [(e, e.state(), e.transitions(request.user)) for e in managed_expenses]
 
     # Sort expenses
-    user_expenses.sort(key=lambda x:"%s-%s" % (x[1], x[0].id)) # state, then creation date
-    managed_expenses.sort(key=lambda x:"%s-%s" % (x[0].user, x[1])) # user then state
-
+    user_expenses.sort(key=lambda x: "%s-%s" % (x[1], x[0].id))  # state, then creation date
+    managed_expenses.sort(key=lambda x: "%s-%s" % (x[0].user, x[1]))  # user then state
 
     # Prune old expense in terminal state (no more transition)
     for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(30))):
@@ -96,11 +96,11 @@ def expenses(request, expense_id=None):
             expense.workflow_in_progress = False
 
     return render_to_response("expense/expenses.html",
-                              {"user_expenses" : user_expenses,
-                               "managed_expenses" : managed_expenses,
-                               "modify_expense" : bool(expense_id),
-                               "form" : form,
-                               "user": request.user },
+                              {"user_expenses": user_expenses,
+                               "managed_expenses": managed_expenses,
+                               "modify_expense": bool(expense_id),
+                               "form": form,
+                               "user": request.user},
                                RequestContext(request))
 
 
@@ -139,9 +139,10 @@ def expenses_history(request):
         expenses = expenses.filter(Q(user=request.user) | Q(user__in=user_team))
 
     return render_to_response("expense/expenses_history.html",
-                              {"expenses" : expenses,
-                               "user": request.user },
+                              {"expenses": expenses,
+                               "user": request.user},
                                RequestContext(request))
+
 
 @pydici_non_public
 def mission_expenses(request, mission_id):
@@ -155,9 +156,10 @@ def mission_expenses(request, mission_id):
     except Mission.DoesNotExist:
         expenses = []
     return render_to_response("expense/expense_list.html",
-                              {"expenses" : expenses,
-                               "user": request.user },
+                              {"expenses": expenses,
+                               "user": request.user},
                                RequestContext(request))
+
 
 @pydici_non_public
 def update_expense_state(request, expense_id, transition_id):
