@@ -1,0 +1,33 @@
+{# Template fragment that display an expense #}
+{# Expense object must be {{ expense }} #}
+
+{% load i18n %}
+{% load permissions_tags %}
+{% load pydici_filters %}
+
+<div class="lead_description">
+        <b>{{ expense.category }} : {{ expense.description }} - {{ expense.expense_date }}</b><br/>
+        {{ expense.amount }} € ({% if expense.corporate_card %}{% trans "Paid with corporate card" %}{% else %}{% trans "To be refund to "%} {{ expense.user|link_to_consultant }}{% endif %}) 
+        {% if expense.receipt %}
+            <a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
+        {% endif %}
+        <br/>
+        {% if expense.lead %}
+            {% if expense.chargeable %}
+                {% trans "Chargeable on lead "%} {{ expense.lead }}
+            {% else %}
+                {% trans "Lead" %} {{ expense.lead }}
+            {% endif %}
+            <br/>
+        {% endif %}
+        {% if expense.comment %}{% trans "Comment: " %}{{ expense.comment }}{% endif %}
+        {% if transitions %}
+        <br/><br/>
+        {% with expense as obj %}{% ifhasperm expense_edit %}
+            <a class="button" href='{% url pydici.expense.views.expenses expense.id %}'>{% trans "Edit" %}</a>
+        {% endifhasperm %}{% endwith %}
+            {% for transition in transitions %}
+                <a class="button" href='{% url pydici.expense.views.update_expense_state expense.id transition.id %}'>{{ transition }}</a>
+            {% endfor %}
+        {% endif %}
+</div>
