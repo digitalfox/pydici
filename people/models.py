@@ -115,13 +115,16 @@ class Consultant(models.Model):
         if users.count() >= 1:
             return users[0]
 
-    def team(self):
+    def team(self, excludeSelf=True):
         """Returns Consultant team as a list of consultant"""
-        return self.consultant_set.exclude(id=self.id)
+        if excludeSelf:
+            return self.consultant_set.exclude(id=self.id)
+        else:
+            return self.consultant_set.all()
 
-    def userTeam(self):
+    def userTeam(self, excludeSelf=True):
         """Returns consultant team as list of pydici user"""
-        return [c.getUser() for c in self.team()]
+        return [c.getUser() for c in self.team(excludeSelf)]
 
     def actions(self):
         """Returns pending actions"""
@@ -130,6 +133,7 @@ class Consultant(models.Model):
     class Meta:
         ordering = ["name", ]
         verbose_name = _("Consultant")
+
 
 class RateObjective(models.Model):
     """Consultant rate objective"""

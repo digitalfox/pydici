@@ -31,7 +31,7 @@ def expenses(request, expense_id=None):
         return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
     try:
         consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-        user_team = consultant.userTeam()
+        user_team = consultant.userTeam(excludeSelf=False)
     except Consultant.DoesNotExist:
         user_team = []
 
