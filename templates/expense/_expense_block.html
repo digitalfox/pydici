@@ -21,11 +21,11 @@
             <br/>
         {% endif %}
         {% if expense.comment %}{% trans "Comment: " %}{{ expense.comment }}{% endif %}
-        {% if transitions %}
         <br/><br/>
         {% with expense as obj %}{% ifhasperm expense_edit %}
             <a class="button" href='{% url pydici.expense.views.expenses expense.id %}'>{% trans "Edit" %}</a>
         {% endifhasperm %}{% endwith %}
+        {% if transitions %}
             {% for transition in transitions %}
                 <a class="button" href='{% url pydici.expense.views.update_expense_state expense.id transition.id %}'>{{ transition }}</a>
             {% endfor %}
