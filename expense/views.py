@@ -69,16 +69,16 @@ def expenses(request, expense_id=None):
             form = ExpenseForm()  # An unbound form
 
     # Get user expenses
-    user_expenses = Expense.objects.filter(user=request.user, workflow_in_progress=True)
+    user_expenses = Expense.objects.filter(user=request.user, workflow_in_progress=True).select_related()
 
     if user_team:
-        team_expenses = Expense.objects.filter(user__in=user_team, workflow_in_progress=True)
+        team_expenses = Expense.objects.filter(user__in=user_team, workflow_in_progress=True).select_related()
     else:
         team_expenses = []
 
     # Paymaster manage all expenses
     if perm.has_role(request.user, "expense paymaster"):
-        managed_expenses = Expense.objects.filter(workflow_in_progress=True).exclude(user=request.user)
+        managed_expenses = Expense.objects.filter(workflow_in_progress=True).exclude(user=request.user).select_related()
     else:
         managed_expenses = team_expenses
 

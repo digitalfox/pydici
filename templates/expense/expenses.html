@@ -48,57 +48,28 @@
 
 {% if user_expenses %}
 <h1>{% trans "My expenses" %}</h1>
-<ul>
     {% for expense, state, transitions in user_expenses %}
         {% ifchanged state %}
             <h3>{{ state }}</h3>
         {% endifchanged %}
-        <li>
-        {% with expense as obj %}{% ifhasperm expense_edit %}
-            <a title='{{ expense.comment }}' href='{% url pydici.expense.views.expenses expense.id %}'>{{ expense }}</a>{% else %}{{ expense }}{% endifhasperm %}
-        {% endwith %}
-        {% if expense.receipt %}
-            <a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
-        {% endif %}
+        {% include "expense/_expense_block.html" %}
 
-        </li>
     {% endfor %}
-</ul>
 <br/><hr/><br/>
 {% endif %}
 
 {% if managed_expenses %}
     <h1>{% trans "Expenses I manage" %}</h1>
-    <ul>
     {% for expense, state, transitions in managed_expenses %}
         {% ifchanged expense.user %}
             <h2>{{ expense.user|link_to_consultant }}</h2>
-            <h3>{{ state }}</h3>
-        {% else %}
-	        {% ifchanged state %}
-	            <h3>{{ state }}</h3>
-	        {% endifchanged %}
-	    {% endifchanged %}
-        <li>
-        {% with expense as obj %}{% ifhasperm expense_edit %}
-            <a title='{{ expense.comment }}' href='{% url pydici.expense.views.expenses expense.id %}'>{{ expense }}</a>{% else %}{{ expense }}{% endifhasperm %}
-        {% endwith %}
-
-        {% if expense.receipt %}
-            <a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
-        {% endif %}
-
-        {% if transitions %}
-        (
-            {% for transition in transitions %}
-                <a href='{% url pydici.expense.views.update_expense_state expense.id transition.id %}'>{{ transition }}</a>
-                {% if not forloop.last %} / {% endif %}
-            {% endfor %}
-        )
-        {% endif %}
-        </li>
+        {% endifchanged %}
+        {% ifchanged %}
+                <h3>{{ state }}</h3>
+        {% endifchanged %}
+        {% include "expense/_expense_block.html" %}
     {% endfor %}
-    </ul>
+
 {% endif %}
 
 <br/><hr/><br/>
