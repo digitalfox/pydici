@@ -947,24 +947,31 @@ def graph_timesheet_rates_bar(request):
 @cache_page(60 * 10)
 def graph_consultant_rates_jqp(request, consultant_id):
     """Nice graph of consultant rates"""
-    ydata = []
-    minYData = [] # Min rate for month
-    maxYData = [] # Max rate for month
-    isoKdates = [] # List of date in iso format
-    graph_data = [] # Data that will be returned to jqplot
+    dailyRateData = []  # Consultant daily rate data
+    prodRateData = []  # Consultant production rate data
+    minYData = []  # Min rate for month
+    maxYData = []  # Max rate for month
+    isoRateDates = []  # List of date in iso format for daily rates data
+    isoProdDates = []  # List of date in iso format for production rates data
+    graph_data = []  # Data that will be returned to jqplot
     consultant = Consultant.objects.get(id=consultant_id)
 
-    # Avg rate / month
-    ts = Timesheet.objects.filter(consultant=consultant, charge__gt=0)
-    kdates = list(ts.dates("working_date", "month"))
+    timesheets = Timesheet.objects.filter(consultant=consultant, charge__gt=0)
+    kdates = list(timesheets.dates("working_date", "month"))
+
+    # Avg daily rate / month
     for refDate in kdates:
         nextMonth = (refDate + timedelta(40)).replace(day=1)
+        prodRate = consultant.getProductionRate(refDate, nextMonth)
+        if prodRate:
+            prodRateData.append(100 * prodRate)
+            isoProdDates.append(refDate.date().isoformat())
         fc = consultant.getFinancialConditions(refDate, nextMonth)
         if fc:
-            ydata.append(int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc])))
+            dailyRateData.append(int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc])))
             minYData.append(int(min([rate for rate, days in fc])))
             maxYData.append(int(max([rate for rate, days in fc])))
-            isoKdates.append(refDate.date().isoformat())
+            isoRateDates.append(refDate.date().isoformat())
 
     # Get rate objectives
     objectives = RateObjective.objects.filter(consultant=consultant).order_by("start_date")
@@ -986,10 +993,11 @@ def graph_consultant_rates_jqp(request, consultant_id):
     isoObjectiveDates = [a.isoformat() for a in objectiveDates] # List of date as string in ISO format
 
     # Add data to graph
-    graph_data.append(zip(isoKdates, ydata))
+    graph_data.append(zip(isoRateDates, dailyRateData))
     graph_data.append(zip(isoObjectiveDates, objectiveRates))
-    graph_data.append(zip(isoKdates, minYData))
-    graph_data.append(zip(isoKdates, maxYData))
+    graph_data.append(zip(isoRateDates, minYData))
+    graph_data.append(zip(isoRateDates, maxYData))
+    graph_data.append(zip(isoProdDates, prodRateData))
 
     return render_to_response("staffing/graph_consultant_rate_jqp.html",
                               {"graph_data" : json.dumps(graph_data),

@@ -107,6 +107,26 @@ class Consultant(models.Model):
         if rates:
             return rates[0]
 
+    def getProductionRate(self, startDate, endDate):
+        """Get consultant production rate for given between startDate (included) and enDate (excluded)"""
+        from pydici.staffing.models import Timesheet
+        timesheets = Timesheet.objects.filter(consultant=self,
+                                              charge__gt=0,
+                                              working_date__gte=startDate,
+                                              working_date__lt=endDate)
+        timesheets = timesheets.exclude(mission__nature="HOLIDAYS")
+        timesheets = timesheets.values("mission__nature").order_by("mission__nature").annotate(Sum("charge"))
+        prodDays = timesheets.filter(mission__nature="PROD")
+        nonProdDays = timesheets.filter(mission__nature="NONPROD")
+        if prodDays:
+            prodDays = prodDays[0]["charge__sum"]
+        if nonProdDays:
+            nonProdDays = nonProdDays[0]["charge__sum"]
+        if prodDays and nonProdDays:
+            return prodDays / (prodDays + nonProdDays)
+        else:
+            return 0
+
     def getUser(self):
         """Returns django user behind this consultant
         Current algorithm check only for equal trigramme

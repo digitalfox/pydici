@@ -1,13 +1,14 @@
 {# Fragment that display leads stat/bar graph to be included with a jquery load #}
 {# One must include in its extrajs block core/_jqplot.html to load according js/css #} {% load i18n %}
 
-<div id="consultant_rate_graph_jqp" style="height: 300px; width: 800px;"></div>
+<div id="consultant_rate_graph_jqp" style="height: 300px; width: 900px;"></div>
 
 <script type="text/javascript">
 
 $.jqplot.config.enablePlugins = true;
 $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
          animate : true,
+         stackSeries: false,
          captureRightClick: true,
          seriesColors: {{ series_colors|safe }},
          series:[{
@@ -25,6 +26,7 @@ $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
                      label: "{% trans 'Min daily rate (€)' %}",
                      rendererOptions: { smooth: true },
                      linePattern: 'dotted',
+                     markerOptions : { size : 5},
                      showMarker: false,
                      lineWidth: 0,
                  },
@@ -32,8 +34,15 @@ $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
                      label: "{% trans 'Max daily rate (€)' %}",
                      rendererOptions: { smooth: true },
                      linePattern: 'dotted',
+                     markerOptions : { size : 5},
                      showMarker: false,
                      lineWidth: 0,
+                 },
+                 {
+                     label: "{% trans 'Production rate (%)' %}",
+                     rendererOptions: { smooth: true },
+                     markerOptions : { size : 7},
+                     yaxis: 'y2axis',
                  },],
              fillBetween: {
                  series1: 2, // Serie min
@@ -53,7 +62,17 @@ $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
            yaxis: {
                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-               tickOptions: { formatString: '%d€' },
+               label: "{% trans 'Daily rate' %}",
+               tickOptions: { formatString: '%d €' },
+               syncTicks : true,
+           },
+           y2axis: {
+               labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+               tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+               label: "{% trans 'Production rate' %}",
+               syncTicks : true,
+               max: 100,
+               tickOptions: { formatString: '%.1f %' },
            },
          },
          legend: {
