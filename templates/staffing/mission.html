@@ -101,7 +101,9 @@
         {% else %}
             <script type="text/javascript">
             // Disable other mission tabs
-            $('#mission-tabs').tabs().tabs('remove', '#tab-other-missions');
+            $(document).ready(function() {
+                $('#mission-tabs').tabs().tabs('remove', '#tab-other-missions');
+            });
             </script>
         {% endif %}
     </div>
