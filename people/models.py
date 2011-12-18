@@ -126,7 +126,7 @@ class Consultant(models.Model):
         """Returns consultant team as list of pydici user"""
         return [c.getUser() for c in self.team(excludeSelf)]
 
-    def actions(self):
+    def pending_actions(self):
         """Returns pending actions"""
         return ActionState.objects.filter(user=self.getUser(), state="TO_BE_DONE")
 

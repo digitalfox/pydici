@@ -12,12 +12,15 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
+from django.contrib.admin.models import ContentType
+from django.db.models import Q
 
 from datetime import datetime, date, timedelta
 
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant
 from pydici.actionset.utils import launchTrigger
+from pydici.actionset.models import ActionState
 
 
 class Mission(models.Model):
@@ -163,6 +166,24 @@ class Mission(models.Model):
             return float(self.price) - amount
         else:
             return 0
+
+    def actions(self):
+        """Returns actions for this mission and its lead"""
+        actionStates = ActionState.objects.filter(target_id=self.id,
+                                                 target_type=ContentType.objects.get_for_model(self))
+        if self.lead:
+            actionStates = actionStates | ActionState.objects.filter(target_id=self.lead.id,
+                                                                     target_type=ContentType.objects.get(app_label="leads", model="lead"))
+
+        return actionStates.select_related()
+
+    def pending_actions(self):
+        """returns pending actions for this mission and its lead"""
+        return self.actions().filter(state="TO_BE_DONE")
+
+    def done_actions(self):
+        """returns done actions for this mission and its lead"""
+        return self.actions().exclude(state="TO_BE_DONE")
 
     @models.permalink
     def get_absolute_url(self):

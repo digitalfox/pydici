@@ -41,6 +41,7 @@
         <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.mission_timesheet mission.id %}">{% trans "Timesheet" %}</a></li>
         <li><a title="#tab-staffing" href="{% url pydici.staffing.views.mission_staffing mission.id %}">{% trans "Forecast staffing" %}</a></li>
         <li><a title="#tab-expenses" href="{% url pydici.expense.views.mission_expenses mission.id %}">{% trans "Expenses" %}</a></li>
+        <li><a href="#tab-actions">{% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
         {% if mission.lead %}<li><a href="#tab-billing">{% trans "Billing" %}</a></li>{% endif %}
     </ul>
 
@@ -116,6 +117,25 @@
 	        {% endwith %}
 	    {% endif %}
     </div>
+    
+    <div id="tab-actions">
+    <br/>
+        
+    <h2>{% trans "Pending actions" %}</h2>
+    {% with pending_actions as actions %}
+        {% include "actionset/_lead_mission_actions.html" %}
+    {% endwith %}
+
+<h2>{% trans "Done actions" %}</h2>
+    <ul>
+    {% for action in mission.done_actions %}
+        <li>{{ action.action.name }} - {{ action.get_state_display }} ({{ action.update_date }})</li>
+    {% empty %}
+        {% trans "No action done" %}
+    {% endfor %}
+    </ul>
+    </div>
+
 
 </div> <!-- end of tabs -->
 </div>

@@ -12,6 +12,7 @@ from django.utils.translation import ugettext
 from django.contrib.admin.models import LogEntry, ContentType
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.db.models import Q
 
 from taggit.managers import TaggableManager
 
@@ -160,10 +161,23 @@ class Lead(models.Model):
         return unused
 
     def actions(self):
-        """Returns pending actions"""
-        return ActionState.objects.filter(target_id=self.id,
-                                          target_type=ContentType.objects.get_for_model(self),
-                                          state="TO_BE_DONE")
+        """Returns actions for this lead and its missions"""
+        actionStates = ActionState.objects.filter(Q(target_id=self.id,
+                                                    target_type=ContentType.objects.get_for_model(self)) |
+                                                  Q(target_id__in=self.mission_set.values("id"),
+                                                    target_type=ContentType.objects.get(app_label="staffing", model="mission")))
+
+        return actionStates.select_related()
+
+    def pending_actions(self):
+        """returns pending actions for this lead and its missions"""
+        return self.actions().filter(state="TO_BE_DONE")
+
+    def done_actions(self):
+        """returns done actions for this lead and its missions"""
+        return self.actions().exclude(state="TO_BE_DONE")
+
+
     @models.permalink
     def get_absolute_url(self):
         return ('pydici.leads.views.detail', [str(self.id)])

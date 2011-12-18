@@ -58,8 +58,10 @@ def missions(request, onlyActive=True):
 @pydici_non_public
 def mission_home(request, mission_id):
     """Home page of mission description - this page loads all others mission sub-pages"""
+    mission = Mission.objects.get(id=mission_id)
     return render_to_response('staffing/mission.html',
-                              {"mission": Mission.objects.get(id=mission_id),
+                              {"mission": mission,
+                               "pending_actions": mission.pending_actions(),
                                "user": request.user},
                                RequestContext(request))
 

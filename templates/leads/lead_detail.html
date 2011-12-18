@@ -159,9 +159,18 @@
 {% endifequal %}
 
 <h2>{% trans "Pending actions" %}</h2>
-    {% with lead.actions as actions %}
-        {% include "actionset/_lead_actions.html" %}
+    {% with lead.pending_actions as actions %}
+        {% include "actionset/_lead_mission_actions.html" %}
     {% endwith %}
+
+<h2>{% trans "Done actions" %}</h2>
+    <ul>
+    {% for action in lead.done_actions %}
+        <li>{{ action.action.name }} - {{ action.get_state_display }} ({{ action.update_date }})</li>
+    {% empty %}
+        {% trans "No action done" %}
+    {% endfor %}
+    </ul>
 
 {% if action_list %}
     <h2>{% trans "Change history" %}</h2>
