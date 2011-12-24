@@ -11,7 +11,7 @@ $.jqplot.config.enablePlugins = true;
 $.jqplot('company_sales_jqp_{{ only_last_year|safe }}',  {{ graph_data|safe }}, {
          animate : true,
          captureRightClick: true,
-         gridPadding: {top:15, bottom:60, left:0, right:0},
+         gridPadding: {top:20, bottom:60, left:0, right:0},
          seriesColors: {{ series_colors|safe }},
          title: '{% if only_last_year %}{% trans "Last year sales repartition" %}{% else %}{% blocktrans %} Client sales repartition since {{ min_date }}{% endblocktrans %}{% endif %}',
          seriesDefaults:{
