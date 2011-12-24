@@ -5,7 +5,10 @@ Database access layer for pydici CRM module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+from datetime import date, timedelta
+
 from django.db import models
+from django.db.models import Sum
 from django.utils.translation import ugettext_lazy as _
 
 from pydici.core.utils import capitalize
@@ -14,27 +17,43 @@ from pydici.core.models import Subsidiary
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
+
 class ClientCompany(models.Model):
     """Client company"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
     code = models.CharField(_("Code"), max_length=3, unique=True)
 
-    def __unicode__(self): return self.name
+    def __unicode__(self):
+        return self.name
+
+    def sales(self, onlyLastYear=False):
+        """Sales billed for this company in keuros"""
+        from pydici.billing.models import Bill
+        data = Bill.objects.filter(lead__client__organisation__company=self)
+        if onlyLastYear:
+            data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
+        if data.count():
+            return float(data.aggregate(Sum("amount")).values()[0]) / 1000
+        else:
+            return 0
 
     class Meta:
         ordering = ["name"]
         verbose_name = _("Client Company")
+
 
 class ClientOrganisation(models.Model):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
     company = models.ForeignKey(ClientCompany, verbose_name=_("Client company"))
 
-    def __unicode__(self): return u"%s : %s " % (self.company, self.name)
+    def __unicode__(self):
+        return u"%s : %s " % (self.company, self.name)
 
     class Meta:
         ordering = ["company", "name"]
         verbose_name = _("Client organisation")
+
 
 class ThirdPartyContact(models.Model):
     """Third party contact abstract definition"""
@@ -44,7 +63,8 @@ class ThirdPartyContact(models.Model):
     mobile_phone = models.CharField(_("Mobile phone"), max_length=30, blank=True)
     fax = models.CharField(_("Fax"), max_length=30, blank=True)
 
-    def __unicode__(self): return self.name
+    def __unicode__(self):
+        return self.name
 
     def save(self, force_insert=False, force_update=False):
         self.name = capitalize(self.name)
@@ -53,6 +73,7 @@ class ThirdPartyContact(models.Model):
     class Meta:
         abstract = True
         ordering = ["name"]
+
 
 class ClientContact(ThirdPartyContact):
     """A contact in client organization"""
@@ -74,6 +95,7 @@ class ClientContact(ThirdPartyContact):
     class Meta:
         verbose_name = _("Client contact")
 
+
 class BusinessBroker(ThirdPartyContact):
     """A business broken: someone that is not a client but an outsider that act
     as a partner to provide some business"""
@@ -93,6 +115,7 @@ class BusinessBroker(ThirdPartyContact):
 
     class Meta:
         verbose_name = _("Business broker")
+
 
 class Client(models.Model):
     """A client is defined by a contact and the organisation where he works"""

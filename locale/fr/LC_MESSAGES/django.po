@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-24 14:09+0100\n"
-"PO-Revision-Date: 2011-12-24 14:08+0100\n"
+"POT-Creation-Date: 2011-12-24 15:58+0100\n"
+"PO-Revision-Date: 2011-12-24 15:57+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -47,9 +47,9 @@ msgid "When a consultant is created"
 msgstr "Quand un consultant est créé"
 
 #: actionset/models.py:26 actionset/models.py:45 core/models.py:15
-#: crm/models.py:19 crm/models.py:41 expense/models.py:31 leads/models.py:46
+#: crm/models.py:23 crm/models.py:60 expense/models.py:31 leads/models.py:46
 #: leads/views.py:99 people/models.py:23 people/models.py:166
-#: templates/crm/clientcompany_detail.html:81
+#: templates/crm/clientcompany_detail.html:86
 #: templates/staffing/consultant.html:37
 #: templates/staffing/consultant_base.html:29
 #: templates/staffing/missions.html:29
@@ -234,7 +234,7 @@ msgstr "Montant prévu"
 msgid "Weighted forecasted work"
 msgstr "Montant prévu pondéré"
 
-#: core/models.py:16 crm/models.py:20 crm/models.py:81
+#: core/models.py:16 crm/models.py:24 crm/models.py:103
 msgid "Code"
 msgstr "Code"
 
@@ -258,71 +258,71 @@ msgstr "Mon staffing"
 msgid "Mail to support"
 msgstr "Courriel au support"
 
-#: crm/models.py:26
+#: crm/models.py:42
 msgid "Client Company"
 msgstr "Entreprise"
 
-#: crm/models.py:30
+#: crm/models.py:47
 msgid "Organization"
 msgstr "Organisation"
 
-#: crm/models.py:31
+#: crm/models.py:48
 msgid "Client company"
 msgstr "Entreprise"
 
-#: crm/models.py:37
+#: crm/models.py:55
 msgid "Client organisation"
 msgstr "Département"
 
-#: crm/models.py:43 people/models.py:171
-#: templates/crm/clientcompany_detail.html:85
+#: crm/models.py:62 people/models.py:171
+#: templates/crm/clientcompany_detail.html:90
 msgid "Phone"
 msgstr "Téléphone"
 
-#: crm/models.py:44 templates/crm/clientcompany_detail.html:86
+#: crm/models.py:63 templates/crm/clientcompany_detail.html:91
 msgid "Mobile phone"
 msgstr "Téléphone mobile"
 
-#: crm/models.py:45 templates/crm/clientcompany_detail.html:87
+#: crm/models.py:64 templates/crm/clientcompany_detail.html:92
 msgid "Fax"
 msgstr "Fax"
 
-#: crm/models.py:59 templates/crm/clientcompany_detail.html:83
+#: crm/models.py:80 templates/crm/clientcompany_detail.html:88
 msgid "Function"
 msgstr "Fonction"
 
-#: crm/models.py:66 templates/leads/lead_mail.html:10
+#: crm/models.py:87 templates/leads/lead_mail.html:10
 #: templates/leads/lead_mail.txt:11 templates/leads/lead_mail.txt.py:19
 #: templates/leads/mail.html:9 templates/leads/mail.html.py:11
 msgid "None"
 msgstr "Aucun(e)"
 
-#: crm/models.py:72 crm/models.py:80 templates/admin/base_site.html:143
-#: templates/crm/clientcompany_detail.html:82
+#: crm/models.py:93 crm/models.py:102 templates/admin/base_site.html:143
+#: templates/crm/clientcompany_detail.html:87
 msgid "Company"
 msgstr "Société"
 
-#: crm/models.py:75
+#: crm/models.py:96
 msgid "Client contact"
 msgstr "Contact client"
 
-#: crm/models.py:95 leads/forms.py:22 leads/models.py:54
+#: crm/models.py:117 leads/forms.py:22 leads/models.py:54
 msgid "Business broker"
 msgstr "Apporteur d'affaire"
 
-#: crm/models.py:99
+#: crm/models.py:122
 msgid "Organisation"
 msgstr "Département"
 
-#: crm/models.py:100
+#: crm/models.py:123
 msgid "Contact"
 msgstr "Contact"
 
-#: crm/models.py:101
+#: crm/models.py:124
 msgid "Sales owner"
 msgstr "Propriété commerciale"
 
-#: crm/models.py:131 leads/forms.py:24 leads/models.py:60 leads/views.py:99
+#: crm/models.py:154 leads/forms.py:24 leads/models.py:60 leads/views.py:99
 #: templates/billing/bill_review.html:20 templates/billing/bill_review.html:56
 #: templates/billing/bill_review.html:92
 #: templates/billing/bill_review.html:128
@@ -928,7 +928,7 @@ msgstr "Bienvenue, "
 
 #: templates/admin/base_site.html:24 templates/admin/base_site.html.py:139
 #: templates/core/m.index.html:70 templates/core/search.html:51
-#: templates/crm/clientcompany_detail.html:37
+#: templates/crm/clientcompany_detail.html:38
 msgid "Leads"
 msgstr "Affaires"
 
@@ -1062,12 +1062,12 @@ msgid "Help page"
 msgstr "Page d'aide"
 
 #: templates/admin/base_site.html:144
-#: templates/crm/clientcompany_detail.html:39
+#: templates/crm/clientcompany_detail.html:40
 msgid "Client contacts"
 msgstr "Contacts clients"
 
 #: templates/admin/base_site.html:145 templates/core/search.html:24
-#: templates/crm/clientcompany_detail.html:38
+#: templates/crm/clientcompany_detail.html:39
 #: templates/staffing/mission.html:39
 msgid "Consultants"
 msgstr "Consultants"
@@ -1364,32 +1364,35 @@ msgstr "Entreprises"
 msgid "no deal id"
 msgstr "pas de n° d'affaire"
 
-#: templates/crm/clientcompany_detail.html:40
+#: templates/crm/_clientcompany_list.html:7
+#: templates/crm/clientcompany_detail.html:42
+#: templates/crm/clientcompany_list.html:15
+msgid "All companies list"
+msgstr "Liste de toutes les entreprises clientes"
+
+#: templates/crm/clientcompany_detail.html:41
 #: templates/staffing/pdc_review.html:73
 #: templates/staffing/pdc_review.html:106
 msgid "Rates"
 msgstr "Taux"
 
-#: templates/crm/clientcompany_detail.html:41
-#: templates/crm/clientcompany_detail.html:123
-#: templates/crm/clientcompany_list.html:15
-#: templates/crm/clientcompany_list.html:21
-msgid "All companies list"
-msgstr "Liste de toutes les entreprises clientes"
+#: templates/crm/clientcompany_detail.html:50
+msgid "Sales with this client: "
+msgstr "Chiffre d'affaire facturé : "
 
-#: templates/crm/clientcompany_detail.html:66
+#: templates/crm/clientcompany_detail.html:71
 msgid "Consultants that work for this company:"
 msgstr "Les consultants qui ont travaillé pour cette société :"
 
-#: templates/crm/clientcompany_detail.html:84
+#: templates/crm/clientcompany_detail.html:89
 msgid "Email"
 msgstr "Courriel"
 
-#: templates/crm/clientcompany_detail.html:107
+#: templates/crm/clientcompany_detail.html:112
 msgid "Used rates for this company"
 msgstr "Les TJMs pratiqués avec cette société"
 
-#: templates/crm/clientcompany_detail.html:114
+#: templates/crm/clientcompany_detail.html:119
 msgid "No rate defined"
 msgstr "Aucun TJM défini"
 

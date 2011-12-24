@@ -98,6 +98,8 @@ class SimpleTest(TestCase):
                      "/people/consultant/3/",
                      "/crm/company/1/",
                      "/crm/company/",
+                     "/crm/company/graph/sales",
+                     "/crm/company/graph/sales/lastyear",
                      "/billing/graph/bar",
                      "/billing/bill_review",
                      "/billing/bill_delay",

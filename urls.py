@@ -113,8 +113,8 @@ pydici_patterns += patterns('pydici.people.views',
 pydici_patterns += patterns('pydici.crm.views',
     (r'^crm/company/(?P<company_id>\d+)/$', 'company_detail'),
     (r'^crm/company/?$', 'company_list'),
-    url(r'^crm/company/graph/sales?$', 'graph_company_sales_jqp', name="graph_company_sales"),
-    url(r'^crm/company/graph/sales/lastyear?$', 'graph_company_sales_jqp', {"onlyLastYear": True}, name="graph_company_lastyear_sales"),
+    url(r'^crm/company/graph/sales$', 'graph_company_sales_jqp', name="graph_company_sales"),
+    url(r'^crm/company/graph/sales/lastyear$', 'graph_company_sales_jqp', {"onlyLastYear": True}, name="graph_company_lastyear_sales"),
 )
 # Billing module
 pydici_patterns += patterns('pydici.billing.views',
