@@ -1,0 +1,22 @@
+{# Fragment of page to be included to display client companies list and pie graph #}
+{# companies must be {{ companies }} #}
+{# One must load jqplot js script in its header #}
+
+{% load i18n %}
+
+<h1>{% trans "All companies list" %}</h1>
+<ul style='float: left; width: 64em;'>
+{% for company in companies %}
+    <li style='float: left; width: 16em;'>
+        <a href='{% url pydici.crm.views.company_detail company.id %}'>{{ company }}</a>
+    </li>
+{% endfor %}
+</ul>
+<div style="clear:both;"></div>
+<br/>
+<div style="float:left;" id="graph_company_sales_jqp"></div>
+<div style="float:left;" id="graph_company_lastyear_sales_jqp"></div>
+<script type="text/javascript">
+$('#graph_company_sales_jqp').load('{% url graph_company_sales %}')
+$('#graph_company_lastyear_sales_jqp').load('{% url graph_company_lastyear_sales %}')
+</script>

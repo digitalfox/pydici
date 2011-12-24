@@ -11,6 +11,7 @@
 {% block extrajs %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.16.custom.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.16.custom.css" />
+{% include "core/_jqplot.html" %}
 {% endblock %}
 
 
@@ -120,14 +121,7 @@
 
 {% if not request.session.mobile %}
     <div id="tab-all-companies">
-    <h1>{% trans "All companies list" %}</h1>
-    <ul style='float: left; width: 64em;'>
-    {% for company in companies %}
-        <li style='float: left; width: 16em;'>
-            <a href='{% url pydici.crm.views.company_detail company.id %}'>{{ company }}</a>
-        </li>
-    {% endfor %}
-    </ul>
+    {% include "crm/_clientcompany_list.html" %}
     </div>
     </div> <!-- End of tabs div -->
 {% endif %}
