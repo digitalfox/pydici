@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-18 23:44+0100\n"
-"PO-Revision-Date: 2011-12-18 23:43+0100\n"
+"POT-Creation-Date: 2011-12-24 14:09+0100\n"
+"PO-Revision-Date: 2011-12-24 14:08+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -613,7 +613,7 @@ msgid "Consultant"
 msgstr "Consultant"
 
 #: people/models.py:162 staffing/models.py:256
-#: templates/staffing/graph_consultant_rate_jqp.html:62
+#: templates/staffing/graph_consultant_rate_jqp.html:65
 msgid "Daily rate"
 msgstr "Taux journalier"
 
@@ -1298,6 +1298,10 @@ msgstr "Suivi du taux de production et des TJM"
 msgid "Billing review and done work"
 msgstr "Suivi de la facturation comparé au travail réalisé/engagé"
 
+#: templates/core/dashboard.html:35
+msgid "Sales repartition per client"
+msgstr "Répartition du chiffre d'affaire facturé par client"
+
 #: templates/core/index.html:16
 msgid "My leads as responsible"
 msgstr "Les affaires dont je suis le responsable"
@@ -1368,8 +1372,8 @@ msgstr "Taux"
 
 #: templates/crm/clientcompany_detail.html:41
 #: templates/crm/clientcompany_detail.html:123
-#: templates/crm/clientcompany_list.html:11
-#: templates/crm/clientcompany_list.html:17
+#: templates/crm/clientcompany_list.html:15
+#: templates/crm/clientcompany_list.html:21
 msgid "All companies list"
 msgstr "Liste de toutes les entreprises clientes"
 
@@ -1388,6 +1392,15 @@ msgstr "Les TJMs pratiqués avec cette société"
 #: templates/crm/clientcompany_detail.html:114
 msgid "No rate defined"
 msgstr "Aucun TJM défini"
+
+#: templates/crm/graph_company_sales_jqp.html:16
+msgid "Last year sales repartition"
+msgstr "Répartition du CA des 12 derniers mois"
+
+#: templates/crm/graph_company_sales_jqp.html:16
+#, python-format
+msgid " Client sales repartition since %(min_date)s"
+msgstr "Répartition du CA par client depuis le %(min_date)s"
 
 #: templates/expense/_expense_block.html:10
 msgid "To be refund to "
@@ -1860,15 +1873,15 @@ msgstr "Objectif de taux journalier (€)"
 msgid "Min daily rate (€)"
 msgstr "Taux journalier mini (€)"
 
-#: templates/staffing/graph_consultant_rate_jqp.html:33
+#: templates/staffing/graph_consultant_rate_jqp.html:34
 msgid "Max daily rate (€)"
 msgstr "Taux journalier maxi (€)"
 
-#: templates/staffing/graph_consultant_rate_jqp.html:40
+#: templates/staffing/graph_consultant_rate_jqp.html:42
 msgid "Production rate (%)"
 msgstr "Taux de production (%)"
 
-#: templates/staffing/graph_consultant_rate_jqp.html:69
+#: templates/staffing/graph_consultant_rate_jqp.html:72
 msgid "Production rate"
 msgstr "Taux de production"
 

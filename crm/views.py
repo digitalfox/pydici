@@ -5,13 +5,21 @@ Pydici crm views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+import json
+from datetime import date, timedelta
+
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.db.models import Sum, Min
+from django.views.decorators.cache import cache_page
 
 from pydici.crm.models import ClientCompany, Client, ClientContact
 from pydici.staffing.models import Timesheet
 from pydici.leads.models import Lead
 from pydici.core.decorator import pydici_non_public
+from pydici.core.utils import COLORS
+from pydici.billing.models import Bill
+
 
 @pydici_non_public
 def company_detail(request, company_id):
@@ -32,15 +40,45 @@ def company_detail(request, company_id):
                               {"company": company,
                                "leads": leads,
                                "consultants": consultants,
-                               "contacts" : ClientContact.objects.filter(client__organisation__company=company).distinct(),
+                               "contacts": ClientContact.objects.filter(client__organisation__company=company).distinct(),
                                "clients": Client.objects.filter(organisation__company=company),
                                "companies": ClientCompany.objects.all()},
                                RequestContext(request))
+
 
 @pydici_non_public
 def company_list(request):
     """Client company list"""
     return render_to_response("crm/clientcompany_list.html",
-                              {"companies": ClientCompany.objects.all() },
+                              {"companies": ClientCompany.objects.all()},
                                RequestContext(request))
 
+
+@pydici_non_public
+@cache_page(60 * 60 * 24)
+def graph_company_sales_jqp(request, onlyLastYear=False):
+    """Sales repartition per company"""
+    graph_data = []
+    labels = []
+    minDate = Bill.objects.aggregate(Min("creation_date")).values()[0]
+    if onlyLastYear:
+        data = Bill.objects.filter(creation_date__gt=(date.today() - timedelta(365)))
+    else:
+        data = Bill.objects.all()
+    data = data.values("lead__client__organisation__company__name")
+    data = data.order_by("lead__client__organisation__company").annotate(Sum("amount"))
+    data = data.order_by("amount__sum").reverse()[0:9]
+    for i in data:
+        graph_data.append((i["lead__client__organisation__company__name"], float(i["amount__sum"])))
+    total = sum([i[1] for i in graph_data])
+    for company, amount in graph_data:
+        labels.append(u"%d k€ (%d%%)" % (amount / 1000, 100 * amount / total))
+
+    return render_to_response("crm/graph_company_sales_jqp.html",
+                              {"graph_data": json.dumps([graph_data]),
+                               "series_colors": COLORS,
+                               "only_last_year": onlyLastYear,
+                               "min_date": minDate,
+                               "labels": json.dumps(labels),
+                               "user": request.user},
+                               RequestContext(request))

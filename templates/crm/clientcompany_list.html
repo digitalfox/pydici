@@ -4,6 +4,10 @@
 
 {% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
 
+{% block extrajs %}
+    {% include "core/_jqplot.html" %}
+{% endblock %}
+
 {% block bodyclass %}dashboard{% endblock %}
 
 {% block breadcrumbs %}{% endblock %}
@@ -22,5 +26,14 @@
     </li>
 {% endfor %}
 </ul>
+<div style="clear:both;"></div>
+<br/>
+<div style="float:left;" id="graph_company_sales_jqp"></div>
+<div style="float:left;" id="graph_company_lastyear_sales_jqp"></div>
+<script type="text/javascript">
+$('#graph_company_sales_jqp').load('{% url graph_company_sales %}')
+$('#graph_company_lastyear_sales_jqp').load('{% url graph_company_lastyear_sales %}')
+</script>
+
 </div>
 {% endblock %}
