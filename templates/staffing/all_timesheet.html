@@ -33,5 +33,6 @@
 
 <br/><br/>
 
-<a href="{% url pydici.staffing.views.all_timesheet year=month.year, month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
+<a href="{% url pydici.staffing.views.all_timesheet year=month.year, month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a><br/>
+<a href="{% url pydici.staffing.views.detailed_csv_timesheet year=month.year, month=month.month %}/?csv">{% trans "Export detailed timesheet in a spreadsheet" %}</a>
 {% endblock %}

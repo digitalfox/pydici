@@ -20,7 +20,7 @@ from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.core.cache import cache
 from django.template import RequestContext
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
@@ -694,6 +694,55 @@ def all_csv_timesheet(request, charges, month):
                 i = unicode(i).encode("ISO-8859-15", "ignore")
             row.append(i)
         writer.writerow(row)
+    return response
+
+
+@pydici_non_public
+def detailed_csv_timesheet(request, year=None, month=None):
+    """Detailed timesheet with mission, consultant, and rates
+    Intended for accounting third party system or spreadsheet analysis"""
+    data = []  # Data array to be returned
+    response = HttpResponse(mimetype="text/csv")
+    response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    writer = csv.writer(response, delimiter=';')
+
+    if year and month:
+        month = date(int(year), int(month), 1)
+    else:
+        month = date.today().replace(day=1)  # We use the first day to represent month
+
+    next_month = (month + timedelta(40)).replace(day=1)
+
+    # Header
+    header = [_("Lead"), _("Deal id"), _("Mission"), _("Billing mode"), _(u"Price (k€)"),
+              _("Consultant"), _("Daily rate"), _("Bought daily rate"), _("Done days"), _("Days to be done")]
+    writer.writerow([unicode(month).encode("ISO-8859-15"), ])
+    writer.writerow([unicode(i).encode("ISO-8859-15") for i in header])
+
+    missions = Mission.objects.filter(Q(timesheet__working_date__gte=month, timesheet__working_date__lt=next_month) |
+                                      Q(staffing__staffing_date__gte=month, staffing__staffing_date__lt=next_month))
+    missions = missions.distinct().order_by("lead")
+
+    for mission in missions:
+        for consultant in mission.staffed_consultant():
+            row = [mission.lead if mission.lead else "", mission.lead.deal_id if mission.lead else "", mission,
+                   mission.get_billing_mode_display(), formats.number_format(mission.price) if mission.price else 0, consultant]
+            try:
+                financialCondition = FinancialCondition.objects.get(consultant=consultant, mission=mission)
+                row.append(formats.number_format(financialCondition.daily_rate) if financialCondition.daily_rate else 0)
+                row.append(formats.number_format(financialCondition.bought_daily_rate) if financialCondition.bought_daily_rate else 0)
+            except FinancialCondition.DoesNotExist:
+                row.extend([0, 0])
+            timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
+                                                 working_date__gte=month,
+                                                 working_date__lt=next_month).aggregate(Sum("charge")).values()[0]
+            row.append(formats.number_format(timesheet) if timesheet else 0)
+            forecast = Staffing.objects.filter(mission=mission, consultant=consultant,
+                                               staffing_date__gte=next_month).aggregate(Sum("charge")).values()[0]
+            row.append(formats.number_format(forecast) if forecast else 0)
+
+            writer.writerow([unicode(i).encode("ISO-8859-15") for i in row])
+
     return response
 
 

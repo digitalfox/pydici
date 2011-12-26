@@ -18,6 +18,7 @@ from pydici.core.models import Subsidiary
 from pydici.actionset.models import ActionState
 from pydici.actionset.utils import launchTrigger
 
+
 class ConsultantProfile(models.Model):
     """Consultant hierarchy"""
     name = models.CharField(_("Name"), max_length=50, unique=True)
