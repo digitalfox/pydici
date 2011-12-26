@@ -215,11 +215,13 @@ def monthWeekNumber(cDate):
     return nWeek
 
 def staffingDates(n=12):
-    """Returns a list of dict() with short/long format dates for the n next month"""
+    """Returns a list of dict() with short/long/datetime format dates for the n next month"""
     staffingDate = date.today().replace(day=1)
     dates = []
     fortyDays = timedelta(40)
     for i in range(n):
-        dates.append({ "short" : formats.localize_input(staffingDate), "long" : formats.date_format(staffingDate, format="YEAR_MONTH_FORMAT").encode("latin-1")})
+        dates.append({"short": formats.localize_input(staffingDate),
+                      "long" : formats.date_format(staffingDate, format="YEAR_MONTH_FORMAT").encode("latin-1"),
+                      "date": staffingDate})
         staffingDate = (staffingDate + fortyDays).replace(day=1)
     return dates

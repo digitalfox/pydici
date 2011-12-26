@@ -5,7 +5,7 @@ Pydici staffing views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import csv
 import itertools
 import json
@@ -31,7 +31,8 @@ from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet, Financ
 from pydici.people.models import Consultant
 from pydici.leads.models import Lead
 from pydici.people.models import ConsultantProfile, RateObjective
-from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, TimesheetForm
+from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
+                                  TimesheetForm, MassStaffingForm
 from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
 from pydici.core.decorator import pydici_non_public
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
@@ -131,6 +132,41 @@ def consultant_staffing(request, consultant_id):
                                "user": request.user},
                                RequestContext(request))
 
+@pydici_non_public
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def mass_staffing(request):
+    """Massive staffing form"""
+    staffing_dates = [(i["date"], formats.date_format(i["date"], format="YEAR_MONTH_FORMAT")) for i in staffingDates()]
+    now = datetime.now().replace(microsecond=0)  # Remove useless microsecond that pollute form validation in callback
+    if request.method == 'POST':  # If the form has been submitted...
+        form = MassStaffingForm(request.POST, staffing_dates=staffing_dates)
+        if form.is_valid():  # All validation rules pass
+            # Process the data in form.cleaned_data
+            for missionId in form.cleaned_data["missions"]:
+                for consultantId in form.cleaned_data["consultants"]:
+                    for staffing_date in form.cleaned_data["staffing_dates"]:
+                        staffing_date = date(*[int(i) for i in staffing_date.split("-")])
+                        staffing, created = Staffing.objects.get_or_create(consultant__id=consultantId,
+                                                                           mission__id=missionId,
+                                                                           staffing_date=staffing_date,
+                                                                           defaults={"consultant_id": consultantId,
+                                                                                     "mission_id": missionId,
+                                                                                     "staffing_date": staffing_date})
+                        staffing.charge = form.cleaned_data["charge"]
+                        staffing.update_date = now
+                        staffing.last_user = unicode(request.user)
+                        staffing.save()
+            # Redirect to self to display a new unbound form
+            request.user.message_set.create(message=_("Staffing has been updated"))
+            return HttpResponseRedirect(urlresolvers.reverse("pydici.staffing.views.mass_staffing"))
+    else:
+        # An unbound form
+        form = MassStaffingForm(staffing_dates=staffing_dates)
+
+    return render_to_response("staffing/mass_staffing.html",
+                              {"form": form,
+                               "staffing_dates": staffing_dates},
+                              RequestContext(request))
 
 @pydici_non_public
 def pdc_review(request, year=None, month=None):

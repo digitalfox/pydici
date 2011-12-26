@@ -47,6 +47,7 @@
                 <li><a href="{% url missions %}">{% trans "Active missions" %}</a></li>
                 <li>{{ user.username|link_to_timesheet }}</li>
                 <li>{{ user.username|link_to_staffing }}</li>
+                <li><a href="{% url pydici.staffing.views.mass_staffing %}">{% trans "Mass staffing" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>

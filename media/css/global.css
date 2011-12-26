@@ -194,7 +194,8 @@ a.tagrlink { color: #999999 }
 
 /* expense form */
 .pydici-expense-col1, .pydici-expense-col2 { width: 40em; float: left;}
-.pydici-expense label { width: 8em; float: left; text-align: right; margin-right: 1em; margin-bottom: -1em; padding-bottom: 0.5em; display: block ; vertical-align: middle; }
+.pydici-mass-staffing-col1, .pydici-mass-staffing-col2 { width: 30em; float: left;}
+.pydici-expense, .pydici-mass-staffing label { width: 8em; float: left; text-align: right; margin-right: 1em; margin-bottom: -1em; padding-bottom: 0.5em; display: block ; vertical-align: middle; }
 .pydici-expense p+p { line-height: 100%; margin-bottom:1em; margin-top:1.25em;  }
 
 /* jquery tooltip */

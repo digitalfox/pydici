@@ -214,9 +214,9 @@ class Staffing(models.Model):
     def __unicode__(self):
         return "%s/%s (%s): %s" % (self.staffing_date.month, self.staffing_date.year, self.consultant.trigramme, self.charge)
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, *args, **kwargs):
         self.staffing_date = datetime(self.staffing_date.year, self.staffing_date.month, 1)
-        super(Staffing, self).save(force_insert, force_update)
+        super(Staffing, self).save(*args, **kwargs)
 
     class Meta:
         unique_together = (("consultant", "mission", "staffing_date"),)

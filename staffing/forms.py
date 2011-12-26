@@ -14,9 +14,10 @@ from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 
-from ajax_select.fields import AutoCompleteSelectField
+from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
 
 from pydici.staffing.models import Mission, FinancialCondition
+
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
@@ -47,6 +48,19 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
         form.fields["consultant"].widget.attrs.setdefault("size", 8) # Reduce default size
         form.fields["staffing_date"].widget.attrs.setdefault("size", 10) # Reduce default size
         form.fields["charge"].widget.attrs.setdefault("size", 3) # Reduce default size
+
+
+class MassStaffingForm(forms.Form):
+    """Massive staffing input forms that allow to define same staffing
+    for a group of consultant accross different months"""
+    def __init__(self, *args, **kwargs):
+        staffing_dates = kwargs.pop("staffing_dates", [])
+        super(MassStaffingForm, self).__init__(*args, **kwargs)
+
+        self.fields["missions"] = AutoCompleteSelectMultipleField('mission', required=True, label=_("Missions"))
+        self.fields["consultants"] = AutoCompleteSelectMultipleField('consultant', required=True, label=_("Consultants"))
+        self.fields["charge"] = forms.fields.FloatField(label=_("Charge"), min_value=0.25, max_value=31)
+        self.fields["staffing_dates"] = forms.fields.MultipleChoiceField(label=_("Staffing dates"), choices=staffing_dates)
 
 
 class TimesheetForm(forms.Form):
@@ -99,6 +113,7 @@ class TimesheetForm(forms.Form):
             # extra space is important - it is for forecast total (which does not exist for ticket...)
             key = "%s total-ticket " % timesheetTotal.get("ticket", 0)
             self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
+
 
 class MissionAdminForm(forms.ModelForm):
     """Form used to validate mission price field in admin"""
