@@ -714,8 +714,8 @@ def detailed_csv_timesheet(request, year=None, month=None):
     next_month = (month + timedelta(40)).replace(day=1)
 
     # Header
-    header = [_("Lead"), _("Deal id"), _("Mission"), _("Billing mode"), _(u"Price (k€)"),
-              _("Consultant"), _("Daily rate"), _("Bought daily rate"), _("Done days"), _("Days to be done")]
+    header = [_("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Mission"), _("Billing mode"), _(u"Mission Price (k€)"),
+              _("Consultant"), _("Daily rate"), _("Bought daily rate"), _("Past done days"), _("Done days"), _("Days to be done")]
     writer.writerow([unicode(month).encode("ISO-8859-15"), ])
     writer.writerow([unicode(i).encode("ISO-8859-15") for i in header])
 
@@ -725,18 +725,26 @@ def detailed_csv_timesheet(request, year=None, month=None):
 
     for mission in missions:
         for consultant in mission.staffed_consultant():
-            row = [mission.lead if mission.lead else "", mission.lead.deal_id if mission.lead else "", mission,
-                   mission.get_billing_mode_display(), formats.number_format(mission.price) if mission.price else 0, consultant]
+            row = [mission.lead if mission.lead else "", mission.lead.deal_id if mission.lead else "",
+                   mission.lead.sales if mission.lead else 0, mission, mission.get_billing_mode_display(),
+                   formats.number_format(mission.price) if mission.price else 0, consultant]
+            # Rates
             try:
                 financialCondition = FinancialCondition.objects.get(consultant=consultant, mission=mission)
                 row.append(formats.number_format(financialCondition.daily_rate) if financialCondition.daily_rate else 0)
                 row.append(formats.number_format(financialCondition.bought_daily_rate) if financialCondition.bought_daily_rate else 0)
             except FinancialCondition.DoesNotExist:
                 row.extend([0, 0])
+            # Past timesheet
+            timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
+                                                 working_date__lt=month).aggregate(Sum("charge")).values()[0]
+            row.append(formats.number_format(timesheet) if timesheet else 0)
+            # Current month timesheet
             timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
                                                  working_date__gte=month,
                                                  working_date__lt=next_month).aggregate(Sum("charge")).values()[0]
             row.append(formats.number_format(timesheet) if timesheet else 0)
+            # Forecasted staffing
             forecast = Staffing.objects.filter(mission=mission, consultant=consultant,
                                                staffing_date__gte=next_month).aggregate(Sum("charge")).values()[0]
             row.append(formats.number_format(forecast) if forecast else 0)
