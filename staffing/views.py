@@ -352,7 +352,6 @@ def consultant_home(request, consultant_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
     """Consultant timesheet"""
-
     mobile = request.session.get("mobile", False)
 
     # We use the first day to represent month
@@ -389,12 +388,12 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
     if not (request.user.has_perm("staffing.add_timesheet") and
             request.user.has_perm("staffing.change_timesheet") and
             request.user.has_perm("staffing.delete_timesheet")):
-        # Only forbid access if the user try to edit someone else staffing.
-        # But authorise manager to have a look (read only) to their team timesheet
+        # Each one can edit its own timesheet
+        # And authorise in-house people to have a look (read only)
         if request.user.username.upper() != consultant.trigramme:
             try:
                 c = Consultant.objects.get(trigramme=request.user.username.upper())
-                if consultant.getUser() in c.userTeam():
+                if not c.subcontractor:
                     readOnly = True
                 else:
                     return HttpResponseRedirect(urlresolvers.reverse("forbiden"))

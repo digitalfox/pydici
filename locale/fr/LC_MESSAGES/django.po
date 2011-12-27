@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-26 18:52+0100\n"
-"PO-Revision-Date: 2011-12-26 18:52+0100\n"
+"POT-Creation-Date: 2011-12-27 07:52+0100\n"
+"PO-Revision-Date: 2011-12-27 07:52+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -147,7 +147,7 @@ msgstr ""
 "l'avertir car il n'a pas d'adresse de courriel."
 
 #: billing/forms.py:19 billing/models.py:25 expense/forms.py:30
-#: leads/models.py:187 staffing/models.py:40 staffing/views.py:753
+#: leads/models.py:187 staffing/models.py:40 staffing/views.py:760
 #: templates/billing/bill_review.html:155 templates/core/index.html:19
 #: templates/core/index.html.py:44 templates/core/index.html:68
 #: templates/core/index.html.py:92 templates/expense/_expense_block.html:19
@@ -548,8 +548,8 @@ msgstr "Démarrage"
 msgid "Due"
 msgstr "Échéance"
 
-#: leads/models.py:62 staffing/models.py:41 staffing/views.py:489
-#: staffing/views.py:658 staffing/views.py:753
+#: leads/models.py:62 staffing/models.py:41 staffing/views.py:496
+#: staffing/views.py:665 staffing/views.py:760
 msgid "Deal id"
 msgstr "N° affaire"
 
@@ -606,13 +606,13 @@ msgstr "Profile"
 msgid "Subcontractor"
 msgstr "Sous-traitant"
 
-#: people/models.py:156 staffing/forms.py:47 staffing/views.py:754
+#: people/models.py:156 staffing/forms.py:47 staffing/views.py:761
 #: templates/staffing/mission.html:65
 #: templates/staffing/mission_staffing.html:9
 msgid "Consultant"
 msgstr "Consultant"
 
-#: people/models.py:163 staffing/models.py:256 staffing/views.py:754
+#: people/models.py:163 staffing/models.py:256 staffing/views.py:761
 #: templates/staffing/graph_consultant_rate_jqp.html:65
 msgid "Daily rate"
 msgstr "Taux journalier"
@@ -639,8 +639,8 @@ msgid "Last forecast staffing updated or created about myself"
 msgstr ""
 "Dernières mise à jour ou création de staffing prévisionnel me concernant"
 
-#: staffing/forms.py:37 staffing/models.py:194 staffing/views.py:489
-#: staffing/views.py:658 staffing/views.py:753
+#: staffing/forms.py:37 staffing/models.py:194 staffing/views.py:496
+#: staffing/views.py:665 staffing/views.py:760
 #: templates/leads/lead_detail.html:113
 #: templates/staffing/consultant_staffing.html:10
 #: templates/staffing/mission.html:83
@@ -664,40 +664,48 @@ msgid "Charge"
 msgstr "Charge"
 
 #: staffing/forms.py:63
+msgid "Comment"
+msgstr "Remarques"
+
+#: staffing/forms.py:64
+msgid "All active consultants"
+msgstr "Toutes les consultants actifs"
+
+#: staffing/forms.py:65
 msgid "Staffing dates"
 msgstr "Dates de staffing"
 
-#: staffing/forms.py:110 staffing/views.py:693
+#: staffing/forms.py:112 staffing/views.py:700
 msgid "Days without lunch ticket"
 msgstr "Jours sans ticket restaurant"
 
-#: staffing/forms.py:130
+#: staffing/forms.py:132
 msgid "Cannot add price to mission without lead"
 msgstr "Impossible d'ajouter un montant à une mission sans affaire"
 
-#: staffing/forms.py:133
+#: staffing/forms.py:135
 msgid "Mission's lead has no sales price. Define lead sales price."
 msgstr ""
 "L'affaire de cette mission n'a pas de prix de vente. Il faut en définir un "
 "au préalable."
 
-#: staffing/forms.py:142
+#: staffing/forms.py:144
 #, python-format
 msgid "Only %s k€ are remaining on this lead. Define a lower price"
 msgstr ""
 "Il ne reste que %s k€ sur cette affaire. Choisissez un montant plus faible"
 
-#: staffing/forms.py:160
+#: staffing/forms.py:162
 msgid "Bought daily rate must be positive and lower than daily rate"
 msgstr ""
 "Le taux journalier d'achat doit être positif et inférieur au taux journalier "
 "moyen"
 
-#: staffing/forms.py:162
+#: staffing/forms.py:164
 msgid "Bought daily rate must be defined for subcontractor"
 msgstr "Le taux journalier d'achat doit être défini pour les sous-traitants"
 
-#: staffing/forms.py:165
+#: staffing/forms.py:167
 msgid "Bought daily rate must be only be defined for subcontractor"
 msgstr ""
 "Le taux journalier d'achat doit être défini uniquement pour les sous-"
@@ -743,7 +751,7 @@ msgstr "Temps passé"
 msgid "Type"
 msgstr "Type"
 
-#: staffing/models.py:44 staffing/views.py:753
+#: staffing/models.py:44 staffing/views.py:760
 #: templates/leads/lead_detail.html:118 templates/staffing/mission.html:88
 msgid "Billing mode"
 msgstr "Mode de facturation"
@@ -778,7 +786,7 @@ msgstr "Pas de ticket restaurant"
 msgid "Lunch ticket"
 msgstr "Ticket restaurant"
 
-#: staffing/models.py:257 staffing/views.py:754
+#: staffing/models.py:257 staffing/views.py:761
 msgid "Bought daily rate"
 msgstr "Taux journalier d'achat"
 
@@ -786,71 +794,71 @@ msgstr "Taux journalier d'achat"
 msgid "Financial condition"
 msgstr "Condition financière"
 
-#: staffing/views.py:160
+#: staffing/views.py:168
 msgid "Staffing has been updated"
 msgstr "Les prévisions de charge ont été mises à jour"
 
-#: staffing/views.py:184
+#: staffing/views.py:192
 msgid "No productive consultant defined !"
 msgstr "Aucun consultant productif défini !"
 
-#: staffing/views.py:481 staffing/views.py:719 staffing/views.py:742
+#: staffing/views.py:488 staffing/views.py:726 staffing/views.py:749
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:490
+#: staffing/views.py:497
 msgid "total"
 msgstr "total"
 
-#: staffing/views.py:680 templates/leads/lead_detail.html:132
+#: staffing/views.py:687 templates/leads/lead_detail.html:132
 #: templates/staffing/mission_timesheet.html:27
 #: templates/staffing/mission_timesheet.html:82
 msgid "Total"
 msgstr "Total"
 
-#: staffing/views.py:753
+#: staffing/views.py:760
 msgid "Lead Price (k€)"
 msgstr "Montant affaire (k€)"
 
-#: staffing/views.py:753
+#: staffing/views.py:760
 msgid "Mission Price (k€)"
 msgstr "Montant mission (k€)"
 
-#: staffing/views.py:754
+#: staffing/views.py:761
 msgid "Past done days"
 msgstr "Jours réalisés dans le passé"
 
-#: staffing/views.py:754 templates/billing/bill_review.html:159
+#: staffing/views.py:761 templates/billing/bill_review.html:159
 #: templates/leads/lead_detail.html:115 templates/staffing/mission.html:85
 #: templates/staffing/mission_timesheet.html:12
 msgid "Done days"
 msgstr "Jours réalisés"
 
-#: staffing/views.py:754 templates/staffing/mission_timesheet.html:18
+#: staffing/views.py:761 templates/staffing/mission_timesheet.html:18
 msgid "Days to be done"
 msgstr "Jours à faire"
 
-#: staffing/views.py:808
+#: staffing/views.py:815
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
-#: staffing/views.py:832 templates/actionset/_base_actions.html:75
+#: staffing/views.py:839 templates/actionset/_base_actions.html:75
 msgid "You are not allowed to do that"
 msgstr "Vous n'êtes pas autorisé à faire cela"
 
-#: staffing/views.py:846
+#: staffing/views.py:853
 msgid "Mission or consultant does not exist"
 msgstr "La mission ou le consultant n'existe pas"
 
-#: staffing/views.py:848
+#: staffing/views.py:855
 msgid "Incorrect value"
 msgstr "Valeur incorrecte"
 
-#: staffing/views.py:1018
+#: staffing/views.py:1025
 msgid "Prod. rate"
 msgstr "Taux de prod."
 
-#: staffing/views.py:1031 templates/staffing/mission.html:65
+#: staffing/views.py:1038 templates/staffing/mission.html:65
 msgid "Daily rate (€)"
 msgstr "Taux journalier (€)"
 
@@ -1491,7 +1499,7 @@ msgstr "Ajouter une note de frais"
 #: templates/staffing/consultant_staffing.html:60
 #: templates/staffing/consultant_timesheet.html:49
 #: templates/staffing/m.consultant_timesheet.html:63
-#: templates/staffing/mass_staffing.html:29
+#: templates/staffing/mass_staffing.html:31
 #: templates/staffing/mission_staffing.html:63
 msgid "Save"
 msgstr "Enregistrer"
@@ -1857,11 +1865,10 @@ msgid "Forec."
 msgstr "Prév."
 
 #: templates/staffing/consultant_timesheet.html:46
-#: templates/staffing/m.consultant_timesheet.html:60
-msgid "Note: Past month timesheet and your team timesheets are read only"
+msgid "Note: Past month timesheet and other people timesheets are read only"
 msgstr ""
-"Remarque : les feuilles de temps des mois passés et de votre équipe sont en "
-"lecture seule."
+"Remarque : les feuilles de temps des mois passés et des autres personnes  "
+"sont en lecture seule."
 
 #: templates/staffing/consultant_timesheet.html:53
 #: templates/staffing/m.consultant_timesheet.html:67
@@ -1937,6 +1944,12 @@ msgstr "Semaine précédente"
 #: templates/staffing/m.consultant_timesheet.html:13
 msgid "Next week"
 msgstr "Semaine suivante"
+
+#: templates/staffing/m.consultant_timesheet.html:60
+msgid "Note: Past month timesheet and your team timesheets are read only"
+msgstr ""
+"Remarque : les feuilles de temps des mois passés et de votre équipe sont en "
+"lecture seule."
 
 #: templates/staffing/mass_staffing.html:10
 msgid "Massive staffing"
@@ -2150,9 +2163,6 @@ msgstr "Totaux"
 
 #~ msgid "workload schedule of this mission"
 #~ msgstr "prévisions de charge de cette mission"
-
-#~ msgid "Comment"
-#~ msgstr "Remarques"
 
 #~ msgid "All lead (k€)"
 #~ msgstr "Toutes les affaires (k€)"
