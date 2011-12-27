@@ -16,8 +16,10 @@
     <div class="pydici-mass-staffing-col1">
         <div class="pydici-mass-staffing">
             <p>{{ form.missions.errors }} {{ form.missions.label_tag }} : {{ form.missions }}</p>
-            <p>{{ form.consultants.errors }} {{ form.consultants.label_tag }} : {{ form.consultants }}</p>
+            <div id="consultants_block"><p>{{ form.consultants.errors }} {{ form.consultants.label_tag }} : {{ form.consultants }}</p></div>
+            <p>{{ form.all_consultants.errors }} {{ form.all_consultants.label_tag }} : {{ form.all_consultants }}</p>
             <p>{{ form.charge.errors }} {{ form.charge.label_tag }} : {{ form.charge }}</p>
+            <p>{{ form.comment.errors }} {{ form.comment.label_tag }} : {{ form.comment }}</p>
         </div>
     </div>
     <div class="pydici-mass-staffing-col2">
@@ -27,7 +29,9 @@
     </div>
     <div style="clear:both"></div>
     <input type="submit" value="{% trans 'Save' %}"/>
-
 </form>
 
+<script type="text/JavaScript">
+ /* TODO: java script that hide consultants_block when all_consultants checkbox is true */
+</script>
 {% endblock %}

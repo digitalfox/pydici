@@ -142,8 +142,14 @@ def mass_staffing(request):
         form = MassStaffingForm(request.POST, staffing_dates=staffing_dates)
         if form.is_valid():  # All validation rules pass
             # Process the data in form.cleaned_data
+            if form.cleaned_data["all_consultants"]:
+                # Get all active, productive non subcontractors consultants
+                consultantIds = [c.id for c in Consultant.objects.filter(active=True, productive=True, subcontractor=False)]
+            else:
+                # Use selected consultants
+                consultantIds = form.cleaned_data["consultants"]
             for missionId in form.cleaned_data["missions"]:
-                for consultantId in form.cleaned_data["consultants"]:
+                for consultantId in consultantIds:
                     for staffing_date in form.cleaned_data["staffing_dates"]:
                         staffing_date = date(*[int(i) for i in staffing_date.split("-")])
                         staffing, created = Staffing.objects.get_or_create(consultant__id=consultantId,
@@ -153,6 +159,7 @@ def mass_staffing(request):
                                                                                      "mission_id": missionId,
                                                                                      "staffing_date": staffing_date})
                         staffing.charge = form.cleaned_data["charge"]
+                        staffing.comment = form.cleaned_data["comment"]
                         staffing.update_date = now
                         staffing.last_user = unicode(request.user)
                         staffing.save()
