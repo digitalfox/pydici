@@ -134,6 +134,7 @@ def consultant_staffing(request, consultant_id):
 
 @pydici_non_public
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@permission_required("staffing.change_staffing")
 def mass_staffing(request):
     """Massive staffing form"""
     staffing_dates = [(i["date"], formats.date_format(i["date"], format="YEAR_MONTH_FORMAT")) for i in staffingDates()]
