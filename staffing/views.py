@@ -662,7 +662,7 @@ def all_timesheet(request, year=None, month=None):
         # drill down link
         data = [mark_safe("<a href='%s#tab-timesheet'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.consultant_home", args=[consultant.id]),
                                         escape(unicode(consultant)))) for consultant in consultants]
-    data = [[_("Mission"), _("Deal id")] + data]
+    data = [[_("Mission"), _("Mission id")] + data]
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = timesheet["sum"]
     for mission in missions:
