@@ -23,7 +23,7 @@ def expense_receipt_path(instance, filename):
     """Format full path of expense receipt"""
     return join(pydici.settings.PYDICI_ROOTDIR, "data", "expense",
                 strftime("%Y"), strftime("%m"), instance.user.username,
-                strftime("%d-%H%M%S_" + filename))
+                u"%s_%s" % (strftime("%d-%H%M%S"), filename))
 
 
 class ExpenseCategory(models.Model):
