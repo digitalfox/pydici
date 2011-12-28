@@ -60,8 +60,8 @@ class MassStaffingForm(forms.Form):
         self.fields["missions"] = AutoCompleteSelectMultipleField('mission', required=True, label=_("Missions"))
         self.fields["consultants"] = AutoCompleteSelectMultipleField('consultant', required=True, label=_("Consultants"))
         self.fields["charge"] = forms.fields.FloatField(label=_("Charge"), min_value=0.25, max_value=31)
-        self.fields["comment"] = forms.fields.CharField(label=_("Comment"), max_length=100)
-        self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"))
+        self.fields["comment"] = forms.fields.CharField(label=_("Comment"), max_length=100, required=False)
+        self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
         self.fields["staffing_dates"] = forms.fields.MultipleChoiceField(label=_("Staffing dates"), choices=staffing_dates)
 
 
