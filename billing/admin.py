@@ -6,6 +6,7 @@ Django administration setup
 """
 
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from ajax_select.admin import AjaxSelectAdmin
 
@@ -22,6 +23,13 @@ class BillAdmin(AjaxSelectAdmin):
     search_fields = ["lead__name", "lead__client__organisation__name", "comment",
                      "lead__paying_authority__name", "lead__paying_authority__company",
                      "lead__client__contact__name", "lead__client__organisation__company__name"]
+    fieldsets = [
+                 (_("Description"), {"fields": ["lead", "bill_id", "nature", "bill_file"]}),
+                 (_("Amounts"), {"fields": ["amount", "vat", "amount_with_vat", ]}),
+                 (_("Dates"), {"fields": ["creation_date", "due_date", "payment_date", ]}),
+                 (_("State"), {"fields": ["state", "previous_year_bill", "comment", ]}),
+                 (_("Link with expenses"), {"fields": ["expenses_with_vat", "expenses", ]}),
+                 ]
     form = BillForm
 
 admin.site.register(Bill, BillAdmin)

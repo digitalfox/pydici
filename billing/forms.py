@@ -8,12 +8,14 @@ Bill form setup
 from django.forms import models
 from django.utils.translation import ugettext_lazy as _
 
-from ajax_select.fields import AutoCompleteSelectField
+from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
 
 from pydici.billing.models import Bill
+
 
 class BillForm(models.ModelForm):
     class Meta:
         model = Bill
     # declare a field and specify the named channel that it uses
-    lead = AutoCompleteSelectField('lead', required=True, label=_("Lead"))
+    lead = AutoCompleteSelectField("lead", required=True, label=_("Lead"))
+    expenses = AutoCompleteSelectMultipleField("recent_chargeable_expense", required=False, label=_("Expenses"))
