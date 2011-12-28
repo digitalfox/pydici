@@ -6,9 +6,9 @@
 <div id="company_sales_jqp_{{ only_last_year|safe }}" style="height: 400px; width: 400px;"></div>
 
 <script type="text/javascript">
-
+$(document).ready(function() {
 $.jqplot.config.enablePlugins = true;
-$.jqplot('company_sales_jqp_{{ only_last_year|safe }}',  {{ graph_data|safe }}, {
+var plot_company_sales_{{ only_last_year|safe }} =$.jqplot('company_sales_jqp_{{ only_last_year|safe }}',  {{ graph_data|safe }}, {
          animate : true,
          captureRightClick: true,
          gridPadding: {top:20, bottom:60, left:0, right:0},
@@ -46,4 +46,11 @@ $.jqplot('company_sales_jqp_{{ only_last_year|safe }}',  {{ graph_data|safe }}, 
              sizeAdjust: 7.5,
          },*/
 });
+
+$('#company-tabs').bind('tabsshow', function(event, ui) {
+    if (plot_company_sales_{{ only_last_year|safe }}._drawCount == 0) {
+        plot_company_sales_{{ only_last_year|safe }}.replot();
+    }
+  });
+}); // End of ready()
 </script>

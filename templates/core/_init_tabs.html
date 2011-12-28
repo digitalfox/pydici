@@ -2,7 +2,7 @@
 {# tab id must be {{ tabs }} (use {% with...%}) #}
 {% load i18n %}
 <script>
-$(function() {
+$(document).ready(function() {
     $( "#{{ tabs }}" ).tabs({
         ajaxOptions: {
             error: function( xhr, status, index, anchor ) {
