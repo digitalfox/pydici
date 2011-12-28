@@ -757,7 +757,7 @@ def detailed_csv_timesheet(request, year=None, month=None):
     next_month = (month + timedelta(40)).replace(day=1)
 
     # Header
-    header = [_("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Mission"), _("Billing mode"), _(u"Mission Price (k€)"),
+    header = [_("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
               _("Consultant"), _("Daily rate"), _("Bought daily rate"), _("Past done days"), _("Done days"), _("Days to be done")]
     writer.writerow([unicode(month).encode("ISO-8859-15"), ])
     writer.writerow([unicode(i).encode("ISO-8859-15") for i in header])
@@ -769,7 +769,8 @@ def detailed_csv_timesheet(request, year=None, month=None):
     for mission in missions:
         for consultant in mission.staffed_consultant():
             row = [mission.lead if mission.lead else "", mission.lead.deal_id if mission.lead else "",
-                   mission.lead.sales if mission.lead else 0, mission, mission.get_billing_mode_display(),
+                   mission.lead.sales if mission.lead else 0, mission,
+                   mission.mission_id(), mission.get_billing_mode_display(),
                    formats.number_format(mission.price) if mission.price else 0, consultant]
             # Rates
             try:
