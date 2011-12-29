@@ -137,7 +137,7 @@ def consultant_staffing(request, consultant_id):
 @permission_required("staffing.change_staffing")
 def mass_staffing(request):
     """Massive staffing form"""
-    staffing_dates = [(i["date"], formats.date_format(i["date"], format="YEAR_MONTH_FORMAT")) for i in staffingDates()]
+    staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime")]
     now = datetime.now().replace(microsecond=0)  # Remove useless microsecond that pollute form validation in callback
     if request.method == 'POST':  # If the form has been submitted...
         form = MassStaffingForm(request.POST, staffing_dates=staffing_dates)
