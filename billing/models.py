@@ -37,7 +37,7 @@ class Bill(models.Model):
             ('2_SUPPLIER', ugettext("Supplier")),)
 
     lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
-    bill_id = models.CharField(_("Bill id"), max_length=500, blank=True, null=True)
+    bill_id = models.CharField(_("Bill id"), max_length=500)
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2)
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
     vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=pydici.settings.PYDICI_DEFAULT_VAT_RATE)
