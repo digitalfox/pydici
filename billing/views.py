@@ -7,13 +7,14 @@ Pydici billing views. Http request are processed here.
 
 from datetime import date, timedelta
 import itertools
+import mimetypes
 
 from matplotlib.figure import Figure
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core import urlresolvers
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import Sum
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_page
@@ -113,6 +114,24 @@ def create_new_bill_from_lead(request, lead_id):
     bill.state = "1_SENT"
     bill.save()
     return HttpResponseRedirect(urlresolvers.reverse("admin:billing_bill_change", args=[bill.id, ]))
+
+
+@pydici_non_public
+def bill_file(request, bill_id):
+    """Returns bill file"""
+    response = HttpResponse()
+    try:
+        bill = Bill.objects.get(id=bill_id)
+        if bill.bill_file:
+            response['Content-Type'] = mimetypes.guess_type(bill.bill_file.name)[0] or "application/stream"
+            for chunk in bill.bill_file.chunks():
+                response.write(chunk)
+    except (Bill.DoesNotExist, OSError):
+        pass
+
+    return response
+
+
 
 @pydici_non_public
 @cache_page(60 * 10)

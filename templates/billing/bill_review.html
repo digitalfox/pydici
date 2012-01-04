@@ -21,6 +21,7 @@
                 <td><b>{% trans "Amount (€ excl tax)" %}</b></td>
                 <td><b>{% trans "Amount (€ with tax)" %}</b></td>
                 <td><b>{% trans "Wait" %}</b></td>
+                <td><b>{% trans "File" %}</b></td>
                 <td><b>{% trans "Comments" %}</b></td>
                 <td></td>
         </tr>
@@ -31,6 +32,7 @@
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
+                <td><a href='{% url pydici.billing.views.bill_file bill.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12 /></a></td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.change_bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
@@ -57,6 +59,7 @@
                 <td><b>{% trans "Amount (€ excl tax)" %}</b></td>
                 <td><b>{% trans "Amount (€ with tax)" %}</b></td>
                 <td><b>{% trans "Wait" %}</b></td>
+                <td><b>{% trans "File" %}</b></td>
                 <td><b>{% trans "Comments" %}</b></td>
                 <td></td>
         </tr>
@@ -67,6 +70,7 @@
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
+                <td><a href='{% url pydici.billing.views.bill_file bill.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.change_bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
@@ -93,6 +97,7 @@
                 <td><b>{% trans "Amount (€ excl tax)" %}</b></td>
                 <td><b>{% trans "Amount (€ with tax)" %}</b></td>
                 <td><b>{% trans "Wait" %}</b></td>
+                <td><b>{% trans "File" %}</b></td>
                 <td><b>{% trans "Comments" %}</b></td>
                 <td></td>
         </tr>
@@ -103,6 +108,7 @@
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
+                <td><a href='{% url pydici.billing.views.bill_file bill.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/ height=12></a></td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.change_bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
@@ -130,6 +136,7 @@
                 <td><b>{% trans "Amount (€ with tax)" %}</b></td>
                 <td><b>{% trans "Creation date" %}</b></td>
                 <td><b>{% trans "Payment delay" %}</b></td>
+                <td><b>{% trans "File" %}</b></td>
                 <td><b>{% trans "Comments" %}</b></td>
         </tr>
         {% for bill in recent_bills %}
@@ -140,6 +147,7 @@
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_delay }}</td>
+                <td><a href='{% url pydici.billing.views.bill_file bill.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
                 <td>{{ bill.comment }}</td>
             </tr>
         {% endfor %}
