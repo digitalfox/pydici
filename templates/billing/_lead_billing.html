@@ -11,6 +11,7 @@
             <th>{% trans "Creation date" %}</th>
             <th>{% trans "Due date" %}</th>
             <th>{% trans "Payment date" %}</th>
+            <th>{% trans "File" %}</th>
             {% for bill in lead.bill_set.all %}
                 <tr {%cycle 'class="row1"' 'class="row2"' %}>
                     <td><a href="{% url admin:billing_bill_change bill.id %}">{{ bill }}</a></td>
@@ -19,6 +20,7 @@
                     <td>{{ bill.creation_date }}</td>
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date }}</td>
+                    <td><a href='{% url pydici.billing.views.bill_file bill.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
                 </tr>
             {% endfor %}
     </table>
