@@ -39,6 +39,7 @@
         <li><a href="#tab-consultants">{% trans "Consultants" %}</a></li>
         <li><a href="#tab-contacts">{% trans "Client contacts" %}</a></li>
         <li><a href="#tab-rates">{% trans "Rates" %}</a></li>
+        <li><a href="#tab-billing">{% trans "Billing" %}</a></li>
         <li><a href="#tab-all-companies">{% trans "All companies list" %}</a></li>
     </ul>
 
@@ -122,6 +123,22 @@
 {% endfor %}
 </ul>
 </div>
+
+<div id="tab-billing">
+<ul>
+{% for lead in leads %}
+    {% ifequal lead.state "WON" %}
+        <h2><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }}</a></h2>
+            {% include "billing/_lead_billing.html" %}
+            <br/>
+    {% endifequal %}
+{% endfor %}
+</ul>
+
+
+</div>
+
+
 
 {% if not request.session.mobile %}
     <div id="tab-all-companies">
