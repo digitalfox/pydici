@@ -541,7 +541,8 @@ def mission_timesheet(request, mission_id):
             timesheetData.append(n_days)
             if consultant.subcontractor:
                 # Compute objective margin on sold rate
-                objectiveMargin[consultant] += n_days * (consultant_rates[consultant][0] - consultant_rates[consultant][1])
+                if consultant_rates[consultant][0] and consultant_rates[consultant][1]:
+                    objectiveMargin[consultant] += n_days * (consultant_rates[consultant][0] - consultant_rates[consultant][1])
             else:
                 # Compute objective margin on rate objective for this period
                 objectiveRate = consultant.getRateObjective(workingDate=month)
