@@ -27,10 +27,11 @@
 
 <h1>
 {% if mission.lead.client %}
-    <a href='{% url pydici.crm.views.company_detail mission.lead.client.organisation.company.id %}'>{{ mission.lead.client.organisation }}</a> : <a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission.short_name }}</a>
-{% else %}
-    <a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission }} - {{ mission.mission_id }}</a>
+    <a href='{% url pydici.crm.views.company_detail mission.lead.client.organisation.company.id %}'>{{ mission.lead.client.organisation }}</a> : 
 {% endif %}
+    <a href='{% url admin:staffing_mission_change mission.id %}' target='_blank'class='changelink' >{{ mission.full_name }}</a>
+
+
 </h1>
 
 <div id="mission-tabs">
@@ -117,10 +118,10 @@
 	        {% endwith %}
 	    {% endif %}
     </div>
-    
+
     <div id="tab-actions">
     <br/>
-        
+
     <h2>{% trans "Pending actions" %}</h2>
     {% with pending_actions as actions %}
         {% include "actionset/_lead_mission_actions.html" %}
