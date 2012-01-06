@@ -130,7 +130,7 @@
 <h2>{% trans "Done actions" %}</h2>
     <ul>
     {% for action in mission.done_actions %}
-        <li>{{ action.action.name }} - {{ action.get_state_display }} ({{ action.update_date }})</li>
+        <li>{{ action.action.name }} - {{ action.get_state_display }} ({{ action.user.first_name }} {{ action.user.last_name }}, {{ action.update_date }})</li>
     {% empty %}
         {% trans "No action done" %}
     {% endfor %}
