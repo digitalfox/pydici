@@ -28,7 +28,7 @@ class BillAdmin(AjaxSelectAdmin):
                  (_("Amounts"), {"fields": ["amount", "vat", "amount_with_vat", ]}),
                  (_("Dates"), {"fields": ["creation_date", "due_date", "payment_date", ]}),
                  (_("State"), {"fields": ["state", "previous_year_bill", "comment", ]}),
-                 (_("Link with expenses"), {"fields": ["expenses_with_vat", "expenses", ]}),
+                 (_("Link with expenses"), {"fields": ["expenses", "expenses_with_vat", ]}),
                  ]
     form = BillForm
 
