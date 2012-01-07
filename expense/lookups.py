@@ -5,6 +5,8 @@ Ajax custom lookup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+from django.utils import formats
+
 from pydici.expense.models import Expense
 
 
@@ -16,11 +18,13 @@ class ChargeableExpenseLookup(object):
 
     def format_result(self, expense):
         """ the search results display in the dropdown menu.  may contain html and multiple-lines. will remove any |  """
-        return u"%s (%s %s)" % (expense, expense.user.first_name, expense.user.last_name)
+        return u"%s (%s %s) - %s" % (expense, expense.user.first_name, expense.user.last_name,
+                                     formats.date_format(expense.expense_date))
 
     def format_item(self, expense):
         """ the display of a currently selected object in the area below the search box. html is OK """
-        return u"%s (%s %s)" % (expense, expense.user.first_name, expense.user.last_name)
+        return u"%s (%s %s) - %s" % (expense, expense.user.first_name, expense.user.last_name,
+                                     formats.date_format(expense.expense_date))
 
     def get_objects(self, ids):
         """ given a list of ids, return the objects ordered as you would like them on the admin page.
