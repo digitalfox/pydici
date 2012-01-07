@@ -5,7 +5,7 @@ Staffing form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from decimal import Decimal
 
 from django import forms
@@ -24,10 +24,13 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     def get_queryset(self):
         if not hasattr(self, '_queryset'):
             beforeLastMonth = datetime.today() - timedelta(days=60)
+            year = datetime.today().year
+            month = datetime.today().month
+            firstDayOfThisMonth = date(year, month, 1)
             qs = super(ConsultantStaffingInlineFormset, self).get_queryset()
             qs = qs.filter(mission__active=True) # Remove archived mission
-            qs = qs.exclude(Q(staffing_date__lte=beforeLastMonth) &
-                      ~ Q(mission__nature="PROD")) # Remove past non prod mission
+            qs = qs.exclude(Q(staffing_date__lt=firstDayOfThisMonth)) # Remove past missions
+
             self._queryset = qs
         return self._queryset
 
