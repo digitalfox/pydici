@@ -24,8 +24,15 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     def get_queryset(self):
         if not hasattr(self, '_queryset'):
             qs = super(ConsultantStaffingInlineFormset, self).get_queryset()
-            qs = qs.filter(mission__active=True, # Remove archived mission
-                           staffing_date__gte=date.today().replace(day=1))  # Remove past missions
+            if date.today().day > 5:
+                qs = qs.filter(mission__active=True, # Remove archived mission
+                               staffing_date__gte=date.today().replace(day=1))  # Remove past missions
+            else:
+                lastDayOfPreviousMonth = date.today().replace(day=1).toordinal() - 1
+                firstDayOfPreviousMonth = date.fromordinal(lastDayOfPreviousMonth).replace(day=1)
+                qs = qs.filter(mission__active=True, # Remove archived mission
+                               staffing_date__gte=firstDayOfPreviousMonth)  # Remove past missions
+
             self._queryset = qs
         return self._queryset
 
