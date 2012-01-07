@@ -18,4 +18,4 @@ class BillForm(models.ModelForm):
         model = Bill
     # declare a field and specify the named channel that it uses
     lead = AutoCompleteSelectField("lead", required=True, label=_("Lead"))
-    expenses = AutoCompleteSelectMultipleField("recent_chargeable_expense", required=False, label=_("Expenses"))
+    expenses = AutoCompleteSelectMultipleField("chargeable_expense", required=False, label=_("Expenses"))

@@ -47,7 +47,7 @@ AJAX_LOOKUP_CHANNELS = {
     'mission' : ('staffing.lookups', 'MissionLookup'),
     'lead' : ('leads.lookups', 'LeadLookup'),
     'user' : ('core.lookups', 'UserLookup'),
-    'recent_chargeable_expense' : ('expense.lookups', 'RecentChargeableExpenseLookup'),
+    'chargeable_expense' : ('expense.lookups', 'ChargeableExpenseLookup'),
 }
 
 

@@ -5,17 +5,14 @@ Ajax custom lookup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date, timedelta
-
 from pydici.expense.models import Expense
 
 
-
-class RecentChargeableExpenseLookup(object):
+class ChargeableExpenseLookup(object):
     def get_query(self, q, request):
         """ return a query set.  you also have access to request.user if needed """
-        # Only return chargeable expense of last 6 months
-        return Expense.objects.filter(chargeable=True, expense_date__gt=(date.today() - timedelta(30 * 6)))
+        # Only return chargeable expense that has not already associated to expe,se
+        return Expense.objects.filter(chargeable=True, bill=None)
 
     def format_result(self, expense):
         """ the search results display in the dropdown menu.  may contain html and multiple-lines. will remove any |  """
