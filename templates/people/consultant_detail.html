@@ -19,10 +19,8 @@
 <div id="content-large">
 <h1>{{ consultant.full_name }} - {{consultant.profil }} {% if consultant.subcontractor %}({% trans "subcontractor" %}) {% endif %}
 &nbsp;&nbsp;
-{% if not consultant.subcontractor %}
-    <a href='{% url pydici.staffing.views.consultant_home consultant.id %}#tab-staffing'><img title='{% trans "staffing" %}' src='{{ MEDIA_URL }}pydici/staffing.png'/></a>
+<a href='{% url pydici.staffing.views.consultant_home consultant.id %}#tab-staffing'><img title='{% trans "staffing" %}' src='{{ MEDIA_URL }}pydici/staffing.png'/></a>
 &nbsp;&nbsp;
-{% endif %}
 <a href='{% url pydici.staffing.views.consultant_home consultant.id %}#tab-timesheet'><img title='{% trans "timesheet" %}' src='{{ MEDIA_URL }}pydici/timesheet.png'/></a>
 &nbsp;&nbsp;
 {% if perms.people.change_consultant %}
@@ -102,21 +100,17 @@
 	</div>
 </li>
 <div style="clear:both">&nbsp;</div>
-{% if not consultant.subcontractor %}
 <li>
     <div id="consultant_rate_graph_jqp_content"></div>
     <script type="text/javascript">
     $('#consultant_rate_graph_jqp_content').load('{% url pydici.staffing.views.graph_consultant_rates_jqp consultant.id %}')
     </script>
 </li>
-{% endif %}
 </ul>
 </div>
 <br/>
 
 <div style="clear:both;"></div>
-{% if not consultant.subcontractor %}
-    {% include "leads/_tag_cloud.html" %}
-{% endif %}
+{% include "leads/_tag_cloud.html" %}
 </div>
 {% endblock %}

@@ -16,8 +16,9 @@ from pydici.people.models import Consultant, SalesMan
 from pydici.crm.models import ClientCompany, ClientContact
 from pydici.staffing.models import Mission
 from pydici.billing.models import Bill
-from pydici.people.views import consultant_detail
+from pydici.people.views import consultant_detail, subcontractor_detail
 import pydici.settings
+
 
 @login_required
 def index(request):
@@ -25,42 +26,20 @@ def index(request):
     request.session["mobile"] = False
 
     try:
-        # If user is an existing consultant, return personal home page
         consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-        return consultant_detail(request, consultant.id)
     except Consultant.DoesNotExist:
-        # Display classical home page for now...
-        # TODO: this index page should be simplifed (remove "my" stuff that don't hav
-        # any sens now
-        pass
+        consultant = None
 
-    myLeadsAsResponsible = set()
-    myLatestArchivedLeads = set()
-    myLeadsAsStaffee = set()
+    # If user is an existing consultant and not a subcontractor, return personal home page
+    if consultant and not consultant.subcontractor:
+        return consultant_detail(request, consultant.id)
+    # For subcontractor, specific page :
+    if consultant and consultant.subcontractor:
+        return subcontractor_detail(request, consultant.id)
 
-    consultants = Consultant.objects.filter(trigramme__iexact=request.user.username)
-    if consultants:
-        consultant = consultants[0]
-        myLeadsAsResponsible = set(consultant.lead_responsible.active().select_related())
-        myLeadsAsStaffee = consultant.lead_set.active().select_related()
-        myLatestArchivedLeads = set((consultant.lead_responsible.passive().select_related().order_by("-update_date")
-                                  | consultant.lead_set.passive().select_related().order_by("-update_date"))[:10])
-
-    salesmen = SalesMan.objects.filter(trigramme__iexact=request.user.username)
-    if salesmen:
-        salesman = salesmen[0]
-        myLeadsAsResponsible.update(salesman.lead_set.active().select_related())
-        myLatestArchivedLeads.update(salesman.lead_set.passive().select_related().order_by("-update_date")[:10])
-
-
-    latestLeads = Lead.objects.all().select_related().order_by("-update_date")[:10]
-
+    # User is not a consultant. Go for default index page.
     return render_to_response("core/index.html",
-                              {"latest_leads": latestLeads,
-                               "my_leads_as_responsible": myLeadsAsResponsible,
-                               "my_leads_as_staffee": myLeadsAsStaffee,
-                               "my_latest_archived_leads": myLatestArchivedLeads,
-                               "user": request.user },
+                              {"user": request.user},
                                RequestContext(request))
 
 
