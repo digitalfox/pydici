@@ -1,0 +1,75 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{% trans "Consultant " %}{{ consultant }}{% endblock %}
+
+{% block content %}
+
+<div id="content-large">
+<h1>{{ consultant.full_name }} - {{consultant.profil }} {% if consultant.subcontractor %}({% trans "subcontractor" %}) {% endif %}</h1>
+
+{% if not consultant.active %}
+<h3>{% trans "This consultant does not work anymore for the company" %}</h3>
+{% endif %}
+
+
+<div class="pydici-grid">
+<ul>
+<li>
+    <div class="pydici-grid-item">
+    <p><a href='{% url pydici.staffing.views.consultant_home consultant.id %}#tab-timesheet'>{% trans "timesheet" %} <img title='{% trans "timesheet" %}' src='{{ MEDIA_URL }}pydici/timesheet.png'/></a></p>
+	<p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{% trans "Contact: " %} {{ consultant.manager.full_name }}{% endifnotequal %}{% endif %}</p>
+	</div>
+</li>
+<li>
+    <div class="pydici-grid-long-item">
+    <h3>{% trans "Pending actions" %}</h3>
+    {% with consultant.pending_actions as actions %}
+        {% include "actionset/_consultant_actions.html" %}
+    {% endwith %}
+    </div>
+</li>
+<li>
+    <div class="pydici-grid-item">
+	<h3>{% trans "Clients" %}</h3>
+	<ul>
+	{% for company in companies %}
+	    <li>{{ company }}</li>
+	{% endfor %}
+	</ul>
+	</div>
+</li>
+<li>
+    <div class="pydici-grid-long-item">
+	<h3>{% trans "Current missions" %}</h3>
+	<ul>
+	{% for mission in missions %}
+	    <li>{{ mission }}</li>
+	{% endfor %}
+	</ul>
+	</div>
+</li>
+<li>
+    <div class="pydici-grid-long-item">
+	{% if leads_as_staffee %}
+	<h3>{% trans "Current leads as resource" %}</h3>
+	<ul>
+	{% for lead in leads_as_staffee %}
+	    <li>{{ lead }}</li>
+	{% endfor %}
+	</ul>
+	{% endif %}	
+	</div>
+</li>
+<div style="clear:both">&nbsp;</div>
+</ul>
+</div>
+<br/>
+{% endblock %}
