@@ -111,7 +111,7 @@
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
                     <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
-                </li>    
+                </li>
             </ul>
         </li>
         <li><a href="#link">{% trans "Help" %}</a>
@@ -120,14 +120,14 @@
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
                         <a href="{% url admin:index %}">{% trans "Admin console" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
-                </li>                
+                </li>
                 <li><a href="{% url help %}">{% trans "Help page" %}</a></li>
                 <li>{{ foo|get_admin_mail }}</li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
                     <img class="corner_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_right.png"/>
-                </li>    
+                </li>
             </ul>
         </li>
         <li class="searchContainer">
@@ -154,15 +154,15 @@
 	       </form>
         </li>
         <li>&nbsp;</li>
-        <li style='border-radius: 0px 0px 24px 0px;'>&nbsp;</li>
         {% else %}
         <li>&nbsp;&nbsp;&nbsp;&nbsp;</li><li>&nbsp;&nbsp;&nbsp;&nbsp;</li><li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
         <li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li>
-        <li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li>
+        <li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li>
         {% endif %} {# End of menu for staff users only #}
+        <li style='border-radius: 0px 0px 24px 0px;'>&nbsp;</li>
     </ul>
 </div>
-    
+
 <!-- End menu -->
 {% endif %}
 {% endblock %}
