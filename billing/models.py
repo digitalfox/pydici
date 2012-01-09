@@ -65,6 +65,8 @@ class Bill(models.Model):
             return unicode(self.lead)
 
     def save(self, force_insert=False, force_update=False):
+        # Save it first to define pk and allow browsing relationship
+        super(Bill, self).save(force_insert, force_update)
         # Automatically set payment date for paid bills
         if self.state == "2_PAID" and not self.payment_date:
             self.payment_date = date.today()
@@ -78,7 +80,7 @@ class Bill(models.Model):
                 for expense in self.expenses.all():
                     #TODO: handle expense without VAT
                     self.amount_with_vat += expense.amount
-        super(Bill, self).save(force_insert, force_update)
+        super(Bill, self).save(force_insert, force_update) # Save again
 
     def payment_wait(self):
         if self.payment_date:
