@@ -119,11 +119,9 @@ class Consultant(models.Model):
         timesheets = timesheets.values("mission__nature").order_by("mission__nature").annotate(Sum("charge"))
         prodDays = timesheets.filter(mission__nature="PROD")
         nonProdDays = timesheets.filter(mission__nature="NONPROD")
-        if prodDays:
-            prodDays = prodDays[0]["charge__sum"]
-        if nonProdDays:
-            nonProdDays = nonProdDays[0]["charge__sum"]
-        if prodDays and nonProdDays:
+        prodDays = prodDays[0]["charge__sum"] if prodDays else 0
+        nonProdDays = nonProdDays[0]["charge__sum"] if nonProdDays else 0
+        if (prodDays + nonProdDays) > 0 :
             return prodDays / (prodDays + nonProdDays)
         else:
             return 0
