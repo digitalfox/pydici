@@ -23,7 +23,7 @@ def bill_file_path(instance, filename):
     """Format full path of bill path"""
     return join(pydici.settings.PYDICI_ROOTDIR, "data", "bill",
                 strftime("%Y"), strftime("%m"),
-                u"%s_%s_%s" % (strftime("%d-%H%M%S"), instance.bill_id, filename))
+                u"%s_%s" % (strftime("%d-%H%M%S"), instance.bill_id))
 
 
 class Bill(models.Model):
