@@ -522,6 +522,9 @@ def mission_timesheet(request, mission_id):
     consultants = mission.staffed_consultant()
     consultant_rates = mission.consultant_rates()
 
+    if "csv" in request.GET:
+        return mission_csv_timesheet(request, mission, consultants)
+
     # Gather timesheet (Only consider timesheet up to current month)
     timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=next_month).order_by("working_date")
     timesheetMonths = list(timesheets.dates("working_date", "month"))
@@ -635,6 +638,44 @@ def mission_timesheet(request, mission_id):
                                 "user": request.user,
                                 "avg_daily_rate" : avgDailyRate},
                                RequestContext(request))
+
+def mission_csv_timesheet(request, mission, consultants):
+    """@return: csv timesheet for a given mission"""
+    # This "view" is never called directly but only through consultant_timesheet view
+    response = HttpResponse(mimetype="text/csv")
+    response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    writer = csv.writer(response, delimiter=';')
+    timesheets = Timesheet.objects.select_related().filter(mission=mission)
+    months = timesheets.dates("working_date", "month")
+
+    for month in months:
+        days = daysOfMonth(month)
+        next_month = (month + timedelta(days=40)).replace(day=1)
+        # Header
+        writer.writerow([("%s - %s" % (mission.full_name(), formats.date_format(month, format="YEAR_MONTH_FORMAT"))).encode("ISO-8859-15"), ])
+
+        # Days
+        writer.writerow(["", ""] + [d.day for d in days])
+        writer.writerow([_("Consultants").encode("ISO-8859-15", "ignore")]
+                         + [_(d.strftime("%a")) for d in days] + [_("total")])
+
+        for consultant in consultants:
+            total = 0
+            row = [unicode(consultant).encode("ISO-8859-15", "ignore"), ]
+            consultant_timesheets = timesheets.select_related().filter(consultant=consultant,
+                                                            working_date__gte=month,
+                                                            working_date__lt=next_month)
+            for day in days:
+                try:
+                    timesheet = consultant_timesheets.get(working_date=day)
+                    row.append(formats.number_format(timesheet.charge))
+                    total += timesheet.charge
+                except Timesheet.DoesNotExist:
+                    row.append("")
+            row.append(formats.number_format(total))
+            writer.writerow(row)
+        writer.writerow([""])
+    return response
 
 
 @pydici_non_public

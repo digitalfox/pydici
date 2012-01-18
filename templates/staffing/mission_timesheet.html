@@ -52,6 +52,8 @@
     {% endfor %}
 
     </table>
+    <br/>
+    <a href="{% url pydici.staffing.views.mission_timesheet mission_id=mission.id %}?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
     </div>
     <br/>
     {% ifequal mission.nature "PROD" %}
