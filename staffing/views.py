@@ -655,7 +655,7 @@ def mission_csv_timesheet(request, mission, consultants):
         writer.writerow([("%s - %s" % (mission.full_name(), formats.date_format(month, format="YEAR_MONTH_FORMAT"))).encode("ISO-8859-15"), ])
 
         # Days
-        writer.writerow(["", ""] + [d.day for d in days])
+        writer.writerow(["", ] + [d.day for d in days])
         writer.writerow([_("Consultants").encode("ISO-8859-15", "ignore")]
                          + [_(d.strftime("%a")) for d in days] + [_("total")])
 
