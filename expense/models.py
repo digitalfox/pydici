@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 import workflows.utils as wf
 
 from pydici.leads.models import Lead
+from pydici.core.utils import sanitizeName
 import pydici.settings
 
 # This utils function is here and not in utils module
@@ -23,7 +24,7 @@ def expense_receipt_path(instance, filename):
     """Format full path of expense receipt"""
     return join(pydici.settings.PYDICI_ROOTDIR, "data", "expense",
                 strftime("%Y"), strftime("%m"), instance.user.username,
-                u"%s_%s" % (strftime("%d-%H%M%S"), filename))
+                u"%s_%s" % (strftime("%d-%H%M%S"), sanitizeName(filename)))
 
 
 class ExpenseCategory(models.Model):

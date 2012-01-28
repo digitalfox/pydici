@@ -10,6 +10,7 @@ appropriate to live in models or view
 import re
 import os
 from datetime import timedelta
+import unicodedata
 
 os.environ['MPLCONFIGDIR'] = '/tmp' # Needed for matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -147,3 +148,8 @@ def sampleList(data, maxLength):
             nData.append(data[i])
         data = nData
     return data
+
+
+def sanitizeName(name):
+    """Sanitize given unicode name to simple ascii name"""
+    return unicodedata.normalize('NFKD', name).encode('ascii', 'ignore')

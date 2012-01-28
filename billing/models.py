@@ -14,6 +14,7 @@ from django.utils.translation import ugettext
 
 from pydici.leads.models import Lead
 from pydici.expense.models import Expense
+from pydici.core.utils import sanitizeName
 import pydici.settings
 
 
@@ -23,7 +24,7 @@ def bill_file_path(instance, filename):
     """Format full path of bill path"""
     return join(pydici.settings.PYDICI_ROOTDIR, "data", "bill",
                 strftime("%Y"), strftime("%m"),
-                u"%s_%s" % (strftime("%d-%H%M%S"), instance.bill_id))
+                u"%s_%s_%s" % (strftime("%d-%H%M%S"), instance.bill_id, sanitizeName(filename)))
 
 
 class Bill(models.Model):
