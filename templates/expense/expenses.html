@@ -48,30 +48,46 @@
 
 {% if user_expenses %}
 <h1>{% trans "My expenses" %}</h1>
+    <div id="accordion-my">
     {% for expense, state, transitions in user_expenses %}
         {% ifchanged state %}
-            <h3>{{ state }}</h3>
+            {% if not forloop.first %}</div>{% endif %}
+            <h3><a href="#">{{ state }}</a></h3>
+            <div>
         {% endifchanged %}
         {% include "expense/_expense_block.html" %}
+        {% if forloop.last %}</div>{% endif %}
     {% endfor %}
+    </div>
 <br/><hr/><br/>
 {% endif %}
 
 {% if managed_expenses %}
     <h1>{% trans "Expenses I manage" %}</h1>
+    <div id="accordion-managed">
     {% for expense, state, transitions in managed_expenses %}
         {% ifchanged expense.user %}
-            <h2>{{ expense.user|link_to_consultant }}</h2>
+            {% if not forloop.first %}</div>{% endif %}
+            <h3>{{ expense.user|link_to_consultant }}</h3>
+            <div>
         {% endifchanged %}
         {% ifchanged %}
-                <h3>{{ state }}</h3>
+                <h4>{{ state }}</h4>
         {% endifchanged %}
         {% include "expense/_expense_block.html" %}
+        {% if forloop.last %}</div>{% endif %}
     {% endfor %}
-
+    </div>
 {% endif %}
 
 <br/><hr/><br/>
 <a href='{% url pydici.expense.views.expenses_history %}'>{% trans "Expenses history" %}</a>
 </div>
+
+<script>
+    $(function() {
+        $( "#accordion-my" ).accordion();
+        $( "#accordion-managed" ).accordion();
+    });
+</script>
 {% endblock %}
