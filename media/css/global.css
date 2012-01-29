@@ -184,6 +184,19 @@ a.tagrlink { color: #999999 }
 	box-shadow: 1px 1px 4px #555;
 }
 
+.expense_description {
+    background: #ffc;
+    margin: 10px;
+    padding: 6px 8px;
+    border-radius: 8px 8px 8px 8px;
+    font-size: .8em;
+    box-shadow: 1px 1px 4px #555;
+    width:40em;
+    display:inline-block;
+    vertical-align: top;
+}
+
+
 /* home page grid layout */
 .pydici-grid ul { float: left; list-style: none outside none; }
 .pydici-grid li { float: left; width:400px; margin-bottom:20px; margin-right:5px; list-style-type: none;}

@@ -5,7 +5,7 @@
 {% load permissions_tags %}
 {% load pydici_filters %}
 
-<div class="lead_description">
+<div class="expense_description">
         <b>{{ expense.category }} : {{ expense.description }} - {{ expense.expense_date }}</b><br/>
         {{ expense.amount }} € ({% if expense.corporate_card %}{% trans "Paid with corporate card" %}{% else %}{% trans "To be refund to "%} {{ expense.user|link_to_consultant }}{% endif %}) 
         {% if expense.receipt %}
