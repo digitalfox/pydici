@@ -14,7 +14,7 @@ from django.db.models.signals import post_save
 from datetime import date, timedelta
 
 from pydici.core.utils import capitalize
-from pydici.core.models import Subsidiary
+from pydici.crm.models import Subsidiary
 from pydici.actionset.models import ActionState
 from pydici.actionset.utils import launchTrigger
 

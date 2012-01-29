@@ -28,7 +28,7 @@
             "creation_date": "2010-11-29", 
             "amount": "11110010",
             "vat" : "19.6", 
-            "bill_id": ""
+            "bill_id": "A111111"
         }
     }, 
     {
@@ -44,7 +44,7 @@
             "creation_date": "2010-11-29", 
             "amount": "1000",
             "vat" : "19.6", 
-            "bill_id": ""
+            "bill_id": "A121212"
         }
     }, 
     {
@@ -76,7 +76,7 @@
             "creation_date": "2010-11-30", 
             "amount": "20",
             "vat" : "19.6", 
-            "bill_id": ""
+            "bill_id": "A131313"
         }
     }, 
     {
@@ -92,7 +92,7 @@
             "creation_date": "2010-10-29", 
             "amount": "50.2",
             "vat" : "19.6", 
-            "bill_id": "A101010"
+            "bill_id": "A232323"
         }
     }
 ]

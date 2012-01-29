@@ -16,10 +16,9 @@ import permissions.utils as perm
 from workflows.models import Transition
 
 # Pydici modules
-from pydici.core.models import Subsidiary
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant, ConsultantProfile
-from pydici.crm.models import Client
+from pydici.crm.models import Client, Subsidiary
 from pydici.staffing.models import Mission
 from pydici.expense.models import Expense, ExpenseCategory
 from pydici.expense.default_workflows import install_expense_workflow
@@ -34,7 +33,7 @@ TEST_PASSWORD = "sre"
 PREFIX = "/" + pydici.settings.PYDICI_PREFIX
 
 class SimpleTest(TestCase):
-    fixtures = ["auth.json", "core.json", "people.json", "crm.json",
+    fixtures = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
 
 
@@ -216,7 +215,7 @@ class UtilsTest(TestCase):
             self.assertEqual(firstDay, nextWeek(weekDay))
 
 class ModelTest(TestCase):
-    fixtures = ["auth.json", "core.json", "people.json", "crm.json",
+    fixtures = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
 
     def test_people_consultant_save(self):
@@ -242,7 +241,7 @@ class ModelTest(TestCase):
 
 class WorkflowTest(TestCase):
     """Test pydici workflows"""
-    fixtures = ["auth.json", "core.json", "people.json", "crm.json",
+    fixtures = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
 
     def test_expense_wf(self):

@@ -13,9 +13,19 @@ from django.utils.translation import ugettext_lazy as _
 
 from pydici.core.utils import capitalize
 
-from pydici.core.models import Subsidiary
-
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
+
+
+class Subsidiary(models.Model):
+    """Internal company / organisation unit"""
+    name = models.CharField(_("Name"), max_length=200, unique=True)
+    code = models.CharField(_("Code"), max_length=3, unique=True)
+
+    def __unicode__(self): return self.name
+
+    class Meta:
+        verbose_name = _("Subsidiary")
+        verbose_name_plural = _("Subsidiaries")
 
 
 class ClientCompany(models.Model):

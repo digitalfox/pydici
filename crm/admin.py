@@ -8,7 +8,13 @@ Django administration setup for pydici CRM module
 from django.contrib import admin
 
 from pydici.crm.models import Client, ClientOrganisation, ClientCompany, \
-                              ClientContact, BusinessBroker
+                              ClientContact, BusinessBroker, Subsidiary
+
+
+class SubsidiaryAdmin(admin.ModelAdmin):
+    ordering = ("name",)
+    actions = None
+
 
 class ClientContactAdmin(admin.ModelAdmin):
     list_display = ("name", "company", "function", "email", "phone", "mobile_phone", "fax")
@@ -16,6 +22,7 @@ class ClientContactAdmin(admin.ModelAdmin):
     search_fields = ["name", "email", "function", "client__organisation__company__name",
                      "client__organisation__name"]
     actions = None
+
 
 class BusinessBrokerAdmin(admin.ModelAdmin):
     list_display = ("name", "code", "company", "email", "phone", "mobile_phone")
@@ -32,8 +39,10 @@ class ClientOrganisationAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     actions = None
 
+
 class ClientOrganisationAdminInline(admin.TabularInline):
     model = ClientOrganisation
+
 
 class ClientCompanyAdmin(admin.ModelAdmin):
     list_display = ("name", "code")
@@ -41,12 +50,15 @@ class ClientCompanyAdmin(admin.ModelAdmin):
     search_fields = ("name", "code")
     actions = None
 
+
 class ClientAdmin(admin.ModelAdmin):
     list_display = ("organisation", "salesOwner", "contact")
     ordering = ("organisation",)
     search_fields = ("organisation__company__name", "organisation__name", "contact__name")
     actions = None
 
+
+admin.site.register(Subsidiary, SubsidiaryAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(ClientOrganisation, ClientOrganisationAdmin)
 admin.site.register(ClientCompany, ClientCompanyAdmin)
