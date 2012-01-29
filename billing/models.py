@@ -6,11 +6,14 @@ Database access layer for pydici billing module
 """
 from datetime import date, timedelta
 from time import strftime
-from os.path import join
+from os.path import join, dirname
+import os.path
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.core.files.storage import FileSystemStorage
+from django.core.urlresolvers import reverse
 
 from pydici.leads.models import Lead
 from pydici.expense.models import Expense
@@ -18,13 +21,28 @@ from pydici.core.utils import sanitizeName
 import pydici.settings
 
 
+# Custom storage that hook static url to custom view
+# Really used to have proper link in admin page
+
+class BillStorage(FileSystemStorage):
+    def __init__(self):
+        super(BillStorage, self).__init__(location=join(pydici.settings.PYDICI_ROOTDIR, "data", "bill"))
+
+    def url(self, name):
+        try:
+            bill_id = os.path.split(dirname(name))[1]
+            bill = Bill.objects.get(bill_id=bill_id)
+            return reverse("pydici.billing.views.bill_file", args=[bill.id, ])
+        except Exception:
+            # Don't display URL if Bill does not exist or path is invalid
+            return ""
+
 # This utils function is here and not in utils module
 # to avoid circular import loop, as utils module import models
 def bill_file_path(instance, filename):
     """Format full path of bill path"""
-    return join(pydici.settings.PYDICI_ROOTDIR, "data", "bill",
-                strftime("%Y"), strftime("%m"),
-                u"%s_%s_%s" % (strftime("%d-%H%M%S"), instance.bill_id, sanitizeName(filename)))
+    return join(strftime("%Y"), strftime("%m"),
+                instance.bill_id, sanitizeName(filename))
 
 
 class Bill(models.Model):
@@ -38,7 +56,7 @@ class Bill(models.Model):
             ('2_SUPPLIER', ugettext("Supplier")),)
 
     lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
-    bill_id = models.CharField(_("Bill id"), max_length=500)
+    bill_id = models.CharField(_("Bill id"), max_length=500, unique=True)
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2)
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
     vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=pydici.settings.PYDICI_DEFAULT_VAT_RATE)
@@ -51,7 +69,7 @@ class Bill(models.Model):
     nature = models.CharField(_("Nature"), max_length=30, choices=BILL_NATURE, default="1_CLIENT")
     expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable":True})
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
-    bill_file = models.FileField(_("File"), upload_to=bill_file_path)
+    bill_file = models.FileField(_("File"), upload_to=bill_file_path, storage=BillStorage())
 
     def __unicode__(self):
         if self.bill_id:
@@ -65,9 +83,9 @@ class Bill(models.Model):
         else:
             return unicode(self.lead)
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, *args, **kwargs):
         # Save it first to define pk and allow browsing relationship
-        super(Bill, self).save(force_insert, force_update)
+        super(Bill, self).save(*args, **kwargs)
         # Automatically set payment date for paid bills
         if self.state == "2_PAID" and not self.payment_date:
             self.payment_date = date.today()
@@ -81,7 +99,7 @@ class Bill(models.Model):
                 for expense in self.expenses.all():
                     #TODO: handle expense without VAT
                     self.amount_with_vat += expense.amount
-        super(Bill, self).save(force_insert, force_update) # Save again
+        super(Bill, self).save(*args, **kwargs) # Save again
 
     def payment_wait(self):
         if self.payment_date:
