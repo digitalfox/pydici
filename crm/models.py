@@ -16,26 +16,28 @@ from pydici.core.utils import capitalize
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
 
-class Subsidiary(models.Model):
-    """Internal company / organisation unit"""
-    name = models.CharField(_("Name"), max_length=200, unique=True)
-    code = models.CharField(_("Code"), max_length=3, unique=True)
-
-    def __unicode__(self): return self.name
-
-    class Meta:
-        verbose_name = _("Subsidiary")
-        verbose_name_plural = _("Subsidiaries")
-
-
-class ClientCompany(models.Model):
-    """Client company"""
+class Company(models.Model):
+    """Abstract Company base class for subsidiary, client company and supplier company"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
     code = models.CharField(_("Code"), max_length=3, unique=True)
 
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        abstract = True
+        ordering = ["name", ]
+
+
+class Subsidiary(Company):
+    """Internal company / organisation unit"""
+    class Meta:
+        verbose_name = _("Subsidiary")
+        verbose_name_plural = _("Subsidiaries")
+
+
+class ClientCompany(Company):
+    """Client company"""
     def sales(self, onlyLastYear=False):
         """Sales billed for this company in keuros"""
         from pydici.billing.models import Bill
@@ -48,8 +50,8 @@ class ClientCompany(models.Model):
             return 0
 
     class Meta:
-        ordering = ["name"]
         verbose_name = _("Client Company")
+        verbose_name_plural = _("Client Companies")
 
 
 class ClientOrganisation(models.Model):
@@ -63,6 +65,13 @@ class ClientOrganisation(models.Model):
     class Meta:
         ordering = ["company", "name"]
         verbose_name = _("Client organisation")
+
+
+class SupplierCompany(Company):
+    """Supplier company"""
+    class Meta:
+        verbose_name = _("Supplier company")
+        verbose_name_plural = _("Suppliers companies")
 
 
 class ThirdPartyContact(models.Model):
@@ -127,8 +136,24 @@ class BusinessBroker(ThirdPartyContact):
         verbose_name = _("Business broker")
 
 
+class Supplier(models.Model):
+    """A supplier is defined by a contact and the supplier company where he works at the moment"""
+    company = models.ForeignKey(SupplierCompany, verbose_name=_("Supplier company"))
+    contact = models.ForeignKey(ClientContact, blank=True, null=True, verbose_name=_("Contact"))
+
+    def __unicode__(self):
+        if self.contact:
+            return u"%s (%s)" % (self.company, self.contact)
+        else:
+            return unicode(self.company)
+
+    class Meta:
+            ordering = ["company", "contact"]
+            verbose_name = _("Supplier")
+
+
 class Client(models.Model):
-    """A client is defined by a contact and the organisation where he works"""
+    """A client is defined by a contact and the organisation where he works at the moment"""
     organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Organisation"))
     contact = models.ForeignKey(ClientContact, blank=True, null=True, verbose_name=_("Contact"))
     salesOwner = models.ForeignKey(Subsidiary, verbose_name=_("Sales owner"))
@@ -137,7 +162,7 @@ class Client(models.Model):
         if self.contact:
             return u"%s (%s)" % (self.organisation, self.contact)
         else:
-            return u"%s" % (self.organisation)
+            return unicode(self.organisation)
 
     def getFinancialConditions(self):
         """Get financial condition for this client by profil
