@@ -62,9 +62,9 @@
                         <a href="{% url pydici.crm.views.company_list %}">{% trans "All clients" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
-                <li><a href="{% url admin:crm_clientcontact_changelist %}">{% trans "Contact adress directory" %}</a></li>
+                <li><a href="{% url admin:crm_contact_changelist %}">{% trans "Contact adress directory" %}</a></li>
+                <li><a href='{% url admin:crm_contact_add %}'>{% trans "new contact" %}</a></li>
                 <li><a href='{% url admin:crm_client_add %}'>{% trans "new client" %}</a></li>
-                <li><a href='{% url admin:crm_clientcontact_add %}'>{% trans "new client contact" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
@@ -142,7 +142,7 @@
 	                </li>
 	                <li><input name="mission" type="checkbox"    checked="checked" />{% trans "Missions" %}</li>
 	                <li><input name="company" type="checkbox"    checked="checked"/>{% trans "Company" %}</li>
-	                <li><input name="contact" type="checkbox"    checked="checked"/>{% trans "Client contacts" %}</li>
+	                <li><input name="contact" type="checkbox"    checked="checked"/>{% trans "Contacts" %}</li>
 	                <li><input name="consultant" type="checkbox" checked="checked"/>{% trans "Consultants" %}</li>
 	                <li><input name="bill" type="checkbox" checked="checked"/>{% trans "Bills" %}</li>
 	                <li class="last">

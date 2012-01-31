@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from pydici.core.decorator import pydici_non_public
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant, SalesMan
-from pydici.crm.models import ClientCompany, ClientContact
+from pydici.crm.models import Company, Contact
 from pydici.staffing.models import Mission
 from pydici.billing.models import Bill
 from pydici.people.views import consultant_detail, subcontractor_detail
@@ -60,7 +60,7 @@ def mobile_index(request):
         missions = []
         leads = []
     else:
-        companies = ClientCompany.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
+        companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
         missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
         leads = Lead.objects.active().order_by("creation_date")
     return render_to_response("core/m.index.html",
@@ -76,10 +76,10 @@ def search(request):
     """Very simple search function on all major pydici objects"""
 
     consultants = None
-    clientCompanies = None
+    companies = None
     leads = None
     missions = None
-    clientContacts = None
+    contacts = None
     bills = None
 
     words = request.GET.get("q", "")
@@ -94,19 +94,19 @@ def search(request):
                                                  Q(trigramme__icontains=word))
             consultants = consultants.distinct()
 
-        # Client Company
+        # Companies
         if request.GET.get("company"):
-            clientCompanies = ClientCompany.objects.all()
+            companies = Company.objects.all()
             for word in words:
-                clientCompanies = clientCompanies.filter(name__icontains=word)
-            clientCompanies = clientCompanies.distinct()
+                companies = companies.filter(name__icontains=word)
+            companies = companies.distinct()
 
-        # Client contact
+        # Contacts
         if request.GET.get("contact"):
-            clientContacts = ClientContact.objects.all()
+            contacts = Contact.objects.all()
             for word in words:
-                clientContacts = clientContacts.filter(name__icontains=word)
-            clientContacts = clientContacts.distinct()
+                contacts = contacts.filter(name__icontains=word)
+            contacts = contacts.distinct()
 
         # Leads
         if request.GET.get("lead"):
@@ -118,7 +118,7 @@ def search(request):
                                      Q(client__contact__name__icontains=word) |
                                      Q(client__organisation__company__name__icontains=word) |
                                      Q(client__organisation__name__iexact=word) |
-                                     Q(deal_id__icontains=word[:-1])) # Squash last letter that could be mission letter
+                                     Q(deal_id__icontains=word[:-1]))  # Squash last letter that could be mission letter
             leads = leads.distinct()
 
         # Missions
@@ -156,13 +156,14 @@ def search(request):
     return render_to_response("core/search.html",
                               {"query" : " ".join(words),
                                "consultants": consultants,
-                               "client_companies" : clientCompanies,
-                               "client_contacts" : clientContacts,
+                               "companies" : companies,
+                               "contacts" : contacts,
                                "leads" : leads,
                                "missions" : missions,
                                "bills" : bills,
                                "user": request.user },
                                RequestContext(request))
+
 
 @pydici_non_public
 def dashboard(request):
@@ -173,10 +174,12 @@ def dashboard(request):
                               {},
                               RequestContext(request))
 
+
 def internal_error(request):
     """Custom internal error view.
     Like the default builtin one, but with context to allow proper menu display with correct media path"""
     return render_to_response("500.html", {}, RequestContext(request))
+
 
 def forbiden(request):
     """When access is denied..."""
@@ -187,5 +190,5 @@ def forbiden(request):
         # Standard request, use full forbiden page with menu
         template = "core/forbiden.html"
     return render_to_response(template,
-                              {"admins" : pydici.settings.ADMINS, },
+                              {"admins": pydici.settings.ADMINS, },
                               RequestContext(request))

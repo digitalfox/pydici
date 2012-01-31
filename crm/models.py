@@ -8,7 +8,7 @@ Database access layer for pydici CRM module
 from datetime import date, timedelta
 
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.utils.translation import ugettext_lazy as _
 
 from pydici.core.utils import capitalize
@@ -16,8 +16,8 @@ from pydici.core.utils import capitalize
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
 
-class Company(models.Model):
-    """Abstract Company base class for subsidiary, client company and supplier company"""
+class AbstractCompany(models.Model):
+    """Abstract Company base class for subsidiary, client/supplier/broker/.. company"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
     code = models.CharField(_("Code"), max_length=3, unique=True)
 
@@ -29,15 +29,15 @@ class Company(models.Model):
         ordering = ["name", ]
 
 
-class Subsidiary(Company):
+class Subsidiary(AbstractCompany):
     """Internal company / organisation unit"""
     class Meta:
         verbose_name = _("Subsidiary")
         verbose_name_plural = _("Subsidiaries")
 
 
-class ClientCompany(Company):
-    """Client company"""
+class Company(AbstractCompany):
+    """Company"""
     def sales(self, onlyLastYear=False):
         """Sales billed for this company in keuros"""
         from pydici.billing.models import Bill
@@ -50,14 +50,14 @@ class ClientCompany(Company):
             return 0
 
     class Meta:
-        verbose_name = _("Client Company")
-        verbose_name_plural = _("Client Companies")
+        verbose_name = _("Company")
+        verbose_name_plural = _("Companies")
 
 
 class ClientOrganisation(models.Model):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
-    company = models.ForeignKey(ClientCompany, verbose_name=_("Client company"))
+    company = models.ForeignKey(Company, verbose_name=_("Client company"))
 
     def __unicode__(self):
         return u"%s : %s " % (self.company, self.name)
@@ -67,79 +67,65 @@ class ClientOrganisation(models.Model):
         verbose_name = _("Client organisation")
 
 
-class SupplierCompany(Company):
-    """Supplier company"""
-    class Meta:
-        verbose_name = _("Supplier company")
-        verbose_name_plural = _("Suppliers companies")
-
-
-class ThirdPartyContact(models.Model):
-    """Third party contact abstract definition"""
+class Contact(models.Model):
+    """Third party contact definition, client contact, broker, business contact etc."""
     name = models.CharField(_("Name"), max_length=200, unique=True)
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)
     mobile_phone = models.CharField(_("Mobile phone"), max_length=30, blank=True)
     fax = models.CharField(_("Fax"), max_length=30, blank=True)
+    function = models.CharField(_("Function"), max_length=200, blank=True)
 
     def __unicode__(self):
         return self.name
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, *args, **kargs):
         self.name = capitalize(self.name)
-        super(ThirdPartyContact, self).save(force_insert, force_update)
+        super(Contact, self).save(*args, **kargs)
 
-    class Meta:
-        abstract = True
-        ordering = ["name"]
-
-
-class ClientContact(ThirdPartyContact):
-    """A contact in client organization"""
-    function = models.CharField(_("Function"), max_length=200, blank=True)
-
-    def company(self):
-        """Return the company for whom this contact works"""
-        #return ClientCompany.objects.get(clientorganisation__client__contact__id=self.id)
-        companies = ClientOrganisation.objects.filter(client__contact__id=self.id)
+    def companies(self):
+        """Return companies for whom this contact currently works"""
+        companies = Company.objects.filter(Q(clientorganisation__client__contact__id=self.id) |
+                                           Q(businessbroker__contact__id=self.id))
         if companies.count() == 0:
             return _("None")
         elif companies.count() == 1:
             return companies[0]
         elif companies.count() > 1:
             return u", ".join([unicode(i) for i in companies])
-
-    company.short_description = _("Company")
+    companies.short_description = _("Companies")
 
     class Meta:
-        verbose_name = _("Client contact")
+        ordering = ["name"]
 
 
-class BusinessBroker(ThirdPartyContact):
+class BusinessBroker(models.Model):
     """A business broken: someone that is not a client but an outsider that act
     as a partner to provide some business"""
-    company = models.CharField(_("Company"), max_length=200, blank=True)
-    code = models.CharField(_("Code"), max_length=3, unique=True)
+    company = models.ForeignKey(Company, verbose_name=_("Broker company"))
+    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
 
     def __unicode__(self):
         if self.company:
-            return "%s (%s)" % (self.company, self.name)
+            return "%s (%s)" % (self.company, self.contact)
         else:
-            return self.name
+            return self.contact
+
     def short_name(self):
         if self.company:
             return self.company
         else:
-            return self.name
+            return self.contact
 
     class Meta:
+        ordering = ["company", "contact"]
         verbose_name = _("Business broker")
 
 
 class Supplier(models.Model):
     """A supplier is defined by a contact and the supplier company where he works at the moment"""
-    company = models.ForeignKey(SupplierCompany, verbose_name=_("Supplier company"))
-    contact = models.ForeignKey(ClientContact, blank=True, null=True, verbose_name=_("Contact"))
+    company = models.ForeignKey(Company, verbose_name=_("Supplier company"))
+    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
 
     def __unicode__(self):
         if self.contact:
@@ -155,7 +141,7 @@ class Supplier(models.Model):
 class Client(models.Model):
     """A client is defined by a contact and the organisation where he works at the moment"""
     organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Organisation"))
-    contact = models.ForeignKey(ClientContact, blank=True, null=True, verbose_name=_("Contact"))
+    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
     salesOwner = models.ForeignKey(Subsidiary, verbose_name=_("Sales owner"))
 
     def __unicode__(self):

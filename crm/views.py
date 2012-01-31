@@ -13,7 +13,7 @@ from django.shortcuts import render_to_response
 from django.db.models import Sum, Min
 from django.views.decorators.cache import cache_page
 
-from pydici.crm.models import ClientCompany, Client, ClientContact
+from pydici.crm.models import Company, Client, Contact
 from pydici.staffing.models import Timesheet
 from pydici.leads.models import Lead
 from pydici.core.decorator import pydici_non_public
@@ -25,7 +25,7 @@ from pydici.billing.models import Bill
 def company_detail(request, company_id):
     """Home page of client company"""
 
-    company = ClientCompany.objects.get(id=company_id)
+    company = Company.objects.get(id=company_id)
 
     # Find leads of this company
     leads = Lead.objects.filter(client__organisation__company=company).select_related()
@@ -40,17 +40,20 @@ def company_detail(request, company_id):
                               {"company": company,
                                "leads": leads,
                                "consultants": consultants,
-                               "contacts": ClientContact.objects.filter(client__organisation__company=company).distinct(),
+                               "contacts": Contact.objects.filter(client__organisation__company=company).distinct(),
                                "clients": Client.objects.filter(organisation__company=company),
-                               "companies": ClientCompany.objects.all()},
+                               "companies": Company.objects.all()},
                                RequestContext(request))
 
 
 @pydici_non_public
 def company_list(request):
     """Client company list"""
+    companies = set()
+    for client in Client.objects.all():
+        companies.add(client.organisation.company)
     return render_to_response("crm/clientcompany_list.html",
-                              {"companies": ClientCompany.objects.all()},
+                              {"companies": list(companies)},
                                RequestContext(request))
 
 

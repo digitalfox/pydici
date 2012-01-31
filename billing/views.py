@@ -22,7 +22,7 @@ from django.views.decorators.cache import cache_page
 from pydici.billing.models import Bill
 from pydici.leads.models import Lead
 from pydici.staffing.models import Timesheet, FinancialCondition, Staffing
-from pydici.crm.models import ClientCompany, BusinessBroker
+from pydici.crm.models import Company, BusinessBroker
 from pydici.core.utils import print_png, COLORS, sortedValues, sampleList
 from pydici.core.decorator import pydici_non_public
 
@@ -75,17 +75,17 @@ def bill_payment_delay(request):
     #List of tuple (company, avg delay in days)
     directDelays = list() # for direct client
     indirectDelays = list() # for client with paying authority
-    for company in ClientCompany.objects.all():
+    for company in Company.objects.all():
+        # Direct delays
         bills = Bill.objects.filter(lead__client__organisation__company=company, lead__paying_authority__isnull=True)
         res = [i.payment_delay() for i in bills]
         if res:
             directDelays.append((company, sum(res) / len(res)))
-
-    for authority in BusinessBroker.objects.all():
-        bills = Bill.objects.filter(lead__paying_authority=authority)
+        # Indirect delays
+        bills = Bill.objects.filter(lead__paying_authority__company=company)
         res = [i.payment_delay() for i in bills]
         if res:
-            indirectDelays.append((authority, sum(res) / len(res)))
+            indirectDelays.append((company, sum(res) / len(res)))
 
     return render_to_response("billing/payment_delay.html",
                               {"direct_delays" : directDelays,

@@ -53,7 +53,8 @@
     {% ifchanged lead.client %}
         {% if request.session.mobile %}</ul><ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d"><li data-role="list-divider">{% else %}<h2>{% endif %}
         {% if lead.client.contact %}
-            <a rel=external href="{% url admin:crm_clientcontact_change lead.client.contact.id %}">{{ lead.client.organisation }} ({{ lead.client.contact }})</a>
+            {{ lead.client.organisation }} (
+            <a rel=external href="{% url admin:crm_contact_change lead.client.contact.id %}">{{ lead.client.contact }}</a>)
         {% else %}
             {{ lead.client }}
         {% endif %}
@@ -92,7 +93,7 @@
 	</tr>
     {% for contact in contacts %}
 	    <tr {%cycle 'class="row1"' 'class="row2"' %}>
-	       <td><a rel=external href="{% url admin:crm_clientcontact_change contact.id %}">{{ contact.name }}</a></td>
+	       <td><a rel=external href="{% url admin:crm_contact_change contact.id %}">{{ contact.name }}</a></td>
 	       <td>{{ contact.company }}</td>
 	       <td>{{ contact.function }}</td>
 	       <td>{{ contact.email }}</td>

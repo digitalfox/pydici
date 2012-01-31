@@ -13,7 +13,7 @@
 <br/>
 
 {% if query %}
-    {% if consultants or client_companies or leads or missions or client_contacts %}
+    {% if consultants or companies or leads or missions or contacts %}
         <h1>{% blocktrans with query|escape as value %}Search results for <em>{{ value }}</em>:{% endblocktrans %}</h1>
     {% else %}
         <h1>{% blocktrans with query|escape as value %}No results for <em>{{ value }}</em>{% endblocktrans %}</h1>
@@ -29,19 +29,19 @@
     </ul>
 {% endif %}
 
-{% if client_contacts %}
-    <h2>{% trans "Clients contacts"%}</h2>
+{% if contacts %}
+    <h2>{% trans "Contacts"%}</h2>
     <ul>
-    {% for contact in client_contacts %}
-        <li><a href="{% url admin:crm_clientcontact_change contact.id %}">{{ contact }} ({{ contact.company }})</a></li>
+    {% for contact in contacts %}
+        <li><a href="{% url admin:crm_contact_change contact.id %}">{{ contact }} ({{ contact.company }})</a></li>
     {% endfor %}
     </ul>
 {% endif %}
 
-{% if client_companies %}
-    <h2>{% trans "Clients companies"%}</h2>
+{% if companies %}
+    <h2>{% trans "Companies"%}</h2>
     <ul>
-    {% for company in client_companies %}
+    {% for company in companies %}
         <li><a href="{% url pydici.crm.views.company_detail company.id %}">{{ company }}</a></li>
     {% endfor %}
     </ul>

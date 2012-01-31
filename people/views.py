@@ -11,7 +11,7 @@ from django.core import urlresolvers
 from django.template import RequestContext
 
 from pydici.people.models import Consultant
-from pydici.crm.models import ClientCompany
+from pydici.crm.models import Company
 from pydici.core.decorator import pydici_non_public
 
 
@@ -23,7 +23,7 @@ def consultant_detail(request, consultant_id):
         staff = consultant.team()
         # Compute user current mission based on forecast
         missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
-        companies = ClientCompany.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
+        companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
         leads_as_responsible = set(consultant.lead_responsible.active())
         leads_as_staffee = consultant.lead_set.active()
     except Consultant.DoesNotExist:
@@ -44,7 +44,7 @@ def subcontractor_detail(request, consultant_id):
     try:
         consultant = Consultant.objects.get(id=consultant_id)
         missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
-        companies = ClientCompany.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
+        companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
         leads_as_staffee = consultant.lead_set.active()
     except Consultant.DoesNotExist:
         raise Http404
