@@ -75,7 +75,7 @@ class Lead(models.Model):
         if self.deal_id == "":
             # First, subsidiary or paying authority code
             if self.paying_authority:
-                deal_id = unicode(self.paying_authority.code)
+                deal_id = unicode(self.paying_authority.company.code)
             else:
                 deal_id = unicode(self.client.salesOwner.code)
             # Then, client company code
@@ -185,6 +185,7 @@ class Lead(models.Model):
     class Meta:
         ordering = ["client__organisation__company__name", "name"]
         verbose_name = _("Lead")
+
 
 # Signal handling to throw actionset
 def leadSignalHandler(sender, **kwargs):

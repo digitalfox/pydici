@@ -30,7 +30,7 @@ class ContactAdmin(admin.ModelAdmin):
 
 class BusinessBrokerAdmin(admin.ModelAdmin):
     list_display = ("company", "contact")
-    odering = ("name")
+    odering = ("company", "contact")
     search_fields = ["company", "contact__name"]
     actions = None
 
