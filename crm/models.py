@@ -22,7 +22,7 @@ class AbstractCompany(models.Model):
     code = models.CharField(_("Code"), max_length=3, unique=True)
 
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
     class Meta:
         abstract = True
@@ -107,7 +107,7 @@ class BusinessBroker(models.Model):
 
     def __unicode__(self):
         if self.company:
-            return "%s (%s)" % (self.company, self.contact)
+            return u"%s (%s)" % (self.company, self.contact)
         else:
             return self.contact
 
