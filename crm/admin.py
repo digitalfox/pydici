@@ -35,6 +35,13 @@ class BusinessBrokerAdmin(admin.ModelAdmin):
     actions = None
 
 
+class SupplierAdmin(admin.ModelAdmin):
+    list_display = ("company", "contact")
+    odering = ("company", "contact")
+    search_fields = ["company", "contact__name"]
+    actions = None
+
+
 class ClientOrganisationAdmin(admin.ModelAdmin):
     fieldsets = [(None, {"fields": ["company", "name"]}), ]
     list_display = ("company", "name",)
@@ -61,3 +68,4 @@ admin.site.register(Client, ClientAdmin)
 admin.site.register(ClientOrganisation, ClientOrganisationAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(BusinessBroker, BusinessBrokerAdmin)
+admin.site.register(Supplier, SupplierAdmin)
