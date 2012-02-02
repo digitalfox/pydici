@@ -186,12 +186,12 @@ a.tagrlink { color: #999999 }
 
 .expense_description {
     background: #ffc;
-    margin: 10px;
-    padding: 6px 8px;
+    margin: 3px;
+    padding: 4px 6px;
     border-radius: 8px 8px 8px 8px;
     font-size: .8em;
     box-shadow: 1px 1px 4px #555;
-    width:40em;
+    width:32em;
     display:inline-block;
     vertical-align: top;
 }
@@ -229,9 +229,9 @@ a.tagrlink { color: #999999 }
     border:1px solid #dedede;
     border-top:1px solid #eee;
     border-left:1px solid #eee;
+    font-size: .7em;
     line-height:130%;
     text-decoration:none;
-    font-weight:bold;
     color:#565656;
     cursor:pointer;
     border-radius: 2px 2px 2px 2px;
