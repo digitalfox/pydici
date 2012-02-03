@@ -12,10 +12,10 @@ from django.contrib.auth.decorators import login_required
 
 from pydici.core.decorator import pydici_non_public
 from pydici.leads.models import Lead
-from pydici.people.models import Consultant, SalesMan
+from pydici.people.models import Consultant
 from pydici.crm.models import Company, Contact
 from pydici.staffing.models import Mission
-from pydici.billing.models import Bill
+from pydici.billing.models import ClientBill
 from pydici.people.views import consultant_detail, subcontractor_detail
 import pydici.settings
 
@@ -138,7 +138,7 @@ def search(request):
 
         # Bills
         if request.GET.get("bill"):
-            bills = Bill.objects.all()
+            bills = ClientBill.objects.all()
             for word in words:
                 bills = bills.filter(Q(bill_id__icontains=word) |
                                      Q(comment__icontains=word))
@@ -147,7 +147,7 @@ def search(request):
             if leads:
                 bills = set(bills)
                 for lead in leads:
-                    for bill in lead.bill_set.all():
+                    for bill in lead.clientbill_set.all():
                         bills.add(bill)
             # Sort
             bills = list(bills)

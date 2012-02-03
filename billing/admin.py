@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ajax_select.admin import AjaxSelectAdmin
 
-from pydici.billing.models import Bill
+from pydici.billing.models import ClientBill
 from pydici.billing.forms import BillForm
 
 
@@ -24,7 +24,7 @@ class BillAdmin(AjaxSelectAdmin):
                      "lead__paying_authority__name", "lead__paying_authority__company",
                      "lead__client__contact__name", "lead__client__organisation__company__name"]
     fieldsets = [
-                 (_("Description"), {"fields": ["lead", "bill_id", "nature", "bill_file"]}),
+                 (_("Description"), {"fields": ["lead", "bill_id", "bill_file"]}),
                  (_("Amounts"), {"fields": ["amount", "vat", "amount_with_vat", ]}),
                  (_("Dates"), {"fields": ["creation_date", "due_date", "payment_date", ]}),
                  (_("State"), {"fields": ["state", "previous_year_bill", "comment", ]}),
@@ -32,4 +32,4 @@ class BillAdmin(AjaxSelectAdmin):
                  ]
     form = BillForm
 
-admin.site.register(Bill, BillAdmin)
+admin.site.register(ClientBill, BillAdmin)

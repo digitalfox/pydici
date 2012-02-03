@@ -19,7 +19,7 @@ from django.db.models import Sum
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_page
 
-from pydici.billing.models import Bill
+from pydici.billing.models import ClientBill
 from pydici.leads.models import Lead
 from pydici.staffing.models import Timesheet, FinancialCondition, Staffing
 from pydici.crm.models import Company, BusinessBroker
@@ -33,10 +33,10 @@ def bill_review(request):
     wait_warning = timedelta(15) # wait in days used to warn that a bill is due soon
 
     # Get bills overdue, due soon, litigious and recently paid
-    overdue_bills = Bill.objects.filter(state="1_SENT").filter(due_date__lte=today).select_related()
-    soondue_bills = Bill.objects.filter(state="1_SENT").filter(due_date__gt=today).filter(due_date__lte=(today + wait_warning)).select_related()
-    recent_bills = Bill.objects.filter(state="2_PAID").order_by("-payment_date").select_related()[:20]
-    litigious_bills = Bill.objects.filter(state="3_LITIGIOUS").select_related()
+    overdue_bills = ClientBill.objects.filter(state="1_SENT").filter(due_date__lte=today).select_related()
+    soondue_bills = ClientBill.objects.filter(state="1_SENT").filter(due_date__gt=today).filter(due_date__lte=(today + wait_warning)).select_related()
+    recent_bills = ClientBill.objects.filter(state="2_PAID").order_by("-payment_date").select_related()[:20]
+    litigious_bills = ClientBill.objects.filter(state="3_LITIGIOUS").select_related()
 
     # Compute totals
     soondue_bills_total = soondue_bills.aggregate(Sum("amount"))["amount__sum"]
@@ -50,22 +50,22 @@ def bill_review(request):
     leadsWithoutBill = []
     threeMonthAgo = date.today() - timedelta(90)
     for lead in Lead.objects.filter(state="WON").select_related():
-        if lead.bill_set.count() == 0:
+        if lead.clientbill_set.count() == 0:
             if Timesheet.objects.filter(mission__lead=lead, working_date__gte=threeMonthAgo).count() != 0:
                 leadsWithoutBill.append(lead)
 
     return render_to_response("billing/bill_review.html",
-                              {"overdue_bills" : overdue_bills,
-                               "soondue_bills" : soondue_bills,
-                               "recent_bills" : recent_bills,
-                               "litigious_bills" : litigious_bills,
-                               "soondue_bills_total" : soondue_bills_total,
-                               "overdue_bills_total" : overdue_bills_total,
-                               "litigious_bills_total" : litigious_bills_total,
-                               "soondue_bills_total_with_vat" : soondue_bills_total_with_vat,
-                               "overdue_bills_total_with_vat" : overdue_bills_total_with_vat,
-                               "litigious_bills_total_with_vat" : litigious_bills_total_with_vat,
-                               "leads_without_bill" : leadsWithoutBill,
+                              {"overdue_bills": overdue_bills,
+                               "soondue_bills": soondue_bills,
+                               "recent_bills": recent_bills,
+                               "litigious_bills": litigious_bills,
+                               "soondue_bills_total": soondue_bills_total,
+                               "overdue_bills_total": overdue_bills_total,
+                               "litigious_bills_total": litigious_bills_total,
+                               "soondue_bills_total_with_vat": soondue_bills_total_with_vat,
+                               "overdue_bills_total_with_vat": overdue_bills_total_with_vat,
+                               "litigious_bills_total_with_vat": litigious_bills_total_with_vat,
+                               "leads_without_bill": leadsWithoutBill,
                                "user": request.user},
                               RequestContext(request))
 
@@ -77,12 +77,12 @@ def bill_payment_delay(request):
     indirectDelays = list() # for client with paying authority
     for company in Company.objects.all():
         # Direct delays
-        bills = Bill.objects.filter(lead__client__organisation__company=company, lead__paying_authority__isnull=True)
+        bills = ClientBill.objects.filter(lead__client__organisation__company=company, lead__paying_authority__isnull=True)
         res = [i.payment_delay() for i in bills]
         if res:
             directDelays.append((company, sum(res) / len(res)))
         # Indirect delays
-        bills = Bill.objects.filter(lead__paying_authority__company=company)
+        bills = ClientBill.objects.filter(lead__paying_authority__company=company)
         res = [i.payment_delay() for i in bills]
         if res:
             indirectDelays.append((company, sum(res) / len(res)))
@@ -97,7 +97,7 @@ def bill_payment_delay(request):
 @pydici_non_public
 def mark_bill_paid(request, bill_id):
     """Mark the given bill as paid"""
-    bill = Bill.objects.get(id=bill_id)
+    bill = ClientBill.objects.get(id=bill_id)
     bill.state = "2_PAID"
     bill.save()
     return HttpResponseRedirect(urlresolvers.reverse("pydici.billing.views.bill_review"))
@@ -106,7 +106,7 @@ def mark_bill_paid(request, bill_id):
 @pydici_non_public
 def create_new_bill_from_lead(request, lead_id):
     """Create a new bill for this lead"""
-    bill = Bill()
+    bill = ClientBill()
     bill.lead = Lead.objects.get(id=lead_id)
     # Define mandatory field - user will have choice to change this after
     bill.amount = 0
@@ -121,12 +121,12 @@ def bill_file(request, bill_id):
     """Returns bill file"""
     response = HttpResponse()
     try:
-        bill = Bill.objects.get(id=bill_id)
+        bill = ClientBill.objects.get(id=bill_id)
         if bill.bill_file:
             response['Content-Type'] = mimetypes.guess_type(bill.bill_file.name)[0] or "application/stream"
             for chunk in bill.bill_file.chunks():
                 response.write(chunk)
-    except (Bill.DoesNotExist, OSError):
+    except (ClientBill.DoesNotExist, OSError):
         pass
 
     return response
@@ -153,7 +153,7 @@ def graph_stat_bar(request):
     ax = fig.add_subplot(111)
 
     # Gathering billsData
-    bills = Bill.objects.filter(creation_date__gt=start_date)
+    bills = ClientBill.objects.filter(creation_date__gt=start_date)
     if bills.count() == 0:
         return print_png(fig)
 
@@ -194,7 +194,7 @@ def graph_stat_bar(request):
     bottom = [0] * len(billKdates)
 
     # Draw a bar for each state
-    for state in Bill.BILL_STATE:
+    for state in ClientBill.BILL_STATE:
         ydata = [sum([i.amount / 1000 for i in x if i.state == state[0]]) for x in sortedValues(billsData)]
         b = ax.bar(billKdates, ydata, bottom=bottom, align="center", width=15,
                color=colors.next())
@@ -227,7 +227,7 @@ def graph_stat_bar(request):
     ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
     ax.set_ylim(ymax=max(int(max(bottom)), int(max(tsYData))) + 10)
     ax.set_ylabel(u"k€")
-    ax.legend(plots, [i[1] for i in Bill.BILL_STATE] + [_(u"Done work"), _(u"Forecasted work"), _(u"Weighted forecasted work")],
+    ax.legend(plots, [i[1] for i in ClientBill.BILL_STATE] + [_(u"Done work"), _(u"Forecasted work"), _(u"Weighted forecasted work")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
               ncol=4, borderaxespad=0.)
     ax.grid(True)

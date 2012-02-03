@@ -40,8 +40,8 @@ class Company(AbstractCompany):
     """Company"""
     def sales(self, onlyLastYear=False):
         """Sales billed for this company in keuros"""
-        from pydici.billing.models import Bill
-        data = Bill.objects.filter(lead__client__organisation__company=self)
+        from pydici.billing.models import ClientBill
+        data = ClientBill.objects.filter(lead__client__organisation__company=self)
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():

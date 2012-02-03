@@ -18,7 +18,7 @@ from pydici.staffing.models import Timesheet
 from pydici.leads.models import Lead
 from pydici.core.decorator import pydici_non_public
 from pydici.core.utils import COLORS
-from pydici.billing.models import Bill
+from pydici.billing.models import ClientBill
 
 
 @pydici_non_public
@@ -63,11 +63,11 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
     """Sales repartition per company"""
     graph_data = []
     labels = []
-    minDate = Bill.objects.aggregate(Min("creation_date")).values()[0]
+    minDate = ClientBill.objects.aggregate(Min("creation_date")).values()[0]
     if onlyLastYear:
-        data = Bill.objects.filter(creation_date__gt=(date.today() - timedelta(365)))
+        data = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(365)))
     else:
-        data = Bill.objects.all()
+        data = ClientBill.objects.all()
     data = data.values("lead__client__organisation__company__name")
     data = data.order_by("lead__client__organisation__company").annotate(Sum("amount"))
     data = data.order_by("amount__sum").reverse()[0:9]

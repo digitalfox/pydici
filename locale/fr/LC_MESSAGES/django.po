@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-02 23:35+0100\n"
-"PO-Revision-Date: 2012-02-02 23:33+0100\n"
+"POT-Creation-Date: 2012-02-03 23:00+0100\n"
+"PO-Revision-Date: 2012-02-03 23:00+0100\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -84,7 +84,7 @@ msgstr "Faite"
 msgid "N/A"
 msgstr "N/A"
 
-#: actionset/models.py:59 billing/admin.py:30 billing/models.py:66
+#: actionset/models.py:59 billing/admin.py:30 billing/models.py:62
 #: leads/models.py:58 leads/views.py:101
 #: templates/billing/_lead_billing.html:9
 #: templates/expense/expense_list.html:19
@@ -159,7 +159,7 @@ msgstr "Dates"
 msgid "Link with expenses"
 msgstr "Lien avec les notes de frais"
 
-#: billing/forms.py:20 billing/models.py:58 expense/forms.py:30
+#: billing/forms.py:20 billing/models.py:54 expense/forms.py:30
 #: leads/models.py:187 staffing/models.py:40 staffing/views.py:802
 #: templates/billing/bill_review.html:163 templates/core/index.html:19
 #: templates/core/index.html.py:44 templates/core/index.html:68
@@ -190,61 +190,47 @@ msgstr "En litige"
 msgid "Canceled"
 msgstr "Annulée"
 
-#: billing/models.py:55 crm/models.py:175 leads/forms.py:24 leads/models.py:60
-#: leads/views.py:99 templates/billing/bill_review.html:20
-#: templates/billing/bill_review.html:58 templates/billing/bill_review.html:96
-#: templates/billing/bill_review.html:134
-#: templates/billing/payment_delay.html:18 templates/core/index.html:18
-#: templates/core/index.html.py:43 templates/core/index.html:67
-#: templates/core/index.html.py:91
-msgid "Client"
-msgstr "Client"
-
-#: billing/models.py:56 crm/models.py:138
-msgid "Supplier"
-msgstr "Fournisseur"
-
-#: billing/models.py:59 templates/billing/_lead_billing.html:8
+#: billing/models.py:55 templates/billing/_lead_billing.html:8
 #: templates/billing/bill_review.html:19 templates/billing/bill_review.html:57
 #: templates/billing/bill_review.html:95
 #: templates/billing/bill_review.html:133
 msgid "Bill id"
 msgstr "N° facture"
 
-#: billing/models.py:60 templates/billing/_lead_billing.html:10
+#: billing/models.py:56 templates/billing/_lead_billing.html:10
 #: templates/billing/bill_review.html:21 templates/billing/bill_review.html:59
 #: templates/billing/bill_review.html:97
 #: templates/billing/bill_review.html:135
 msgid "Amount (€ excl tax)"
 msgstr "Montant (€ HT)"
 
-#: billing/models.py:61
+#: billing/models.py:57
 msgid "Amount (€ incl tax)"
 msgstr "Montant (€ TTC)"
 
-#: billing/models.py:62
+#: billing/models.py:58
 msgid "VAT (%)"
 msgstr "TVA (%)"
 
-#: billing/models.py:63 templates/billing/_lead_billing.html:11
+#: billing/models.py:59 templates/billing/_lead_billing.html:11
 #: templates/billing/bill_review.html:137
 msgid "Creation date"
 msgstr "Date de création"
 
-#: billing/models.py:64 leads/views.py:101
+#: billing/models.py:60 leads/views.py:101
 #: templates/billing/_lead_billing.html:12 templates/leads/review.html:36
 msgid "Due date"
 msgstr "Date d'échéance"
 
-#: billing/models.py:65 templates/billing/_lead_billing.html:13
+#: billing/models.py:61 templates/billing/_lead_billing.html:13
 msgid "Payment date"
 msgstr "Date de paiement"
 
-#: billing/models.py:67
+#: billing/models.py:63
 msgid "Previous year bill"
 msgstr "Facture de l'année N-1"
 
-#: billing/models.py:68 expense/models.py:51 staffing/models.py:210
+#: billing/models.py:64 expense/models.py:51 staffing/models.py:210
 #: templates/billing/bill_review.html:25 templates/billing/bill_review.html:63
 #: templates/billing/bill_review.html:101
 #: templates/billing/bill_review.html:140
@@ -254,24 +240,20 @@ msgstr "Facture de l'année N-1"
 msgid "Comments"
 msgstr "Remarques"
 
-#: billing/models.py:69
-msgid "Nature"
-msgstr "Nature"
-
-#: billing/models.py:71
+#: billing/models.py:66
 msgid "Charge expense with VAT"
 msgstr "Refacturer les frais avec la TVA"
 
-#: billing/models.py:72 templates/billing/_lead_billing.html:14
+#: billing/models.py:67 templates/billing/_lead_billing.html:14
 #: templates/billing/bill_review.html:24 templates/billing/bill_review.html:62
 #: templates/billing/bill_review.html:100
 #: templates/billing/bill_review.html:139
 msgid "File"
 msgstr "Fichier"
 
-#: billing/models.py:120
-msgid "Bill"
-msgstr "Facture"
+#: billing/models.py:115
+msgid "Client Bill"
+msgstr "Factures clients"
 
 #: billing/views.py:230
 msgid "Done work"
@@ -369,6 +351,10 @@ msgstr "Apporteur d'affaire"
 msgid "Supplier company"
 msgstr "Société du fournisseur"
 
+#: crm/models.py:138
+msgid "Supplier"
+msgstr "Fournisseur"
+
 #: crm/models.py:143
 msgid "Organisation"
 msgstr "Département"
@@ -376,6 +362,16 @@ msgstr "Département"
 #: crm/models.py:145
 msgid "Sales owner"
 msgstr "Propriété commerciale"
+
+#: crm/models.py:175 leads/forms.py:24 leads/models.py:60 leads/views.py:99
+#: templates/billing/bill_review.html:20 templates/billing/bill_review.html:58
+#: templates/billing/bill_review.html:96
+#: templates/billing/bill_review.html:134
+#: templates/billing/payment_delay.html:18 templates/core/index.html:18
+#: templates/core/index.html.py:43 templates/core/index.html:67
+#: templates/core/index.html.py:91
+msgid "Client"
+msgstr "Client"
 
 #: expense/forms.py:35
 msgid "You must define a lead if expense is chargeable"
@@ -1104,12 +1100,12 @@ msgid "On going actions"
 msgstr "Actions en cours"
 
 #: templates/admin/base_site.html:86
-msgid "All bills"
-msgstr "Toutes les factures"
+msgid "All client bills"
+msgstr "Toutes les factures clients"
 
 #: templates/admin/base_site.html:87
-msgid "New bill"
-msgstr "Nouvelle facture"
+msgid "New client bill"
+msgstr "Nouvelle facture client"
 
 #: templates/admin/base_site.html:95
 msgid "Reports"
@@ -1169,7 +1165,7 @@ msgstr "Page d'aide"
 msgid "Contacts"
 msgstr "Contacts"
 
-#: templates/admin/base_site.html:147 templates/core/search.html:69
+#: templates/admin/base_site.html:147
 msgid "Bills"
 msgstr "Factures"
 
@@ -1447,6 +1443,10 @@ msgstr "Aucun résultat pour <em>%(value)s</em>"
 #: templates/core/search.html:54
 msgid "no deal id"
 msgstr "pas de n° d'affaire"
+
+#: templates/core/search.html:69
+msgid "Client Bills"
+msgstr "Factures clients"
 
 #: templates/crm/_clientcompany_list.html:7
 #: templates/crm/clientcompany_detail.html:41
@@ -2195,6 +2195,22 @@ msgstr "Équipe %(manager)s"
 #: templates/staffing/pdc_review.html:100
 msgid "Totals"
 msgstr "Totaux"
+
+#, fuzzy
+#~ msgid "ClientBill"
+#~ msgstr "Client"
+
+#~ msgid "Nature"
+#~ msgstr "Nature"
+
+#~ msgid "Bill"
+#~ msgstr "Facture"
+
+#~ msgid "All bills"
+#~ msgstr "Toutes les factures"
+
+#~ msgid "New bill"
+#~ msgstr "Nouvelle facture"
 
 #~ msgid "Client Company"
 #~ msgstr "Entreprise"
