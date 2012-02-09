@@ -43,6 +43,7 @@ AJAX_LOOKUP_CHANNELS = {
     'internal_consultant' : ('people.lookups', 'InternalConsultantLookup'),
     'salesman' : ('people.lookups', 'SalesmanLookup'),
     'business_broker' : ('crm.lookups', 'BusinessBrokerLookup'),
+    'supplier' : ('crm.lookups', 'SupplierLookup'),
     'client' : ('crm.lookups', 'ClientLookup'),
     'mission' : ('staffing.lookups', 'MissionLookup'),
     'lead' : ('leads.lookups', 'LeadLookup'),
