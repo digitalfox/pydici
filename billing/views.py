@@ -19,7 +19,7 @@ from django.db.models import Sum
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_page
 
-from pydici.billing.models import ClientBill
+from pydici.billing.models import ClientBill, SupplierBill
 from pydici.leads.models import Lead
 from pydici.staffing.models import Timesheet, FinancialCondition, Staffing
 from pydici.crm.models import Company, BusinessBroker
@@ -117,16 +117,19 @@ def create_new_bill_from_lead(request, lead_id):
 
 
 @pydici_non_public
-def bill_file(request, bill_id):
+def bill_file(request, bill_id=0, nature="client"):
     """Returns bill file"""
     response = HttpResponse()
     try:
-        bill = ClientBill.objects.get(id=bill_id)
+        if nature == "client":
+            bill = ClientBill.objects.get(id=bill_id)
+        else:
+            bill = SupplierBill.objects.get(id=bill_id)
         if bill.bill_file:
             response['Content-Type'] = mimetypes.guess_type(bill.bill_file.name)[0] or "application/stream"
             for chunk in bill.bill_file.chunks():
                 response.write(chunk)
-    except (ClientBill.DoesNotExist, OSError):
+    except (ClientBill.DoesNotExist, SupplierBill.DoesNotExist, OSError):
         pass
 
     return response
@@ -194,7 +197,7 @@ def graph_stat_bar(request):
     bottom = [0] * len(billKdates)
 
     # Draw a bar for each state
-    for state in ClientBill.BILL_STATE:
+    for state in ClientBill.CLIENT_BILL_STATE:
         ydata = [sum([i.amount / 1000 for i in x if i.state == state[0]]) for x in sortedValues(billsData)]
         b = ax.bar(billKdates, ydata, bottom=bottom, align="center", width=15,
                color=colors.next())
@@ -227,7 +230,7 @@ def graph_stat_bar(request):
     ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
     ax.set_ylim(ymax=max(int(max(bottom)), int(max(tsYData))) + 10)
     ax.set_ylabel(u"k€")
-    ax.legend(plots, [i[1] for i in ClientBill.BILL_STATE] + [_(u"Done work"), _(u"Forecasted work"), _(u"Weighted forecasted work")],
+    ax.legend(plots, [i[1] for i in ClientBill.CLIENT_BILL_STATE] + [_(u"Done work"), _(u"Forecasted work"), _(u"Weighted forecasted work")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
               ncol=4, borderaxespad=0.)
     ax.grid(True)

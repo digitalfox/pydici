@@ -32,7 +32,7 @@
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
-                <td><a href='{% url pydici.billing.views.bill_file bill.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12 /></a></td>
+                <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12 /></a></td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.change_bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
@@ -70,7 +70,7 @@
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
-                <td><a href='{% url pydici.billing.views.bill_file bill.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
+                <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.change_bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
@@ -108,7 +108,7 @@
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
-                <td><a href='{% url pydici.billing.views.bill_file bill.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/ height=12></a></td>
+                <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/ height=12></a></td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if perms.billing.change_bill %}
                     <a href="{% url pydici.billing.views.mark_bill_paid bill.id %}">{% trans "Mark this bill as paid" %}</a>
@@ -147,7 +147,7 @@
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_delay }}</td>
-                <td><a href='{% url pydici.billing.views.bill_file bill.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
+                <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
                 <td>{{ bill.comment }}</td>
             </tr>
         {% endfor %}

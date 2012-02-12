@@ -8,6 +8,7 @@ Ajax custom lookup
 from pydici.people.models import Consultant, SalesMan
 from django.db.models import Q
 
+
 class PeopleLookup(object):
     def get_query(self, q, request):
         """ return a query set.  you also have access to request.user if needed """

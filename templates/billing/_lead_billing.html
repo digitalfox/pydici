@@ -20,7 +20,7 @@
                     <td>{{ bill.creation_date }}</td>
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date }}</td>
-                    <td><a href='{% url pydici.billing.views.bill_file bill.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
+                    <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
                 </tr>
             {% endfor %}
     </table>

@@ -17,6 +17,7 @@ from django.core.urlresolvers import reverse
 
 from pydici.leads.models import Lead
 from pydici.expense.models import Expense
+from pydici.crm.models import Supplier
 from pydici.core.utils import sanitizeName
 import pydici.settings
 
@@ -25,52 +26,89 @@ import pydici.settings
 # Really used to have proper link in admin page
 
 class BillStorage(FileSystemStorage):
-    def __init__(self):
-        super(BillStorage, self).__init__(location=join(pydici.settings.PYDICI_ROOTDIR, "data", "bill"))
+    def __init__(self, nature="client"):
+        super(BillStorage, self).__init__(location=join(pydici.settings.PYDICI_ROOTDIR, "data", "bill", nature))
+        self.nature = nature
 
     def url(self, name):
         try:
             bill_id = os.path.split(dirname(name))[1]
-            bill = Bill.objects.get(bill_id=bill_id)
-            return reverse("pydici.billing.views.bill_file", args=[bill.id, ])
-        except Exception:
+            if self.nature == "client":
+                bill = ClientBill.objects.get(bill_id=bill_id)
+                return reverse("pydici.billing.views.bill_file", kwargs={"bill_id": bill.id, "nature": "client"})
+            else:
+                bill = SupplierBill.objects.get(bill_id=bill_id)
+                return reverse("pydici.billing.views.bill_file", kwargs={"bill_id": bill.id, "nature": "supplier"})
+        except Exception, e:
+            print "prout"
+            print e
             # Don't display URL if Bill does not exist or path is invalid
             return ""
 
 # This utils function is here and not in utils module
 # to avoid circular import loop, as utils module import models
 def bill_file_path(instance, filename):
-    """Format full path of bill path"""
+    """Format relative path to Storage of bill"""
     return join(strftime("%Y"), strftime("%m"),
                 instance.bill_id, sanitizeName(filename))
 
 
-class ClientBill(models.Model):
-    BILL_STATE = (
-            ('1_SENT', ugettext("Sent")),
-            ('2_PAID', ugettext("Paid")),
-            ('3_LITIGIOUS', ugettext("Litigious")),
-            ('4_CANCELED', ugettext("Canceled")),)
+class AbstractBill(models.Model):
+    """Abstract class that factorize ClientBill and SupplierBill fields and logic"""
     lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
-    bill_id = models.CharField(_("Bill id"), max_length=500, unique=True)
-    amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2)
-    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
-    vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=pydici.settings.PYDICI_DEFAULT_VAT_RATE)
+    bill_id = models.CharField(_("Bill id"), max_length=200, unique=True)
     creation_date = models.DateField(_("Creation date"), default=date.today())
     due_date = models.DateField(_("Due date"), default=(date.today() + timedelta(30)))
     payment_date = models.DateField(_("Payment date"), blank=True, null=True)
-    state = models.CharField(_("State"), max_length=30, choices=BILL_STATE, default="1_SENT")
     previous_year_bill = models.BooleanField(_("Previous year bill"), default=False)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
+    amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2)
+    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
+    vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=pydici.settings.PYDICI_DEFAULT_VAT_RATE)
     expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable":True})
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
-    bill_file = models.FileField(_("File"), upload_to=bill_file_path, storage=BillStorage())
+
 
     def __unicode__(self):
         if self.bill_id:
             return u"%s (%s)" % (self.bill_id, self.id)
         else:
             return unicode(self.id)
+
+    def payment_wait(self):
+        if self.payment_date:
+            wait = self.payment_date - self.due_date
+        else:
+            wait = date.today() - self.due_date
+        return wait.days
+
+    def payment_delay(self):
+        if self.payment_date:
+            wait = self.payment_date - self.creation_date
+        else:
+            wait = date.today() - self.creation_date
+        return wait.days
+
+    def bill_file_url(self):
+        """Return url if file exists, else #"""
+        try:
+            return self.bill_file.url
+        except ValueError:
+            return "#"
+
+    class Meta:
+        abstract = True
+        ordering = ["lead__client__organisation__company", "creation_date"]
+
+
+class ClientBill(AbstractBill):
+    CLIENT_BILL_STATE = (
+            ('1_SENT', ugettext("Sent")),
+            ('2_PAID', ugettext("Paid")),
+            ('3_LITIGIOUS', ugettext("Litigious")),
+            ('4_CANCELED', ugettext("Canceled")),)
+    state = models.CharField(_("State"), max_length=30, choices=CLIENT_BILL_STATE, default="1_SENT")
+    bill_file = models.FileField(_("File"), upload_to=bill_file_path, storage=BillStorage(nature="client"))
 
     def client(self):
         if self.lead.paying_authority:
@@ -96,20 +134,20 @@ class ClientBill(models.Model):
                     self.amount_with_vat += expense.amount
         super(ClientBill, self).save(*args, **kwargs) # Save again
 
-    def payment_wait(self):
-        if self.payment_date:
-            wait = self.payment_date - self.due_date
-        else:
-            wait = date.today() - self.due_date
-        return wait.days
+    class Meta:
+        verbose_name = _("Client Bill")
 
-    def payment_delay(self):
-        if self.payment_date:
-            wait = self.payment_date - self.creation_date
-        else:
-            wait = date.today() - self.creation_date
-        return wait.days
+class SupplierBill(AbstractBill):
+    SUPPLIER_BILL_STATE = (
+            ('1_RECEIVED', ugettext("Received")),
+            ('2_PAID', ugettext("Paid")),
+            ('3_LITIGIOUS', ugettext("Litigious")),
+            ('4_CANCELED', ugettext("Canceled")),)
+    state = models.CharField(_("State"), max_length=30, choices=SUPPLIER_BILL_STATE, default="1_RECEIVED")
+    bill_file = models.FileField(_("File"), upload_to=bill_file_path, storage=BillStorage(nature="supplier"))
+    supplier = models.ForeignKey(Supplier)
+    supplier_bill_id = models.CharField(_("Supplier Bill id"), max_length=200)
 
     class Meta:
-        ordering = ["lead__client__organisation__company", "creation_date"]
-        verbose_name = _("Client Bill")
+        verbose_name = _("Supplier Bill")
+        unique_together = (("supplier", "supplier_bill_id"),)
