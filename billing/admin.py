@@ -16,7 +16,7 @@ from pydici.billing.forms import ClientBillForm, SupplierBillForm
 
 #class BillAdmin(AjaxSelectAdmin):
 class BillAdmin(AjaxSelectAdmin):
-    list_display = ("id", "bill_id", "lead", "state", "amount", "creation_date", "due_date", "payment_date", "comment")
+    list_display = ["id", "bill_id", "lead", "state", "amount", "creation_date", "due_date", "payment_date", "comment"]
     ordering = ("-creation_date",)
     actions = None
     list_filter = ["state", "creation_date", "due_date", "payment_date", "previous_year_bill"]
@@ -39,6 +39,8 @@ class ClientBillAdmin(BillAdmin):
 class SupplierBillAdmin(BillAdmin):
     form = SupplierBillForm
     search_fields = BillAdmin.search_fields + ["supplier_contact__name", "supplier__company__name"]
+    list_display = list(BillAdmin.list_display)  # Copy list before changing it
+    list_display.insert(2, "supplier")
     fieldsets = [
                  (_("Description"), {"fields": ["supplier", "lead", "bill_id", "supplier_bill_id", "bill_file"]}),
                  (_("Amounts"), {"fields": ["amount", "vat", "amount_with_vat", ]}),
