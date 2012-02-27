@@ -3,6 +3,7 @@
 
 {% load i18n %}
 <div class="timesheet">
+    <h3>{% trans "Clients bills" %}</h3>
     {% if lead.clientbill_set.all %}
     <table>
             <th>{% trans "Bill id" %}</th>
@@ -28,7 +29,41 @@
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
     <br/>
-    {% if perms.billing.add_bill %}
-        <i><a href="{% url pydici.billing.views.create_new_bill_from_lead lead.id %}" target="_blank">{% trans "Add a bill for this lead" %}</a></i>
+    {% if perms.billing.add_clientbill %}
+        <i><a href="{% url admin:billing_clientbill_add %}?lead={{ lead.id }}" target="_blank">{% trans "Add a client bill for this lead" %}</a></i>
+    {% endif %}
+
+    <h3>{% trans "Suppliers bills" %}</h3>
+    {% if lead.supplierbill_set.all %}
+    <table>
+            <th>{% trans "Bill id" %}</th>
+            <th>{% trans "Supplier" %}</th>
+            <th>{% trans "Supplier Bill id" %}</th>
+            <th>{% trans "State" %}</th>
+            <th>{% trans "Amount (€ excl tax)" %}</th>
+            <th>{% trans "Creation date" %}</th>
+            <th>{% trans "Due date" %}</th>
+            <th>{% trans "Payment date" %}</th>
+            <th>{% trans "File" %}</th>
+            {% for bill in lead.supplierbill_set.all %}
+                <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                    <td><a href="{% url admin:billing_supplierbill_change bill.id %}">{{ bill }}</a></td>
+                    <td>{{ bill.supplier }}</td>
+                    <td>{{ bill.supplier_bill_id }}</td>
+                    <td>{{ bill.get_state_display }}</td>
+                    <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
+                    <td>{{ bill.creation_date }}</td>
+                    <td>{{ bill.due_date }}</td>
+                    <td>{{ bill.payment_date }}</td>
+                    <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
+                </tr>
+            {% endfor %}
+    </table>
+    {% else %}
+            <p>{% trans "No bill yet" %}</p>
+    {% endif %}
+    <br/>
+    {% if perms.billing.add_supplierbill %}
+        <i><a href="{% url admin:billing_supplierbill_add %}?lead={{ lead.id }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a></i>
     {% endif %}
 </div>

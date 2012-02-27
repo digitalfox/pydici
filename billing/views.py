@@ -22,15 +22,16 @@ from django.views.decorators.cache import cache_page
 from pydici.billing.models import ClientBill, SupplierBill
 from pydici.leads.models import Lead
 from pydici.staffing.models import Timesheet, FinancialCondition, Staffing
-from pydici.crm.models import Company, BusinessBroker
-from pydici.core.utils import print_png, COLORS, sortedValues, sampleList
+from pydici.crm.models import Company
+from pydici.core.utils import print_png, COLORS, sortedValues
 from pydici.core.decorator import pydici_non_public
+
 
 @pydici_non_public
 def bill_review(request):
     """Review of bills: bills overdue, due soon, or to be created"""
     today = date.today()
-    wait_warning = timedelta(15) # wait in days used to warn that a bill is due soon
+    wait_warning = timedelta(15)  # wait in days used to warn that a bill is due soon
 
     # Get bills overdue, due soon, litigious and recently paid
     overdue_bills = ClientBill.objects.filter(state="1_SENT").filter(due_date__lte=today).select_related()
@@ -101,19 +102,6 @@ def mark_bill_paid(request, bill_id):
     bill.state = "2_PAID"
     bill.save()
     return HttpResponseRedirect(urlresolvers.reverse("pydici.billing.views.bill_review"))
-
-
-@pydici_non_public
-def create_new_bill_from_lead(request, lead_id):
-    """Create a new bill for this lead"""
-    bill = ClientBill()
-    bill.lead = Lead.objects.get(id=lead_id)
-    # Define mandatory field - user will have choice to change this after
-    bill.amount = 0
-    bill.due_date = date.today() + timedelta(30)
-    bill.state = "1_SENT"
-    bill.save()
-    return HttpResponseRedirect(urlresolvers.reverse("admin:billing_bill_change", args=[bill.id, ]))
 
 
 @pydici_non_public
