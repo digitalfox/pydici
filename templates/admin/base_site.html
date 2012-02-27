@@ -85,6 +85,8 @@
                 <li><a href='{% url pydici.expense.views.expenses %}'>{% trans "Expenses" %}</a></li>
                 <li><a href="{% url admin:billing_clientbill_changelist %}">{% trans "All client bills" %}</a></li>
                 <li><a href='{% url admin:billing_clientbill_add %}'>{% trans "New client bill" %}</a></li>
+                <li><a href="{% url admin:billing_supplierbill_changelist %}">{% trans "All supplier bills" %}</a></li>
+                <li><a href='{% url admin:billing_supplierbill_add %}'>{% trans "New supplier bill" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
