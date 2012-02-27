@@ -94,6 +94,7 @@ def expenses(request, expense_id=None):
     for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(30))):
         if wf.get_state(expense).transitions.count() == 0:
             expense.workflow_in_progress = False
+            expense.save()
 
     return render_to_response("expense/expenses.html",
                               {"user_expenses": user_expenses,
