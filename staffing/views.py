@@ -540,7 +540,7 @@ def mission_timesheet(request, mission_id):
         # Timesheet data
         timesheetData = []
         for month in timesheetMonths:
-            n_days = sum([t.charge for t in timesheets.filter(consultant=consultant) if t.working_date.month == month.month])
+            n_days = sum([t.charge for t in timesheets.filter(consultant=consultant) if (t.working_date.month == month.month and t.working_date.year == month.year)])
             timesheetData.append(n_days)
             if consultant.subcontractor:
                 # Compute objective margin on sold rate
@@ -558,7 +558,7 @@ def mission_timesheet(request, mission_id):
         # Forecast staffing data
         staffingData = []
         for month in staffingMonths:
-            data = sum([t.charge for t in staffings.filter(consultant=consultant) if t.staffing_date.month == month.month])
+            data = sum([t.charge for t in staffings.filter(consultant=consultant) if (t.staffing_date.month == month.month and t.staffing_date.year == month.year)])
             if timesheetMonths  and \
                date(timesheetMonths[-1].year, timesheetMonths[-1].month, 1) == current_month and \
                date(month.year, month.month, 1) == current_month:
