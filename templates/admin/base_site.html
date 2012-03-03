@@ -55,16 +55,17 @@
                 </li>
             </ul>
         </li>
-        <li><a href="#link">{% trans "Clients" %}</a>
+        <li><a href="#link">{% trans "Third parties" %}</a>
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
                         <a href="{% url pydici.crm.views.company_list %}">{% trans "All clients" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
-                <li><a href="{% url admin:crm_contact_changelist %}">{% trans "Contact adress directory" %}</a></li>
-                <li><a href='{% url admin:crm_contact_add %}'>{% trans "new contact" %}</a></li>
-                <li><a href='{% url admin:crm_client_add %}'>{% trans "new client" %}</a></li>
+                <li><a href="{% url admin:crm_contact_changelist %}">{% trans "Contact address directory" %}</a></li>
+                <li><a href='{% url admin:crm_contact_add %}'>{% trans "New contact" %}</a></li>
+                <li><a href='{% url admin:crm_client_add %}'>{% trans "New client" %}</a></li>
+                <li><a href='{% url admin:crm_supplier_add %}'>{% trans "New supplier" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>

@@ -26,7 +26,6 @@ class AbstractCompany(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ["name", ]
 
 
 class Subsidiary(AbstractCompany):
@@ -34,6 +33,7 @@ class Subsidiary(AbstractCompany):
     class Meta:
         verbose_name = _("Subsidiary")
         verbose_name_plural = _("Subsidiaries")
+        ordering = ["name", ]
 
 
 class Company(AbstractCompany):
@@ -52,6 +52,7 @@ class Company(AbstractCompany):
     class Meta:
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")
+        ordering = ["name", ]
 
 
 class ClientOrganisation(models.Model):
@@ -86,7 +87,8 @@ class Contact(models.Model):
     def companies(self):
         """Return companies for whom this contact currently works"""
         companies = Company.objects.filter(Q(clientorganisation__client__contact__id=self.id) |
-                                           Q(businessbroker__contact__id=self.id)).distinct()
+                                           Q(businessbroker__contact__id=self.id) |
+                                           Q(supplier__contact__id=self.id)).distinct()
         if companies.count() == 0:
             return _("None")
         elif companies.count() == 1:
@@ -134,8 +136,8 @@ class Supplier(models.Model):
             return unicode(self.company)
 
     class Meta:
-            ordering = ["company", "contact"]
-            verbose_name = _("Supplier")
+        ordering = ["company", "contact"]
+        verbose_name = _("Supplier")
 
 
 class Client(models.Model):
@@ -173,3 +175,49 @@ class Client(models.Model):
     class Meta:
         ordering = ["organisation", "contact"]
         verbose_name = _("Client")
+
+
+class MissionContact(models.Model):
+    """Contact encountered during mission"""
+    company = models.ForeignKey(Company, verbose_name=_("company"))
+    contact = models.ForeignKey(Contact, verbose_name=_("Contact"))
+
+    class Meta:
+        ordering = ["company", "contact"]
+        verbose_name = _("Mission contact")
+
+
+class AdministrativeFunction(models.Model):
+    """Admin functions in a company (sales, HR, billing etc."""
+    name = models.CharField(_("Name"), max_length=200, unique=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ("name",)
+
+
+class AdministrativeContact(models.Model):
+    """Administrative contact (team or people) of a company."""
+    company = models.ForeignKey(Company, verbose_name=_("company"))
+    function = models.ForeignKey(AdministrativeFunction, verbose_name=_("Function"))
+    default_phone = models.CharField(_("Phone Switchboard"), max_length=30, blank=True, null=True)
+    default_mail = models.EmailField(_("Generic email"), max_length=100, blank=True, null=True)
+    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
+
+    def phone(self):
+        """Best phone number to use"""
+        if self.contact:
+            # Use contact phone if defined
+            if self.contact.mobile_phone:
+                return self.contact.mobile_phone
+            elif self.contact.phone:
+                return self.contact.phone
+        else:
+            # Default to phone switch board
+            return self.default_phone
+
+    class Meta:
+        verbose_name = _("Administrative contact")
+        ordering = ("company", "contact")

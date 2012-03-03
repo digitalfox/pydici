@@ -9,7 +9,8 @@ from django.contrib import admin
 
 from pydici.crm.models import Client, ClientOrganisation, Company, \
                               Contact, BusinessBroker, Subsidiary, \
-                              Supplier
+                              Supplier, AdministrativeFunction, AdministrativeContact, \
+                              MissionContact
 
 
 class CompanyAdmin(admin.ModelAdmin):
@@ -38,7 +39,26 @@ class BusinessBrokerAdmin(admin.ModelAdmin):
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ("company", "contact")
     odering = ("company", "contact")
-    search_fields = ["company", "contact__name"]
+    search_fields = ["company__name", "contact__name"]
+    actions = None
+
+
+class AdministrativeFunctionAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    actions = None
+
+
+class AdministrativeContactAdmin(admin.ModelAdmin):
+    list_display = ("company", "function", "contact", "phone")
+    list_display_links = ("company", "function", "contact")
+    list_filter = ["function", ]
+    actions = None
+
+
+class MissionContactAdmin(admin.ModelAdmin):
+    list_display = ("company", "contact")
+    odering = ("company", "contact")
+    search_fields = ["company__name", "contact__name"]
     actions = None
 
 
@@ -69,3 +89,6 @@ admin.site.register(ClientOrganisation, ClientOrganisationAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(BusinessBroker, BusinessBrokerAdmin)
 admin.site.register(Supplier, SupplierAdmin)
+admin.site.register(AdministrativeFunction, AdministrativeFunctionAdmin)
+admin.site.register(AdministrativeContact, AdministrativeContactAdmin)
+admin.site.register(MissionContact, MissionContactAdmin)
