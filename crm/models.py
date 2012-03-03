@@ -86,7 +86,7 @@ class Contact(models.Model):
     def companies(self):
         """Return companies for whom this contact currently works"""
         companies = Company.objects.filter(Q(clientorganisation__client__contact__id=self.id) |
-                                           Q(businessbroker__contact__id=self.id))
+                                           Q(businessbroker__contact__id=self.id)).distinct()
         if companies.count() == 0:
             return _("None")
         elif companies.count() == 1:
