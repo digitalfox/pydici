@@ -40,8 +40,6 @@ class BillStorage(FileSystemStorage):
                 bill = SupplierBill.objects.get(bill_id=bill_id)
                 return reverse("pydici.billing.views.bill_file", kwargs={"bill_id": bill.id, "nature": "supplier"})
         except Exception, e:
-            print "prout"
-            print e
             # Don't display URL if Bill does not exist or path is invalid
             return ""
 
