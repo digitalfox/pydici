@@ -1,0 +1,29 @@
+{# This template fragments can be included to display contact list #}
+{# Context : contacts as a list a contact #}
+
+{% load i18n %}
+
+<div class="imodule">
+<table>
+    <tr>
+        <th>{% trans "Name" %}</th>
+        <th>{% trans "Company" %}</th>
+        <th>{% trans "Function" %}</th>
+        <th>{% trans "Email" %}</th>
+        <th>{% trans "Phone" %}</th>
+        <th>{% trans "Mobile phone" %}</th>
+        <th>{% trans "Fax" %}</th>
+    </tr>
+    {% for contact in contacts %}
+        <tr {%cycle 'class="row1"' 'class="row2"' %}>
+           <td><a rel=external href="{% url admin:crm_contact_change contact.id %}">{{ contact.name }}</a></td>
+           <td>{{ contact.companies }}</td>
+           <td>{{ contact.function }}</td>
+           <td>{{ contact.email }}</td>
+           <td>{{ contact.phone }}</td>
+           <td>{{ contact.mobile_phone }}</td>
+           <td>{{ contact.fax }}</td>
+        </tr>
+    {% endfor %}
+</table>
+</div>

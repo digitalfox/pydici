@@ -80,30 +80,15 @@
 {% if not request.session.mobile %}
 <div id="tab-contacts">
 <br/>
-<div class="imodule">
-<table>
-	<tr>
-	    <th>{% trans "Name" %}</th>
-	    <th>{% trans "Company" %}</th>
-	    <th>{% trans "Function" %}</th>
-	    <th>{% trans "Email" %}</th>
-	    <th>{% trans "Phone" %}</th>
-	    <th>{% trans "Mobile phone" %}</th>
-	    <th>{% trans "Fax" %}</th>
-	</tr>
-    {% for contact in contacts %}
-	    <tr {%cycle 'class="row1"' 'class="row2"' %}>
-	       <td><a rel=external href="{% url admin:crm_contact_change contact.id %}">{{ contact.name }}</a></td>
-	       <td>{{ contact.company }}</td>
-	       <td>{{ contact.function }}</td>
-	       <td>{{ contact.email }}</td>
-	       <td>{{ contact.phone }}</td>
-	       <td>{{ contact.mobile_phone }}</td>
-	       <td>{{ contact.fax }}</td>
-	    </tr>
-    {% endfor %}
-</table>
-</div>
+<h4>{% trans "Business contacts" %}</h4>
+{% with business_contacts as contacts %}
+     {% include "crm/_contact_list.html" %}
+{% endwith %}
+<h4>{% trans "Mission contacts" %}</h4>
+{% with mission_contacts as contacts %}
+     {% include "crm/_contact_list.html" %}
+{% endwith %}
+
 </div>
 {% endif %}
 
