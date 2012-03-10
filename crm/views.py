@@ -13,7 +13,7 @@ from django.shortcuts import render_to_response
 from django.db.models import Sum, Min
 from django.views.decorators.cache import cache_page
 
-from pydici.crm.models import Company, Client, Contact
+from pydici.crm.models import Company, Client, Contact, AdministrativeContact
 from pydici.staffing.models import Timesheet
 from pydici.leads.models import Lead
 from pydici.core.decorator import pydici_non_public
@@ -41,6 +41,7 @@ def company_detail(request, company_id):
                                "consultants": consultants,
                                "business_contacts": Contact.objects.filter(client__organisation__company=company).distinct(),
                                "mission_contacts": Contact.objects.filter(missioncontact__company=company).distinct(),
+                               "administrative_contacts": AdministrativeContact.objects.filter(company=company),
                                "clients": Client.objects.filter(organisation__company=company),
                                "companies": Company.objects.all()},
                                RequestContext(request))

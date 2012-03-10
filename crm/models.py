@@ -204,6 +204,7 @@ class AdministrativeContact(models.Model):
     function = models.ForeignKey(AdministrativeFunction, verbose_name=_("Function"))
     default_phone = models.CharField(_("Phone Switchboard"), max_length=30, blank=True, null=True)
     default_mail = models.EmailField(_("Generic email"), max_length=100, blank=True, null=True)
+    default_fax = models.CharField(_("Generic fax"), max_length=100, blank=True, null=True)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
 
     def phone(self):
@@ -214,9 +215,26 @@ class AdministrativeContact(models.Model):
                 return self.contact.mobile_phone
             elif self.contact.phone:
                 return self.contact.phone
-        else:
-            # Default to phone switch board
-            return self.default_phone
+        # Default to phone switch board
+        return self.default_phone
+
+    def email(self):
+        """Best email address to use"""
+        if self.contact:
+            # Use contact email if defined
+            if self.contact.email:
+                return self.contact.email
+        # Default to default team generic email
+        return self.default_mail
+
+    def fax(self):
+        """Best fax number to use"""
+        if self.contact:
+            # Use contact fax if defined
+            if self.contact.fax:
+                return self.contact.fax
+        # Default to default team generic fax
+        return self.default_fax
 
     class Meta:
         verbose_name = _("Administrative contact")
