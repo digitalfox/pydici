@@ -1,0 +1,11 @@
+{# This template fragments can be included to display contact item in a table #}
+{# Context : contact object #}
+   <tr {%cycle 'class="row1"' 'class="row2"' %}>
+       <td><a rel=external href="{% url admin:crm_contact_change contact.id %}">{{ contact.name }}</a></td>
+       <td>{{ contact.companies }}</td>
+       <td>{{ contact.function }}</td>
+       <td>{{ contact.email }}</td>
+       <td>{{ contact.phone }}</td>
+       <td>{{ contact.mobile_phone }}</td>
+       <td>{{ contact.fax }}</td>
+    </tr>

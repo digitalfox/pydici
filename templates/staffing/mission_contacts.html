@@ -1,0 +1,26 @@
+{# This template is intented to be loaded as a fragment #}
+{# of a page loaded in ajax #}
+{% load i18n %}
+
+<h2>{% trans "Mission contacts" %}</h2>
+{% for mission_contact in mission_contacts %}
+    {% ifchanged mission_contact.company %}
+        {% if not loop.first %}</table>{% endif %}
+        <h4>{{ mission_contact.company }}</h4>
+        <table>
+         <tr>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Company" %}</th>
+            <th>{% trans "Function" %}</th>
+            <th>{% trans "Email" %}</th>
+            <th>{% trans "Phone" %}</th>
+            <th>{% trans "Mobile phone" %}</th>
+            <th>{% trans "Fax" %}</th>
+        </tr>
+    {% endifchanged %}
+
+    {% with mission_contact.contact as contact %}
+        {% include "crm/_contact_item.html" %}
+    {% endwith %}
+{% endfor %}
+</table>

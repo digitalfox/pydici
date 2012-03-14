@@ -935,6 +935,17 @@ def mission_update(request):
 
 
 @pydici_non_public
+def mission_contacts(request, mission_id):
+    """Mission contacts: business, work, administrative
+    This views is intented to be called in ajax"""
+    mission = Mission.objects.get(id=mission_id)
+    missionContacts = mission.contacts.select_related().order_by("company")
+    return render_to_response("staffing/mission_contacts.html", {
+                                "mission": mission,
+                                "mission_contacts": missionContacts },
+                               RequestContext(request))
+
+@pydici_non_public
 @cache_page(60 * 10)
 def graph_timesheet_rates_bar(request):
     """Nice graph bar of timesheet prod/holidays/nonprod rates

@@ -15,15 +15,7 @@
         <th>{% trans "Fax" %}</th>
     </tr>
     {% for contact in contacts %}
-        <tr {%cycle 'class="row1"' 'class="row2"' %}>
-           <td><a rel=external href="{% url admin:crm_contact_change contact.id %}">{{ contact.name }}</a></td>
-           <td>{{ contact.companies }}</td>
-           <td>{{ contact.function }}</td>
-           <td>{{ contact.email }}</td>
-           <td>{{ contact.phone }}</td>
-           <td>{{ contact.mobile_phone }}</td>
-           <td>{{ contact.fax }}</td>
-        </tr>
+        {% include "crm/_contact_item.html" %}
     {% endfor %}
 </table>
 </div>

@@ -19,6 +19,7 @@ from datetime import datetime, date, timedelta
 
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant
+from pydici.crm.models import MissionContact
 from pydici.actionset.utils import launchTrigger
 from pydici.actionset.models import ActionState
 
@@ -46,6 +47,7 @@ class Mission(models.Model):
     probability = models.IntegerField(_("Proba"), default=50, choices=PROBABILITY)
     price = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
+    contacts = models.ManyToManyField(MissionContact, blank=True)
 
     def __unicode__(self):
         if self.description and not self.lead:

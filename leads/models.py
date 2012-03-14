@@ -25,12 +25,15 @@ from pydici.actionset.utils import launchTrigger
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
+
 class LeadManager(models.Manager):
     def active(self):
         return self.get_query_set().exclude(state__in=("LOST", "FORGIVEN", "WON", "SLEEPING"))
 
     def passive(self):
         return self.get_query_set().filter(state__in=("LOST", "FORGIVEN", "WON", "SLEEPING"))
+
+
 class Lead(models.Model):
     """A commercial lead"""
     STATES = (

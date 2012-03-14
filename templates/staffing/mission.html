@@ -36,6 +36,7 @@
     <ul>
         <li><a href="#tab-description">{% trans "Description" %}</a></li>
         <li><a href="#tab-consultants">{% trans "Consultants" %}</a></li>
+        <li><a title="#tab-contacts" href="{% url pydici.staffing.views.mission_contacts mission.id %}">{% trans "Contacts" %}</a></li>
         <li><a href="#tab-other-missions">{% trans "Other missions" %}</a></li>
         <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.mission_timesheet mission.id %}">{% trans "Timesheet" %}</a></li>
         <li><a title="#tab-staffing" href="{% url pydici.staffing.views.mission_staffing mission.id %}">{% trans "Forecast staffing" %}</a></li>
