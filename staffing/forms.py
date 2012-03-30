@@ -124,8 +124,8 @@ class TimesheetForm(forms.Form):
 
 class MissionAdminForm(forms.ModelForm):
     """Form used to validate mission price field in admin"""
-    class Meta:
-        model = Mission
+
+    contacts = AutoCompleteSelectMultipleField('mission_contact', required=True, label=_("Contacts"))
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
@@ -151,6 +151,9 @@ class MissionAdminForm(forms.ModelForm):
         # No error, we return data as is
         return self.cleaned_data["price"]
 
+    class Meta:
+        model = Mission
+
 
 class FinancialConditionAdminForm(forms.ModelForm):
     """Form used to validate financial condition bought price field in admin"""
@@ -172,6 +175,14 @@ class FinancialConditionAdminForm(forms.ModelForm):
                 raise ValidationError(_("Bought daily rate must be only be defined for subcontractor"))
             else:
                 return self.cleaned_data["bought_daily_rate"]
+
+
+class MissionContactForm(forms.ModelForm):
+    contacts = AutoCompleteSelectMultipleField('mission_contact', required=True, label=_("New contacts"))
+
+    class Meta:
+        model = Mission
+        fields = ["contacts", ]
 
 
 class TimesheetField(forms.ChoiceField):

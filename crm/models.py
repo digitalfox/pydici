@@ -182,6 +182,9 @@ class MissionContact(models.Model):
     company = models.ForeignKey(Company, verbose_name=_("company"))
     contact = models.ForeignKey(Contact, verbose_name=_("Contact"))
 
+    def __unicode__(self):
+        return u"%s (%s)" % (self.contact, self.company)
+
     class Meta:
         ordering = ["company", "contact"]
         verbose_name = _("Mission contact")

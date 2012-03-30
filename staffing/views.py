@@ -26,13 +26,12 @@ from django.utils.html import escape
 from django.utils import formats
 from django.views.decorators.cache import cache_page, cache_control
 
-
 from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from pydici.people.models import Consultant
 from pydici.leads.models import Lead
 from pydici.people.models import ConsultantProfile, RateObjective
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
-                                  TimesheetForm, MassStaffingForm
+                                  TimesheetForm, MassStaffingForm, MissionContactForm
 from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
 from pydici.core.decorator import pydici_non_public
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
@@ -939,10 +938,16 @@ def mission_contacts(request, mission_id):
     """Mission contacts: business, work, administrative
     This views is intented to be called in ajax"""
     mission = Mission.objects.get(id=mission_id)
+    if request.method == "POST":
+        form = MissionContactForm(request.POST, instance=mission)
+        form.save()
+        return HttpResponseRedirect(urlresolvers.reverse("pydici.staffing.views.mission_home", args=[mission.id, ]))
     missionContacts = mission.contacts.select_related().order_by("company")
+    form = MissionContactForm(instance=mission)
     return render_to_response("staffing/mission_contacts.html", {
                                 "mission": mission,
-                                "mission_contacts": missionContacts },
+                                "mission_contacts": missionContacts,
+                                "mission_contact_form": form },
                                RequestContext(request))
 
 @pydici_non_public
