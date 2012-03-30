@@ -32,7 +32,7 @@
 </div>
 
 <div id="contact_edit">
-<form action='{% url pydici.staffing.views.mission_contacts mission.id %}' method="POST"> 
+<form action='{% url pydici.staffing.views.mission_contacts mission.id %}#tab-contacts' method="POST"> 
     {{ mission_contact_form.non_field_errors }}
     {{ mission_contact_form }}
     <input type="submit" value="{% trans 'Save' %}"/>
