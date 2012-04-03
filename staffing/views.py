@@ -11,6 +11,8 @@ import itertools
 import json
 
 from matplotlib.figure import Figure
+from ajax_select.fields import autoselect_fields_check_can_add
+
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse, Http404
@@ -946,6 +948,7 @@ def mission_contacts(request, mission_id):
 
     # Unbound form
     form = MissionContactForm(instance=mission)
+    autoselect_fields_check_can_add(form, Mission, request.user)
     missionContacts = mission.contacts.select_related().order_by("company")
     return render_to_response("staffing/mission_contacts.html", {
                                 "mission": mission,
