@@ -88,6 +88,8 @@ class Contact(models.Model):
         """Return companies for whom this contact currently works"""
         companies = Company.objects.filter(Q(clientorganisation__client__contact__id=self.id) |
                                            Q(businessbroker__contact__id=self.id) |
+                                           Q(missioncontact__contact__id=self.id) |
+                                           Q(administrativecontact__contact__id=self.id) |
                                            Q(supplier__contact__id=self.id)).distinct()
         if companies.count() == 0:
             return _("None")
