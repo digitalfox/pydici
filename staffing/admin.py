@@ -10,6 +10,7 @@ from django.contrib import admin
 from pydici.staffing.models import Mission, Holiday, Timesheet, FinancialCondition
 from pydici.staffing.forms import MissionAdminForm, FinancialConditionAdminForm
 
+
 class MissionAdmin(admin.ModelAdmin):
     list_display = ("lead", "description", "nature", "probability", "mission_id", "active", "update_date")
     list_display_links = ["lead", "description"]
@@ -26,6 +27,7 @@ class HolidayAdmin(admin.ModelAdmin):
     list_display = ("day", "description")
     date_hierarchy = "day"
     actions = None
+
 
 class FinancialConditionAdmin(admin.ModelAdmin):
     list_display = ("mission", "consultant", "daily_rate")

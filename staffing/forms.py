@@ -125,7 +125,7 @@ class TimesheetForm(forms.Form):
 class MissionAdminForm(forms.ModelForm):
     """Form used to validate mission price field in admin"""
 
-    contacts = AutoCompleteSelectMultipleField('mission_contact', required=True, label=_("Contacts"))
+    contacts = AutoCompleteSelectMultipleField('mission_contact', required=False, label=_("Contacts"))
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
@@ -178,7 +178,7 @@ class FinancialConditionAdminForm(forms.ModelForm):
 
 
 class MissionContactForm(forms.ModelForm):
-    contacts = AutoCompleteSelectMultipleField('mission_contact', required=True, label=_("New contacts"))
+    contacts = AutoCompleteSelectMultipleField('mission_contact', required=False, label=_("New contacts"))
 
     class Meta:
         model = Mission

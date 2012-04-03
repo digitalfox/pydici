@@ -940,10 +940,13 @@ def mission_contacts(request, mission_id):
     mission = Mission.objects.get(id=mission_id)
     if request.method == "POST":
         form = MissionContactForm(request.POST, instance=mission)
-        form.save()
+        if form.is_valid():
+            form.save()
         return HttpResponseRedirect(urlresolvers.reverse("pydici.staffing.views.mission_home", args=[mission.id, ]))
-    missionContacts = mission.contacts.select_related().order_by("company")
+
+    # Unbound form
     form = MissionContactForm(instance=mission)
+    missionContacts = mission.contacts.select_related().order_by("company")
     return render_to_response("staffing/mission_contacts.html", {
                                 "mission": mission,
                                 "mission_contacts": missionContacts,
