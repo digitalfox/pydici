@@ -1,8 +1,8 @@
 {# Fragment that display leads stat/bar graph to be included with a jquery load #}
 {# One must include in its extrajs block core/_jqplot.html to load according js/css #} {% load i18n %}
 
+{% if graph_data %}
 <div id="consultant_rate_graph_jqp" style="height: 300px; width: 900px;"></div>
-
 <script type="text/javascript">
 
 $.jqplot.config.enablePlugins = true;
@@ -87,3 +87,4 @@ $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
          },
 });
 </script>
+{% endif %}

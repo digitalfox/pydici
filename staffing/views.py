@@ -1157,9 +1157,14 @@ def graph_consultant_rates_jqp(request, consultant_id):
     graph_data.append(zip(isoRateDates, minYData))
     graph_data.append(zip(isoRateDates, maxYData))
     graph_data.append(zip(isoProdDates, prodRateData))
-
+    if sum(graph_data, []): # Test if list contains other things that empty lists
+        graph_data = json.dumps(graph_data)
+    else:
+        # If graph_data is only a bunch of emty list, set it to empty list to 
+        # disable graph. Avoid jqplot infinite loop with some poor browsers
+        graph_data = None
     return render_to_response("staffing/graph_consultant_rate_jqp.html",
-                              {"graph_data" : json.dumps(graph_data),
+                              {"graph_data" : graph_data,
                                "series_colors" : COLORS,
                                "user": request.user },
                                RequestContext(request))
