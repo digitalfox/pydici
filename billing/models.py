@@ -106,7 +106,7 @@ class ClientBill(AbstractBill):
             ('3_LITIGIOUS', ugettext("Litigious")),
             ('4_CANCELED', ugettext("Canceled")),)
     state = models.CharField(_("State"), max_length=30, choices=CLIENT_BILL_STATE, default="1_SENT")
-    bill_file = models.FileField(_("File"), upload_to=bill_file_path, storage=BillStorage(nature="client"))
+    bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path, storage=BillStorage(nature="client"))
 
     def client(self):
         if self.lead.paying_authority:
@@ -142,7 +142,7 @@ class SupplierBill(AbstractBill):
             ('3_LITIGIOUS', ugettext("Litigious")),
             ('4_CANCELED', ugettext("Canceled")),)
     state = models.CharField(_("State"), max_length=30, choices=SUPPLIER_BILL_STATE, default="1_RECEIVED")
-    bill_file = models.FileField(_("File"), upload_to=bill_file_path, storage=BillStorage(nature="supplier"))
+    bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path, storage=BillStorage(nature="supplier"))
     supplier = models.ForeignKey(Supplier)
     supplier_bill_id = models.CharField(_("Supplier Bill id"), max_length=200)
 
