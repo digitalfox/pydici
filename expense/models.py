@@ -46,7 +46,7 @@ class Expense(models.Model):
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     amount = models.DecimalField(_("Amount"), max_digits=7, decimal_places=2)
     category = models.ForeignKey(ExpenseCategory, verbose_name=_("Category"))
-    receipt = models.FileField(_("Receipt"), upload_to=expense_receipt_path, null=True, blank=True)
+    receipt = models.FileField(_("Receipt"), max_length=500, upload_to=expense_receipt_path, null=True, blank=True)
     corporate_card = models.BooleanField(_("Paid with corporate card"), default=False)
     comment = models.TextField(_("Comments"), blank=True)
     workflow_in_progress = models.BooleanField(default=True)
