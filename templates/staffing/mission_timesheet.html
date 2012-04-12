@@ -5,21 +5,29 @@
     <div class="timesheet">
     <table>
     <tr>
-        <th></th>
+        <td></td>
+        <th style="text-align:center" colspan={{ timesheet_months|length|add:2 }}>{% trans "Done days" %}</th>
+        <th class="table-separator"></th>
+        <th style="text-align:center" colspan={{ staffing_months|length|add:2 }}>{% trans "Days to be done" %}</th>
+        <th class="table-separator"></th>
+        <th style="text-align:center" colspan=3>{% trans "Total estimated" %}</th>
+    </tr>
+    <tr align="right">
+        <td></td>
         {% for month in timesheet_months %}
-            <th>{{ month|date:"M y" }}</th>
+            <td>{{ month|date:"M y" }}</td>
         {% endfor %}
-        <th>{% trans "Done days" %}</th>
-        <th>{% trans "k€" %}</th>
-        <th></th>
+        <td>{% trans "Days" %}</td>
+        <td>{% trans "k€" %}</td>
+        <td class="table-separator"></td>
         {% for month in staffing_months %}
-            <th>{{ month|date:"M y" }}</th>
+            <td>{{ month|date:"M y" }}</td>
         {% endfor %}
-        <th>{% trans "Days to be done" %}</th>
-        <th>{% trans "k€" %}</th>
-        <th></th>
-        <th>{% trans "Total days estimated" %}</th>
-        <th>{% trans "k€" %}</th>
+        <td>{% trans "Days" %}</td>
+        <td>{% trans "k€" %}</td>
+        <td class="table-separator"></td>
+        <td>{% trans "Days" %}</td>
+        <td>{% trans "k€" %}</td>
     </tr>
     {% for consultant, timesheet, staffing, estimated, timesheetRate, staffingRate in mission_data %}
         {% ifequal consultant None %}
