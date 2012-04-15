@@ -123,7 +123,7 @@ def search(request):
 
         # Missions
         if request.GET.get("mission"):
-            missions = Mission.objects.filter(active=True)
+            missions = Mission.objects.all()
             for word in words:
                 missions = missions.filter(Q(deal_id__icontains=word) |
                                            Q(description__icontains=word))
