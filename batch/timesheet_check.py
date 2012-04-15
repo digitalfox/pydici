@@ -35,7 +35,6 @@ from pydici.people.models import Consultant
 from pydici.staffing.utils import gatherTimesheetData
 
 
-
 def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
     """Warn users and admin for incomplete timesheet after due date
     @param warnSurbooking: Warn for surbooking days (default is false)
@@ -49,7 +48,7 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
         nextMonth = date.today().replace(day=1)
         currentMonth = (nextMonth - timedelta(days=5)).replace(day=1)
 
-    mails = [] # List of mail to be sent
+    mails = []  # List of mail to be sent
     for consultant in Consultant.objects.filter(active=True, subcontractor=False):
         recipients = []
         if not [m for m in consultant.forecasted_missions(currentMonth) if m.nature == "PROD"]:
@@ -59,16 +58,18 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
             continue
         missions = consultant.timesheet_missions(month=currentMonth)
         timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, currentMonth)
-        url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("pydici.staffing.views.consultant_timesheet", args=[consultant.id, currentMonth.year, currentMonth.month])
+        url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("pydici.staffing.views.consultant_home", args=[consultant.id])
+        url += "?year=%s;month=%s" % (currentMonth.year, currentMonth.month)
+
         # Truncate if day parameter was given
         if days:
             warning = warning[:days]
-        warning = [i for i in warning if i] # Remove None 
+        warning = [i for i in warning if i]  # Remove None
         if sum(warning) > 0:
             surbookingDays = warning.count(1)
             incompleteDays = warning.count(2)
             if not warnSurbooking and not incompleteDays:
-                continue # Don't cry if user only have surbooking issue       
+                continue  # Don't cry if user only have surbooking issue
 
             user = consultant.getUser()
             if user and user.email:
@@ -81,11 +82,11 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
             if recipients:
                 msgText = emailTemplate.render(Context(
                                             {"month": currentMonth,
-                                             "surbooking_days" : surbookingDays,
-                                             "incomplete_days" : incompleteDays,
-                                             "consultant" : consultant,
-                                             "days" : days,
-                                             "url": url }))
+                                             "surbooking_days": surbookingDays,
+                                             "incomplete_days": incompleteDays,
+                                             "consultant": consultant,
+                                             "days": days,
+                                             "url": url}))
                 mails.append(((_("[pydici] Your timesheet is not correct"), msgText,
                           pydici.settings.LEADS_MAIL_FROM, recipients)))
             else:

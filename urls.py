@@ -22,11 +22,11 @@ from pydici.staffing.feeds import LatestStaffing, MyLatestStaffing
 
 feeds = {
         "latest": LatestLeads,
-        "new" :   NewLeads,
-        "won" :   WonLeads,
-        "mine":   MyLatestLeads,
-        "latestStaffing" : LatestStaffing,
-        "myLatestStaffing" : MyLatestStaffing
+        "new": NewLeads,
+        "won": WonLeads,
+        "mine": MyLatestLeads,
+        "latestStaffing": LatestStaffing,
+        "myLatestStaffing": MyLatestStaffing
         }
 
 
@@ -73,19 +73,17 @@ pydici_patterns += patterns('pydici.leads.views',
     (r'^leads/tag/remove/(?P<tag_id>\d+)/(?P<lead_id>\d+)$', 'remove_tag'),
     (r'^leads/(?P<lead_id>\d+)/$', 'detail'),
     (r'^leads/sendmail/(?P<lead_id>\d+)/$', 'mail_lead'),
-    url(r'^leads/mail/text', 'summary_mail', { "html" : False }, name="lead-mail-text"),
-    url(r'^leads/mail/html', 'summary_mail', { "html" : True  }, name="lead-mail-html"),
+    url(r'^leads/mail/text', 'summary_mail', {"html": False}, name="lead-mail-text"),
+    url(r'^leads/mail/html', 'summary_mail', {"html": True}, name="lead-mail-html"),
     (r'^leads/graph/bar-jqp$', 'graph_bar_jqp'),
 )
 
 # Staffing module
 pydici_patterns += patterns('pydici.staffing.views',
-    #url(r'^staffing/pdcreview/mobile$', 'pdc_review', { "mobile" : True }, name='m.pdcreview-index'),
-    #url(r'^staffing/pdcreview/mobile/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', { "mobile" : True }, name='m.pdcreview'),
     url(r'^staffing/pdcreview/?$', 'pdc_review', name='pdcreview-index'),
     url(r'^staffing/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', name='pdcreview'),
     url(r'^staffing/mission/$', 'missions', name='missions'),
-    url(r'^staffing/mission/all', 'missions', { 'onlyActive' : False }, 'all-missions'),
+    url(r'^staffing/mission/all', 'missions', {'onlyActive': False}, 'all-missions'),
     (r'^staffing/mission/(?P<mission_id>\d+)/$', 'mission_home'),
     (r'^staffing/mission/update/$', 'mission_update'),
     (r'^staffing/mission/newfromdeal/(?P<lead_id>\d+)/$', 'create_new_mission_from_lead'),
@@ -120,6 +118,7 @@ pydici_patterns += patterns('pydici.crm.views',
     url(r'^crm/company/graph/sales$', 'graph_company_sales_jqp', name="graph_company_sales"),
     url(r'^crm/company/graph/sales/lastyear$', 'graph_company_sales_jqp', {"onlyLastYear": True}, name="graph_company_lastyear_sales"),
 )
+
 # Billing module
 pydici_patterns += patterns('pydici.billing.views',
     (r'^billing/bill_review', 'bill_review'),
