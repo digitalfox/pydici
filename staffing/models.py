@@ -67,7 +67,10 @@ class Mission(models.Model):
     def short_name(self):
         """Name with deal name, mission desc and id. No client name"""
         if self.lead:
-            return u"%s (%s)" % (self.lead.name, self.mission_id())
+            if self.description:
+                return u"%s/%s (%s)" % (self.lead.name, self.description, self.mission_id())
+            else:
+                return u"%s (%s)" % (self.lead.name, self.mission_id())
         else:
             # default to full name
             return self.full_name()
