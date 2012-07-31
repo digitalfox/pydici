@@ -63,7 +63,7 @@ class MassStaffingForm(forms.Form):
         super(MassStaffingForm, self).__init__(*args, **kwargs)
 
         self.fields["missions"] = AutoCompleteSelectMultipleField('mission', required=True, label=_("Missions"))
-        self.fields["consultants"] = AutoCompleteSelectMultipleField('consultant', required=True, label=_("Consultants"))
+        self.fields["consultants"] = AutoCompleteSelectMultipleField('consultant', required=False, label=_("Consultants"))
         self.fields["charge"] = forms.fields.FloatField(label=_("Charge"), min_value=0.25, max_value=31)
         self.fields["comment"] = forms.fields.CharField(label=_("Comment"), max_length=100, required=False)
         self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
