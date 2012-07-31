@@ -1,4 +1,4 @@
-body { margin:0; padding:0; font-size:12px; font-family:"Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif; color:#333; background:#fff; }
+body { margin:0; padding:0; font-size:12px; font-family:Verdana,"Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Arial,sans-serif; color:#333; background:#fff; }
 
 /* LINKS */
 a:link, a:visited { color: #883915; text-decoration:none; }
@@ -55,7 +55,7 @@ p img, h1 img, h2 img, h3 img, h4 img, td img { vertical-align:middle; }
 
 /* TABLES */
 table { border-collapse:collapse; border-color:#ccc; }
-td, th { font-size:11px; line-height:9px; border-bottom:1px solid #eee; vertical-align:top; padding:5px; font-family:"Lucida Grande", Verdana, Arial, sans-serif; }
+td, th { font-size:11px; line-height:9px; border-bottom:1px solid #eee; vertical-align:top; padding:5px; font-family:Verdana, "Lucida Grande", Arial, sans-serif; }
 th { text-align:left; font-size:12px; font-weight:bold; }
 thead th, 
 tfoot td { color:#666; padding:2px 5px; font-size:11px; background:#e1e1e1 url(../img/admin/nav-bg.gif) top left repeat-x; border-left:1px solid #ddd; border-bottom:1px solid #ddd; }
@@ -83,7 +83,7 @@ table.orderable tbody tr td:first-child { padding-left:14px; background-image:ur
 table.orderable-initalized .order-cell, body>tr>td.order-cell { display:none; }
 
 /* FORM DEFAULTS */
-input, textarea, select { margin:2px 0; padding:2px 3px; vertical-align:middle; font-family:"Lucida Grande", Verdana, Arial, sans-serif; font-weight:normal; font-size:11px; }
+input, textarea, select { margin:2px 0; padding:2px 3px; vertical-align:middle; font-family:Verdana, "Lucida Grande", Arial, sans-serif; font-weight:normal; font-size:11px; }
 textarea { vertical-align:top !important; }
 input[type=text], input[type=password], textarea, select, .vTextField { border:1px solid #ccc; background: white;}
 input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }

@@ -25,7 +25,7 @@ from http://www.jankoatwarpspeed.com/post/2009/01/19/Create-Vimeo-like-top-navig
 /* search */
 #menu .searchContainer div { background-color:#fff; display:inline; padding:5px;}
 #menu .searchContainer input[type="text"] {border:none;}
-#menu .searchContainer input { margin:2px 10px; padding:2px 3px; vertical-align:middle; font-family:"Lucida Grande", Verdana, Arial, sans-serif; font-weight:normal; font-size:11px; }
+#menu .searchContainer input { margin:2px 10px; padding:2px 3px; vertical-align:middle; font-family:Verdana, "Lucida Grande", Arial, sans-serif; font-weight:normal; font-size:11px; }
 #menu .searchContainer img { vertical-align:middle;}
 /* corners*/
 #menu .corner_inset_left { position:absolute; top:0px; left:-12px;}
