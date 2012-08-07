@@ -34,7 +34,7 @@ def send_lead_mail(lead, request, fromAddr=pydici.settings.LEADS_MAIL_FROM, from
     @param request: http request of user - used to determine full URL
     @raise exception: if SMTP errors occurs. It is up to the caller to catch that.
     """
-    url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("admin:leads_lead_change", args=[lead.id, ])
+    url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("admin:leads_lead_change", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
     subject = u"[AVV] %s : %s" % (lead.client.organisation, lead.name)
     msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj" : lead,
                                                                                   "lead_url" : url }))

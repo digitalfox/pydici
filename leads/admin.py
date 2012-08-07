@@ -77,5 +77,10 @@ class LeadAdmin(AjaxSelectAdmin):
                 mission.save()
                 request.user.message_set.create(message=ugettext("According mission has been archived"))
 
+    def change_view(self, request, object_id, extra_context=None):
+        result = super(LeadAdmin, self).change_view(request, object_id, extra_context)
+        if request.GET.get('return_to', False):
+            result['Location'] = request.GET['return_to']
+        return result
 
 admin.site.register(Lead, LeadAdmin)
