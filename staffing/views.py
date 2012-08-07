@@ -1153,7 +1153,7 @@ def graph_consultant_rates_jqp(request, consultant_id):
         objectiveDates.append(objectiveDate)
         objectiveRates.append(objectiveRate)
     # Add last point (last date and last known rate)
-    if objectiveRates:
+    if objectiveRates and kdates:
         objectiveDates.append(kdates[-1].date())
         objectiveRates.append(objectiveRates[-1])
 
