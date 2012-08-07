@@ -216,7 +216,8 @@ def graph_stat_bar(request):
     kdates = list(set(tsKdates + staffingKdates))
     ax.set_xticks(kdates)
     ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
-    ax.set_ylim(ymax=max(int(max(bottom)), int(max(tsYData))) + 10)
+    if tsYData:
+        ax.set_ylim(ymax=max(int(max(bottom)), int(max(tsYData))) + 10)
     ax.set_ylabel(u"k€")
     ax.legend(plots, [i[1] for i in ClientBill.CLIENT_BILL_STATE] + [_(u"Done work"), _(u"Forecasted work"), _(u"Weighted forecasted work")],
               bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
