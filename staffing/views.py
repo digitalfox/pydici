@@ -873,7 +873,7 @@ def create_new_mission_from_lead(request, lead_id):
 
     # Redirect user to change page of the mission 
     # in order to type description and deal id
-    return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_mission_change", args=[mission.id, ]))
+    return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_mission_change", args=[mission.id, ]) + "?return_to=" + lead.get_absolute_url())
 
 
 @pydici_non_public

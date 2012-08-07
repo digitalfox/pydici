@@ -44,7 +44,7 @@
 	              <em>{% trans "Archive" %}</em></a>
 	       {% endif %}
 	    </td>
-	    <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', target='_blank', class='changelink'><em>{% trans "Change" %}</em></a></td>
+	    <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}?return_to={% if all %}{% url all-missions %}{% else %}{% url missions %}{% endif %}', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', class='changelink'><em>{% trans "Change" %}</em></a></td>
 	    <td>{% if mission.active %}
 	           {% if mission.no_more_staffing_since %}
 	               {% trans "This mission has no staffing in future" %}

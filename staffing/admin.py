@@ -25,6 +25,12 @@ class MissionAdmin(AjaxSelectAdmin):
     actions = None
     form = MissionAdminForm
 
+    def change_view(self, request, object_id, extra_context=None):
+        result = super(MissionAdmin, self).change_view(request, object_id, extra_context)
+        if request.GET.get('return_to', False):
+            result['Location'] = request.GET['return_to']
+        return result
+
 
 class HolidayAdmin(admin.ModelAdmin):
     list_display = ("day", "description")
