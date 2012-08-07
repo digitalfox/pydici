@@ -12,6 +12,13 @@ from pydici.crm.models import Client, ClientOrganisation, Company, \
                               Supplier, AdministrativeFunction, AdministrativeContact, \
                               MissionContact
 
+class GenericContactAdmin(admin.ModelAdmin):
+    actions = None
+    def add_view(self, request, form_url='', extra_context=None):
+        result = super(GenericContactAdmin, self).add_view(request, form_url, extra_context)
+        if request.GET.get('return_to', False):
+            result['Location'] = request.GET['return_to']
+        return result
 
 class CompanyAdmin(admin.ModelAdmin):
     """Base admin model for subsidiary, clientcompanies and suppliers companies"""
@@ -21,45 +28,39 @@ class CompanyAdmin(admin.ModelAdmin):
     actions = None
 
 
-class ContactAdmin(admin.ModelAdmin):
+class ContactAdmin(GenericContactAdmin):
     list_display = ("name", "companies", "function", "email", "phone", "mobile_phone", "fax")
     odering = ("name",)
     search_fields = ["name", "email", "function", "client__organisation__company__name",
                      "client__organisation__name"]
-    actions = None
 
 
-class BusinessBrokerAdmin(admin.ModelAdmin):
+class BusinessBrokerAdmin(GenericContactAdmin):
     list_display = ("company", "contact")
     odering = ("company", "contact")
     search_fields = ["company", "contact__name"]
-    actions = None
 
 
-class SupplierAdmin(admin.ModelAdmin):
+class SupplierAdmin(GenericContactAdmin):
     list_display = ("company", "contact")
     odering = ("company", "contact")
     search_fields = ["company__name", "contact__name"]
-    actions = None
 
 
-class AdministrativeFunctionAdmin(admin.ModelAdmin):
+class AdministrativeFunctionAdmin(GenericContactAdmin):
     list_display = ("name",)
-    actions = None
 
 
-class AdministrativeContactAdmin(admin.ModelAdmin):
+class AdministrativeContactAdmin(GenericContactAdmin):
     list_display = ("company", "function", "contact", "phone")
     list_display_links = ("company", "function", "contact")
     list_filter = ["function", ]
-    actions = None
 
 
-class MissionContactAdmin(admin.ModelAdmin):
+class MissionContactAdmin(GenericContactAdmin):
     list_display = ("company", "contact")
     odering = ("company", "contact")
     search_fields = ["company__name", "contact__name"]
-    actions = None
 
 
 class ClientOrganisationAdmin(admin.ModelAdmin):

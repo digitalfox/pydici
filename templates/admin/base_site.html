@@ -29,7 +29,7 @@
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
                 <li><a href="{% url admin:leads_lead_changelist %}">{% trans "All leads" %}</a></li>
-                <li><a href='{% url admin:leads_lead_add %}'>{% trans "New lead" %}</a></li>
+                <li><a href='{% url admin:leads_lead_add %}?return_to={{ request.get_full_path }}'>{% trans "New lead" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
@@ -63,11 +63,11 @@
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
                 <li><a href="{% url admin:crm_contact_changelist %}">{% trans "Contact address directory" %}</a></li>
-                <li><a href='{% url admin:crm_client_add %}'>{% trans "New client" %}</a></li>
-                <li><a href='{% url admin:crm_missioncontact_add %}'>{% trans "New mission contact" %}</a></li>
-                <li><a href='{% url admin:crm_businessbroker_add %}'>{% trans "New business broker" %}</a></li>
-                <li><a href='{% url admin:crm_administrativecontact_add %}'>{% trans "New administrative contact" %}</a></li>
-                <li><a href='{% url admin:crm_supplier_add %}'>{% trans "New supplier" %}</a></li>
+                <li><a href='{% url admin:crm_client_add %}?return_to={{ request.get_full_path }}'>{% trans "New client" %}</a></li>
+                <li><a href='{% url admin:crm_missioncontact_add %}?return_to={{ request.get_full_path }}'>{% trans "New mission contact" %}</a></li>
+                <li><a href='{% url admin:crm_businessbroker_add %}?return_to={{ request.get_full_path }}'>{% trans "New business broker" %}</a></li>
+                <li><a href='{% url admin:crm_administrativecontact_add %}?return_to={{ request.get_full_path }}'>{% trans "New administrative contact" %}</a></li>
+                <li><a href='{% url admin:crm_supplier_add %}?return_to={{ request.get_full_path }}'>{% trans "New supplier" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
@@ -87,9 +87,9 @@
                 {% endif %}
                 <li><a href='{% url pydici.expense.views.expenses %}'>{% trans "Expenses" %}</a></li>
                 <li><a href="{% url admin:billing_clientbill_changelist %}">{% trans "All client bills" %}</a></li>
-                <li><a href='{% url admin:billing_clientbill_add %}'>{% trans "New client bill" %}</a></li>
+                <li><a href='{% url admin:billing_clientbill_add %}?return_to={{ request.get_full_path }}'>{% trans "New client bill" %}</a></li>
                 <li><a href="{% url admin:billing_supplierbill_changelist %}">{% trans "All supplier bills" %}</a></li>
-                <li><a href='{% url admin:billing_supplierbill_add %}'>{% trans "New supplier bill" %}</a></li>
+                <li><a href='{% url admin:billing_supplierbill_add %}?return_to={{ request.get_full_path }}'>{% trans "New supplier bill" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>

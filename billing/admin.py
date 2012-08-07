@@ -23,6 +23,12 @@ class BillAdmin(AjaxSelectAdmin):
                      "lead__paying_authority__contact__name", "lead__paying_authority__company__name",
                      "lead__client__contact__name", "lead__client__organisation__company__name"]
 
+    def add_view(self, request, form_url='', extra_context=None):
+        result = super(BillAdmin, self).add_view(request, form_url, extra_context)
+        if request.GET.get('return_to', False):
+            result['Location'] = request.GET['return_to']
+        return result
+
 
 class ClientBillAdmin(BillAdmin):
     form = ClientBillForm
