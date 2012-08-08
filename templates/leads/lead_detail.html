@@ -50,7 +50,7 @@
     {% endif %}
 
     <div class="form-row name  ">
-    <h2><a href='{% url admin:leads_lead_change lead.id %}?return_to={{ lead.get_absolute_url }}' class='changelink' title='Cliquez pour modifier ce lead', target='_blank'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
+    <h2><a href='{% url admin:leads_lead_change lead.id %}?return_to={{ lead.get_absolute_url }}' class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.client.organisation }}</b> - {{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
     <div class="tag_banner">
 	    {% for tag in lead.tags.all %}
