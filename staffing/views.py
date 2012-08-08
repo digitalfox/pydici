@@ -992,7 +992,7 @@ def graph_timesheet_rates_bar(request):
         nDays[profilId] = {}
 
     # Gather data
-    timesheetStartDate = date.today() - timedelta(365) # Last year
+    timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
     timesheetEndDate = (date.today().replace(day=1) + timedelta(40)).replace(day=1) # First day of next month
     timesheets = Timesheet.objects.filter(consultant__subcontractor=False,
                                           consultant__productive=True,
