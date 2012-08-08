@@ -203,7 +203,7 @@ def graph_bar_jqp(request):
     graph_data = [] # Data that will be returned to jqplot 
 
     # Gathering data
-    for lead in Lead.objects.all():
+    for lead in Lead.objects.filter(creation_date__gt=date.today() - timedelta(2 * 365)):
         #Using first day of each month as key date
         kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
         if not data.has_key(kdate):
