@@ -29,6 +29,13 @@ class BillAdmin(AjaxSelectAdmin):
             result['Location'] = request.GET['return_to']
         return result
 
+    def change_view(self, request, object_id, extra_context=None):
+        result = super(BillAdmin, self).change_view(request, object_id, extra_context)
+        if request.GET.get('return_to', False):
+            result['Location'] = request.GET['return_to']
+        return result
+
+
 
 class ClientBillAdmin(BillAdmin):
     form = ClientBillForm

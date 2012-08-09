@@ -14,8 +14,15 @@ from pydici.crm.models import Client, ClientOrganisation, Company, \
 
 class GenericContactAdmin(admin.ModelAdmin):
     actions = None
+
     def add_view(self, request, form_url='', extra_context=None):
         result = super(GenericContactAdmin, self).add_view(request, form_url, extra_context)
+        if request.GET.get('return_to', False):
+            result['Location'] = request.GET['return_to']
+        return result
+
+    def change_view(self, request, object_id, extra_context=None):
+        result = super(GenericContactAdmin, self).change_view(request, object_id, extra_context)
         if request.GET.get('return_to', False):
             result['Location'] = request.GET['return_to']
         return result
