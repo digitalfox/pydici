@@ -224,11 +224,15 @@ def graph_bar_jqp(request):
     yWonLead = [sum([i.sales for i in x if (i.sales and i.state == "WON")]) for x in sortedValues(data)]
     graph_data.append(zip(isoKdates, yAllLead))
     graph_data.append(zip(isoKdates, yWonLead))
+    if kdates:
+        min_date = (kdates[0] - timedelta(30)).isoformat()
+    else:
+        min_date = ""
 
     return render_to_response("leads/graph_bar_jqp.html",
                               {"graph_data" : json.dumps(graph_data),
                                "series_label" : [i[1] for i in Lead.STATES],
                                "series_colors" : COLORS,
-                               "min_date" : (kdates[0] - timedelta(30)).isoformat(),
+                               "min_date" : min_date,
                                "user": request.user },
                                RequestContext(request))
