@@ -123,6 +123,12 @@ def month_days(monthDate):
         monthDate += day
     return n
 
+def nextMonth(month):
+    """Compute next month
+    @param month: date or datetime object
+    @return: date or datetime object (depending on input parameter) of the first day of next month"""
+    return (month + timedelta(days=40)).replace(day=1)
+
 def print_png(fig):
     """Return http response with fig rendered as png
     @param fig: fig to render

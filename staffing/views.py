@@ -34,7 +34,7 @@ from pydici.leads.models import Lead
 from pydici.people.models import ConsultantProfile, RateObjective
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
                                   TimesheetForm, MassStaffingForm, MissionContactForm
-from pydici.core.utils import working_days, to_int_or_round, print_png, COLORS
+from pydici.core.utils import working_days, nextMonth, to_int_or_round, print_png, COLORS
 from pydici.core.decorator import pydici_non_public
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
                                   sortMissions, holidayDays, daysOfMonth, staffingDates, \
@@ -519,7 +519,6 @@ def mission_timesheet(request, mission_id):
     """Mission timesheet"""
     mission = Mission.objects.get(id=mission_id)
     current_month = date.today().replace(day=1)  # Current month
-    next_month = (current_month + timedelta(days=40)).replace(day=1)
     consultants = mission.staffed_consultant()
     consultant_rates = mission.consultant_rates()
 
@@ -527,7 +526,7 @@ def mission_timesheet(request, mission_id):
         return mission_csv_timesheet(request, mission, consultants)
 
     # Gather timesheet (Only consider timesheet up to current month)
-    timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=next_month).order_by("working_date")
+    timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
     timesheetMonths = list(timesheets.dates("working_date", "month"))
 
     # Gather forecaster (till current month)
@@ -535,23 +534,12 @@ def mission_timesheet(request, mission_id):
     staffingMonths = list(staffings.dates("staffing_date", "month"))
 
     missionData = []  # list of tuple (consultant, (charge month 1, charge month 2), (forecast month 1, forcast month2), estimated)
-    objectiveMargin = {}  # Dict of margin over objective rate. Key is consultant, value is cumulated margin over objective
     for consultant in consultants:
-        objectiveMargin[consultant] = 0  # Initialize margin over rate objective for this consultant
         # Timesheet data
         timesheetData = []
         for month in timesheetMonths:
-            n_days = sum([t.charge for t in timesheets.filter(consultant=consultant) if (t.working_date.month == month.month and t.working_date.year == month.year)])
+            n_days = sum([t.charge for t in timesheets.filter(consultant=consultant, working_date__gte=month, working_date__lt=nextMonth(month))])
             timesheetData.append(n_days)
-            if consultant.subcontractor:
-                # Compute objective margin on sold rate
-                if consultant_rates[consultant][0] and consultant_rates[consultant][1]:
-                    objectiveMargin[consultant] += n_days * (consultant_rates[consultant][0] - consultant_rates[consultant][1])
-            else:
-                # Compute objective margin on rate objective for this period
-                objectiveRate = consultant.getRateObjective(workingDate=month)
-                if objectiveRate:
-                    objectiveMargin[consultant] += n_days * (consultant_rates[consultant][0] - objectiveRate.daily_rate)
 
         timesheetData.append(sum(timesheetData))  # Add total per consultant
         timesheetData.append(timesheetData[-1] * consultant_rates[consultant][0] / 1000)  # Add total in money
@@ -625,6 +613,7 @@ def mission_timesheet(request, mission_id):
                         timesheetAverageRate, staffingAverageRate))
 
     missionData = map(to_int_or_round, missionData)
+    objectiveMargin = mission.objectiveMargin(endDate=nextMonth(current_month))
     return render_to_response("staffing/mission_timesheet.html", {
                                 "mission": mission,
                                 "margin": margin,
@@ -651,7 +640,7 @@ def mission_csv_timesheet(request, mission, consultants):
 
     for month in months:
         days = daysOfMonth(month)
-        next_month = (month + timedelta(days=40)).replace(day=1)
+        next_month = nextMonth(month)
         # Header
         writer.writerow([("%s - %s" % (mission.full_name(), formats.date_format(month, format="YEAR_MONTH_FORMAT"))).encode("ISO-8859-15"), ])
 
@@ -687,7 +676,7 @@ def all_timesheet(request, year=None, month=None):
         month = date.today().replace(day=1)  # We use the first day to represent month
 
     previous_date = (month - timedelta(days=5)).replace(day=1)
-    next_date = (month + timedelta(days=40)).replace(day=1)
+    next_date = nextMonth(month)
 
     timesheets = Timesheet.objects.filter(working_date__gte=month)  # Filter on current month
     timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1))  # Discard next month
@@ -799,7 +788,7 @@ def detailed_csv_timesheet(request, year=None, month=None):
     else:
         month = date.today().replace(day=1)  # We use the first day to represent month
 
-    next_month = (month + timedelta(40)).replace(day=1)
+    next_month = nextMonth(month)
 
     # Header
     header = [_("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
@@ -1128,12 +1117,12 @@ def graph_consultant_rates_jqp(request, consultant_id):
 
     # Avg daily rate / month
     for refDate in kdates:
-        nextMonth = (refDate + timedelta(40)).replace(day=1)
-        prodRate = consultant.getProductionRate(refDate, nextMonth)
+        next_month = nextMonth(refDate)
+        prodRate = consultant.getProductionRate(refDate, next_month)
         if prodRate:
             prodRateData.append(100 * prodRate)
             isoProdDates.append(refDate.date().isoformat())
-        fc = consultant.getFinancialConditions(refDate, nextMonth)
+        fc = consultant.getFinancialConditions(refDate, next_month)
         if fc:
             dailyRateData.append(int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc])))
             minYData.append(int(min([rate for rate, days in fc])))

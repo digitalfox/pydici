@@ -13,7 +13,6 @@ from django.utils.translation import ugettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.contrib.admin.models import ContentType
-from django.db.models import Q
 
 from datetime import datetime, date, timedelta
 
@@ -22,6 +21,7 @@ from pydici.people.models import Consultant
 from pydici.crm.models import MissionContact
 from pydici.actionset.utils import launchTrigger
 from pydici.actionset.models import ActionState
+from pydici.core.utils import nextMonth
 
 
 class Mission(models.Model):
@@ -171,6 +171,36 @@ class Mission(models.Model):
             return float(self.price) - amount
         else:
             return 0
+
+    def objectiveMargin(self, startDate=None, endDate=None):
+        """Compute margin over rate objective
+        @param startDate: starting date to consider. This date is included in range. If None, start date is the begining of the mission
+        @param endDate: ending date to consider. This date is excluded from range. If None, end date is last timesheet for this mission.
+        @return: dict where key is consultant, value is cumulated margin over objective"""
+        result = {}
+        consultant_rates = self.consultant_rates()
+        # Gather timesheet (Only consider timesheet up to current month)
+        timesheets = Timesheet.objects.filter(mission=self)
+        if startDate:
+            timesheets = timesheets.filter(working_date__gte=startDate)
+        if endDate:
+            timesheets = timesheets.filter(working_date__lt=endDate)
+        timesheets = timesheets.order_by("working_date")
+        timesheetMonths = list(timesheets.dates("working_date", "month"))
+        for consultant in self.staffed_consultant():
+            result[consultant] = 0  # Initialize margin over rate objective for this consultant
+            for month in timesheetMonths:
+                n_days = sum([t.charge for t in timesheets.filter(consultant=consultant, working_date__gte=month, working_date__lt=nextMonth(month))])
+                if consultant.subcontractor:
+                    # Compute objective margin on sold rate
+                    if consultant_rates[consultant][0] and consultant_rates[consultant][1]:
+                        result[consultant] += n_days * (consultant_rates[consultant][0] - consultant_rates[consultant][1])
+                else:
+                    # Compute objective margin on rate objective for this period
+                    objectiveRate = consultant.getRateObjective(workingDate=month)
+                    if objectiveRate:
+                        result[consultant] += n_days * (consultant_rates[consultant][0] - objectiveRate.daily_rate)
+        return result
 
     def actions(self):
         """Returns actions for this mission and its lead"""

@@ -187,7 +187,7 @@ def daysOfMonth(month, week=None):
     return days
 
 def nextWeek(cDate):
-    """    
+    """
     @return: next monday"""
     day = timedelta(1)
     cDate += day
