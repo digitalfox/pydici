@@ -8,6 +8,7 @@ Pydici leads views. Http request are processed here.
 import csv
 from datetime import datetime, timedelta, date
 import json
+from collections import defaultdict
 
 
 from django.core import urlresolvers
@@ -199,15 +200,13 @@ def tags(request, lead_id):
 def graph_bar_jqp(request):
     """Nice graph bar of lead state during time using jqplot
     @todo: per year, with start-end date"""
-    data = {} # Raw data collected
+    data = defaultdict(list) # Raw data collected
     graph_data = [] # Data that will be returned to jqplot 
 
     # Gathering data
     for lead in Lead.objects.filter(creation_date__gt=date.today() - timedelta(2 * 365)):
         #Using first day of each month as key date
         kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
-        if not data.has_key(kdate):
-            data[kdate] = [] # Create key with empty list
         data[kdate].append(lead)
 
     kdates = data.keys()

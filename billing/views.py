@@ -8,6 +8,7 @@ Pydici billing views. Http request are processed here.
 from datetime import date, timedelta
 import itertools
 import mimetypes
+from collections import defaultdict
 
 from matplotlib.figure import Figure
 
@@ -74,8 +75,8 @@ def bill_review(request):
 def bill_payment_delay(request):
     """Report on client bill payment delay"""
     #List of tuple (company, avg delay in days)
-    directDelays = list() # for direct client
-    indirectDelays = list() # for client with paying authority
+    directDelays = list()  # for direct client
+    indirectDelays = list()  # for client with paying authority
     for company in Company.objects.all():
         # Direct delays
         bills = ClientBill.objects.filter(lead__client__organisation__company=company, lead__paying_authority__isnull=True)
@@ -89,8 +90,8 @@ def bill_payment_delay(request):
             indirectDelays.append((company, sum(res) / len(res)))
 
     return render_to_response("billing/payment_delay.html",
-                              {"direct_delays" : directDelays,
-                               "indirect_delays" : indirectDelays,
+                              {"direct_delays": directDelays,
+                               "indirect_delays": indirectDelays,
                                "user": request.user},
                               RequestContext(request))
 
@@ -129,13 +130,13 @@ def bill_file(request, bill_id=0, nature="client"):
 def graph_stat_bar(request):
     """Nice graph bar of incomming cash from bills
     @todo: per year, with start-end date"""
-    billsData = {} # Bill graph Data
-    tsData = {} # Timesheet done work graph data
-    staffingData = {} # Staffing forecasted work graph data
-    wStaffingData = {} # Weighted Staffing forecasted work graph data
-    plots = [] # List of plots - needed to add legend
+    billsData = defaultdict(list)  # Bill graph Data
+    tsData = {}  # Timesheet done work graph data
+    staffingData = {}  # Staffing forecasted work graph data
+    wStaffingData = {}  # Weighted Staffing forecasted work graph data
+    plots = []  # List of plots - needed to add legend
     today = date.today()
-    start_date = today - timedelta(24 * 30) # Screen data about 24 month before today
+    start_date = today - timedelta(24 * 30)  # Screen data about 24 month before today
     colors = itertools.cycle(COLORS)
 
     # Setting up graph
@@ -151,8 +152,6 @@ def graph_stat_bar(request):
     for bill in bills:
         #Using first day of each month as key date
         kdate = bill.creation_date.replace(day=1)
-        if not billsData.has_key(kdate):
-            billsData[kdate] = [] # Create key with empty list
         billsData[kdate].append(bill)
 
     # Collect Financial conditions as a hash for further lookup
@@ -166,16 +165,16 @@ def graph_stat_bar(request):
     # Collect data for done work according to timesheet data
     for ts in Timesheet.objects.filter(working_date__lt=today, working_date__gt=start_date, mission__nature="PROD").select_related():
         kdate = ts.working_date.replace(day=1)
-        if not tsData.has_key(kdate):
+        if kdate not in tsData:
             tsData[kdate] = 0 # Create key
         tsData[kdate] += ts.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
 
     # Collect data for forecasted work according to staffing data
     for staffing in Staffing.objects.filter(staffing_date__gte=today.replace(day=1), mission__nature="PROD").select_related():
         kdate = staffing.staffing_date.replace(day=1)
-        if not staffingData.has_key(kdate):
-            staffingData[kdate] = 0 # Create key
-            wStaffingData[kdate] = 0 # Create key
+        if kdate not in staffingData:
+            staffingData[kdate] = 0  # Create key
+            wStaffingData[kdate] = 0  # Create key
         staffingData[kdate] += staffing.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
         wStaffingData[kdate] += staffing.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) * staffing.mission.probability / 100 / 1000
 
@@ -191,7 +190,7 @@ def graph_stat_bar(request):
                color=colors.next())
         plots.append(b[0])
         for i in range(len(ydata)):
-            bottom[i] += ydata[i] # Update bottom
+            bottom[i] += ydata[i]  # Update bottom
 
     # Sort keys
     tsKdates = tsData.keys()

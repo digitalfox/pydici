@@ -626,8 +626,9 @@ def mission_timesheet(request, mission_id):
                                 "mission_data": missionData,
                                 "consultant_rates": consultant_rates,
                                 "user": request.user,
-                                "avg_daily_rate" : avgDailyRate},
+                                "avg_daily_rate": avgDailyRate},
                                RequestContext(request))
+
 
 def mission_csv_timesheet(request, mission, consultants):
     """@return: csv timesheet for a given mission"""
@@ -736,7 +737,7 @@ def all_timesheet(request, year=None, month=None):
     #          , Cons1, Cons2, Cons3
     # Mission 1, M1/C1, M1/C2, M1/C3
     # Mission 2, M2/C1, M2/C2, M2/C3
-    # with. tk   C1,    C2,    C3...     
+    # with. tk   C1,    C2,    C3...
 
     if "csv" in request.GET and charges:
         # Return CSV timesheet
@@ -778,7 +779,6 @@ def all_csv_timesheet(request, charges, month):
 def detailed_csv_timesheet(request, year=None, month=None):
     """Detailed timesheet with mission, consultant, and rates
     Intended for accounting third party system or spreadsheet analysis"""
-    data = []  # Data array to be returned
     response = HttpResponse(mimetype="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
     writer = csv.writer(response, delimiter=';')
@@ -877,7 +877,7 @@ def mission_consultant_rate(request):
         mission = Mission.objects.get(id=mission_id)
         consultant = Consultant.objects.get(id=consultant_id)
         condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
-                                                                  defaults={"daily_rate":0})
+                                                                      defaults={"daily_rate":0})
         if sold == "sold":
             condition.daily_rate = request.POST["value"].replace(" ", "")
         else:
@@ -982,7 +982,7 @@ def graph_timesheet_rates_bar(request):
 
     # Gather data
     timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
-    timesheetEndDate = (date.today().replace(day=1) + timedelta(40)).replace(day=1) # First day of next month
+    timesheetEndDate = nextMonth(date.today())  # First day of next month
     timesheets = Timesheet.objects.filter(consultant__subcontractor=False,
                                           consultant__productive=True,
                                           working_date__gt=timesheetStartDate,
@@ -1025,11 +1025,11 @@ def graph_timesheet_rates_bar(request):
 
     # Draw a bar for each nature
     kdates = list(kdates)
-    kdates.sort() # Convert kdates to list and sort it
+    kdates.sort()  # Convert kdates to list and sort it
     for nature in natures:
         ydata = []
         for kdate in kdates:
-            if data[nature].has_key(kdate):
+            if kdate in data[nature]:
                 ydata.append(100 * data[nature][kdate] / (working_days(kdate, holiday_days) * len(nConsultant[kdate])))
             else:
                 ydata.append(0)
@@ -1038,10 +1038,10 @@ def graph_timesheet_rates_bar(request):
                    color=colors.next())
         plots.append(b[0])
         for i in range(len(ydata)):
-            bottom[i] += ydata[i] # Update bottom
+            bottom[i] += ydata[i]  # Update bottom
 
-    ydata = []  # Prod rate 
-    y2data = {} # Average daily rate per profil
+    ydata = []  # Prod rate
+    y2data = {}  # Average daily rate per profil
 
     for profilId in profils.keys():
         y2data[profilId] = []
@@ -1146,7 +1146,7 @@ def graph_consultant_rates_jqp(request, consultant_id):
         objectiveDates.append(kdates[-1].date())
         objectiveRates.append(objectiveRates[-1])
 
-    isoObjectiveDates = [a.isoformat() for a in objectiveDates] # List of date as string in ISO format
+    isoObjectiveDates = [a.isoformat() for a in objectiveDates]  # List of date as string in ISO format
 
     # Add data to graph
     graph_data.append(zip(isoRateDates, dailyRateData))
@@ -1154,14 +1154,14 @@ def graph_consultant_rates_jqp(request, consultant_id):
     graph_data.append(zip(isoRateDates, minYData))
     graph_data.append(zip(isoRateDates, maxYData))
     graph_data.append(zip(isoProdDates, prodRateData))
-    if sum(graph_data, []): # Test if list contains other things that empty lists
+    if sum(graph_data, []):  # Test if list contains other things that empty lists
         graph_data = json.dumps(graph_data)
     else:
-        # If graph_data is only a bunch of emty list, set it to empty list to 
+        # If graph_data is only a bunch of emty list, set it to empty list to
         # disable graph. Avoid jqplot infinite loop with some poor browsers
         graph_data = None
     return render_to_response("staffing/graph_consultant_rate_jqp.html",
-                              {"graph_data" : graph_data,
-                               "series_colors" : COLORS,
-                               "user": request.user },
+                              {"graph_data": graph_data,
+                               "series_colors": COLORS,
+                               "user": request.user},
                                RequestContext(request))
