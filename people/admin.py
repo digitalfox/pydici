@@ -10,8 +10,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from pydici.people.models import SalesMan, Consultant, ConsultantProfile, RateObjective
 from pydici.people.forms import ConsultantForm
+from pydici.core.admin import ReturnToAppAdmin
 
-class SalesManAdmin(admin.ModelAdmin):
+
+class SalesManAdmin(ReturnToAppAdmin):
     list_display = ("name", "company", "trigramme", "email", "phone", "active")
     odering = ("name")
     list_filter = ["active", ]
@@ -19,7 +21,7 @@ class SalesManAdmin(admin.ModelAdmin):
     actions = None
 
 
-class ConsultantAdmin(admin.ModelAdmin):
+class ConsultantAdmin(ReturnToAppAdmin):
     list_display = ("name", "trigramme", "profil", "productive", "active", "subcontractor")
     search_fields = ("name", "trigramme")
     ordering = ("name",)
@@ -27,16 +29,18 @@ class ConsultantAdmin(admin.ModelAdmin):
     actions = None
     fieldsets = [
         (None, {"fields": ["name", "trigramme", "active", "productive", "company", "profil", "manager"]}),
-        (_("For subcontractors"), {"fields": ["subcontractor", "subcontractor_company" ]}),
+        (_("For subcontractors"), {"fields": ["subcontractor", "subcontractor_company"]}),
         ]
     form = ConsultantForm
 
-class ConsultantProfileAdmin(admin.ModelAdmin):
+
+class ConsultantProfileAdmin(ReturnToAppAdmin):
     ordering = ("level",)
     list_display = ("name", "level")
     actions = None
 
-class RateObjectiveAdmin(admin.ModelAdmin):
+
+class RateObjectiveAdmin(ReturnToAppAdmin):
     ordering = ("start_date",)
     list_display = ("start_date", "consultant", "daily_rate")
     list_filter = ("consultant",)

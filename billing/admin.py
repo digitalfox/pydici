@@ -12,9 +12,10 @@ from ajax_select.admin import AjaxSelectAdmin
 
 from pydici.billing.models import ClientBill, SupplierBill
 from pydici.billing.forms import ClientBillForm, SupplierBillForm
+from pydici.core.admin import ReturnToAppAdmin
 
 
-class BillAdmin(AjaxSelectAdmin):
+class BillAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
     list_display = ["id", "bill_id", "lead", "state", "amount", "creation_date", "due_date", "payment_date", "comment"]
     ordering = ("-creation_date",)
     actions = None
@@ -22,19 +23,6 @@ class BillAdmin(AjaxSelectAdmin):
     search_fields = ["lead__name", "lead__client__organisation__name", "comment",
                      "lead__paying_authority__contact__name", "lead__paying_authority__company__name",
                      "lead__client__contact__name", "lead__client__organisation__company__name"]
-
-    def add_view(self, request, form_url='', extra_context=None):
-        result = super(BillAdmin, self).add_view(request, form_url, extra_context)
-        if request.GET.get('return_to', False):
-            result['Location'] = request.GET['return_to']
-        return result
-
-    def change_view(self, request, object_id, extra_context=None):
-        result = super(BillAdmin, self).change_view(request, object_id, extra_context)
-        if request.GET.get('return_to', False):
-            result['Location'] = request.GET['return_to']
-        return result
-
 
 
 class ClientBillAdmin(BillAdmin):

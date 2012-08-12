@@ -11,83 +11,67 @@ from pydici.crm.models import Client, ClientOrganisation, Company, \
                               Contact, BusinessBroker, Subsidiary, \
                               Supplier, AdministrativeFunction, AdministrativeContact, \
                               MissionContact
+from pydici.core.admin import ReturnToAppAdmin
 
-class GenericContactAdmin(admin.ModelAdmin):
-    actions = None
 
-    def add_view(self, request, form_url='', extra_context=None):
-        result = super(GenericContactAdmin, self).add_view(request, form_url, extra_context)
-        if request.GET.get('return_to', False):
-            result['Location'] = request.GET['return_to']
-        return result
-
-    def change_view(self, request, object_id, extra_context=None):
-        result = super(GenericContactAdmin, self).change_view(request, object_id, extra_context)
-        if request.GET.get('return_to', False):
-            result['Location'] = request.GET['return_to']
-        return result
-
-class CompanyAdmin(admin.ModelAdmin):
+class CompanyAdmin(ReturnToAppAdmin):
     """Base admin model for subsidiary, clientcompanies and suppliers companies"""
     list_display = ("name", "code")
     search_fields = ("name", "code")
     ordering = ("name",)
-    actions = None
 
 
-class ContactAdmin(GenericContactAdmin):
+class ContactAdmin(ReturnToAppAdmin):
     list_display = ("name", "companies", "function", "email", "phone", "mobile_phone", "fax")
     odering = ("name",)
     search_fields = ["name", "email", "function", "client__organisation__company__name",
                      "client__organisation__name"]
 
 
-class BusinessBrokerAdmin(GenericContactAdmin):
+class BusinessBrokerAdmin(ReturnToAppAdmin):
     list_display = ("company", "contact")
     odering = ("company", "contact")
     search_fields = ["company", "contact__name"]
 
 
-class SupplierAdmin(GenericContactAdmin):
+class SupplierAdmin(ReturnToAppAdmin):
     list_display = ("company", "contact")
     odering = ("company", "contact")
     search_fields = ["company__name", "contact__name"]
 
 
-class AdministrativeFunctionAdmin(GenericContactAdmin):
+class AdministrativeFunctionAdmin(ReturnToAppAdmin):
     list_display = ("name",)
 
 
-class AdministrativeContactAdmin(GenericContactAdmin):
+class AdministrativeContactAdmin(ReturnToAppAdmin):
     list_display = ("company", "function", "contact", "phone")
     list_display_links = ("company", "function", "contact")
     list_filter = ["function", ]
 
 
-class MissionContactAdmin(GenericContactAdmin):
+class MissionContactAdmin(ReturnToAppAdmin):
     list_display = ("company", "contact")
     odering = ("company", "contact")
     search_fields = ["company__name", "contact__name"]
 
 
-class ClientOrganisationAdmin(admin.ModelAdmin):
+class ClientOrganisationAdmin(ReturnToAppAdmin):
     fieldsets = [(None, {"fields": ["company", "name"]}), ]
     list_display = ("company", "name",)
     list_display_links = ("company", "name",)
     ordering = ("name",)
     search_fields = ("name",)
-    actions = None
 
 
 class ClientOrganisationAdminInline(admin.TabularInline):
     model = ClientOrganisation
 
 
-class ClientAdmin(admin.ModelAdmin):
+class ClientAdmin(ReturnToAppAdmin):
     list_display = ("organisation", "salesOwner", "contact")
     ordering = ("organisation",)
     search_fields = ("organisation__company__name", "organisation__name", "contact__name")
-    actions = None
 
 
 admin.site.register(Subsidiary, CompanyAdmin)

@@ -15,9 +15,10 @@ from pydici.leads.models import Lead
 from pydici.staffing.models import Mission
 from pydici.leads.forms import LeadForm
 from pydici.core.utils import send_lead_mail
+from pydici.core.admin import ReturnToAppAdmin
 
 
-class LeadAdmin(AjaxSelectAdmin):
+class LeadAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
     list_display = ("name", "client", "responsible", "salesman", "business_broker", "state", "due_date", "update_date_strf")
     fieldsets = [
         (None, {"fields": ["name", "client", "description", "action"]}),
@@ -76,17 +77,5 @@ class LeadAdmin(AjaxSelectAdmin):
                 mission.active = False
                 mission.save()
                 request.user.message_set.create(message=ugettext("According mission has been archived"))
-
-    def add_view(self, request, form_url='', extra_context=None):
-        result = super(LeadAdmin, self).add_view(request, form_url, extra_context)
-        if request.GET.get('return_to', False):
-            result['Location'] = request.GET['return_to']
-        return result
-
-    def change_view(self, request, object_id, extra_context=None):
-        result = super(LeadAdmin, self).change_view(request, object_id, extra_context)
-        if request.GET.get('return_to', False):
-            result['Location'] = request.GET['return_to']
-        return result
 
 admin.site.register(Lead, LeadAdmin)

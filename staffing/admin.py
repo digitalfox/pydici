@@ -11,9 +11,10 @@ from ajax_select.admin import AjaxSelectAdmin
 
 from pydici.staffing.models import Mission, Holiday, Timesheet, FinancialCondition
 from pydici.staffing.forms import MissionAdminForm, FinancialConditionAdminForm
+from pydici.core.admin import ReturnToAppAdmin
 
 
-class MissionAdmin(AjaxSelectAdmin):
+class MissionAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
     list_display = ("lead", "description", "nature", "probability", "mission_id", "active", "update_date")
     list_display_links = ["lead", "description"]
     search_fields = ("lead__name", "description", "deal_id", "lead__client__organisation__company__name",
@@ -24,12 +25,6 @@ class MissionAdmin(AjaxSelectAdmin):
 
     actions = None
     form = MissionAdminForm
-
-    def change_view(self, request, object_id, extra_context=None):
-        result = super(MissionAdmin, self).change_view(request, object_id, extra_context)
-        if request.GET.get('return_to', False):
-            result['Location'] = request.GET['return_to']
-        return result
 
 
 class HolidayAdmin(admin.ModelAdmin):
