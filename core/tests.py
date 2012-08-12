@@ -16,6 +16,7 @@ import permissions.utils as perm
 from workflows.models import Transition
 
 # Pydici modules
+from pydici.core.utils import monthWeekNumber, previousWeek, nextWeek
 from pydici.leads.models import Lead
 from pydici.people.models import Consultant, ConsultantProfile
 from pydici.crm.models import Client, Subsidiary
@@ -170,7 +171,6 @@ class SimpleTest(TestCase):
 
 class UtilsTest(TestCase):
     def test_monthWeekNumber(self):
-        from pydici.staffing.utils import monthWeekNumber
         # Week number, date
         dates = ((1, date(2011, 4, 1)),
                  (1, date(2011, 4, 3)),
@@ -181,7 +181,6 @@ class UtilsTest(TestCase):
             self.assertEqual(weekNum, monthWeekNumber(weekDate))
 
     def test_previousWeek(self):
-        from pydici.staffing.utils import previousWeek
         # Previous week first day, week day
         dates = ((date(2011, 3, 28), date(2011, 4, 1)),
                  (date(2011, 3, 28), date(2011, 4, 2)),
@@ -197,7 +196,6 @@ class UtilsTest(TestCase):
             self.assertEqual(firstDay, previousWeek(weekDay))
 
     def test_nextWeek(self):
-        from pydici.staffing.utils import nextWeek
         # Previous week first day, week day
         dates = ((date(2011, 4, 4), date(2011, 4, 1)),
                  (date(2011, 4, 4), date(2011, 4, 2)),

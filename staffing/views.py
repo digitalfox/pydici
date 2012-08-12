@@ -34,11 +34,11 @@ from pydici.leads.models import Lead
 from pydici.people.models import ConsultantProfile, RateObjective
 from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
                                   TimesheetForm, MassStaffingForm, MissionContactForm
-from pydici.core.utils import working_days, nextMonth, to_int_or_round, print_png, COLORS
+from pydici.core.utils import working_days, nextMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
+                              to_int_or_round, print_png, COLORS
 from pydici.core.decorator import pydici_non_public
 from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
-                                  sortMissions, holidayDays, daysOfMonth, staffingDates, \
-                                  previousWeek, nextWeek, monthWeekNumber
+                                  sortMissions, holidayDays, staffingDates
 
 
 @pydici_non_public
