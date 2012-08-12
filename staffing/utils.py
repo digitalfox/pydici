@@ -13,7 +13,7 @@ from django.db import transaction
 from django.utils import formats
 
 from pydici.staffing.models import Timesheet, Mission, LunchTicket, Holiday
-from pydici.core.utils import month_days
+from pydici.core.utils import month_days, nextMonth
 
 
 def gatherTimesheetData(consultant, missions, month):
@@ -26,7 +26,7 @@ def gatherTimesheetData(consultant, missions, month):
     timesheetTotal = {}
     warning = []
     totalPerDay = [0] * month_days(month)
-    next_month = (month + timedelta(days=40)).replace(day=1)
+    next_month = nextMonth(month)
     for mission in missions:
         timesheets = Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission)
         timesheets = timesheets.filter(working_date__gte=month).filter(working_date__lt=next_month)
@@ -154,8 +154,7 @@ def holidayDays(month=None):
     if not month:
         month = date.today()
     month = month.replace(day=1)
-    nextMonth = (month + timedelta(40)).replace(day=1)
-    return [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth)]
+    return [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth(month))]
 
 def daysOfMonth(month, week=None):
     """
@@ -219,12 +218,11 @@ def staffingDates(n=12, format=None):
     as a list of dict() with short/long(encoded) string date"""
     staffingDate = date.today().replace(day=1)
     dates = []
-    fortyDays = timedelta(40)
     for i in range(n):
         if format == "datetime":
             dates.append(staffingDate)
         else:
             dates.append({"short": formats.localize_input(staffingDate),
                           "long" : formats.date_format(staffingDate, format="YEAR_MONTH_FORMAT").encode("latin-1"), })
-        staffingDate = (staffingDate + fortyDays).replace(day=1)
+        staffingDate = nextMonth(staffingDate)
     return dates
