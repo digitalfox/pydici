@@ -93,7 +93,7 @@
     {% if lead.paying_authority %}
         <b>{% trans "Paying authority: " %}</b>{{ lead.paying_authority }}
     {% endif %}
-    
+
     <br><br><hr>
     <b>{% trans "Due date: " %}</b><span {% if lead.is_late %}style='color:red'{% endif %}>{{ lead.due_date|default_if_none:_("Unknown") }}</span><br>
     <b>{% trans "Start date: " %} </b>{{ lead.start_date|default_if_none:_("Unknown") }}
@@ -153,6 +153,7 @@
             {% else %} <a href='{% url admin:leads_lead_change lead.id %}?return_to={{ lead.get_absolute_url }}'>{% trans "To be defined" %}</a>
             {% endif %}</td></tr>
         <tr><td>{% trans "Unused" %}</td><td>{{ lead.unused }} k€</td></tr>
+        <tr><td>{% trans "Margin over rate objective" %}</td><td>{{ lead.totalObjectiveMargin }} k€</td></tr>
     </table>
 <h2>{% trans "Billing" %}</h2>
     {% include "billing/_lead_billing.html" %}

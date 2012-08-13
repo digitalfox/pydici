@@ -163,6 +163,28 @@ class Lead(models.Model):
                     unused -= mission.price
         return unused
 
+    def objectiveMargin(self, startDate=None, endDate=None):
+        """Compute margin over rate objective of all lead's missions
+        @param startDate: starting date to consider. This date is included in range. If None, start date is the begining of each mission
+        @param endDate: ending date to consider. This date is excluded from range. If None, end date is last timesheet for each mission.
+        @return: dict where key is consultant, value is cumulated margin over objective
+        @see: for global sum, see totalMarginObjectives()"""
+        leadMargin = {}
+        for mission in self.mission_set.all():
+            missionMargin = mission.objectiveMargin(startDate, endDate)
+            for consultant in missionMargin:
+                if consultant in leadMargin:
+                    leadMargin[consultant] += missionMargin[consultant]
+                else:
+                    leadMargin[consultant] = missionMargin[consultant]
+        return leadMargin
+
+    def totalObjectiveMargin(self, startDate=None, endDate=None):
+        """Compute total margin objective of all lead's missions for all consultants
+        @return: int in k€
+        @see: for per consultant, look at marginObjectives()"""
+        return sum(self.objectiveMargin(startDate, endDate).values())
+
     def actions(self):
         """Returns actions for this lead and its missions"""
         actionStates = ActionState.objects.filter(Q(target_id=self.id,
