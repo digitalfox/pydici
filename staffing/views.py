@@ -477,7 +477,6 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                                "previous_date": previous_date,
                                "previous_week": previous_week,
                                "next_week": next_week,
-                               "link_to_staffing": False, # for consultant_base template links
                                "user": request.user},
                                RequestContext(request))
 

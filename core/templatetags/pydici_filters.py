@@ -82,7 +82,7 @@ def link_to_timesheet(value, arg=None):
                                         escape(_("My timesheet")))
         return mark_safe(url)
     except Consultant.DoesNotExist:
-        return value
+        return None
 
 
 @register.filter
@@ -95,7 +95,7 @@ def link_to_staffing(value, arg=None):
                                         escape(_("My staffing")))
         return mark_safe(url)
     except Consultant.DoesNotExist:
-        return value
+        return None
 
 
 @register.filter
