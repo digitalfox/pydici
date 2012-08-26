@@ -88,6 +88,7 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
                                RequestContext(request))
 
 @pydici_non_public
+@cache_page(60 * 60)
 def graph_company_business_activity_jqp(request, company_id):
     """Business activity (leads and bills) for a company
     @todo: extend this graph to multiple companies"""
