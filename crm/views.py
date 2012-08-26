@@ -35,6 +35,10 @@ def company_detail(request, company_id):
     consultants = [s.consultant for s in Timesheet.objects.filter(mission__lead__client__organisation__company=company).select_related()]
     consultants = list(set(consultants))  # Distinct
 
+    companies = set()
+    for client in Client.objects.all():
+        companies.add(client.organisation.company)
+
     return render_to_response("crm/clientcompany_detail.html",
                               {"company": company,
                                "leads": leads,
@@ -43,7 +47,7 @@ def company_detail(request, company_id):
                                "mission_contacts": Contact.objects.filter(missioncontact__company=company).distinct(),
                                "administrative_contacts": AdministrativeContact.objects.filter(company=company),
                                "clients": Client.objects.filter(organisation__company=company),
-                               "companies": Company.objects.all()},
+                               "companies": companies},
                                RequestContext(request))
 
 
