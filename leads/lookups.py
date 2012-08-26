@@ -8,19 +8,21 @@ Ajax custom lookup
 from pydici.leads.models import Lead
 from django.db.models import Q
 
+
 class LeadLookup(object):
     def get_query(self, q, request):
         """ return a query set.  you also have access to request.user if needed """
         qs = Lead.objects.filter(state="WON")
         # Get lead with name and client name
         qs = qs.filter(Q(name__icontains=q) |
+                       Q(deal_id__icontains=q) |
                        Q(client__organisation__name__icontains=q) |
                        Q(client__organisation__company__name__icontains=q))
         return qs
 
     def format_result(self, lead):
         """ the search results display in the dropdown menu.  may contain html and multiple-lines. will remove any |  """
-        return unicode(lead)
+        return u"%s (%s)" % (lead, lead.deal_id)
 
     def format_item(self, lead):
         """ the display of a currently selected object in the area below the search box. html is OK """
