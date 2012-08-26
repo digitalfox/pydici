@@ -17,7 +17,7 @@ from pydici.crm.models import Company, Client, Contact, AdministrativeContact
 from pydici.staffing.models import Timesheet
 from pydici.leads.models import Lead
 from pydici.core.decorator import pydici_non_public
-from pydici.core.utils import COLORS
+from pydici.core.utils import sortedValues, previousMonth, COLORS
 from pydici.billing.models import ClientBill
 
 
@@ -32,8 +32,8 @@ def company_detail(request, company_id):
     leads = leads.order_by("client", "state", "start_date")
 
     # Find consultant that work (=declare timesheet) for this company
-    consultants = [ s.consultant for s in Timesheet.objects.filter(mission__lead__client__organisation__company=company).select_related()]
-    consultants = list(set(consultants)) # Distinct
+    consultants = [s.consultant for s in Timesheet.objects.filter(mission__lead__client__organisation__company=company).select_related()]
+    consultants = list(set(consultants))  # Distinct
 
     return render_to_response("crm/clientcompany_detail.html",
                               {"company": company,
@@ -84,5 +84,55 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
                                "only_last_year": onlyLastYear,
                                "min_date": minDate,
                                "labels": json.dumps(labels),
+                               "user": request.user},
+                               RequestContext(request))
+
+@pydici_non_public
+def graph_company_business_activity_jqp(request, company_id):
+    """Business activity (leads and bills) for a company
+    @todo: extend this graph to multiple companies"""
+    graph_data = []
+    billsData = dict()
+    allLeadsData = dict()
+    wonLeadsData = dict()
+    minDate = date.today()
+    company = Company.objects.get(id=company_id)
+
+    for bill in ClientBill.objects.filter(lead__client__organisation__company=company):
+        kdate = bill.creation_date.replace(day=1)
+        if kdate in billsData:
+            billsData[kdate] += int(float(bill.amount) / 1000)
+        else:
+            billsData[kdate] = int(float(bill.amount) / 1000)
+
+    for lead in Lead.objects.filter(client__organisation__company=company):
+        kdate = lead.creation_date.date().replace(day=1)
+        if lead.state == "WON":
+            datas = (allLeadsData, wonLeadsData)
+        else:
+            datas = (allLeadsData,)
+        for data in datas:
+            if kdate in data:
+                data[kdate] += 1
+            else:
+                data[kdate] = 1
+
+    for data in (billsData, allLeadsData, wonLeadsData):
+        kdates = data.keys()
+        kdates.sort()
+        isoKdates = [a.isoformat() for a in kdates]  # List of date as string in ISO format
+        if len(kdates) > 0 and kdates[0] < minDate:
+            minDate = kdates[0]
+        data = zip(isoKdates, sortedValues(data))
+        if not data:
+            data = ((0, 0))
+        graph_data.append(data)
+
+    minDate = previousMonth(minDate)
+
+    return render_to_response("crm/graph_company_business_activity_jqp.html",
+                              {"graph_data": json.dumps(graph_data),
+                               "series_colors": COLORS,
+                               "min_date": minDate.isoformat(),
                                "user": request.user},
                                RequestContext(request))

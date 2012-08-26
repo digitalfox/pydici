@@ -45,6 +45,12 @@
 
 <div id="tab-leads">
 
+<div id="graph_company_business_activity_jqp_content"></div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#graph_company_business_activity_jqp_content').load('{% url graph_company_business_activity company.id %}');
+});
+</script>
 
 <h2>{% trans "Sales with this client: "%} {{ company.sales|floatformat:-1 }} k€</h2>
 

@@ -129,6 +129,12 @@ def nextMonth(month):
     @return: date or datetime object (depending on input parameter) of the first day of next month"""
     return (month.replace(day=1) + timedelta(days=40)).replace(day=1)
 
+def previousMonth(month):
+    """Compute previoujs month
+    @param month: date or datetime object
+    @return: date or datetime object (depending on input parameter) of the first day of previous month"""
+    return (month.replace(day=1) - timedelta(days=10)).replace(day=1)
+
 def daysOfMonth(month, week=None):
     """
     @param month: datetime object of any day in the month: 

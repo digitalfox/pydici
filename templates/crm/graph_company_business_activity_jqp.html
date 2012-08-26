@@ -1,0 +1,85 @@
+{# Fragment that display company business activity to be included with a jquery load #}
+{# One must include in its extrajs block core/_jqplot.html to load according js/css #}
+{% load i18n %}
+
+
+<div id="company_business_activity_jqp" style="height: 400px; width: 800px;"></div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$.jqplot.config.enablePlugins = true;
+$.jqplot('company_business_activity_jqp',  {{ graph_data|safe }}, {
+    animate : true,
+    stackSeries: true,
+    captureRightClick: true,
+    seriesColors: {{ series_colors|safe }},
+    seriesDefaults:{
+      renderer:$.jqplot.BarRenderer,
+      rendererOptions: {
+          barMargin: 20,
+          barWidth: 15,
+      },
+      pointLabels: {show: true}
+    },
+    series:[
+         {label: "{% trans 'Billing' %}" },
+         {
+          label: "{% trans 'All leads' %}",
+          renderer: $.jqplot.LineRenderer,
+          rendererOptions: { smooth: true },
+          linePattern: 'dashed',
+          lineWidth: 1,
+          markerOptions : { size : 5},
+          yaxis: 'y2axis',
+          disableStack : true,
+         },
+         {
+             label: "{% trans 'Won leads' %}",
+             renderer: $.jqplot.LineRenderer,
+             rendererOptions: { smooth: true },
+             yaxis: 'y2axis',
+             disableStack : true,
+         }
+        ],
+    axes: {
+      xaxis: {
+          renderer: $.jqplot.DateAxisRenderer,
+          labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+          tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+          tickOptions:{
+              formatString:'%b %y',
+              angle: -40 
+          },
+          min: '{{ min_date }}',
+          tickInterval: '1 month',
+      },
+      yaxis: {
+          syncTicks : true,
+          label: "{% trans 'k€' %}",
+          labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+          tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+      },
+      y2axis: {
+          //padMin: 1,
+          pad : 1.2,
+          tickInterval: 1,
+          syncTicks : true,
+          labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+          tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+          //tickOptions: { formatString: '%dk€' },
+      }
+    },
+    legend: {
+        show:true,
+         location: 'e',
+         placement: 'outsideGrid',
+    },
+    highlighter: {
+        tooltipAxes: 'y',
+        showLabel: true,
+        sizeAdjust: 7.5,
+    },
+});
+
+}); // End of ready()
+</script>
