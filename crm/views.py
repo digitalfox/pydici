@@ -35,9 +35,7 @@ def company_detail(request, company_id):
     consultants = [s.consultant for s in Timesheet.objects.filter(mission__lead__client__organisation__company=company).select_related()]
     consultants = list(set(consultants))  # Distinct
 
-    companies = set()
-    for client in Client.objects.all():
-        companies.add(client.organisation.company)
+    companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
 
     return render_to_response("crm/clientcompany_detail.html",
                               {"company": company,
@@ -54,9 +52,7 @@ def company_detail(request, company_id):
 @pydici_non_public
 def company_list(request):
     """Client company list"""
-    companies = set()
-    for client in Client.objects.all():
-        companies.add(client.organisation.company)
+    companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
     return render_to_response("crm/clientcompany_list.html",
                               {"companies": list(companies)},
                                RequestContext(request))
