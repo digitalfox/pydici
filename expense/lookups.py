@@ -18,6 +18,7 @@ class ChargeableExpenseLookup(object):
         return Expense.objects.filter(chargeable=True, clientbill=None).filter(Q(description__icontains=q) |
                                                                                Q(comment__icontains=q) |
                                                                                Q(lead__name__icontains=q) |
+                                                                               Q(lead__deal_id__icontains=q) |
                                                                                Q(lead__client__organisation__company__name__icontains=q))
 
     def format_result(self, expense):

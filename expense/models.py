@@ -53,7 +53,7 @@ class Expense(models.Model):
 
     def __unicode__(self):
         if self.lead:
-            return u"%s (%s) - %s €" % (self.description, self.lead, self.amount)
+            return u"%s (%s %s) - %s €" % (self.description, self.lead, self.lead.deal_id, self.amount)
         else:
             return u"%s - %s €" % (self.description, self.amount)
 
