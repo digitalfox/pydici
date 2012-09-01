@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from pydici.core.utils import capitalize
 
+
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
 
@@ -38,6 +39,8 @@ class Subsidiary(AbstractCompany):
 
 class Company(AbstractCompany):
     """Company"""
+    businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True)
+
     def sales(self, onlyLastYear=False):
         """Sales billed for this company in keuros"""
         from pydici.billing.models import ClientBill

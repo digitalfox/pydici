@@ -14,10 +14,18 @@ from pydici.crm.models import Client, ClientOrganisation, Company, \
 from pydici.core.admin import ReturnToAppAdmin
 
 
-class CompanyAdmin(ReturnToAppAdmin):
-    """Base admin model for subsidiary, clientcompanies and suppliers companies"""
+class SubsidiaryAdmin(ReturnToAppAdmin):
+    """Admin model for subsidiary"""
     list_display = ("name", "code")
     search_fields = ("name", "code")
+    ordering = ("name",)
+
+
+class CompanyAdmin(ReturnToAppAdmin):
+    """Admin model for client companies and suppliers companies"""
+    list_display = ("name", "code", "businessOwner")
+    search_fields = ("name", "code", "businessOwner")
+    list_filter = ("businessOwner",)
     ordering = ("name",)
 
 
@@ -74,7 +82,7 @@ class ClientAdmin(ReturnToAppAdmin):
     search_fields = ("organisation__company__name", "organisation__name", "contact__name")
 
 
-admin.site.register(Subsidiary, CompanyAdmin)
+admin.site.register(Subsidiary, SubsidiaryAdmin)
 admin.site.register(Company, CompanyAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(ClientOrganisation, ClientOrganisationAdmin)
