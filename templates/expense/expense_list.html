@@ -27,7 +27,18 @@
     <td>{{ expense.description }}</td>
     <td>{% if expense.lead %}<a href="{% url pydici.leads.views.detail expense.lead.id %}">{{ expense.lead }}</a>{% endif %}</td>
     <td>{{ expense.amount }}</td>
-    <td>{% if expense.chargeable %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+    <td>{% if expense.chargeable %}
+            {% if expense.clientbill_set.all %}
+                {% for bill in expense.clientbill_set.all %}
+                    <a href="{% url admin:billing_clientbill_change bill.id %}">{{ bill }}</a>
+                    <a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
+                {% endfor %}
+            {% else %}
+                {% trans "Yes, but not charged yet" %}
+            {% endif %}
+        {% else %}
+            {% trans "No" %}
+        {% endif %}</td>
     <td>{% if expense.receipt %}<a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}</td>
     <td>{{ expense.state }}</td>
     <td>{{ expense.expense_date }}</td>
