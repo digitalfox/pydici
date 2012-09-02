@@ -24,6 +24,7 @@ def consultant_detail(request, consultant_id):
         # Compute user current mission based on forecast
         missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
         companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
+        business_territory = Company.objects.filter(businessOwner=consultant)
         leads_as_responsible = set(consultant.lead_responsible.active())
         leads_as_staffee = consultant.lead_set.active()
     except Consultant.DoesNotExist:
@@ -33,6 +34,7 @@ def consultant_detail(request, consultant_id):
                                "staff": staff,
                                "missions": missions,
                                "companies": companies,
+                               "business_territory": business_territory,
                                "leads_as_responsible": leads_as_responsible,
                                "leads_as_staffee": leads_as_staffee,
                                "user": request.user},

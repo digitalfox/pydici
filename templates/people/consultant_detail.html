@@ -55,6 +55,18 @@
     {% endwith %}
     </div>
 </li>
+{% if business_territory %}
+<li>
+    <div class="pydici-grid-item">
+    <h3>{% trans "Business territory" %}</h3>
+    <ul>
+    {% for company in business_territory %}
+        <li><a href="{% url pydici.crm.views.company_detail company.id %}">{{ company }}</a></li>
+    {% endfor %}
+    </ul>
+    </div>
+</li>
+{% endif %}
 <li>
     <div class="pydici-grid-item">
 	<h3>{% trans "Clients" %}</h3>
