@@ -127,31 +127,22 @@ def expense_receipt(request, expense_id):
 
 @pydici_non_public
 def expenses_history(request, year):
-    """Display expense history"""
-    #TODO: add time range (year)
-    expenses = []
+    """Display expense history.
+    @param year: year of history. If None, display recent items and year index"""
+    expenses = Expense.objects.all()
     try:
         consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
         user_team = consultant.userTeam()
     except Consultant.DoesNotExist:
         user_team = []
 
-    expenses = Expense.objects.all()
     if not perm.has_role(request.user, "expense paymaster"):
         expenses = expenses.filter(Q(user=request.user) | Q(user__in=user_team))
 
     if year:
-        #begin = date(year, 1, 1)
-        #end = date(year + 1, 1, 1)
-        #expenses = expenses.filter(expense_date__gte=begin, expense_date__lt=end)
-        return date_based.archive_year(request, year, expenses, "expense_date", extra_context={ "user": request.user}, make_object_list=True)
+        return date_based.archive_year(request, year, expenses, "expense_date", extra_context={"user": request.user}, make_object_list=True)
     else:
-        return date_based.archive_index(request, expenses, "expense_date", extra_context={ "user": request.user})
-    #return render_to_response("expense/expenses_history.html",
-    #                          {"expenses": expenses,
-    #                           "user": request.user},
-    #                           RequestContext(request))
-
+        return date_based.archive_index(request, expenses, "expense_date", extra_context={"user": request.user})
 
 @pydici_non_public
 def mission_expenses(request, mission_id):
