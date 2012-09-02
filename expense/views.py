@@ -17,6 +17,7 @@ from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
 from django.db.models import Q
+from django.views.generic import date_based
 
 from pydici.expense.forms import ExpenseForm
 from pydici.expense.models import Expense
@@ -125,7 +126,7 @@ def expense_receipt(request, expense_id):
 
 
 @pydici_non_public
-def expenses_history(request):
+def expenses_history(request, year):
     """Display expense history"""
     #TODO: add time range (year)
     expenses = []
@@ -139,10 +140,17 @@ def expenses_history(request):
     if not perm.has_role(request.user, "expense paymaster"):
         expenses = expenses.filter(Q(user=request.user) | Q(user__in=user_team))
 
-    return render_to_response("expense/expenses_history.html",
-                              {"expenses": expenses,
-                               "user": request.user},
-                               RequestContext(request))
+    if year:
+        #begin = date(year, 1, 1)
+        #end = date(year + 1, 1, 1)
+        #expenses = expenses.filter(expense_date__gte=begin, expense_date__lt=end)
+        return date_based.archive_year(request, year, expenses, "expense_date", extra_context={ "user": request.user}, make_object_list=True)
+    else:
+        return date_based.archive_index(request, expenses, "expense_date", extra_context={ "user": request.user})
+    #return render_to_response("expense/expenses_history.html",
+    #                          {"expenses": expenses,
+    #                           "user": request.user},
+    #                           RequestContext(request))
 
 
 @pydici_non_public

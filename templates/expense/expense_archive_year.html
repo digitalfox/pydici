@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{% trans "Expenses history" %}{% endblock %}
+
+{% block content %}
+
+<h1>{% trans "Expenses for year" %} {{year}}</h1>
+<div id="content-large">
+{% with object_list as expenses %}
+    {% include "expense/expense_list.html" %}
+{% endwith %}
+</div>
+<br/><br/>
+
+<a href='{% url pydici.expense.views.expenses_history %}'>{% trans "Back to expenses index" %}</a>
+
+
+{% endblock %}

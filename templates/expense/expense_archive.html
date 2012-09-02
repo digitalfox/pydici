@@ -12,9 +12,18 @@
 
 {% block content %}
 
-<h1>{% trans "Expenses history" %}</h1>
+<h1>{% trans "Last expenses" %}</h1>
 <div id="content-large">
-{% include "expense/expense_list.html" %}
+{% with latest as expenses %}
+    {% include "expense/expense_list.html" %}
+{% endwith %}
 </div>
+
+<h1>{% trans "Expenses archive" %}</h1>
+<ul>
+{% for date in date_list %}
+    <li><a href='{% url pydici.expense.views.expenses_history date.year %}'>{{ date.year }}</a></li>
+{% endfor %}
+</ul>
 
 {% endblock %}
