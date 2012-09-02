@@ -346,14 +346,6 @@ def deactivate_mission(request, mission_id):
                         mimetype="application/json")
 
 
-def consultant_home(request, consultant_id):
-    """Home page of consultant staffing/timesheet stuff - this page loads all others mission sub-pages"""
-    return render_to_response('staffing/consultant.html',
-                              {"consultant": Consultant.objects.get(id=consultant_id),
-                               "user": request.user},
-                               RequestContext(request))
-
-
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
     """Consultant timesheet"""
@@ -700,7 +692,7 @@ def all_timesheet(request, year=None, month=None):
         data = list(consultants)
     else:
         # drill down link
-        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.consultant_home", args=[consultant.id]),
+        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (urlresolvers.reverse("pydici.people.views.consultant_home", args=[consultant.id]),
                                                                                    month.year,
                                                                                    month.month,
                                                                                    escape(unicode(consultant)))) for consultant in consultants]

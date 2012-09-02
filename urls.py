@@ -89,7 +89,6 @@ pydici_patterns += patterns('pydici.staffing.views',
     (r'^staffing/mission/newfromdeal/(?P<lead_id>\d+)/$', 'create_new_mission_from_lead'),
     (r'^staffing/forecast/mission/(?P<mission_id>\d+)/$', 'mission_staffing'),
     (r'^staffing/mission/(?P<mission_id>\d+)/deactivate$', 'deactivate_mission'),
-    (r'^staffing/consultant/(?P<consultant_id>\d+)/$', 'consultant_home'),
     (r'^staffing/forecast/consultant/(?P<consultant_id>\d+)/$', 'consultant_staffing'),
     (r'^staffing/forecast/mass/$', 'mass_staffing'),
     (r'^staffing/timesheet/all/?$', 'all_timesheet'),
@@ -108,7 +107,8 @@ pydici_patterns += patterns('pydici.staffing.views',
 
 # People module
 pydici_patterns += patterns('pydici.people.views',
-    (r'^people/consultant/(?P<consultant_id>\d+)/$', 'consultant_detail'),
+    (r'^people/home/consultant/(?P<consultant_id>\d+)/$', 'consultant_home'),
+    (r'^people/detail/consultant/(?P<consultant_id>\d+)/$', 'consultant_detail'),
 )
 
 # CRM module

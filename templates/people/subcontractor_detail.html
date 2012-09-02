@@ -24,7 +24,7 @@
 <ul>
 <li>
     <div class="pydici-grid-item">
-    <p><a href='{% url pydici.staffing.views.consultant_home consultant.id %}#tab-timesheet'>{% trans "timesheet" %} <img title='{% trans "timesheet" %}' src='{{ MEDIA_URL }}pydici/timesheet.png'/></a></p>
+    <p><a href='{% url pydici.people.views.consultant_home consultant.id %}#tab-timesheet'>{% trans "timesheet" %} <img title='{% trans "timesheet" %}' src='{{ MEDIA_URL }}pydici/timesheet.png'/></a></p>
 	<p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{% trans "Contact: " %} {{ consultant.manager.full_name }}{% endifnotequal %}{% endif %}</p>
 	</div>
 </li>

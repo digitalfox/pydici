@@ -6,13 +6,20 @@ Pydici people views. Http request are processed here.
 """
 
 from django.shortcuts import render_to_response
-from django.http import Http404, HttpResponseRedirect
-from django.core import urlresolvers
+from django.http import Http404
 from django.template import RequestContext
 
 from pydici.people.models import Consultant
 from pydici.crm.models import Company
 from pydici.core.decorator import pydici_non_public
+
+
+def consultant_home(request, consultant_id):
+    """Home page of consultant - this page loads all others mission sub-pages"""
+    return render_to_response('people/consultant.html',
+                              {"consultant": Consultant.objects.get(id=consultant_id),
+                               "user": request.user},
+                               RequestContext(request))
 
 
 @pydici_non_public

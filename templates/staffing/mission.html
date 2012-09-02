@@ -66,7 +66,7 @@
 	    <tr><th>{% trans "Consultant" %}</th><th>{% trans "Daily rate (€)" %}</th><th></th></tr>
 	    {% for consultant, rate in mission.consultant_rates.items %}
 	        <tr {%cycle 'class="row1"' 'class="row2"' %}>
-	            <td><a href='{% url pydici.staffing.views.consultant_home consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
+	            <td><a href='{% url pydici.people.views.consultant_home consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
 	            <td align="right"><div id="sold-{{ mission.id }}-{{ consultant.id }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
 	            <td align="right">{% if consultant.subcontractor %}(<div id="bought-{{ mission.id }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>){% endif %}</td>
 	        </tr>

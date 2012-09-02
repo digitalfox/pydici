@@ -73,20 +73,11 @@ class SimpleTest(TestCase):
                      "/staffing/mission/3/",
                      "/staffing/mission/3/#tab-staffing",
                      "/staffing/mission/3/#tab-timesheet",
-                     "/staffing/forecast/mission/1/",
-                     "/staffing/forecast/mission/2/",
-                     "/staffing/forecast/mission/3/",
                      "/staffing/forecast/consultant/1/",
-                     "/staffing/timesheet/mission/1/",
-                     "/staffing/timesheet/mission/2/",
-                     "/staffing/timesheet/mission/3/",
                      "/staffing/timesheet/consultant/1/",
                      "/staffing/timesheet/consultant/1/?csv",
                      "/staffing/timesheet/consultant/1/2010/10",
                      "/staffing/timesheet/consultant/1/2010/10/2",
-                     "/staffing/consultant/1/",
-                     "/staffing/consultant/1/#tab-staffing",
-                     "/staffing/consultant/1/#tab-timesheet",
                      "/staffing/timesheet/all",
                      "/staffing/timesheet/all/?csv",
                      "/staffing/timesheet/all/2010/11",
@@ -95,9 +86,12 @@ class SimpleTest(TestCase):
                      "/staffing/graph/rates/",
                      "/staffing/graph/rates/graph-jqp/consultant/1",
                      "/staffing/mission/1/deactivate",
-                     "/people/consultant/1/",
-                     "/people/consultant/2/",
-                     "/people/consultant/3/",
+                     "/people/home/consultant/1/",
+                     "/people/home/consultant/2/",
+                     "/people/home/consultant/3/",
+                     "/people/detail/consultant/1/",
+                     "/people/home/consultant/1/#tab-staffing",
+                     "/people/home/consultant/1/#tab-timesheet",
                      "/crm/company/1/",
                      "/crm/company/",
                      "/crm/company/graph/sales",
@@ -129,7 +123,14 @@ class SimpleTest(TestCase):
         response = self.client.get(PREFIX + "/help")
         self.failUnlessEqual(response.status_code, 301)
         for page in ("/staffing/mission/newfromdeal/1/",
-                     "/staffing/mission/newfromdeal/2/",):
+                     "/staffing/mission/newfromdeal/2/",
+                     "/staffing/forecast/mission/1/",
+                     "/staffing/forecast/mission/2/",
+                     "/staffing/forecast/mission/3/",
+                     "/staffing/timesheet/mission/1/",
+                     "/staffing/timesheet/mission/2/",
+                     "/staffing/timesheet/mission/3/",
+                     ):
             response = self.client.get(PREFIX + page)
             self.failUnlessEqual(response.status_code, 302)
 

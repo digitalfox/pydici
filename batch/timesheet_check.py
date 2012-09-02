@@ -58,7 +58,7 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
             continue
         missions = consultant.timesheet_missions(month=currentMonth)
         timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, currentMonth)
-        url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("pydici.staffing.views.consultant_home", args=[consultant.id])
+        url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("pydici.people.views.consultant_home", args=[consultant.id])
         url += "?year=%s;month=%s" % (currentMonth.year, currentMonth.month)
 
         # Truncate if day parameter was given
