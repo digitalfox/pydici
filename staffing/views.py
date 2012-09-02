@@ -14,7 +14,7 @@ from matplotlib.figure import Figure
 from ajax_select.fields import autoselect_fields_check_can_add
 
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
@@ -78,6 +78,10 @@ def mission_staffing(request, mission_id):
         readOnly = False
     else:
         readOnly = True
+
+    if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        # This view should only be accessed by ajax request. Redirect lost users
+        return redirect(mission_home, mission_id)
 
     StaffingFormSet = inlineformset_factory(Mission, Staffing,
                                             formset=MissionStaffingInlineFormset)
@@ -524,6 +528,10 @@ def mission_timesheet(request, mission_id):
     if "csv" in request.GET:
         return mission_csv_timesheet(request, mission, consultants)
 
+    if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        # This view should only be accessed by ajax request. Redirect lost users
+        return redirect(mission_home, mission_id)
+
     # Gather timesheet (Only consider timesheet up to current month)
     timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
     timesheetMonths = list(timesheets.dates("working_date", "month"))
@@ -929,6 +937,7 @@ def mission_update(request):
 def mission_contacts(request, mission_id):
     """Mission contacts: business, work, administrative
     This views is intented to be called in ajax"""
+
     mission = Mission.objects.get(id=mission_id)
     if request.method == "POST":
         form = MissionContactForm(request.POST, instance=mission)
