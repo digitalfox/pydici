@@ -19,7 +19,7 @@
 <div id="content-large">
 <h1>{{ consultant.full_name }} {% if consultant.subcontractor %} - {% trans "subcontractor" %} {% endif %}
 {% if perms.people.change_consultant %}
-<a href='{% url admin:people_consultant_change consultant.id %}'><img title='{% trans "Change" %}' src='{{ MEDIA_URL }}pydici/configure.png'/></a>
+<a href='{% url admin:people_consultant_change consultant.id %}?return_to={{ consultant.get_absolute_url }}'><img title='{% trans "Change" %}' src='{{ MEDIA_URL }}pydici/configure.png'/></a>
 {% endif %}
 </h1>
 

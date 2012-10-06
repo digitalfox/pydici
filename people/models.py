@@ -92,11 +92,11 @@ class Consultant(models.Model):
         @return: ((rate1, #days), (rate2, #days)...)"""
         from pydici.staffing.models import FinancialCondition
         fc = FinancialCondition.objects.filter(consultant=self,
-                                               consultant__timesheet__charge__gt=0, # exclude null charge
+                                               consultant__timesheet__charge__gt=0,  # exclude null charge
                                                consultant__timesheet__working_date__gte=startDate,
                                                consultant__timesheet__working_date__lt=endDate,
-                                               consultant__timesheet=F("mission__timesheet")) # Join to avoid duplicate entries
-        fc = fc.values("daily_rate").annotate(Sum("consultant__timesheet__charge")) # nb days at this rate group by timesheet
+                                               consultant__timesheet=F("mission__timesheet"))  # Join to avoid duplicate entries
+        fc = fc.values("daily_rate").annotate(Sum("consultant__timesheet__charge"))  # nb days at this rate group by timesheet
         fc = fc.values_list("daily_rate", "consultant__timesheet__charge__sum")
         fc = fc.order_by("daily_rate")
         return fc
@@ -148,6 +148,10 @@ class Consultant(models.Model):
     def pending_actions(self):
         """Returns pending actions"""
         return ActionState.objects.filter(user=self.getUser(), state="TO_BE_DONE")
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('pydici.people.views.consultant_home', [str(self.id)])
 
     class Meta:
         ordering = ["name", ]
