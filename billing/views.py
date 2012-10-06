@@ -25,7 +25,7 @@ from pydici.leads.models import Lead
 from pydici.people.models import Consultant
 from pydici.staffing.models import Timesheet, FinancialCondition, Staffing, Mission
 from pydici.crm.models import Company
-from pydici.core.utils import print_png, COLORS, sortedValues, nextMonth, previousMonth
+from pydici.core.utils import print_png, COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round
 from pydici.core.decorator import pydici_non_public
 
 
@@ -135,7 +135,6 @@ def pre_billing(request, year=None, month=None):
 
     next_month = nextMonth(month)
     timeSpentBilling = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
-    fixedPriceBilling = defaultdict(list)  # Key is lead, value is list of fixed price mission, with done work and already billed work
     rates = {}  # Key is mission, value is Consultant rates dict
 
     fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
@@ -164,7 +163,7 @@ def pre_billing(request, year=None, month=None):
         total = charge * rates[mission][consultant][0]
         timeSpentBilling[lead][0] += total
         timeSpentBilling[lead][1][mission][0] += total
-        timeSpentBilling[lead][1][mission][1].append([consultant, charge, rates[mission][consultant][0], total])
+        timeSpentBilling[lead][1][mission][1].append([consultant, to_int_or_round(charge, 2), rates[mission][consultant][0], total])
 
     # Sort data
     timeSpentBilling = timeSpentBilling.items()
