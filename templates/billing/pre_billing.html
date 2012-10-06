@@ -12,7 +12,7 @@
 {% block content %}
 <div id="content-large">
 <h1>{% trans "Pre billing for time spent missions" %} - {{ month|date:"F Y" }}</h1>
-{% for lead, lead_data in time_spent_billing.items %}
+{% for lead, lead_data in time_spent_billing %}
     <hr/>
     <h2><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
     {% for mission, mission_data in lead_data.1.items %}

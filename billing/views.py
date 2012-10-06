@@ -141,7 +141,7 @@ def pre_billing(request, year=None, month=None):
     fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
                                       timesheet__working_date__gte=month,
                                       timesheet__working_date__lt=next_month)
-    fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
+    fixedPriceMissions = fixedPriceMissions.order_by("lead__deal_id").distinct()
 
     timesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
                                           mission__nature="PROD", mission__billing_mode="TIME_SPENT")
@@ -165,6 +165,10 @@ def pre_billing(request, year=None, month=None):
         timeSpentBilling[lead][0] += total
         timeSpentBilling[lead][1][mission][0] += total
         timeSpentBilling[lead][1][mission][1].append([consultant, charge, rates[mission][consultant][0], total])
+
+    # Sort data
+    timeSpentBilling = timeSpentBilling.items()
+    timeSpentBilling.sort(key=lambda x: x[0].deal_id)
 
     return render_to_response("billing/pre_billing.html",
                               {"time_spent_billing": timeSpentBilling,
