@@ -8,7 +8,9 @@ $(document).ready(function() {
             error: function( xhr, status, index, anchor ) {
                 $( anchor.hash ).html('{% trans "Could not load this tab. Sorry" %}');
             }
-        }
+        },
+        fx: [{opacity:'toggle', duration:100},
+             {opacity:'toggle', duration:100}],
     });
     $("#{{ tabs }}").bind("tabsshow", function(event, ui) {
         window.location.hash = ui.tab.hash;
