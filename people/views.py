@@ -5,7 +5,7 @@ Pydici people views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.http import Http404
 from django.template import RequestContext
 
@@ -25,6 +25,9 @@ def consultant_home(request, consultant_id):
 @pydici_non_public
 def consultant_detail(request, consultant_id):
     """Summary page of consultant activity"""
+    if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        # This view should only be accessed by ajax request. Redirect lost users
+        return redirect(consultant_home, consultant_id)
     try:
         consultant = Consultant.objects.get(id=consultant_id)
         staff = consultant.team()

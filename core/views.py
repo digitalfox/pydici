@@ -16,7 +16,7 @@ from pydici.people.models import Consultant
 from pydici.crm.models import Company, Contact
 from pydici.staffing.models import Mission
 from pydici.billing.models import ClientBill
-from pydici.people.views import consultant_detail, subcontractor_detail
+from pydici.people.views import consultant_home, subcontractor_detail
 import pydici.settings
 
 
@@ -32,7 +32,7 @@ def index(request):
 
     # If user is an existing consultant and not a subcontractor, return personal home page
     if consultant and not consultant.subcontractor:
-        return consultant_detail(request, consultant.id)
+        return consultant_home(request, consultant.id)
     # For subcontractor, specific page :
     if consultant and consultant.subcontractor:
         return subcontractor_detail(request, consultant.id)
