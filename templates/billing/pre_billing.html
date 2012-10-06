@@ -42,7 +42,7 @@
         <ul>
     {% endifchanged %}
     <li><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }} ({{ mission.mission_id }}) : </a>
-    {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "total:" %} {{ mission.price }} k€)
+    {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
 
 {% endfor %}
 

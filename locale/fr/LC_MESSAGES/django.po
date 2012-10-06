@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-06 20:15+0200\n"
-"PO-Revision-Date: 2012-10-06 20:15+0200\n"
+"POT-Creation-Date: 2012-10-06 20:43+0200\n"
+"PO-Revision-Date: 2012-10-06 20:43+0200\n"
 "Last-Translator: Sébastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -282,15 +282,15 @@ msgstr "N° de facture fournisseur"
 msgid "Supplier Bill"
 msgstr "Facture fournisseur"
 
-#: billing/views.py:271
+#: billing/views.py:275
 msgid "Done work"
 msgstr "Montant réalisé"
 
-#: billing/views.py:271
+#: billing/views.py:275
 msgid "Forecasted work"
 msgstr "Montant prévu"
 
-#: billing/views.py:271
+#: billing/views.py:275
 msgid "Weighted forecasted work"
 msgstr "Montant prévu pondéré"
 
@@ -1498,8 +1498,8 @@ msgid "%(done)s k€ done "
 msgstr "%(done)s k€ réalisés "
 
 #: templates/billing/pre_billing.html:45
-msgid "total:"
-msgstr "total : "
+msgid "sold:"
+msgstr "Vendu :"
 
 #: templates/core/_access_forbiden.html:5
 msgid ""
@@ -2389,6 +2389,12 @@ msgstr "Équipe %(manager)s"
 #: templates/staffing/pdc_review.html:100
 msgid "Totals"
 msgstr "Totaux"
+
+#~ msgid "sales:"
+#~ msgstr "Vendu : "
+
+#~ msgid "total:"
+#~ msgstr "total : "
 
 #~ msgid "Consultant "
 #~ msgstr "Consultant "
