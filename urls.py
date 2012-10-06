@@ -109,6 +109,7 @@ pydici_patterns += patterns('pydici.staffing.views',
 pydici_patterns += patterns('pydici.people.views',
     (r'^people/home/consultant/(?P<consultant_id>\d+)/$', 'consultant_home'),
     (r'^people/detail/consultant/(?P<consultant_id>\d+)/$', 'consultant_detail'),
+    (r'^people/detail/subcontractor/(?P<consultant_id>\d+)/$', 'subcontractor_detail'),
 )
 
 # CRM module

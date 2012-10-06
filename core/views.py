@@ -16,7 +16,7 @@ from pydici.people.models import Consultant
 from pydici.crm.models import Company, Contact
 from pydici.staffing.models import Mission
 from pydici.billing.models import ClientBill
-from pydici.people.views import consultant_home, subcontractor_detail
+from pydici.people.views import consultant_home
 import pydici.settings
 
 
@@ -30,17 +30,13 @@ def index(request):
     except Consultant.DoesNotExist:
         consultant = None
 
-    # If user is an existing consultant and not a subcontractor, return personal home page
-    if consultant and not consultant.subcontractor:
+    if consultant:
         return consultant_home(request, consultant.id)
-    # For subcontractor, specific page :
-    if consultant and consultant.subcontractor:
-        return subcontractor_detail(request, consultant.id)
-
-    # User is not a consultant. Go for default index page.
-    return render_to_response("core/index.html",
-                              {"user": request.user},
-                               RequestContext(request))
+    else:
+        # User is not a consultant. Go for default index page.
+        return render_to_response("core/index.html",
+                                  {"user": request.user},
+                                   RequestContext(request))
 
 
 def mobile_index(request):

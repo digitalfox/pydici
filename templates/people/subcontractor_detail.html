@@ -1,20 +1,5 @@
-{% extends "admin/base_site.html" %}
-
 {% load i18n %}
-
-{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
-{% block title %}{% trans "Consultant " %}{{ consultant }}{% endblock %}
-
-{% block content %}
-
 <div id="content-large">
-<h1>{{ consultant.full_name }} - {{consultant.profil }} {% if consultant.subcontractor %}({% trans "subcontractor" %}) {% endif %}</h1>
-
 {% if not consultant.active %}
 <h3>{% trans "This consultant does not work anymore for the company" %}</h3>
 {% endif %}
@@ -24,7 +9,6 @@
 <ul>
 <li>
     <div class="pydici-grid-item">
-    <p><a href='{% url pydici.people.views.consultant_home consultant.id %}#tab-timesheet'>{% trans "timesheet" %} <img title='{% trans "timesheet" %}' src='{{ MEDIA_URL }}pydici/timesheet.png'/></a></p>
 	<p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{% trans "Contact: " %} {{ consultant.manager.full_name }}{% endifnotequal %}{% endif %}</p>
 	</div>
 </li>
@@ -72,4 +56,3 @@
 </ul>
 </div>
 <br/>
-{% endblock %}

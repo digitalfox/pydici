@@ -25,7 +25,11 @@
 
 <div id="consultant-tabs">
     <ul>
-        <li><a title="#tab-detail"  href="{% url pydici.people.views.consultant_detail consultant.id %}">{% trans "Home" %}</a></li>
+        {% if consultant.subcontractor %}
+            <li><a title="#tab-detail"  href="{% url pydici.people.views.subcontractor_detail consultant.id %}">{% trans "Home" %}</a></li>
+        {% else %}
+            <li><a title="#tab-detail"  href="{% url pydici.people.views.consultant_detail consultant.id %}">{% trans "Home" %}</a></li>
+        {% endif %}
         {% if request.GET.year and request.GET.month %}
             <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.consultant_timesheet consultant.id request.GET.year request.GET.month %}">{% trans "Timesheet" %}</a></li>
         {% else %}
