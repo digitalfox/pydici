@@ -126,7 +126,9 @@ pydici_patterns += patterns('pydici.billing.views',
     (r'^billing/bill_review', 'bill_review'),
     (r'^billing/bill_delay', 'bill_payment_delay'),
     (r'^billing/bill/(?P<bill_id>\d+)/mark_bill_paid$', 'mark_bill_paid'),
-    (r'^billing/(?P<nature>.+)/(?P<bill_id>\d+)$', 'bill_file'),
+    (r'^billing/file/(?P<nature>.+)/(?P<bill_id>\d+)$', 'bill_file'),
+    (r'^billing/pre_billing$', 'pre_billing'),
+    (r'^billing/pre_billing/(?P<year>\d+)/(?P<month>\d+)/$', 'pre_billing'),
     (r'^billing/graph/bar', 'graph_stat_bar'),
 )
 

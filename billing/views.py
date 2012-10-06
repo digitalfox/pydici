@@ -22,9 +22,10 @@ from django.views.decorators.cache import cache_page
 
 from pydici.billing.models import ClientBill, SupplierBill
 from pydici.leads.models import Lead
-from pydici.staffing.models import Timesheet, FinancialCondition, Staffing
+from pydici.people.models import Consultant
+from pydici.staffing.models import Timesheet, FinancialCondition, Staffing, Mission
 from pydici.crm.models import Company
-from pydici.core.utils import print_png, COLORS, sortedValues
+from pydici.core.utils import print_png, COLORS, sortedValues, nextMonth, previousMonth
 from pydici.core.decorator import pydici_non_public
 
 
@@ -74,7 +75,7 @@ def bill_review(request):
 @pydici_non_public
 def bill_payment_delay(request):
     """Report on client bill payment delay"""
-    #List of tuple (company, avg delay in days)
+    # List of tuple (company, avg delay in days)
     directDelays = list()  # for direct client
     indirectDelays = list()  # for client with paying authority
     for company in Company.objects.all():
@@ -124,6 +125,55 @@ def bill_file(request, bill_id=0, nature="client"):
     return response
 
 
+@pydici_non_public
+def pre_billing(request, year=None, month=None):
+    """Pre billing page: help to identify bills to send"""
+    if year and month:
+        month = date(int(year), int(month), 1)
+    else:
+        month = previousMonth(date.today())
+
+    next_month = nextMonth(month)
+    timeSpentBilling = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
+    fixedPriceBilling = defaultdict(list)  # Key is lead, value is list of fixed price mission, with done work and already billed work
+    rates = {}  # Key is mission, value is Consultant rates dict
+
+    fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
+                                      timesheet__working_date__gte=month,
+                                      timesheet__working_date__lt=next_month)
+    fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
+
+    timesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
+                                          mission__nature="PROD", mission__billing_mode="TIME_SPENT")
+
+    timesheet_data = timesheets.order_by("mission", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
+    for mission_id, consultant_id, charge in timesheet_data:
+        mission = Mission.objects.get(id=mission_id)
+        if mission.lead:
+            lead = mission.lead
+        else:
+            # Bad data, mission with nature prod without lead... This should not happened
+            continue
+        consultant = Consultant.objects.get(id=consultant_id)
+        if not mission in rates:
+            rates[mission] = mission.consultant_rates()
+        if not lead in timeSpentBilling:
+            timeSpentBilling[lead] = [0.0, {}]  # Lead Total and dict of mission
+        if not mission in timeSpentBilling[lead][1]:
+            timeSpentBilling[lead][1][mission] = [0.0, []]  # Mission Total and detail per consultant
+        total = charge * rates[mission][consultant][0]
+        timeSpentBilling[lead][0] += total
+        timeSpentBilling[lead][1][mission][0] += total
+        timeSpentBilling[lead][1][mission][1].append([consultant, charge, rates[mission][consultant][0], total])
+
+    return render_to_response("billing/pre_billing.html",
+                              {"time_spent_billing": timeSpentBilling,
+                               "fixed_price_missions": fixedPriceMissions,
+                               "month": month,
+                               "user": request.user},
+                              RequestContext(request))
+
+
 
 @pydici_non_public
 @cache_page(60 * 10)
@@ -150,23 +200,23 @@ def graph_stat_bar(request):
         return print_png(fig)
 
     for bill in bills:
-        #Using first day of each month as key date
+        # Using first day of each month as key date
         kdate = bill.creation_date.replace(day=1)
         billsData[kdate].append(bill)
 
     # Collect Financial conditions as a hash for further lookup
-    financialConditions = {} # First key is consultant id, second is mission id. Value is daily rate
-    #TODO: filter FC on timesheet date to forget old fc (perf)
+    financialConditions = {}  # First key is consultant id, second is mission id. Value is daily rate
+    # TODO: filter FC on timesheet date to forget old fc (perf)
     for fc in FinancialCondition.objects.filter(mission__nature="PROD"):
         if not fc.consultant_id in financialConditions:
-            financialConditions[fc.consultant_id] = {} # Empty dict for missions
+            financialConditions[fc.consultant_id] = {}  # Empty dict for missions
         financialConditions[fc.consultant_id][fc.mission_id] = fc.daily_rate
 
     # Collect data for done work according to timesheet data
     for ts in Timesheet.objects.filter(working_date__lt=today, working_date__gt=start_date, mission__nature="PROD").select_related():
         kdate = ts.working_date.replace(day=1)
         if kdate not in tsData:
-            tsData[kdate] = 0 # Create key
+            tsData[kdate] = 0  # Create key
         tsData[kdate] += ts.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
 
     # Collect data for forecasted work according to staffing data

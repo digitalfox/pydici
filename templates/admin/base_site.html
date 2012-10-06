@@ -87,10 +87,11 @@
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
                 {% if perms.actionset.change_actionstate %}
-                <li><a href='{% url admin:actionset_actionstate_changelist %}'>{% trans "On going actions" %}</a></li>
+                    <li><a href='{% url admin:actionset_actionstate_changelist %}'>{% trans "On going actions" %}</a></li>
                 {% endif %}
                 <li><a href='{% url pydici.expense.views.expenses %}'>{% trans "Expenses" %}</a></li>
                 <li><a href="{% url admin:billing_clientbill_changelist %}">{% trans "All client bills" %}</a></li>
+                <li><a href="{% url pydici.billing.views.pre_billing %}">{% trans "Pre billing" %}</a></li>
                 <li><a href='{% url admin:billing_clientbill_add %}?return_to={{ request.get_full_path }}'>{% trans "New client bill" %}</a></li>
                 <li><a href="{% url admin:billing_supplierbill_changelist %}">{% trans "All supplier bills" %}</a></li>
                 <li><a href='{% url admin:billing_supplierbill_add %}?return_to={{ request.get_full_path }}'>{% trans "New supplier bill" %}</a></li>

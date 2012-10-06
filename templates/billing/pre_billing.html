@@ -1,0 +1,50 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{% trans "Billing preparation" %}{% endblock %}
+
+{% block content %}
+<div id="content-large">
+<h1>{% trans "Pre billing for time spent missions" %} - {{ month|date:"F Y" }}</h1>
+{% for lead, lead_data in time_spent_billing.items %}
+    <hr/>
+    <h2><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
+    {% for mission, mission_data in lead_data.1.items %}
+        <h5><a href="{% url pydici.staffing.views.mission_home mission.id %}">{{ mission }} ({{ mission.mission_id }})</a></h5>
+            <table>
+            <tr><th>{% trans "consultant" %}</th><th>{% trans "days" %}</th><th>{% trans "rate" %}</th><th>{% trans "total" %}</th></tr>
+            {% for consultant, charge, rate, total in mission_data.1 %}
+                <tr><td><a href="{% url pydici.people.views.consultant_home consultant.id %}">{{ consultant }}</a></td><td>{{ charge }}</td><td>{{ rate }} €</td><td>{{ total }} €</td></tr>
+            {% endfor %}
+            <tr><th>{% trans "total" %}</th><td></td><td></td><th>{{ mission_data.0 }} €</th></tr>
+            </table>
+    {% endfor %}
+     {% ifnotequal lead.mission_set.count 1 %}
+        <h4>{% trans "Total:" %} {{ lead_data.0}}</h4>
+     {% endifnotequal %}
+{% endfor %}
+
+<h1>{% trans "Pre billing for fixed price missions" %} - {{ month|date:"F Y" }}</h1>
+<div><ul>
+{% for mission in fixed_price_missions %}
+    {% ifchanged mission.lead %}
+        </ul></div><hr/>
+        <h2>{{ mission.lead }} ({{ mission.lead.deal_id }})</h2>
+        {% with mission.lead as lead %}{% include "billing/_lead_billing.html" %}{% endwith %}
+        <div class="timesheet">
+        <h3>{% trans "Fixed price mission(s)" %}</h3>
+        <ul>
+    {% endifchanged %}
+    <li><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }} ({{ mission.mission_id }}) : </a>
+    {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "total:" %} {{ mission.price }} k€)
+
+{% endfor %}
+
+</div>
+{% endblock %}
