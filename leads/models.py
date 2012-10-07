@@ -22,6 +22,7 @@ from pydici.crm.models import Client, BusinessBroker
 from pydici.people.models import Consultant, SalesMan
 from pydici.actionset.models import ActionState
 from pydici.actionset.utils import launchTrigger
+from pydici.core.utils import createProjectTree
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -225,6 +226,7 @@ def leadSignalHandler(sender, **kwargs):
 
     if  kwargs.get("created", False):
         launchTrigger("NEW_LEAD", [targetUser, ], lead)
+        createProjectTree(lead)
     if lead.state == "WON":
         # Ensure actionset has not already be fired for this lead and this user
         if not ActionState.objects.filter(user=targetUser,

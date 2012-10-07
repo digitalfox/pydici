@@ -17,6 +17,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 from django.template.loader import get_template
 from django.template import RequestContext
+from django.template.defaultfilters import slugify
 from django.http import HttpResponse
 from django.core.mail import EmailMultiAlternatives
 from django.core import urlresolvers
@@ -223,3 +224,21 @@ def sampleList(data, maxLength):
 def sanitizeName(name):
     """Sanitize given unicode name to simple ascii name"""
     return unicodedata.normalize('NFKD', name).encode('ascii', 'ignore')
+
+
+def createProjectTree(lead):
+    """Create standard document filesystem tree for this lead"""
+    clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH,
+                             pydici.settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name), code=lead.client.organisation.company.code))
+    leadDir = os.path.join(clientDir,
+                           pydici.settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
+    businessDir = os.path.join(leadDir,
+                               pydici.settings.DOCUMENT_PROJECT_BUSINESS_DIR)
+    inputDir = os.path.join(leadDir,
+                               pydici.settings.DOCUMENT_PROJECT_INPUT_DIR)
+    deliveryDir = os.path.join(leadDir,
+                               pydici.settings.DOCUMENT_PROJECT_DELIVERY_DIR)
+
+    for directory in (clientDir, leadDir, businessDir, inputDir, deliveryDir):
+        if not os.path.exists(directory):
+            os.mkdir(directory)

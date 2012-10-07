@@ -178,3 +178,14 @@ else:
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Filesystem for commercial and mission delivery. It is intented to be
+# accessed localy by pydici and exposed though a web server and/or a webdav server
+DOCUMENT_PROJECT_PATH = "/home/fox/prog/workspace/pydici/doc/client/"
+DOCUMENT_PROJECT_URL = "http://localhost:9999/client/"
+DOCUMENT_PROJECT_CLIENT_DIR = "{name}_{code}"
+DOCUMENT_PROJECT_LEAD_DIR = "{deal_id}_{name}"
+DOCUMENT_PROJECT_BUSINESS_DIR = "commerce"
+DOCUMENT_PROJECT_DELIVERY_DIR = "delivery"
+DOCUMENT_PROJECT_INPUT_DIR = "input"
+
