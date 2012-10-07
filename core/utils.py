@@ -231,21 +231,35 @@ def getLeadDirs(lead):
     @return: clientDir, leadDir, businessDir, inputDir, deliveryDir"""
     clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH,
                              pydici.settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name), code=lead.client.organisation.company.code))
+    if not os.path.exists(clientDir):
+        # Look if an alternative path exists with proper client code
+        for path in os.listdir(pydici.settings.DOCUMENT_PROJECT_PATH):
+            if path.endswith("_%s" % lead.client.organisation.company.code):
+                clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH, path)
+                break
+
     leadDir = os.path.join(clientDir,
                            pydici.settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
+    if not os.path.exists(leadDir):
+        # Look if an alternative path exists with proper lead code
+        for path in os.listdir(clientDir):
+            if path.startswith(lead.deal_id):
+                leadDir = os.path.join(clientDir, path)
+                break
+
     businessDir = os.path.join(leadDir,
                                pydici.settings.DOCUMENT_PROJECT_BUSINESS_DIR)
     inputDir = os.path.join(leadDir,
                                pydici.settings.DOCUMENT_PROJECT_INPUT_DIR)
     deliveryDir = os.path.join(leadDir,
                                pydici.settings.DOCUMENT_PROJECT_DELIVERY_DIR)
+
     return (clientDir, leadDir, businessDir, inputDir, deliveryDir)
 
 def getLeadDocURL(lead):
     """@return: URL to reach this lead base directory"""
-    url = pydici.settings.DOCUMENT_PROJECT_URL + "/"
-    url += pydici.settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name), code=lead.client.organisation.company.code) + "/"
-    url += pydici.settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id) + "/"
+    (clientDir, leadDir, businessDir, inputDir, deliveryDir) = getLeadDirs(lead)
+    url = pydici.settings.DOCUMENT_PROJECT_URL + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):] + "/"
     return url
 
 def createProjectTree(lead):
