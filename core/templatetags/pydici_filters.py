@@ -60,7 +60,7 @@ def link_to_consultant(value, arg=None):
         if consultant.subcontractor:
             value = escape(name)
         else:
-            value = "<a href='%s'>%s</a>" % (reverse("pydici.people.views.consultant_detail", args=[consultant.id, ]),
+            value = "<a href='%s'>%s</a>" % (reverse("pydici.people.views.consultant_home", args=[consultant.id, ]),
                                         escape(name))
         return mark_safe(value)
     except Consultant.DoesNotExist:

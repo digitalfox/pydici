@@ -76,14 +76,14 @@ $(document).ready(function() {
 {% if consultants %}
     <h2>{% trans "Business owner for this company:" %}</h2>
         <ul data-role="listview" data-inset="true" data-theme="c">
-            <li>{% if company.businessOwner %}<a href="{% url pydici.people.views.consultant_detail company.businessOwner.id %}">{{ company.businessOwner.full_name }}</a>
+            <li>{% if company.businessOwner %}<a href="{% url pydici.people.views.consultant_home company.businessOwner.id %}">{{ company.businessOwner.full_name }}</a>
                 {% else %} <a href="{% url admin:crm_company_change company.id %}?return_to={{ request.get_full_path }}#tab-consultants">{% trans "To be defined" %}</a>
                 {% endif %}</li>
         </ul>
     <h2>{% trans "Consultants that work for this company:" %}</h2>
         <ul data-role="listview" data-inset="true" data-theme="c">
         {% for consultant in consultants %}
-            <li><a href="{% url pydici.people.views.consultant_detail consultant.id %}">{{ consultant.full_name }}</a></li>
+            <li><a href="{% url pydici.people.views.consultant_home consultant.id %}">{{ consultant.full_name }}</a></li>
         {% endfor %}
         </ul>
 {% endif %}

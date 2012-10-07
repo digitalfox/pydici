@@ -39,7 +39,7 @@
         {% for lead in active_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
                 <td><a href='{% url pydici.leads.views.detail lead.id %}' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
-                <td>{% if lead.responsible %}<a href="{% url pydici.people.views.consultant_detail lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
+                <td>{% if lead.responsible %}<a href="{% url pydici.people.views.consultant_home lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.sales }}</td>
@@ -68,7 +68,7 @@
         {% for lead in recent_archived_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
                 <td><a href='{% url pydici.leads.views.detail lead.id %}' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
-                <td>{% if lead.responsible %}<a href="{% url pydici.people.views.consultant_detail lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
+                <td>{% if lead.responsible %}<a href="{% url pydici.people.views.consultant_home lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.sales }}</td>

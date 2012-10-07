@@ -24,7 +24,7 @@
     <h2>{% trans "Consultants"%}</h2>
     <ul>
     {% for consultant in consultants %}
-        <li><a href="{% url pydici.people.views.consultant_detail consultant.id %}">{{ consultant.full_name }}</a></li>
+        <li><a href="{% url pydici.people.views.consultant_home consultant.id %}">{{ consultant.full_name }}</a></li>
     {% endfor %}
     </ul>
 {% endif %}
