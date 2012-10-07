@@ -12,7 +12,7 @@ import os
 from datetime import timedelta
 import unicodedata
 
-os.environ['MPLCONFIGDIR'] = '/tmp' # Needed for matplotlib
+os.environ['MPLCONFIGDIR'] = '/tmp'  # Needed for matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 from django.template.loader import get_template
@@ -107,7 +107,7 @@ def working_days(monthDate, holidays=[]):
     n = 0
     currentMonth = monthDate.month
     while monthDate.month == currentMonth:
-        if monthDate.weekday() < 5 and monthDate not in holidays: # Only count working days
+        if monthDate.weekday() < 5 and monthDate not in holidays:  # Only count working days
             n += 1
         monthDate += day
     return n
@@ -145,7 +145,7 @@ def daysOfMonth(month, week=None):
     day = timedelta(1)
     month = month.replace(day=1)
     tmpDate = month
-    nWeek = 1 # Week count
+    nWeek = 1  # Week count
     while tmpDate.month == month.month:
         if week:
             # Only add days if we are in the given week
@@ -178,9 +178,9 @@ def previousWeek(cDate):
     """
     @return: previous week first day. Weeks are split if across two month"""
     day = timedelta(1)
-    while cDate.isoweekday() != 1 and cDate.day != 1:  cDate -= day # Begining of current week
-    cDate -= day # Go to previous week
-    while cDate.isoweekday() != 1 and cDate.day != 1:  cDate -= day # Begining of current week
+    while cDate.isoweekday() != 1 and cDate.day != 1:  cDate -= day  # Begining of current week
+    cDate -= day  # Go to previous week
+    while cDate.isoweekday() != 1 and cDate.day != 1:  cDate -= day  # Begining of current week
     return cDate
 
 def monthWeekNumber(cDate):

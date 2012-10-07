@@ -24,6 +24,7 @@ from pydici.actionset.models import ActionState
 from pydici.actionset.utils import launchTrigger
 from pydici.core.utils import createProjectTree
 
+
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
 
@@ -69,7 +70,7 @@ class Lead(models.Model):
     send_email = models.BooleanField(_("Send lead by email"), default=True)
     tags = TaggableManager(blank=True)
 
-    objects = LeadManager() # Custom manager that factorise active/passive lead code
+    objects = LeadManager()  # Custom manager that factorise active/passive lead code
 
     def __unicode__(self):
         return u"%s - %s" % (self.client.organisation, self.name)
@@ -213,7 +214,7 @@ class Lead(models.Model):
         verbose_name = _("Lead")
 
 
-# Signal handling to throw actionset
+# Signal handling to throw actionset and document tree creation
 def leadSignalHandler(sender, **kwargs):
     """Signal handler for new/updated leads"""
     lead = kwargs["instance"]
