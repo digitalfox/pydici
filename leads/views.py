@@ -8,6 +8,7 @@ Pydici leads views. Http request are processed here.
 import csv
 from datetime import datetime, timedelta, date
 import json
+import os
 from collections import defaultdict
 
 
@@ -29,11 +30,12 @@ import pydici.settings
 from pydici.core.utils import capitalize, getLeadDirs, getLeadDocURL, createProjectTree
 from pydici.core.decorator import pydici_non_public
 
+
 @pydici_non_public
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""
     today = datetime.today()
-    delay = timedelta(days=6) # Six days
+    delay = timedelta(days=6)  # Six days
     leads = []
     for state in ("WON", "FORGIVEN", "LOST", "SLEEPING", "WRITE_OFFER", "OFFER_SENT", "NEGOTIATION", "QUALIF"):
         rs = Lead.objects.filter(state=state).order_by("-update_date")
@@ -101,6 +103,7 @@ def detail(request, lead_id):
                                "action_list": lead.get_change_history(),
                                "completion_url" : urlresolvers.reverse("pydici.leads.views.tags", args=[lead.id, ]),
                                "suggested_tags" : suggestedTags,
+                               "documents": documents,
                                "user": request.user},
                                RequestContext(request))
 
@@ -143,7 +146,7 @@ def mail_lead(request, lead_id=0):
 @pydici_non_public
 def review(request):
     today = datetime.today()
-    delay = timedelta(days=10) #(10 days)
+    delay = timedelta(days=10)  # (10 days)
     recentArchivedLeads = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
                                                       Q(state="SLEEPING"))
     recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date")
@@ -167,16 +170,16 @@ def tag(request, tag_id):
 def add_tag(request):
     """Add a tag to a lead. Create the tag if needed"""
     answer = {}
-    answer["tag_created"] = True # indicate if a tag was reused or created
-    answer["tag_url"] = ""       # url on tag
-    answer["tag_name"] = ""      # tag name
+    answer["tag_created"] = True  # indicate if a tag was reused or created
+    answer["tag_url"] = ""  # url on tag
+    answer["tag_name"] = ""  # tag name
     if request.POST["tag"]:
         tagName = capitalize(request.POST["tag"], keepUpper=True)
         lead = Lead.objects.get(id=int(request.POST["lead_id"]))
         if tagName in lead.tags.all().values_list("name", flat=True):
             answer["tag_created"] = False
         lead.tags.add(tagName)
-        tag = Tag.objects.filter(name=tagName)[0] # We should have only one, but in case of bad data, just take the first one
+        tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
         answer["tag_url"] = urlresolvers.reverse("pydici.leads.views.tag", args=[tag.id, ])
         answer["tag_remove_url"] = urlresolvers.reverse("pydici.leads.views.remove_tag", args=[tag.id, lead.id])
         answer["tag_name"] = tag.name
@@ -201,7 +204,7 @@ def remove_tag(request, tag_id, lead_id):
 @pydici_non_public
 def tags(request, lead_id):
     """@return: all tags that contains q parameter and are not already associated to this lead as a simple text list"""
-    tags = Tag.objects.all().exclude(lead__id=lead_id) # Exclude existing tags
+    tags = Tag.objects.all().exclude(lead__id=lead_id)  # Exclude existing tags
     tags = tags.filter(name__icontains=request.GET["q"])
     tags = tags.values_list("name", flat=True)
     return HttpResponse("\n".join(tags))
@@ -212,18 +215,18 @@ def tags(request, lead_id):
 def graph_bar_jqp(request):
     """Nice graph bar of lead state during time using jqplot
     @todo: per year, with start-end date"""
-    data = defaultdict(list) # Raw data collected
-    graph_data = [] # Data that will be returned to jqplot 
+    data = defaultdict(list)  # Raw data collected
+    graph_data = []  # Data that will be returned to jqplot
 
     # Gathering data
     for lead in Lead.objects.filter(creation_date__gt=date.today() - timedelta(2 * 365)):
-        #Using first day of each month as key date
+        # Using first day of each month as key date
         kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
         data[kdate].append(lead)
 
     kdates = data.keys()
     kdates.sort()
-    isoKdates = [a.isoformat() for a in kdates] # List of date as string in ISO format
+    isoKdates = [a.isoformat() for a in kdates]  # List of date as string in ISO format
 
     # Draw a bar for each state
     for state in Lead.STATES:
