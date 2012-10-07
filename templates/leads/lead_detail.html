@@ -62,6 +62,7 @@
         <li><a href="#tab-missions">{% trans "Missions" %}</a></li>
         <li><a href="#tab-billing">{% trans "Billing" %}</a></li>
         <li><a href="#tab-actions">{% trans "Actions" %}</a></li>
+        <li><a href="#tab-documents">{% trans "Documents" %}</a></li>
         <li><a href="#tab-history">{% trans "History" %}</a></li>
     </ul>
 
@@ -195,6 +196,19 @@
         {% endfor %}
         </ul>
 </div>
+
+<div id="tab-documents">
+{% for directory, docs in documents %}
+    <h3>{{ directory }}</h3>
+    <ul>
+    {% for doc, url in docs %}
+        <li><a href="{{ url }}">{{ doc }}</a></li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+</div>
+
+
 
 <div id="tab-history">
     {% if action_list %}

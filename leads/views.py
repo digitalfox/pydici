@@ -26,7 +26,7 @@ from taggit_suggest.utils import suggest_tags
 from pydici.core.utils import send_lead_mail, sortedValues, COLORS
 from pydici.leads.models import Lead
 import pydici.settings
-from pydici.core.utils import capitalize
+from pydici.core.utils import capitalize, getLeadDirs, getLeadDocURL, createProjectTree
 from pydici.core.decorator import pydici_non_public
 
 @pydici_non_public
@@ -77,6 +77,18 @@ def detail(request, lead_id):
         # Find suggested tags for this lead
         suggestedTags = set(suggest_tags(content=u"%s %s" % (lead.name, lead.description)))
         suggestedTags -= set(lead.tags.all())
+
+        # Gather documents relative to this lead
+        documents = []  # List of name/url docs grouped by type
+        clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
+        leadDocURL = getLeadDocURL(lead)
+        try:
+            for directory in (businessDir, inputDir, deliveryDir):
+                directoryName = directory.split("/")[-1]
+                documents.append([directoryName, [(f, leadDocURL + directoryName + "/" + f) for f in os.listdir(directory)]])
+        except OSError:
+            # Project tree does not exist yet. Create it.
+            createProjectTree(lead)
     except Lead.DoesNotExist:
         raise Http404
     return render_to_response("leads/lead_detail.html",

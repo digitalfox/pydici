@@ -226,8 +226,9 @@ def sanitizeName(name):
     return unicodedata.normalize('NFKD', name).encode('ascii', 'ignore')
 
 
-def createProjectTree(lead):
-    """Create standard document filesystem tree for this lead"""
+def getLeadDirs(lead):
+    """Get documents directories relative to this lead
+    @return: clientDir, leadDir, businessDir, inputDir, deliveryDir"""
     clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH,
                              pydici.settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name), code=lead.client.organisation.company.code))
     leadDir = os.path.join(clientDir,
@@ -238,7 +239,17 @@ def createProjectTree(lead):
                                pydici.settings.DOCUMENT_PROJECT_INPUT_DIR)
     deliveryDir = os.path.join(leadDir,
                                pydici.settings.DOCUMENT_PROJECT_DELIVERY_DIR)
+    return (clientDir, leadDir, businessDir, inputDir, deliveryDir)
 
-    for directory in (clientDir, leadDir, businessDir, inputDir, deliveryDir):
+def getLeadDocURL(lead):
+    """@return: URL to reach this lead base directory"""
+    url = pydici.settings.DOCUMENT_PROJECT_URL + "/"
+    url += pydici.settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name), code=lead.client.organisation.company.code) + "/"
+    url += pydici.settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id) + "/"
+    return url
+
+def createProjectTree(lead):
+    """Create standard document filesystem tree for this lead"""
+    for directory in getLeadDirs(lead):
         if not os.path.exists(directory):
             os.mkdir(directory)
