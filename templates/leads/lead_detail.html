@@ -37,6 +37,10 @@
     <div data-role="content">
 {% else %}
 
+{% with "lead-tabs" as tabs %}
+    {% include "core/_init_tabs.html" %}
+{% endwith %}
+
 <div id="content-main">
     <h1>{% trans "Lead detail" %}</h1>
     {% if active_count %}
@@ -52,6 +56,16 @@
     <div class="form-row name  ">
     <h2><a href='{% url pydici.crm.views.company_detail lead.client.organisation.company.id %}'>{{ lead.client.organisation }}</a> - <a href='{% url admin:leads_lead_change lead.id %}?return_to={{ lead.get_absolute_url }}' class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
+<div id="lead-tabs">
+    <ul>
+        <li><a href="#tab-description">{% trans "Description" %}</a></li>
+        <li><a href="#tab-missions">{% trans "Missions" %}</a></li>
+        <li><a href="#tab-billing">{% trans "Billing" %}</a></li>
+        <li><a href="#tab-actions">{% trans "Actions" %}</a></li>
+        <li><a href="#tab-history">{% trans "History" %}</a></li>
+    </ul>
+
+<div id="tab-description">
     <div class="tag_banner">
 	    {% for tag in lead.tags.all %}
 	    <div id="tag_{{ tag.id }}" style="display:inline">
@@ -102,9 +116,22 @@
     <b>{% trans "Potential resource(s): " %} </b>{{ lead.staffing_list }}<br>
     <b>{% trans "Action: " %}</b>{% if lead.action %}{{ lead.action }}{% else %}{% trans "Nothing" %}{% endif %}<br>
     <br><br><hr>
-</div>
 
-<br/>
+    {% ifequal lead.state "WON" %}
+    <h2>{% trans "Profitability" %}</h2>
+    <table>
+        <tr><td>{% trans "Sold" %}</td>
+        <td>{% if lead.sales %}{{ lead.sales }} k€
+            {% else %} <a href='{% url admin:leads_lead_change lead.id %}?return_to={{ lead.get_absolute_url }}'>{% trans "To be defined" %}</a>
+            {% endif %}</td></tr>
+        <tr><td>{% trans "Unused" %}</td><td>{{ lead.unused }} k€</td></tr>
+        <tr><td>{% trans "Margin over rate objective" %}</td><td>{{ lead.totalObjectiveMargin }} €</td></tr>
+    </table>
+    {% endifequal %}
+
+</div> {# End of description tab #}
+
+<div id="tab-missions">
 {% if lead.mission_set.count %}
     <h2>{% trans "Missions of this lead:" %}</h2>
     <div class="imodule">
@@ -142,59 +169,58 @@
     {% if perms.staffing.add_mission %}
         <a href='{% url pydici.staffing.views.create_new_mission_from_lead lead.id %}'><i>{% trans "Create a new mission for this lead" %}</i></a>
     {% endif %}
+{% else %}
+    {% trans "A mission is created once a commercial proposal has been sent." %}
 {% endif %}
-<br/>
+</div> {# end of tab missions #}
 
-{% ifequal lead.state "WON" %}
-<h2>{% trans "Profitability" %}</h2>
-    <table>
-        <tr><td>{% trans "Sold" %}</td>
-        <td>{% if lead.sales %}{{ lead.sales }} k€
-            {% else %} <a href='{% url admin:leads_lead_change lead.id %}?return_to={{ lead.get_absolute_url }}'>{% trans "To be defined" %}</a>
-            {% endif %}</td></tr>
-        <tr><td>{% trans "Unused" %}</td><td>{{ lead.unused }} k€</td></tr>
-        <tr><td>{% trans "Margin over rate objective" %}</td><td>{{ lead.totalObjectiveMargin }} €</td></tr>
-    </table>
-<h2>{% trans "Billing" %}</h2>
-    {% include "billing/_lead_billing.html" %}
-{% endifequal %}
 
-<h2>{% trans "Pending actions" %}</h2>
-    {% with lead.pending_actions as actions %}
-        {% include "actionset/_lead_mission_actions.html" %}
-    {% endwith %}
+<div id="tab-billing">
+    <h2>{% trans "Billing" %}</h2>
+        {% include "billing/_lead_billing.html" %}
+</div>
 
-<h2>{% trans "Done actions" %}</h2>
-    <ul>
-    {% for action in lead.done_actions %}
-        <li>{{ action.action.name }} - {{ action.get_state_display }} ({{ action.update_date }})</li>
-    {% empty %}
-        {% trans "No action done" %}
-    {% endfor %}
-    </ul>
-
-{% if action_list %}
-    <h2>{% trans "Change history" %}</h2>
-    <table id="change-history">
-        <thead>
-        <tr>
-            <th scope="col">{% trans 'Date/time' %}</th>
-            <th scope="col">{% trans 'User' %}</th>
-            <th scope="col">{% trans 'Action' %}</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for action in action_list %}
-        <tr>
-            <th scope="row">{{ action.action_time|date:_("DATETIME_FORMAT") }}</th>
-            <td>{{ action.user.username }}{% if action.user.first_name %} ({{ action.user.first_name }} {{ action.user.last_name }}){% endif %}</td>
-            <td>{{ action.change_message }}</td>
-        </tr>
+<div id="tab-actions">
+    <h2>{% trans "Pending actions" %}</h2>
+        {% with lead.pending_actions as actions %}
+            {% include "actionset/_lead_mission_actions.html" %}
+        {% endwith %}
+    
+    <h2>{% trans "Done actions" %}</h2>
+        <ul>
+        {% for action in lead.done_actions %}
+            <li>{{ action.action.name }} - {{ action.get_state_display }} ({{ action.update_date }})</li>
+        {% empty %}
+            {% trans "No action done" %}
         {% endfor %}
-        </tbody>
-    </table>
-{% endif %}
+        </ul>
+</div>
 
+<div id="tab-history">
+    {% if action_list %}
+        <h2>{% trans "Change history" %}</h2>
+        <table id="change-history">
+            <thead>
+            <tr>
+                <th scope="col">{% trans 'Date/time' %}</th>
+                <th scope="col">{% trans 'User' %}</th>
+                <th scope="col">{% trans 'Action' %}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for action in action_list %}
+            <tr>
+                <th scope="row">{{ action.action_time|date:_("DATETIME_FORMAT") }}</th>
+                <td>{{ action.user.username }}{% if action.user.first_name %} ({{ action.user.first_name }} {{ action.user.last_name }}){% endif %}</td>
+                <td>{{ action.change_message }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+
+</div> {# End of all tabs #}
 
 <script type="text/javascript">
 <!--
