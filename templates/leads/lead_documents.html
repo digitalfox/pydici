@@ -1,0 +1,11 @@
+{# Ajax fragment to display lead documents #}
+{% load i18n %}
+
+{% for directory, docs in documents %}
+    <h3>{{ directory }}</h3>
+    <ul>
+    {% for doc, url in docs %}
+        <li><a href="{{ url }}">{{ doc }}</a></li>
+    {% endfor %}
+    </ul>
+{% endfor %}

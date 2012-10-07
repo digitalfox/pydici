@@ -80,17 +80,6 @@ def detail(request, lead_id):
         suggestedTags = set(suggest_tags(content=u"%s %s" % (lead.name, lead.description)))
         suggestedTags -= set(lead.tags.all())
 
-        # Gather documents relative to this lead
-        documents = []  # List of name/url docs grouped by type
-        clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
-        leadDocURL = getLeadDocURL(lead)
-        try:
-            for directory in (businessDir, inputDir, deliveryDir):
-                directoryName = directory.split("/")[-1]
-                documents.append([directoryName, [(f, leadDocURL + directoryName + "/" + f) for f in os.listdir(directory)]])
-        except OSError:
-            # Project tree does not exist yet. Create it.
-            createProjectTree(lead)
     except Lead.DoesNotExist:
         raise Http404
     return render_to_response("leads/lead_detail.html",
@@ -103,9 +92,30 @@ def detail(request, lead_id):
                                "action_list": lead.get_change_history(),
                                "completion_url" : urlresolvers.reverse("pydici.leads.views.tags", args=[lead.id, ]),
                                "suggested_tags" : suggestedTags,
-                               "documents": documents,
                                "user": request.user},
                                RequestContext(request))
+
+
+@pydici_non_public
+def lead_documents(request, lead_id):
+    """Gather documents relative to this lead as a fragement page for an ajax call"""
+    lead = Lead.objects.get(id=lead_id)
+    documents = []  # List of name/url docs grouped by type
+    clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
+    leadDocURL = getLeadDocURL(lead)
+    try:
+        for directory in (businessDir, inputDir, deliveryDir):
+            directoryName = directory.split("/")[-1]
+            documents.append([directoryName, [(f, leadDocURL + directoryName + "/" + f) for f in os.listdir(directory)]])
+    except OSError:
+        # Project tree does not exist yet. Create it.
+        createProjectTree(lead)
+
+    return render_to_response("leads/lead_documents.html",
+                              {"documents": documents,
+                               "user": request.user},
+                              RequestContext(request))
+
 
 @pydici_non_public
 def csv_export(request, target):
