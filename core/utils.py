@@ -241,6 +241,9 @@ def getLeadDirs(lead):
                 clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH, path)
                 break
 
+    if not os.path.exists(clientDir):
+        os.mkdir(clientDir)
+
     leadDir = os.path.join(clientDir,
                            pydici.settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
     if not os.path.exists(leadDir):
