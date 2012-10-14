@@ -105,8 +105,14 @@ def lead_documents(request, lead_id):
     leadDocURL = getLeadDocURL(lead)
     try:
         for directory in (businessDir, inputDir, deliveryDir):
-            directoryName = directory.split("/")[-1]
-            documents.append([directoryName, [(f, leadDocURL + directoryName + "/" + f) for f in os.listdir(directory)]])
+            directoryName = directory.split(u"/")[-1]
+            directoryDocuments = []
+            for fileName in os.listdir(directory):
+                if isinstance(fileName, str):
+                    # Corner case, files are not encoded with filesystem encoding but another...
+                    fileName = fileName.decode("utf8", "ignore")
+                directoryDocuments.append((fileName, leadDocURL + directoryName + u"/" + fileName))
+            documents.append([directoryName, directoryDocuments])
     except OSError:
         # Project tree does not exist yet. Create it.
         createProjectTree(lead)
