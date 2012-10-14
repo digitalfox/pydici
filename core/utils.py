@@ -234,7 +234,7 @@ def getLeadDirs(lead):
     if not os.path.exists(clientDir):
         # Look if an alternative path exists with proper client code
         for path in os.listdir(pydici.settings.DOCUMENT_PROJECT_PATH):
-            if path.endswith("_%s" % lead.client.organisation.company.code):
+            if path.endswith(u"_%s" % lead.client.organisation.company.code):
                 clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH, path)
                 break
 
