@@ -9,6 +9,7 @@ import csv
 from datetime import datetime, timedelta, date
 import json
 import os
+import sys
 from collections import defaultdict
 
 
@@ -114,7 +115,7 @@ def lead_documents(request, lead_id):
         dirs = []
         files = []
         for fileName in os.listdir(directory):
-            filePath = os.path.join(directory, fileName)
+            filePath = os.path.join(directory.encode(sys.getfilesystemencoding()), fileName)
             if isinstance(fileName, str):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 fileName = fileName.decode("utf8", "ignore")
