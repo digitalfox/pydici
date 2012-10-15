@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% for directory, docs in documents %}
-    <h3>{{ directory }}</h3>
+    <h3><a href='{{ lead_doc_url}}/{{ directory }}/'>{{ directory }}</a></h3>
     <ul>
     {% for doc, url in docs %}
         <li><a href="{{ url }}">{{ doc }}</a></li>
