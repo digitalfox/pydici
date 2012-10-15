@@ -111,13 +111,19 @@ def lead_documents(request, lead_id):
 
     for directory in (businessDir, inputDir, deliveryDir):
         directoryName = directory.split(u"/")[-1]
-        directoryDocuments = []
+        dirs = []
+        files = []
         for fileName in os.listdir(directory):
             if isinstance(fileName, str):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 fileName = fileName.decode("utf8", "ignore")
-            directoryDocuments.append((fileName, leadDocURL + directoryName + u"/" + fileName))
-        documents.append([directoryName, directoryDocuments])
+            if os.path.isdir(os.path.join(directory, fileName)):
+                dirs.append((fileName + u"/", leadDocURL + directoryName + u"/" + fileName + u"/"))
+            else:
+                files.append((fileName, leadDocURL + directoryName + u"/" + fileName))
+        dirs.sort(key=lambda x:x[0])
+        files.sort(key=lambda x:x[0])
+        documents.append([directoryName, dirs + files])
 
 
     return render_to_response("leads/lead_documents.html",
