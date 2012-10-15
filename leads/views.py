@@ -103,19 +103,22 @@ def lead_documents(request, lead_id):
     documents = []  # List of name/url docs grouped by type
     clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
     leadDocURL = getLeadDocURL(lead)
-    try:
-        for directory in (businessDir, inputDir, deliveryDir):
-            directoryName = directory.split(u"/")[-1]
-            directoryDocuments = []
-            for fileName in os.listdir(directory):
-                if isinstance(fileName, str):
-                    # Corner case, files are not encoded with filesystem encoding but another...
-                    fileName = fileName.decode("utf8", "ignore")
-                directoryDocuments.append((fileName, leadDocURL + directoryName + u"/" + fileName))
-            documents.append([directoryName, directoryDocuments])
-    except OSError:
-        # Project tree does not exist yet. Create it.
-        createProjectTree(lead)
+    for directory in (businessDir, inputDir, deliveryDir):
+        # Create project tree if at least one directory is missing
+        if not os.path.exists(directory):
+            createProjectTree(lead)
+            break
+
+    for directory in (businessDir, inputDir, deliveryDir):
+        directoryName = directory.split(u"/")[-1]
+        directoryDocuments = []
+        for fileName in os.listdir(directory):
+            if isinstance(fileName, str):
+                # Corner case, files are not encoded with filesystem encoding but another...
+                fileName = fileName.decode("utf8", "ignore")
+            directoryDocuments.append((fileName, leadDocURL + directoryName + u"/" + fileName))
+        documents.append([directoryName, directoryDocuments])
+
 
     return render_to_response("leads/lead_documents.html",
                               {"documents": documents,
