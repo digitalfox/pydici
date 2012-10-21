@@ -56,14 +56,14 @@
     <ul>
     {% for expense, state, transitions in user_expenses %}
         {% ifchanged state %}
-            <li><a href="#tab-my-{{ state }}">{{ state }}</a></li>
+            <li><a href="#tab-my-{{ state|slugify }}">{{ state }}</a></li>
         {% endifchanged %}
     {% endfor %}
     </ul>
     {% for expense, state, transitions in user_expenses %}
         {% ifchanged state %}
             {% if not forloop.first %}</div>{% endif %}
-            <div id="tab-my-{{ state }}">
+            <div id="tab-my-{{ state|slugify }}">
         {% endifchanged %}
         {% include "expense/_expense_block.html" %}
         {% if forloop.last %}</div>{% endif %}
