@@ -49,6 +49,12 @@
 {% with "tab-my" as tabs %}
     {% include "core/_init_tabs.html" %}
 {% endwith %}
+<script>
+{# Don't rewrite url for expense. It is useless and make rendering flacky #}
+$(document).ready(function() {
+    $("#tab-my").unbind("tabsshow");
+});
+</script>
 
 {% if user_expenses %}
 <h1>{% trans "My expenses" %}</h1>
@@ -75,6 +81,13 @@
 {% with "tab-managed" as tabs %}
     {% include "core/_init_tabs.html" %}
 {% endwith %}
+<script>
+{# Don't rewrite url for expense. It is useless and make rendering flacky #}
+$(document).ready(function() {
+    $("#tab-managed").unbind("tabsshow");
+});
+</script>
+
 
 {% if managed_expenses %}
     <h1>{% trans "Expenses I manage" %}</h1>
