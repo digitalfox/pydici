@@ -40,7 +40,9 @@
         <li><a title="#tab-contacts" href="{% url pydici.staffing.views.mission_contacts mission.id %}">{% trans "Contacts" %}</a></li>
         <li><a href="#tab-other-missions">{% trans "Other missions" %}</a></li>
         <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.mission_timesheet mission.id %}">{% trans "Timesheet" %}</a></li>
-        <li><a title="#tab-staffing" href="{% url pydici.staffing.views.mission_staffing mission.id %}">{% trans "Forecast staffing" %}</a></li>
+        {% if mission.active %}
+            <li><a title="#tab-staffing" href="{% url pydici.staffing.views.mission_staffing mission.id %}">{% trans "Forecast staffing" %}</a></li>
+        {% endif %}
         <li><a title="#tab-expenses" href="{% url pydici.expense.views.mission_expenses mission.id %}">{% trans "Expenses" %}</a></li>
         {% if mission.lead %}
             <li><a title="#tab-documents" href="{% url pydici.leads.views.lead_documents mission.lead.id %}">{% trans "Documents" %}</a></li>
@@ -50,6 +52,17 @@
     </ul>
 
     <div id="tab-description">
+        {% if mission.active %}
+               {% if mission.no_more_staffing_since %}
+                   <div class="errornote">{% trans "This mission has no staffing in future" %}</div>
+               {% else %}
+                   {% if mission.no_staffing_update_since %}
+                       <div class="errornote">{% trans "Staffing has not been updated recently" %}</div>
+                   {% endif %}
+               {% endif %}
+         {% else %}
+                <div class="errornote">{% trans "This mission is archived" %}</div>
+         {% endif %}
         <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
         <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
         {% if mission.lead %}
