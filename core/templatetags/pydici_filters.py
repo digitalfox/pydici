@@ -50,14 +50,14 @@ def split(value, arg):
 @register.filter
 def link_to_consultant(value, arg=None):
     """create a link to consultant if he exists
-    @param arg: consultant trigramme"""
+    @param value: consultant trigramme"""
     try:
         consultant = Consultant.objects.get(trigramme__iexact=value)
         if consultant.name:
             name = consultant.name
         else:
             name = value
-        if consultant.subcontractor:
+        if consultant.subcontractor or arg == "nolink":
             value = escape(name)
         else:
             value = "<a href='%s'>%s</a>" % (reverse("pydici.people.views.consultant_home", args=[consultant.id, ]),
@@ -75,7 +75,7 @@ def link_to_consultant(value, arg=None):
 @register.filter
 def link_to_timesheet(value, arg=None):
     """create a link to consultant timesheet if he exists
-    @param arg: consultant trigramme"""
+    @param value: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
         url = "<a href='%s#tab-timesheet'>%s</a>" % (reverse("pydici.people.views.consultant_home", args=[c.id, ]),
