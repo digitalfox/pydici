@@ -72,7 +72,7 @@
             <div>
         {% endifchanged %}
         {% ifchanged %}
-                <h4>{{ state }}</h4>
+                <h4 id="{{expense.user}}.{{state}}">{{ state }}</h4>
         {% endifchanged %}
         {% include "expense/_expense_block.html" %}
         {% if forloop.last %}</div>{% endif %}
