@@ -48,7 +48,7 @@
 {% endfor %}
 </table>
 </div>
-
+<a href="{% url pydici.expense.views.expenses_history year%}?csv">{% trans "Export expenses in a spreadsheet" %}</a><br/><br/>
 {% else %}
     {% trans "No expense" %}
 {% endif %}

@@ -6,6 +6,7 @@ Pydici expense views. Http request are processed here.
 """
 
 from datetime import date, timedelta
+import csv
 import mimetypes
 import workflows.utils as wf
 import permissions.utils as perm
@@ -139,10 +140,31 @@ def expenses_history(request, year):
     if not perm.has_role(request.user, "expense paymaster"):
         expenses = expenses.filter(Q(user=request.user) | Q(user__in=user_team))
 
+    if "csv" in request.GET:
+        return csv_expenses(request, expenses)
+
     if year:
         return date_based.archive_year(request, year, expenses, "expense_date", extra_context={"user": request.user}, make_object_list=True)
     else:
         return date_based.archive_index(request, expenses, "expense_date", extra_context={"user": request.user})
+
+
+@pydici_non_public
+def csv_expenses(request, expenses):
+    response = HttpResponse(mimetype="text/csv")
+    response["Content-Disposition"] = "attachment; filename=%s" % _("expenses.csv")
+    writer = csv.writer(response, delimiter=';')
+    header = [_("People"), _("Description"), _("Lead"), _("Amount"), _("Chargeable"), _("Paid with corporate card"), _("State"), _("Expense date"), _("Update date"), _("Comments")]
+    writer.writerow([h.encode("iso8859-1") for h in header])
+    for e in expenses:
+        row = []
+        for item in [e.user, e.description, e.lead, e.amount, e.chargeable, e.corporate_card, e.state(), e.expense_date, e.update_date, e.comment]:
+            if isinstance(item, unicode):
+                row.append(item.encode("iso8859-1"))
+            else:
+                row.append(item)
+        writer.writerow(row)
+    return response
 
 
 @pydici_non_public
