@@ -134,16 +134,16 @@ class Consultant(models.Model):
         if users.count() >= 1:
             return users[0]
 
-    def team(self, excludeSelf=True):
+    def team(self, excludeSelf=True, onlyActive=False):
         """Returns Consultant team as a list of consultant"""
         if excludeSelf:
-            return self.consultant_set.exclude(id=self.id)
+            return self.consultant_set.exclude(id=self.id).filter(active=onlyActive)
         else:
-            return self.consultant_set.all()
+            return self.consultant_set.filter(active=onlyActive)
 
-    def userTeam(self, excludeSelf=True):
+    def userTeam(self, excludeSelf=True, onlyActive=False):
         """Returns consultant team as list of pydici user"""
-        return [c.getUser() for c in self.team(excludeSelf)]
+        return [c.getUser() for c in self.team(excludeSelf=excludeSelf, onlyActive=onlyActive)]
 
     def pending_actions(self):
         """Returns pending actions"""

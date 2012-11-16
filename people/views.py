@@ -30,7 +30,7 @@ def consultant_detail(request, consultant_id):
         return redirect(consultant_home, consultant_id)
     try:
         consultant = Consultant.objects.get(id=consultant_id)
-        staff = consultant.team()
+        staff = consultant.team(onlyActive=True)
         # Compute user current mission based on forecast
         missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
         companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
