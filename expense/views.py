@@ -144,6 +144,7 @@ def expenses_history(request, year):
     else:
         return date_based.archive_index(request, expenses, "expense_date", extra_context={"user": request.user})
 
+
 @pydici_non_public
 def mission_expenses(request, mission_id):
     """Page fragment that display expenses related to given mission"""

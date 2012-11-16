@@ -8,6 +8,7 @@ Ajax custom lookup
 from django.contrib.auth.models import User
 from django.db.models import Q
 
+
 class UserLookup(object):
     def get_query(self, q, request):
         """ return a query set.  you also have access to request.user if needed """

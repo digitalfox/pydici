@@ -39,9 +39,10 @@ class BillStorage(FileSystemStorage):
             else:
                 bill = SupplierBill.objects.get(bill_id=bill_id)
                 return reverse("pydici.billing.views.bill_file", kwargs={"bill_id": bill.id, "nature": "supplier"})
-        except Exception, e:
+        except Exception:
             # Don't display URL if Bill does not exist or path is invalid
             return ""
+
 
 # This utils function is here and not in utils module
 # to avoid circular import loop, as utils module import models
@@ -63,9 +64,8 @@ class AbstractBill(models.Model):
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2)
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
     vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=pydici.settings.PYDICI_DEFAULT_VAT_RATE)
-    expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable":True})
+    expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True})
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
-
 
     def __unicode__(self):
         if self.bill_id:
@@ -128,12 +128,13 @@ class ClientBill(AbstractBill):
             self.amount_with_vat = self.amount * (1 + self.vat / 100)
             if self.expenses.count():
                 for expense in self.expenses.all():
-                    #TODO: handle expense without VAT
+                    # TODO: handle expense without VAT
                     self.amount_with_vat += expense.amount
-        super(ClientBill, self).save(*args, **kwargs) # Save again
+        super(ClientBill, self).save(*args, **kwargs)  # Save again
 
     class Meta:
         verbose_name = _("Client Bill")
+
 
 class SupplierBill(AbstractBill):
     SUPPLIER_BILL_STATE = (

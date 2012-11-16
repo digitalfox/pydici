@@ -23,7 +23,9 @@ class ClientBillForm(BillForm):
     class Meta:
         model = ClientBill
 
+
 class SupplierBillForm(BillForm):
     supplier = AutoCompleteSelectField("supplier", required=True, label=_("Supplier"))
+
     class Meta:
         model = SupplierBill

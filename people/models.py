@@ -121,7 +121,7 @@ class Consultant(models.Model):
         nonProdDays = timesheets.filter(mission__nature="NONPROD")
         prodDays = prodDays[0]["charge__sum"] if prodDays else 0
         nonProdDays = nonProdDays[0]["charge__sum"] if nonProdDays else 0
-        if (prodDays + nonProdDays) > 0 :
+        if (prodDays + nonProdDays) > 0:
             return prodDays / (prodDays + nonProdDays)
         else:
             return 0
@@ -164,6 +164,7 @@ class RateObjective(models.Model):
     start_date = models.DateField(_("Starting"))
     daily_rate = models.IntegerField(_("Daily rate"))
 
+
 class SalesMan(models.Model):
     """A salesman"""
     name = models.CharField(_("Name"), max_length=50)
@@ -184,6 +185,7 @@ class SalesMan(models.Model):
         ordering = ["name", ]
         verbose_name = _("Salesman")
         verbose_name_plural = _("Salesmen")
+
 
 # Signal handling to throw actionset
 def consultantSignalHandler(sender, **kwargs):

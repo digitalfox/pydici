@@ -7,6 +7,7 @@ Pydici views decorators
 
 from django.contrib.auth.decorators import user_passes_test
 
+
 def pydici_non_public(function=None):
     """
     Decorator for views that restrict access to "internal" users. For now

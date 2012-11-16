@@ -72,6 +72,7 @@ def bill_review(request):
                                "user": request.user},
                               RequestContext(request))
 
+
 @pydici_non_public
 def bill_payment_delay(request):
     """Report on client bill payment delay"""
@@ -175,7 +176,6 @@ def pre_billing(request, year=None, month=None):
                                "month": month,
                                "user": request.user},
                               RequestContext(request))
-
 
 
 @pydici_non_public

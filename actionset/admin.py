@@ -10,8 +10,10 @@ from django.utils.translation import ugettext
 
 from pydici.actionset.models import ActionSet, Action, ActionState
 
+
 class ActionInlineAdmin(admin.TabularInline):
     model = Action
+
 
 class ActionSetAdmin(admin.ModelAdmin):
     list_display = ("name", "trigger", "active")
@@ -20,15 +22,17 @@ class ActionSetAdmin(admin.ModelAdmin):
     actions = None
     inlines = [ActionInlineAdmin, ]
 
+
 class ActionAdmin(admin.ModelAdmin):
     list_display = ("name", "actionset")
     search_fields = ["name", "actionset__name"]
     actions = None
 
+
 class ActionStateAdmin(admin.ModelAdmin):
     list_display = ("action", "user", "target", "state", "creation_date", "update_date")
-    fieldsets = [(ugettext("Action state"), {"fields" : ["action", "user", "state" ] }),
-                 (ugettext("Target object"), {"fields" : ["target_type", "target_id"]}) ]
+    fieldsets = [(ugettext("Action state"), {"fields": ["action", "user", "state" ]}),
+                 (ugettext("Target object"), {"fields": ["target_type", "target_id"]})]
     search_fields = ["action__actionset__name", "action__name", "user"]
     actions = None
     list_filter = ["state", "user"]
