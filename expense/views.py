@@ -160,7 +160,7 @@ def csv_expenses(request, expenses):
         row = []
         for item in [e.user, e.description, e.lead, e.amount, e.chargeable, e.corporate_card, e.state(), e.expense_date, e.update_date, e.comment]:
             if isinstance(item, unicode):
-                row.append(item.encode("iso8859-1"))
+                row.append(item.encode("iso8859-1", "ignore"))
             else:
                 row.append(item)
         writer.writerow(row)
