@@ -136,10 +136,12 @@ class Consultant(models.Model):
 
     def team(self, excludeSelf=True, onlyActive=False):
         """Returns Consultant team as a list of consultant"""
+        team = self.consultant_set.all()
         if excludeSelf:
-            return self.consultant_set.exclude(id=self.id).filter(active=onlyActive)
-        else:
-            return self.consultant_set.filter(active=onlyActive)
+            team = team.exclude(id=self.id)
+        if onlyActive:
+            team = team.filter(active=True)
+        return team
 
     def userTeam(self, excludeSelf=True, onlyActive=False):
         """Returns consultant team as list of pydici user"""
