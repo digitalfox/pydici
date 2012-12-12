@@ -187,13 +187,13 @@ def pdc_review(request, year=None, month=None):
     @param year: start date year. None means current year
     @param year: start date year. None means current month"""
 
-    #TODO: factorise this code in a decorator
+    # TODO: factorise this code in a decorator
     mobile = request.session.get("mobile", False)
 
     # Don't display this page if no productive consultant are defined
     people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False).count()
     if people == 0:
-        #TODO: make this message nice
+        # TODO: make this message nice
         return HttpResponse(_("No productive consultant defined !"))
 
     if mobile:
@@ -226,10 +226,10 @@ def pdc_review(request, year=None, month=None):
         start_date = start_date.replace(day=1)  # We use the first day to represent month
 
     staffing = {}  # staffing data per month and per consultant
-    total = {}     # total staffing data per month
-    rates = []     # staffing rates per month
+    total = {}  # total staffing data per month
+    rates = []  # staffing rates per month
     available_month = {}  # available working days per month
-    months = []   # list of month to be displayed
+    months = []  # list of month to be displayed
 
     for i in range(n_month):
         if start_date.month + i <= 12:
@@ -364,7 +364,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         week = monthWeekNumber(date.today())
 
     forecastTotal = {}  # forecast charge (value) per mission (key is mission.id)
-    missions = set()    # Set of all consultant missions for this month
+    missions = set()  # Set of all consultant missions for this month
     days = daysOfMonth(month, week=week)  # List of days in month
 
     if week:
@@ -397,8 +397,8 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
             except Consultant.DoesNotExist:
                 return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
 
-        # A consultant can only edit his own timesheet on current month and 5 days after
-        if (date.today() - next_date).days > 5:
+        # A consultant can only edit his own timesheet on current month and 3 days after
+        if (date.today() - next_date).days > 3:
             readOnly = True
 
     staffings = Staffing.objects.filter(consultant=consultant)
@@ -576,10 +576,10 @@ def mission_timesheet(request, mission_id):
 
     # Compute total per month
     timesheetTotal = [timesheet for consultant, timesheet, staffing, estimated in missionData]
-    timesheetTotal = zip(*timesheetTotal) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
+    timesheetTotal = zip(*timesheetTotal)  # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
     timesheetTotal = [sum(t) for t in timesheetTotal]
     staffingTotal = [staffing for consultant, timesheet, staffing, estimated in missionData]
-    staffingTotal = zip(*staffingTotal) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
+    staffingTotal = zip(*staffingTotal)  # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
     staffingTotal = [sum(t) for t in staffingTotal]
 
     # average = total rate / number of billed days
@@ -716,7 +716,7 @@ def all_timesheet(request, year=None, month=None):
     # Compute total per consultant
     if len(charges) > 1:
         total = [i[2:] for i in charges[1:]]
-        total = zip(*total) # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
+        total = zip(*total)  # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
         total = [sum(t) for t in total]
         charges.append([_("Total"), ""] + total)
     else:
@@ -857,9 +857,9 @@ def create_new_mission_from_lead(request, lead_id):
     mission.nature = modelMission.nature
     mission.probability = modelMission.probability
     mission.save()
-    mission.create_default_staffing() # Initialize default staffing
+    mission.create_default_staffing()  # Initialize default staffing
 
-    # Redirect user to change page of the mission 
+    # Redirect user to change page of the mission
     # in order to type description and deal id
     return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_mission_change", args=[mission.id, ]) + "?return_to=" + lead.get_absolute_url())
 
@@ -906,7 +906,7 @@ def mission_update(request):
         # Update mission attributes
         attribute, mission_id = request.POST["id"].split("-")
         value = request.POST["value"]
-        mission = Mission.objects.get(id=mission_id) # If no mission found, it fails, that's what we want
+        mission = Mission.objects.get(id=mission_id)  # If no mission found, it fails, that's what we want
         billingModes = dict(Mission.BILLING_MODES)
         probability = dict(Mission.PROBABILITY)
         if attribute == "billing_mode":
@@ -953,7 +953,7 @@ def graph_timesheet_rates_bar(request):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
     @todo: per year, with start-end date"""
     data = {}  # Graph data
-    natures = [i[0] for i in Mission.MISSION_NATURE] # Mission natures
+    natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures
     kdates = set()  # List of uniq month
     nConsultant = {}  # Set of working consultant id per month
     avgDailyRate = {}  # daily rate sum per month
@@ -962,7 +962,7 @@ def graph_timesheet_rates_bar(request):
     plots2 = []  # List of plots for daily rate - needed to add legend
     colors = itertools.cycle(COLORS)
     holiday_days = [h.day for h in  Holiday.objects.all()]
-    profils = dict(ConsultantProfile.objects.all().values_list("id", "name")) # Consultant Profiles
+    profils = dict(ConsultantProfile.objects.all().values_list("id", "name"))  # Consultant Profiles
 
     # Setting up graph
     fig = Figure(figsize=(12, 8))
@@ -992,7 +992,7 @@ def graph_timesheet_rates_bar(request):
         return print_png(fig)
 
     for timesheet in timesheets:
-        #Using first day of each month as key date
+        # Using first day of each month as key date
         kdate = date(timesheet.working_date.year, timesheet.working_date.month, 1)
         kdates.add(kdate)
         # Init dict with kdate if not already done
