@@ -14,9 +14,9 @@
         <br/>
         {% if expense.lead %}
             {% if expense.chargeable %}
-                {% trans "Chargeable on lead "%} {{ expense.lead }}
+                {% trans "Chargeable on lead "%} <a href="{{ expense.lead.get_absolute_url }}">{{ expense.lead }}</a>
             {% else %}
-                {% trans "Lead" %} {{ expense.lead }}
+                {% trans "Lead" %} <a href="{{ expense.lead.get_absolute_url }}">{{ expense.lead }}</a>
             {% endif %}
             <br/>
         {% endif %}
