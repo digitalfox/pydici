@@ -15,6 +15,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 
 from pydici.people.models import Consultant
+from pydici.leads.models import Lead
 import pydici.settings
 
 register = template.Library()
@@ -128,4 +129,14 @@ def pydici_simple_format(value, arg=None):
             inList = False
 
     value = "".join(result)
+
+    # Hook on deal ids
+    result = []
+    dealIds = [i[0] for i in Lead.objects.exclude(deal_id="").values_list("deal_id")]
+    for word in value.split():
+        if word in dealIds:
+            word = "<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=word).get_absolute_url(), word)
+        result.append(word)
+    value = " ".join(result)
+
     return mark_safe(value)
