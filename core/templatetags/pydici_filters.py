@@ -111,12 +111,24 @@ def get_admin_mail(value, arg=None):
 def pydici_simple_format(value, arg=None):
     """Very simple markup formating.
     Markdown and rst are too much complicated"""
-    # format *word* and _word_
+    dealIds = [i[0] for i in Lead.objects.exclude(deal_id="").values_list("deal_id")]
+    trigrammes = [i[0] for i in Consultant.objects.values_list("trigramme")]
+
+    # format *word* and _word_ and look for deal ids
     value = stared_text.sub(r"<strong>\1</strong>", value)
     value = underlined_text.sub(r"<em>\1</em>", value)
     result = []
     inList = False  # Flag to indicate we are in a list
     for line in value.split("\n"):
+        newline = []
+        for word in line.split():
+            if word in dealIds:
+                word = "<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=word).get_absolute_url(), word)
+            if word in trigrammes:
+                word = "<a href='%s'>%s</a>" % (Consultant.objects.get(trigramme=word).get_absolute_url(), word)
+            newline.append(word)
+        line = " ".join(newline)
+
         if bullet_point.match(line):
             if not inList:
                 result.append("<ul>")
@@ -127,16 +139,6 @@ def pydici_simple_format(value, arg=None):
                 result.append("</ul>")
             result.append(line + "\n")
             inList = False
-
     value = "".join(result)
-
-    # Hook on deal ids
-    result = []
-    dealIds = [i[0] for i in Lead.objects.exclude(deal_id="").values_list("deal_id")]
-    for word in value.split():
-        if word in dealIds:
-            word = "<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=word).get_absolute_url(), word)
-        result.append(word)
-    value = " ".join(result)
 
     return mark_safe(value)
