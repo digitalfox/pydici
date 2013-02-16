@@ -11,9 +11,12 @@ from django.db.models import Q
 class MissionLookup(object):
     def get_query(self, q, request):
         """ return a query set.  you also have access to request.user if needed """
-        qs = Mission.objects.filter(active=True) # Remove archived mission
+        qs = Mission.objects.filter(active=True)  # Remove archived mission
         # Get mission with lead by lead and client name
-        qs = qs.filter(Q(lead__name__icontains=q) |
+        qs = qs.filter(Q(deal_id__icontains=q) |
+                       Q(description__icontains=q) |
+                       Q(lead__name__icontains=q) |
+                       Q(lead__deal_id__icontains=q) |
                        Q(lead__client__organisation__name__icontains=q) |
                        Q(lead__client__organisation__company__name__icontains=q))
 
@@ -24,7 +27,7 @@ class MissionLookup(object):
 
     def format_result(self, mission):
         """ the search results display in the dropdown menu.  may contain html and multiple-lines. will remove any |  """
-        return unicode(mission)
+        return mission.full_name()
 
     def format_item(self, mission):
         """ the display of a currently selected object in the area below the search box. html is OK """
