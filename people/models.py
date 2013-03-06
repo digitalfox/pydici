@@ -151,6 +151,29 @@ class Consultant(models.Model):
         """Returns pending actions"""
         return ActionState.objects.filter(user=self.getUser(), state="TO_BE_DONE")
 
+    def done_days(self):
+        """Returns numbers of days worked up to today (according his timesheet) for current month"""
+        from pydici.staffing.models import Timesheet  # Do that here to avoid circular imports
+        today = date.today()
+
+        days = Timesheet.objects.filter(consultant=self,
+                                        charge__gt=0,
+                                        working_date__gte=today.replace(day=1),
+                                        working_date__lte=today).aggregate(Sum("charge")).values()[0]
+        return days or 0
+
+    def forecasted_days(self):
+        """Forecasted days for current month"""
+        from pydici.staffing.models import Staffing  # Do that here to avoid circular imports
+        today = date.today()
+
+        days = Staffing.objects.filter(consultant=self,
+                                       charge__gt=0,
+                                       staffing_date__gte=today.replace(day=1),
+                                       staffing_date__lte=today).aggregate(Sum("charge")).values()[0]
+        return days or 0
+
+
     @models.permalink
     def get_absolute_url(self):
         return ('pydici.people.views.consultant_home', [str(self.id)])

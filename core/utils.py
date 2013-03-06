@@ -9,7 +9,7 @@ appropriate to live in models or view
 
 import re
 import os
-from datetime import timedelta
+from datetime import timedelta, date
 import unicodedata
 
 os.environ['MPLCONFIGDIR'] = '/tmp'  # Needed for matplotlib
@@ -98,18 +98,22 @@ def to_int_or_round(x, precision=1):
         # Return as is
         return x
 
-def working_days(monthDate, holidays=[]):
+def working_days(monthDate, holidays=[], upToToday=False):
     """Compute the number of working days of a month
     @param monthDate: first day of month datetime.date
     @param holidays: list of days (datetime.date) that are not worked
+    @param upToToday: only count days up to today. Only relevant for current month (default is false)
     @return: number of working days (int)"""
     day = timedelta(1)
+    today = date.today()
     n = 0
     currentMonth = monthDate.month
     while monthDate.month == currentMonth:
         if monthDate.weekday() < 5 and monthDate not in holidays:  # Only count working days
             n += 1
         monthDate += day
+        if upToToday and monthDate > today:
+            break
     return n
 
 def month_days(monthDate):

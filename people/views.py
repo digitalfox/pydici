@@ -5,13 +5,18 @@ Pydici people views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+from datetime import date
+
 from django.shortcuts import render_to_response, redirect
 from django.http import Http404
 from django.template import RequestContext
+from django.db.models import Sum
 
 from pydici.people.models import Consultant
 from pydici.crm.models import Company
+from pydici.staffing.models import Timesheet, Holiday
 from pydici.core.decorator import pydici_non_public
+from pydici.core.utils import working_days
 
 
 def consultant_home(request, consultant_id):
@@ -37,6 +42,10 @@ def consultant_detail(request, consultant_id):
         business_territory = Company.objects.filter(businessOwner=consultant)
         leads_as_responsible = set(consultant.lead_responsible.active())
         leads_as_staffee = consultant.lead_set.active()
+        done_days = consultant.done_days()
+        late = working_days(date.today().replace(day=1), [h.day for h in Holiday.objects.all()], upToToday=True) - done_days
+        if late < 0:
+            late = 0  # Don't warn user if timesheet is ok !
     except Consultant.DoesNotExist:
         raise Http404
     return render_to_response("people/consultant_detail.html",
@@ -47,6 +56,8 @@ def consultant_detail(request, consultant_id):
                                "business_territory": business_territory,
                                "leads_as_responsible": leads_as_responsible,
                                "leads_as_staffee": leads_as_staffee,
+                               "done_days": done_days,
+                               "late": late,
                                "user": request.user},
                                RequestContext(request))
 

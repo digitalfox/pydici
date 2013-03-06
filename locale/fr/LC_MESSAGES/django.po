@@ -1,14 +1,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Sebastien Renard <Sebastien.Renard@digitalfox.org>, 2010, 2012.
+# Sebastien Renard <Sebastien.Renard@digitalfox.org>, 2010, 2012, 2013.
 # Sébastien Renard <renard@kde.org>, 2010, 2011, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-16 20:48+0100\n"
-"PO-Revision-Date: 2012-11-16 20:42+0100\n"
+"POT-Creation-Date: 2013-03-07 00:07+0100\n"
+"PO-Revision-Date: 2013-03-07 00:06+0100\n"
 "Last-Translator: Sebastien Renard <sebastien.renard@enioka.com>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -48,7 +48,7 @@ msgstr "Quand un consultant est créé"
 
 #: actionset/models.py:26 actionset/models.py:45 crm/models.py:22
 #: crm/models.py:76 crm/models.py:200 expense/models.py:32 leads/models.py:51
-#: leads/views.py:142 people/models.py:24 people/models.py:170
+#: leads/views.py:142 people/models.py:24 people/models.py:195
 #: templates/crm/_contact_list.html:9
 #: templates/crm/clientcompany_detail.html:110
 #: templates/people/consultant.html:44
@@ -70,7 +70,7 @@ msgstr "Description"
 msgid "Trigger"
 msgstr "Déclencheur"
 
-#: actionset/models.py:29 people/models.py:40 people/models.py:173
+#: actionset/models.py:29 people/models.py:40 people/models.py:198
 #: staffing/models.py:46
 msgid "Active"
 msgstr "Active"
@@ -298,15 +298,15 @@ msgstr "Montant prévu"
 msgid "Weighted forecasted work"
 msgstr "Montant prévu pondéré"
 
-#: core/templatetags/pydici_filters.py:82
+#: core/templatetags/pydici_filters.py:83
 msgid "My timesheet"
 msgstr "Ma feuille de temps"
 
-#: core/templatetags/pydici_filters.py:95
+#: core/templatetags/pydici_filters.py:96
 msgid "My staffing"
 msgstr "Mon staffing"
 
-#: core/templatetags/pydici_filters.py:106
+#: core/templatetags/pydici_filters.py:107
 msgid "Mail to support"
 msgstr "Courriel au support"
 
@@ -314,7 +314,7 @@ msgstr "Courriel au support"
 msgid "Code"
 msgstr "Code"
 
-#: crm/models.py:35 people/models.py:38 people/models.py:172
+#: crm/models.py:35 people/models.py:38 people/models.py:197
 msgid "Subsidiary"
 msgstr "Filiale"
 
@@ -349,7 +349,7 @@ msgstr "Entreprise"
 msgid "Client organisation"
 msgstr "Département"
 
-#: crm/models.py:78 people/models.py:175 templates/crm/_contact_list.html:13
+#: crm/models.py:78 people/models.py:200 templates/crm/_contact_list.html:13
 #: templates/crm/clientcompany_detail.html:114
 #: templates/staffing/mission_contacts.html:17
 msgid "Phone"
@@ -591,7 +591,7 @@ msgid "Responsible"
 msgstr "Responsable"
 
 #: leads/forms.py:21 leads/models.py:55 leads/views.py:143
-#: people/models.py:186 templates/core/index.html:21
+#: people/models.py:211 templates/core/index.html:21
 #: templates/core/index.html.py:46 templates/core/index.html:70
 #: templates/core/index.html.py:94 templates/leads/review.html:32
 #: templates/leads/review.html.py:61
@@ -662,7 +662,7 @@ msgstr "Montant (k€)"
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:61 leads/views.py:143 people/models.py:164
+#: leads/models.py:61 leads/views.py:143 people/models.py:189
 #: templates/leads/review.html:37 templates/leads/review.html.py:66
 msgid "Starting"
 msgstr "Démarrage"
@@ -729,18 +729,18 @@ msgstr "Profile"
 msgid "Subcontractor"
 msgstr "Sous-traitant"
 
-#: people/models.py:158 staffing/forms.py:52 staffing/views.py:794
+#: people/models.py:183 staffing/forms.py:52 staffing/views.py:794
 #: templates/staffing/mission.html:82
 #: templates/staffing/mission_staffing.html:9
 msgid "Consultant"
 msgstr "Consultant"
 
-#: people/models.py:165 staffing/models.py:291 staffing/views.py:794
+#: people/models.py:190 staffing/models.py:291 staffing/views.py:794
 #: templates/staffing/graph_consultant_rate_jqp.html:65
 msgid "Daily rate"
 msgstr "Taux journalier"
 
-#: people/models.py:187
+#: people/models.py:212
 msgid "Salesmen"
 msgstr "Commerciaux"
 
@@ -1590,7 +1590,7 @@ msgstr "Pydici mobile"
 msgid "My clients"
 msgstr "Mes clients"
 
-#: templates/core/m.index.html:28 templates/people/consultant_detail.html:59
+#: templates/core/m.index.html:28 templates/people/consultant_detail.html:70
 #: templates/people/subcontractor_detail.html:35
 msgid "Current missions"
 msgstr "Missions actuelles"
@@ -1922,7 +1922,7 @@ msgstr ""
 "Une mission est créée une fois que la proposition commerciale est envoyée."
 
 #: templates/leads/lead_detail.html:185
-#: templates/people/consultant_detail.html:29
+#: templates/people/consultant_detail.html:40
 #: templates/people/subcontractor_detail.html:17
 #: templates/staffing/mission.html:141
 msgid "Pending actions"
@@ -2043,28 +2043,44 @@ msgid "This consultant does not work anymore for the company"
 msgstr "Ce consultant ne travaille plus pour la société"
 
 #: templates/people/consultant_detail.html:16
+msgid "This month"
+msgstr "Ce mois ci"
+
+#: templates/people/consultant_detail.html:18
+msgid "Done days this month: "
+msgstr "Jours pointés ce mois : "
+
+#: templates/people/consultant_detail.html:18
+msgid " day(s) late"
+msgstr " jour(s) en retard"
+
+#: templates/people/consultant_detail.html:19
+msgid "Forecasted"
+msgstr "Prévus"
+
+#: templates/people/consultant_detail.html:27
 msgid "Manager: "
 msgstr "Manager : "
 
-#: templates/people/consultant_detail.html:18
+#: templates/people/consultant_detail.html:29
 msgid "Staff"
 msgstr "Équipe"
 
-#: templates/people/consultant_detail.html:38
+#: templates/people/consultant_detail.html:49
 msgid "Business territory"
 msgstr "Territoire commercial"
 
-#: templates/people/consultant_detail.html:49
+#: templates/people/consultant_detail.html:60
 #: templates/people/subcontractor_detail.html:25
 #: templates/staffing/pdc_review.html:69
 msgid "Clients"
 msgstr "Clients"
 
-#: templates/people/consultant_detail.html:70
+#: templates/people/consultant_detail.html:81
 msgid "Current leads as responsible"
 msgstr "Affaires en tant que responsable"
 
-#: templates/people/consultant_detail.html:82
+#: templates/people/consultant_detail.html:93
 #: templates/people/subcontractor_detail.html:46
 msgid "Current leads as resource"
 msgstr "Affaires en tant que ressource"
