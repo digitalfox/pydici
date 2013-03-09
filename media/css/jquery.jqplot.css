@@ -86,31 +86,31 @@
 
 .jqplot-xaxis-label {
     margin-top: 10px;
-    font-size: 10pt;
+    font-size: 11pt;
     position: absolute;
 }
 
 .jqplot-x2axis-label {
     margin-bottom: 10px;
-    font-size: 10pt;
+    font-size: 11pt;
     position: absolute;
 }
 
 .jqplot-yaxis-label {
     margin-right: 10px;
 /*    text-align: center;*/
-    font-size: 10pt;
+    font-size: 11pt;
     position: absolute;
 }
 
 .jqplot-yMidAxis-label {
-    font-size: 10pt;
+    font-size: 11pt;
     position: absolute;
 }
 
 .jqplot-y2axis-label, .jqplot-y3axis-label, .jqplot-y4axis-label, .jqplot-y5axis-label, .jqplot-y6axis-label, .jqplot-y7axis-label, .jqplot-y8axis-label, .jqplot-y9axis-label {
 /*    text-align: center;*/
-    font-size: 10pt;
+    font-size: 11pt;
     margin-left: 10px;
     position: absolute;
 }
@@ -126,10 +126,10 @@
 }
 
 table.jqplot-table-legend {
-    margin-top: -30px;
-    margin-bottom: 4px;
-    margin-left: 4px;
-    margin-right: 4px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-left: 12px;
+    margin-right: 12px;
 }
 
 table.jqplot-table-legend, table.jqplot-cursor-legend {
@@ -218,7 +218,7 @@ table.jqplot-cursor-tooltip {
     font-size: 0.75em;
     z-index: 2;
 }
-
+      
 td.jqplot-cursor-legend-swatch {
     vertical-align: middle;
     text-align: center;
