@@ -473,6 +473,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                                "previous_date": previous_date,
                                "previous_week": previous_week,
                                "next_week": next_week,
+                               "is_current_month": month == date.today().replace(day=1),
                                "user": request.user},
                                RequestContext(request))
 
