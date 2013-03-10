@@ -190,6 +190,7 @@ def graph_stat_bar(request):
     plots = []  # List of plots - needed to add legend
     today = date.today()
     start_date = today - timedelta(24 * 30)  # Screen data about 24 month before today
+    end_date = today + timedelta(6 * 30)  # No more than 6 month forecasted
     colors = itertools.cycle(COLORS)
 
     # Setting up graph
@@ -223,7 +224,7 @@ def graph_stat_bar(request):
         tsData[kdate] += ts.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
 
     # Collect data for forecasted work according to staffing data
-    for staffing in Staffing.objects.filter(staffing_date__gte=today.replace(day=1), mission__nature="PROD").select_related():
+    for staffing in Staffing.objects.filter(staffing_date__gte=today.replace(day=1), staffing_date__lt=end_date, mission__nature="PROD").select_related():
         kdate = staffing.staffing_date.replace(day=1)
         if kdate not in staffingData:
             staffingData[kdate] = 0  # Create key
