@@ -28,16 +28,16 @@ from django.utils.html import escape
 from django.utils import formats
 from django.views.decorators.cache import cache_page, cache_control
 
-from pydici.staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
-from pydici.people.models import Consultant
-from pydici.leads.models import Lead
-from pydici.people.models import ConsultantProfile, RateObjective
-from pydici.staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
+from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
+from people.models import Consultant
+from leads.models import Lead
+from people.models import ConsultantProfile, RateObjective
+from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
                                   TimesheetForm, MassStaffingForm, MissionContactForm
-from pydici.core.utils import working_days, nextMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
+from core.utils import working_days, nextMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
                               to_int_or_round, print_png, COLORS
-from pydici.core.decorator import pydici_non_public
-from pydici.staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
+from core.decorator import pydici_non_public
+from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
                                   sortMissions, holidayDays, staffingDates
 
 

@@ -7,7 +7,7 @@ Django administration setup
 
 from django.contrib import admin
 
-from pydici.expense.models import Expense, ExpenseCategory
+from expense.models import Expense, ExpenseCategory
 
 
 class ExpenseAdmin(admin.ModelAdmin):

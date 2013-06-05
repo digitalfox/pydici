@@ -8,7 +8,7 @@ Django administration setup
 from django.contrib import admin
 from django.utils.translation import ugettext
 
-from pydici.actionset.models import ActionSet, Action, ActionState
+from actionset.models import ActionSet, Action, ActionState
 
 
 class ActionInlineAdmin(admin.TabularInline):

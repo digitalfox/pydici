@@ -4,10 +4,10 @@ Utils for pydici action set module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-from pydici.actionset.models import ActionSet
+from actionset.models import ActionSet
+
 
 def launchTrigger(trigger, targetUsers, targetObject=None):
     """Launch actionset about targetObject for given trigger to targeted users"""

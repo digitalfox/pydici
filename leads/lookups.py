@@ -5,7 +5,7 @@ Ajax custom lookup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from pydici.leads.models import Lead
+from leads.models import Lead
 from django.db.models import Q
 
 

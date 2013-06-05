@@ -10,9 +10,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from ajax_select.admin import AjaxSelectAdmin
 
-from pydici.billing.models import ClientBill, SupplierBill
-from pydici.billing.forms import ClientBillForm, SupplierBillForm
-from pydici.core.admin import ReturnToAppAdmin
+from billing.models import ClientBill, SupplierBill
+from billing.forms import ClientBillForm, SupplierBillForm
+from core.admin import ReturnToAppAdmin
 
 
 class BillAdmin(AjaxSelectAdmin, ReturnToAppAdmin):

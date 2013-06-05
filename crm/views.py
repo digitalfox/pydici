@@ -13,12 +13,12 @@ from django.shortcuts import render_to_response
 from django.db.models import Sum, Min
 from django.views.decorators.cache import cache_page
 
-from pydici.crm.models import Company, Client, Contact, AdministrativeContact
-from pydici.staffing.models import Timesheet
-from pydici.leads.models import Lead
-from pydici.core.decorator import pydici_non_public
-from pydici.core.utils import sortedValues, previousMonth, COLORS
-from pydici.billing.models import ClientBill
+from crm.models import Company, Client, Contact, AdministrativeContact
+from staffing.models import Timesheet
+from leads.models import Lead
+from core.decorator import pydici_non_public
+from core.utils import sortedValues, previousMonth, COLORS
+from billing.models import ClientBill
 
 
 @pydici_non_public

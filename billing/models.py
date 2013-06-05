@@ -15,10 +15,10 @@ from django.utils.translation import ugettext
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 
-from pydici.leads.models import Lead
-from pydici.expense.models import Expense
-from pydici.crm.models import Supplier
-from pydici.core.utils import sanitizeName
+from leads.models import Lead
+from expense.models import Expense
+from crm.models import Supplier
+from core.utils import sanitizeName
 import pydici.settings
 
 

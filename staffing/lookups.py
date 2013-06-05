@@ -7,7 +7,7 @@ Ajax custom lookup
 
 from itertools import chain
 
-from pydici.staffing.models import Mission
+from staffing.models import Mission
 from django.db.models import Q
 
 

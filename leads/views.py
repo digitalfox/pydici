@@ -25,11 +25,11 @@ from django.contrib.auth.decorators import permission_required
 from taggit.models import Tag
 from taggit_suggest.utils import suggest_tags
 
-from pydici.core.utils import send_lead_mail, sortedValues, COLORS
-from pydici.leads.models import Lead
+from core.utils import send_lead_mail, sortedValues, COLORS
+from leads.models import Lead
 import pydici.settings
-from pydici.core.utils import capitalize, getLeadDirs, getLeadDocURL, createProjectTree
-from pydici.core.decorator import pydici_non_public
+from core.utils import capitalize, getLeadDirs, getLeadDocURL, createProjectTree
+from core.decorator import pydici_non_public
 
 
 @pydici_non_public

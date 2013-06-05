@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError
 
 from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
 
-from pydici.staffing.models import Mission, FinancialCondition
+from staffing.models import Mission, FinancialCondition
 
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):

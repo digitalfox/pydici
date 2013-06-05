@@ -13,10 +13,10 @@ from django.db.models.signals import post_save
 
 from datetime import date, timedelta
 
-from pydici.core.utils import capitalize
-from pydici.crm.models import Subsidiary
-from pydici.actionset.models import ActionState
-from pydici.actionset.utils import launchTrigger
+from core.utils import capitalize
+from crm.models import Subsidiary
+from actionset.models import ActionState
+from actionset.utils import launchTrigger
 
 
 class ConsultantProfile(models.Model):
@@ -90,7 +90,7 @@ class Consultant(models.Model):
     def getFinancialConditions(self, startDate, endDate):
         """Get consultant's financial condition between startDate (included) and enDate (excluded)
         @return: ((rate1, #days), (rate2, #days)...)"""
-        from pydici.staffing.models import FinancialCondition
+        from staffing.models import FinancialCondition
         fc = FinancialCondition.objects.filter(consultant=self,
                                                consultant__timesheet__charge__gt=0,  # exclude null charge
                                                consultant__timesheet__working_date__gte=startDate,
@@ -110,7 +110,7 @@ class Consultant(models.Model):
 
     def getProductionRate(self, startDate, endDate):
         """Get consultant production rate for given between startDate (included) and enDate (excluded)"""
-        from pydici.staffing.models import Timesheet
+        from staffing.models import Timesheet
         timesheets = Timesheet.objects.filter(consultant=self,
                                               charge__gt=0,
                                               working_date__gte=startDate,
@@ -153,7 +153,7 @@ class Consultant(models.Model):
 
     def done_days(self):
         """Returns numbers of days worked up to today (according his timesheet) for current month"""
-        from pydici.staffing.models import Timesheet  # Do that here to avoid circular imports
+        from staffing.models import Timesheet  # Do that here to avoid circular imports
         today = date.today()
 
         days = Timesheet.objects.filter(consultant=self,
@@ -164,7 +164,7 @@ class Consultant(models.Model):
 
     def forecasted_days(self):
         """Forecasted days for current month"""
-        from pydici.staffing.models import Staffing  # Do that here to avoid circular imports
+        from staffing.models import Staffing  # Do that here to avoid circular imports
         today = date.today()
 
         days = Staffing.objects.filter(consultant=self,

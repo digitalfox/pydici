@@ -20,13 +20,13 @@ from django.db.models import Sum
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_page
 
-from pydici.billing.models import ClientBill, SupplierBill
-from pydici.leads.models import Lead
-from pydici.people.models import Consultant
-from pydici.staffing.models import Timesheet, FinancialCondition, Staffing, Mission
-from pydici.crm.models import Company
-from pydici.core.utils import print_png, COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round
-from pydici.core.decorator import pydici_non_public
+from billing.models import ClientBill, SupplierBill
+from leads.models import Lead
+from people.models import Consultant
+from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
+from crm.models import Company
+from core.utils import print_png, COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round
+from core.decorator import pydici_non_public
 
 
 @pydici_non_public

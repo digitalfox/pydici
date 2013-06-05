@@ -4,13 +4,13 @@
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.contrib.syndication.feeds import Feed
+from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 
-from pydici.staffing.models import Staffing
-from pydici.people.models import Consultant
+from staffing.models import Staffing
+from people.models import Consultant
 
 
 class StaffingFeed(Feed):
@@ -34,6 +34,7 @@ class StaffingFeed(Feed):
     def item_author_name(self, item):
         if item.last_user:
             return item.last_user
+
 
 class LatestStaffing(StaffingFeed):
     title = _("Latest staffing update")

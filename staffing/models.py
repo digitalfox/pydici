@@ -16,12 +16,12 @@ from django.contrib.admin.models import ContentType
 
 from datetime import datetime, date, timedelta
 
-from pydici.leads.models import Lead
-from pydici.people.models import Consultant
-from pydici.crm.models import MissionContact
-from pydici.actionset.utils import launchTrigger
-from pydici.actionset.models import ActionState
-from pydici.core.utils import nextMonth
+from leads.models import Lead
+from people.models import Consultant
+from crm.models import MissionContact
+from actionset.utils import launchTrigger
+from actionset.models import ActionState
+from core.utils import nextMonth
 
 
 class Mission(models.Model):
@@ -82,7 +82,7 @@ class Mission(models.Model):
     def no_more_staffing_since(self, refDate=None):
         """@return: True if at least one staffing is defined after refDate. Zero charge staffing are considered."""
         if not refDate:
-            refDate = datetime.now().replace(day=1) # Current month
+            refDate = datetime.now().replace(day=1)  # Current month
         return not bool(self.staffing_set.filter(staffing_date__gte=refDate).count())
 
     def no_staffing_update_since(self, days=30):
@@ -105,7 +105,7 @@ class Mission(models.Model):
             staffing.mission = self
             staffing.consultant = consultant
             staffing.staffing_date = staffing_date
-            staffing.update_date = datetime.now().replace(microsecond=0) # Remove useless microsecond that pollute form validation in callback
+            staffing.update_date = datetime.now().replace(microsecond=0)  # Remove useless microsecond that pollute form validation in callback
             staffing.last_user = "-"
             staffing.save()
 
@@ -132,8 +132,8 @@ class Mission(models.Model):
             if mission has lead, it is based on lead deal_id if exists
             else if mission deal_id is used or default to pk (id)"""
         if self.lead and self.lead.deal_id:
-            rank = list(self.lead.mission_set.order_by("id")).index(self) # compute mission rank
-            return self.lead.deal_id + chr(97 + rank) # chr(97) is 'a' 
+            rank = list(self.lead.mission_set.order_by("id")).index(self)  # compute mission rank
+            return self.lead.deal_id + chr(97 + rank)  # chr(97) is 'a'
         elif self.deal_id:
             return self.deal_id
         else:
@@ -147,7 +147,7 @@ class Mission(models.Model):
         res = cache.get("missionDoneWork-%s" % self.id)
         if res:
             return res
-        rates = dict([ (i.id, j[0]) for i, j in self.consultant_rates().items()]) # switch to consultant id
+        rates = dict([ (i.id, j[0]) for i, j in self.consultant_rates().items()])  # switch to consultant id
         days = 0
         amount = 0
         timesheets = Timesheet.objects.filter(mission=self)
@@ -289,7 +289,7 @@ class FinancialCondition(models.Model):
     consultant = models.ForeignKey(Consultant)
     mission = models.ForeignKey(Mission, limit_choices_to={"active":True})
     daily_rate = models.IntegerField(_("Daily rate"))
-    bought_daily_rate = models.IntegerField(_("Bought daily rate"), null=True, blank=True) # For subcontractor only
+    bought_daily_rate = models.IntegerField(_("Bought daily rate"), null=True, blank=True)  # For subcontractor only
 
     class Meta:
         unique_together = (("consultant", "mission", "daily_rate"),)

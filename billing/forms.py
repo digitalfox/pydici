@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
 
-from pydici.billing.models import ClientBill, SupplierBill
+from billing.models import ClientBill, SupplierBill
 
 
 class BillForm(models.ModelForm):

@@ -11,11 +11,11 @@ from django.utils.translation import ugettext
 
 from ajax_select.admin import AjaxSelectAdmin
 
-from pydici.leads.models import Lead
-from pydici.staffing.models import Mission
-from pydici.leads.forms import LeadForm
-from pydici.core.utils import send_lead_mail
-from pydici.core.admin import ReturnToAppAdmin
+from leads.models import Lead
+from staffing.models import Mission
+from leads.forms import LeadForm
+from core.utils import send_lead_mail
+from core.admin import ReturnToAppAdmin
 
 
 class LeadAdmin(AjaxSelectAdmin, ReturnToAppAdmin):

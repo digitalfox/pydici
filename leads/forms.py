@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 
 from ajax_select.fields import AutoCompleteSelectField
 
-from pydici.leads.models import Lead
+from leads.models import Lead
 
 class LeadForm(models.ModelForm):
     class Meta:

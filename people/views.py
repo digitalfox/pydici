@@ -11,11 +11,11 @@ from django.shortcuts import render_to_response, redirect
 from django.http import Http404
 from django.template import RequestContext
 
-from pydici.people.models import Consultant
-from pydici.crm.models import Company
-from pydici.staffing.models import Holiday
-from pydici.core.decorator import pydici_non_public
-from pydici.core.utils import working_days
+from people.models import Consultant
+from crm.models import Company
+from staffing.models import Holiday
+from core.decorator import pydici_non_public
+from core.utils import working_days
 
 
 def consultant_home(request, consultant_id):

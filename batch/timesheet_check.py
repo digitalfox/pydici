@@ -31,8 +31,8 @@ from django.template.loader import get_template
 from django.template import Context
 
 # Pydici imports
-from pydici.people.models import Consultant
-from pydici.staffing.utils import gatherTimesheetData
+from people.models import Consultant
+from staffing.utils import gatherTimesheetData
 
 
 def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):

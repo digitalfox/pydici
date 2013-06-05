@@ -9,7 +9,7 @@ import os
 # Django import
 from django.conf.urls.defaults import *
 from django.contrib import admin
-from django.views.generic.simple import redirect_to
+from django.views.generic.base import RedirectView
 
 admin.autodiscover()
 
@@ -17,8 +17,8 @@ admin.autodiscover()
 import pydici.settings
 
 # Feeds definition
-from pydici.leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
-from pydici.staffing.feeds import LatestStaffing, MyLatestStaffing
+from leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
+from staffing.feeds import LatestStaffing, MyLatestStaffing
 
 feeds = {
         "latest": LatestLeads,
@@ -31,7 +31,7 @@ feeds = {
 
 
 # Overide internal server error view
-handler500 = "pydici.core.views.internal_error"
+handler500 = "core.views.internal_error"
 
 pydici_patterns = patterns('',
     # Admin
@@ -43,11 +43,11 @@ pydici_patterns = patterns('',
 
 pydici_patterns += patterns('',
     # Direct to template and direct pages
-    url(r'^help', redirect_to, {'url': pydici.settings.LEADS_HELP_PAGE}, name='help'),
+    url(r'^help', RedirectView.as_view(url=pydici.settings.LEADS_HELP_PAGE), name='help'),
 
     # Media
-    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-            {'document_root': os.path.join(pydici.settings.PYDICI_ROOTDIR, 'media')}),
+#    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+#            {'document_root': os.path.join(pydici.settings.PYDICI_ROOTDIR, 'media')}),
 
     # Feeds
     url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',
@@ -55,7 +55,7 @@ pydici_patterns += patterns('',
 )
 
 # core module
-pydici_patterns += patterns('pydici.core.views',
+pydici_patterns += patterns('core.views',
     url(r'^$', 'index', name='index'),
     url(r'^search$', 'search', name='search'),
     url(r'^mobile$', 'mobile_index', name='mobile_index'),
@@ -64,7 +64,7 @@ pydici_patterns += patterns('pydici.core.views',
 )
 
 # Lead module
-pydici_patterns += patterns('pydici.leads.views',
+pydici_patterns += patterns('leads.views',
     (r'^leads/review', 'review'),
     (r'^leads/csv/(?P<target>.*)', 'csv_export'),
     (r'^leads/tag/(?P<tag_id>\d+)/$', 'tag'),
@@ -80,7 +80,7 @@ pydici_patterns += patterns('pydici.leads.views',
 )
 
 # Staffing module
-pydici_patterns += patterns('pydici.staffing.views',
+pydici_patterns += patterns('staffing.views',
     url(r'^staffing/pdcreview/?$', 'pdc_review', name='pdcreview-index'),
     url(r'^staffing/pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', name='pdcreview'),
     url(r'^staffing/mission/$', 'missions', name='missions'),
@@ -107,14 +107,14 @@ pydici_patterns += patterns('pydici.staffing.views',
 )
 
 # People module
-pydici_patterns += patterns('pydici.people.views',
+pydici_patterns += patterns('people.views',
     (r'^people/home/consultant/(?P<consultant_id>\d+)/$', 'consultant_home'),
     (r'^people/detail/consultant/(?P<consultant_id>\d+)/$', 'consultant_detail'),
     (r'^people/detail/subcontractor/(?P<consultant_id>\d+)/$', 'subcontractor_detail'),
 )
 
 # CRM module
-pydici_patterns += patterns('pydici.crm.views',
+pydici_patterns += patterns('crm.views',
     (r'^crm/company/(?P<company_id>\d+)/$', 'company_detail'),
     (r'^crm/company/?$', 'company_list'),
     url(r'^crm/company/graph/sales$', 'graph_company_sales_jqp', name="graph_company_sales"),
@@ -123,7 +123,7 @@ pydici_patterns += patterns('pydici.crm.views',
 )
 
 # Billing module
-pydici_patterns += patterns('pydici.billing.views',
+pydici_patterns += patterns('billing.views',
     (r'^billing/bill_review', 'bill_review'),
     (r'^billing/bill_delay', 'bill_payment_delay'),
     (r'^billing/bill/(?P<bill_id>\d+)/mark_bill_paid$', 'mark_bill_paid'),
@@ -134,7 +134,7 @@ pydici_patterns += patterns('pydici.billing.views',
 )
 
 # Expense module
-pydici_patterns += patterns('pydici.expense.views',
+pydici_patterns += patterns('expense.views',
     (r'^expense/?$', 'expenses'),
     (r'^expense/(?P<expense_id>\d+)$', 'expenses'),
     (r'^expense/(?P<expense_id>\d+)/receipt$', 'expense_receipt'),
@@ -144,7 +144,7 @@ pydici_patterns += patterns('pydici.expense.views',
 )
 
 # Actionset module
-pydici_patterns += patterns('pydici.actionset.views',
+pydici_patterns += patterns('actionset.views',
     (r'^actionset/?$', 'actionset_catalog'),
     (r'^actionset/(?P<action_state_id>\d+)/(?P<state>\w+)', 'update_action_state'),
     (r'^actionset/launch/(?P<actionset_id>\d+)', 'launch_actionset'),

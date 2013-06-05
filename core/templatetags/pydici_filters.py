@@ -14,8 +14,8 @@ from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 
-from pydici.people.models import Consultant
-from pydici.leads.models import Lead
+from people.models import Consultant
+from leads.models import Lead
 import pydici.settings
 
 register = template.Library()

@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError
 
 from ajax_select.fields import AutoCompleteSelectField
 
-from pydici.expense.models import Expense
+from expense.models import Expense
 
 
 class ExpenseForm(forms.ModelForm):

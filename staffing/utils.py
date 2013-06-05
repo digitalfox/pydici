@@ -12,8 +12,8 @@ from datetime import date, datetime, timedelta
 from django.db import transaction
 from django.utils import formats
 
-from pydici.staffing.models import Timesheet, Mission, LunchTicket, Holiday
-from pydici.core.utils import month_days, nextMonth, daysOfMonth
+from staffing.models import Timesheet, Mission, LunchTicket, Holiday
+from core.utils import month_days, nextMonth, daysOfMonth
 
 
 def gatherTimesheetData(consultant, missions, month):

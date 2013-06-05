@@ -7,11 +7,11 @@ Django administration setup for pydici CRM module
 
 from django.contrib import admin
 
-from pydici.crm.models import Client, ClientOrganisation, Company, \
+from crm.models import Client, ClientOrganisation, Company, \
                               Contact, BusinessBroker, Subsidiary, \
                               Supplier, AdministrativeFunction, AdministrativeContact, \
                               MissionContact
-from pydici.core.admin import ReturnToAppAdmin
+from core.admin import ReturnToAppAdmin
 
 
 class SubsidiaryAdmin(ReturnToAppAdmin):

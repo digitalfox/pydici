@@ -9,9 +9,8 @@ from django.forms import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 
-from ajax_select.fields import AutoCompleteSelectField
+from people.models import Consultant
 
-from pydici.people.models import Consultant
 
 class ConsultantForm(models.ModelForm):
     class Meta:

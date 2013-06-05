@@ -9,9 +9,9 @@ from django.contrib import admin
 
 from ajax_select.admin import AjaxSelectAdmin
 
-from pydici.staffing.models import Mission, Holiday, Timesheet, FinancialCondition
-from pydici.staffing.forms import MissionAdminForm, FinancialConditionAdminForm
-from pydici.core.admin import ReturnToAppAdmin
+from staffing.models import Mission, Holiday, Timesheet, FinancialCondition
+from staffing.forms import MissionAdminForm, FinancialConditionAdminForm
+from core.admin import ReturnToAppAdmin
 
 
 class MissionAdmin(AjaxSelectAdmin, ReturnToAppAdmin):

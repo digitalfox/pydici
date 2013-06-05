@@ -7,7 +7,7 @@ Ajax custom lookup
 
 from django.utils import formats
 
-from pydici.expense.models import Expense
+from expense.models import Expense
 from django.db.models import Q
 
 

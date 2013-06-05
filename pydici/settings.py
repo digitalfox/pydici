@@ -95,8 +95,9 @@ else:
     # Needed for empty prefix (equivalent to "/")
     MEDIA_URL = "/media/"
 
-STATICFILES_DIRS = (os.path.join(PYDICI_ROOTDIR, 'media'),)
-STATIC_URL = MEDIA_URL
+# STATICFILES_DIRS = (os.path.join(PYDICI_ROOTDIR, 'media'),)
+STATIC_URL = '/static/'
+
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -130,7 +131,8 @@ MIDDLEWARE_CLASSES = [
 
 if DEBUG:
     MIDDLEWARE_CLASSES.extend(('userswitch.middleware.UserSwitchMiddleware',
-                               'debug_toolbar.middleware.DebugToolbarMiddleware',))
+                               # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+                               ))
 
 ROOT_URLCONF = 'pydici.urls'
 
@@ -148,14 +150,14 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'pydici.core',
-    'pydici.people',
-    'pydici.leads',
-    'pydici.staffing',
-    'pydici.crm',
-    'pydici.billing',
-    'pydici.expense',
-    'pydici.actionset',
+    'core',
+    'people',
+    'leads',
+    'staffing',
+    'crm',
+    'billing',
+    'expense',
+    'actionset',
     'ajax_select',
     'taggit',
     'taggit_suggest',

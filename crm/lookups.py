@@ -5,7 +5,7 @@ Ajax custom lookup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from pydici.crm.models import Client, BusinessBroker, Supplier, MissionContact
+from crm.models import Client, BusinessBroker, Supplier, MissionContact
 from django.db.models import Q
 
 

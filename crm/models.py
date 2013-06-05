@@ -11,7 +11,7 @@ from django.db import models
 from django.db.models import Sum, Q
 from django.utils.translation import ugettext_lazy as _
 
-from pydici.core.utils import capitalize
+from core.utils import capitalize
 
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
@@ -43,7 +43,7 @@ class Company(AbstractCompany):
 
     def sales(self, onlyLastYear=False):
         """Sales billed for this company in keuros"""
-        from pydici.billing.models import ClientBill
+        from billing.models import ClientBill
         data = ClientBill.objects.filter(lead__client__organisation__company=self)
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
@@ -160,11 +160,11 @@ class Client(models.Model):
     def getFinancialConditions(self):
         """Get financial condition for this client by profil
         @return: ((profil1, avgrate1), (profil2, avgrate2)...)"""
-        from pydici.staffing.models import FinancialCondition
+        from staffing.models import FinancialCondition
         data = {}
         for fc in FinancialCondition.objects.filter(mission__lead__client=self,
-                                               consultant__timesheet__charge__gt=0, # exclude null charge
-                                               consultant__timesheet=models.F("mission__timesheet") # Join to avoid duplicate entries
+                                               consultant__timesheet__charge__gt=0,  # exclude null charge
+                                               consultant__timesheet=models.F("mission__timesheet")  # Join to avoid duplicate entries
                                                ).select_related():
             profil = fc.consultant.profil
             if not profil in data:

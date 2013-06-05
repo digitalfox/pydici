@@ -4,12 +4,13 @@
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.contrib.syndication.feeds import Feed
+from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import ugettext as _
 
-from pydici.leads.models import Consultant, Lead
+from leads.models import Consultant, Lead
 from django.core import urlresolvers
+
 
 class LeadFeed(Feed):
     feed_type = Atom1Feed
@@ -31,6 +32,7 @@ class LeadFeed(Feed):
 
     def item_author_name(self, item):
         return item.responsible
+
 
 class LatestLeads(LeadFeed):
     title = _("Latest leads")

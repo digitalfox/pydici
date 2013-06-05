@@ -16,13 +16,13 @@ import permissions.utils as perm
 from workflows.models import Transition
 
 # Pydici modules
-from pydici.core.utils import monthWeekNumber, previousWeek, nextWeek
-from pydici.leads.models import Lead
-from pydici.people.models import Consultant, ConsultantProfile
-from pydici.crm.models import Client, Subsidiary
-from pydici.staffing.models import Mission
-from pydici.expense.models import Expense, ExpenseCategory
-from pydici.expense.default_workflows import install_expense_workflow
+from core.utils import monthWeekNumber, previousWeek, nextWeek
+from leads.models import Lead
+from people.models import Consultant, ConsultantProfile
+from crm.models import Client, Subsidiary
+from staffing.models import Mission
+from expense.models import Expense, ExpenseCategory
+from expense.default_workflows import install_expense_workflow
 import pydici.settings
 
 # Python modules used by tests

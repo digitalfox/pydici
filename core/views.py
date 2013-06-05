@@ -10,13 +10,13 @@ from django.template import RequestContext
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 
-from pydici.core.decorator import pydici_non_public
-from pydici.leads.models import Lead
-from pydici.people.models import Consultant
-from pydici.crm.models import Company, Contact
-from pydici.staffing.models import Mission
-from pydici.billing.models import ClientBill
-from pydici.people.views import consultant_home
+from core.decorator import pydici_non_public
+from leads.models import Lead
+from people.models import Consultant
+from crm.models import Company, Contact
+from staffing.models import Mission
+from billing.models import ClientBill
+from people.views import consultant_home
 import pydici.settings
 
 

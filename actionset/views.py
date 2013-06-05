@@ -13,8 +13,8 @@ from django.utils.translation import ugettext as _
 from django.template import RequestContext
 from django.contrib.auth.models import User
 
-from pydici.actionset.models import ActionSet, Action, ActionState
-from pydici.core.decorator import pydici_non_public
+from actionset.models import ActionSet, Action, ActionState
+from core.decorator import pydici_non_public
 
 
 def update_action_state(request, action_state_id, state):

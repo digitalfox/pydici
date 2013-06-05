@@ -20,11 +20,11 @@ from django.template import RequestContext
 from django.db.models import Q
 from django.views.generic import date_based
 
-from pydici.expense.forms import ExpenseForm
-from pydici.expense.models import Expense
-from pydici.people.models import Consultant
-from pydici.staffing.models import Mission
-from pydici.core.decorator import pydici_non_public
+from expense.forms import ExpenseForm
+from expense.models import Expense
+from people.models import Consultant
+from staffing.models import Mission
+from core.decorator import pydici_non_public
 
 
 @pydici_non_public

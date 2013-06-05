@@ -8,9 +8,9 @@ Django administration setup
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from pydici.people.models import SalesMan, Consultant, ConsultantProfile, RateObjective
-from pydici.people.forms import ConsultantForm
-from pydici.core.admin import ReturnToAppAdmin
+from people.models import SalesMan, Consultant, ConsultantProfile, RateObjective
+from people.forms import ConsultantForm
+from core.admin import ReturnToAppAdmin
 
 
 class SalesManAdmin(ReturnToAppAdmin):

@@ -16,13 +16,13 @@ from django.db.models import Q
 
 from taggit.managers import TaggableManager
 
-from pydici.core.utils import compact_text
+from core.utils import compact_text
 
-from pydici.crm.models import Client, BusinessBroker
-from pydici.people.models import Consultant, SalesMan
-from pydici.actionset.models import ActionState
-from pydici.actionset.utils import launchTrigger
-from pydici.core.utils import createProjectTree
+from crm.models import Client, BusinessBroker
+from people.models import Consultant, SalesMan
+from actionset.models import ActionState
+from actionset.utils import launchTrigger
+from core.utils import createProjectTree
 
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
