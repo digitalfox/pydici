@@ -18,7 +18,9 @@ from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.template import RequestContext
 from django.db.models import Q
-from django.views.generic import date_based
+from django.views.generic.dates import ArchiveIndexView
+from django.views.generic.dates import YearArchiveView
+
 
 from expense.forms import ExpenseForm
 from expense.models import Expense
@@ -144,9 +146,9 @@ def expenses_history(request, year):
         return csv_expenses(request, expenses)
 
     if year:
-        return date_based.archive_year(request, year, expenses, "expense_date", extra_context={"user": request.user}, make_object_list=True)
+        return YearArchiveView.as_view(request, year, expenses, "expense_date", extra_context={"user": request.user}, make_object_list=True)
     else:
-        return date_based.archive_index(request, expenses, "expense_date", extra_context={"user": request.user})
+        return ArchiveIndexView.as_view(request, expenses, "expense_date", extra_context={"user": request.user})
 
 
 @pydici_non_public

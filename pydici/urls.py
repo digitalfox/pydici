@@ -50,7 +50,7 @@ pydici_patterns += patterns('',
 #            {'document_root': os.path.join(pydici.settings.PYDICI_ROOTDIR, 'media')}),
 
     # Feeds
-    url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',
+    url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.Feed',
             {'feed_dict': feeds}, name='feed'),
 )
 
