@@ -1,7 +1,7 @@
 {% load i18n %}
 {# Fragment of page to be included in a consultant_home tab #}
 <div id="pydici-ajax-form-content-consultant-staffing" class="content-large">
-    <form action="{% url pydici.staffing.views.consultant_staffing consultant.id %}" method="POST" id="pydici-ajax-form-consultant-staffing">
+    <form action="{% url 'staffing.views.consultant_staffing' consultant.id %}" method="POST" id="pydici-ajax-form-consultant-staffing">
         {{ formset.management_form }}
         <div class="form-row">
         <table>

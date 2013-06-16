@@ -26,9 +26,9 @@
 
 <h1>
 {% if mission.lead.client %}
-    <a href='{% url pydici.crm.views.company_detail mission.lead.client.organisation.company.id %}'>{{ mission.lead.client.organisation }}</a> : 
+    <a href="{% url 'crm.views.company_detail' mission.lead.client.organisation.company.id %}">{{ mission.lead.client.organisation }}</a> : 
 {% endif %}
-    <a href='{% url admin:staffing_mission_change mission.id %}?return_to={% url pydici.staffing.views.mission_home mission.id %}' class='changelink' >{{ mission.short_name }}</a>
+    <a href="{% url 'admin:staffing_mission_change' mission.id %}?return_to={% url 'staffing.views.mission_home' mission.id %}" class='changelink' >{{ mission.short_name }}</a>
 
 
 </h1>
@@ -37,15 +37,15 @@
     <ul>
         <li><a href="#tab-description">{% trans "Description" %}</a></li>
         <li><a href="#tab-consultants">{% trans "Consultants" %}</a></li>
-        <li><a title="#tab-contacts" href="{% url pydici.staffing.views.mission_contacts mission.id %}">{% trans "Contacts" %}</a></li>
+        <li><a title="#tab-contacts" href="{% url 'staffing.views.mission_contacts' mission.id %}">{% trans "Contacts" %}</a></li>
         <li><a href="#tab-other-missions">{% trans "Other missions" %}</a></li>
-        <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.mission_timesheet mission.id %}">{% trans "Timesheet" %}</a></li>
+        <li><a title="#tab-timesheet" href="{% url 'staffing.views.mission_timesheet' mission.id %}">{% trans "Timesheet" %}</a></li>
         {% if mission.active %}
-            <li><a title="#tab-staffing" href="{% url pydici.staffing.views.mission_staffing mission.id %}">{% trans "Forecast staffing" %}</a></li>
+            <li><a title="#tab-staffing" href="{% url 'staffing.views.mission_staffing' mission.id %}">{% trans "Forecast staffing" %}</a></li>
         {% endif %}
-        <li><a title="#tab-expenses" href="{% url pydici.expense.views.mission_expenses mission.id %}">{% trans "Expenses" %}</a></li>
+        <li><a title="#tab-expenses" href="{% url 'expense.views.mission_expenses' mission.id %}">{% trans "Expenses" %}</a></li>
         {% if mission.lead %}
-            <li><a title="#tab-documents" href="{% url pydici.leads.views.lead_documents mission.lead.id %}">{% trans "Documents" %}</a></li>
+            <li><a title="#tab-documents" href="{% url 'leads.views.lead_documents' mission.lead.id %}">{% trans "Documents" %}</a></li>
         {% endif %}
         <li><a href="#tab-actions">{% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
         {% if mission.lead %}<li><a href="#tab-billing">{% trans "Billing" %}</a></li>{% endif %}
@@ -68,7 +68,7 @@
         {% if mission.lead %}
             <h3>{% trans "Billing mode: " %} <div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></h3>
             <h3>{% trans "Probability:" %} <div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_probability_display }}</div></h3>
-            <h3>{% trans "Lead of this mission:" %} <a href="{% url pydici.leads.views.detail mission.lead.id %}">{{ mission.lead }}</a></h3>
+            <h3>{% trans "Lead of this mission:" %} <a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></h3>
 	        {% if mission.lead.description %}
 	            <div class='lead_description'>{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
 	        {% endif %}
@@ -82,7 +82,7 @@
 	    <tr><th>{% trans "Consultant" %}</th><th>{% trans "Daily rate (€)" %}</th><th></th></tr>
 	    {% for consultant, rate in mission.consultant_rates.items %}
 	        <tr {%cycle 'class="row1"' 'class="row2"' %}>
-	            <td><a href='{% url pydici.people.views.consultant_home consultant.id %}', title='{{ consultant }}'>{{ consultant }}</a></td>
+	            <td><a href="{% url 'people.views.consultant_home' consultant.id %}", title='{{ consultant }}'>{{ consultant }}</a></td>
 	            <td align="right"><div id="sold-{{ mission.id }}-{{ consultant.id }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
 	            <td align="right">{% if consultant.subcontractor %}(<div id="bought-{{ mission.id }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>){% endif %}</td>
 	        </tr>
@@ -106,7 +106,7 @@
         </tr>
         {% for sister_mission in mission.sister_missions %}
         <tr {%cycle 'class="row1"' 'class="row2"' %}>
-	        <td><a href='{% url pydici.staffing.views.mission_home sister_mission.id %}'>{{ sister_mission }}</a></td>
+	        <td><a href="{% url 'staffing.views.mission_home' sister_mission.id %}">{{ sister_mission }}</a></td>
 	        <td>{{ sister_mission.mission_id }}</td>
 	        <td>{{ sister_mission.done_work_k.0 }}</td>
 	        <td>{{ sister_mission.done_work_k.1|floatformat }}</td>
@@ -159,14 +159,14 @@
 
 <script type="text/javascript">
 
-$(".jeditable-rate").editable("{% url pydici.staffing.views.mission_consultant_rate %}", { 
+$(".jeditable-rate").editable("{% url 'staffing.views.mission_consultant_rate' %}", { 
     indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
     tooltip   : "{% trans 'click to edit...' %}",
     event     : "click",
     style  : "inherit"
 });
 
-$(".jeditable-mission-update").editable("{% url pydici.staffing.views.mission_update %}", { 
+$(".jeditable-mission-update").editable("{% url 'staffing.views.mission_update' %}", { 
     indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
     tooltip   : "{% trans 'click to edit...' %}",
     event     : "click",

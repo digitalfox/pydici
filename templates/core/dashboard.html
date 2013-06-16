@@ -20,7 +20,7 @@
 <center><h1>{% trans "Commercial activity" %}</h1></center>
 <div id="graph_bar_jqp"></div>
 <script type="text/javascript">
-$('#graph_bar_jqp').load('{% url pydici.leads.views.graph_bar_jqp %}')
+$('#graph_bar_jqp').load('{% url 'leads.views.graph_bar_jqp' %}')
 </script>
 <br/>
 
@@ -29,7 +29,7 @@ $('#graph_bar_jqp').load('{% url pydici.leads.views.graph_bar_jqp %}')
 <br/>
 
 <center><h1>{% trans "Billing review and done work" %}</h1></center>
-<img src="{% url pydici.billing.views.graph_stat_bar %}"/>
+<img src="{% url 'billing.views.graph_stat_bar' %}"/>
 <br/>
 
 <center><h1>{% trans "Sales repartition per client" %}</h1></center>

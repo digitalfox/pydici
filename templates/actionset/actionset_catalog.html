@@ -27,7 +27,7 @@
        </form>
            <script><!--
                 $('#form_actionset_launch_{{ actionset.id }}').submit(function() {
-                    $.get('{% url 'pydici.actionset.views.launch_actionset' actionset.id %}?username='+$("input[name^='actionset_target_user_{{ actionset.id }}']").val(),
+                    $.get('{% url 'actionset.views.launch_actionset' actionset.id %}?username='+$("input[name^='actionset_target_user_{{ actionset.id }}']").val(),
                            process_launch_actionset);
                     return false; // prevent submiting form to browser (which would reload page...)
                 });
@@ -43,7 +43,7 @@
 
 <br/>
 {% if perms.actionset.change_actionstate %}
-<a href="{% url admin:actionset_actionstate_changelist %}">{% trans "Pending action tracking" %}</a>
+<a href="{% url 'admin:actionset_actionstate_changelist' %}">{% trans "Pending action tracking" %}</a>
 {% endif %}
 
 <script type="text/JavaScript">

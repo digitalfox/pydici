@@ -32,19 +32,19 @@
 	   <tr><th>{{ mission.get_nature_display }}</th></tr>
 	{% endifchanged %}
 	<tr {%cycle 'class="row1"' 'class="row2"' %} id="mission_{{ mission.id }}">
-	    <td scope="row"><a href='{% url pydici.staffing.views.mission_home mission.id %}', title='{% blocktrans %}Defines {{ mission }} staffing{% endblocktrans %}'>{{ mission }}</a></td>
+	    <td scope="row"><a href="{% url 'staffing.views.mission_home' mission.id %}", title='{% blocktrans %}Defines {{ mission }} staffing{% endblocktrans %}'>{{ mission }}</a></td>
 	    <td>{{ mission.mission_id }}</td>
 	    <td>{{ mission.get_probability_display }} </td>
 	    <td scope="row">
 	       {% if mission.active %}
 	           <a href="javascript:;"
-	              onClick="$.get('{% url pydici.staffing.views.deactivate_mission mission.id %}',
+	              onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}',
 	                               process_mission_archive)"
 	              title='{% blocktrans %}Archive {{ mission }}{% endblocktrans %}'>
 	              <em>{% trans "Archive" %}</em></a>
 	       {% endif %}
 	    </td>
-	    <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}?return_to={% if all %}{% url all-missions %}{% else %}{% url missions %}{% endif %}', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', class='changelink'><em>{% trans "Change" %}</em></a></td>
+	    <td scope="row"><a href="{% url 'admin:staffing_mission_change' mission.id %}?return_to={% if all %}{% url 'all-missions' %}{% else %}{% url 'missions' %}{% endif %}", title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', class='changelink'><em>{% trans "Change" %}</em></a></td>
 	    <td>{% if mission.active %}
 	           {% if mission.no_more_staffing_since %}
 	               {% trans "This mission has no staffing in future" %}
@@ -66,9 +66,9 @@
     <a href='{% url all-missions %}'>{% trans "Display all missions" %}</a>
 {% endif %}
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='{% url admin:staffing_mission_changelist %}'>{% trans "Missions administration" %}</a>
+<a href="{% url 'admin:staffing_mission_changelist' %}">{% trans "Missions administration" %}</a>
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href='{% url index %}'>{% trans "Back to home page" %}</a>
+<a href="{% url 'index' %}">{% trans "Back to home page" %}</a>
 </div>
 
 <script type="text/JavaScript">

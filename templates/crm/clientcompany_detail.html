@@ -25,7 +25,7 @@
     <div data-role="content">
 {% else %}
 <div id="content-main">
-<h1><a href="{% url admin:crm_company_change company.id %}?return_to={{ request.get_full_path }}" class='changelink'>{{ company }}</a></h1>
+<h1><a href="{% url 'admin:crm_company_change' company.id %}?return_to={{ request.get_full_path }}" class='changelink'>{{ company }}</a></h1>
 
 {% with "company-tabs" as tabs %}
     {% include "core/_init_tabs.html" %}
@@ -60,14 +60,14 @@ $(document).ready(function() {
         {% if request.session.mobile %}</ul><ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d"><li data-role="list-divider">{% else %}<h2>{% endif %}
         {% if lead.client.contact %}
             {{ lead.client.organisation }} (
-            <a rel=external href="{% url admin:crm_contact_change lead.client.contact.id %}?return_to={{ request.get_full_path }}#tab-leads">{{ lead.client.contact }}</a>)
+            <a rel=external href="{% url 'admin:crm_contact_change' lead.client.contact.id %}?return_to={{ request.get_full_path }}#tab-leads">{{ lead.client.contact }}</a>)
         {% else %}
             {{ lead.client }}
         {% endif %}
         {% if request.session.mobile %}</li>{% else %}</h2>{% endif %}
     {% endifchanged %}
 
-    <li><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }}</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
+    <li><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
 {% endfor %}
 </ul>
 </div>
@@ -76,14 +76,14 @@ $(document).ready(function() {
 {% if consultants %}
     <h2>{% trans "Business owner for this company:" %}</h2>
         <ul data-role="listview" data-inset="true" data-theme="c">
-            <li>{% if company.businessOwner %}<a href="{% url pydici.people.views.consultant_home company.businessOwner.id %}">{{ company.businessOwner.full_name }}</a>
-                {% else %} <a href="{% url admin:crm_company_change company.id %}?return_to={{ request.get_full_path }}#tab-consultants">{% trans "To be defined" %}</a>
+            <li>{% if company.businessOwner %}<a href="{% url 'people.views.consultant_home' company.businessOwner.id %}">{{ company.businessOwner.full_name }}</a>
+                {% else %} <a href="{% url 'admin:crm_company_change' company.id %}?return_to={{ request.get_full_path }}#tab-consultants">{% trans "To be defined" %}</a>
                 {% endif %}</li>
         </ul>
     <h2>{% trans "Consultants that work for this company:" %}</h2>
         <ul data-role="listview" data-inset="true" data-theme="c">
         {% for consultant in consultants %}
-            <li><a href="{% url pydici.people.views.consultant_home consultant.id %}">{{ consultant.full_name }}</a></li>
+            <li><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant.full_name }}</a></li>
         {% endfor %}
         </ul>
 {% endif %}
@@ -118,7 +118,7 @@ $(document).ready(function() {
     {% for admincontact in administrative_contacts %}
         <tr {%cycle 'class="row1"' 'class="row2"' %}>
         {% if admincontact.contact %}
-           <td><a rel=external href="{% url admin:crm_contact_change admincontact.contact.id %}?return_to={{ request.get_full_path }}#tab-contacts">{{ contact.name }}</a></td>
+           <td><a rel=external href="{% url 'admin:crm_contact_change' admincontact.contact.id %}?return_to={{ request.get_full_path }}#tab-contacts">{{ contact.name }}</a></td>
         {% else %}
             <td></td>
         {% endif %}
@@ -155,7 +155,7 @@ $(document).ready(function() {
 <ul>
 {% for lead in leads %}
     {% ifequal lead.state "WON" %}
-        <h2><a href="{% url pydici.leads.views.detail lead.id %}">{{ lead }}</a></h2>
+        <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a></h2>
             {% include "billing/_lead_billing.html" %}
             <br/>
     {% endifequal %}

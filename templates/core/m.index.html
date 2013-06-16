@@ -29,7 +29,7 @@
 		      <li><a href="#leads">{% trans "Current leads review" %}</a></li>
 		      <li><a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a></li>
 		    {% endif %}
-		    <li><a href="{% url pydici.staffing.views.consultant_timesheet consultant.id %}">{% trans "Timesheet" %}</a></li>
+		    <li><a href="{% url 'staffing.views.consultant_timesheet' consultant.id %}">{% trans "Timesheet" %}</a></li>
 		</ul>
 
 		<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
@@ -46,7 +46,7 @@
     <div data-role="content">
 	    <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
 	    {% for company in companies %}
-	        <li><a href="{% url pydici.crm.views.company_detail company.id %}">{{ company }}</a></li>
+	        <li><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
 	    {% endfor %}
 	    </ul>
     </div>
@@ -59,7 +59,7 @@
     <div data-role="content">    
         <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
         {% for mission in missions %}
-            <li><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></li>
+            <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></li>
         {% endfor %}  
         </ul>
     </div>  
@@ -72,7 +72,7 @@
     <div data-role="content">
         <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
         {% for lead in leads %}
-            <li><a href='{% url pydici.leads.views.detail lead.id %}'>{{ lead }}</a></li>
+            <li><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a></li>
         {% endfor %}
         </ul>
     </div>

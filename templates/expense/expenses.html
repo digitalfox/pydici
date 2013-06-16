@@ -114,7 +114,7 @@ $(document).ready(function() {
 {% endif %}
 
 <br/><hr/><br/>
-<a href='{% url pydici.expense.views.expenses_history %}'>{% trans "Expenses history" %}</a>
+<a href="{% url 'expense.views.expenses_history' %}">{% trans "Expenses history" %}</a>
 </div>
 
 {% endblock %}

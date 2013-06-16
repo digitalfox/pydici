@@ -88,7 +88,7 @@
     {% endifequal %}
 
     <tr {%cycle 'class="row1"' 'class="row2"' %}>
-        <td><a href="{% url pydici.people.views.consultant_home consultant.id %}#tab-staffing">{{ consultant }}</a></td>
+        <td><a href="{% url 'people.views.consultant_home' consultant.id %}#tab-staffing">{{ consultant }}</a></td>
         {% autoescape off %}
         {% for charge in charges %}
             <td style="border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td class='charge'>" }}</td>
@@ -113,7 +113,7 @@
 
 {% if not request.session.mobile %}
     <h1>{% trans "Production rates and daily rates review" %}</h1>
-	<img src="{% url pydici.staffing.views.graph_timesheet_rates_bar %}"/>
+	<img src="{% url 'staffing.views.graph_timesheet_rates_bar' %}"/>
 	<br/>
 {% endif %}
 

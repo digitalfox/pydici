@@ -18,7 +18,7 @@
 <div class="content-large">
 	<div id="graph_bar_jqp_content"></div>
 	<script type="text/javascript">
-	$('#graph_bar_jqp_content').load('{% url pydici.leads.views.graph_bar_jqp %}')
+	$('#graph_bar_jqp_content').load('{% url 'leads.views.graph_bar_jqp' %}')
 	</script>
 
 <br/>
@@ -38,8 +38,8 @@
         </tr>
         {% for lead in active_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><a href='{% url pydici.leads.views.detail lead.id %}' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
-                <td>{% if lead.responsible %}<a href="{% url pydici.people.views.consultant_home lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
+                <td><a href="{% url 'leads.views.detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
+                <td>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.sales }}</td>
@@ -67,8 +67,8 @@
         </tr>
         {% for lead in recent_archived_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><a href='{% url pydici.leads.views.detail lead.id %}' title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
-                <td>{% if lead.responsible %}<a href="{% url pydici.people.views.consultant_home lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
+                <td><a href="{% url 'leads.views.detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
+                <td>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
                 <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.sales }}</td>

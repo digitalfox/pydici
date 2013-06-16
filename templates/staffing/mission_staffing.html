@@ -1,7 +1,7 @@
 {% load i18n %}
 {# Fragment of page to be included in a mission_home tab #}
 <div id="pydici-ajax-form-content-mission-staffing">
-    <form action="{% url pydici.staffing.views.mission_staffing mission.id %}" method="POST" id="pydici-ajax-form-mission-staffing">
+    <form action="{% url 'staffing.views.mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-staffing">
         {{ formset.management_form }}
         <div class="form-row">
         <table>

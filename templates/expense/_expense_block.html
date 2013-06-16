@@ -9,7 +9,7 @@
         <b>{{ expense.category }} : {{ expense.description }} - {{ expense.expense_date }}</b><br/>
         {{ expense.amount }} € ({% if expense.corporate_card %}{% trans "Paid with corporate card" %}{% else %}{% trans "To be refund to "%} {{ expense.user|link_to_consultant }}{% endif %}) 
         {% if expense.receipt %}
-            <a href='{% url pydici.expense.views.expense_receipt expense.id %}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
+            <a href="{% url 'expense.views.expense_receipt' expense.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
         {% endif %}
         <br/>
         {% if expense.lead %}
@@ -23,11 +23,11 @@
         {% if expense.comment %}{% trans "Comment: " %}{{ expense.comment }}{% endif %}
         <br/><br/>
         {% with expense as obj %}{% ifhasperm expense_edit %}
-            <a class="button" href='{% url pydici.expense.views.expenses expense.id %}'>{% trans "Edit" %}</a>
+            <a class="button" href="{% url 'expense.views.expenses' expense.id %}">{% trans "Edit" %}</a>
         {% endifhasperm %}{% endwith %}
         {% if transitions %}
             {% for transition in transitions %}
-                <a class="button" href='{% url pydici.expense.views.update_expense_state expense.id transition.id %}'>{{ transition }}</a>
+                <a class="button" href="{% url 'expense.views.update_expense_state' expense.id transition.id %}">{{ transition }}</a>
             {% endfor %}
         {% endif %}
 </div>

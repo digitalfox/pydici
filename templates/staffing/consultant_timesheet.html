@@ -7,7 +7,7 @@
     {% trans "Timesheet" %} {{ month|date:"F Y"}}
     <img id="next-month" src="{{ MEDIA_URL }}pydici/fd.png" border=0 style="cursor:pointer;" title="{% trans 'Next month' %}" />
     </h2>
-    <form action='{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=month|date:"Y",month=month|date:"m" %}' method="POST" id="pydici-ajax-form-consultant-timesheet">
+    <form action="{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' %}" method="POST" id="pydici-ajax-form-consultant-timesheet">
     <table class='small-form-row' style="text-align:center">
             <tr>
             {% for day in days %}
@@ -57,17 +57,17 @@
     {% if is_current_month %}
         <p>{% trans "Forecasted this month: " %} {{ consultant.forecasted_days|floatformat:-2 }}</p>
     {% endif %}
-    <a href="{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=month.year, month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
+    <a href="{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id  year=month.year month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
 </div>
 
 <script type="text/javascript">
 /* Bind time nav bar to ajax calls */
 $('#previous-month').click(function () {
-	$('#pydici-ajax-form-content-consultant-timesheet').load('{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=previous_date|date:"Y",month=previous_date|date:"m" %}');
+	$('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=previous_date|date:'Y' month=previous_date|date:'m' %}');
 });
 
 $('#next-month').click(function () {
-    $('#pydici-ajax-form-content-consultant-timesheet').load('{% url pydici.staffing.views.consultant_timesheet consultant_id=consultant.id, year=next_date|date:"Y",month=next_date|date:"m" %}');
+    $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=next_date|date:'Y' month=next_date|date:'m' %}');
 });
 </script>
 

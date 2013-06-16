@@ -19,7 +19,7 @@
 <ul style='float: left; width: 64em;'>
 {% for lead in leads %}
     <li style='float: left; width: 32em;'>
-        <a href='{% url pydici.leads.views.detail lead.id %}'>{{ lead }}</a>
+        <a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a>
     </li>
 {% endfor %}
 </ul>

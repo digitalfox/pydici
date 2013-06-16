@@ -14,7 +14,7 @@
 
 
 <br><i>
-<a href='{% url pydici.people.views.consultant_home obj.consultant.id %}#tab-staffing'>{% trans "Change this consultant staffing" %}</a>
+<a href="{% url 'people.views.consultant_home' obj.consultant.id %}#tab-staffing">{% trans "Change this consultant staffing" %}</a>
 <br/>
-<a href='{% url pydici.staffing.views.mission_home obj.mission.id %}#tab-staffing'>{% trans "Change this mission staffing" %}</a>
+<a href="% url 'staffing.views.mission_home' obj.mission.id %}#tab-staffing">{% trans "Change this mission staffing" %}</a>
 </i>

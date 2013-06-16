@@ -11,9 +11,9 @@
 
 {% block content %}
 
-   <h2><a href='{% url pydici.staffing.views.all_timesheet year=previous_date|date:"Y",month=previous_date|date:"m" %}' title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
+   <h2><a href="{% url 'staffing.views.all_timesheet' year=previous_date|date:'Y',month=previous_date|date:'m' %}" title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
     {% trans "All people timesheet for " %} {{ month|date:"F Y"}}
-    <a href='{% url pydici.staffing.views.all_timesheet year=next_date|date:"Y",month=next_date|date:"m" %}' title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a></h2>
+    <a href="{% url 'staffing.views.all_timesheet' year=next_date|date:'Y',month=next_date|date:'m' %}" title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a></h2>
 
     <br/><br/><hr/>
 
@@ -33,6 +33,6 @@
 
 <br/><br/>
 
-<a href="{% url pydici.staffing.views.all_timesheet year=month.year, month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a><br/>
-<a href="{% url pydici.staffing.views.detailed_csv_timesheet year=month.year, month=month.month %}/?csv">{% trans "Export detailed timesheet in a spreadsheet" %}</a>
+<a href="{% url 'staffing.views.all_timesheet' year=month.year, month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a><br/>
+<a href="{% url 'staffing.views.detailed_csv_timesheet' year=month.year, month=month.month %}/?csv">{% trans "Export detailed timesheet in a spreadsheet" %}</a>
 {% endblock %}

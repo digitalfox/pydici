@@ -22,12 +22,12 @@
                 <ul>
                     <li>
 	                   {% if previous_lead %}
-		                  <a href='{% url pydici.leads.views.detail previous_lead.id %}' data-direction="reverse">{% trans "Previous" %}</a>
+		                  <a href="{% url 'leads.views.detail' previous_lead.id %}" data-direction="reverse">{% trans "Previous" %}</a>
 		               {% endif %}
 		              </li>
 		              <li>
 		                {% if next_lead %}
-		                   <a href='{% url pydici.leads.views.detail next_lead.id %}'>{% trans "Next" %}</a>
+		                   <a href="{% url 'leads.views.detail' next_lead.id %}">{% trans "Next" %}</a>
 	                    {% endif %}
 	                  </li>
 	             </ul>
@@ -45,16 +45,16 @@
     <h1>{% trans "Lead detail" %}</h1>
     {% if active_count %}
 	    {% if previous_lead %}
-	        <a href='{% url pydici.leads.views.detail previous_lead.id %}'><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
+	        <a href="{% url 'leads.views.detail' previous_lead.id %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
 	    {% endif %}
 	    {{ active_rank }} / {{ active_count }}
 	    {% if next_lead %}
-	        <a href='{% url pydici.leads.views.detail next_lead.id %}'><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
+	        <a href="{% url 'leads.views.detail' next_lead.id %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
 	    {% endif %}
     {% endif %}
 
     <div class="form-row name  ">
-    <h2><a href='{% url pydici.crm.views.company_detail lead.client.organisation.company.id %}'>{{ lead.client.organisation }}</a> - <a href='{% url admin:leads_lead_change lead.id %}?return_to={{ lead.get_absolute_url }}' class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
+    <h2><a href="{% url 'pydici.crm.views.company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a> - <a href="{% url 'admin:leads_lead_change' lead.id %}?return_to={{ lead.get_absolute_url }}" class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
 <div id="lead-tabs">
     <ul>
@@ -62,7 +62,7 @@
         <li><a href="#tab-missions">{% trans "Missions" %}</a></li>
         <li><a href="#tab-billing">{% trans "Billing" %}</a></li>
         <li><a href="#tab-actions">{% trans "Actions" %}</a></li>
-        <li><a title="#tab-documents" href="{% url pydici.leads.views.lead_documents lead.id %}">{% trans "Documents" %}</a></li>
+        <li><a title="#tab-documents" href="{% url 'leads.views.lead_documents' lead.id %}">{% trans "Documents" %}</a></li>
         <li><a href="#tab-history">{% trans "History" %}</a></li>
     </ul>
 
@@ -70,8 +70,8 @@
     <div class="tag_banner">
 	    {% for tag in lead.tags.all %}
 	    <div id="tag_{{ tag.id }}" style="display:inline">
-	    	<a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }}</a>
-	    	<a class='tagrlink' href='javascript:;' onClick="$.get('{% url pydici.leads.views.remove_tag tag.id lead.id %}', hide_tag);">[x]</a>&nbsp;
+	    	<a href="{% url 'leads.views.tag' tag.id %}">{{ tag }}</a>
+	    	<a class='tagrlink' href='javascript:;' onClick="$.get('{% url 'leads.views.remove_tag' tag.id lead.id %}', hide_tag);">[x]</a>&nbsp;
         </div>
 	    {% endfor %}
 	    <div id="newtags" style="display:inline"></div>
@@ -98,7 +98,7 @@
     <b>{% trans "Contact: " %}</b>{{ lead.client.contact|default_if_none:_("Unknown")}} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}<br/>
     <b>{% trans "Deal id:" %}</b> {{ lead.deal_id }}
     <br><br><hr>
-    <b>{% trans "Responsible: " %}</b>{% if lead.responsible %}<a href="{% url pydici.people.views.consultant_home lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}<br>
+    <b>{% trans "Responsible: " %}</b>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}<br>
     {% if lead.salesman %}
         <b>{% trans "Salesman: " %}</b>{{ lead.salesman }}<br/>
     {% endif %}
@@ -123,7 +123,7 @@
     <table>
         <tr><td>{% trans "Sold" %}</td>
         <td>{% if lead.sales %}{{ lead.sales }} k€
-            {% else %} <a href='{% url admin:leads_lead_change lead.id %}?return_to={{ lead.get_absolute_url }}'>{% trans "To be defined" %}</a>
+            {% else %} <a href="{% url 'admin:leads_lead_change' lead.id %}?return_to={{ lead.get_absolute_url }}">{% trans "To be defined" %}</a>
             {% endif %}</td></tr>
         <tr><td>{% trans "Unused" %}</td><td>{{ lead.unused }} k€</td></tr>
         <tr><td>{% trans "Margin over rate objective" %}</td><td>{{ lead.totalObjectiveMargin }} €</td></tr>
@@ -147,7 +147,7 @@
     </tr>
     {% for mission in lead.mission_set.all %}
     <tr>
-        <td><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></td>
+        <td><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></td>
         <td>{{ mission.mission_id }}</td>
         <td>{{ mission.done_work_k.0 }}</td>
         <td>{{ mission.done_work_k.1|floatformat }}</td>
@@ -168,7 +168,7 @@
     </table>
     </div>
     {% if perms.staffing.add_mission %}
-        <a href='{% url pydici.staffing.views.create_new_mission_from_lead lead.id %}'><i>{% trans "Create a new mission for this lead" %}</i></a>
+        <a href="{% url 'staffing.views.create_new_mission_from_lead' lead.id %}"><i>{% trans "Create a new mission for this lead" %}</i></a>
     {% endif %}
 {% else %}
     {% trans "A mission is created once a commercial proposal has been sent." %}
@@ -238,7 +238,7 @@ $(document).ready(function() {
         e.preventDefault();
         // send requests
         if ($("#newtag").val()) {
-	        $.post("{% url pydici.leads.views.add_tag %}",
+	        $.post("{% url 'leads.views.add_tag' %}",
 	                { tag : $("#newtag").val(), lead_id : {{lead.id}} },
 	                function(data) {
 	                    if (data.tag_created) {
@@ -258,7 +258,7 @@ $(document).ready(function() {
     $("#suggested a").click(function(e){
         e.preventDefault();
         // send requests
-        $.post("{% url pydici.leads.views.add_tag %}",
+        $.post("{% url 'leads.views.add_tag' %}",
                 { tag : $(this).text(), lead_id : {{lead.id}} },
                 function(data) {
 	                // Add new tag on list
