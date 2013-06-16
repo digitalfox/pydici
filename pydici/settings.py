@@ -16,7 +16,7 @@ MANAGERS = ADMINS
 # Pydici specific parameters
 
 # Root dir
-PYDICI_ROOTDIR = os.path.abspath(os.path.dirname(__file__))
+PYDICI_ROOTDIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir)
 
 # Application prefix without leading or trailing slash
 # Ex. if defined to 'pydici', index url will be http://my-site.com/pydici/
@@ -107,12 +107,6 @@ ADMIN_MEDIA_PREFIX = '/media/'
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '-)^_522$p_b6ckz_94&o_en4th6ug&gxpe$!@f^6fjim0j=_)p'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
-)
 
 # Template processors, used to add session access wihtin templates
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -193,4 +187,3 @@ DOCUMENT_PROJECT_LEAD_DIR = u"{deal_id}_{name}"
 DOCUMENT_PROJECT_BUSINESS_DIR = u"commerce"
 DOCUMENT_PROJECT_DELIVERY_DIR = u"delivery"
 DOCUMENT_PROJECT_INPUT_DIR = u"input"
-

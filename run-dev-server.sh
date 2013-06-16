@@ -1,2 +1,2 @@
 #!/bin/sh
-./manage.py runserver --adminmedia=$(dirname $0)/media/ $* 8888
+python manage.py runserver 8888
