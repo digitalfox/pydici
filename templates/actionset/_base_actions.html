@@ -26,17 +26,17 @@
         {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
         {% ifequal request.user action.user %}
         <p><a href="javascript:;"
-              onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'DONE' %}',
+              onClick="$.get('{% url 'actionset.views.update_action_state' action.id 'DONE' %}',
                               process_update_action_state);">
               {% trans "Mark as done" %}</a>
            &nbsp;-&nbsp;
            <a href="javascript:;" 
-              onClick="$.get('{% url pydici.actionset.views.update_action_state action.id 'NA' %}',
+              onClick="$.get('{% url 'actionset.views.update_action_state' action.id 'NA' %}',
                               process_update_action_state);">
               {% trans "N/A" %}</a>
            &nbsp;-&nbsp;
            <a href="javascript:;" 
-              onClick="call_deleguate_action('{% url pydici.actionset.views.update_action_state action.id 'DELEGUATE' %}', '{{ action.id }}');">
+              onClick="call_deleguate_action('{% url 'actionset.views.update_action_state' action.id 'DELEGUATE' %}', '{{ action.id }}');">
               {% trans "Delegate to: " %}</a>
            <input name="deleguate_user_{{action.id}}" type="text"/>
          </p>
@@ -52,7 +52,7 @@
 <script type="text/JavaScript">
 <!--
 
-    $("input[name^='deleguate_user']").autocomplete('{% url ajax_lookup "user"%}',
+    $("input[name^='deleguate_user']").autocomplete('{% url "ajax_lookup" "user"%}',
                                           { formatItem: function(row) { return row[2]; },
                                             formatResult: function(row) { return row[1]; },
                                             dataType: "text"

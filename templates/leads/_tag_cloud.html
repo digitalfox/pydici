@@ -13,7 +13,7 @@
 {% for tag in tags %}
     <li style='float: left; width: 20em;'>
         <font size={{tag.weight|floatformat:0}}>
-            <a href='{% url pydici.leads.views.tag tag.id %}'>{{ tag }} ({{tag.num_times}})</a>
+            <a href="{% url 'leads.views.tag' tag.id %}">{{ tag }} ({{tag.num_times}})</a>
         </font>
     </li>
 {% endfor %}

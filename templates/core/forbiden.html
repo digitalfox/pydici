@@ -1,7 +1,9 @@
 {% extends "admin/base_site.html" %}
 {% load i18n %}
+{% load admin_static %}
 
-{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/login.css{% endblock %}
+
+{% block stylesheet %}{% static "admin/css/login.css" %}{% endblock %}
 
 {% block bodyclass %}dashboard{% endblock %}
 

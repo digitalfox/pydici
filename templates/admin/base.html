@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+{% load admin_static %}
 <head>
 <title>{% block title %}{% endblock %}</title>
 {% block extrastyle %}{% endblock %}
@@ -25,24 +26,24 @@
 
 {% if not request.session.mobile %}
 
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />
-{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}css/base.css{% endblock %}" />
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}css/rtl.css{% endblock %}" />{% endif %}
 
-<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% admin_media_prefix %}{% endfilter %}";</script>
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
 
 
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last modified leads' %}"
-      href="{% url feed 'latest' %}" />
+      href="{% url 'feed' 'latest' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last created leads' %}"
-      href="{% url feed 'new' %}" />
+      href="{% url 'feed' 'new' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last won leads' %}"
-      href="{% url feed 'won' %}" />
+      href="{% url 'feed' 'won' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my leads' %}"
-      href="{% url feed 'mine' %}" />
+      href="{% url 'feed' 'mine' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of latest staffing forecast' %}"
-      href="{% url feed 'latestStaffing' %}" />
+      href="{% url 'feed' 'latestStaffing' %}" />
 <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my latest staffing forecast' %}"
-      href="{% url feed 'myLatestStaffing' %}" />
+      href="{% url 'feed' 'myLatestStaffing' %}" />
       
 {% endif %}
 </head>

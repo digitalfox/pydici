@@ -61,7 +61,7 @@ def link_to_consultant(value, arg=None):
         if consultant.subcontractor or arg == "nolink":
             value = escape(name)
         else:
-            value = "<a href='%s'>%s</a>" % (reverse("pydici.people.views.consultant_home", args=[consultant.id, ]),
+            value = "<a href='%s'>%s</a>" % (reverse("people.views.consultant_home", args=[consultant.id, ]),
                                         escape(name))
         return mark_safe(value)
     except Consultant.DoesNotExist:
@@ -79,7 +79,7 @@ def link_to_timesheet(value, arg=None):
     @param value: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
-        url = "<a href='%s#tab-timesheet'>%s</a>" % (reverse("pydici.people.views.consultant_home", args=[c.id, ]),
+        url = "<a href='%s#tab-timesheet'>%s</a>" % (reverse("people.views.consultant_home", args=[c.id, ]),
                                         escape(_("My timesheet")))
         return mark_safe(url)
     except Consultant.DoesNotExist:
@@ -92,7 +92,7 @@ def link_to_staffing(value, arg=None):
     @param arg: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
-        url = "<a href='%s#tab-staffing'>%s</a>" % (reverse("pydici.people.views.consultant_home", args=[c.id, ]),
+        url = "<a href='%s#tab-staffing'>%s</a>" % (reverse("people.views.consultant_home", args=[c.id, ]),
                                         escape(_("My staffing")))
         return mark_safe(url)
     except Consultant.DoesNotExist:

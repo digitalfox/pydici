@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
 
 {% block bodyclass %}dashboard{% endblock %}
 
@@ -18,23 +18,23 @@
 
 <h1>{{ consultant.full_name }} {% if consultant.subcontractor %} - {% trans "subcontractor" %} {% endif %}
 {% if perms.people.change_consultant %}
-<a href='{% url admin:people_consultant_change consultant.id %}?return_to={{ consultant.get_absolute_url }}'><img title='{% trans "Change" %}' src='{{ MEDIA_URL }}pydici/configure.png'/></a>
+<a href="{% url 'admin:people_consultant_change' consultant.id %}?return_to={{ consultant.get_absolute_url }}"><img title='{% trans "Change" %}' src='{{ MEDIA_URL }}pydici/configure.png'/></a>
 {% endif %}
 </h1>
 
 <div id="consultant-tabs">
     <ul>
         {% if consultant.subcontractor %}
-            <li><a title="#tab-detail"  href="{% url pydici.people.views.subcontractor_detail consultant.id %}">{% trans "Home" %}</a></li>
+            <li><a title="#tab-detail"  href="{% url 'people.views.subcontractor_detail' consultant.id %}">{% trans "Home" %}</a></li>
         {% else %}
-            <li><a title="#tab-detail"  href="{% url pydici.people.views.consultant_detail consultant.id %}">{% trans "Home" %}</a></li>
+            <li><a title="#tab-detail"  href="{% url 'people.views.consultant_detail' consultant.id %}">{% trans "Home" %}</a></li>
         {% endif %}
         {% if request.GET.year and request.GET.month %}
-            <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.consultant_timesheet consultant.id request.GET.year request.GET.month %}">{% trans "Timesheet" %}</a></li>
+            <li><a title="#tab-timesheet" href="{% url 'staffing.views.consultant_timesheet' consultant.id request.GET.year request.GET.month %}">{% trans "Timesheet" %}</a></li>
         {% else %}
-            <li><a title="#tab-timesheet" href="{% url pydici.staffing.views.consultant_timesheet consultant.id %}">{% trans "Timesheet" %}</a></li>
+            <li><a title="#tab-timesheet" href="{% url 'staffing.views.consultant_timesheet' consultant.id %}">{% trans "Timesheet" %}</a></li>
         {% endif %}
-        <li><a title="#tab-staffing"  href="{% url pydici.staffing.views.consultant_staffing consultant.id %}">{% trans "Forecast staffing" %}</a></li>
+        <li><a title="#tab-staffing"  href="{% url 'staffing.views.consultant_staffing' consultant.id %}">{% trans "Forecast staffing" %}</a></li>
         <li><a href="#tab-missions">{% trans "Missions" %}</a></li>
     </ul>
 
@@ -47,10 +47,10 @@
         </tr>
         {% for mission in consultant.active_missions %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></th>
+                <th scope="row"><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></th>
                 <td>{{ mission.mission_id }}</td>
                 <td>{{ mission.get_probability_display }}</td>
-                <td scope="row"><a href='{% url admin:staffing_mission_change mission.id %}?return_to={% url pydici.people.views.consultant_home consultant.id %}#tab-missions', title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', class='changelink'><em>{% trans "Change" %}</em></a></td>
+                <td scope="row"><a href="{% url 'admin:staffing_mission_change' mission.id %}?return_to={% url 'people.views.consultant_home' consultant.id %}#tab-missions", title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', class='changelink'><em>{% trans "Change" %}</em></a></td>
             </tr>
         {% endfor %}
         </table>

@@ -11,7 +11,7 @@
     <div style="margin-left:10px; padding-bottom:47px;">
     <ul id="menu" class="shadow" style='border-radius: 0px 0px 24px 0px;'>
         <div style="float:left; background:#332B2A; height: 40px; padding-top:5px; padding-left: 5px">
-        <a href="{% url index %}">
+        <a href="{% url 'index' %}">
            <img alt="" src="{{ MEDIA_URL }}pydici/company_logo.png"/>
         </a>
         </div>
@@ -25,11 +25,11 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                     <a href="{% url pydici.leads.views.review %}">{% trans "Current leads review" %}</a>
+                     <a href="{% url 'leads.views.review' %}">{% trans "Current leads review" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
-                <li><a href="{% url admin:leads_lead_changelist %}">{% trans "All leads" %}</a></li>
-                <li><a href='{% url admin:leads_lead_add %}?return_to={{ request.get_full_path }}'>{% trans "New lead" %}</a></li>
+                <li><a href="{% url 'admin:leads_lead_changelist' %}">{% trans "All leads" %}</a></li>
+                <li><a href="{% url 'admin:leads_lead_add' %}?return_to={{ request.get_full_path }}">{% trans 'New lead' %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
@@ -41,17 +41,17 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                     <a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a>
+                     <a href="{% url 'pdcreview-index' %}">{% trans "Workload schedule" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
-                <li><a href="{% url missions %}">{% trans "Active missions" %}</a></li>
+                <li><a href="{% url 'missions' %}">{% trans "Active missions" %}</a></li>
                 {% with user.username|link_to_timesheet as link %}
                     {% if link %}<li>{{ link }}</li>{% endif %}
                 {% endwith %}
                 {% with user.username|link_to_staffing as link %}
                     {% if link %}<li>{{ link }}</li>{% endif %}
                 {% endwith %}
-                <li><a href="{% url pydici.staffing.views.mass_staffing %}">{% trans "Mass staffing" %}</a></li>
+                <li><a href="{% url 'staffing.views.mass_staffing' %}">{% trans "Mass staffing" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
@@ -63,15 +63,15 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                        <a href="{% url pydici.crm.views.company_list %}">{% trans "All clients" %}</a>
+                        <a href="{% url 'crm.views.company_list' %}">{% trans "All clients" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
-                <li><a href="{% url admin:crm_contact_changelist %}">{% trans "Contact address directory" %}</a></li>
-                <li><a href='{% url admin:crm_client_add %}?return_to={{ request.get_full_path }}'>{% trans "New client" %}</a></li>
-                <li><a href='{% url admin:crm_missioncontact_add %}?return_to={{ request.get_full_path }}'>{% trans "New mission contact" %}</a></li>
-                <li><a href='{% url admin:crm_businessbroker_add %}?return_to={{ request.get_full_path }}'>{% trans "New business broker" %}</a></li>
-                <li><a href='{% url admin:crm_administrativecontact_add %}?return_to={{ request.get_full_path }}'>{% trans "New administrative contact" %}</a></li>
-                <li><a href='{% url admin:crm_supplier_add %}?return_to={{ request.get_full_path }}'>{% trans "New supplier" %}</a></li>
+                <li><a href="{% url 'admin:crm_contact_changelist' %}">{% trans "Contact address directory" %}</a></li>
+                <li><a href="{% url 'admin:crm_client_add' %}?return_to={{ request.get_full_path }}">{% trans "New client" %}</a></li>
+                <li><a href="{% url 'admin:crm_missioncontact_add' %}?return_to={{ request.get_full_path }}">{% trans "New mission contact" %}</a></li>
+                <li><a href="{% url 'admin:crm_businessbroker_add' %}?return_to={{ request.get_full_path }}">{% trans "New business broker" %}</a></li>
+                <li><a href="{% url 'admin:crm_administrativecontact_add' %}?return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></li>
+                <li><a href="{% url 'admin:crm_supplier_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
@@ -83,18 +83,18 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                        <a href='{% url pydici.actionset.views.actionset_catalog %}'>{% trans "Actionset catalog" %}</a>
+                        <a href="{% url 'actionset.views.actionset_catalog' %}">{% trans "Actionset catalog" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
                 {% if perms.actionset.change_actionstate %}
-                    <li><a href='{% url admin:actionset_actionstate_changelist %}'>{% trans "On going actions" %}</a></li>
+                    <li><a href="{% url 'admin:actionset_actionstate_changelist' %}">{% trans "On going actions" %}</a></li>
                 {% endif %}
-                <li><a href='{% url pydici.expense.views.expenses %}'>{% trans "Expenses" %}</a></li>
-                <li><a href="{% url admin:billing_clientbill_changelist %}">{% trans "All client bills" %}</a></li>
-                <li><a href="{% url pydici.billing.views.pre_billing %}">{% trans "Pre billing" %}</a></li>
-                <li><a href='{% url admin:billing_clientbill_add %}?return_to={{ request.get_full_path }}'>{% trans "New client bill" %}</a></li>
-                <li><a href="{% url admin:billing_supplierbill_changelist %}">{% trans "All supplier bills" %}</a></li>
-                <li><a href='{% url admin:billing_supplierbill_add %}?return_to={{ request.get_full_path }}'>{% trans "New supplier bill" %}</a></li>
+                <li><a href="{% url 'expense.views.expenses' %}">{% trans "Expenses" %}</a></li>
+                <li><a href="{% url 'admin:billing_clientbill_changelist' %}">{% trans "All client bills" %}</a></li>
+                <li><a href="{% url 'billing.views.pre_billing' %}">{% trans "Pre billing" %}</a></li>
+                <li><a href="{% url 'admin:billing_clientbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>
+                <li><a href="{% url 'admin:billing_supplierbill_changelist' %}">{% trans "All supplier bills" %}</a></li>
+                <li><a href="{% url 'admin:billing_supplierbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier bill" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
@@ -106,17 +106,17 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                        <a href='{% url dashboard %}'>{% trans "Management dashboard" %}</a>
+                        <a href="{% url 'dashboard' %}">{% trans "Management dashboard" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
-                <li><a href='{% url pydici.leads.views.csv_export target="active" %}'>{% trans "Active leads (csv)" %}</a></li>
-                <li><a href='{% url pydici.leads.views.csv_export target="all" %}'>{% trans "All leads (csv)" %}</a></li>
-                <li><a href='{% url lead-mail-html %}'>{% trans "Week summary mail (html)" %}</a></li>
-                <li><a href='{% url lead-mail-text %}'>{% trans "Week summary mail (text)" %}</a></li>
-                <li><a href='{% url pydici.staffing.views.all_timesheet %}'>{% trans "All people timesheet" %}</a></li>
-                <li><a href='{% url pydici.billing.views.bill_review %}'>{% trans "Bills review" %}</a></li>
-                <li><a href='{% url pydici.billing.views.bill_payment_delay %}'>{% trans "Payment delay review" %}</a></li>
-                <li><a href='{% url pydici.expense.views.expenses_history %}'>{% trans "Expenses history" %}</a></li>
+                <li><a href="{% url 'leads.views.csv_export' target='active' %}">{% trans "Active leads (csv)" %}</a></li>
+                <li><a href="{% url 'leads.views.csv_export' target='all' %}">{% trans "All leads (csv)" %}</a></li>
+                <li><a href="{% url 'lead-mail-html' %}">{% trans "Week summary mail (html)" %}</a></li>
+                <li><a href="{% url 'lead-mail-text' %}">{% trans "Week summary mail (text)" %}</a></li>
+                <li><a href="{% url 'staffing.views.all_timesheet' %}">{% trans "All people timesheet" %}</a></li>
+                <li><a href="{% url 'billing.views.bill_review' %}">{% trans "Bills review" %}</a></li>
+                <li><a href="{% url 'billing.views.bill_payment_delay' %}">{% trans "Payment delay review" %}</a></li>
+                <li><a href="{% url 'expense.views.expenses_history' %}">{% trans "Expenses history" %}</a></li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
@@ -128,10 +128,10 @@
             <ul>
                 <li>
                     <img class="corner_inset_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_left.png"/>
-                        <a href="{% url admin:index %}">{% trans "Admin console" %}</a>
+                        <a href="{% url 'admin:index' %}">{% trans "Admin console" %}</a>
                      <img class="corner_inset_right" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_inset_right.png"/>
                 </li>
-                <li><a href="{% url help %}">{% trans "Help page" %}</a></li>
+                <li><a href="{% url 'help' %}">{% trans "Help page" %}</a></li>
                 <li>{{ foo|get_admin_mail }}</li>
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
@@ -141,7 +141,7 @@
             </ul>
         </li>
         <li class="searchContainer">
-            <form action="{% url search %}" method="GET">
+            <form action="{% url 'search' %}" method="GET">
 	            <input type="text", name="q", value="{{ query|escape }}", maxlength="100" />
 	            <img src="{{ MEDIA_URL }}pydici/menu/magnifier.png" alt="Search" onclick="submit"/>
 	            <ul id="search">

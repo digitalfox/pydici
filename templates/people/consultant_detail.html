@@ -14,7 +14,7 @@
 <li>
     <div class="pydici-grid-long-item">
     <h3>{% trans "This month" %}</h3>
-    {% url pydici.people.views.consultant_home consultant.id as consultant_url %}
+    {% url 'people.views.consultant_home' consultant.id as consultant_url %}
         <ul>
             {% with consultant.forecasted_days as forecasted_days %}
                 {% if forecasting_balance > 0 %}<li>{% blocktrans with forecasting_balance|floatformat:-2 as missing %} Incomplete <a href="{{ consultant_url }}#tab-staffing">forecasting</a> for this month (missing {{ missing }} day(s)) {% endblocktrans %}</li>{% endif %}
@@ -77,12 +77,12 @@ $(document).ready(function() {
 
 <li>
     <div class="pydici-grid-item">
-	<p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href='{% url pydici.people.views.consultant_home consultant.manager.id %}'>{{ consultant.manager.full_name }}</a>{% endifnotequal %}{% endif %}</p>
+	<p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href="{% url 'people.views.consultant_home' consultant.manager.id %}">{{ consultant.manager.full_name }}</a>{% endifnotequal %}{% endif %}</p>
 	{% if staff %}
 	    <h3>{% trans "Staff" %}</h3>
 	    <ul>
 	    {% for people in staff %}
-	        <li><a href='{% url pydici.people.views.consultant_home people.id %}'>{{ people.full_name }}</a></li>
+	        <li><a href="{% url 'people.views.consultant_home' people.id %}">{{ people.full_name }}</a></li>
 	    {% endfor %}
 	    </ul>
 	{% endif %}
@@ -102,7 +102,7 @@ $(document).ready(function() {
     <h3>{% trans "Business territory" %}</h3>
     <ul>
     {% for company in business_territory %}
-        <li><a href="{% url pydici.crm.views.company_detail company.id %}">{{ company }}</a></li>
+        <li><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
     {% endfor %}
     </ul>
     </div>
@@ -113,7 +113,7 @@ $(document).ready(function() {
 	<h3>{% trans "Clients" %}</h3>
 	<ul>
 	{% for company in companies %}
-	    <li><a href="{% url pydici.crm.views.company_detail company.id %}">{{ company }}</a></li>
+	    <li><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
 	{% endfor %}
 	</ul>
 	</div>
@@ -123,7 +123,7 @@ $(document).ready(function() {
 	<h3>{% trans "Current missions" %}</h3>
 	<ul>
 	{% for mission in missions %}
-	    <li><a href='{% url pydici.staffing.views.mission_home mission.id %}'>{{ mission }}</a></li>
+	    <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></li>
 	{% endfor %}
 	</ul>
 	</div>
@@ -134,7 +134,7 @@ $(document).ready(function() {
 	<h3>{% trans "Current leads as responsible" %}</h3>
 	<ul>
 	{% for lead in leads_as_responsible %}
-	    <li><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead }}</a></li>
+	    <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
 	{% endfor %}
 	</ul>
 	{% endif %}
@@ -146,7 +146,7 @@ $(document).ready(function() {
 	<h3>{% trans "Current leads as resource" %}</h3>
 	<ul>
 	{% for lead in leads_as_staffee %}
-	    <li><a href='{% url pydici.leads.views.detail lead.id %}', title='{{ lead.description }}'>{{ lead }}</a></li>
+	    <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
 	{% endfor %}
 	</ul>
 	{% endif %}	
@@ -156,7 +156,7 @@ $(document).ready(function() {
 <li>
     <div id="consultant_rate_graph_jqp_content"></div>
     <script type="text/javascript">
-    $('#consultant_rate_graph_jqp_content').load('{% url pydici.staffing.views.graph_consultant_rates_jqp consultant.id %}')
+    $('#consultant_rate_graph_jqp_content').load("{% url 'staffing.views.graph_consultant_rates_jqp' consultant.id %}")
     </script>
 </li>
 </ul>

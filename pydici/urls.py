@@ -46,8 +46,8 @@ pydici_patterns += patterns('',
     url(r'^help', RedirectView.as_view(url=pydici.settings.LEADS_HELP_PAGE), name='help'),
 
     # Media
-#    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-#            {'document_root': os.path.join(pydici.settings.PYDICI_ROOTDIR, 'media')}),
+    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': os.path.join(pydici.settings.PYDICI_ROOTDIR, 'media')}),
 
     # Feeds
     url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.Feed',
