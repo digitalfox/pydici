@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css{% endblock %}
+{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
 
 {% block bodyclass %}dashboard{% endblock %}
 
