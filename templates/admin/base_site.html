@@ -1,10 +1,51 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
+{% load admin_static %}
 {% load pydici_filters %}
+
+{% block extrahead %}
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.5.2.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.autocomplete.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/admin/ajax_select.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.simpletooltip-min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.17.custom.min.js"></script>
+    
+    {% block extrajs %}{% endblock %}
+    
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery.autocomplete.css" />
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/iconic.css" />
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-ui-1.8.17.custom.css" />
+    
+    {% block mobileheader %}{% endblock %}
+
+    {% if not request.session.mobile %}
+    
+        <link rel="stylesheet" type="text/css" href="{% block stylesheet %}css/base.css{% endblock %}" />
+        {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}css/rtl.css{% endblock %}" />{% endif %}
+        
+        <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+        
+        
+        <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last modified leads' %}"
+              href="{% url 'feed' 'latest' %}" />
+        <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last created leads' %}"
+              href="{% url 'feed' 'new' %}" />
+        <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last won leads' %}"
+              href="{% url 'feed' 'won' %}" />
+        <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my leads' %}"
+              href="{% url 'feed' 'mine' %}" />
+        <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of latest staffing forecast' %}"
+              href="{% url 'feed' 'latestStaffing' %}" />
+        <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my latest staffing forecast' %}"
+              href="{% url 'feed' 'myLatestStaffing' %}" />
+    {% endif %}
+
+
+{% endblock %}
 
 {% block title %}Pydici{% endblock %}
 
-{% block menu %}
+{% block nav-global %}
 
 {% if not request.session.mobile %}
 <!-- Begin menu -->
@@ -177,6 +218,7 @@
 {% endif %}
 {% endblock %}
 
+  {% block breadcrumbs %}
+    <div class="breadcrumbs"><a href="/">{% trans 'Home' %}</a>{% if title %} &rsaquo; {{ title|escape }}{% endif %}</div>
+  {% endblock %}
 
-
-{% block nav-global %}{% endblock %}
