@@ -19,10 +19,10 @@ class StaffingFeed(Feed):
     title_template = "staffing/feed_title.txt"
 
     def link(self):
-        return urlresolvers.reverse("pydici.core.views.index")
+        return urlresolvers.reverse("core.views.index")
 
     def item_link(self, obj):
-        url = urlresolvers.reverse("pydici.people.views.consultant_home", args=[obj.consultant.id]) + "#tab-staffing"
+        url = urlresolvers.reverse("people.views.consultant_home", args=[obj.consultant.id]) + "#tab-staffing"
         return  self.request.build_absolute_uri(url)
 
     def item_pubdate(self, item):
@@ -42,6 +42,7 @@ class LatestStaffing(StaffingFeed):
 
     def items(self):
         return Staffing.objects.order_by('-update_date')[:50]
+
 
 class MyLatestStaffing(StaffingFeed):
     title = _("My lastest staffing update")

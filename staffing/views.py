@@ -171,7 +171,7 @@ def mass_staffing(request):
                         staffing.save()
             # Redirect to self to display a new unbound form
             request.user.message_set.create(message=_("Staffing has been updated"))
-            return HttpResponseRedirect(urlresolvers.reverse("pydici.staffing.views.mass_staffing"))
+            return HttpResponseRedirect(urlresolvers.reverse("staffing.views.mass_staffing"))
     else:
         # An unbound form
         form = MassStaffingForm(staffing_dates=staffing_dates)
@@ -287,7 +287,7 @@ def pdc_review(request, year=None, month=None):
         if not mobile:
             company = set([m.lead.client.organisation.company for m in list(missions)])
             staffing[consultant].append([", ".join(["<a href='%s'>%s</a>" %
-                                                    (urlresolvers.reverse("pydici.crm.views.company_detail", args=[c.id]),
+                                                    (urlresolvers.reverse("crm.views.company_detail", args=[c.id]),
                                                      unicode(c)) for c in company])])
 
     # Compute indicator rates
@@ -693,7 +693,7 @@ def all_timesheet(request, year=None, month=None):
         data = list(consultants)
     else:
         # drill down link
-        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (urlresolvers.reverse("pydici.people.views.consultant_home", args=[consultant.id]),
+        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (urlresolvers.reverse("people.views.consultant_home", args=[consultant.id]),
                                                                                    month.year,
                                                                                    month.month,
                                                                                    escape(unicode(consultant)))) for consultant in consultants]
@@ -701,7 +701,7 @@ def all_timesheet(request, year=None, month=None):
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = timesheet["sum"]
     for mission in missions:
-        missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("pydici.staffing.views.mission_home", args=[mission.id, ]),
+        missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]),
                                         escape(unicode(mission)))
         if "csv" in request.GET:
             # Simple mission name
@@ -936,7 +936,7 @@ def mission_contacts(request, mission_id):
         form = MissionContactForm(request.POST, instance=mission)
         if form.is_valid():
             form.save()
-        return HttpResponseRedirect(urlresolvers.reverse("pydici.staffing.views.mission_home", args=[mission.id, ]))
+        return HttpResponseRedirect(urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]))
 
     # Unbound form
     form = MissionContactForm(instance=mission)

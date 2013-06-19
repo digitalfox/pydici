@@ -46,7 +46,7 @@
 
 {% if not request.session.mobile %}
     <br><hr><br><br>
-    <a href='{% url  pydici.staffing.views.pdc_review %}'>{% trans "Back to work load schedule" %}</a>
+    <a href="{% url 'staffing.views.pdc_review' %}">{% trans "Back to work load schedule" %}</a>
 {% endif %}
 </div>
 {% endblock %}

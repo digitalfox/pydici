@@ -222,11 +222,12 @@ class Mission(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('pydici.staffing.views.mission_home', [str(self.id)])
+        return ('staffing.views.mission_home', [str(self.id)])
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "id", "description"]
         verbose_name = _("Mission")
+
 
 class Holiday(models.Model):
     """List of public and enterprise specific holidays"""
@@ -236,10 +237,11 @@ class Holiday(models.Model):
     class Meta:
         verbose_name = _("Holiday")
 
+
 class Staffing(models.Model):
     """The staffing fact forecasting table: charge per month per consultant per mission"""
     consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to={"active":True})
+    mission = models.ForeignKey(Mission, limit_choices_to={"active": True})
     staffing_date = models.DateField(_("Date"))
     charge = models.FloatField(_("Load"), default=0)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)

@@ -204,10 +204,9 @@ class Lead(models.Model):
         """returns done actions for this lead and its missions"""
         return self.actions().exclude(state="TO_BE_DONE")
 
-
     @models.permalink
     def get_absolute_url(self):
-        return ('pydici.leads.views.detail', [str(self.id)])
+        return ('leads.views.detail', [str(self.id)])
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]

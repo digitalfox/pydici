@@ -61,11 +61,12 @@ def mobile_index(request):
         leads = Lead.objects.active().order_by("creation_date")
     return render_to_response("core/m.index.html",
                               {"user": request.user,
-                               "consultant" : consultant,
-                               "companies" : companies,
-                               "missions" : missions,
-                               "leads" : leads },
+                               "consultant": consultant,
+                               "companies": companies,
+                               "missions": missions,
+                               "leads": leads},
                               RequestContext(request))
+
 
 @pydici_non_public
 def search(request):
@@ -150,14 +151,14 @@ def search(request):
             bills.sort(key=lambda x: x.creation_date)
 
     return render_to_response("core/search.html",
-                              {"query" : " ".join(words),
+                              {"query": " ".join(words),
                                "consultants": consultants,
-                               "companies" : companies,
-                               "contacts" : contacts,
-                               "leads" : leads,
-                               "missions" : missions,
-                               "bills" : bills,
-                               "user": request.user },
+                               "companies": companies,
+                               "contacts": contacts,
+                               "leads": leads,
+                               "missions": missions,
+                               "bills": bills,
+                               "user": request.user},
                                RequestContext(request))
 
 

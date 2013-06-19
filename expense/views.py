@@ -65,7 +65,7 @@ def expenses(request, expense_id=None):
             expense.creation_date = date.today()
             expense.save()
             wf.set_initial_state(expense)
-            return HttpResponseRedirect(urlresolvers.reverse("pydici.expense.views.expenses"))
+            return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
     else:
         if expense_id:
             form = ExpenseForm(instance=expense)  # A form that edit current expense
@@ -193,18 +193,18 @@ def update_expense_state(request, expense_id, transition_id):
         expense = Expense.objects.get(id=expense_id)
         if expense.user == request.user and not perm.has_role(request.user, "expense administrator"):
             request.user.message_set.create(message=_("You cannot manage your own expense !"))
-            return HttpResponseRedirect(urlresolvers.reverse("pydici.expense.views.expenses"))
+            return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
     except Expense.DoesNotExist:
         request.user.message_set.create(message=_("Expense %s does not exist" % expense_id))
-        return HttpResponseRedirect(urlresolvers.reverse("pydici.expense.views.expenses"))
+        return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
     try:
         transition = Transition.objects.get(id=transition_id)
     except Transition.DoesNotExist:
         request.user.message_set.create(message=_("Transition %s does not exist" % transition_id))
-        return HttpResponseRedirect(urlresolvers.reverse("pydici.expense.views.expenses"))
+        return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
 
     if wf.do_transition(expense, transition, request.user):
         request.user.message_set.create(message=_("Successfully update expense"))
     else:
         request.user.message_set.create(message=_("You cannot do this transition"))
-    return HttpResponseRedirect(urlresolvers.reverse("pydici.expense.views.expenses"))
+    return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))

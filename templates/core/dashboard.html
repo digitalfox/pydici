@@ -25,7 +25,7 @@ $('#graph_bar_jqp').load('{% url 'leads.views.graph_bar_jqp' %}')
 <br/>
 
 <center><h1>{% trans "Production rates and daily rates review" %}</h1></center>
-<img src="{% url pydici.staffing.views.graph_timesheet_rates_bar %}"/>
+<img src="{% url 'staffing.views.graph_timesheet_rates_bar' %}"/>
 <br/>
 
 <center><h1>{% trans "Billing review and done work" %}</h1></center>

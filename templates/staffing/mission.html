@@ -172,7 +172,7 @@ $(".jeditable-mission-update").editable("{% url 'staffing.views.mission_update' 
     event     : "click",
     style  : "inherit",
     type   : "select",
-    loadurl : "{% url pydici.staffing.views.mission_update %}",
+    loadurl : "{% url 'staffing.views.mission_update' %}",
     submit : 'OK',
     onblur : 'submit',
 });

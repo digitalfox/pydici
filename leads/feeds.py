@@ -18,10 +18,10 @@ class LeadFeed(Feed):
     title_template = "leads/feed_title.txt"
 
     def link(self):
-        return urlresolvers.reverse("pydici.core.views.index")
+        return urlresolvers.reverse("core.views.index")
 
     def item_link(self, obj):
-        url = urlresolvers.reverse("pydici.leads.views.detail", args=[obj.id])
+        url = urlresolvers.reverse("leads.views.detail", args=[obj.id])
         return  self.request.build_absolute_uri(url)
 
     def item_pubdate(self, item):

@@ -31,7 +31,7 @@ COLORS = ["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFE32C", "#AAFF86", "#D9
 def send_lead_mail(lead, request, fromAddr=pydici.settings.LEADS_MAIL_FROM, fromName=""):
     """ Send a mail with lead detailed description.
     @param lead: the lead to send by mail
-    @type lead: pydici.leads.lead instance
+    @type lead: leads.lead instance
     @param request: http request of user - used to determine full URL
     @raise exception: if SMTP errors occurs. It is up to the caller to catch that.
     """

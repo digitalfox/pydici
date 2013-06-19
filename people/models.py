@@ -173,10 +173,9 @@ class Consultant(models.Model):
                                        staffing_date__lte=today).aggregate(Sum("charge")).values()[0]
         return days or 0
 
-
     @models.permalink
     def get_absolute_url(self):
-        return ('pydici.people.views.consultant_home', [str(self.id)])
+        return ('people.views.consultant_home', [str(self.id)])
 
     class Meta:
         ordering = ["name", ]
