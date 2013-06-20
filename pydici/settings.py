@@ -12,8 +12,6 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-
-
 # Pydici specific parameters
 
 # Root dir
@@ -73,6 +71,7 @@ TIME_ZONE = 'Europe/Paris'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'fr-fr'
+LOCALE_PATHS = (os.path.join(PYDICI_ROOTDIR, "locale"),)
 
 SITE_ID = 1
 
@@ -125,7 +124,7 @@ MIDDLEWARE_CLASSES = [
 
 if DEBUG:
     MIDDLEWARE_CLASSES.extend(('userswitch.middleware.UserSwitchMiddleware',
-                               # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+                               'debug_toolbar.middleware.DebugToolbarMiddleware',
                                ))
 
 ROOT_URLCONF = 'pydici.urls'

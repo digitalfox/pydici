@@ -4,6 +4,6 @@
 
 OLD=$PWD
 cd $(dirname $0)
-./manage.py makemessages -a -e ".html,.txt"
-./manage.py compilemessages
+python manage.py makemessages -a -e ".html,.txt" -i data
+python manage.py compilemessages
 cd $OLD
