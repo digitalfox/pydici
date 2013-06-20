@@ -43,7 +43,7 @@
 <br>
 {% ifequal groupby "manager" %}
     <strong>{% trans "Grouped by manager" %}</strong>
-    (<a href='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=position;projected"><em>{% trans "group by level" %}</em></a>)
+    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=position;projected"><em>{% trans "group by level" %}</em></a>)
 {% else %}
     <strong>{% trans "Grouped by level" %}</strong>
     (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=manager;projected"><em>{% trans "group by manager" %}</em></a>)
