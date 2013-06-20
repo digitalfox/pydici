@@ -1,14 +1,30 @@
-@import url('base.css');
-
 /* DASHBOARD */
-.dashboard .module table th { width:100%; }
-.dashboard .module table td { white-space:nowrap; }
-.dashboard .module table td a { display:block; padding-right:.6em; }
 
-.dashboard .imodule table { width:100%; }
-.dashboard .imodule table td { white-space:wrap; }
-.dashboard .imodule table td a { display:block; }
+.dashboard .module table th {
+    width: 100%;
+}
 
-/*  RECENT ACTIONS MODULE  */
-.module ul.actionlist { margin-left:0; }
-ul.actionlist li { list-style-type:none; }
+.dashboard .module table td {
+    white-space: nowrap;
+}
+
+.dashboard .module table td a {
+    display: block;
+    padding-right: .6em;
+}
+
+/* RECENT ACTIONS MODULE */
+
+.module ul.actionlist {
+    margin-left: 0;
+}
+
+ul.actionlist li {
+    list-style-type: none;
+}
+
+ul.actionlist li.changelink {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+}
