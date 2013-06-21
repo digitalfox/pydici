@@ -48,7 +48,7 @@
 
 <script type="text/JavaScript">
 <!--
-    $("input[name^='actionset_target_user']").autocomplete('{% url ajax_lookup "user"%}',
+    $("input[name^='actionset_target_user']").autocomplete('{% url 'ajax_lookup' "user"%}',
                                                       { formatItem: function(row) { return row[2]; },
                                                         formatResult: function(row) { return row[1]; },
                                                         dataType: "text"
