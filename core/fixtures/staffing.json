@@ -60,7 +60,7 @@
             "consultant": 1, 
             "charge": 0.5, 
             "working_date": "2010-07-08", 
-            "mission": 9
+            "mission": 3
         }
     }, 
     {
@@ -70,7 +70,7 @@
             "consultant": 1, 
             "charge": 0.5, 
             "working_date": "2010-07-08", 
-            "mission": 4
+            "mission": 2
         }
     }, 
     {
@@ -80,7 +80,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-07-09", 
-            "mission": 9
+            "mission": 3
         }
     }, 
     {
@@ -90,7 +90,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-07-12", 
-            "mission": 4
+            "mission": 2
         }
     }, 
     {
@@ -100,7 +100,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-07-12", 
-            "mission": 9
+            "mission": 3
         }
     }, 
     {
@@ -110,7 +110,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-07-13", 
-            "mission": 13
+            "mission": 3
         }
     }, 
     {
@@ -120,7 +120,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-07-14", 
-            "mission": 13
+            "mission": 3
         }
     }, 
     {
@@ -130,7 +130,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-07-15", 
-            "mission": 13
+            "mission": 1
         }
     }, 
     {
@@ -140,7 +140,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-07-16", 
-            "mission": 9
+            "mission": 2
         }
     }, 
     {
@@ -150,7 +150,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-07-19", 
-            "mission": 9
+            "mission": 2
         }
     }, 
     {
@@ -170,7 +170,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-07-20", 
-            "mission": 13
+            "mission": 3
         }
     }, 
     {
@@ -180,127 +180,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-07-20", 
-            "mission": 9
-        }
-    }, 
-    {
-        "pk": 104, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-07-20", 
-            "mission": 4
-        }
-    }, 
-    {
-        "pk": 92, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-07-21", 
-            "mission": 13
-        }
-    }, 
-    {
-        "pk": 57, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-07-22", 
-            "mission": 9
-        }
-    }, 
-    {
-        "pk": 17, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-07-23", 
-            "mission": 9
-        }
-    }, 
-    {
-        "pk": 90, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-07-26", 
-            "mission": 4
-        }
-    }, 
-    {
-        "pk": 1, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-07-27", 
-            "mission": 9
-        }
-    }, 
-    {
-        "pk": 43, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-07-28", 
-            "mission": 4
-        }
-    }, 
-    {
-        "pk": 42, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-07-29", 
-            "mission": 4
-        }
-    }, 
-    {
-        "pk": 97, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 2, 
-            "charge": 1.0, 
-            "working_date": "2010-08-02", 
-            "mission": 9
-        }
-    }, 
-    {
-        "pk": 122, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-08-03", 
-            "mission": 25
-        }
-    }, 
-    {
-        "pk": 123, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-08-04", 
-            "mission": 25
-        }
-    }, 
-    {
-        "pk": 124, 
-        "model": "staffing.timesheet", 
-        "fields": {
-            "consultant": 1, 
-            "charge": 1.0, 
-            "working_date": "2010-08-05", 
-            "mission": 25
+            "mission": 1
         }
     }, 
     {
@@ -310,7 +190,7 @@
             "consultant": 1, 
             "charge": 0.25, 
             "working_date": "2010-08-10", 
-            "mission": 9
+            "mission": 1
         }
     }, 
     {
@@ -320,7 +200,7 @@
             "consultant": 1, 
             "charge": 0.33000000000000002, 
             "working_date": "2010-08-11", 
-            "mission": 9
+            "mission": 2
         }
     }, 
     {
@@ -330,7 +210,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-08-12", 
-            "mission": 9
+            "mission": 3
         }
     }, 
     {
@@ -340,7 +220,7 @@
             "consultant": 1, 
             "charge": 0.65000000000000002, 
             "working_date": "2010-08-13", 
-            "mission": 9
+            "mission": 2
         }
     }, 
     {
@@ -350,7 +230,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-08-16", 
-            "mission": 25
+            "mission": 2
         }
     }, 
     {
@@ -360,7 +240,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-09-01", 
-            "mission": 9
+            "mission": 2
         }
     }, 
     {
@@ -370,7 +250,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-09-03", 
-            "mission": 25
+            "mission": 2
         }
     }, 
     {
@@ -380,7 +260,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-09-06", 
-            "mission": 25
+            "mission": 2
         }
     }, 
     {
@@ -390,7 +270,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-09-07", 
-            "mission": 25
+            "mission": 2
         }
     }, 
     {
@@ -400,7 +280,7 @@
             "consultant": 1, 
             "charge": 1.0, 
             "working_date": "2010-09-09", 
-            "mission": 25
+            "mission": 2
         }
     }
 ]

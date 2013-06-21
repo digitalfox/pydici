@@ -8,7 +8,7 @@ Test cases
 # Python/Django test modules
 from django.test import TestCase
 from django.core import urlresolvers
-from django.contrib.admin.models import User
+from django.contrib.auth.models import User
 
 # Third party modules
 import workflows.utils as wf
