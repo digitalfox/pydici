@@ -7,7 +7,7 @@
 import os
 
 # Django import
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 

@@ -146,9 +146,9 @@ def expenses_history(request, year):
         return csv_expenses(request, expenses)
 
     if year:
-        return YearArchiveView.as_view(request, year, expenses, "expense_date", extra_context={"user": request.user}, make_object_list=True)
+        return YearArchiveView.as_view(queryset=expenses, date_field="expense_date", year=year, make_object_list=True)(request)
     else:
-        return ArchiveIndexView.as_view(request, expenses, "expense_date", extra_context={"user": request.user})
+        return ArchiveIndexView.as_view(queryset=expenses, date_field="expense_date")(request)
 
 
 @pydici_non_public

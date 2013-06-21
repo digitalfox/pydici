@@ -12,7 +12,7 @@
 
 {% block content %}
 
-<h1>{% trans "Expenses for year" %} {{year}}</h1>
+<h1>{% trans "Expenses for year" %} {{year.year}}</h1>
 <div class="content-large">
 {% with object_list as expenses %}
     {% include "expense/expense_list.html" %}
