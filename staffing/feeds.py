@@ -21,10 +21,6 @@ class StaffingFeed(Feed):
     def link(self):
         return urlresolvers.reverse("core.views.index")
 
-    def item_link(self, obj):
-        url = urlresolvers.reverse("people.views.consultant_home", args=[obj.consultant.id]) + "#tab-staffing"
-        return  self.request.build_absolute_uri(url)
-
     def item_pubdate(self, item):
         return item.update_date
 
@@ -47,6 +43,11 @@ class LatestStaffing(StaffingFeed):
 class MyLatestStaffing(StaffingFeed):
     title = _("My lastest staffing update")
     description = _("Last forecast staffing updated or created about myself")
+
+    def get_object(self, request, *args, **kwargs):
+        # Save request object for further use in items method.
+        self.request = request
+        return StaffingFeed.get_object(self, request, *args, **kwargs)
 
     def items(self):
         consultants = Consultant.objects.filter(trigramme__iexact=self.request.user.username)

@@ -13,6 +13,7 @@ from django.utils.translation import ugettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.contrib.admin.models import ContentType
+from django.core.urlresolvers import reverse
 
 from datetime import datetime, date, timedelta
 
@@ -255,15 +256,19 @@ class Staffing(models.Model):
         self.staffing_date = datetime(self.staffing_date.year, self.staffing_date.month, 1)
         super(Staffing, self).save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse("people.views.consultant_home", args=[str(self.consultant.id)]) + "#tab-staffing"
+
     class Meta:
         unique_together = (("consultant", "mission", "staffing_date"),)
         ordering = ["staffing_date", "consultant"]
         verbose_name = _("Staffing")
 
+
 class Timesheet(models.Model):
     """The staffing table: charge per day per consultant per mission"""
     consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to={"active":True})
+    mission = models.ForeignKey(Mission, limit_choices_to={"active": True})
     working_date = models.DateField(_("Date"))
     charge = models.FloatField(_("Load"), default=0)
 
@@ -274,6 +279,7 @@ class Timesheet(models.Model):
         unique_together = (("consultant", "mission", "working_date"),)
         ordering = ["working_date", "consultant"]
         verbose_name = _("Timesheet")
+
 
 class LunchTicket(models.Model):
     """Default is to give a lunck ticket every working day.
@@ -286,16 +292,18 @@ class LunchTicket(models.Model):
         unique_together = (("consultant", "lunch_date"),)
         verbose_name = _("Lunch ticket")
 
+
 class FinancialCondition(models.Model):
     """Mission financial condition"""
     consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to={"active":True})
+    mission = models.ForeignKey(Mission, limit_choices_to={"active": True})
     daily_rate = models.IntegerField(_("Daily rate"))
     bought_daily_rate = models.IntegerField(_("Bought daily rate"), null=True, blank=True)  # For subcontractor only
 
     class Meta:
         unique_together = (("consultant", "mission", "daily_rate"),)
         verbose_name = _("Financial condition")
+
 
 # Signal handling to throw actionset
 def missionSignalHandler(sender, **kwargs):

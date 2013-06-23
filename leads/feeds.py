@@ -20,10 +20,6 @@ class LeadFeed(Feed):
     def link(self):
         return urlresolvers.reverse("core.views.index")
 
-    def item_link(self, obj):
-        url = urlresolvers.reverse("leads.views.detail", args=[obj.id])
-        return  self.request.build_absolute_uri(url)
-
     def item_pubdate(self, item):
         return item.update_date
 
@@ -41,6 +37,7 @@ class LatestLeads(LeadFeed):
     def items(self):
         return Lead.objects.order_by('-update_date')[:50]
 
+
 class NewLeads(LeadFeed):
     title = _("New leads")
     description = _("Last new lead created")
@@ -52,6 +49,7 @@ class NewLeads(LeadFeed):
     def items(self):
         return Lead.objects.order_by('-creation_date')[:50]
 
+
 class WonLeads(LeadFeed):
     title = _("Won leads")
     description = _("Last won leads")
@@ -59,9 +57,15 @@ class WonLeads(LeadFeed):
     def items(self):
         return Lead.objects.filter(state="WON").order_by('-update_date')[:50]
 
+
 class MyLatestLeads(LeadFeed):
     title = _("My leads")
     description = _("Last active leads that I am responsible or resource")
+
+    def get_object(self, request, *args, **kwargs):
+        # Save request object for further use in items method.
+        self.request = request
+        return LeadFeed.get_object(self, request, *args, **kwargs)
 
     def items(self):
         consultants = Consultant.objects.filter(trigramme__iexact=self.request.user.username)

@@ -7,7 +7,7 @@
 import os
 
 # Django import
-from django.conf.urls import *
+from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 
@@ -19,15 +19,6 @@ import pydici.settings
 # Feeds definition
 from leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
 from staffing.feeds import LatestStaffing, MyLatestStaffing
-
-feeds = {
-        "latest": LatestLeads,
-        "new": NewLeads,
-        "won": WonLeads,
-        "mine": MyLatestLeads,
-        "latestStaffing": LatestStaffing,
-        "myLatestStaffing": MyLatestStaffing
-        }
 
 
 # Overide internal server error view
@@ -50,9 +41,14 @@ pydici_patterns += patterns('',
             {'document_root': os.path.join(pydici.settings.PYDICI_ROOTDIR, 'media')}),
 
     # Feeds
-    url(r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.Feed',
-            {'feed_dict': feeds}, name='feed'),
+    url(r'^feeds/latest/?$', LatestLeads(), name='latest'),
+    url(r'^feeds/new/?$', NewLeads(), name='new'),
+    url(r'^feeds/won/?$', WonLeads(), name='won'),
+    url(r'^feeds/mine/?$', MyLatestLeads(), name='mine'),
+    url(r'^feeds/latestStaffing/?$', LatestStaffing(), name='latestStaffing'),
+    url(r'^feeds/myLatestStaffing/?$', MyLatestStaffing(), name='myLatestStaffing'),
 )
+
 
 # core module
 pydici_patterns += patterns('core.views',
