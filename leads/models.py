@@ -13,6 +13,7 @@ from django.contrib.admin.models import LogEntry, ContentType
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q
+from django.core.urlresolvers import reverse
 
 from taggit.managers import TaggableManager
 
@@ -204,9 +205,8 @@ class Lead(models.Model):
         """returns done actions for this lead and its missions"""
         return self.actions().exclude(state="TO_BE_DONE")
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('leads.views.detail', [str(self.id)])
+        return reverse('leads.views.detail', args=[str(self.id)])
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]

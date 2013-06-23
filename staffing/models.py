@@ -221,9 +221,8 @@ class Mission(models.Model):
         """returns done actions for this mission and its lead"""
         return self.actions().exclude(state="TO_BE_DONE")
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('staffing.views.mission_home', [str(self.id)])
+        return reverse('staffing.views.mission_home', args=[str(self.id)])
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "id", "description"]

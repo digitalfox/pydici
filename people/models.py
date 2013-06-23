@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import F, Sum
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.core.urlresolvers import reverse
 
 from datetime import date, timedelta
 
@@ -173,9 +174,8 @@ class Consultant(models.Model):
                                        staffing_date__lte=today).aggregate(Sum("charge")).values()[0]
         return days or 0
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('people.views.consultant_home', [str(self.id)])
+        return reverse('people.views.consultant_home', args=[str(self.id)])
 
     class Meta:
         ordering = ["name", ]
