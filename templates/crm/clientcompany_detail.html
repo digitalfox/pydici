@@ -48,7 +48,7 @@
 <div id="graph_company_business_activity_jqp_content"></div>
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#graph_company_business_activity_jqp_content').load('{% url graph_company_business_activity company.id %}');
+    $('#graph_company_business_activity_jqp_content').load('{% url 'graph_company_business_activity' company.id %}');
 });
 </script>
 

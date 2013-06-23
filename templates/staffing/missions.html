@@ -61,9 +61,9 @@
 
 <br><br>
 {% if all %}
-    <a href='{% url missions %}'>{% trans "Only display active missions" %}</a>
+    <a href='{% url 'missions' %}'>{% trans "Only display active missions" %}</a>
 {% else %}
-    <a href='{% url all-missions %}'>{% trans "Display all missions" %}</a>
+    <a href="{% url 'all-missions' %}">{% trans "Display all missions" %}</a>
 {% endif %}
 &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 <a href="{% url 'admin:staffing_mission_changelist' %}">{% trans "Missions administration" %}</a>
