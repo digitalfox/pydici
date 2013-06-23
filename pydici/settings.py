@@ -168,6 +168,8 @@ if DEBUG:
             'django.contrib.staticfiles',  # Static files are served by web server in production mode
 			))
 
+WSGI_APPLICATION = "pydici.wsgi.application"
+
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_CONFIG = { "INTERCEPT_REDIRECTS" : False }
 
