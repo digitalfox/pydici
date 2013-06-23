@@ -26,6 +26,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
 from django.views.decorators.cache import cache_page, cache_control
+from django.contrib import messages
 
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from people.models import Consultant
@@ -165,7 +166,7 @@ def mass_staffing(request):
                         staffing.last_user = unicode(request.user)
                         staffing.save()
             # Redirect to self to display a new unbound form
-            request.user.message_set.create(message=_("Staffing has been updated"))
+            messages.add_message(request, messages.INFO, _("Staffing has been updated"))
             return HttpResponseRedirect(urlresolvers.reverse("staffing.views.mass_staffing"))
     else:
         # An unbound form

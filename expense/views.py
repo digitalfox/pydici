@@ -19,6 +19,7 @@ from django.db.models import Q
 from django.views.generic.dates import ArchiveIndexView
 from django.views.generic.dates import YearArchiveView
 from django.shortcuts import render
+from django.contrib import messages
 
 
 from expense.forms import ExpenseForm
@@ -44,11 +45,11 @@ def expenses(request, expense_id=None):
             expense = Expense.objects.get(id=expense_id)
             if not (perm.has_permission(expense, request.user, "expense_edit")
                     and (expense.user == request.user or expense.user in user_team)):
-                request.user.message_set.create(message=_("You are not allowed to edit that expense"))
+                messages.add_message(request, messages.WARNING, _("You are not allowed to edit that expense"))
                 expense_id = None
                 expense = None
     except Expense.DoesNotExist:
-        request.user.message_set.create(message=_("Expense %s does not exist" % expense_id))
+        messages.add_message(request, messages.ERROR, _("Expense %s does not exist" % expense_id))
         expense_id = None
 
     if request.method == "POST":
@@ -189,19 +190,19 @@ def update_expense_state(request, expense_id, transition_id):
     try:
         expense = Expense.objects.get(id=expense_id)
         if expense.user == request.user and not perm.has_role(request.user, "expense administrator"):
-            request.user.message_set.create(message=_("You cannot manage your own expense !"))
+            messages.add_message(request, messages.WARNING, _("You cannot manage your own expense !"))
             return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
     except Expense.DoesNotExist:
-        request.user.message_set.create(message=_("Expense %s does not exist" % expense_id))
+        messages.add_message(request, messages.WARNING, _("Expense %s does not exist" % expense_id))
         return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
     try:
         transition = Transition.objects.get(id=transition_id)
     except Transition.DoesNotExist:
-        request.user.message_set.create(message=_("Transition %s does not exist" % transition_id))
+        messages.add_message(request, messages.ERROR, _("Transition %s does not exist" % transition_id))
         return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
 
     if wf.do_transition(expense, transition, request.user):
-        request.user.message_set.create(message=_("Successfully update expense"))
+        messages.add_message(request, messages.SUCCESS, _("Successfully update expense"))
     else:
-        request.user.message_set.create(message=_("You cannot do this transition"))
+        messages.add_message(request, messages.ERROR, _("You cannot do this transition"))
     return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
