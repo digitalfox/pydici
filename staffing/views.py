@@ -14,14 +14,13 @@ from matplotlib.figure import Figure
 from ajax_select.fields import autoselect_fields_check_can_add
 
 
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.core.cache import cache
-from django.template import RequestContext
 from django.db.models import Sum, Q
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
@@ -50,22 +49,20 @@ def missions(request, onlyActive=True):
     else:
         missions = Mission.objects.all()
         allMissions = True
-    return render_to_response("staffing/missions.html",
-                              {"missions": missions,
-                               "all": allMissions,
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "staffing/missions.html",
+                  {"missions": missions,
+                   "all": allMissions,
+                   "user": request.user})
 
 
 @pydici_non_public
 def mission_home(request, mission_id):
     """Home page of mission description - this page loads all others mission sub-pages"""
     mission = Mission.objects.get(id=mission_id)
-    return render_to_response('staffing/mission.html',
-                              {"mission": mission,
-                               "pending_actions": mission.pending_actions(),
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, 'staffing/mission.html',
+                  {"mission": mission,
+                   "pending_actions": mission.pending_actions(),
+                   "user": request.user})
 
 
 @pydici_non_public
@@ -97,13 +94,12 @@ def mission_staffing(request, mission_id):
     else:
         formset = StaffingFormSet(instance=mission)  # An unbound form
 
-    return render_to_response('staffing/mission_staffing.html',
-                              {"formset": formset,
-                               "mission": mission,
-                               "read_only": readOnly,
-                               "staffing_dates": staffingDates(),
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, 'staffing/mission_staffing.html',
+                  {"formset": formset,
+                   "mission": mission,
+                   "read_only": readOnly,
+                   "staffing_dates": staffingDates(),
+                   "user": request.user})
 
 
 @pydici_non_public
@@ -130,12 +126,11 @@ def consultant_staffing(request, consultant_id):
     else:
         formset = StaffingFormSet(instance=consultant)  # An unbound form
 
-    return render_to_response('staffing/consultant_staffing.html',
-                              {"formset": formset,
-                               "consultant": consultant,
-                               "staffing_dates": staffingDates(),
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, 'staffing/consultant_staffing.html',
+                  {"formset": formset,
+                   "consultant": consultant,
+                   "staffing_dates": staffingDates(),
+                   "user": request.user})
 
 @pydici_non_public
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -176,10 +171,10 @@ def mass_staffing(request):
         # An unbound form
         form = MassStaffingForm(staffing_dates=staffing_dates)
 
-    return render_to_response("staffing/mass_staffing.html",
-                              {"form": form,
-                               "staffing_dates": staffing_dates},
-                              RequestContext(request))
+    return render(request, "staffing/mass_staffing.html",
+                  {"form": form,
+                   "staffing_dates": staffing_dates})
+
 
 @pydici_non_public
 def pdc_review(request, year=None, month=None):
@@ -318,18 +313,17 @@ def pdc_review(request, year=None, month=None):
     else:
         staffing.sort(cmp=lambda x, y: cmp(x[0].profil.level, y[0].profil.level))  # Sort by position
 
-    return render_to_response("staffing/pdc_review.html",
-                              {"staffing": staffing,
-                               "months": months,
-                               "total": total,
-                               "rates": rates,
-                               "user": request.user,
-                               "projected": projected,
-                               "previous_slice_date" : previous_slice_date,
-                               "next_slice_date" : next_slice_date,
-                               "start_date" : start_date,
-                               "groupby" : groupby},
-                               RequestContext(request))
+    return render(request, "staffing/pdc_review.html",
+                  {"staffing": staffing,
+                   "months": months,
+                   "total": total,
+                   "rates": rates,
+                   "user": request.user,
+                   "projected": projected,
+                   "previous_slice_date": previous_slice_date,
+                   "next_slice_date": next_slice_date,
+                   "start_date": start_date,
+                   "groupby": groupby})
 
 
 @pydici_non_public
@@ -343,7 +337,7 @@ def deactivate_mission(request, mission_id):
     except Mission.DoesNotExist:
         error = True
     return HttpResponse(json.dumps({"error": error, "id": mission_id}),
-                        mimetype="application/json")
+                        content_type="application/json")
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -458,30 +452,29 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
     else:
         template = "staffing/consultant_timesheet.html"
 
-    return render_to_response(template, {
-                                "consultant": consultant,
-                               "form": form,
-                               "read_only": readOnly,
-                               "days": days,
-                               "month": month,
-                               "week": week,
-                               "missions": missions,
-                               "working_days_balance": wDaysBalance,
-                               "working_days": wDays,
-                               "warning": warning,
-                               "next_date": next_date,
-                               "previous_date": previous_date,
-                               "previous_week": previous_week,
-                               "next_week": next_week,
-                               "is_current_month": month == date.today().replace(day=1),
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, template,
+                  {"consultant": consultant,
+                   "form": form,
+                   "read_only": readOnly,
+                   "days": days,
+                   "month": month,
+                   "week": week,
+                   "missions": missions,
+                   "working_days_balance": wDaysBalance,
+                   "working_days": wDays,
+                   "warning": warning,
+                   "next_date": next_date,
+                   "previous_date": previous_date,
+                   "previous_week": previous_week,
+                   "next_week": next_week,
+                   "is_current_month": month == date.today().replace(day=1),
+                   "user": request.user})
 
 
 def consultant_csv_timesheet(request, consultant, days, month, missions):
     """@return: csv timesheet for a given consultant"""
     # This "view" is never called directly but only through consultant_timesheet view
-    response = HttpResponse(mimetype="text/csv")
+    response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
     writer = csv.writer(response, delimiter=';')
 
@@ -614,26 +607,25 @@ def mission_timesheet(request, mission_id):
 
     missionData = map(to_int_or_round, missionData)
     objectiveMargin = mission.objectiveMargin(endDate=nextMonth(current_month))
-    return render_to_response("staffing/mission_timesheet.html", {
-                                "mission": mission,
-                                "margin": margin,
-                                "objective_margin": objectiveMargin,
-                                "objective_margin_total":  sum(objectiveMargin.values()),
-                                "forecasted_unused": forecastedUnused,
-                                "current_unused": currentUnused,
-                                "timesheet_months": timesheetMonths,
-                                "staffing_months": staffingMonths,
-                                "mission_data": missionData,
-                                "consultant_rates": consultant_rates,
-                                "user": request.user,
-                                "avg_daily_rate": avgDailyRate},
-                               RequestContext(request))
+    return render(request, "staffing/mission_timesheet.html",
+                  {"mission": mission,
+                   "margin": margin,
+                   "objective_margin": objectiveMargin,
+                   "objective_margin_total": sum(objectiveMargin.values()),
+                   "forecasted_unused": forecastedUnused,
+                   "current_unused": currentUnused,
+                   "timesheet_months": timesheetMonths,
+                   "staffing_months": staffingMonths,
+                   "mission_data": missionData,
+                   "consultant_rates": consultant_rates,
+                   "user": request.user,
+                   "avg_daily_rate": avgDailyRate})
 
 
 def mission_csv_timesheet(request, mission, consultants):
     """@return: csv timesheet for a given mission"""
     # This "view" is never called directly but only through consultant_timesheet view
-    response = HttpResponse(mimetype="text/csv")
+    response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
     writer = csv.writer(response, delimiter=';')
     timesheets = Timesheet.objects.select_related().filter(mission=mission)
@@ -744,20 +736,19 @@ def all_timesheet(request, year=None, month=None):
         return all_csv_timesheet(request, charges, month)
     else:
         # Return html page
-        return render_to_response("staffing/all_timesheet.html", {
-                               "user": request.user,
-                               "next_date": next_date,
-                               "previous_date": previous_date,
-                               "month": month,
-                               "consultants": consultants,
-                               "missions": missions,
-                               "charges": charges },
-                               RequestContext(request))
+        return render(request, "staffing/all_timesheet.html",
+                      {"user": request.user,
+                       "next_date": next_date,
+                       "previous_date": previous_date,
+                       "month": month,
+                       "consultants": consultants,
+                       "missions": missions,
+                       "charges": charges})
 
 
 @pydici_non_public
 def all_csv_timesheet(request, charges, month):
-    response = HttpResponse(mimetype="text/csv")
+    response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
     writer = csv.writer(response, delimiter=';')
 
@@ -779,7 +770,7 @@ def all_csv_timesheet(request, charges, month):
 def detailed_csv_timesheet(request, year=None, month=None):
     """Detailed timesheet with mission, consultant, and rates
     Intended for accounting third party system or spreadsheet analysis"""
-    response = HttpResponse(mimetype="text/csv")
+    response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
     writer = csv.writer(response, delimiter=';')
 
@@ -836,7 +827,7 @@ def detailed_csv_timesheet(request, year=None, month=None):
 @permission_required("staffing.add_mission")
 def create_new_mission_from_lead(request, lead_id):
     """Create a new mission on the given lead. Mission are created with same nature
-    and probability than the fist mission. 
+    and probability than the fist mission.
     Used when a lead has more than one mission as only the default (first) mission
     is created during standard lead workflow.
     An error message will be returned if the given lead does not already have a mission"""
@@ -877,7 +868,7 @@ def mission_consultant_rate(request):
         mission = Mission.objects.get(id=mission_id)
         consultant = Consultant.objects.get(id=consultant_id)
         condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
-                                                                      defaults={"daily_rate":0})
+                                                                      defaults={"daily_rate": 0})
         if sold == "sold":
             condition.daily_rate = request.POST["value"].replace(" ", "")
         else:
@@ -942,11 +933,11 @@ def mission_contacts(request, mission_id):
     form = MissionContactForm(instance=mission)
     autoselect_fields_check_can_add(form, Mission, request.user)
     missionContacts = mission.contacts.select_related().order_by("company")
-    return render_to_response("staffing/mission_contacts.html", {
-                                "mission": mission,
-                                "mission_contacts": missionContacts,
-                                "mission_contact_form": form },
-                               RequestContext(request))
+    return render(request, "staffing/mission_contacts.html",
+                  {"mission": mission,
+                   "mission_contacts": missionContacts,
+                   "mission_contact_form": form})
+
 
 @pydici_non_public
 @cache_page(60 * 10)
@@ -1161,8 +1152,7 @@ def graph_consultant_rates_jqp(request, consultant_id):
         # If graph_data is only a bunch of emty list, set it to empty list to
         # disable graph. Avoid jqplot infinite loop with some poor browsers
         graph_data = None
-    return render_to_response("staffing/graph_consultant_rate_jqp.html",
-                              {"graph_data": graph_data,
-                               "series_colors": COLORS,
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "staffing/graph_consultant_rate_jqp.html",
+                  {"graph_data": graph_data,
+                   "series_colors": COLORS,
+                   "user": request.user})

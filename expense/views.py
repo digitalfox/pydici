@@ -12,14 +12,13 @@ import workflows.utils as wf
 import permissions.utils as perm
 from workflows.models import Transition
 
-from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
-from django.template import RequestContext
 from django.db.models import Q
 from django.views.generic.dates import ArchiveIndexView
 from django.views.generic.dates import YearArchiveView
+from django.shortcuts import render
 
 
 from expense.forms import ExpenseForm
@@ -100,13 +99,12 @@ def expenses(request, expense_id=None):
             expense.workflow_in_progress = False
             expense.save()
 
-    return render_to_response("expense/expenses.html",
-                              {"user_expenses": user_expenses,
-                               "managed_expenses": managed_expenses,
-                               "modify_expense": bool(expense_id),
-                               "form": form,
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "expense/expenses.html",
+                  {"user_expenses": user_expenses,
+                   "managed_expenses": managed_expenses,
+                   "modify_expense": bool(expense_id),
+                   "form": form,
+                   "user": request.user})
 
 
 @pydici_non_public
@@ -153,7 +151,7 @@ def expenses_history(request, year):
 
 @pydici_non_public
 def csv_expenses(request, expenses):
-    response = HttpResponse(mimetype="text/csv")
+    response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("expenses.csv")
     writer = csv.writer(response, delimiter=';')
     header = [_("People"), _("Description"), _("Lead"), _("Amount"), _("Chargeable"), _("Paid with corporate card"), _("State"), _("Expense date"), _("Update date"), _("Comments")]
@@ -180,10 +178,9 @@ def mission_expenses(request, mission_id):
             expenses = []
     except Mission.DoesNotExist:
         expenses = []
-    return render_to_response("expense/expense_list.html",
-                              {"expenses": expenses,
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "expense/expense_list.html",
+                  {"expenses": expenses,
+                   "user": request.user})
 
 
 @pydici_non_public

@@ -8,8 +8,7 @@ Pydici crm views. Http request are processed here.
 import json
 from datetime import date, timedelta
 
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.db.models import Sum, Min
 from django.views.decorators.cache import cache_page
 
@@ -37,25 +36,23 @@ def company_detail(request, company_id):
 
     companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
 
-    return render_to_response("crm/clientcompany_detail.html",
-                              {"company": company,
-                               "leads": leads,
-                               "consultants": consultants,
-                               "business_contacts": Contact.objects.filter(client__organisation__company=company).distinct(),
-                               "mission_contacts": Contact.objects.filter(missioncontact__company=company).distinct(),
-                               "administrative_contacts": AdministrativeContact.objects.filter(company=company),
-                               "clients": Client.objects.filter(organisation__company=company),
-                               "companies": companies},
-                               RequestContext(request))
+    return render(request, "crm/clientcompany_detail.html",
+                  {"company": company,
+                   "leads": leads,
+                   "consultants": consultants,
+                   "business_contacts": Contact.objects.filter(client__organisation__company=company).distinct(),
+                   "mission_contacts": Contact.objects.filter(missioncontact__company=company).distinct(),
+                   "administrative_contacts": AdministrativeContact.objects.filter(company=company),
+                   "clients": Client.objects.filter(organisation__company=company),
+                   "companies": companies})
 
 
 @pydici_non_public
 def company_list(request):
     """Client company list"""
     companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
-    return render_to_response("crm/clientcompany_list.html",
-                              {"companies": list(companies)},
-                               RequestContext(request))
+    return render(request, "crm/clientcompany_list.html",
+                  {"companies": list(companies)})
 
 
 @pydici_non_public
@@ -78,14 +75,13 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
     for company, amount in graph_data:
         labels.append(u"%d k€ (%d%%)" % (amount / 1000, 100 * amount / total))
 
-    return render_to_response("crm/graph_company_sales_jqp.html",
-                              {"graph_data": json.dumps([graph_data]),
-                               "series_colors": COLORS,
-                               "only_last_year": onlyLastYear,
-                               "min_date": minDate,
-                               "labels": json.dumps(labels),
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "crm/graph_company_sales_jqp.html",
+                  {"graph_data": json.dumps([graph_data]),
+                   "series_colors": COLORS,
+                   "only_last_year": onlyLastYear,
+                   "min_date": minDate,
+                   "labels": json.dumps(labels),
+                   "user": request.user})
 
 @pydici_non_public
 @cache_page(60 * 60)
@@ -131,9 +127,8 @@ def graph_company_business_activity_jqp(request, company_id):
 
     minDate = previousMonth(minDate)
 
-    return render_to_response("crm/graph_company_business_activity_jqp.html",
-                              {"graph_data": json.dumps(graph_data),
-                               "series_colors": COLORS,
-                               "min_date": minDate.isoformat(),
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "crm/graph_company_business_activity_jqp.html",
+                  {"graph_data": json.dumps(graph_data),
+                   "series_colors": COLORS,
+                   "min_date": minDate.isoformat(),
+                   "user": request.user})

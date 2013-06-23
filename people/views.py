@@ -7,9 +7,8 @@ Pydici people views. Http request are processed here.
 
 from datetime import date
 
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.http import Http404
-from django.template import RequestContext
 
 from people.models import Consultant
 from crm.models import Company
@@ -20,10 +19,9 @@ from core.utils import working_days
 
 def consultant_home(request, consultant_id):
     """Home page of consultant - this page loads all others mission sub-pages"""
-    return render_to_response('people/consultant.html',
-                              {"consultant": Consultant.objects.get(id=consultant_id),
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, 'people/consultant.html',
+                  {"consultant": Consultant.objects.get(id=consultant_id),
+                   "user": request.user})
 
 
 @pydici_non_public
@@ -52,21 +50,20 @@ def consultant_detail(request, consultant_id):
         forecasting_balance = month_days - consultant.forecasted_days()
     except Consultant.DoesNotExist:
         raise Http404
-    return render_to_response("people/consultant_detail.html",
-                              {"consultant": consultant,
-                               "staff": staff,
-                               "missions": missions,
-                               "companies": companies,
-                               "business_territory": business_territory,
-                               "leads_as_responsible": leads_as_responsible,
-                               "leads_as_staffee": leads_as_staffee,
-                               "done_days": done_days,
-                               "late": late,
-                               "to_be_done": to_be_done,
-                               "month_days": month_days,
-                               "forecasting_balance": forecasting_balance,
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "people/consultant_detail.html",
+                  {"consultant": consultant,
+                   "staff": staff,
+                   "missions": missions,
+                   "companies": companies,
+                   "business_territory": business_territory,
+                   "leads_as_responsible": leads_as_responsible,
+                   "leads_as_staffee": leads_as_staffee,
+                   "done_days": done_days,
+                   "late": late,
+                   "to_be_done": to_be_done,
+                   "month_days": month_days,
+                   "forecasting_balance": forecasting_balance,
+                   "user": request.user})
 
 
 def subcontractor_detail(request, consultant_id):
@@ -80,10 +77,9 @@ def subcontractor_detail(request, consultant_id):
         raise Http404
     if not consultant.subcontractor:
         raise Http404
-    return render_to_response("people/subcontractor_detail.html",
-                              {"consultant": consultant,
-                               "missions": missions,
-                               "companies": companies,
-                               "leads_as_staffee": leads_as_staffee,
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "people/subcontractor_detail.html",
+                  {"consultant": consultant,
+                   "missions": missions,
+                   "companies": companies,
+                   "leads_as_staffee": leads_as_staffee,
+                   "user": request.user})

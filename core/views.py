@@ -5,8 +5,7 @@ Pydici core views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 
@@ -34,9 +33,8 @@ def index(request):
         return consultant_home(request, consultant.id)
     else:
         # User is not a consultant. Go for default index page.
-        return render_to_response("core/index.html",
-                                  {"user": request.user},
-                                   RequestContext(request))
+        return render(request, "core/index.html",
+                      {"user": request.user})
 
 
 def mobile_index(request):
@@ -59,13 +57,12 @@ def mobile_index(request):
         companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
         missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
         leads = Lead.objects.active().order_by("creation_date")
-    return render_to_response("core/m.index.html",
-                              {"user": request.user,
-                               "consultant": consultant,
-                               "companies": companies,
-                               "missions": missions,
-                               "leads": leads},
-                              RequestContext(request))
+    return render(request, "core/m.index.html",
+                  {"user": request.user,
+                   "consultant": consultant,
+                   "companies": companies,
+                   "missions": missions,
+                   "leads": leads})
 
 
 @pydici_non_public
@@ -150,16 +147,15 @@ def search(request):
             bills = list(bills)
             bills.sort(key=lambda x: x.creation_date)
 
-    return render_to_response("core/search.html",
-                              {"query": " ".join(words),
-                               "consultants": consultants,
-                               "companies": companies,
-                               "contacts": contacts,
-                               "leads": leads,
-                               "missions": missions,
-                               "bills": bills,
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "core/search.html",
+                  {"query": " ".join(words),
+                   "consultants": consultants,
+                   "companies": companies,
+                   "contacts": contacts,
+                   "leads": leads,
+                   "missions": missions,
+                   "bills": bills,
+                   "user": request.user})
 
 
 @pydici_non_public
@@ -167,15 +163,13 @@ def dashboard(request):
     """Tactical management dashboard. This views is in core module because it aggregates data
     accross different modules"""
 
-    return render_to_response("core/dashboard.html",
-                              {},
-                              RequestContext(request))
+    return render(request, "core/dashboard.html")
 
 
 def internal_error(request):
     """Custom internal error view.
     Like the default builtin one, but with context to allow proper menu display with correct media path"""
-    return render_to_response("500.html", {}, RequestContext(request))
+    return render(request, "500.html")
 
 
 def forbiden(request):
@@ -186,6 +180,5 @@ def forbiden(request):
     else:
         # Standard request, use full forbiden page with menu
         template = "core/forbiden.html"
-    return render_to_response(template,
-                              {"admins": pydici.settings.ADMINS, },
-                              RequestContext(request))
+    return render(request, template,
+                  {"admins": pydici.settings.ADMINS, })

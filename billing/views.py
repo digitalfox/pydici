@@ -12,8 +12,7 @@ from collections import defaultdict
 
 from matplotlib.figure import Figure
 
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.core import urlresolvers
 from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import Sum
@@ -57,20 +56,19 @@ def bill_review(request):
             if Timesheet.objects.filter(mission__lead=lead, working_date__gte=threeMonthAgo).count() != 0:
                 leadsWithoutBill.append(lead)
 
-    return render_to_response("billing/bill_review.html",
-                              {"overdue_bills": overdue_bills,
-                               "soondue_bills": soondue_bills,
-                               "recent_bills": recent_bills,
-                               "litigious_bills": litigious_bills,
-                               "soondue_bills_total": soondue_bills_total,
-                               "overdue_bills_total": overdue_bills_total,
-                               "litigious_bills_total": litigious_bills_total,
-                               "soondue_bills_total_with_vat": soondue_bills_total_with_vat,
-                               "overdue_bills_total_with_vat": overdue_bills_total_with_vat,
-                               "litigious_bills_total_with_vat": litigious_bills_total_with_vat,
-                               "leads_without_bill": leadsWithoutBill,
-                               "user": request.user},
-                              RequestContext(request))
+    return render(request, "billing/bill_review.html",
+                  {"overdue_bills": overdue_bills,
+                   "soondue_bills": soondue_bills,
+                   "recent_bills": recent_bills,
+                   "litigious_bills": litigious_bills,
+                   "soondue_bills_total": soondue_bills_total,
+                   "overdue_bills_total": overdue_bills_total,
+                   "litigious_bills_total": litigious_bills_total,
+                   "soondue_bills_total_with_vat": soondue_bills_total_with_vat,
+                   "overdue_bills_total_with_vat": overdue_bills_total_with_vat,
+                   "litigious_bills_total_with_vat": litigious_bills_total_with_vat,
+                   "leads_without_bill": leadsWithoutBill,
+                   "user": request.user})
 
 
 @pydici_non_public
@@ -91,11 +89,10 @@ def bill_payment_delay(request):
         if res:
             indirectDelays.append((company, sum(res) / len(res)))
 
-    return render_to_response("billing/payment_delay.html",
-                              {"direct_delays": directDelays,
-                               "indirect_delays": indirectDelays,
-                               "user": request.user},
-                              RequestContext(request))
+    return render(request, "billing/payment_delay.html",
+                  {"direct_delays": directDelays,
+                   "indirect_delays": indirectDelays,
+                   "user": request.user},)
 
 
 @pydici_non_public
@@ -170,12 +167,11 @@ def pre_billing(request, year=None, month=None):
     timeSpentBilling = timeSpentBilling.items()
     timeSpentBilling.sort(key=lambda x: x[0].deal_id)
 
-    return render_to_response("billing/pre_billing.html",
-                              {"time_spent_billing": timeSpentBilling,
-                               "fixed_price_missions": fixedPriceMissions,
-                               "month": month,
-                               "user": request.user},
-                              RequestContext(request))
+    return render(request, "billing/pre_billing.html",
+                  {"time_spent_billing": timeSpentBilling,
+                   "fixed_price_missions": fixedPriceMissions,
+                   "month": month,
+                   "user": request.user})
 
 
 @pydici_non_public

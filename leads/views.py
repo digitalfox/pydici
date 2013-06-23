@@ -13,12 +13,11 @@ import sys
 from collections import defaultdict
 
 
+from django.shortcuts import render
 from django.core import urlresolvers
-from django.shortcuts import render_to_response
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext as _
 from django.db.models import Q
-from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 
@@ -44,12 +43,9 @@ def summary_mail(request, html=True):
             rs = rs.filter(update_date__gte=(today - delay))
         leads.append(rs)
     if html:
-        return render_to_response("leads/mail.html", {"lead_group": leads},
-                                  RequestContext(request))
+        return render(request, "leads/mail.html", {"lead_group": leads})
     else:
-        return render_to_response("leads/mail.txt", {"lead_group": leads},
-                                  RequestContext(request),
-                                  mimetype="text/plain; charset=utf-8")
+        return render(request, "leads/mail.txt", {"lead_group": leads}, content_type="text/plain; charset=utf-8")
 
 
 @pydici_non_public
@@ -84,18 +80,17 @@ def detail(request, lead_id):
 
     except Lead.DoesNotExist:
         raise Http404
-    return render_to_response("leads/lead_detail.html",
-                              {"lead": lead,
-                               "active_count": active_count,
-                               "active_rank": rank + 1,
-                               "next_lead": next_lead,
-                               "previous_lead": previous_lead,
-                               "link_root": urlresolvers.reverse("index"),
-                               "action_list": lead.get_change_history(),
-                               "completion_url": urlresolvers.reverse("leads.views.tags", args=[lead.id, ]),
-                               "suggested_tags": suggestedTags,
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "leads/lead_detail.html",
+                  {"lead": lead,
+                   "active_count": active_count,
+                   "active_rank": rank + 1,
+                   "next_lead": next_lead,
+                   "previous_lead": previous_lead,
+                   "link_root": urlresolvers.reverse("index"),
+                   "action_list": lead.get_change_history(),
+                   "completion_url": urlresolvers.reverse("leads.views.tags", args=[lead.id, ]),
+                   "suggested_tags": suggestedTags,
+                   "user": request.user})
 
 
 @pydici_non_public
@@ -128,16 +123,15 @@ def lead_documents(request, lead_id):
         files.sort(key=lambda x: x[0])
         documents.append([directoryName, dirs + files])
 
-    return render_to_response("leads/lead_documents.html",
-                              {"documents": documents,
-                               "lead_doc_url": leadDocURL,
-                               "user": request.user},
-                              RequestContext(request))
+    return render(request, "leads/lead_documents.html",
+                  {"documents": documents,
+                   "lead_doc_url": leadDocURL,
+                   "user": request.user})
 
 
 @pydici_non_public
 def csv_export(request, target):
-    response = HttpResponse(mimetype="text/csv")
+    response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("leads.csv")
     writer = csv.writer(response, delimiter=';')
     writer.writerow([i.encode("ISO-8859-15") for i in [_("Name"), _("Client"), _("Description"),
@@ -179,21 +173,19 @@ def review(request):
     recentArchivedLeads = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
                                                       Q(state="SLEEPING"))
     recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date")
-    return render_to_response("leads/review.html",
-                              {"recent_archived_leads": recentArchivedLeads,
-                               "active_leads": Lead.objects.active().order_by("creation_date"),
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "leads/review.html",
+                  {"recent_archived_leads": recentArchivedLeads,
+                   "active_leads": Lead.objects.active().order_by("creation_date"),
+                   "user": request.user})
 
 
 @pydici_non_public
 def tag(request, tag_id):
     """Displays leads for given tag"""
-    return render_to_response("leads/tag.html",
-                              {"leads": Lead.objects.filter(tags=tag_id),
-                               "tag": Tag.objects.get(id=tag_id),
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "leads/tag.html",
+                  {"leads": Lead.objects.filter(tags=tag_id),
+                   "tag": Tag.objects.get(id=tag_id),
+                   "user": request.user})
 
 
 @pydici_non_public
@@ -215,7 +207,7 @@ def add_tag(request):
         answer["tag_remove_url"] = urlresolvers.reverse("leads.views.remove_tag", args=[tag.id, lead.id])
         answer["tag_name"] = tag.name
         answer["id"] = tag.id
-    return HttpResponse(json.dumps(answer), mimetype="application/json")
+    return HttpResponse(json.dumps(answer), content_type="application/json")
 
 
 @pydici_non_public
@@ -231,7 +223,7 @@ def remove_tag(request, tag_id, lead_id):
         lead.tags.remove(tag)
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         answer["error"] = True
-    return HttpResponse(json.dumps(answer), mimetype="application/json")
+    return HttpResponse(json.dumps(answer), content_type="application/json")
 
 
 @pydici_non_public
@@ -276,10 +268,9 @@ def graph_bar_jqp(request):
     else:
         min_date = ""
 
-    return render_to_response("leads/graph_bar_jqp.html",
-                              {"graph_data": json.dumps(graph_data),
-                               "series_label": [i[1] for i in Lead.STATES],
-                               "series_colors": COLORS,
-                               "min_date": min_date,
-                               "user": request.user},
-                               RequestContext(request))
+    return render(request, "leads/graph_bar_jqp.html",
+                  {"graph_data": json.dumps(graph_data),
+                   "series_label": [i[1] for i in Lead.STATES],
+                   "series_colors": COLORS,
+                   "min_date": min_date,
+                   "user": request.user})
