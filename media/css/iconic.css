@@ -31,7 +31,7 @@ input.ac_loading {
 .results_on_deck .iconic, .results_on_deck .iconic:hover {
     /*float: left;*/
     vertical-align: middle;
-    background: url('../img/admin/icon_deletelink.gif') no-repeat;
+    background: url('../img/icon_deletelink.gif') no-repeat;
     color: transparent;
     border: 0;
 }

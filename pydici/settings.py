@@ -52,7 +52,6 @@ AJAX_LOOKUP_CHANNELS = {
     'chargeable_expense' : ('expense.lookups', 'ChargeableExpenseLookup'),
 }
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
