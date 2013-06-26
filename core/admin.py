@@ -15,13 +15,13 @@ class ReturnToAppAdmin(admin.ModelAdmin):
     actions = None
 
     def add_view(self, request, form_url='', extra_context=None):
-        result = super(ReturnToAppAdmin, self).add_view(request, form_url, extra_context)
+        result = super(ReturnToAppAdmin, self).add_view(request, form_url=form_url, extra_context=extra_context)
         if request.GET.get('return_to', False):
             result['Location'] = request.GET['return_to']
         return result
 
-    def change_view(self, request, object_id, extra_context=None):
-        result = super(ReturnToAppAdmin, self).change_view(request, object_id, extra_context)
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        result = super(ReturnToAppAdmin, self).change_view(request, object_id, form_url=form_url, extra_context=extra_context)
         if request.GET.get('return_to', False):
             result['Location'] = request.GET['return_to']
         return result
