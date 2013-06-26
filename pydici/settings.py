@@ -161,13 +161,13 @@ INSTALLED_APPS = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS.extend((
-			'debug_toolbar',
-    		'django_extensions',
-            'django.contrib.staticfiles',  # Static files are served by web server in production mode
-			))
+    INSTALLED_APPS.extend(('debug_toolbar',
+                           'django_extensions',
+                           'django.contrib.staticfiles',  # Static files are served by web server in production mode
+            ))
 
 WSGI_APPLICATION = "pydici.wsgi.application"
+ALLOWED_HOSTS = ("localhost",)
 
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_CONFIG = { "INTERCEPT_REDIRECTS" : False }
