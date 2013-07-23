@@ -23,7 +23,7 @@ from crm.models import Client, BusinessBroker
 from people.models import Consultant, SalesMan
 from actionset.models import ActionState
 from actionset.utils import launchTrigger
-from core.utils import createProjectTree
+from core.utils import createProjectTree, disable_for_loaddata
 
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
@@ -214,6 +214,7 @@ class Lead(models.Model):
 
 
 # Signal handling to throw actionset and document tree creation
+@disable_for_loaddata
 def leadSignalHandler(sender, **kwargs):
     """Signal handler for new/updated leads"""
     lead = kwargs["instance"]

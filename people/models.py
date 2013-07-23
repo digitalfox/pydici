@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 
 from datetime import date, timedelta
 
-from core.utils import capitalize
+from core.utils import capitalize, disable_for_loaddata
 from crm.models import Subsidiary
 from actionset.models import ActionState
 from actionset.utils import launchTrigger
@@ -212,6 +212,7 @@ class SalesMan(models.Model):
 
 
 # Signal handling to throw actionset
+@disable_for_loaddata
 def consultantSignalHandler(sender, **kwargs):
     """Signal handler for new consultant"""
 

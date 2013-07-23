@@ -22,7 +22,7 @@ from people.models import Consultant
 from crm.models import MissionContact
 from actionset.utils import launchTrigger
 from actionset.models import ActionState
-from core.utils import nextMonth
+from core.utils import nextMonth, disable_for_loaddata
 
 
 class Mission(models.Model):
@@ -305,6 +305,7 @@ class FinancialCondition(models.Model):
 
 
 # Signal handling to throw actionset
+@disable_for_loaddata
 def missionSignalHandler(sender, **kwargs):
     """Signal handler for new/updated leads"""
     mission = kwargs["instance"]

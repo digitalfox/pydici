@@ -11,6 +11,7 @@ import re
 import os
 from datetime import timedelta, date
 import unicodedata
+from functools import wraps
 
 os.environ['MPLCONFIGDIR'] = '/tmp'  # Needed for matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -280,3 +281,16 @@ def createProjectTree(lead):
     for directory in getLeadDirs(lead):
         if not os.path.exists(directory):
             os.mkdir(directory)
+
+
+def disable_for_loaddata(signal_handler):
+    """Decorator that turns off signal handlers when loading fixture data.
+    Thanks to garnertb: http://stackoverflow.com/questions/15624817/have-loaddata-ignore-or-disable-post-save-signals
+    """
+
+    @wraps(signal_handler)
+    def wrapper(*args, **kwargs):
+        if kwargs['raw']:
+            return
+        signal_handler(*args, **kwargs)
+    return wrapper
