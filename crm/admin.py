@@ -39,7 +39,7 @@ class ContactAdmin(ReturnToAppAdmin):
 class BusinessBrokerAdmin(ReturnToAppAdmin):
     list_display = ("company", "contact")
     odering = ("company", "contact")
-    search_fields = ["company", "contact__name"]
+    search_fields = ["company__name", "contact__name"]
 
 
 class SupplierAdmin(ReturnToAppAdmin):
