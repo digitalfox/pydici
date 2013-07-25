@@ -149,7 +149,6 @@ class Client(models.Model):
     """A client is defined by a contact and the organisation where he works at the moment"""
     organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Organisation"))
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
-    salesOwner = models.ForeignKey(Subsidiary, verbose_name=_("Sales owner"))
 
     def __unicode__(self):
         if self.contact:

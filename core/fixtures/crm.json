@@ -3,14 +3,16 @@
         "pk": 1, 
         "model": "crm.subsidiary", 
         "fields": {
-            "name": "the E company"
+            "name": "the E company",
+            "code": "E"
         }
     },
     {
         "pk": 1, 
         "model": "crm.company", 
         "fields": {
-            "name": "World company"
+            "name": "World company",
+            "code": "W"
         }
     }, 
     {
@@ -36,8 +38,15 @@
         "model": "crm.client", 
         "fields": {
             "organisation": 1, 
-            "contact": 1, 
-            "salesOwner": 1
+            "contact": 1
         }
-    } 
+    },
+    {
+        "pk": 1, 
+        "model": "crm.businessbroker", 
+        "fields": {
+            "company": 1, 
+            "contact": 1
+        }
+    }
 ]

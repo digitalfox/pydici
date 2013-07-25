@@ -84,7 +84,7 @@ class Lead(models.Model):
             if self.paying_authority:
                 deal_id = unicode(self.paying_authority.company.code)
             else:
-                deal_id = unicode(self.client.salesOwner.code)
+                deal_id = unicode(self.subsidiary.code)
             # Then, client company code
             deal_id += unicode(self.client.organisation.company.code)
             # Then, year in two digits

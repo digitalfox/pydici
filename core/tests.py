@@ -19,7 +19,7 @@ from workflows.models import Transition
 from core.utils import monthWeekNumber, previousWeek, nextWeek
 from leads.models import Lead
 from people.models import Consultant, ConsultantProfile
-from crm.models import Client, Subsidiary
+from crm.models import Client, Subsidiary, BusinessBroker
 from staffing.models import Mission
 from expense.models import Expense, ExpenseCategory
 from expense.default_workflows import install_expense_workflow
@@ -99,6 +99,20 @@ class SimpleTest(TestCase):
                      "/billing/bill_review",
                      "/billing/bill_delay",
                      "/forbiden",
+                     "/admin/",
+                     "/admin/crm/",
+                     "/admin/crm/client/",
+                     "/admin/crm/subsidiary/",
+                     "/admin/crm/company/",
+                     "/admin/crm/contact/",
+                     "/admin/crm/businessbroker/",
+                     "/admin/crm/supplier/",
+                     "/admin/crm/administrativefunction/",
+                     "/admin/crm/administrativecontact/",
+                     "/admin/crm/missioncontact/",
+                     "/admin/crm/clientorganisation/",
+                     "/admin/leads/",
+                     "/admin/leads/lead/",
                      ):
             response = self.client.get(PREFIX + page)
             self.failUnlessEqual(response.status_code, 200,
@@ -213,7 +227,8 @@ class UtilsTest(TestCase):
         for firstDay, weekDay in dates:
             self.assertEqual(firstDay, nextWeek(weekDay))
 
-class ModelTest(TestCase):
+
+class CrmModelTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
 
@@ -237,6 +252,33 @@ class ModelTest(TestCase):
         self.assertEqual(c.getUser(), u)
         c = Consultant.objects.get(trigramme="GBA")
         self.assertEqual(c.getUser(), None)
+
+
+class LeadModelTest(TestCase):
+    fixtures = ["auth.json", "people.json", "crm.json",
+                "leads.json", "staffing.json", "billing.json"]
+
+    def test_save_lead(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        subsidiary = Subsidiary.objects.get(pk=1)
+        broker = BusinessBroker.objects.get(pk=1)
+        client = Client.objects.get(pk=1)
+        lead = Lead(name="laalaa",
+          state="QUALIF",
+          client=client,
+          salesman=None,
+          description="A wonderfull lead that as a so so long description",
+          subsidiary=subsidiary)
+        self.assertEqual(lead.deal_id, "")  # No deal id code yet
+        lead.save()
+        self.assertEqual(lead.deal_id, "%s%s%s01" % (subsidiary.code, client.organisation.company.code, date.today().strftime("%y")))
+        lead.paying_authority = broker
+        lead.save()
+        self.assertEqual(lead.deal_id, "%s%s%s01" % (subsidiary.code, client.organisation.company.code, date.today().strftime("%y")))  # No change to deal id
+        lead.deal_id = ""
+        lead.save()
+        self.assertEqual(lead.deal_id, "%s%s%s01" % (broker.company.code, client.organisation.company.code, date.today().strftime("%y")))  # New deal id
+
 
 class WorkflowTest(TestCase):
     """Test pydici workflows"""
