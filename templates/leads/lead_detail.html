@@ -98,6 +98,7 @@
     <b>{% trans "Contact: " %}</b>{{ lead.client.contact|default_if_none:_("Unknown")}} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}<br/>
     <b>{% trans "Deal id:" %}</b> {{ lead.deal_id }}
     <br><br><hr>
+    <b>{% trans "Subsidiary: " %}</b>{{ lead.subsidiary }}<br/>
     <b>{% trans "Responsible: " %}</b>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}<br>
     {% if lead.salesman %}
         <b>{% trans "Salesman: " %}</b>{{ lead.salesman }}<br/>

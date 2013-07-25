@@ -28,8 +28,8 @@
         <caption>{% trans "All active leads" %}</caption>
         <tr>
                 <td><b>{% trans "Lead" %}</b></td>
+                <td><b>{% trans "Subsidiary" %}</b></td>
                 <td><b>{% trans "Responsible" %}</b></td>
-                <td><b>{% trans "Salesman" %}</b></td>
                 <td><b>{% trans "Staffing" %}</b></td>
                 <td><b>{% trans "Sales (k€)" %}</b></td>
                 <td><b>{% trans "Status" %}</b></td>
@@ -39,8 +39,8 @@
         {% for lead in active_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
                 <td><a href="{% url 'leads.views.detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
+                <td>{{ lead.subsidiary }}</td>
                 <td>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
-                <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.sales }}</td>
                 <td>{{ lead.get_state_display }}</td>
@@ -57,8 +57,8 @@
         <caption>{% trans "Recent won, lost or forgiven leads" %}</caption>
         <tr>
                 <td><b>{% trans "Lead" %}</b></td>
+                <td><b>{% trans "Subsidiary" %}</b></td>
                 <td><b>{% trans "Responsible" %}</b></td>
-                <td><b>{% trans "Salesman" %}</b></td>
                 <td><b>{% trans "Staffing" %}</b></td>
                 <td><b>{% trans "Sales (k€)" %}</b></td>
                 <td><b>{% trans "Status" %}</b></td>
@@ -68,8 +68,8 @@
         {% for lead in recent_archived_leads %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
                 <td><a href="{% url 'leads.views.detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
+                <td>{{ lead.subsidiary }}</td>
                 <td>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
-                <td>{{ lead.salesman.name }}</td>
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.sales }}</td>
                 <td>{{ lead.get_state_display }}</td>

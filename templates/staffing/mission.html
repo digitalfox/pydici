@@ -66,6 +66,7 @@
         <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
         <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
         {% if mission.lead %}
+            <h3>{% trans "Subsidiary:" %} {{ mission.lead.subsidiary }}</h3>
             <h3>{% trans "Billing mode: " %} <div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></h3>
             <h3>{% trans "Probability:" %} <div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_probability_display }}</div></h3>
             <h3>{% trans "Lead of this mission:" %} <a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></h3>
