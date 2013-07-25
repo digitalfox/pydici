@@ -156,25 +156,6 @@ class SimpleTest(TestCase):
             self.failUnlessEqual(response.status_code, 404,
                                  "Failed to test url %s (got %s instead of 404" % (page, response.status_code))
 
-    def test_create_lead(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        lead = create_lead()
-        self.failUnlessEqual(lead.staffing.count(), 0)
-        lead.staffing.add(Consultant.objects.get(pk=1))
-        self.failUnlessEqual(lead.staffing.count(), 1)
-        # Add staffing here lead.add...
-        self.failUnlessEqual(len(lead.update_date_strf()), 14)
-        self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
-        self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
-        self.failUnlessEqual(urlresolvers.reverse("leads.views.detail", args=[4]), PREFIX + "/leads/4/")
-
-        url = "".join(urlparse.urlsplit(urlresolvers.reverse("leads.views.detail", args=[4]))[2:])
-        response = self.client.get(url)
-        self.failUnlessEqual(response.status_code, 200)
-        context = response.context[-1]
-        self.failUnlessEqual(unicode(context["lead"]), u"World company : DSI  - laala")
-        self.failUnlessEqual(unicode(context["user"]), "sre")
-
     def test_pdc_review(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         url = PREFIX + "/staffing/pdcreview/2009/07"
@@ -258,6 +239,25 @@ class LeadModelTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
 
+    def test_create_lead(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        lead = create_lead()
+        self.failUnlessEqual(lead.staffing.count(), 0)
+        self.failUnlessEqual(lead.staffing_list(), ", (JCF)")
+        lead.staffing.add(Consultant.objects.get(pk=1))
+        self.failUnlessEqual(lead.staffing.count(), 1)
+        self.failUnlessEqual(len(lead.update_date_strf()), 14)
+        self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
+        self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
+        self.failUnlessEqual(urlresolvers.reverse("leads.views.detail", args=[4]), PREFIX + "/leads/4/")
+
+        url = "".join(urlparse.urlsplit(urlresolvers.reverse("leads.views.detail", args=[4]))[2:])
+        response = self.client.get(url)
+        self.failUnlessEqual(response.status_code, 200)
+        context = response.context[-1]
+        self.failUnlessEqual(unicode(context["lead"]), u"World company : DSI  - laala")
+        self.failUnlessEqual(unicode(context["user"]), "sre")
+
     def test_save_lead(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         subsidiary = Subsidiary.objects.get(pk=1)
@@ -278,6 +278,7 @@ class LeadModelTest(TestCase):
         lead.deal_id = ""
         lead.save()
         self.assertEqual(lead.deal_id, "%s%s%s01" % (broker.company.code, client.organisation.company.code, date.today().strftime("%y")))  # New deal id
+
 
 
 class WorkflowTest(TestCase):
