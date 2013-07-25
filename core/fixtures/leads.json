@@ -18,7 +18,8 @@
             "salesman": null, 
             "start_date": null, 
             "staffing": [], 
-            "description": "what a wonderful project mister fox !"
+            "description": "what a wonderful project mister fox !",
+            "subsidiary": 1
         }
     }, 
     {
@@ -40,7 +41,8 @@
             "salesman": null, 
             "start_date": null, 
             "staffing": [], 
-            "description": "very interesting project"
+            "description": "very interesting project",
+            "subsidiary": 1
         }
     }, 
     {
@@ -62,7 +64,8 @@
             "salesman": null, 
             "start_date": null, 
             "staffing": [], 
-            "description": "again, a big project"
+            "description": "again, a big project",
+            "subsidiary": 1
         }
     }
 ]

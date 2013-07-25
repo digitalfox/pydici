@@ -19,9 +19,9 @@ from core.admin import ReturnToAppAdmin
 
 
 class LeadAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
-    list_display = ("name", "client", "responsible", "salesman", "business_broker", "state", "due_date", "update_date_strf")
+    list_display = ("name", "client", "subsidiary", "responsible", "state", "due_date", "update_date_strf")
     fieldsets = [
-        (None, {"fields": ["name", "client", "description", "action"]}),
+        (None, {"fields": ["name", "client", "subsidiary", "description", "action"]}),
         (_("State and tracking"), {"fields": ["responsible", "state", "due_date", "start_date", "deal_id"]}),
         (_("Commercial"), {"fields": ["sales", "business_broker", "paying_authority", "salesman", ]}),
         (_("Staffing"), {"fields": ["staffing", "external_staffing"]}),
@@ -30,7 +30,7 @@ class LeadAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
     ordering = ("creation_date",)
     actions = None
     filter_horizontal = ["staffing"]
-    list_filter = ["state", ]
+    list_filter = ["state", "subsidiary"]
     date_hierarchy = "update_date"
     search_fields = ["name", "description", "action",
                      "responsible__name", "responsible__trigramme",

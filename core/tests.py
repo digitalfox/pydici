@@ -310,7 +310,8 @@ def create_lead():
           deal_id="123456",
           client=Client.objects.get(pk=1),
           salesman=None,
-          description="A wonderfull lead that as a so so long description")
+          description="A wonderfull lead that as a so so long description",
+          subsidiary=Subsidiary.objects.get(pk=1))
 
     lead.save()
     return lead

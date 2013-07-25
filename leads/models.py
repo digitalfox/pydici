@@ -19,7 +19,7 @@ from taggit.managers import TaggableManager
 
 from core.utils import compact_text
 
-from crm.models import Client, BusinessBroker
+from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
 from actionset.models import ActionState
 from actionset.utils import launchTrigger
@@ -61,7 +61,7 @@ class Lead(models.Model):
     paying_authority = models.ForeignKey(BusinessBroker, related_name="%(class)s_paying", verbose_name=_("Paying authority"), blank=True, null=True)
     start_date = models.DateField(_("Starting"), blank=True, null=True)
     due_date = models.DateField(_("Due"), blank=True, null=True)
-    state = models.CharField(_("State"), max_length=30, choices=STATES)
+    state = models.CharField(_("State"), max_length=30, choices=STATES, default=STATES[0][0])
     state.db_index = True
     client = models.ForeignKey(Client, verbose_name=_("Client"))
     creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
@@ -70,6 +70,7 @@ class Lead(models.Model):
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     send_email = models.BooleanField(_("Send lead by email"), default=True)
     tags = TaggableManager(blank=True)
+    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
 
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
 
