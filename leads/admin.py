@@ -77,6 +77,8 @@ class LeadAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
                 mission.probability = 0
                 mission.active = False
                 mission.save()
+                for staffing in mission.staffing_set.all():
+                    staffing.delete()
                 messages.add_message(request, messages.INFO, ugettext("According mission has been archived"))
 
 admin.site.register(Lead, LeadAdmin)

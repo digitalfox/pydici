@@ -164,7 +164,7 @@ class Consultant(models.Model):
         return days or 0
 
     def forecasted_days(self):
-        """Forecasted days for current month"""
+        """Forecasted days for current month without considering mission probability"""
         from staffing.models import Staffing  # Do that here to avoid circular imports
         today = date.today()
 
