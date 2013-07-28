@@ -63,9 +63,10 @@
          {% else %}
                 <div class="errornote">{% trans "This mission is archived" %}</div>
          {% endif %}
-        <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
-        <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
-        {% if mission.lead %}
+         <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
+         <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
+         {% if mission.lead %}
+            {% if mission.lead.client_deal_id %}<h3>{% trans "Client lead id: " %} {{ mission.lead.client_deal_id }}</h3>{% endif %}
             <h3>{% trans "Subsidiary:" %} {{ mission.lead.subsidiary }}</h3>
             <h3>{% trans "Billing mode: " %} <div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></h3>
             <h3>{% trans "Probability:" %} <div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_probability_display }}</div></h3>
@@ -73,7 +74,7 @@
 	        {% if mission.lead.description %}
 	            <div class='lead_description'>{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
 	        {% endif %}
-        {% endif %}
+         {% endif %}
     </div>
 
     <div id="tab-consultants">

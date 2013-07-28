@@ -66,6 +66,7 @@ class Lead(models.Model):
     client = models.ForeignKey(Client, verbose_name=_("Client"))
     creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
     deal_id = models.CharField(_("Deal id"), max_length=100, blank=True)
+    client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
     deal_id.db_index = True
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     send_email = models.BooleanField(_("Send lead by email"), default=True)
