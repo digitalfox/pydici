@@ -9,7 +9,7 @@ from django.contrib import admin
 
 from ajax_select.admin import AjaxSelectAdmin
 
-from staffing.models import Mission, Holiday, Timesheet, FinancialCondition
+from staffing.models import Mission, Holiday, Timesheet, FinancialCondition, Staffing
 from staffing.forms import MissionAdminForm, FinancialConditionAdminForm
 from core.admin import ReturnToAppAdmin
 
@@ -33,14 +33,16 @@ class HolidayAdmin(admin.ModelAdmin):
     actions = None
 
 
-class FinancialConditionAdmin(admin.ModelAdmin):
+class FinancialConditionAdmin(ReturnToAppAdmin):
     list_display = ("mission", "consultant", "daily_rate")
     search_fileds = ("mission__lead__name", "mission__description", "mission__deal_id", "mission__lead__client__organisation__company__name",
                    "mission__lead__client__contact__name", "consultant__name", "consultant__trigramme")
     actions = None
     form = FinancialConditionAdminForm
 
+
 admin.site.register(Mission, MissionAdmin)
 admin.site.register(Holiday, HolidayAdmin)
 admin.site.register(FinancialCondition, FinancialConditionAdmin)
 admin.site.register(Timesheet)
+admin.site.register(Staffing)
