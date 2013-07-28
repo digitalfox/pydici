@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-28 15:48+0200\n"
-"PO-Revision-Date: 2013-07-28 15:47+0200\n"
+"POT-Creation-Date: 2013-07-28 16:10+0200\n"
+"PO-Revision-Date: 2013-07-28 16:10+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -767,7 +767,7 @@ msgstr ""
 #: staffing/views.py:693 staffing/views.py:786
 #: templates/leads/lead_detail.html:145
 #: templates/staffing/consultant_staffing.html:10
-#: templates/staffing/mission.html:102
+#: templates/staffing/mission.html:103
 msgid "Mission"
 msgstr "Mission"
 
@@ -887,7 +887,7 @@ msgid "Type"
 msgstr "Type"
 
 #: staffing/models.py:46 staffing/views.py:786
-#: templates/leads/lead_detail.html:150 templates/staffing/mission.html:107
+#: templates/leads/lead_detail.html:150 templates/staffing/mission.html:108
 msgid "Billing mode"
 msgstr "Mode de facturation"
 
@@ -974,7 +974,7 @@ msgid "Past done days"
 msgstr "Jours réalisés dans le passé"
 
 #: staffing/views.py:787 templates/billing/bill_review.html:167
-#: templates/leads/lead_detail.html:147 templates/staffing/mission.html:104
+#: templates/leads/lead_detail.html:147 templates/staffing/mission.html:105
 #: templates/staffing/mission_timesheet.html:9
 msgid "Done days"
 msgstr "Jours réalisés"
@@ -1916,15 +1916,15 @@ msgstr "Marge sur objectifs de TJM"
 msgid "Missions of this lead:"
 msgstr "Missions de cette affaire : "
 
-#: templates/leads/lead_detail.html:146 templates/staffing/mission.html:103
+#: templates/leads/lead_detail.html:146 templates/staffing/mission.html:104
 msgid "id"
 msgstr "n°"
 
-#: templates/leads/lead_detail.html:148 templates/staffing/mission.html:105
+#: templates/leads/lead_detail.html:148 templates/staffing/mission.html:106
 msgid "Done work (k€)"
 msgstr "Montant réalisé (k€)"
 
-#: templates/leads/lead_detail.html:149 templates/staffing/mission.html:106
+#: templates/leads/lead_detail.html:149 templates/staffing/mission.html:107
 msgid "Sold (k€)"
 msgstr "Vendu (k€)"
 
@@ -1940,15 +1940,15 @@ msgstr ""
 #: templates/leads/lead_detail.html:189
 #: templates/people/consultant_detail.html:93
 #: templates/people/subcontractor_detail.html:17
-#: templates/staffing/mission.html:143
+#: templates/staffing/mission.html:144
 msgid "Pending actions"
 msgstr "Actions en attente"
 
-#: templates/leads/lead_detail.html:194 templates/staffing/mission.html:148
+#: templates/leads/lead_detail.html:194 templates/staffing/mission.html:149
 msgid "Done actions"
 msgstr "Actions réalisées"
 
-#: templates/leads/lead_detail.html:199 templates/staffing/mission.html:153
+#: templates/leads/lead_detail.html:199 templates/staffing/mission.html:154
 msgid "No action done"
 msgstr "Aucune action réalisée"
 
@@ -2331,11 +2331,15 @@ msgstr "Affaire de cette mission :"
 msgid "Consultants currently implicated in this mission"
 msgstr "Consultants impliqués actuellement dans cette mission"
 
-#: templates/staffing/mission.html:98
+#: templates/staffing/mission.html:84
+msgid "Objective rate (€)"
+msgstr "Taux budget (€)"
+
+#: templates/staffing/mission.html:99
 msgid "Other missions linked to this lead"
 msgstr "Autres missions liées à cette affaire"
 
-#: templates/staffing/mission.html:166 templates/staffing/mission.html:173
+#: templates/staffing/mission.html:167 templates/staffing/mission.html:174
 msgid "click to edit..."
 msgstr "Cliquez pour modifier..."
 
