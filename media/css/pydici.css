@@ -68,6 +68,9 @@ tr.row-label td { font-size:9px; padding-top:2px; padding-bottom:0; border-botto
 tr.alt { background:#f6f6f6; }
 .row1 { background:#FFF2ED; }
 .row2 { background:white; }
+tr:hover {
+  background-color: #E9E5E3; color: #000;
+}
 table.small-form-row td { padding:0px; font-size:9px; margin:0px; vertical-align: middle;}
 
 /* SORTABLE TABLES 
