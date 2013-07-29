@@ -20,11 +20,12 @@
         "model": "people.consultant", 
         "fields": {
             "trigramme": "GBA", 
-            "productive": true, 
+            "productive": true,
+            "active": false, 
             "name": "Gr\u00e9goire", 
             "company": 1, 
             "profil": 1, 
-            "manager": 3
+            "manager": 1
         }
     }, 
     {

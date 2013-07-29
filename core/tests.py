@@ -33,10 +33,10 @@ TEST_USERNAME = "sre"
 TEST_PASSWORD = "sre"
 PREFIX = "/" + pydici.settings.PYDICI_PREFIX
 
+
 class SimpleTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
-
 
     def test_basic_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
@@ -165,6 +165,7 @@ class SimpleTest(TestCase):
             self.failUnlessEqual(response.status_code, 200,
                 "Failed to test pdc_review with arg %s (got %s instead of 200" % (arg, response.status_code))
 
+
 class UtilsTest(TestCase):
     def test_monthWeekNumber(self):
         # Week number, date
@@ -233,6 +234,22 @@ class CrmModelTest(TestCase):
         self.assertEqual(c.getUser(), u)
         c = Consultant.objects.get(trigramme="GBA")
         self.assertEqual(c.getUser(), None)
+
+    def test_team(self):
+        c = Consultant.objects.get(trigramme="SRE")
+        self.assertEqual(list(c.team().order_by("id").values_list("id", flat=True)), [3, 5])
+        self.assertEqual(list(c.team(excludeSelf=False).order_by("id").values_list("id", flat=True)), [1, 3, 5])
+        self.assertEqual(list(c.team(excludeSelf=False, onlyActive=True).order_by("id").values_list("id", flat=True)), [1, 5])
+        self.assertEqual(list(c.team(onlyActive=True).order_by("id").values_list("id", flat=True)), [5, ])
+
+    def test_user_team(self):
+        c = Consultant.objects.get(trigramme="SRE")
+        self.assertEqual(c.userTeam(), [User.objects.get(username="abr"), None])
+        self.assertEqual(c.userTeam(excludeSelf=False), [User.objects.get(username="abr"), None, User.objects.get(username="sre")])
+
+    def test_pending_action(self):
+        c = Consultant.objects.get(trigramme="SRE")
+        self.assertQuerysetEqual(c.pending_actions(), [])
 
 
 class LeadModelTest(TestCase):
