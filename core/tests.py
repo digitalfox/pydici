@@ -286,15 +286,16 @@ class LeadModelTest(TestCase):
           salesman=None,
           description="A wonderfull lead that as a so so long description",
           subsidiary=subsidiary)
+        deal_id = client.organisation.company.code, date.today().strftime("%y")
         self.assertEqual(lead.deal_id, "")  # No deal id code yet
         lead.save()
-        self.assertEqual(lead.deal_id, "%s%s%s01" % (subsidiary.code, client.organisation.company.code, date.today().strftime("%y")))
+        self.assertEqual(lead.deal_id, "%s%s01" % deal_id)
         lead.paying_authority = broker
         lead.save()
-        self.assertEqual(lead.deal_id, "%s%s%s01" % (subsidiary.code, client.organisation.company.code, date.today().strftime("%y")))  # No change to deal id
+        self.assertEqual(lead.deal_id, "%s%s01" % deal_id)
         lead.deal_id = ""
         lead.save()
-        self.assertEqual(lead.deal_id, "%s%s%s01" % (broker.company.code, client.organisation.company.code, date.today().strftime("%y")))  # New deal id
+        self.assertEqual(lead.deal_id, "%s%s02" % deal_id)  # 01 is already used
 
 
 
