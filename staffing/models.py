@@ -307,9 +307,14 @@ class FinancialCondition(models.Model):
 # Signal handling to throw actionset
 @disable_for_loaddata
 def missionSignalHandler(sender, **kwargs):
-    """Signal handler for new/updated leads"""
+    """Signal handler for new/updated missions"""
     mission = kwargs["instance"]
     targetUser = None
+    if not mission.active:
+        # Mission is archived. Remove all staffing
+        for staffing in mission.staffing_set.all():
+            staffing.delete()
+    # Handle actionset stuff :
     if not mission.nature == "PROD":
         # Don't throw actions for non prod missions
         return
