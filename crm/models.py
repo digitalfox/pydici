@@ -127,6 +127,7 @@ class BusinessBroker(models.Model):
     class Meta:
         ordering = ["company", "contact"]
         verbose_name = _("Business broker")
+        unique_together = (("company", "contact",))
 
 
 class Supplier(models.Model):
@@ -143,6 +144,7 @@ class Supplier(models.Model):
     class Meta:
         ordering = ["company", "contact"]
         verbose_name = _("Supplier")
+        unique_together = (("company", "contact",))
 
 
 class Client(models.Model):
@@ -179,6 +181,7 @@ class Client(models.Model):
     class Meta:
         ordering = ["organisation", "contact"]
         verbose_name = _("Client")
+        unique_together = (("organisation", "contact",))
 
 
 class MissionContact(models.Model):
@@ -192,6 +195,7 @@ class MissionContact(models.Model):
     class Meta:
         ordering = ["company", "contact"]
         verbose_name = _("Mission contact")
+        unique_together = (("company", "contact",))
 
 
 class AdministrativeFunction(models.Model):
@@ -246,3 +250,4 @@ class AdministrativeContact(models.Model):
     class Meta:
         verbose_name = _("Administrative contact")
         ordering = ("company", "contact")
+        unique_together = (("company", "contact",))
