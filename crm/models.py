@@ -194,6 +194,17 @@ class Client(models.Model):
         data.sort(key=lambda x: x[0].level)
         return data
 
+    def getActiveLeads(self):
+        """@return: list (qs) of active leads for this client"""
+        return self.lead_set.exclude(state__in=(("LOST", "FORGIVEN", "SLEEPING")))
+
+    def getActiveMissions(self):
+        """@return: list of active missions for this client"""
+        missions = list()
+        for lead in self.getActiveLeads():
+            missions.extend(lead.mission_set.filter(active=True))
+        return missions
+
     class Meta:
         ordering = ["organisation", "contact"]
         verbose_name = _("Client")

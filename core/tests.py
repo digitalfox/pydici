@@ -276,7 +276,6 @@ class LeadModelTest(TestCase):
         self.failUnlessEqual(unicode(context["user"]), "sre")
 
     def test_save_lead(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         subsidiary = Subsidiary.objects.get(pk=1)
         broker = BusinessBroker.objects.get(pk=1)
         client = Client.objects.get(pk=1)
@@ -297,6 +296,18 @@ class LeadModelTest(TestCase):
         lead.save()
         self.assertEqual(lead.deal_id, "%s%s02" % deal_id)  # 01 is already used
 
+    def test_save_lead_and_active_client(self):
+        lead = Lead.objects.get(id=1)
+        lead.state = "LOST"
+        lead.save()
+        lead = Lead.objects.get(id=1)
+        self.assertTrue(lead.client.active)  # There's still anotger active lead for this client
+        otherLead = Lead.objects.get(id=3)
+        otherLead.state = "SLEEPING"
+        otherLead.save()
+        lead = Lead.objects.get(id=1)
+        self.assertFalse(lead.client.active)
+
 
 class StaffingModelTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
@@ -305,6 +316,11 @@ class StaffingModelTest(TestCase):
     def test_save_mission_and_active_client(self):
         mission = Mission.objects.get(id=1)
         mission.save()
+        lead = mission.lead
+        for lead in Lead.objects.filter(id__in=(1, 2, 3)):
+            # Set lead as won to allow client passivation when mission are archived
+            lead.state = "WON"
+            lead.save()
         mission.active = False
         self.assertTrue(mission.lead.client.active)  # Client is active by default and mission is not saved
         mission.save()
