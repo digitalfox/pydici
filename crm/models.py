@@ -70,6 +70,7 @@ class ClientOrganisation(models.Model):
     class Meta:
         ordering = ["company", "name"]
         verbose_name = _("Client organisation")
+        unique_together = ("name", "company")
 
 
 class Contact(models.Model):
