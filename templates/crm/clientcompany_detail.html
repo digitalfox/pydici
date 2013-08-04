@@ -54,6 +54,19 @@ $(document).ready(function() {
 
 <h2>{% trans "Sales with this client: "%} {{ company.sales|floatformat:-1 }} k€</h2>
 
+<h2>{% trans "Current active missions" %}</h2>
+<ul>
+{% for clientorganisation in company.clientorganisation_set.all %}
+    {% for client in clientorganisation.client_set.all %}
+        <li>{{ client }} <ul>
+        {% for mission in client.getActiveMissions %}
+            <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission.short_name }}</a></li>
+        {% endfor %}
+        </ul></li>
+    {% endfor %}
+{% endfor %}
+</ul>
+<h2>{% trans "Leads" %}</h2>
 <ul>
 {% for lead in leads %}
     {% ifchanged lead.client %}
