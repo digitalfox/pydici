@@ -298,6 +298,38 @@ class LeadModelTest(TestCase):
         self.assertEqual(lead.deal_id, "%s%s02" % deal_id)  # 01 is already used
 
 
+class StaffingModelTest(TestCase):
+    fixtures = ["auth.json", "people.json", "crm.json",
+                "leads.json", "staffing.json", "billing.json"]
+
+    def test_save_mission_and_active_client(self):
+        mission = Mission.objects.get(id=1)
+        mission.save()
+        mission.active = False
+        self.assertTrue(mission.lead.client.active)  # Client is active by default and mission is not saved
+        mission.save()
+        self.assertFalse(mission.lead.client.active)  # Client should be flag as inactive too
+        # Now with a client that has two mission in two different leads
+        mission = Mission.objects.get(id=2)
+        mission.save()
+        self.assertTrue(mission.lead.client.active)
+        mission.active = False
+        mission.save()
+        self.assertTrue(mission.lead.client.active)  # Client is still active because another mission is active
+        otherMission = Mission.objects.get(id=3)
+        otherMission.active = False
+        otherMission.save()
+        mission = Mission.objects.get(id=2)  # Read mission from database to avoid nasty cache effect
+        self.assertFalse(mission.lead.client.active)  # All missions are now archived. Client is no more active
+
+    def test_save_mission_and_forecast(self):
+        mission = Mission.objects.get(id=1)
+        mission.save()
+        self.assertNotEqual(mission.staffing_set.count(), 0)
+        mission.active = False
+        mission.save()
+        self.assertEqual(mission.staffing_set.count(), 0)
+
 
 class WorkflowTest(TestCase):
     """Test pydici workflows"""

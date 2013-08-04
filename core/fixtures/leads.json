@@ -57,7 +57,7 @@
             "external_staffing": "",  
             "send_email": false, 
             "state": "NEGOTIATION", 
-            "client": 1, 
+            "client": 2, 
             "action": "", 
             "deal_id": "1234567890",
             "creation_date": "2010-02-21 16:49:25", 

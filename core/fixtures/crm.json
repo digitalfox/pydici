@@ -14,12 +14,28 @@
             "name": "World company",
             "code": "W"
         }
+    },
+    {
+        "pk": 2, 
+        "model": "crm.company", 
+        "fields": {
+            "name": "Super company",
+            "code": "S"
+        }
     }, 
     {
         "pk": 1, 
         "model": "crm.clientorganisation", 
         "fields": {
             "company": 1, 
+            "name": "DSI"
+        }
+    },
+    {
+        "pk": 2, 
+        "model": "crm.clientorganisation", 
+        "fields": {
+            "company": 2, 
             "name": "DSI"
         }
     }, 
@@ -41,6 +57,15 @@
             "contact": 1
         }
     },
+    {
+        "pk": 2, 
+        "model": "crm.client", 
+        "fields": {
+            "organisation": 2, 
+            "contact": 1
+        }
+    },
+    
     {
         "pk": 1, 
         "model": "crm.businessbroker", 

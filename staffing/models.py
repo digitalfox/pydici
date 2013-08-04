@@ -314,6 +314,18 @@ def missionSignalHandler(sender, **kwargs):
         # Mission is archived. Remove all staffing
         for staffing in mission.staffing_set.all():
             staffing.delete()
+        # If this was the last active mission of its client, flag client as inactive
+        atLeastOneActiveMission = False
+        if mission.lead:
+            client = mission.lead.client
+            for lead in client.lead_set.all():
+                for mission in lead.mission_set.all():
+                    if mission.active:
+                        atLeastOneActiveMission = True
+                        break
+            if not atLeastOneActiveMission:
+                client.active = False
+                client.save()
     # Handle actionset stuff :
     if not mission.nature == "PROD":
         # Don't throw actions for non prod missions
