@@ -10,6 +10,7 @@ from datetime import date, timedelta
 from django.db import models
 from django.db.models import Sum, Q
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
 
 from core.utils import capitalize
 
@@ -149,8 +150,22 @@ class Supplier(models.Model):
 
 class Client(models.Model):
     """A client is defined by a contact and the organisation where he works at the moment"""
-    organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Organisation"))
+    EXPECTATIONS = (
+            ('1_NONE', ugettext("None")),
+            ('2_DECREASING', ugettext("Decreasing")),
+            ('3_FLAT', ugettext("Flat")),
+            ('4_INCREASING', ugettext("Increasing")),
+           )
+    ALIGNMENT = (
+            ("1_RESTRAIN", ugettext("To restrain")),
+            ("2_STANDARD", ugettext("Standard")),
+            ("3_STRATEGIC", ugettext("Strategic")),
+                 )
+    organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Company : Organisation"))
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
+    expectations = models.CharField(max_length=30, choices=EXPECTATIONS, default=EXPECTATIONS[1][0], verbose_name=_("Expectations"))
+    alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
+    active = models.BooleanField(_("Active"), default=True)
 
     def __unicode__(self):
         if self.contact:

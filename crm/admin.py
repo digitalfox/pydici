@@ -77,9 +77,10 @@ class ClientOrganisationAdminInline(admin.TabularInline):
 
 
 class ClientAdmin(ReturnToAppAdmin):
-    list_display = ("organisation", "contact")
+    list_display = ("organisation", "contact", "expectations", "alignment", "active")
     ordering = ("organisation",)
     search_fields = ("organisation__company__name", "organisation__name", "contact__name")
+    list_filter = ("expectations", "alignment", "active")
 
 
 admin.site.register(Subsidiary, SubsidiaryAdmin)
