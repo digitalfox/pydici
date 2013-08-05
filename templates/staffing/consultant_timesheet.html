@@ -7,7 +7,7 @@
     {% trans "Timesheet" %} {{ month|date:"F Y"}}
     <img id="next-month" src="{{ MEDIA_URL }}pydici/fd.png" border=0 style="cursor:pointer;" title="{% trans 'Next month' %}" />
     </h2>
-    <form action="{% url 'staffing.views.consultant_timesheet' consultant_id=year=month|date:'Y' month=month|date:'m' %}" method="POST" id="pydici-ajax-form-consultant-timesheet">
+    <form action="{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' %}" method="POST" id="pydici-ajax-form-consultant-timesheet">
     <table class='small-form-row' style="text-align:center">
             <tr>
             {% for day in days %}
