@@ -15,7 +15,7 @@
 {% if request.session.mobile %}
 <div data-role="page" data-theme="c">
     <div data-role="header">
-        <a href="{% url mobile_index %}" data-transition="flip">{% trans "Home" %}</a>
+        <a href="{% url 'mobile_index' %}" data-transition="flip">{% trans "Home" %}</a>
         <h1>{% trans "Lead detail" %} ({{ active_rank }} / {{ active_count }})</h1>
         {% if active_count %}
             <div data-role="navbar">

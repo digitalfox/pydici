@@ -27,14 +27,14 @@
 		      <li><a href="#companies">{% trans "My clients" %}</a></li>
 		      <li><a href="#missions">{% trans "Current missions" %}</a></li>
 		      <li><a href="#leads">{% trans "Current leads review" %}</a></li>
-		      <li><a href="{% url pdcreview-index %}">{% trans "Workload schedule" %}</a></li>
+		      <li><a href="{% url 'pdcreview-index' %}">{% trans "Workload schedule" %}</a></li>
 		    {% endif %}
 		    <li><a href="{% url 'staffing.views.consultant_timesheet' consultant.id %}">{% trans "Timesheet" %}</a></li>
 		</ul>
 
 		<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
 		    <li data-role="list-divider">{% trans "Full pydici" %}</li>
-		    <li><a target="_blank" href="{% url index %}">{% trans "Home" %}</a></li>
+		    <li><a target="_blank" href="{% url 'index' %}">{% trans "Home" %}</a></li>
 		</ul>
     </div>
 </div>
