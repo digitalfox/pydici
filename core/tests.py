@@ -125,7 +125,6 @@ class SimpleTest(TestCase):
     def test_basic_mobile_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         for page in PYDICI_MOBILE_PAGES + PYDICI_PAGES[1:]:  # Remove first URL from PYDICI_PAGES (/) that disable mobile mode
-            print page
             response = self.client.get(PREFIX + page)
             self.failUnlessEqual(response.status_code, 200,
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))

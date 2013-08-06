@@ -6,15 +6,16 @@ Pydici batch module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-# python import 
+
+# python import
 from datetime import date, timedelta
 from os.path import abspath, dirname, join, pardir
 import sys
 import os
 from optparse import OptionParser
 
-## Setup django envt & django imports
-sys.path.append(abspath(join(dirname(__file__), pardir, pardir))) # Add project path to python path
+# # Setup django envt & django imports
+sys.path.append(abspath(join(dirname(__file__), pardir)))  # Add project path to python path
 
 # Ensure we are in the good current working directory (pydici home)
 os.chdir(abspath(join(dirname(__file__), pardir)))
@@ -58,7 +59,7 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
             continue
         missions = consultant.timesheet_missions(month=currentMonth)
         timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, currentMonth)
-        url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("pydici.people.views.consultant_home", args=[consultant.id])
+        url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("people.views.consultant_home", args=[consultant.id])
         url += "?year=%s;month=%s" % (currentMonth.year, currentMonth.month)
 
         # Truncate if day parameter was given
