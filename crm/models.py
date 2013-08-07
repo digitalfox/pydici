@@ -164,7 +164,7 @@ class Client(models.Model):
                  )
     organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Company : Organisation"))
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
-    expectations = models.CharField(max_length=30, choices=EXPECTATIONS, default=EXPECTATIONS[1][0], verbose_name=_("Expectations"))
+    expectations = models.CharField(max_length=30, choices=EXPECTATIONS, default=EXPECTATIONS[2][0], verbose_name=_("Expectations"))
     alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
     active = models.BooleanField(_("Active"), default=True)
 
