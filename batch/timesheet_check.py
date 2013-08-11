@@ -15,14 +15,15 @@ import os
 from optparse import OptionParser
 
 # # Setup django envt & django imports
-sys.path.append(abspath(join(dirname(__file__), pardir)))  # Add project path to python path
+PYDICI_DIR = abspath(join(dirname(__file__), pardir))
+os.environ['DJANGO_SETTINGS_MODULE'] = "pydici.settings"
+
+sys.path.append(PYDICI_DIR)  # Add project path to python path
 
 # Ensure we are in the good current working directory (pydici home)
-os.chdir(abspath(join(dirname(__file__), pardir)))
+os.chdir(PYDICI_DIR)
 
-from django.core.management import setup_environ
 import pydici.settings
-setup_environ(pydici.settings)
 
 # Django import
 from django.core import urlresolvers
