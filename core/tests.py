@@ -318,6 +318,11 @@ class LeadModelTest(TestCase):
         otherLead.save()
         lead = Lead.objects.get(id=1)
         self.assertFalse(lead.client.active)
+        newLead = Lead()
+        newLead.subsidiary_id = 1
+        newLead.client = lead.client
+        newLead.save()
+        self.assertTrue(lead.client.active)  # A new lead on this client should mark it as active again
 
 
 class StaffingModelTest(TestCase):

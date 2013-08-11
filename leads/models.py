@@ -227,9 +227,10 @@ def leadSignalHandler(sender, **kwargs):
         # Default to admin
         targetUser = User.objects.filter(is_superuser=True)[0]
 
-    if  kwargs.get("created", False):
+    if  kwargs.get("created", False):  # New Lead
         launchTrigger("NEW_LEAD", [targetUser, ], lead)
         createProjectTree(lead)
+        client.active = True
     if lead.state == "WON":
         # Ensure actionset has not already be fired for this lead and this user
         if not ActionState.objects.filter(user=targetUser,
