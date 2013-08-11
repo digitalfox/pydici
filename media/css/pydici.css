@@ -169,6 +169,11 @@ a.deletelink:hover { color:#993333; }
 table#change-history { width:100%; }
 table#change-history tbody th { width:16em; }
 
+/* Calendar */
+.calendarbox .calendarnav-previous, .calendarbox .calendarnav-next {
+	background: None;
+}
+
 /* Text frame */
 .tag_banner {
     background:#F6F6F6;
