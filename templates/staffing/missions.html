@@ -21,9 +21,12 @@
 <div class="content-large">
 {% if all %}
     <h1>{% trans "All missions" %}</h1>
+    <br/><i><a href='{% url 'missions' %}'>{% trans "Only display active missions" %}</a></i><br/><br/>
 {% else %}
     <h1>{% trans "Active missions" %}</h1>
+    <br/><i><a href="{% url 'all-missions' %}">{% trans "Display all missions" %}</a></i><br/><br/>
 {% endif %}
+
 
 <table>
 <tr><th>{% trans "Name" %}</th><th>{% trans "Mission id" %}</th><th>{% trans "Probability" %}</th><th></th></tr>
@@ -60,15 +63,6 @@
 </table>
 
 <br><br>
-{% if all %}
-    <a href='{% url 'missions' %}'>{% trans "Only display active missions" %}</a>
-{% else %}
-    <a href="{% url 'all-missions' %}">{% trans "Display all missions" %}</a>
-{% endif %}
-&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href="{% url 'admin:staffing_mission_changelist' %}">{% trans "Missions administration" %}</a>
-&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-<a href="{% url 'index' %}">{% trans "Back to home page" %}</a>
 </div>
 
 <script type="text/JavaScript">
