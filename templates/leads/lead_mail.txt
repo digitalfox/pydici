@@ -1,6 +1,6 @@
 {% load i18n %}
 {% autoescape off %}
-{{ obj.client.organisation }} - {{ obj.name }}
+{{ obj.client.organisation }} - {{ obj.name }} ({{ obj.deal_id }})
 
 {% trans "Contact: " %}{{ obj.client.contact }} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}
 

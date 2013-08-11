@@ -37,14 +37,15 @@ def send_lead_mail(lead, request, fromAddr=pydici.settings.LEADS_MAIL_FROM, from
     @raise exception: if SMTP errors occurs. It is up to the caller to catch that.
     """
     url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("admin:leads_lead_change", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
-    subject = u"[AVV] %s : %s" % (lead.client.organisation, lead.name)
-    msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj" : lead,
-                                                                                  "lead_url" : url }))
-    msgHtml = get_template("leads/lead_mail.html").render(RequestContext(request, {"obj" : lead,
-                                                                                   "lead_url" : url }))
+    subject = u"[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
+    msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj": lead,
+                                                                                  "lead_url": url}))
+    msgHtml = get_template("leads/lead_mail.html").render(RequestContext(request, {"obj": lead,
+                                                                                   "lead_url": url}))
     msg = EmailMultiAlternatives(subject, msgText, fromAddr, [pydici.settings.LEADS_MAIL_TO, ])
     msg.attach_alternative(msgHtml, "text/html")
     msg.send()
+
 
 def capitalize(sentence, keepUpper=False):
     """
@@ -66,16 +67,18 @@ def capitalize(sentence, keepUpper=False):
         result = []
     return sentence
 
-EXTRA_SPACE = re.compile("[ ]+")
-EXTRA_NLINE = re.compile("\n\s*\n+")
+
 def compact_text(text):
     """Compact text by removing extra space and extra lines. BTW, it also squash carriage returns.
     @param text: text to compact
     @return: compacted text"""
+    EXTRA_SPACE = re.compile("[ ]+")
+    EXTRA_NLINE = re.compile("\n\s*\n+")
     text = text.replace("\r", "")
     text = EXTRA_SPACE.sub(" ", text)
     text = EXTRA_NLINE.sub("\n\n", text)
     return text
+
 
 def to_int_or_round(x, precision=1):
     """Convert a float to int if decimal part is equal to 0
@@ -99,6 +102,7 @@ def to_int_or_round(x, precision=1):
         # Return as is
         return x
 
+
 def working_days(monthDate, holidays=[], upToToday=False):
     """Compute the number of working days of a month
     @param monthDate: first day of month datetime.date
@@ -117,6 +121,7 @@ def working_days(monthDate, holidays=[], upToToday=False):
             break
     return n
 
+
 def month_days(monthDate):
     """Compute the number of days in a month
     @param monthDate: first day of month datetime.date
@@ -129,11 +134,13 @@ def month_days(monthDate):
         monthDate += day
     return n
 
+
 def nextMonth(month):
     """Compute next month
     @param month: date or datetime object
     @return: date or datetime object (depending on input parameter) of the first day of next month"""
     return (month.replace(day=1) + timedelta(days=40)).replace(day=1)
+
 
 def previousMonth(month):
     """Compute previoujs month
@@ -141,9 +148,10 @@ def previousMonth(month):
     @return: date or datetime object (depending on input parameter) of the first day of previous month"""
     return (month.replace(day=1) - timedelta(days=10)).replace(day=1)
 
+
 def daysOfMonth(month, week=None):
-    """
-    @param month: datetime object of any day in the month: 
+    """List of days of a month
+    @param month: datetime object of any day in the month
     @param week:week number of week to consider (1 is first etc.). All is none
     @return: list of days (datetime object) for given month"""
     days = []
@@ -176,17 +184,22 @@ def nextWeek(cDate):
     @return: next monday"""
     day = timedelta(1)
     cDate += day
-    while cDate.isoweekday() != 1 and cDate.day != 1: cDate += day
+    while cDate.isoweekday() != 1 and cDate.day != 1:
+        cDate += day
     return cDate
+
 
 def previousWeek(cDate):
     """
     @return: previous week first day. Weeks are split if across two month"""
     day = timedelta(1)
-    while cDate.isoweekday() != 1 and cDate.day != 1:  cDate -= day  # Begining of current week
+    while cDate.isoweekday() != 1 and cDate.day != 1:
+        cDate -= day  # Begining of current week
     cDate -= day  # Go to previous week
-    while cDate.isoweekday() != 1 and cDate.day != 1:  cDate -= day  # Begining of current week
+    while cDate.isoweekday() != 1 and cDate.day != 1:
+        cDate -= day  # Begining of current week
     return cDate
+
 
 def monthWeekNumber(cDate):
     """@return: month week number of given date. First week of month is 1"""
@@ -199,6 +212,7 @@ def monthWeekNumber(cDate):
             nWeek += 1
     return nWeek
 
+
 def print_png(fig):
     """Return http response with fig rendered as png
     @param fig: fig to render
@@ -209,11 +223,13 @@ def print_png(fig):
     canvas.print_png(response)
     return response
 
+
 def sortedValues(data):
     """Sorted value of a dict according to his keys"""
     items = data.items()
     items.sort(key=lambda x: x[0])
     return [x[1] for x in items]
+
 
 def sampleList(data, maxLength):
     """Sample data list enough to reduce it to maxLength"""
@@ -270,11 +286,13 @@ def getLeadDirs(lead):
 
     return (clientDir, leadDir, businessDir, inputDir, deliveryDir)
 
+
 def getLeadDocURL(lead):
     """@return: URL to reach this lead base directory"""
     (clientDir, leadDir, businessDir, inputDir, deliveryDir) = getLeadDirs(lead)
     url = pydici.settings.DOCUMENT_PROJECT_URL + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):] + "/"
     return url
+
 
 def createProjectTree(lead):
     """Create standard document filesystem tree for this lead"""
