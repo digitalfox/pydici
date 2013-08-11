@@ -1,6 +1,7 @@
 {% extends "admin/base_site.html" %}
 
 {% load i18n %}
+{% load l10n %}
 {% load permissions_tags %}
 {% load pydici_filters %}
 
@@ -35,7 +36,7 @@
      </div>
     <ul>
     {% for action in actionset.action_set.all %}
-        <li><strong>{% if can_change %}<a href="{% url 'admin:actionset_action_change' action.id %}">{{ action.name }}</a>{% else %}{{ action.name }}{% endif %}</strong> : <em>{{ action.description }}</em></li>
+        <li><strong>{% if can_change %}<a href="{% url 'admin:actionset_action_change' action.id|unlocalize %}">{{ action.name }}</a>{% else %}{{ action.name }}{% endif %}</strong> : <em>{{ action.description }}</em></li>
     {% endfor %}
     </ul>
     <br/><hr/><br/>

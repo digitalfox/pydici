@@ -3,12 +3,13 @@
 {# Context/Argument: actions (list of actionstates) #}
 
 {% load i18n %}
+{% load l10n %}
 
 <ul class="more-items">
 {% for action in actions %}
-    <div id="action_{{action.id}}">
-        <li><a href="#action_tooltip_{{action.id}}" class="tooltiplink">{{ action.action }}</a></li>
-        <div id="action_tooltip_{{action.id}}" class="tooltip">
+    <div id="action_{{ action.id|unlocalize }}">
+        <li><a href="#action_tooltip_{{ action.id|unlocalize }}" class="tooltiplink">{{ action.action }}</a></li>
+        <div id="action_tooltip_{{ action.id|unlocalize }}" class="tooltip">
         <div style='float:left;'><strong>{{ action.action }}</strong></div>
         <div style='float:right;'><a href="javascript:;" rel="close">X</a></div>
         <div style="clear:both"></div>
@@ -26,19 +27,19 @@
         {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
         {% ifequal request.user action.user %}
         <p><a href="javascript:;"
-              onClick="$.get('{% url 'actionset.views.update_action_state' action.id 'DONE' %}',
+              onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DONE' %}',
                               process_update_action_state);">
               {% trans "Mark as done" %}</a>
            &nbsp;-&nbsp;
            <a href="javascript:;" 
-              onClick="$.get('{% url 'actionset.views.update_action_state' action.id 'NA' %}',
+              onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'NA' %}',
                               process_update_action_state);">
               {% trans "N/A" %}</a>
            &nbsp;-&nbsp;
            <a href="javascript:;" 
-              onClick="call_deleguate_action('{% url 'actionset.views.update_action_state' action.id 'DELEGUATE' %}', '{{ action.id }}');">
+              onClick="call_deleguate_action('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DELEGUATE' %}', '{{ action.id|unlocalize }}');">
               {% trans "Delegate to: " %}</a>
-           <input name="deleguate_user_{{action.id}}" type="text"/>
+           <input name="deleguate_user_{{ action.id|unlocalize }}" type="text"/>
          </p>
          {% endifequal %}
         </div>
