@@ -509,7 +509,7 @@ def mission_timesheet(request, mission_id):
     """Mission timesheet"""
     mission = Mission.objects.get(id=mission_id)
     current_month = date.today().replace(day=1)  # Current month
-    consultants = mission.staffed_consultant()
+    consultants = mission.consultants()
     consultant_rates = mission.consultant_rates()
 
     if "csv" in request.GET:
@@ -557,6 +557,7 @@ def mission_timesheet(request, mission_id):
         estimatedData = (timesheetData[-2] + staffingData[-2], timesheetData[-1] + staffingData[-1])
         # Add tuple to data
         missionData.append((consultant, timesheetData, staffingData, estimatedData))
+
 
     # Compute the total daily rate for each month of the mission
     timesheetTotalRate = []
@@ -607,6 +608,7 @@ def mission_timesheet(request, mission_id):
                         timesheetAverageRate, staffingAverageRate))
 
     missionData = map(to_int_or_round, missionData)
+
     objectiveMargin = mission.objectiveMargin(endDate=nextMonth(current_month))
     return render(request, "staffing/mission_timesheet.html",
                   {"mission": mission,
@@ -793,7 +795,7 @@ def detailed_csv_timesheet(request, year=None, month=None):
     missions = missions.distinct().order_by("lead")
 
     for mission in missions:
-        for consultant in mission.staffed_consultant():
+        for consultant in mission.consultants():
             row = [mission.lead if mission.lead else "", mission.lead.deal_id if mission.lead else "",
                    mission.lead.sales if mission.lead else 0, mission,
                    mission.mission_id(), mission.get_billing_mode_display(),

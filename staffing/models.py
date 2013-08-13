@@ -90,9 +90,13 @@ class Mission(models.Model):
         """@return: True if no staffing have been updated since 'days' number of days"""
         return not bool(self.staffing_set.filter(update_date__gte=(date.today() - timedelta(days))).count())
 
-    def staffed_consultant(self):
-        """@return: sorted list of consultant forecasted for this mission"""
-        return Consultant.objects.filter(staffing__mission=self).distinct().order_by("name")
+    def consultants(self):
+        """@return: sorted list of consultants forecasted or that once charge timesheet for this mission"""
+        # Do two distinct query and then gather data. It is much much more faster than the left outer join on the two tables in the same query.
+        consultantsIdsFromStaffing = Consultant.objects.filter(staffing__mission=self).values_list("id", flat=True)
+        consultantsIdsFromTimesheet = Consultant.objects.filter(timesheet__mission=self).values_list("id", flat=True)
+        ids = set(list(consultantsIdsFromStaffing) + list(consultantsIdsFromTimesheet))
+        return Consultant.objects.filter(id__in=ids).order_by("name")
 
     def create_default_staffing(self):
         """Initialize mission staffing based on lead hypothesis and current month"""
@@ -123,7 +127,7 @@ class Mission(models.Model):
         for condition in FinancialCondition.objects.filter(mission=self).select_related():
             rates[condition.consultant] = (condition.daily_rate, condition.bought_daily_rate)
         # Put 0 for consultant forecasted on this mission but without defined daily rate
-        for consultant in self.staffed_consultant():
+        for consultant in self.consultants():
             if not consultant in rates:
                 rates[consultant] = (0, 0)
         return rates
@@ -188,7 +192,7 @@ class Mission(models.Model):
             timesheets = timesheets.filter(working_date__lt=endDate)
         timesheets = timesheets.order_by("working_date")
         timesheetMonths = list(timesheets.dates("working_date", "month"))
-        for consultant in self.staffed_consultant():
+        for consultant in self.consultants():
             result[consultant] = 0  # Initialize margin over rate objective for this consultant
             for month in timesheetMonths:
                 n_days = sum([t.charge for t in timesheets.filter(consultant=consultant, working_date__gte=month, working_date__lt=nextMonth(month))])
@@ -328,7 +332,7 @@ def missionSignalHandler(sender, **kwargs):
         targetUser = mission.lead.responsible.getUser()
     else:
         # try to pick up one of staffee
-        for consultant in mission.staffed_consultant():
+        for consultant in mission.consultants():
             targetUser = consultant.getUser()
             if targetUser:
                 break
