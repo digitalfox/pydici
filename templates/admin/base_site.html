@@ -132,11 +132,11 @@
                     <li><a href="{% url 'admin:actionset_actionstate_changelist' %}">{% trans "On going actions" %}</a></li>
                 {% endif %}
                 <li><a href="{% url 'expense.views.expenses' %}">{% trans "Expenses" %}</a></li>
-                <li><a href="{% url 'admin:billing_clientbill_changelist' %}">{% trans "All client bills" %}</a></li>
                 <li><a href="{% url 'billing.views.pre_billing' %}">{% trans "Pre billing" %}</a></li>
-                <li><a href="{% url 'admin:billing_clientbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>
-                <li><a href="{% url 'admin:billing_supplierbill_changelist' %}">{% trans "All supplier bills" %}</a></li>
-                <li><a href="{% url 'admin:billing_supplierbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier bill" %}</a></li>
+                {% if perms.billing.change_clientbill %}<li><a href="{% url 'admin:billing_clientbill_changelist' %}">{% trans "All client bills" %}</a></li>{% endif %}
+                {% if perms.billing.add_clientbill %}<li><a href="{% url 'admin:billing_clientbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>{% endif %}
+                {% if perms.billing.change_supplierbill %}<li><a href="{% url 'admin:billing_supplierbill_changelist' %}">{% trans "All supplier bills" %}</a></li>{% endif %}
+                {% if perms.billing.add_supplierbill %}<li><a href="{% url 'admin:billing_supplierbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier bill" %}</a></li>{% endif %}
                 <li class="last">
                     <img class="corner_left" alt="" src="{{ MEDIA_URL }}pydici/menu/corner_left.png"/>
                     <img class="middle" alt="" src="{{ MEDIA_URL }}pydici/menu/dot.png"/>
