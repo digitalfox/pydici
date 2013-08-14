@@ -27,7 +27,11 @@
         </tr>
         {% for bill in overdue_bills %}
             <tr>
-                <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% if perms.billing.change_clientbill %}
+                    <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% else %}
+                    <td>{{ bill }}</td>
+                {% endif %}
                 <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
@@ -65,7 +69,11 @@
         </tr>
         {% for bill in soondue_bills %}
             <tr>
-                <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% if perms.billing.change_clientbill %}
+                    <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% else %}
+                    <td>{{ bill }}</td>
+                {% endif %}
                 <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
@@ -103,7 +111,11 @@
         </tr>
         {% for bill in litigious_bills %}
             <tr>
-                <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% if perms.billing.change_clientbill %}
+                    <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% else %}
+                    <td>{{ bill }}</td>
+                {% endif %}
                 <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
@@ -141,7 +153,11 @@
         </tr>
         {% for bill in recent_bills %}
             <tr>
-                <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% if perms.billing.change_clientbill %}
+                    <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% else %}
+                    <td>{{ bill }}</td>
+                {% endif %}
                 <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
