@@ -110,7 +110,7 @@ class Consultant(models.Model):
             return rates[0]
 
     def getProductionRate(self, startDate, endDate):
-        """Get consultant production rate for given between startDate (included) and enDate (excluded)"""
+        """Get consultant production rate between startDate (included) and enDate (excluded)"""
         from staffing.models import Timesheet
         timesheets = Timesheet.objects.filter(consultant=self,
                                               charge__gt=0,
@@ -126,6 +126,25 @@ class Consultant(models.Model):
             return prodDays / (prodDays + nonProdDays)
         else:
             return 0
+
+    def getTurnover(self, startDate=None, endDate=None):
+        """Get consultant turnover in euros of done missions according to timesheet and rates between startDate (included) and enDate (excluded). Only PROD missions are considered.
+        Fixed price mission margin (profit or loss) are not considered.
+        @param startDate: if None, from the creation of earth
+        @param endDate : if None, up to today
+        @return: turnover in euros"""
+        from staffing.models import Timesheet, FinancialCondition  # Late import to avoid circular reference
+        if startDate is None:
+            startDate = date(1977, 2, 18)
+        if endDate is None:
+            endDate = date.today()
+        turnover = 0
+        timesheets = Timesheet.objects.filter(consultant=self, working_date__gte=startDate, working_date__lt=endDate, mission__nature="PROD").order_by("mission__id")
+        timesheets = timesheets.values_list("mission").annotate(Sum("charge"))
+        rates = dict(FinancialCondition.objects.filter(consultant=self, mission__in=[i[0] for i in timesheets]).values_list("mission", "daily_rate"))
+        for mission, charge in timesheets:
+            turnover += charge * rates.get(mission, 0)
+        return turnover
 
     def getUser(self):
         """Returns django user behind this consultant

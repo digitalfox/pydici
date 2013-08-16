@@ -14,7 +14,7 @@ from people.models import Consultant
 from crm.models import Company
 from staffing.models import Holiday
 from core.decorator import pydici_non_public
-from core.utils import working_days
+from core.utils import working_days, previousMonth
 
 
 def consultant_home(request, consultant_id):
@@ -33,6 +33,7 @@ def consultant_detail(request, consultant_id):
     try:
         consultant = Consultant.objects.get(id=consultant_id)
         staff = consultant.team(onlyActive=True)
+        month = date.today().replace(day=1)
         # Compute user current mission based on forecast
         missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
         companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
@@ -48,6 +49,9 @@ def consultant_detail(request, consultant_id):
             late = 0  # Don't warn user if timesheet is ok !
         to_be_done = month_days - late - done_days
         forecasting_balance = month_days - consultant.forecasted_days()
+        monthTurnover = consultant.getTurnover(month)
+        lastMonthTurnover = consultant.getTurnover(previousMonth(month), previousMonth(month).replace(day=date.today().day))  # Turnover for last month up to the same day
+        turnoverVariation = 100 * (monthTurnover - lastMonthTurnover) / lastMonthTurnover
     except Consultant.DoesNotExist:
         raise Http404
     return render(request, "people/consultant_detail.html",
@@ -63,6 +67,8 @@ def consultant_detail(request, consultant_id):
                    "to_be_done": to_be_done,
                    "month_days": month_days,
                    "forecasting_balance": forecasting_balance,
+                   "month_turnover": monthTurnover,
+                   "turnover_variation": turnoverVariation,
                    "user": request.user})
 
 
