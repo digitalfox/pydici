@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-16 14:29+0200\n"
-"PO-Revision-Date: 2013-08-16 14:29+0200\n"
+"POT-Creation-Date: 2013-08-17 11:02+0200\n"
+"PO-Revision-Date: 2013-08-17 11:02+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -940,7 +940,7 @@ msgstr "Charge"
 
 #: staffing/models.py:284 templates/core/m.index.html:32
 #: templates/people/consultant.html:33 templates/people/consultant.html:35
-#: templates/people/consultant_detail.html:33
+#: templates/people/consultant_detail.html:38
 #: templates/staffing/consultant_timesheet.html:7
 #: templates/staffing/m.consultant_timesheet.html:9
 #: templates/staffing/mission.html:42
@@ -2100,44 +2100,44 @@ msgstr "Ce consultant ne travaille plus pour la société"
 msgid "This month"
 msgstr "Ce mois ci"
 
-#: templates/people/consultant_detail.html:20
-#, python-format
-msgid ""
-" Incomplete <a href=\"%(consultant_url)s#tab-staffing\">forecasting</a> for "
-"this month (missing %(missing)s day(s)) "
-msgstr ""
-" <a href=\"%(consultant_url)s#tab-staffing\">Prévisions</a> incomplètes pour "
-"ce mois (il manque %(missing)s jour(s))"
-
-#: templates/people/consultant_detail.html:21
-#, python-format
-msgid ""
-" Overhead <a href=\"%(consultant_url)s#tab-staffing\">forecasting</a> for "
-"this month (%(overhead)s day(s) overhead) "
-msgstr ""
-" <a href=\"%(consultant_url)s#tab-staffing\">Prévisions</a> en surcharge "
-"pour ce mois (%(overhead)s jour(s) en trop) "
-
-#: templates/people/consultant_detail.html:23
-#, python-format
-msgid ""
-"<a href=\"%(consultant_url)s#tab-timesheet\">Timesheet</a> is %(days)s day"
-"(s) late"
-msgstr ""
-"<a href=\"%(consultant_url)s#tab-timesheet\">Feuille de temps</a> en retard "
-"de %(days)s jour(s)"
-
-#: templates/people/consultant_detail.html:73
+#: templates/people/consultant_detail.html:19
 msgid "My turnover this month: "
 msgstr "Mon chiffre d'affaire du mois : "
 
-#: templates/people/consultant_detail.html:74
+#: templates/people/consultant_detail.html:20
 msgid "Increase"
 msgstr "Croissance"
 
-#: templates/people/consultant_detail.html:75
+#: templates/people/consultant_detail.html:21
 msgid "Decrease"
 msgstr "Décroissance"
+
+#: templates/people/consultant_detail.html:24
+#, python-format
+msgid ""
+" Incomplete <a href=\"%(consultant_url)s#tab-staffing\">forecasting</a> for "
+"this month (missing <b>%(missing)s day(s)</b>) "
+msgstr ""
+" <a href=\"%(consultant_url)s#tab-staffing\">Prévisions</a> incomplètes pour "
+"ce mois (il manque <b>%(missing)s jour(s)</b>)"
+
+#: templates/people/consultant_detail.html:25
+#, python-format
+msgid ""
+" Overhead <a href=\"%(consultant_url)s#tab-staffing\">forecasting</a> for "
+"this month (<b>%(overhead)s day(s)</b> overhead) "
+msgstr ""
+" <a href=\"%(consultant_url)s#tab-staffing\">Prévisions</a> en surcharge "
+"pour ce mois (<b>%(overhead)s jour(s) en trop</b>) "
+
+#: templates/people/consultant_detail.html:27
+#, python-format
+msgid ""
+"<a href=\"%(consultant_url)s#tab-timesheet\">Timesheet</a> is <b>%(days)s day"
+"(s)</b> late"
+msgstr ""
+"<a href=\"%(consultant_url)s#tab-timesheet\">Feuille de temps</a> en retard "
+"de <b>%(days)s jour(s)</b>"
 
 #: templates/people/consultant_detail.html:84
 msgid "Manager: "
