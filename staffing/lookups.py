@@ -5,8 +5,6 @@ Ajax custom lookup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from itertools import chain
-
 from staffing.models import Mission
 from django.db.models import Q
 
@@ -23,8 +21,7 @@ class MissionLookup(object):
                        Q(lead__client__organisation__name__icontains=q) |
                        Q(lead__client__organisation__company__name__icontains=q))
 
-        # Add mission without lead (don't do that in a single qs as FK can be null)
-        return chain(qs, Mission.objects.filter(active=True).filter(description__icontains=q))
+        return qs
 
     def format_result(self, mission):
         """ the search results display in the dropdown menu.  may contain html and multiple-lines. will remove any |  """
