@@ -324,6 +324,22 @@ class LeadModelTest(TestCase):
         newLead.save()
         self.assertTrue(lead.client.active)  # A new lead on this client should mark it as active again
 
+    def test_lead_done_work(self):
+        for i in (1, 2, 3):
+            lead = Lead.objects.get(id=i)
+            a, b = lead.done_work()
+            c, d = lead.done_work_k()
+            e = lead.unused()
+            f = lead.totalObjectiveMargin()
+            for x in (a, b, c, d, e, f):
+                self.assertIsInstance(x, (int, float))
+
+    def test_checkDoc(self):
+        for i in (1, 2, 3):
+            lead = Lead.objects.get(id=i)
+            lead.checkDeliveryDoc()
+            lead.checkBusinessDoc()
+
 
 class StaffingModelTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",

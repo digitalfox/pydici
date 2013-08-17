@@ -1,0 +1,6 @@
+{# This template fragment can be included to display lead doc check banner #}
+{# Context/Argument: Lead #}
+
+{% load i18n %}
+{% if not lead.checkBusinessProposal %}<div class="errornote">{% trans "Business documents are missing. Please put them here: " %}{{ lead.getDocURL|urlize }}</div>{% endif %}
+{% if not lead.checkDeliveryDoc %}<div class="errornote">{% trans "Delivery documents are missing. Please put them here: " %}{{ lead.getDocURL|urlize }}</div>{% endif %}

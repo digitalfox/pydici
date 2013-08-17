@@ -27,7 +27,7 @@ from taggit_suggest.utils import suggest_tags
 from core.utils import send_lead_mail, sortedValues, COLORS
 from leads.models import Lead
 import pydici.settings
-from core.utils import capitalize, getLeadDirs, getLeadDocURL, createProjectTree
+from core.utils import capitalize, getLeadDirs, createProjectTree
 from core.decorator import pydici_non_public
 
 
@@ -95,11 +95,11 @@ def detail(request, lead_id):
 
 @pydici_non_public
 def lead_documents(request, lead_id):
-    """Gather documents relative to this lead as a fragement page for an ajax call"""
+    """Gather documents relative to this lead as a fragment page for an ajax call"""
     lead = Lead.objects.get(id=lead_id)
     documents = []  # List of name/url docs grouped by type
     clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
-    leadDocURL = getLeadDocURL(lead)
+    leadDocURL = lead.getDocURL()
     for directory in (businessDir, inputDir, deliveryDir):
         # Create project tree if at least one directory is missing
         if not os.path.exists(directory):

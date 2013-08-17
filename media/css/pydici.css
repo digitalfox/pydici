@@ -132,7 +132,6 @@ input[type=submit].default:active { background-image:url(../img/default-bg-rever
 /* MESSAGES & ERRORS */
 ul.messagelist { padding:0 0 5px 0; margin:0; }
 ul.messagelist li { font-size:12px; display:block; padding:4px 5px 4px 25px; margin:0 0 3px 0; border-bottom:1px solid #ddd; color:#666; background:#ffc url(../img/icon_success.gif) 5px .3em no-repeat; }
-.errornote { font-size:12px !important; display:block; padding:4px 5px 4px 25px; margin:0 0 3px 0; border:1px solid red; color:red;background:#ffc url(../img/icon_error.gif) 5px .3em no-repeat; }
 ul.errorlist { margin:0 !important; padding:0 !important; }
 .errorlist li { font-size:12px !important; display:block; padding:4px 5px 4px 25px; margin:0 0 3px 0; border:1px solid red; color:white; background:red url(../img/icon_alert.gif) 5px .3em no-repeat; }
 td ul.errorlist { margin:0 !important; padding:0 !important; }
@@ -247,6 +246,17 @@ a.tagrlink { color: #999999 }
     border-radius: 2px 2px 2px 2px;
     box-shadow:1px 1px 2px #555;
 }
+
+
+.infonote {
+    font-size: 12px !important;
+    display: block;
+    padding: 4px 5px 4px 25px;
+    margin: 0 0 3px 0;
+    border: 1px solid lightgrey;
+    background: #ffc url(../img/icon_alert.gif) 5px .3em no-repeat;
+}
+
 
 /**********/
 /* Layout */

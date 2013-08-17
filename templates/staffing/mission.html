@@ -61,8 +61,9 @@
                    {% endif %}
                {% endif %}
          {% else %}
-                <div class="errornote">{% trans "This mission is archived" %}</div>
+                <div class="infonote">{% trans "This mission is archived" %}</div>
          {% endif %}
+         {% if mission.lead %}{% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}{% endif %}
          <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
          <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
          {% if mission.lead %}

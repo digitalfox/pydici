@@ -5,6 +5,8 @@ Database access layer for pydici leads module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+import os
+
 from django.db import models
 from datetime import datetime, date
 from django.utils.translation import ugettext_lazy as _
@@ -18,12 +20,12 @@ from django.core.urlresolvers import reverse
 from taggit.managers import TaggableManager
 
 from core.utils import compact_text
-
+import pydici.settings
 from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
 from actionset.models import ActionState
 from actionset.utils import launchTrigger
-from core.utils import createProjectTree, disable_for_loaddata
+from core.utils import createProjectTree, disable_for_loaddata, getLeadDirs
 
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
@@ -54,7 +56,7 @@ class Lead(models.Model):
     action = models.CharField(_("Action"), max_length=2000, blank=True, null=True)
     sales = models.IntegerField(_(u"Price (k€)"), blank=True, null=True)
     salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"))
-    staffing = models.ManyToManyField(Consultant, blank=True, limit_choices_to={"active":True, "productive":True})
+    staffing = models.ManyToManyField(Consultant, blank=True, limit_choices_to={"active": True, "productive": True})
     external_staffing = models.CharField(_("External staffing"), max_length=300, blank=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True)
     business_broker = models.ForeignKey(BusinessBroker, related_name="%(class)s_broker", verbose_name=_("Business broker"), blank=True, null=True)
@@ -201,6 +203,38 @@ class Lead(models.Model):
     def done_actions(self):
         """returns done actions for this lead and its missions"""
         return self.actions().exclude(state="TO_BE_DONE")
+
+    def checkDeliveryDoc(self):
+        """Ensure delivery doc are put on file server if lead is won and archived
+        @return: True is doc is ok, else False"""
+        if self.state == "WON" and self.mission_set.filter(active=True).count() == 0:
+            clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(self)
+            try:
+                if len(os.listdir(deliveryDir)) == 0:
+                    return False
+            except OSError:
+                # Document directory may not exist or may not be accessible
+                return False
+        return True
+
+    def checkBusinessDoc(self):
+        """Ensure business doc are put on file server if business propoal has been sent
+        @return: True is doc is ok, else False"""
+        if self.state in ("WON", "OFFER_SENT", "NEGOTIATION"):
+            clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(self)
+            try:
+                if len(os.listdir(businessDir)) == 0:
+                    return False
+            except OSError:
+                # Document directory may not exist or may not be accessible
+                return False
+        return True
+
+    def getDocURL(self):
+        """@return: URL to reach this lead base directory"""
+        (clientDir, leadDir, businessDir, inputDir, deliveryDir) = getLeadDirs(self)
+        url = pydici.settings.DOCUMENT_PROJECT_URL + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):] + "/"
+        return url
 
     def get_absolute_url(self):
         return reverse('leads.views.detail', args=[str(self.id)])

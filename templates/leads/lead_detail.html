@@ -91,6 +91,7 @@
 	    {% endif %}
     </div>
 {% endif %} <!-- end non-mobile header -->
+    {% with lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
     {% if lead.description %}
         <div class='lead_description'>{{ lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
     {% endif %}

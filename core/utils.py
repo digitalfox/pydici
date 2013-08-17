@@ -287,13 +287,6 @@ def getLeadDirs(lead):
     return (clientDir, leadDir, businessDir, inputDir, deliveryDir)
 
 
-def getLeadDocURL(lead):
-    """@return: URL to reach this lead base directory"""
-    (clientDir, leadDir, businessDir, inputDir, deliveryDir) = getLeadDirs(lead)
-    url = pydici.settings.DOCUMENT_PROJECT_URL + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):] + "/"
-    return url
-
-
 def createProjectTree(lead):
     """Create standard document filesystem tree for this lead"""
     for directory in getLeadDirs(lead):
@@ -303,9 +296,7 @@ def createProjectTree(lead):
 
 def disable_for_loaddata(signal_handler):
     """Decorator that turns off signal handlers when loading fixture data.
-    Thanks to garnertb: http://stackoverflow.com/questions/15624817/have-loaddata-ignore-or-disable-post-save-signals
-    """
-
+    Thanks to garnertb: http://stackoverflow.com/questions/15624817/have-loaddata-ignore-or-disable-post-save-signals"""
     @wraps(signal_handler)
     def wrapper(*args, **kwargs):
         if kwargs['raw']:
