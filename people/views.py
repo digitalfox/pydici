@@ -51,7 +51,10 @@ def consultant_detail(request, consultant_id):
         forecasting_balance = month_days - consultant.forecasted_days()
         monthTurnover = consultant.getTurnover(month)
         lastMonthTurnover = consultant.getTurnover(previousMonth(month), previousMonth(month).replace(day=date.today().day))  # Turnover for last month up to the same day
-        turnoverVariation = 100 * (monthTurnover - lastMonthTurnover) / lastMonthTurnover
+        if lastMonthTurnover:
+            turnoverVariation = 100 * (monthTurnover - lastMonthTurnover) / lastMonthTurnover
+        else:
+            turnoverVariation = 100
     except Consultant.DoesNotExist:
         raise Http404
     return render(request, "people/consultant_detail.html",
