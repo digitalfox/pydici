@@ -629,7 +629,7 @@ def mission_csv_timesheet(request, mission, consultants):
     """@return: csv timesheet for a given mission"""
     # This "view" is never called directly but only through consultant_timesheet view
     response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    response["Content-Disposition"] = "attachment; filename=%s.csv" % mission.mission_id()
     writer = csv.writer(response, delimiter=';')
     timesheets = Timesheet.objects.select_related().filter(mission=mission)
     months = timesheets.dates("working_date", "month")
