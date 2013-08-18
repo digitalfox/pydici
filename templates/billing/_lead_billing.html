@@ -4,7 +4,8 @@
 {% load i18n %}
 <div class="timesheet">
     <h3>{% trans "Clients bills" %}</h3>
-    {% if lead.clientbill_set.all %}
+    {% with lead.clientbill_set.all as client_bills %}
+    {% if client_bills %}
     <table>
             <th>{% trans "Bill id" %}</th>
             <th>{% trans "State" %}</th>
@@ -13,7 +14,7 @@
             <th>{% trans "Due date" %}</th>
             <th>{% trans "Payment date" %}</th>
             <th>{% trans "File" %}</th>
-            {% for bill in lead.clientbill_set.all %}
+            {% for bill in client_bills %}
                 <tr {%cycle 'class="row1"' 'class="row2"' %}>
                     <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
                     <td>{{ bill.get_state_display }}</td>
@@ -32,9 +33,11 @@
     {% if perms.billing.add_clientbill %}
         <i><a href="{% url 'admin:billing_clientbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a client bill for this lead" %}</a></i>
     {% endif %}
+    {% endwith %}
 
     <h3>{% trans "Suppliers bills" %}</h3>
-    {% if lead.supplierbill_set.all %}
+    {% with lead.supplierbill_set.all as supplier_bills %}
+    {% if supplier_bills %}
     <table>
             <th>{% trans "Bill id" %}</th>
             <th>{% trans "Supplier" %}</th>
@@ -45,7 +48,7 @@
             <th>{% trans "Due date" %}</th>
             <th>{% trans "Payment date" %}</th>
             <th>{% trans "File" %}</th>
-            {% for bill in lead.supplierbill_set.all %}
+            {% for bill in supplier_bills %}
                 <tr {%cycle 'class="row1"' 'class="row2"' %}>
                     <td><a href="{% url 'admin:billing_supplierbill_change' bill.id %}">{{ bill }}</a></td>
                     <td>{{ bill.supplier }}</td>
@@ -66,4 +69,5 @@
     {% if perms.billing.add_supplierbill %}
         <i><a href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a></i>
     {% endif %}
+    {% endwith %}
 </div>
