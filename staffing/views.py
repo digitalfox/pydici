@@ -22,6 +22,7 @@ from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.core.cache import cache
 from django.db.models import Sum, Q
+from django.db import connections
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
@@ -507,6 +508,7 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
 @pydici_non_public
 def mission_timesheet(request, mission_id):
     """Mission timesheet"""
+    dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
     mission = Mission.objects.get(id=mission_id)
     current_month = date.today().replace(day=1)  # Current month
     consultants = mission.consultants()
@@ -531,8 +533,9 @@ def mission_timesheet(request, mission_id):
     for consultant in consultants:
         # Timesheet data
         timesheetData = []
+        data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
         for month in timesheetMonths:
-            n_days = sum([t.charge for t in timesheets.filter(consultant=consultant, working_date__gte=month, working_date__lt=nextMonth(month))])
+            n_days = data.get(unicode(month), 0)
             timesheetData.append(n_days)
 
         timesheetData.append(sum(timesheetData))  # Add total per consultant
