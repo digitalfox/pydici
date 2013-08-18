@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q
 from django.core.urlresolvers import reverse
+from django.core.cache import cache
 
 from taggit.managers import TaggableManager
 
@@ -78,7 +79,13 @@ class Lead(models.Model):
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
 
     def __unicode__(self):
-        return u"%s - %s" % (self.client.organisation, self.name)
+        # As lead name computation generate lots of sql request, cache it to avoid
+        # perf issue for screen that intensively use lead name (like consultant staffing)
+        name = cache.get("leadName-%s" % self.id)
+        if not name:
+            name = u"%s - %s" % (self.client.organisation, self.name)
+            cache.set("leadName-%s" % self.id, name, 3)
+        return name
 
     def save(self, force_insert=False, force_update=False):
         self.description = compact_text(self.description)

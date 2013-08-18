@@ -22,7 +22,7 @@ from people.models import Consultant
 from crm.models import MissionContact
 from actionset.utils import launchTrigger
 from actionset.models import ActionState
-from core.utils import nextMonth, disable_for_loaddata
+from core.utils import disable_for_loaddata
 
 
 class Mission(models.Model):
@@ -54,12 +54,7 @@ class Mission(models.Model):
         if self.description and not self.lead:
             return unicode(self.description)
         else:
-            # As lead name computation generate lots of sql request, cache it to avoid
-            # perf issue for screen that intensively use lead name (like consultant staffing)
-            name = cache.get("missionName-%s" % self.id)
-            if not name:
-                name = unicode(self.lead)
-                cache.set("missionName-%s" % self.id, name, 3)
+            name = unicode(self.lead)
             if self.description:
                 return u"%s/%s" % (name, self.description)
             else:
