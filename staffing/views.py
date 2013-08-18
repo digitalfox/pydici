@@ -259,7 +259,7 @@ def pdc_review(request, year=None, month=None):
             prod = []
             unprod = []
             holidays = []
-            for current_staffing  in current_staffings:
+            for current_staffing  in current_staffings.select_related():
                 nature = current_staffing.mission.nature
                 if nature == "PROD":
                     missions.add(current_staffing.mission)  # Store prod missions for this consultant
