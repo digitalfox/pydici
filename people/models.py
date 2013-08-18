@@ -169,7 +169,7 @@ class Consultant(models.Model):
 
     def pending_actions(self):
         """Returns pending actions"""
-        return ActionState.objects.filter(user=self.getUser(), state="TO_BE_DONE")
+        return ActionState.objects.filter(user=self.getUser(), state="TO_BE_DONE").select_related().prefetch_related("target")
 
     def done_days(self):
         """Returns numbers of days worked up to today (according his timesheet) for current month"""

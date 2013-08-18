@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
+
 class ActionSet(models.Model):
     """Set of action that needs to be done when triggered by a process"""
     ACTIONSET_TRIGGERS = (
@@ -39,6 +40,7 @@ class ActionSet(models.Model):
                 ActionState.objects.create(action=action, user=user, target=targetObject)
             else:
                 ActionState.objects.create(action=action, user=user)
+
 
 class Action(models.Model):
     """Single action"""
