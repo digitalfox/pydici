@@ -63,7 +63,6 @@ def mission_home(request, mission_id):
     mission = Mission.objects.get(id=mission_id)
     return render(request, 'staffing/mission.html',
                   {"mission": mission,
-                   "pending_actions": mission.pending_actions(),
                    "user": request.user})
 
 

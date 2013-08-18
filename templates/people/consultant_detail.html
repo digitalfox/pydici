@@ -95,7 +95,7 @@ $(document).ready(function() {
 <li>
     <div class="pydici-grid-long-item">
     <h3>{% trans "Pending actions" %}</h3>
-    {% with consultant.pending_actions as actions %}
+    {% with consultant.pending_actions|slice:":20" as actions %}
         {% include "actionset/_consultant_actions.html" %}
     {% endwith %}
     </div>

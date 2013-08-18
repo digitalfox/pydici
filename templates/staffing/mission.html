@@ -143,7 +143,7 @@
     <br/>
 
     <h2>{% trans "Pending actions" %}</h2>
-    {% with pending_actions as actions %}
+    {% with mission.pending_actions as actions %}
         {% include "actionset/_lead_mission_actions.html" %}
     {% endwith %}
 
