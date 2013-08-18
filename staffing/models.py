@@ -5,7 +5,7 @@ Database access layer for pydici staffing module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.db import models
+from django.db import models, connections
 from django.db.models import Sum
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
@@ -182,6 +182,7 @@ class Mission(models.Model):
         @param startDate: starting date to consider. This date is included in range. If None, start date is the begining of the mission
         @param endDate: ending date to consider. This date is excluded from range. If None, end date is last timesheet for this mission.
         @return: dict where key is consultant, value is cumulated margin over objective"""
+        dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
         result = {}
         consultant_rates = self.consultant_rates()
         # Gather timesheet (Only consider timesheet up to current month)
@@ -194,8 +195,9 @@ class Mission(models.Model):
         timesheetMonths = list(timesheets.dates("working_date", "month"))
         for consultant in self.consultants():
             result[consultant] = 0  # Initialize margin over rate objective for this consultant
+            data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
             for month in timesheetMonths:
-                n_days = sum([t.charge for t in timesheets.filter(consultant=consultant, working_date__gte=month, working_date__lt=nextMonth(month))])
+                n_days = data.get(unicode(month), 0)
                 if consultant.subcontractor:
                     # Compute objective margin on sold rate
                     if consultant_rates[consultant][0] and consultant_rates[consultant][1]:
