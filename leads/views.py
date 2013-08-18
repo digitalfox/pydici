@@ -172,10 +172,10 @@ def review(request):
     delay = timedelta(days=10)  # (10 days)
     recentArchivedLeads = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
                                                       Q(state="SLEEPING"))
-    recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date")
+    recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date").select_related()
     return render(request, "leads/review.html",
                   {"recent_archived_leads": recentArchivedLeads,
-                   "active_leads": Lead.objects.active().order_by("creation_date"),
+                   "active_leads": Lead.objects.active().select_related().order_by("creation_date"),
                    "user": request.user})
 
 
