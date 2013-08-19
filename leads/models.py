@@ -16,7 +16,6 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q
 from django.core.urlresolvers import reverse
-from django.core.cache import cache
 
 from taggit.managers import TaggableManager
 
@@ -26,7 +25,7 @@ from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
 from actionset.models import ActionState
 from actionset.utils import launchTrigger
-from core.utils import createProjectTree, disable_for_loaddata, getLeadDirs
+from core.utils import createProjectTree, disable_for_loaddata, getLeadDirs, cacheable
 
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
@@ -78,14 +77,9 @@ class Lead(models.Model):
 
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
 
+    @cacheable("Lead.__unicode__%(id)s", 3)
     def __unicode__(self):
-        # As lead name computation generate lots of sql request, cache it to avoid
-        # perf issue for screen that intensively use lead name (like consultant staffing)
-        name = cache.get("leadName-%s" % self.id)
-        if not name:
-            name = u"%s - %s" % (self.client.organisation, self.name)
-            cache.set("leadName-%s" % self.id, name, 3)
-        return name
+        return u"%s - %s" % (self.client.organisation, self.name)
 
     def save(self, force_insert=False, force_update=False):
         self.description = compact_text(self.description)

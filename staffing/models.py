@@ -7,7 +7,6 @@ Database access layer for pydici staffing module
 
 from django.db import models, connections
 from django.db.models import Sum
-from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.db.models.signals import post_save
@@ -22,7 +21,7 @@ from people.models import Consultant
 from crm.models import MissionContact
 from actionset.utils import launchTrigger
 from actionset.models import ActionState
-from core.utils import disable_for_loaddata
+from core.utils import disable_for_loaddata, cacheable
 
 
 class Mission(models.Model):
@@ -139,15 +138,12 @@ class Mission(models.Model):
         else:
             return unicode(self.id)
 
+    @cacheable("Mission.done_work%(id)s", 10)
     def done_work(self):
         """Compute done work according to timesheet for this mission
         Result is cached for few seconds
         @return: (done work in days, done work in euros)"""
-        CACHE_DELAY = 10
-        res = cache.get("missionDoneWork-%s" % self.id)
-        if res:
-            return res
-        rates = dict([ (i.id, j[0]) for i, j in self.consultant_rates().items()])  # switch to consultant id
+        rates = dict([(i.id, j[0]) for i, j in self.consultant_rates().items()])  # switch to consultant id
         days = 0
         amount = 0
         timesheets = Timesheet.objects.filter(mission=self)
@@ -156,7 +152,6 @@ class Mission(models.Model):
             days += charge
             if consultant_id in rates:
                 amount += charge * rates[consultant_id]
-        cache.set("missionDoneWork-%s" % self.id, (days, amount), CACHE_DELAY)
         return (days, amount)
 
     def done_work_k(self):

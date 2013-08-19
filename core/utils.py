@@ -22,6 +22,7 @@ from django.template.defaultfilters import slugify
 from django.http import HttpResponse
 from django.core.mail import EmailMultiAlternatives
 from django.core import urlresolvers
+from django.core.cache import cache
 
 import pydici.settings
 
@@ -303,3 +304,20 @@ def disable_for_loaddata(signal_handler):
             return
         signal_handler(*args, **kwargs)
     return wrapper
+
+
+def cacheable(cache_key, timeout=3600):
+    """Decorator to simplify model level method caching.
+    Adapted from http://djangosnippets.org/snippets/1130/"""
+    def paramed_decorator(func):
+        def decorated(self):
+            key = cache_key % self.__dict__
+            res = cache.get(key)
+            if res is None:
+                res = func(self)
+                cache.set(key, res, timeout)
+            return res
+        decorated.__doc__ = func.__doc__
+        decorated.__dict__ = func.__dict__
+        return decorated
+    return paramed_decorator
