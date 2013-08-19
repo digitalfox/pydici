@@ -35,7 +35,7 @@ from leads.models import Lead
 from people.models import ConsultantProfile, RateObjective
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
                                   TimesheetForm, MassStaffingForm, MissionContactForm
-from core.utils import working_days, nextMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
+from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
                               to_int_or_round, print_png, COLORS
 from core.decorator import pydici_non_public
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
@@ -238,7 +238,7 @@ def pdc_review(request, year=None, month=None):
     next_slice_date = start_date + timedelta(days=(31 * n_month))
 
     # Initialize total dict and available dict
-    holidays_days = [h.day for h in Holiday.objects.all()]
+    holidays_days = Holiday.objects.all().values_list("day", flat=True)
     for month in months:
         total[month] = {"prod": 0, "unprod": 0, "holidays": 0, "available": 0}
         available_month[month] = working_days(month, holidays_days)
@@ -826,6 +826,43 @@ def detailed_csv_timesheet(request, year=None, month=None):
             writer.writerow([unicode(i).encode("ISO-8859-15") for i in row])
 
     return response
+
+
+@pydici_non_public
+def holidays_planning(request, year=None, month=None):
+    """Display forecasted holidays of all consultants"""
+    # We use the first day to represent month
+    if year and month:
+        month = date(int(year), int(month), 1)
+    else:
+        month = date.today().replace(day=1)
+
+    holidays_days = Holiday.objects.all().values_list("day", flat=True)
+    days = daysOfMonth(month)
+    data = []
+    # TODO: holidays (jours fériés
+    # TODO: week end)
+    next_month = nextMonth(month)
+    previous_month = previousMonth(month)
+    for consultant in Consultant.objects.filter(active=True, subcontractor=False):
+        consultantData = [consultant, ]
+        consultantHolidays = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
+                                                      consultant=consultant, mission__nature="HOLIDAYS", charge__gt=0).values_list("working_date", flat=True)
+        for day in days:
+            if day.isoweekday() in (6, 7) or day in holidays_days:
+                consultantData.append("lightgrey")
+            elif day in consultantHolidays:
+                consultantData.append("#56160C")
+            else:
+                consultantData.append("#F6F6F6")
+        data.append(consultantData)
+    return render(request, "staffing/holidays_planning.html",
+                  {"days": days,
+                   "data": data,
+                   "month": month,
+                   "previous_month": previous_month,
+                   "next_month": next_month,
+                   "user": request.user, })
 
 
 @pydici_non_public

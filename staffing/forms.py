@@ -5,12 +5,11 @@ Staffing form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import datetime, timedelta, date
+from datetime import timedelta, date
 from decimal import Decimal
 
 from django import forms
 from django.forms.models import BaseInlineFormSet
-from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 
@@ -30,7 +29,7 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
                 lastDayOfPreviousMonth = date.today().replace(day=1) + timedelta(-1)
                 lowerDayBound = lastDayOfPreviousMonth.replace(day=1)
 
-            qs = qs.filter(mission__active=True, # Remove archived mission
+            qs = qs.filter(mission__active=True,  # Remove archived mission
                            staffing_date__gte=lowerDayBound)  # Remove past missions
 
             self._queryset = qs
@@ -39,20 +38,21 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["mission"] = AutoCompleteSelectField('mission', required=True, label=_("Mission")) # Ajax it
-        form.fields["mission"].widget.attrs.setdefault("size", 8) # Reduce default size
-        form.fields["staffing_date"].widget.attrs.setdefault("size", 10) # Reduce default size
-        form.fields["charge"].widget.attrs.setdefault("size", 3) # Reduce default size
+        form.fields["mission"] = AutoCompleteSelectField('mission', required=True, label=_("Mission"))  # Ajax it
+        form.fields["mission"].widget.attrs.setdefault("size", 8)  # Reduce default size
+        form.fields["staffing_date"].widget.attrs.setdefault("size", 10)  # Reduce default size
+        form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
+
 
 class MissionStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["consultant"] = AutoCompleteSelectField('consultant', required=True, label=_("Consultant")) # Ajax it
-        form.fields["consultant"].widget.attrs.setdefault("size", 8) # Reduce default size
-        form.fields["staffing_date"].widget.attrs.setdefault("size", 10) # Reduce default size
-        form.fields["charge"].widget.attrs.setdefault("size", 3) # Reduce default size
+        form.fields["consultant"] = AutoCompleteSelectField('consultant', required=True, label=_("Consultant"))  # Ajax it
+        form.fields["consultant"].widget.attrs.setdefault("size", 8)  # Reduce default size
+        form.fields["staffing_date"].widget.attrs.setdefault("size", 10)  # Reduce default size
+        form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
 
 class MassStaffingForm(forms.Form):
@@ -85,18 +85,18 @@ class TimesheetForm(forms.Form):
             for day in days:
                 key = "charge_%s_%s" % (mission.id, day.day)
                 self.fields[key] = TimesheetField(required=False)
-                self.fields[key].widget.attrs.setdefault("size", 1) # Reduce default size
-                self.fields[key].widget.attrs.setdefault("readonly", 1) # Avoid direct input for mobile
+                self.fields[key].widget.attrs.setdefault("size", 1)  # Reduce default size
+                self.fields[key].widget.attrs.setdefault("readonly", 1)  # Avoid direct input for mobile
                 # Order tabindex by day
                 if day.isoweekday() in (6, 7) or day in holiday_days:
-                    tabIndex = 100000 # Skip week-end from tab path
+                    tabIndex = 100000  # Skip week-end from tab path
                     # Color week ends in grey
                     self.fields[key].widget.attrs.setdefault("style", "background-color: LightGrey;")
                 else:
                     tabIndex = day.day
                 self.fields[key].widget.attrs.setdefault("tabindex", tabIndex)
 
-                if day == days[0]: # Only show label for first day
+                if day == days[0]:  # Only show label for first day
                     self.fields[key].label = unicode(mission)
                 else:
                     self.fields[key].label = ""
@@ -111,12 +111,12 @@ class TimesheetForm(forms.Form):
             for day in days:
                 key = "lunch_ticket_%s" % day.day
                 self.fields[key] = forms.BooleanField(required=False)
-                self.fields[key].widget.attrs.setdefault("size", 1) # Reduce default size
-                self.fields[key].widget.attrs.setdefault("data-role", "none") # Don't apply jquery theme
-                if day == days[0]: # Only show label for first day
+                self.fields[key].widget.attrs.setdefault("size", 1)  # Reduce default size
+                self.fields[key].widget.attrs.setdefault("data-role", "none")  # Don't apply jquery theme
+                if day == days[0]:  # Only show label for first day
                     self.fields[key].label = _("Days without lunch ticket")
                 else:
-                    self.fields[key].label = "" # Squash label 
+                    self.fields[key].label = ""  # Squash label
             # extra space is important - it is for forecast total (which does not exist for ticket...)
             key = "%s total-ticket " % timesheetTotal.get("ticket", 0)
             self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
@@ -139,7 +139,7 @@ class MissionAdminForm(forms.ModelForm):
         if not self.instance.lead.sales:
             raise ValidationError(_("Mission's lead has no sales price. Define lead sales price."))
 
-        total = 0 # Total price for all missions except current one
+        total = 0  # Total price for all missions except current one
         for mission in self.instance.lead.mission_set.exclude(id=self.instance.id):
             if mission.price:
                 total += mission.price
