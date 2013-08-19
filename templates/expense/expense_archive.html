@@ -14,7 +14,7 @@
 
 <h1>{% trans "Last expenses" %}</h1>
 <div class="content-large">
-{% with latest as expenses %}
+{% with latest|slice:":50" as expenses %}
     {% include "expense/expense_list.html" %}
 {% endwith %}
 </div>
