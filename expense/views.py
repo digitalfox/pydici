@@ -131,7 +131,7 @@ def expense_receipt(request, expense_id):
 def expenses_history(request, year):
     """Display expense history.
     @param year: year of history. If None, display recent items and year index"""
-    expenses = Expense.objects.all()
+    expenses = Expense.objects.all().select_related().prefetch_related("clientbill_set", "user", "lead")
     try:
         consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
         user_team = consultant.userTeam()

@@ -13,6 +13,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
+from django.core.cache import cache
 
 from people.models import Consultant
 from leads.models import Lead
@@ -52,6 +53,9 @@ def split(value, arg):
 def link_to_consultant(value, arg=None):
     """create a link to consultant if he exists
     @param value: consultant trigramme"""
+    result = cache.get("link_to_consultant_%s" % value)
+    if result:
+        return result
     try:
         consultant = Consultant.objects.get(trigramme__iexact=value)
         if consultant.name:
@@ -59,11 +63,13 @@ def link_to_consultant(value, arg=None):
         else:
             name = value
         if consultant.subcontractor or arg == "nolink":
-            value = escape(name)
+            result = escape(name)
         else:
-            value = "<a href='%s'>%s</a>" % (reverse("people.views.consultant_home", args=[consultant.id, ]),
+            result = "<a href='%s'>%s</a>" % (reverse("people.views.consultant_home", args=[consultant.id, ]),
                                         escape(name))
-        return mark_safe(value)
+        result = mark_safe(result)
+        cache.set("link_to_consultant_%s" % value, result, 180)
+        return mark_safe(result)
     except Consultant.DoesNotExist:
         try:
             user = User.objects.get(username=value)
