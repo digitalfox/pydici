@@ -10,8 +10,9 @@
 {% block title %}{% trans "Payment delay review" %}{% endblock %}
 
 {% block content %}
+<br/><br/>
 <div id="content-main">
-    <div class="imodule">
+    <div class="imodule" style="float:left;">
         <table>
         <caption>{% trans "Direct clients" %}</caption>
         <tr>
@@ -20,13 +21,14 @@
         </tr>
         {% for company, delay in direct_delays %}
             <tr>
-                <td><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></td>
+                <td><a href="{% url 'crm.views.company_detail' company.id %}#tab-billing">{{ company }}</a></td>
                 <td>{{ delay }}</td>
             </tr>
         {% endfor %}
         </table>
     </div>
-    <div class="imodule">
+    <div style="float:left;">&nbsp;&nbsp;&nbsp;</div>
+    <div class="imodule" style="float:left;">
         <table>
         <caption>{% trans "Paying authorities" %}</caption>
         <tr>

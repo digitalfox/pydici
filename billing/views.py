@@ -79,12 +79,12 @@ def bill_payment_delay(request):
     indirectDelays = list()  # for client with paying authority
     for company in Company.objects.all():
         # Direct delays
-        bills = ClientBill.objects.filter(lead__client__organisation__company=company, lead__paying_authority__isnull=True)
+        bills = ClientBill.objects.filter(lead__client__organisation__company=company, lead__paying_authority__isnull=True, state="2_PAID")
         res = [i.payment_delay() for i in bills]
         if res:
             directDelays.append((company, sum(res) / len(res)))
         # Indirect delays
-        bills = ClientBill.objects.filter(lead__paying_authority__company=company)
+        bills = ClientBill.objects.filter(lead__paying_authority__company=company, state="2_PAID")
         res = [i.payment_delay() for i in bills]
         if res:
             indirectDelays.append((company, sum(res) / len(res)))
