@@ -9,7 +9,7 @@
 $.jqplot.config.enablePlugins = true;
 $.jqplot('graph_bar_jqp',  {{ graph_data|safe }},
 		{
-         animate : true,
+         animate : false,
          stackSeries: true,
          captureRightClick: true,
          seriesColors: {{ series_colors|safe }},

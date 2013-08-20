@@ -9,7 +9,7 @@
 $(document).ready(function() {
 $.jqplot.config.enablePlugins = true;
 var plot_company_sales_{{ only_last_year|safe }} =$.jqplot('company_sales_jqp_{{ only_last_year|safe }}',  {{ graph_data|safe }}, {
-         animate : true,
+         animate : false,
          captureRightClick: true,
          gridPadding: {top:20, bottom:60, left:0, right:0},
          seriesColors: {{ series_colors|safe }},

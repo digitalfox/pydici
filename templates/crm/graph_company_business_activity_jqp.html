@@ -9,7 +9,7 @@
 $(document).ready(function() {
 $.jqplot.config.enablePlugins = true;
 $.jqplot('company_business_activity_jqp',  {{ graph_data|safe }}, {
-    animate : true,
+    animate : false,
     stackSeries: true,
     captureRightClick: true,
     seriesColors: {{ series_colors|safe }},

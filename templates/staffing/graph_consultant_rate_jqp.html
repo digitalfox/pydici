@@ -7,7 +7,7 @@
 
 $.jqplot.config.enablePlugins = true;
 $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
-         animate : true,
+         animate : false,
          stackSeries: false,
          captureRightClick: true,
          seriesColors: {{ series_colors|safe }},
