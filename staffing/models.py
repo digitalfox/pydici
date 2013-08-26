@@ -186,8 +186,12 @@ class Mission(models.Model):
         for consultant in self.consultants():
             result[consultant] = 0  # Initialize margin over rate objective for this consultant
             data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
+            if data and isinstance(data.keys()[0], unicode):
+                # Sqlite3 does not support properly trunc_date. So we cast manually to datetime object
+                data = {datetime.strptime(k, '%Y-%m-%d %H:%M:%S'): v for k, v in data.items()}
+
             for month in timesheetMonths:
-                n_days = data.get(unicode(month), 0)
+                n_days = data.get(month, 0)
                 if consultant.subcontractor:
                     # Compute objective margin on sold rate
                     if consultant_rates[consultant][0] and consultant_rates[consultant][1]:

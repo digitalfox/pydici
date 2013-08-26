@@ -533,8 +533,12 @@ def mission_timesheet(request, mission_id):
         # Timesheet data
         timesheetData = []
         data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
+        if data and isinstance(data.keys()[0], unicode):
+            # Sqlite3 does not support properly trunc_date. So we cast manually to datetime object
+            data = {datetime.strptime(k, '%Y-%m-%d %H:%M:%S'): v for k, v in data.items()}
+
         for month in timesheetMonths:
-            n_days = data.get(unicode(month), 0)
+            n_days = data.get(month, 0)
             timesheetData.append(n_days)
 
         timesheetData.append(sum(timesheetData))  # Add total per consultant
