@@ -9,7 +9,7 @@ appropriate to live in models or view
 
 import re
 import os
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 import unicodedata
 from functools import wraps
 
@@ -113,6 +113,8 @@ def working_days(monthDate, holidays=[], upToToday=False):
     day = timedelta(1)
     today = date.today()
     n = 0
+    if isinstance(monthDate, datetime):
+        monthDate = monthDate.date()
     currentMonth = monthDate.month
     while monthDate.month == currentMonth:
         if monthDate.weekday() < 5 and monthDate not in holidays:  # Only count working days
@@ -321,3 +323,13 @@ def cacheable(cache_key, timeout=3600):
         decorated.__dict__ = func.__dict__
         return decorated
     return paramed_decorator
+
+
+def convertDictKeyToDateTime(data):
+    """Convert dict key from unicode string with %Y-%m-%d %H:%M:%S format, to datetime.
+    This is used to convert dict from queryset for sqlite3 that don't support properly date trunc functions
+    If data is empty or if key is already, datetime, return as is"""
+    if data and isinstance(data.keys()[0], unicode):
+        return dict((datetime.strptime(k, "%Y-%m-%d %H:%M:%S"), v) for k, v in data.items())
+    else:
+        return data
