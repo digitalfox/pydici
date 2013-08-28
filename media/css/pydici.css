@@ -258,6 +258,14 @@ a.tagrlink { color: #999999 }
 }
 
 
+/* jqplot */
+.jqplot-point-label {
+  padding: 1px 3px;
+  background-color: rgba(220, 220, 220, 0.5);
+  color: black;
+  font-size: 1em;
+}
+
 /**********/
 /* Layout */
 

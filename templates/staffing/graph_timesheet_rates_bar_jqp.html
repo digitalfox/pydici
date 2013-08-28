@@ -1,0 +1,67 @@
+{# Fragment that display timesheet and rates graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_jqplot.html to load according js/css #} {% load i18n %}
+
+{% if graph_data %}
+<div id="timesheet_rates_bar_graph_jqp" style="height: 300px; width: 900px;"></div>
+<script type="text/javascript">
+
+$.jqplot.config.enablePlugins = true;
+$.jqplot('timesheet_rates_bar_graph_jqp',  {{ graph_data|safe }}, {
+         animate : false,
+         stackSeries: true,
+         captureRightClick: true,
+         seriesDefaults:{
+             renderer:$.jqplot.BarRenderer,
+             pointLabels: {show: false},
+             rendererOptions: {
+                 barMargin: 5,
+                 barWidth: 30,
+             },
+         },
+
+         seriesColors: {{ series_colors|safe }},
+         series:[
+                   {% for nature in natures_display %}
+                    {label: "{{ nature }}"},
+                   {% endfor %}
+                    {label: "{% trans "Production rate" %}",
+                        renderer: $.jqplot.LineRenderer,
+                        rendererOptions: { smooth: true },
+                        pointLabels: { show:true, location:"s" },
+                        disableStack : true,
+                    },
+                    ],
+         axes: {
+             xaxis: {
+                 renderer: $.jqplot.DateAxisRenderer,
+                 labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                 tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                 tickOptions:{
+                     formatString:'%b %y',
+                     angle: -40 
+                 },
+                 min: '{{ min_date }}',
+                 tickInterval: '1 month',
+             },
+           yaxis: {
+               min: 0,
+               max: 100,
+               syncTicks : true,
+               label: "%",
+               labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+               tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+           },
+         },
+         legend: {
+             show:true,
+             location: 'e',
+             placement: 'outsideGrid',
+         },
+         highlighter: {
+             tooltipAxes: 'xy',
+             showLabel: true,
+             sizeAdjust: 7.5,
+         },
+});
+</script>
+{% endif %}

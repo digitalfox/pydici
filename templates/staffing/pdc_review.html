@@ -6,6 +6,9 @@
 
 {% block bodyclass %}dashboard{% endblock %}
 
+{% block extrajs %}
+    {% include "core/_jqplot.html" %}
+{% endblock %}
 {% block breadcrumbs %}{% endblock %}
 
 {% block title %}{% trans "Workload schedule" %}{% endblock %}
@@ -115,6 +118,12 @@
 
 {% if not request.session.mobile %}
     <h1>{% trans "Production rates and daily rates review" %}</h1>
+    <div id="graph_timesheet_rates_bar_jqp_content"></div>
+    <script type="text/javascript">
+    $('#graph_timesheet_rates_bar_jqp_content').load('{% url 'staffing.views.graph_timesheet_rates_bar_jqp' %}')
+    </script>
+    
+    
 	<img src="{% url 'staffing.views.graph_timesheet_rates_bar' %}"/>
 	<br/>
 {% endif %}

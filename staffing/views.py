@@ -5,10 +5,10 @@ Pydici staffing views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta, datetime, time
 import csv
-import itertools
 import json
+import itertools
 
 from matplotlib.figure import Figure
 from ajax_select.fields import autoselect_fields_check_can_add
@@ -21,7 +21,7 @@ from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.core.cache import cache
-from django.db.models import Sum, Q
+from django.db.models import Sum, Count, Q
 from django.db import connections
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
@@ -36,7 +36,7 @@ from people.models import ConsultantProfile, RateObjective
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
                                   TimesheetForm, MassStaffingForm, MissionContactForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-                              to_int_or_round, print_png, COLORS
+                              to_int_or_round, print_png, COLORS, convertDictKeyToDateTime
 from core.decorator import pydici_non_public
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
                                   sortMissions, holidayDays, staffingDates
@@ -533,9 +533,7 @@ def mission_timesheet(request, mission_id):
         # Timesheet data
         timesheetData = []
         data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-        if data and isinstance(data.keys()[0], unicode):
-            # Sqlite3 does not support properly trunc_date. So we cast manually to datetime object
-            data = dict((datetime.strptime(k, '%Y-%m-%d %H:%M:%S'), v) for k, v in data.items())
+        data = convertDictKeyToDateTime(data)
 
         for month in timesheetMonths:
             n_days = data.get(month, 0)
@@ -987,6 +985,59 @@ def mission_contacts(request, mission_id):
 
 @pydici_non_public
 @cache_page(60 * 10)
+def graph_timesheet_rates_bar_jqp(request):
+    """Nice graph bar of timesheet prod/holidays/nonprod rates
+    @todo: per year, with start-end date"""
+    dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
+    data = {}  # Graph data
+    natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures
+    nature_data = {}
+    holiday_days = [h.day for h in  Holiday.objects.all()]
+    graph_data = []
+
+    # Create dict per mission nature
+    for nature in natures:
+        data[nature] = {}
+
+    # Compute date data
+    timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
+    timesheetEndDate = nextMonth(date.today())  # First day of next month
+
+    timesheets = Timesheet.objects.filter(consultant__subcontractor=False,
+                                          consultant__productive=True,
+                                          working_date__gt=timesheetStartDate,
+                                          working_date__lt=timesheetEndDate).select_related()
+
+    nConsultant = dict(timesheets.extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Count("consultant__id", distinct=True)).order_by())
+    nConsultant = convertDictKeyToDateTime(nConsultant)
+
+    timesheetMonths = timesheets.dates("working_date", "month")
+    isoTimesheetMonths = [d.date().isoformat() for d in timesheetMonths]
+
+    for nature in natures:
+        nature_data[nature] = []
+        data = dict(timesheets.filter(mission__nature=nature).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
+        data = convertDictKeyToDateTime(data)
+        for month in timesheetMonths:
+            nature_data[nature].append(100 * data.get(month, 0) / (working_days(month, holiday_days) * nConsultant.get(month, 1)))
+        graph_data.append(zip(isoTimesheetMonths, nature_data[nature]))
+
+    prodRate = []
+    for prod, nonprod in zip(nature_data["PROD"], nature_data["NONPROD"]):
+        prodRate.append("%.1f" % (100 * prod / (prod + nonprod)))
+
+    graph_data.append(zip(isoTimesheetMonths, prodRate))
+
+    return render(request, "staffing/graph_timesheet_rates_bar_jqp.html",
+                  {"graph_data": json.dumps(graph_data),
+                   "min_date": previousMonth(timesheetMonths[0]).date().isoformat(),
+                   "natures_display": [i[1] for i in Mission.MISSION_NATURE],
+                   "series_colors": COLORS,
+                   "user": request.user})
+
+
+@pydici_non_public
+@cache_page(60 * 10)
 def graph_timesheet_rates_bar(request):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
     @todo: per year, with start-end date"""
@@ -1135,6 +1186,7 @@ def graph_timesheet_rates_bar(request):
     ax2.grid(True)
 
     return print_png(fig)
+
 
 
 @pydici_non_public

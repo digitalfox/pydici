@@ -14,12 +14,12 @@ $.jqplot('graph_bar_jqp',  {{ graph_data|safe }},
          captureRightClick: true,
          seriesColors: {{ series_colors|safe }},
          seriesDefaults:{
+           pointLabels: {show: false},
            renderer:$.jqplot.BarRenderer,
            rendererOptions: {
                barMargin: 20,
                barWidth: 15,
            },
-           pointLabels: {show: true}
          },
          series:[
                {% for label in series_label %}

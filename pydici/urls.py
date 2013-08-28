@@ -101,6 +101,7 @@ pydici_patterns += patterns('staffing.views',
     (r'^staffing/contacts/mission/(?P<mission_id>\d+)/$', 'mission_contacts'),
     (r'^staffing/rate/?$', 'mission_consultant_rate'),
     (r'^staffing/graph/rates/?$', 'graph_timesheet_rates_bar'),
+    (r'^staffing/graph/timesheet-rates/?$', 'graph_timesheet_rates_bar_jqp'),
     (r'^staffing/graph/rates/graph-jqp/consultant/(?P<consultant_id>\d+)', 'graph_consultant_rates_jqp'),
 )
 
