@@ -10,6 +10,9 @@ $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
          animate : false,
          stackSeries: false,
          captureRightClick: true,
+         seriesDefaults:{
+             pointLabels: {show: false},
+         },
          seriesColors: {{ series_colors|safe }},
          series:[{
                      label: "{% trans 'Average daily rate (€)' %}",
