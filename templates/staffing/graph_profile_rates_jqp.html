@@ -2,34 +2,24 @@
 {# One must include in its extrajs block core/_jqplot.html to load according js/css #} {% load i18n %}
 
 {% if graph_data %}
-<div id="timesheet_profile_rates_graph_jqp" style="height: 300px; width: 1000px;"></div>
+<div id="timesheet_rates_bar_graph_jqp" style="height: 300px; width: 1000px;"></div>
 <script type="text/javascript">
 
 $.jqplot.config.enablePlugins = true;
-$.jqplot('timesheet_profile_rates_graph_jqp',  {{ graph_data|safe }}, {
+$.jqplot('timesheet_rates_bar_graph_jqp',  {{ graph_data|safe }}, {
          animate : false,
-         stackSeries: true,
+         stackSeries: false,
          captureRightClick: true,
          seriesDefaults:{
-             renderer:$.jqplot.BarRenderer,
-             pointLabels: {show: false},
-             rendererOptions: {
-                 barMargin: 5,
-                 barWidth: 30,
-             },
+             renderer: $.jqplot.LineRenderer,
+             rendererOptions: { smooth: true },
+             pointLabels: { show:false },
          },
-
          seriesColors: {{ series_colors|safe }},
          series:[
-                   {% for nature in natures_display %}
-                    {label: "{{ nature }}"},
+                   {% for profil in profils_display %}
+                    {label: "{{ profil }}"},
                    {% endfor %}
-                    {label: "{% trans "Production rate" %}",
-                        renderer: $.jqplot.LineRenderer,
-                        rendererOptions: { smooth: true },
-                        pointLabels: { show:true, location:"s" },
-                        disableStack : true,
-                    },
                     ],
          axes: {
              xaxis: {
@@ -44,10 +34,8 @@ $.jqplot('timesheet_profile_rates_graph_jqp',  {{ graph_data|safe }}, {
                  tickInterval: '1 month',
              },
            yaxis: {
-               min: 0,
-               max: 100,
-               syncTicks : true,
-               label: "%",
+               label: "€",
+               pad: 1.02,
                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
            },

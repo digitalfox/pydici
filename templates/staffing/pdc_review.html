@@ -118,13 +118,17 @@
 
 {% if not request.session.mobile %}
     <h1>{% trans "Production rates and daily rates review" %}</h1>
+    
     <div id="graph_timesheet_rates_bar_jqp_content"></div>
     <script type="text/javascript">
     $('#graph_timesheet_rates_bar_jqp_content').load('{% url 'staffing.views.graph_timesheet_rates_bar_jqp' %}')
     </script>
-    
-    
-	<img src="{% url 'staffing.views.graph_timesheet_rates_bar' %}"/>
+    <br/>
+    <div id="graph_profile_rates_bar_jqp_content"></div>
+    <script type="text/javascript">
+    $('#graph_profile_rates_bar_jqp_content').load('{% url 'staffing.views.graph_profile_rates_jqp' %}')
+    </script>
+
 	<br/>
 {% endif %}
 

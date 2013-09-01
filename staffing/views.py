@@ -1008,11 +1008,14 @@ def graph_timesheet_rates_bar_jqp(request):
                                           working_date__gt=timesheetStartDate,
                                           working_date__lt=timesheetEndDate).select_related()
 
-    nConsultant = dict(timesheets.extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Count("consultant__id", distinct=True)).order_by())
-    nConsultant = convertDictKeyToDateTime(nConsultant)
-
     timesheetMonths = timesheets.dates("working_date", "month")
     isoTimesheetMonths = [d.date().isoformat() for d in timesheetMonths]
+
+    if not timesheetMonths:
+        return HttpResponse('')
+
+    nConsultant = dict(timesheets.extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Count("consultant__id", distinct=True)).order_by())
+    nConsultant = convertDictKeyToDateTime(nConsultant)
 
     for nature in natures:
         nature_data[nature] = []
@@ -1038,155 +1041,63 @@ def graph_timesheet_rates_bar_jqp(request):
 
 @pydici_non_public
 @cache_page(60 * 10)
-def graph_timesheet_rates_bar(request):
-    """Nice graph bar of timesheet prod/holidays/nonprod rates
+def graph_profile_rates_jqp(request):
+    """Sale rate per profil
     @todo: per year, with start-end date"""
-    data = {}  # Graph data
-    natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures
-    kdates = set()  # List of uniq month
-    nConsultant = {}  # Set of working consultant id per month
-    avgDailyRate = {}  # daily rate sum per month
-    nDays = {}  # number of days with valid rate per month
-    plots = []  # List of plots for prod rate - needed to add legend
-    plots2 = []  # List of plots for daily rate - needed to add legend
-    colors = itertools.cycle(COLORS)
-    holiday_days = [h.day for h in  Holiday.objects.all()]
+    graph_data = []
+    avgDailyRate = {}
+    nDays = {}
+    timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
+    timesheetEndDate = nextMonth(date.today())  # First day of next month
     profils = dict(ConsultantProfile.objects.all().values_list("id", "name"))  # Consultant Profiles
-
-    # Setting up graph
-    fig = Figure(figsize=(12, 8))
-    fig.set_facecolor("white")
-    ax = fig.add_subplot(211)  # Main graph for prod rate and days
-    ax2 = fig.add_subplot(212, sharex=ax)  # Second graph for avg daily rate
-    fig.subplots_adjust(hspace=0.3)
-
-    # Create dict per mission nature
-    for nature in natures:
-        data[nature] = {}
 
     # Create dict per consultant profile
     for profilId in profils.keys():
         avgDailyRate[profilId] = {}
         nDays[profilId] = {}
 
-    # Gather data
-    timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
-    timesheetEndDate = nextMonth(date.today())  # First day of next month
     timesheets = Timesheet.objects.filter(consultant__subcontractor=False,
                                           consultant__productive=True,
                                           working_date__gt=timesheetStartDate,
                                           working_date__lt=timesheetEndDate).select_related()
 
-    if timesheets.count() == 0:
-        return print_png(fig)
+    timesheetMonths = timesheets.dates("working_date", "month")
+    isoTimesheetMonths = [d.date().isoformat() for d in timesheetMonths]
+    if not timesheetMonths:
+        return HttpResponse('')
+
+    financialConditions = {}
+    for fc in FinancialCondition.objects.all():
+        financialConditions["%s-%s" % (fc.mission_id, fc.consultant_id)] = fc.daily_rate
 
     for timesheet in timesheets:
-        # Using first day of each month as key date
-        kdate = date(timesheet.working_date.year, timesheet.working_date.month, 1)
-        kdates.add(kdate)
-        # Init dict with kdate if not already done
-        if not kdate in nConsultant:
-            nConsultant[kdate] = set()
-        if not kdate in avgDailyRate[timesheet.consultant.profil.id]:
-            avgDailyRate[timesheet.consultant.profil.id][kdate] = 0
-        if not kdate in nDays[timesheet.consultant.profil.id]:
-            nDays[timesheet.consultant.profil.id][kdate] = 0
-        # Gather data
-        if kdate in data[timesheet.mission.nature]:
-            data[timesheet.mission.nature][kdate] += timesheet.charge
-        else:
-            data[timesheet.mission.nature][kdate] = timesheet.charge
-        nConsultant[kdate].add(timesheet.consultant.id)
-        daily_rate = cache.get("fc-%s-%s" % (timesheet.mission_id, timesheet.consultant_id))
-        if not daily_rate:
-            try:
-                fc = FinancialCondition.objects.get(mission=timesheet.mission, consultant=timesheet.consultant)
-                daily_rate = int(fc.daily_rate)
-                cache.set("fc-%s-%s" % (timesheet.mission_id, timesheet.consultant_id), daily_rate, 60)
-            except FinancialCondition.DoesNotExist:
-                daily_rate = 0
+        month = date(timesheet.working_date.year, timesheet.working_date.month, 1)
+        if not month in avgDailyRate[timesheet.consultant.profil.id]:
+            avgDailyRate[timesheet.consultant.profil.id][month] = 0
+        if not month in nDays[timesheet.consultant.profil.id]:
+            nDays[timesheet.consultant.profil.id][month] = 0
+
+        daily_rate = financialConditions.get("%s-%s" % (timesheet.mission_id, timesheet.consultant_id), 0)
         if daily_rate > 0:
-            avgDailyRate[timesheet.consultant.profil.id][kdate] += timesheet.charge * daily_rate
-            nDays[timesheet.consultant.profil.id][kdate] += timesheet.charge
+            avgDailyRate[timesheet.consultant.profil.id][month] += timesheet.charge * daily_rate
+            nDays[timesheet.consultant.profil.id][month] += timesheet.charge
 
-    # Set bottom of each graph. Starts if [0, 0, 0, ...]
-    bottom = [0] * len(kdates)
-
-    # Draw a bar for each nature
-    kdates = list(kdates)
-    kdates.sort()  # Convert kdates to list and sort it
-    for nature in natures:
-        ydata = []
-        for kdate in kdates:
-            if kdate in data[nature]:
-                ydata.append(100 * data[nature][kdate] / (working_days(kdate, holiday_days) * len(nConsultant[kdate])))
+    for profil in profils.keys():
+        data = []
+        for month in timesheetMonths:
+            month = month.date()
+            if month in nDays[profil] and nDays[profil][month] > 0:
+                data.append(avgDailyRate[profil][month] / nDays[profil][month])
             else:
-                ydata.append(0)
+                data.append(None)
+        graph_data.append(zip(isoTimesheetMonths, data))
 
-        b = ax.bar(kdates, ydata, bottom=bottom, align="center", width=15,
-                   color=colors.next())
-        plots.append(b[0])
-        for i in range(len(ydata)):
-            bottom[i] += ydata[i]  # Update bottom
-
-    ydata = []  # Prod rate
-    y2data = {}  # Average daily rate per profil
-
-    for profilId in profils.keys():
-        y2data[profilId] = []
-
-    for kdate in kdates:
-        # Days repart per type
-        try:
-            if kdate in data["NONPROD"]:
-                ydata.append(100 * data["PROD"][kdate] / (data["PROD"][kdate] + data["NONPROD"][kdate]))
-            else:
-                ydata.append(100)
-        except (KeyError, ZeroDivisionError):
-            ydata.append(0)
-        ax.text(kdate, ydata[-1] + 4, "%.1f" % ydata[-1])
-
-        # Rate per profil
-        for profilId in profils.keys():
-            if kdate in avgDailyRate[profilId] and kdate in nDays[profilId] and nDays[profilId][kdate] > 0:
-                y2data[profilId].append(avgDailyRate[profilId][kdate] / nDays[profilId][kdate])
-                ax2.text(kdate, y2data[profilId][-1] + 50, "%d" % y2data[profilId][-1])
-            else:
-                y2data[profilId].append(0)
-
-    b = ax.plot(kdates, ydata, '--o', ms=10, lw=2, alpha=0.7, color="green", mfc="green")
-    plots.append(b[0])
-    for profilId in profils.keys():
-        if sum(y2data[profilId]) != 0:
-            color = colors.next()
-            b = ax2.plot(kdates, y2data[profilId], '-o', ms=10, lw=4, color=color, mfc=color, label="profil-%s" % profilId)
-            plots2.append(b[0])
-
-    # Add Legend and setup axes
-    ax.set_ylim(ymax=115)
-    ax.set_xticks(kdates)
-    ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
-    ax.set_ylabel("%")
-    ax.legend(plots, [i[1] for i in Mission.MISSION_NATURE] + [_("Prod. rate")],
-              bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
-              ncol=4, borderaxespad=0.)
-    ax.grid(True)
-
-    if len([i for i in sum(y2data.values(), []) if i > 0]) == 0:
-        # Second graph (ax2) is empty
-        return print_png(fig)
-
-    # ymin is set as the min non null rate minus 200. Sum is used to flatten list of list
-    ax2.set_ylim(ymin=min([i for i in sum(y2data.values(), []) if i > 0]) - 200,
-                 ymax=max([max(i) for i in y2data.values()]) + 200)
-    ax2.set_xticks(kdates)
-    ax2.set_ylabel(_(u"Daily rate (€)"))
-    ax2.legend(plots2, [v for k, v in profils.items() if sum(y2data[k]) != 0],
-              bbox_to_anchor=(0., 1.02, 1., .102), loc=4, ncol=4, borderaxespad=0.)
-    ax2.grid(True)
-
-    return print_png(fig)
-
+    return render(request, "staffing/graph_profile_rates_jqp.html",
+              {"graph_data": json.dumps(graph_data),
+               "min_date": previousMonth(timesheetMonths[0]).date().isoformat(),
+               "profils_display": profils.values(),
+               "series_colors": COLORS,
+               "user": request.user})
 
 
 @pydici_non_public
