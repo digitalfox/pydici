@@ -50,7 +50,15 @@ def consultant_detail(request, consultant_id):
         to_be_done = month_days - late - done_days
         forecasting_balance = month_days - consultant.forecasted_days()
         monthTurnover = consultant.getTurnover(month)
-        lastMonthTurnover = consultant.getTurnover(previousMonth(month), previousMonth(month).replace(day=date.today().day))  # Turnover for last month up to the same day
+        lastMonthTurnover = None
+        day = date.today().day
+        while lastMonthTurnover is None:
+            try:
+                lastMonthTurnover = consultant.getTurnover(previousMonth(month), previousMonth(month).replace(day=day))  # Turnover for last month up to the same day
+            except ValueError:
+                # Corner case, last month has fewer days than current one. Go back one day and try again till it works.
+                lastMonthTurnover = None
+                day -= 1
         if lastMonthTurnover:
             turnoverVariation = 100 * (monthTurnover - lastMonthTurnover) / lastMonthTurnover
         else:
