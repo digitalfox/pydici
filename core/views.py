@@ -205,10 +205,11 @@ def financialControl(request, start_date, end_date):
     staffings = Staffing.objects.filter(staffing_date__gte=start_date, staffing_date__lt=nextMonth(end_date))
 
     consultants = dict([(i.trigramme.lower(), i) for i in Consultant.objects.all().select_related()])
-    # TODO: get missions frmo previous timesheets and staffings queryset
-    missions = Mission.objects.filter(Q(timesheet__working_date__gte=start_date, timesheet__working_date__lt=nextMonth(end_date)) |
-                                      Q(staffing__staffing_date__gte=start_date, staffing__staffing_date__lt=nextMonth(end_date)))
-    missions = missions.filter(probability__gt=0)
+
+    missionsIdsFromStaffing = Mission.objects.filter(probability__gt=0, staffing__staffing_date__gte=start_date, staffing__staffing_date__lt=nextMonth(end_date)).values_list("id", flat=True)
+    missionsIdsFromTimesheet = Mission.objects.filter(probability__gt=0, timesheet__working_date__gte=start_date, timesheet__working_date__lt=nextMonth(end_date)).values_list("id", flat=True)
+    missionsIds = set(list(missionsIdsFromStaffing) + list(missionsIdsFromTimesheet))
+    missions = Mission.objects.filter(id__in=missionsIds)
     missions = missions.distinct().select_related().prefetch_related("lead__client__organisation__company")
 
     for mission in missions:
@@ -297,7 +298,6 @@ def financialControl(request, start_date, end_date):
         row.append(expense.amount)  # TODO: compute pseudo HT amount
         writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
 
-    # return render(request, "core/index.html", {"user": request.user})
     return response
 
 
