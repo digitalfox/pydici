@@ -22,7 +22,7 @@ from crm.models import Company, Contact
 from staffing.models import Mission
 from billing.models import ClientBill
 from people.views import consultant_home
-from core.utils import nextMonth
+from core.utils import nextMonth, previousMonth
 
 import pydici.settings
 
@@ -175,17 +175,26 @@ def dashboard(request):
 
 
 @pydici_non_public
-def financialControl(request, start_date, end_date):
+def financialControl(request, start_date=None, end_date=None):
     """Financial control extraction. This view is intented to be processed by 
     a spreadsheet or a financial package software"""
     from staffing.models import Mission, FinancialCondition, Timesheet, Staffing
     from expense.models import Expense
+    if end_date is None:
+        end_date = previousMonth(datetime.date.today())
+    else:
+        end_date = datetime.date(int(end_date[0:4]), int(end_date[4:6]), 1)
+    if start_date is None:
+        start_date = (datetime.date.today().replace(day=1) - datetime.timedelta(30 * 12)).replace(day=1)
+    else:
+        start_date = datetime.date(int(start_date[0:4]), int(start_date[4:6]), 1)
+
     response = HttpResponse(content_type="text/plain")
     response["Content-Disposition"] = "attachment; filename=financialControl.dat"
     writer = csv.writer(response, delimiter=';')
 
-    start_date = datetime.date(int(start_date[0:4]), int(start_date[4:6]), 1)
-    end_date = datetime.date(int(end_date[0:4]), int(end_date[4:6]), 1)
+
+
 
     financialConditions = {}
     for fc in FinancialCondition.objects.all():
