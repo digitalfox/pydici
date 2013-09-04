@@ -15,11 +15,11 @@ $.jqplot('company_business_activity_jqp',  {{ graph_data|safe }}, {
     seriesColors: {{ series_colors|safe }},
     seriesDefaults:{
       renderer:$.jqplot.BarRenderer,
+      pointLabels: {show: false},
       rendererOptions: {
           barMargin: 20,
           barWidth: 15,
       },
-      pointLabels: {show: true}
     },
     series:[
          {label: "{% trans 'Billing' %}" },
