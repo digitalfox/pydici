@@ -193,20 +193,17 @@ def financialControl(request, start_date=None, end_date=None):
     response["Content-Disposition"] = "attachment; filename=financialControl.dat"
     writer = csv.writer(response, delimiter=';')
 
-
-
-
     financialConditions = {}
     for fc in FinancialCondition.objects.all():
         financialConditions["%s-%s" % (fc.mission_id, fc.consultant_id)] = (fc.daily_rate, fc.bought_daily_rate)
 
     # Header
-    header = [_("Fiscal year"), _("month"), _("type"), _("nature"), _("Accounting column"),
-              _("Lead subsidiary"), _("client company"), _("client company code"), _("client organization"),
-              _("Lead"), _("Deal id"), _(u"Lead Price (k€)"),
+    header = [_("Fiscal year"), _("Month"), _("Type"), _("Nature"), _("Accounting column"),
+              _("Lead subsidiary"), _("Client company"), _("Client company code"), _("Client organization"),
+              _("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Lead responsible"), _("Lead responsible trigramme"),
               _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
               _("Consultant subsidiary"), _("Consultant team"), _("Trigramme"), _("Consultant"), _("subcontractor"), _("cross billing"),
-              _("Objective rate"), _("Daily rate"), _("Bought daily rate"), _("BudgetType"), _("Quantity (days)"), _(u"Quantity (€)")]
+              _(u"Objective rate (€)"), _("Daily rate"), _("Bought daily rate"), _("Budget Type"), _("Quantity (days)"), _(u"Quantity (€)")]
 
     writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in header])
 
@@ -219,7 +216,7 @@ def financialControl(request, start_date=None, end_date=None):
     missionsIdsFromTimesheet = Mission.objects.filter(probability__gt=0, timesheet__working_date__gte=start_date, timesheet__working_date__lt=nextMonth(end_date)).values_list("id", flat=True)
     missionsIds = set(list(missionsIdsFromStaffing) + list(missionsIdsFromTimesheet))
     missions = Mission.objects.filter(id__in=missionsIds)
-    missions = missions.distinct().select_related().prefetch_related("lead__client__organisation__company")
+    missions = missions.distinct().select_related().prefetch_related("lead__client__organisation__company", "lead__responsible")
 
     for mission in missions:
         missionRow = []
@@ -236,8 +233,11 @@ def financialControl(request, start_date=None, end_date=None):
             missionRow.append(mission.lead.name)
             missionRow.append(mission.lead.deal_id)
             missionRow.append(formats.number_format(mission.lead.sales))
+            if mission.lead.responsible:
+                missionRow.append(mission.lead.responsible.name)
+                missionRow.append(mission.lead.responsible.trigramme)
         else:
-            missionRow.extend(["unknown for now", "", "", "", "", "", 0])
+            missionRow.extend(["unknown for now", "", "", "", "", "", 0, "", ""])
         missionRow.append(mission.description)
         missionRow.append(mission.deal_id)
         missionRow.append(mission.billing_mode)
