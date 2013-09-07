@@ -57,6 +57,9 @@ pydici_patterns += patterns('core.views',
     url(r'^mobile$', 'mobile_index', name='mobile_index'),
     url(r'^dashboard$', 'dashboard', name='dashboard'),
     url(r'^forbiden', 'forbiden', name='forbiden'),
+    url(r'^financial-control//?$', 'financialControl'),
+    url(r'^financial-control/(?P<start_date>\d{6})/?$', 'financialControl'),
+    url(r'^financial-control/(?P<start_date>\d{6})/(?P<end_date>\d{6})/?$', 'financialControl'),
 )
 
 # Lead module

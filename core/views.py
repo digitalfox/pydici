@@ -5,9 +5,15 @@ Pydici core views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+import csv
+import datetime
+
 from django.shortcuts import render
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.utils.translation import ugettext as _
+from django.utils import formats
 
 from core.decorator import pydici_non_public
 from leads.models import Lead
@@ -16,6 +22,8 @@ from crm.models import Company, Contact
 from staffing.models import Mission
 from billing.models import ClientBill
 from people.views import consultant_home
+from core.utils import nextMonth, previousMonth
+
 import pydici.settings
 
 
@@ -164,6 +172,142 @@ def dashboard(request):
     accross different modules"""
 
     return render(request, "core/dashboard.html")
+
+
+@pydici_non_public
+def financialControl(request, start_date=None, end_date=None):
+    """Financial control extraction. This view is intented to be processed by 
+    a spreadsheet or a financial package software"""
+    from staffing.models import Mission, FinancialCondition, Timesheet, Staffing
+    from expense.models import Expense
+    if end_date is None:
+        end_date = previousMonth(datetime.date.today())
+    else:
+        end_date = datetime.date(int(end_date[0:4]), int(end_date[4:6]), 1)
+    if start_date is None:
+        start_date = (datetime.date.today().replace(day=1) - datetime.timedelta(30 * 12)).replace(day=1)
+    else:
+        start_date = datetime.date(int(start_date[0:4]), int(start_date[4:6]), 1)
+
+    response = HttpResponse(content_type="text/plain")
+    response["Content-Disposition"] = "attachment; filename=financialControl.dat"
+    writer = csv.writer(response, delimiter=';')
+
+    financialConditions = {}
+    for fc in FinancialCondition.objects.all():
+        financialConditions["%s-%s" % (fc.mission_id, fc.consultant_id)] = (fc.daily_rate, fc.bought_daily_rate)
+
+    # Header
+    header = [_("Fiscal year"), _("Month"), _("Type"), _("Nature"), _("Accounting column"),
+              _("Lead subsidiary"), _("Client company"), _("Client company code"), _("Client organization"),
+              _("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Lead responsible"), _("Lead responsible trigramme"),
+              _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
+              _("Consultant subsidiary"), _("Consultant team"), _("Trigramme"), _("Consultant"), _("subcontractor"), _("cross billing"),
+              _(u"Objective rate (€)"), _("Daily rate"), _("Bought daily rate"), _("Budget Type"), _("Quantity (days)"), _(u"Quantity (€)")]
+
+    writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in header])
+
+    timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=nextMonth(end_date))
+    staffings = Staffing.objects.filter(staffing_date__gte=start_date, staffing_date__lt=nextMonth(end_date))
+
+    consultants = dict([(i.trigramme.lower(), i) for i in Consultant.objects.all().select_related()])
+
+    missionsIdsFromStaffing = Mission.objects.filter(probability__gt=0, staffing__staffing_date__gte=start_date, staffing__staffing_date__lt=nextMonth(end_date)).values_list("id", flat=True)
+    missionsIdsFromTimesheet = Mission.objects.filter(probability__gt=0, timesheet__working_date__gte=start_date, timesheet__working_date__lt=nextMonth(end_date)).values_list("id", flat=True)
+    missionsIds = set(list(missionsIdsFromStaffing) + list(missionsIdsFromTimesheet))
+    missions = Mission.objects.filter(id__in=missionsIds)
+    missions = missions.distinct().select_related().prefetch_related("lead__client__organisation__company", "lead__responsible")
+
+    for mission in missions:
+        missionRow = []
+        missionRow.append(start_date.year)
+        missionRow.append(end_date.isoformat())
+        missionRow.append("timesheet")
+        missionRow.append(mission.nature)
+        missionRow.append("mission accounting (tbd)")
+        if mission.lead:
+            missionRow.append(mission.lead.subsidiary)
+            missionRow.append(mission.lead.client.organisation.company.name)
+            missionRow.append(mission.lead.client.organisation.company.code)
+            missionRow.append(mission.lead.client.organisation.name)
+            missionRow.append(mission.lead.name)
+            missionRow.append(mission.lead.deal_id)
+            missionRow.append(formats.number_format(mission.lead.sales))
+            if mission.lead.responsible:
+                missionRow.append(mission.lead.responsible.name)
+                missionRow.append(mission.lead.responsible.trigramme)
+        else:
+            missionRow.extend(["unknown for now", "", "", "", "", "", 0, "", ""])
+        missionRow.append(mission.description)
+        missionRow.append(mission.deal_id)
+        missionRow.append(mission.billing_mode)
+        missionRow.append(formats.number_format(mission.price))
+        for consultant in mission.consultants().select_related().prefetch_related("manager"):
+            consultantRow = missionRow[:]  # copy
+            daily_rate, bought_daily_rate = financialConditions.get("%s-%s" % (mission.id, consultant.id), [0, 0])
+            rateObjective = consultant.getRateObjective(end_date)
+            if rateObjective:
+                rateObjective = rateObjective.daily_rate
+            else:
+                rateObjective = None
+            doneDays = timesheets.filter(mission_id=mission.id, consultant=consultant.id).aggregate(Sum("charge")).values()[0] or 0
+            forecastedDays = staffings.filter(mission_id=mission.id, consultant=consultant.id).aggregate(Sum("charge")).values()[0] or 0
+            consultantRow.append(consultant.company)
+            if consultant.manager:
+                consultantRow.append(consultant.manager.trigramme)
+            else:
+                consultantRow.append("")
+            consultantRow.append(consultant.trigramme)
+            consultantRow.append(consultant.name)
+            consultantRow.append(consultant.subcontractor)
+            if mission.lead:
+                consultantRow.append(mission.lead.subsidiary != consultant.company)
+            else:
+                consultantRow.append("unknown for now")
+            consultantRow.append(rateObjective)
+            consultantRow.append(formats.number_format(daily_rate))
+            consultantRow.append(formats.number_format(bought_daily_rate))
+            # Timesheet row
+            for budgetType, quantity in (("done", doneDays), ("forecast", forecastedDays)):
+                row = consultantRow[:]  # Copy
+                row.append(budgetType)
+                row.append(formats.number_format(quantity))
+                row.append(formats.number_format(quantity * daily_rate))
+                writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
+#
+    for expense in Expense.objects.filter(expense_date__gte=start_date, expense_date__lt=nextMonth(end_date), chargeable=False).select_related():
+        row = []
+        row.append(start_date.year)
+        row.append(end_date.isoformat())
+        row.append("expense")
+        row.append(expense.category)
+        row.append("expense accounting (tbd)")
+        if expense.lead:
+            row.append(expense.lead.subsidiary)
+            row.extend(["", "", "", ""])
+            row.append(expense.lead.deal_id)
+        else:
+            row.extend(["", "", "", "", "", ""])
+        row.extend(["", "", "", "", ""])
+        try:
+            consultant = consultants[expense.user.username.lower()]
+            row.append(consultant.company.name)
+            row.append(consultant.manager.trigramme)
+            row.append(consultant.trigramme)
+            row.append(consultant.name)
+            row.append(consultant.subcontractor)
+            if expense.lead:
+                row.append(expense.lead.subsidiary != consultant.company)
+            else:
+                row.append("unknown for now")
+        except KeyError:
+            # Exepense user is not a consultant
+            row.extend(["", "", "", "", "", ""])
+        row.extend(["", "", "", "", ""])
+        row.append(expense.amount)  # TODO: compute pseudo HT amount
+        writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
+
+    return response
 
 
 def internal_error(request):
