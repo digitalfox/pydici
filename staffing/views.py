@@ -1101,7 +1101,7 @@ def graph_profile_rates_jqp(request):
 
 
 @pydici_non_public
-# @cache_page(60 * 10)
+@cache_page(60 * 10)
 def graph_consultant_rates_jqp(request, consultant_id):
     """Nice graph of consultant rates"""
     dailyRateData = []  # Consultant daily rate data
