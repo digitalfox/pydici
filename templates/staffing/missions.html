@@ -1,6 +1,7 @@
 {% extends "admin/base_site.html" %}
 
 {% load i18n %}
+{% load render_table from django_tables2 %}
 
 {% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
 
@@ -24,45 +25,11 @@
     <br/><i><a href='{% url 'missions' %}'>{% trans "Only display active missions" %}</a></i><br/><br/>
 {% else %}
     <h1>{% trans "Active missions" %}</h1>
-    <br/><i><a href="{% url 'all-missions' %}">{% trans "Display all missions" %}</a></i><br/><br/>
+    <br/><i><a href="{% url 'all-missions' %}">{% trans "Also display inactive missions" %}</a></i><br/><br/>
 {% endif %}
 
+  {% render_table missionTable %}
 
-<table>
-<tr><th>{% trans "Name" %}</th><th>{% trans "Mission id" %}</th><th>{% trans "Probability" %}</th><th></th></tr>
-{% for mission in missions %}
-	{% ifchanged mission.nature %}
-	   <tr><th>{{ mission.get_nature_display }}</th></tr>
-	{% endifchanged %}
-	<tr {%cycle 'class="row1"' 'class="row2"' %} id="mission_{{ mission.id }}">
-	    <td scope="row"><a href="{% url 'staffing.views.mission_home' mission.id %}", title='{% blocktrans %}Defines {{ mission }} staffing{% endblocktrans %}'>{{ mission }}</a></td>
-	    <td>{{ mission.mission_id }}</td>
-	    <td>{{ mission.get_probability_display }} </td>
-	    <td scope="row">
-	       {% if mission.active %}
-	           <a href="javascript:;"
-	              onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}',
-	                               process_mission_archive)"
-	              title='{% blocktrans %}Archive {{ mission }}{% endblocktrans %}'>
-	              <em>{% trans "Archive" %}</em></a>
-	       {% endif %}
-	    </td>
-	    <td scope="row"><a href="{% url 'admin:staffing_mission_change' mission.id %}?return_to={% if all %}{% url 'all-missions' %}{% else %}{% url 'missions' %}{% endif %}", title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', class='changelink'><em>{% trans "Change" %}</em></a></td>
-	    <td>{% if mission.active %}
-	           {% if mission.no_more_staffing_since %}
-	               {% trans "This mission has no staffing in future" %}
-	           {% else %}
-		           {% if mission.no_staffing_update_since %}
-	                   {% trans "Staffing has not been updated recently" %}
-	               {% endif %}
-               {% endif %}
-            {% endif %}
-	    </td>
-	</tr>
-{% endfor %}
-</table>
-
-<br><br>
 </div>
 
 <script type="text/JavaScript">
@@ -73,7 +40,7 @@
             alert("{% trans 'Archiving failed' %}");
         }
         else {
-            $("#mission_" + data.id).hide("fast");
+            $("#mission_" + data.id).closest("tr").hide("fast");
         }
     };
 -->

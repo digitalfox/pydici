@@ -5,13 +5,12 @@ Pydici staffing views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date, timedelta, datetime, time
+from datetime import date, timedelta, datetime
 import csv
 import json
-import itertools
 
-from matplotlib.figure import Figure
 from ajax_select.fields import autoselect_fields_check_can_add
+from django_tables2   import RequestConfig
 
 
 from django.shortcuts import render, redirect
@@ -20,7 +19,6 @@ from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
-from django.core.cache import cache
 from django.db.models import Sum, Count, Q
 from django.db import connections
 from django.utils.safestring import mark_safe
@@ -36,10 +34,11 @@ from people.models import ConsultantProfile, RateObjective
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
                                   TimesheetForm, MassStaffingForm, MissionContactForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-                              to_int_or_round, print_png, COLORS, convertDictKeyToDateTime
+                              to_int_or_round, COLORS, convertDictKeyToDateTime
 from core.decorator import pydici_non_public
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
                                   sortMissions, holidayDays, staffingDates
+from staffing.tables import MissionTable
 
 
 @pydici_non_public
@@ -51,8 +50,11 @@ def missions(request, onlyActive=True):
     else:
         missions = Mission.objects.all()
         allMissions = True
+    missionTable = MissionTable(missions)
+    RequestConfig(request, paginate={"per_page": 50}).configure(missionTable)
     return render(request, "staffing/missions.html",
                   {"missions": missions,
+                   "missionTable": missionTable,
                    "all": allMissions,
                    "user": request.user})
 

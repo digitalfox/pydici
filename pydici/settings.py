@@ -158,6 +158,7 @@ INSTALLED_APPS = [
     'taggit_templatetags',
     'permissions',
     'workflows',
+    'django_tables2',
 ]
 
 if DEBUG:
