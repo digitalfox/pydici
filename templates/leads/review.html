@@ -1,5 +1,6 @@
 {% extends "admin/base_site.html" %}
 {% load i18n %}
+{% load render_table from django_tables2 %}
 
 {% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
 
@@ -22,67 +23,15 @@
 	</script>
 
 <br/>
-    {% if active_leads %}
-    <div class="imodule">
-        <table summary="Leads">
-        <caption>{% trans "All active leads" %}</caption>
-        <tr>
-                <td><b>{% trans "Lead" %}</b></td>
-                <td><b>{% trans "Deal id" %}</b></td>
-                <td><b>{% trans "Subsidiary" %}</b></td>
-                <td><b>{% trans "Responsible" %}</b></td>
-                <td><b>{% trans "Staffing" %}</b></td>
-                <td><b>{% trans "Sales (k€)" %}</b></td>
-                <td><b>{% trans "Status" %}</b></td>
-                <td><b>{% trans "Due date" %}</b></td>
-                <td><b>{% trans "Starting" %}</b></td>
-        </tr>
-        {% for lead in active_leads %}
-            <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><a href="{% url 'leads.views.detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
-                <td>{{ lead.deal_id }}</td>
-                <td>{{ lead.subsidiary }}</td>
-                <td>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
-                <td>{{ lead.staffing_list }}</td>
-                <td>{{ lead.sales }}</td>
-                <td>{{ lead.get_state_display }}</td>
-                <td>{{ lead.due_date }}</td>
-                <td>{{ lead.start_date }}</td>
-            </tr>
-        {% endfor %}
-        </table>
-    </div>
+
+    {% if active_leads_table %}
+    <h2>{% trans "All active leads" %}</h2>
+        {% render_table active_leads_table %}
     {% endif %}
-    {% if recent_archived_leads %}
-    <div class="imodule">
-        <table summary="Leads">
-        <caption>{% trans "Recent won, lost or forgiven leads" %}</caption>
-        <tr>
-                <td><b>{% trans "Lead" %}</b></td>
-                <td><b>{% trans "Deal id" %}</b></td>
-                <td><b>{% trans "Subsidiary" %}</b></td>
-                <td><b>{% trans "Responsible" %}</b></td>
-                <td><b>{% trans "Staffing" %}</b></td>
-                <td><b>{% trans "Sales (k€)" %}</b></td>
-                <td><b>{% trans "Status" %}</b></td>
-                <td><b>{% trans "Updated" %}</b></td>
-                <td><b>{% trans "Starting" %}</b></td>
-        </tr>
-        {% for lead in recent_archived_leads %}
-            <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><a href="{% url 'leads.views.detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
-                <td>{{ lead.deal_id }}</td>
-                <td>{{ lead.subsidiary }}</td>
-                <td>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
-                <td>{{ lead.staffing_list }}</td>
-                <td>{{ lead.sales }}</td>
-                <td>{{ lead.get_state_display }}</td>
-                <td>{{ lead.update_date_strf }}</td>
-                <td>{{ lead.start_date }}</td>
-            </tr>
-        {% endfor %}
-        </table>
-    </div>
+
+    {% if recent_archived_leads_table %}
+    <h2>{% trans "Recent won, lost or forgiven leads" %}</h2>
+        {% render_table recent_archived_leads_table %}
     {% endif %}
 </div>
 

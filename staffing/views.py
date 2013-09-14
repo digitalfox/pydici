@@ -53,8 +53,7 @@ def missions(request, onlyActive=True):
     missionTable = MissionTable(missions)
     RequestConfig(request, paginate={"per_page": 50}).configure(missionTable)
     return render(request, "staffing/missions.html",
-                  {"missions": missions,
-                   "missionTable": missionTable,
+                  {"missionTable": missionTable,
                    "all": allMissions,
                    "user": request.user})
 

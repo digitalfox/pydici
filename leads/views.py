@@ -23,12 +23,15 @@ from django.contrib.auth.decorators import permission_required
 
 from taggit.models import Tag
 from taggit_suggest.utils import suggest_tags
+from django_tables2   import RequestConfig
 
 from core.utils import send_lead_mail, sortedValues, COLORS
 from leads.models import Lead
+from leads.tables import LeadTable
 import pydici.settings
 from core.utils import capitalize, getLeadDirs, createProjectTree
 from core.decorator import pydici_non_public
+
 
 
 @pydici_non_public
@@ -173,9 +176,14 @@ def review(request):
     recentArchivedLeads = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
                                                       Q(state="SLEEPING"))
     recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date").select_related()
+    recentArchivedLeadsTable = LeadTable(recentArchivedLeads)
+    RequestConfig(request, paginate={"per_page": 50}).configure(recentArchivedLeadsTable)
+    activeLeadsTable = LeadTable(Lead.objects.active().select_related().order_by("creation_date"))
+    RequestConfig(request, paginate={"per_page": 50}).configure(activeLeadsTable)
     return render(request, "leads/review.html",
                   {"recent_archived_leads": recentArchivedLeads,
-                   "active_leads": Lead.objects.active().select_related().order_by("creation_date"),
+                   "recent_archived_leads_table": recentArchivedLeadsTable,
+                   "active_leads_table": activeLeadsTable,
                    "user": request.user})
 
 
