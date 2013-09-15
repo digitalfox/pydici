@@ -34,6 +34,10 @@ class ExpenseCategory(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        verbose_name = _("Expense category")
+        verbose_name_plural = _("Expense categories")
+
 
 class Expense(models.Model):
     """Consultant expense"""
@@ -67,3 +71,7 @@ class Expense(models.Model):
             return wf.get_allowed_transitions(self, user)
         else:
             return []
+
+    class Meta:
+        verbose_name = _("Expense")
+        verbose_name_plural = _("Expenses")
