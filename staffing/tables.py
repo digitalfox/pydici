@@ -24,3 +24,4 @@ class MissionTable(tables.Table):
         model = Mission
         sequence = ("name", "nature", "mission_id", "probability", "price", "active", "old_forecast", "no_forecast", "archive")
         fields = sequence
+        attrs = {"class": "pydici-tables2"}

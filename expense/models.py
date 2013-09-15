@@ -43,7 +43,7 @@ class Expense(models.Model):
     """Consultant expense"""
     description = models.CharField(_("Description"), max_length=200)
     user = models.ForeignKey(User)
-    lead = models.ForeignKey(Lead, null=True, blank=True)
+    lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"))
     chargeable = models.BooleanField(_("Chargeable"))
     creation_date = models.DateField(_("Date"))
     expense_date = models.DateField(_("Expense date"))

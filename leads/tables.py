@@ -22,3 +22,4 @@ class LeadTable(tables.Table):
         model = Lead
         sequence = ("name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "due_date", "start_date")
         fields = sequence
+        attrs = {"class": "pydici-tables2"}

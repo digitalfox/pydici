@@ -6,7 +6,6 @@ Pydici expense views. Http request are processed here.
 """
 
 from datetime import date, timedelta
-import csv
 import mimetypes
 import workflows.utils as wf
 import permissions.utils as perm
@@ -23,7 +22,7 @@ from django.contrib import messages
 
 from expense.forms import ExpenseForm
 from expense.models import Expense
-from expense.tables import ExpenseTable
+from expense.tables import ExpenseTable, ExpenseWorkflowTable
 from people.models import Consultant
 from staffing.models import Mission
 from core.decorator import pydici_non_public
@@ -87,13 +86,15 @@ def expenses(request, expense_id=None):
     else:
         managed_expenses = team_expenses
 
-    # Add state and transitions to expense list
-    user_expenses = [(e, e.state(), None) for e in user_expenses]  # Don't compute transitions for user exp.
-    managed_expenses = [(e, e.state(), e.transitions(request.user)) for e in managed_expenses]
+    userExpenseTable = ExpenseWorkflowTable(user_expenses)
+    userExpenseTable.transitions = dict([(e.id, []) for e in user_expenses])  # Inject expense allowed transitions. Always empty for own expense
+    userExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in user_expenses])  # Inject expense edit permissions
+    RequestConfig(request, paginate={"per_page": 50}).configure(userExpenseTable)
 
-    # Sort expenses
-    user_expenses.sort(key=lambda x: "%s-%s" % (x[1], x[0].id))  # state, then creation date
-    managed_expenses.sort(key=lambda x: "%s-%s" % (x[0].user, x[1]))  # user then state
+    managedExpenseTable = ExpenseWorkflowTable(managed_expenses)
+    managedExpenseTable.transitions = dict([(e.id, e.transitions(request.user)) for e in managed_expenses])  # Inject expense allowed transitions
+    managedExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in managed_expenses])  # Inject expense edit permissions
+    RequestConfig(request, paginate={"per_page": 50}).configure(managedExpenseTable)
 
     # Prune old expense in terminal state (no more transition)
     for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(30))):
@@ -102,8 +103,8 @@ def expenses(request, expense_id=None):
             expense.save()
 
     return render(request, "expense/expenses.html",
-                  {"user_expenses": user_expenses,
-                   "managed_expenses": managed_expenses,
+                  {"user_expense_table": userExpenseTable,
+                   "managed_expense_table": managedExpenseTable,
                    "modify_expense": bool(expense_id),
                    "form": form,
                    "user": request.user})
