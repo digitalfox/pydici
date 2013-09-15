@@ -48,7 +48,6 @@
 {% endfor %}
 </table>
 </div>
-<a href="{% url 'expense.views.expenses_history' year.year %}?csv">{% trans "Export expenses in a spreadsheet" %}</a><br/><br/>
 {% else %}
     {% trans "No expense" %}
 {% endif %}
