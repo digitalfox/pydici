@@ -17,6 +17,7 @@ from core.templatetags.pydici_filters import link_to_consultant
 class ExpenseTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"))
     receipt = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_receipt' record.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>""")
+    state = tables.Column(sortable=False, verbose_name=_("State"))
 
     def render_user(self, value):
         return link_to_consultant(value)
