@@ -1,0 +1,115 @@
+/* pydici theme for django tables 2 */
+
+table.pydici-tables2 {
+    border-collapse: collapse;
+    border-color: #CCC;
+    border: 1px solid #DDD;
+}
+
+
+table.pydici-tables2 a:link,
+table.pydici-tables2 a:visited,
+table.pydici-tables2 + ul.pagination > li > a {
+    text-decoration: none;
+}
+
+
+table.pydici-tables2 td,
+table.pydici-tables2 th {
+    padding: 5px;
+    line-height: 13px;
+    border-bottom: 1px solid #EEE;
+    border-left: 1px solid #DDD;
+    text-align: left;
+}
+
+table.pydici-tables2 thead th:first-child,
+table.pydici-tables2 thead td:first-child {
+    border-left: none !important;
+}
+
+table.pydici-tables2 thead th,
+table.pydici-tables2 thead td {
+    background: #FCFCFC url(../img/header-bg.png) left bottom repeat-x;
+    border-bottom: 1px solid #DDD;
+    padding: 2px 5px;
+    font-size: 11px;
+    vertical-align: middle;
+    color: #666;
+}
+
+table.pydici-tables2 thead th > a:link,
+table.pydici-tables2 thead th > a:visited {
+    color: #666;
+}
+
+table.pydici-tables2 thead th.orderable > a {
+    padding-right: 20px;
+    background: url(../img/arrow-inactive-up.png) right center no-repeat;
+}
+table.pydici-tables2 thead th.orderable.asc > a {
+    background-image: url(../img/arrow-active-up.png);
+}
+table.pydici-tables2 thead th.orderable.desc > a {
+    background-image: url(../img/arrow-active-down.png);
+}
+
+
+table.pydici-tables2 + ul.pagination {
+    background: white url(../img/pagination-bg.gif) left 180% repeat-x;
+    overflow: auto;
+    margin: 0;
+    padding: 10px;
+    border: 1px solid #DDD;
+    list-style: none;
+    list-style-type: none; 
+}
+
+table.pydici-tables2 + ul.pagination > li {
+    float: left;
+    line-height: 22px;
+    margin-left: 10px;
+    list-style-type: none;
+}
+
+table.pydici-tables2 + ul.pagination > li:first-child {
+    margin-left: 0;
+}
+
+table.pydici-tables2 + ul.pagination > li.cardinality {
+    float: right;
+    color: #8d8d8d;
+}
+
+table.pydici-tables2 > tbody > tr > td > span.true,
+table.pydici-tables2 > tbody > tr > td > span.false {
+    background-position: top left;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 10px;
+    overflow: hidden;
+    text-indent: -200px;
+    width: 10px;
+}
+
+table.pydici-tables2 > tbody > tr > td > .missing {
+    background: transparent url(../img/missing.png) right center no-repeat;
+    color: #717171;
+    padding-right: 20px;
+}
+
+table.pydici-tables2 > tbody > tr > td > .missing:hover {
+    color: #333;
+}
+
+table.pydici-tables2 > tbody > tr > td > span.true {
+    background-image: url(../img/true.gif);
+}
+
+table.pydici-tables2 > tbody > tr > td > span.false {
+    background-image: url(../img/false.gif);
+}
+
+div.table-container {
+    display: inline-block;
+}
