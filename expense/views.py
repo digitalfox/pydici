@@ -11,19 +11,19 @@ import mimetypes
 import workflows.utils as wf
 import permissions.utils as perm
 from workflows.models import Transition
+from django_tables2 import RequestConfig
 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.db.models import Q
-from django.views.generic.dates import ArchiveIndexView
-from django.views.generic.dates import YearArchiveView
 from django.shortcuts import render
 from django.contrib import messages
 
 
 from expense.forms import ExpenseForm
 from expense.models import Expense
+from expense.tables import ExpenseTable
 from people.models import Consultant
 from staffing.models import Mission
 from core.decorator import pydici_non_public
@@ -128,7 +128,7 @@ def expense_receipt(request, expense_id):
 
 
 @pydici_non_public
-def expenses_history(request, year):
+def expenses_history(request):
     """Display expense history.
     @param year: year of history. If None, display recent items and year index"""
     expenses = Expense.objects.all().select_related().prefetch_related("clientbill_set", "user", "lead")
@@ -144,10 +144,12 @@ def expenses_history(request, year):
     if "csv" in request.GET:
         return csv_expenses(request, expenses)
 
-    if year:
-        return YearArchiveView.as_view(queryset=expenses, date_field="expense_date", year=year, make_object_list=True)(request)
-    else:
-        return ArchiveIndexView.as_view(queryset=expenses, date_field="expense_date")(request)
+    expenseTable = ExpenseTable(expenses)
+    RequestConfig(request, paginate={"per_page": 50}).configure(expenseTable)
+
+    return render(request, "expense/expense_archive.html",
+                  {"expense_table": expenseTable,
+                   "user": request.user})
 
 
 @pydici_non_public

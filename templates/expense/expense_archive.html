@@ -1,6 +1,7 @@
 {% extends "admin/base_site.html" %}
 
 {% load i18n %}
+{% load render_table from django_tables2 %}
 
 {% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
 
@@ -12,18 +13,7 @@
 
 {% block content %}
 
-<h1>{% trans "Last expenses" %}</h1>
-<div class="content-large">
-{% with latest|slice:":50" as expenses %}
-    {% include "expense/expense_list.html" %}
-{% endwith %}
-</div>
-
 <h1>{% trans "Expenses archive" %}</h1>
-<ul>
-{% for date in date_list %}
-    <li><a href="{% url 'expense.views.expenses_history' date.year %}">{{ date.year }}</a></li>
-{% endfor %}
-</ul>
+{% render_table expense_table %}
 
 {% endblock %}
