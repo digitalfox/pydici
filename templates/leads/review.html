@@ -24,12 +24,12 @@
 
 <br/>
 
-    {% if active_leads_table %}
+    {% if active_leads_table.data %}
     <h2>{% trans "All active leads" %}</h2>
         {% render_table active_leads_table %}
     {% endif %}
 
-    {% if recent_archived_leads_table %}
+    {% if recent_archived_leads_table.data %}
     <h2>{% trans "Recent won, lost or forgiven leads" %}</h2>
         {% render_table recent_archived_leads_table %}
     {% endif %}
