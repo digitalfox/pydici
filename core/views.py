@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 from django.utils import formats
+from django.utils.html import strip_tags
 
 from core.decorator import pydici_non_public
 from leads.models import Lead
@@ -307,6 +308,19 @@ def financialControl(request, start_date=None, end_date=None):
         row.append(expense.amount)  # TODO: compute pseudo HT amount
         writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
 
+    return response
+
+
+def tableToCSV(table, filename="data.csv"):
+    """A view that convert a django_table2 object to a CSV in a http response object"""
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = "attachment; filename=%s" % filename
+    writer = csv.writer(response, delimiter=';')
+    header = [column.header for column in table.columns]
+    writer.writerow([h.encode("iso8859-1") for h in header])
+    for row in table.rows:
+        row = [strip_tags(cell) for column, cell in row.items()]
+        writer.writerow([item.encode("iso8859-1", "ignore") for item in row])
     return response
 
 

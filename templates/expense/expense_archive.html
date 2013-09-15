@@ -16,4 +16,6 @@
 <h1>{% trans "Expenses archive" %}</h1>
 {% render_table expense_table %}
 
+<br/>
+<a href="{% url 'expense.views.expenses_history' %}?csv">{% trans 'Export as CSV' %}</a>
 {% endblock %}

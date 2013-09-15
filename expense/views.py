@@ -27,6 +27,7 @@ from expense.tables import ExpenseTable
 from people.models import Consultant
 from staffing.models import Mission
 from core.decorator import pydici_non_public
+from core.views import tableToCSV
 
 
 @pydici_non_public
@@ -141,33 +142,15 @@ def expenses_history(request):
     if not perm.has_role(request.user, "expense paymaster"):
         expenses = expenses.filter(Q(user=request.user) | Q(user__in=user_team))
 
-    if "csv" in request.GET:
-        return csv_expenses(request, expenses)
-
     expenseTable = ExpenseTable(expenses)
     RequestConfig(request, paginate={"per_page": 50}).configure(expenseTable)
+
+    if "csv" in request.GET:
+        return tableToCSV(expenseTable, filename="expenses.csv")
 
     return render(request, "expense/expense_archive.html",
                   {"expense_table": expenseTable,
                    "user": request.user})
-
-
-@pydici_non_public
-def csv_expenses(request, expenses):
-    response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = "attachment; filename=%s" % _("expenses.csv")
-    writer = csv.writer(response, delimiter=';')
-    header = [_("People"), _("Description"), _("Lead"), _("Amount"), _("Chargeable"), _("Paid with corporate card"), _("State"), _("Expense date"), _("Update date"), _("Comments")]
-    writer.writerow([h.encode("iso8859-1") for h in header])
-    for e in expenses:
-        row = []
-        for item in [e.user, e.description, e.lead, e.amount, e.chargeable, e.corporate_card, e.state(), e.expense_date, e.update_date, e.comment]:
-            if isinstance(item, unicode):
-                row.append(item.encode("iso8859-1", "ignore"))
-            else:
-                row.append(item)
-        writer.writerow(row)
-    return response
 
 
 @pydici_non_public
