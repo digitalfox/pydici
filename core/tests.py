@@ -28,6 +28,7 @@ import pydici.settings
 # Python modules used by tests
 from urllib2 import urlparse
 from datetime import date
+import os
 
 TEST_USERNAME = "sre"
 TEST_PASSWORD = "sre"
@@ -267,6 +268,10 @@ class CrmModelTest(TestCase):
 class LeadModelTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
+
+    def setUp(self):
+        if not os.path.exists(pydici.settings.DOCUMENT_PROJECT_PATH):
+            os.makedirs(pydici.settings.DOCUMENT_PROJECT_PATH)
 
     def test_create_lead(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
