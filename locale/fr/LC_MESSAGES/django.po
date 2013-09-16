@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-16 21:28+0200\n"
-"PO-Revision-Date: 2013-09-16 21:28+0200\n"
+"POT-Creation-Date: 2013-09-16 23:08+0200\n"
+"PO-Revision-Date: 2013-09-16 23:08+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -49,7 +49,7 @@ msgstr "Quand un consultant est créé"
 #: actionset/models.py:27 actionset/models.py:47 crm/models.py:23
 #: crm/models.py:78 crm/models.py:230 expense/models.py:32 leads/models.py:54
 #: leads/tables.py:17 leads/views.py:140 people/models.py:25
-#: people/models.py:213 staffing/tables.py:20
+#: people/models.py:213 staffing/tables.py:26
 #: templates/crm/_contact_list.html:9
 #: templates/crm/clientcompany_detail.html:123
 #: templates/people/consultant.html:44
@@ -356,7 +356,7 @@ msgstr "Trigramme responsable affaire"
 msgid "Mission"
 msgstr "Mission"
 
-#: core/views.py:205 staffing/tables.py:19 staffing/views.py:700
+#: core/views.py:205 staffing/tables.py:25 staffing/views.py:700
 #: staffing/views.py:793 templates/people/consultant.html:45
 #: templates/staffing/consultant_base.html:30
 msgid "Mission id"
@@ -424,15 +424,15 @@ msgstr "Quantité (jours)"
 msgid "Quantity (€)"
 msgstr "Quantité (€)"
 
-#: core/templatetags/pydici_filters.py:89
+#: core/templatetags/pydici_filters.py:98
 msgid "My timesheet"
 msgstr "Ma feuille de temps"
 
-#: core/templatetags/pydici_filters.py:102
+#: core/templatetags/pydici_filters.py:111
 msgid "My staffing"
 msgstr "Mon staffing"
 
-#: core/templatetags/pydici_filters.py:113
+#: core/templatetags/pydici_filters.py:122
 msgid "Mail to support"
 msgstr "Courriel au support"
 
@@ -1042,23 +1042,23 @@ msgstr "Ticket restaurant"
 msgid "Financial condition"
 msgstr "Condition financière"
 
-#: staffing/tables.py:17
-msgid "Old fcast"
-msgstr "Prév. obsolètes"
+#: staffing/tables.py:23
+msgid "Fcast updt"
+msgstr "Prév. à jour"
 
-#: staffing/tables.py:17
-msgid "Old forecast"
-msgstr "Prévisions obsolètes"
+#: staffing/tables.py:23
+msgid "Up to date forecast"
+msgstr "Prévisions mise à jour récemment"
 
-#: staffing/tables.py:18
-msgid "No fcast"
-msgstr "Plus de prév."
+#: staffing/tables.py:24
+msgid "Fcast"
+msgstr "Prév"
 
-#: staffing/tables.py:18
-msgid "No forecast in future"
-msgstr "Plus de prévisions dans le futur"
+#: staffing/tables.py:24
+msgid "Forecast in future"
+msgstr "Prévisions dans le futur"
 
-#: staffing/tables.py:21
+#: staffing/tables.py:27
 msgid "Archiving"
 msgstr "Archivage"
 
@@ -2584,6 +2584,9 @@ msgstr "Équipe %(manager)s"
 #: templates/staffing/pdc_review.html:105
 msgid "Totals"
 msgstr "Totaux"
+
+#~ msgid "Old fcast"
+#~ msgstr "Prév. obsolètes"
 
 #~ msgid "To be refund to "
 #~ msgstr "À rembourser à "
