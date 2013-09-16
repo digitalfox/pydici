@@ -50,6 +50,15 @@ def split(value, arg):
 
 
 @register.filter
+def to_float(value, arg=None):
+    """Coerce value to float. Return unchanged value if cast fails"""
+    try:
+        return float(value)
+    except ValueError:
+        return value
+
+
+@register.filter
 def link_to_consultant(value, arg=None):
     """create a link to consultant if he exists
     @param value: consultant trigramme"""

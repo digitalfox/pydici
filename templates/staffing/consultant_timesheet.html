@@ -22,7 +22,7 @@
             <tr>
             {% for field in form  %}
                 {% if field.is_hidden %}
-	               <td {% if field.label|split:" "|last != "" and field.label|split:" "|first > field.label|split:" "|last %}style='background:rgba(255,0,0,0.3)'{% endif %} ">{{ field.label|split:" "|first|floatformat:-2 }}</td>
+	               <td {% if field.label|split:" "|last != "" and field.label|split:" "|first|to_float > field.label|split:" "|last|to_float %}style='background:rgba(255,0,0,0.3)'{% endif %} ">{{ field.label|split:" "|first|floatformat:-2 }}</td>
 	               <td>{{ field.label|split:" "|last|floatformat:-2 }}</td>
 	               </tr><tr>
                 {% else %}
