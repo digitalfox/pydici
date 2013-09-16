@@ -14,8 +14,8 @@ from staffing.models import Mission
 
 
 class MissionTable(tables.Table):
-    old_forecast = tables.BooleanColumn(accessor="no_staffing_update_since")
-    no_forecast = tables.BooleanColumn(accessor="no_more_staffing_since")
+    old_forecast = tables.BooleanColumn(accessor="no_staffing_update_since", verbose_name=_("Old fcast"), attrs={"th": {"title": _("Old forecast")}})
+    no_forecast = tables.BooleanColumn(accessor="no_more_staffing_since", verbose_name=_("No fcast"), attrs={"th": {"title": _("No forecast in future")}})
     mission_id = tables.Column(accessor="mission_id", verbose_name=_("Mission id"))
     name = tables.LinkColumn(accessor="__unicode__", verbose_name=_("Name"), viewname="staffing.views.mission_home", args=[A("pk")])
     archive = tables.TemplateColumn(template_name="staffing/_mission_table_archive_column.html", verbose_name=_("Archiving"))
