@@ -240,7 +240,7 @@ def financialControl(request, start_date=None, end_date=None):
         else:
             missionRow.extend(["unknown for now", "", "", "", "", "", 0, "", ""])
         missionRow.append(mission.description)
-        missionRow.append(mission.deal_id)
+        missionRow.append(mission.mission_id())
         missionRow.append(mission.billing_mode)
         missionRow.append(formats.number_format(mission.price))
         for consultant in mission.consultants().select_related().prefetch_related("manager"):
