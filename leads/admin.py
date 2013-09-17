@@ -62,12 +62,16 @@ class LeadAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
             if obj.state in ("OFFER_SENT", "NEGOTIATION", "WON"):
                 mission = Mission(lead=obj)
                 mission.price = obj.sales  # Initialise with lead price
+                mission.subsidiary = obj.subsidiary
                 mission.save()
                 # Create default staffing
                 mission.create_default_staffing()
                 messages.add_message(request, messages.INFO, ugettext("A mission has been initialized for this lead."))
 
         for mission in obj.mission_set.all():
+            if mission.subsidiary != obj.subsidiary:
+                mission.subsidiary = obj.subsidiary
+                mission.save()
             if obj.state == "WON":
                 mission.probability = 100
                 mission.active = True

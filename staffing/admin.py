@@ -15,13 +15,13 @@ from core.admin import ReturnToAppAdmin
 
 
 class MissionAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
-    list_display = ("lead", "description", "nature", "probability", "mission_id", "active", "update_date")
+    list_display = ("lead", "description", "nature", "probability", "mission_id", "subsidiary", "active", "update_date")
     list_display_links = ["lead", "description"]
     search_fields = ("lead__name", "description", "deal_id", "lead__client__organisation__company__name",
                    "lead__client__contact__name")
     ordering = ("lead", "description")
     date_hierarchy = "update_date"
-    list_filter = ["nature", "probability", "active"]
+    list_filter = ["nature", "probability", "subsidiary", "active"]
 
     actions = None
     form = MissionAdminForm

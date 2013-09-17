@@ -18,7 +18,7 @@ from datetime import datetime, date, timedelta
 
 from leads.models import Lead
 from people.models import Consultant
-from crm.models import MissionContact
+from crm.models import MissionContact, Subsidiary
 from actionset.utils import launchTrigger
 from actionset.models import ActionState
 from core.utils import disable_for_loaddata, cacheable, convertDictKeyToDateTime
@@ -48,6 +48,7 @@ class Mission(models.Model):
     price = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     contacts = models.ManyToManyField(MissionContact, blank=True)
+    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
 
     def __unicode__(self):
         if self.description and not self.lead:

@@ -200,7 +200,7 @@ def financialControl(request, start_date=None, end_date=None):
 
     # Header
     header = [_("Fiscal year"), _("Month"), _("Type"), _("Nature"), _("Accounting column"),
-              _("Lead subsidiary"), _("Client company"), _("Client company code"), _("Client organization"),
+              _("Mission subsidiary"), _("Client company"), _("Client company code"), _("Client organization"),
               _("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Lead responsible"), _("Lead responsible trigramme"),
               _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
               _("Consultant subsidiary"), _("Consultant team"), _("Trigramme"), _("Consultant"), _("subcontractor"), _("cross billing"),
@@ -226,8 +226,8 @@ def financialControl(request, start_date=None, end_date=None):
         missionRow.append("timesheet")
         missionRow.append(mission.nature)
         missionRow.append("mission accounting (tbd)")
+        missionRow.append(mission.subsidiary)
         if mission.lead:
-            missionRow.append(mission.lead.subsidiary)
             missionRow.append(mission.lead.client.organisation.company.name)
             missionRow.append(mission.lead.client.organisation.company.code)
             missionRow.append(mission.lead.client.organisation.name)
@@ -238,7 +238,7 @@ def financialControl(request, start_date=None, end_date=None):
                 missionRow.append(mission.lead.responsible.name)
                 missionRow.append(mission.lead.responsible.trigramme)
         else:
-            missionRow.extend(["unknown for now", "", "", "", "", "", 0, "", ""])
+            missionRow.extend(["", "", "", "", "", 0, "", ""])
         missionRow.append(mission.description)
         missionRow.append(mission.mission_id())
         missionRow.append(mission.billing_mode)
@@ -261,10 +261,7 @@ def financialControl(request, start_date=None, end_date=None):
             consultantRow.append(consultant.trigramme)
             consultantRow.append(consultant.name)
             consultantRow.append(consultant.subcontractor)
-            if mission.lead:
-                consultantRow.append(mission.lead.subsidiary != consultant.company)
-            else:
-                consultantRow.append("unknown for now")
+            consultantRow.append(mission.subsidiary != consultant.company)
             consultantRow.append(rateObjective)
             consultantRow.append(formats.number_format(daily_rate))
             consultantRow.append(formats.number_format(bought_daily_rate))

@@ -10,7 +10,8 @@
             "lead": 1,
             "price" : 10, 
             "deal_id": "1234",
-            "active": true
+            "active": true,
+            "subsidiary": 1
         }
     }, 
     {
@@ -23,7 +24,8 @@
             "nature": "PROD", 
             "lead": 2, 
             "deal_id": "4321",
-            "active": true
+            "active": true,
+            "subsidiary": 1
         }
     },
     {
@@ -36,7 +38,8 @@
             "nature": "PROD", 
             "lead": 2, 
             "deal_id": "4322",
-            "active": true
+            "active": true,
+            "subsidiary": 1
         }
     },   
     {
