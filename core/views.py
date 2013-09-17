@@ -186,7 +186,7 @@ def financialControl(request, start_date=None, end_date=None):
     else:
         end_date = datetime.date(int(end_date[0:4]), int(end_date[4:6]), 1)
     if start_date is None:
-        start_date = (datetime.date.today().replace(day=1) - datetime.timedelta(30 * 12)).replace(day=1)
+        start_date = previousMonth(previousMonth(datetime.date.today()))
     else:
         start_date = datetime.date(int(start_date[0:4]), int(start_date[4:6]), 1)
 
