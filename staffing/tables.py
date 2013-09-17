@@ -28,6 +28,6 @@ class MissionTable(tables.Table):
 
     class Meta:
         model = Mission
-        sequence = ("name", "nature", "mission_id", "probability", "price", "active", "no_forecast", "old_forecast", "archive")
+        sequence = ("name", "subsidiary", "nature", "mission_id", "probability", "price", "active", "no_forecast", "old_forecast", "archive")
         fields = sequence
         attrs = {"class": "pydici-tables2"}
