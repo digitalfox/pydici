@@ -14,12 +14,13 @@ from leads.models import Lead
 
 
 class LeadTable(tables.Table):
-    name = tables.LinkColumn(accessor="__unicode__", verbose_name=_("Name"), viewname="leads.views.detail", args=[A("pk")])
+    client = tables.LinkColumn(verbose_name=_("Client"), viewname="crm.views.company_detail", args=[A("client.organisation.company.id")])
+    name = tables.LinkColumn(verbose_name=_("Name"), viewname="leads.views.detail", args=[A("pk")])
     responsible = tables.LinkColumn(accessor="responsible", viewname="people.views.consultant_home", args=[A("responsible.id")])
     staffing_list = tables.Column(orderable=False)
 
     class Meta:
         model = Lead
-        sequence = ("name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "due_date", "start_date")
+        sequence = ("client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "due_date", "start_date")
         fields = sequence
         attrs = {"class": "pydici-tables2"}
