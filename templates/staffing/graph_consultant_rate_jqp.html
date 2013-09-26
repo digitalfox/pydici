@@ -67,6 +67,7 @@ $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                label: "{% trans 'Daily rate' %}",
                tickOptions: { formatString: '%d €' },
+               pad: 1.0,
                syncTicks : true,
            },
            y2axis: {
