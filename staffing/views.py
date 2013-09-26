@@ -1110,15 +1110,17 @@ def graph_consultant_rates_jqp(request, consultant_id):
     prodRateData = []  # Consultant production rate data
     minYData = []  # Min rate for month
     maxYData = []  # Max rate for month
+    objectiveRates = []  # Rate objective for month
     isoRateDates = []  # List of date in iso format for daily rates data
     isoProdDates = []  # List of date in iso format for production rates data
     graph_data = []  # Data that will be returned to jqplot
     consultant = Consultant.objects.get(id=consultant_id)
+    startDate = (date.today() - timedelta(24 * 30)).replace(day=1)
 
-    timesheets = Timesheet.objects.filter(consultant=consultant, charge__gt=0)
+    timesheets = Timesheet.objects.filter(consultant=consultant, charge__gt=0, working_date__gte=startDate)
     kdates = list(timesheets.dates("working_date", "month"))
 
-    # Avg daily rate / month
+    # Avg daily rate / month and objective rate
     for refDate in kdates:
         next_month = nextMonth(refDate)
         prodRate = consultant.getProductionRate(refDate, next_month)
@@ -1131,29 +1133,15 @@ def graph_consultant_rates_jqp(request, consultant_id):
             minYData.append(int(min([rate for rate, days in fc])))
             maxYData.append(int(max([rate for rate, days in fc])))
             isoRateDates.append(refDate.date().isoformat())
-
-    # Get rate objectives
-    objectives = RateObjective.objects.filter(consultant=consultant).order_by("start_date")
-    objectiveDates = []
-    objectiveRates = []
-    for objectiveDate, objectiveRate in objectives.values_list("start_date", "daily_rate"):
-        # Add last rate at same date if we are not processing first point
-        if objectiveRates:
-            objectiveDates.append(objectiveDate)
-            objectiveRates.append(objectiveRates[-1])
-        # Add current point
-        objectiveDates.append(objectiveDate)
-        objectiveRates.append(objectiveRate)
-    # Add last point (last date and last known rate)
-    if objectiveRates and kdates:
-        objectiveDates.append(kdates[-1].date())
-        objectiveRates.append(objectiveRates[-1])
-
-    isoObjectiveDates = [a.isoformat() for a in objectiveDates]  # List of date as string in ISO format
+        objectiveRate = consultant.getRateObjective(refDate)
+        if objectiveRate:
+            objectiveRates.append(objectiveRate.daily_rate)
+        else:
+            objectiveRates.append(None)
 
     # Add data to graph
     graph_data.append(zip(isoRateDates, dailyRateData))
-    graph_data.append(zip(isoObjectiveDates, objectiveRates))
+    graph_data.append(zip(isoRateDates, objectiveRates))
     graph_data.append(zip(isoRateDates, minYData))
     graph_data.append(zip(isoRateDates, maxYData))
     graph_data.append(zip(isoProdDates, prodRateData))
