@@ -1141,7 +1141,7 @@ def graph_consultant_rates_jqp(request, consultant_id):
 
     # Add data to graph
     graph_data.append(zip(isoRateDates, dailyRateData))
-    graph_data.append(zip(isoRateDates, objectiveRates))
+    graph_data.append(zip([d.date().isoformat() for d in kdates], objectiveRates))
     graph_data.append(zip(isoRateDates, minYData))
     graph_data.append(zip(isoRateDates, maxYData))
     graph_data.append(zip(isoProdDates, prodRateData))
