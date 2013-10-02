@@ -174,22 +174,23 @@ def mission_expenses(request, mission_id):
 @pydici_non_public
 def update_expense_state(request, expense_id, transition_id):
     """Do workflow transition for that expense"""
+    redirect = HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
     try:
         expense = Expense.objects.get(id=expense_id)
         if expense.user == request.user and not perm.has_role(request.user, "expense administrator"):
             messages.add_message(request, messages.WARNING, _("You cannot manage your own expense !"))
-            return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
+            return redirect
     except Expense.DoesNotExist:
         messages.add_message(request, messages.WARNING, _("Expense %s does not exist" % expense_id))
-        return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
+        return redirect
     try:
         transition = Transition.objects.get(id=transition_id)
     except Transition.DoesNotExist:
         messages.add_message(request, messages.ERROR, _("Transition %s does not exist" % transition_id))
-        return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
+        return redirect
 
     if wf.do_transition(expense, transition, request.user):
         messages.add_message(request, messages.SUCCESS, _("Successfully update expense"))
     else:
         messages.add_message(request, messages.ERROR, _("You cannot do this transition"))
-    return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
+    return redirect
