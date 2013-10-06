@@ -39,6 +39,25 @@ class ExpenseCategory(models.Model):
         verbose_name_plural = _("Expense categories")
 
 
+class ExpensePayment(models.Model):
+    """Payment (reimbursement) of a set of expenses to a consultant"""
+    payment_date = models.DateField(_("Payment date"))
+
+    def user(self):
+        if self.expense_set.exists():
+            return self.expense_set.all()[0].user
+
+    def amount(self):
+        amount = 0
+        for expense in self.expense_set.all():
+            amount += expense.amount
+        return amount
+
+    class Meta:
+        verbose_name = _("Expenses payment")
+        verbose_name_plural = _("Expenses payments")
+
+
 class Expense(models.Model):
     """Consultant expense"""
     description = models.CharField(_("Description"), max_length=200)
@@ -54,6 +73,7 @@ class Expense(models.Model):
     corporate_card = models.BooleanField(_("Paid with corporate card"), default=False)
     comment = models.TextField(_("Comments"), blank=True)
     workflow_in_progress = models.BooleanField(default=True)
+    expensePayment = models.ForeignKey(ExpensePayment, blank=True, null=True)
 
     def __unicode__(self):
         if self.lead:

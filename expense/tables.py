@@ -11,8 +11,9 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_bytes
 
 import django_tables2 as tables
+from django_tables2.utils import A
 
-from expense.models import Expense
+from expense.models import Expense, ExpensePayment
 from core.templatetags.pydici_filters import link_to_consultant
 
 
@@ -61,3 +62,18 @@ class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
         attrs = {"class": "pydici-tables2", "id": "managed_expense_workflow_table"}
         prefix = "managed_expense_workflow_table"
         orderable = False
+
+
+class ExpensePaymentTable(tables.Table):
+    user = tables.Column(verbose_name=_("Consultant"), sortable=False)
+    amount = tables.Column(verbose_name=_("Amount"), sortable=False)
+    id = tables.LinkColumn(viewname="expense.views.expense_payments", args=[A("pk")])
+
+    def render_user(self, value):
+        return link_to_consultant(value)
+
+    class Meta:
+        model = ExpensePayment
+        sequence = ("id", "user", "amount", "payment_date")
+        fields = sequence
+        attrs = {"class": "pydici-tables2", "id": "expense_payment_table"}

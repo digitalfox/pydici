@@ -145,6 +145,8 @@ pydici_patterns += patterns('expense.views',
     (r'^expense/mission/(?P<mission_id>\d+)$', 'mission_expenses'),
     (r'^expense/history/?$', 'expenses_history'),
     (r'^expense/chargeable/?$', 'chargeable_expenses'),
+    (r'^expense/payment/?$', 'expense_payments'),
+    (r'^expense/payment/(?P<expense_payment_id>\d+)$', 'expense_payments'),
 )
 
 # Actionset module

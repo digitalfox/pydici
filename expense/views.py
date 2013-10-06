@@ -20,9 +20,9 @@ from django.shortcuts import render
 from django.contrib import messages
 
 
-from expense.forms import ExpenseForm
-from expense.models import Expense
-from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable
+from expense.forms import ExpenseForm, ExpensePaymentForm
+from expense.models import Expense, ExpensePayment
+from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable, ExpensePaymentTable
 from people.models import Consultant
 from staffing.models import Mission
 from core.decorator import pydici_non_public
@@ -181,7 +181,6 @@ def chargeable_expenses(request):
                    "user": request.user})
 
 
-
 @pydici_non_public
 def update_expense_state(request, expense_id, transition_id):
     """Do workflow transition for that expense"""
@@ -205,3 +204,42 @@ def update_expense_state(request, expense_id, transition_id):
     else:
         messages.add_message(request, messages.ERROR, _("You cannot do this transition"))
     return redirect
+
+
+@pydici_non_public
+def expense_payments(request, expense_payment_id=None):
+    if not request.user.groups.filter(name="expense_requester").exists():
+        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+    try:
+        if expense_payment_id:
+            expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
+    except ExpensePayment.DoesNotExist:
+        messages.add_message(request, messages.ERROR, _("Expense payment %s does not exist" % expense_payment_id))
+        expense_payment_id = None
+        expensePayment = None
+
+    if request.method == "POST":
+        if expense_payment_id:
+            form = ExpensePaymentForm(request.POST, instance=expensePayment)
+        else:
+            form = ExpensePaymentForm(request.POST)
+        if form.is_valid():
+            expensePayment = form.save()
+            if form.cleaned_data["expenses"]:
+                for expense_id in form.cleaned_data["expenses"]:
+                    expense = Expense.objects.get(id=expense_id)
+                    expense.expensePayment = expensePayment
+                    expense.save()
+
+            return HttpResponseRedirect(urlresolvers.reverse("expense.views.expense_payments"))
+    else:
+        if expense_payment_id:
+            form = ExpensePaymentForm(instance=expensePayment)  # A form that edit current expense payment
+        else:
+            form = ExpensePaymentForm(initial={"payment_date": date.today()})  # An unbound form
+
+    return render(request, "expense/expense_payments.html",
+                  {"modify_expense_payment": bool(expense_payment_id),
+                   "expense_payment_table": ExpensePaymentTable(ExpensePayment.objects.all()),
+                   "form": form,
+                   "user": request.user})
