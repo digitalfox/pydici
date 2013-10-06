@@ -199,12 +199,12 @@ def financialControl(request, start_date=None, end_date=None):
         financialConditions["%s-%s" % (fc.mission_id, fc.consultant_id)] = (fc.daily_rate, fc.bought_daily_rate)
 
     # Header
-    header = [_("Fiscal year"), _("Month"), _("Type"), _("Nature"), _("Accounting column"),
-              _("Mission subsidiary"), _("Client company"), _("Client company code"), _("Client organization"),
-              _("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Lead responsible"), _("Lead responsible trigramme"),
-              _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
-              _("Consultant subsidiary"), _("Consultant team"), _("Trigramme"), _("Consultant"), _("subcontractor"), _("cross billing"),
-              _(u"Objective rate (€)"), _("Daily rate"), _("Bought daily rate"), _("Budget Type"), _("Quantity (days)"), _(u"Quantity (€)")]
+    header = ["FiscalYear", "Month", "Type", "Nature", "AccountingColumn",
+              "MissionSubsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
+              "Lead", "DealId", "LeadPrice", "LeadResponsible", "LeadResponsibleTrigramme",
+              "Mission", "MissionId", "BillingMode", "MissionPrice",
+              "ConsultantSubsidiary", "ConsultantTeam", "Trigramme", "Consultant", "Subcontractor", "CrossBilling",
+              "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros"]
 
     writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in header])
 
