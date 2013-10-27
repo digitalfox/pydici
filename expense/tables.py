@@ -21,7 +21,9 @@ class ExpenseTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"))
     lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads.views.detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
     receipt = tables.TemplateColumn("""{% if record.receipt %}<a href="{% url 'expense.views.expense_receipt' record.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}""")
-    state = tables.Column(verbose_name=_("State"))
+    state = tables.TemplateColumn("""{% load i18n %}{% if record.expensePayment %}
+                                                        <a href="{% url 'expense.views.expense_payment_detail' record.id %}">{% trans "Paid" %}</a>
+                                                    {% else %}{{ record.state }}{% endif %}""", verbose_name=_("State"))
 
     def render_user(self, value):
         return link_to_consultant(value)
