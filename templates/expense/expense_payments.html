@@ -16,6 +16,15 @@
 {% block content %}
 <div class="content-large">
 
+<h1>{% trans "Expenses to pay" %}</h1>
+{% if expense_to_pay_table.data %}
+    {% render_table expense_to_pay_table %}
+{% else %}
+    {% trans "No expense to pay" %}
+{% endif %}
+<br/><hr/><br/>
+
+
 {% if modify_expense_payment %}
     <h1>{% trans "Modify the expense payment" %}</h1>
 {% else %}
@@ -37,6 +46,8 @@
 <br/><hr/><br/>
 {% endif %}
 
+<br/><hr/><br/>
+<a href="{% url 'expense.views.expenses_history' %}">{% trans "Expenses history" %}</a>
 
 
 {% endblock %}

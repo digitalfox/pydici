@@ -208,7 +208,7 @@ def update_expense_state(request, expense_id, transition_id):
 
 @pydici_non_public
 def expense_payments(request, expense_payment_id=None):
-    if not request.user.groups.filter(name="expense_requester").exists():
+    if not request.user.groups.filter(name="expense_paymaster").exists() and not request.user.is_superuser:
         return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
     try:
         if expense_payment_id:
@@ -238,9 +238,13 @@ def expense_payments(request, expense_payment_id=None):
         else:
             form = ExpensePaymentForm(initial={"payment_date": date.today()})  # An unbound form
 
+    expensesToPay = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
+    expensesToPay = [expense for expense in expensesToPay if wf.get_state(expense).transitions.count() == 0]
+
     return render(request, "expense/expense_payments.html",
                   {"modify_expense_payment": bool(expense_payment_id),
                    "expense_payment_table": ExpensePaymentTable(ExpensePayment.objects.all()),
+                   "expense_to_pay_table": ExpenseTable(expensesToPay),
                    "form": form,
                    "user": request.user})
 
