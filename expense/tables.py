@@ -70,6 +70,8 @@ class ExpensePaymentTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"), sortable=False)
     amount = tables.Column(verbose_name=_("Amount"), sortable=False)
     id = tables.LinkColumn(viewname="expense.views.expense_payment_detail", args=[A("pk")])
+    detail = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_payment_detail' record.id %}"><img src='{{MEDIA_URL}}pydici/menu/magnifier.png'/></a>""", verbose_name=_("detail"), sortable=False)
+    modify = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>""", verbose_name=_("change"), sortable=False)
 
     def render_user(self, value):
         return link_to_consultant(value)
