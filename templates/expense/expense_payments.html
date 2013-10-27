@@ -1,0 +1,42 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+{% load permissions_tags %}
+{% load pydici_filters %}
+{% load render_table from django_tables2 %}
+
+{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{% trans "Expense payments" %}{% endblock %}
+
+{% block content %}
+<div class="content-large">
+
+{% if modify_expense_payment %}
+    <h1>{% trans "Modify the expense payment" %}</h1>
+{% else %}
+    <h1>{% trans "Add an expense payment" %}</h1>
+{% endif %}
+
+<form enctype="multipart/form-data" action='' method="POST">
+    
+    {{ form }}
+    <input type="submit" value="{% trans 'Save' %}"/>
+
+</form>
+
+<br/><hr/><br/>
+
+{% if expense_payment_table.data %}
+<h1>{% trans "Expense payments" %}</h1>
+    {% render_table expense_payment_table %}
+<br/><hr/><br/>
+{% endif %}
+
+
+
+{% endblock %}

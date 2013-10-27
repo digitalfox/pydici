@@ -1,0 +1,31 @@
+{% extends "admin/base.html" %}
+
+{% load i18n %}
+{% load permissions_tags %}
+{% load pydici_filters %}
+{% load render_table from django_tables2 %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/pydici.css" />
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}tables2/css/screen.css" />
+{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{% trans "Expense payment detail" %}{% endblock %}
+
+{% block content %}
+<div class="content-large">
+
+{% if expense_table.data %}
+<h1>{% trans "Expenses of payment " %}{{ expense_payment.id }} ({{ expense_payment.payment_date }})</h1>
+    {% render_table expense_table %}
+<br/><hr/><br/>
+{% trans "Total: " %} {{ expense_payment.amount }} €
+{% endif %}
+
+
+
+{% endblock %}

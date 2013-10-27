@@ -16,7 +16,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
 
 
@@ -242,4 +242,22 @@ def expense_payments(request, expense_payment_id=None):
                   {"modify_expense_payment": bool(expense_payment_id),
                    "expense_payment_table": ExpensePaymentTable(ExpensePayment.objects.all()),
                    "form": form,
+                   "user": request.user})
+
+
+@pydici_non_public
+def expense_payment_detail(request, expense_payment_id):
+    """Display detail of this expense payment"""
+    if not request.user.groups.filter(name="expense_requester").exists():
+        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+    try:
+        if expense_payment_id:
+            expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
+    except ExpensePayment.DoesNotExist:
+        messages.add_message(request, messages.ERROR, _("Expense payment %s does not exist" % expense_payment_id))
+        return redirect(expense_payments)
+
+    return render(request, "expense/expense_payment_detail.html",
+                  {"expense_payment": expensePayment,
+                   "expense_table": ExpenseTable(expensePayment.expense_set.all()),
                    "user": request.user})

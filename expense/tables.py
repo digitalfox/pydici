@@ -67,7 +67,7 @@ class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
 class ExpensePaymentTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"), sortable=False)
     amount = tables.Column(verbose_name=_("Amount"), sortable=False)
-    id = tables.LinkColumn(viewname="expense.views.expense_payments", args=[A("pk")])
+    id = tables.LinkColumn(viewname="expense.views.expense_payment_detail", args=[A("pk")])
 
     def render_user(self, value):
         return link_to_consultant(value)
