@@ -1029,7 +1029,10 @@ def graph_timesheet_rates_bar_jqp(request):
 
     prodRate = []
     for prod, nonprod in zip(nature_data["PROD"], nature_data["NONPROD"]):
-        prodRate.append("%.1f" % (100 * prod / (prod + nonprod)))
+        if (prod + nonprod) > 0:
+            prodRate.append("%.1f" % (100 * prod / (prod + nonprod)))
+        else:
+            prodRate.append("0")
 
     graph_data.append(zip(isoTimesheetMonths, prodRate))
 
