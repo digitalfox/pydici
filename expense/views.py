@@ -96,12 +96,6 @@ def expenses(request, expense_id=None):
     managedExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in managed_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 50}).configure(managedExpenseTable)
 
-    # Prune old expense in terminal state (no more transition)
-    for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(30))):
-        if wf.get_state(expense).transitions.count() == 0:
-            expense.workflow_in_progress = False
-            expense.save()
-
     return render(request, "expense/expenses.html",
                   {"user_expense_table": userExpenseTable,
                    "managed_expense_table": managedExpenseTable,
@@ -236,6 +230,7 @@ def expense_payments(request, expense_payment_id=None):
                 for expense_id in form.cleaned_data["expenses"]:
                     expense = Expense.objects.get(id=expense_id)
                     expense.expensePayment = expensePayment
+                    expense.workflow_in_progress = False
                     expense.save()
 
             return HttpResponseRedirect(urlresolvers.reverse("expense.views.expense_payments"))
