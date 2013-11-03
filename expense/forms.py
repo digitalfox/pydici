@@ -46,7 +46,7 @@ class ExpensePaymentForm(forms.Form):
                     user = expense.user
                 else:
                     if expense.user != user:
-                        raise ValidationError(_("All expenses of a payment must belongs to same users"))
+                        raise ValidationError(_("All expenses of a payment must belongs to same user"))
         return self.cleaned_data
 
     class Meta:
