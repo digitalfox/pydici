@@ -31,9 +31,10 @@ class ExpenseForm(forms.ModelForm):
         return self.cleaned_data
 
 
-class ExpensePaymentForm(forms.ModelForm):
+class ExpensePaymentForm(forms.Form):
     """Expense payment form based on ExpensePayemnt model"""
     expenses = AutoCompleteSelectMultipleField('payable_expense', required=True, label=_("Expenses"))  # Ajax it
+    payment_date = forms.fields.DateField()
 
     def clean(self):
         """Ensure expenses belongs to the same users"""
@@ -45,9 +46,8 @@ class ExpensePaymentForm(forms.ModelForm):
                     user = expense.user
                 else:
                     if expense.user != user:
-                        raise ValidationError(_("All expenses of a payments must belongs to same users"))
+                        raise ValidationError(_("All expenses of a payment must belongs to same users"))
         return self.cleaned_data
-
 
     class Meta:
         model = ExpensePayment

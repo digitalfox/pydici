@@ -32,7 +32,7 @@
 {% endif %}
 
 <form enctype="multipart/form-data" action='' method="POST">
-    
+    {{ form.non_field_errors }}
     {{ form }}
     <input type="submit" value="{% trans 'Save' %}"/>
 

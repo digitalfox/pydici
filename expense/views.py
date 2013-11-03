@@ -218,13 +218,20 @@ def expense_payments(request, expense_payment_id=None):
         expense_payment_id = None
         expensePayment = None
 
+    expensesToPay = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
+    expensesToPay = [expense for expense in expensesToPay if wf.get_state(expense).transitions.count() == 0]
+
     if request.method == "POST":
-        if expense_payment_id:
-            form = ExpensePaymentForm(request.POST, instance=expensePayment)
-        else:
-            form = ExpensePaymentForm(request.POST)
+        form = ExpensePaymentForm(request.POST)
         if form.is_valid():
-            expensePayment = form.save()
+            if expense_payment_id:
+                expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
+            else:
+                expensePayment = ExpensePayment(payment_date=form.cleaned_data["payment_date"])
+                expensePayment.save()
+            for expense in Expense.objects.filter(expensePayment=expensePayment):
+                expense.expensePayment = None  # Remove any previous association
+                expense.save()
             if form.cleaned_data["expenses"]:
                 for expense_id in form.cleaned_data["expenses"]:
                     expense = Expense.objects.get(id=expense_id)
@@ -234,12 +241,9 @@ def expense_payments(request, expense_payment_id=None):
             return HttpResponseRedirect(urlresolvers.reverse("expense.views.expense_payments"))
     else:
         if expense_payment_id:
-            form = ExpensePaymentForm(instance=expensePayment)  # A form that edit current expense payment
+            form = ExpensePaymentForm({"expenses": "|".join([str(e.id) for e in Expense.objects.filter(expensePayment=expensePayment)]), "payment_date": expensePayment.payment_date})  # A form that edit current expense payment
         else:
             form = ExpensePaymentForm(initial={"payment_date": date.today()})  # An unbound form
-
-    expensesToPay = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
-    expensesToPay = [expense for expense in expensesToPay if wf.get_state(expense).transitions.count() == 0]
 
     return render(request, "expense/expense_payments.html",
                   {"modify_expense_payment": bool(expense_payment_id),

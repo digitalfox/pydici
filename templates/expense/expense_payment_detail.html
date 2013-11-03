@@ -20,10 +20,10 @@
 <div class="content-large">
 
 {% if expense_table.data %}
-<h1>{% trans "Expenses of payment " %}{{ expense_payment.id }} ({{ expense_payment.payment_date }})</h1>
+<h1>{% trans "Expenses of payment n°" %}{{ expense_payment.id }} ({{ expense_payment.payment_date }})</h1>
     {% render_table expense_table %}
 <br/><hr/><br/>
-{% trans "Total: " %} {{ expense_payment.amount }} €
+<h4>{% trans "Total: " %} {{ expense_payment.amount }} €</h4>
 {% endif %}
 
 
