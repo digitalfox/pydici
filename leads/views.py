@@ -178,7 +178,7 @@ def review(request):
     recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date").select_related()
     recentArchivedLeadsTable = LeadTable(recentArchivedLeads)
     RequestConfig(request, paginate={"per_page": 50}).configure(recentArchivedLeadsTable)
-    activeLeadsTable = LeadTable(Lead.objects.active().select_related().order_by("creation_date"))
+    activeLeadsTable = LeadTable(Lead.objects.active().select_related(), order_by="creation_date")
     RequestConfig(request, paginate={"per_page": 50}).configure(activeLeadsTable)
     return render(request, "leads/review.html",
                   {"recent_archived_leads": recentArchivedLeads,
