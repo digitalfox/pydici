@@ -13,7 +13,7 @@ from django.db.models import Q, Sum
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils.translation import ugettext as _
-from django.utils import formats
+from django.utils import numberformat
 from django.utils.html import strip_tags
 
 from core.decorator import pydici_non_public
@@ -233,16 +233,18 @@ def financialControl(request, start_date=None, end_date=None):
             missionRow.append(mission.lead.client.organisation.name)
             missionRow.append(mission.lead.name)
             missionRow.append(mission.lead.deal_id)
-            missionRow.append(formats.number_format(mission.lead.sales))
+            missionRow.append(numberformat.format(mission.lead.sales, ",") if mission.lead.sales else 0)
             if mission.lead.responsible:
                 missionRow.append(mission.lead.responsible.name)
                 missionRow.append(mission.lead.responsible.trigramme)
+            else:
+                missionRow.extend(["", ""])
         else:
             missionRow.extend(["", "", "", "", "", 0, "", ""])
-        missionRow.append(mission.description)
+        missionRow.append(mission.description or "")
         missionRow.append(mission.mission_id())
-        missionRow.append(mission.billing_mode)
-        missionRow.append(formats.number_format(mission.price))
+        missionRow.append(mission.billing_mode or "")
+        missionRow.append(numberformat.format(mission.price, ",") if mission.price else 0)
         for consultant in mission.consultants().select_related().prefetch_related("manager"):
             consultantRow = missionRow[:]  # copy
             daily_rate, bought_daily_rate = financialConditions.get("%s-%s" % (mission.id, consultant.id), [0, 0])
@@ -250,27 +252,24 @@ def financialControl(request, start_date=None, end_date=None):
             if rateObjective:
                 rateObjective = rateObjective.daily_rate
             else:
-                rateObjective = None
+                rateObjective = 0
             doneDays = timesheets.filter(mission_id=mission.id, consultant=consultant.id).aggregate(Sum("charge")).values()[0] or 0
             forecastedDays = staffings.filter(mission_id=mission.id, consultant=consultant.id).aggregate(Sum("charge")).values()[0] or 0
             consultantRow.append(consultant.company)
-            if consultant.manager:
-                consultantRow.append(consultant.manager.trigramme)
-            else:
-                consultantRow.append("")
+            consultantRow.append(consultant.manager.trigramme if consultant.manager else "")
             consultantRow.append(consultant.trigramme)
             consultantRow.append(consultant.name)
             consultantRow.append(consultant.subcontractor)
             consultantRow.append(mission.subsidiary != consultant.company)
-            consultantRow.append(rateObjective)
-            consultantRow.append(formats.number_format(daily_rate))
-            consultantRow.append(formats.number_format(bought_daily_rate))
+            consultantRow.append(numberformat.format(rateObjective, ","))
+            consultantRow.append(numberformat.format(daily_rate, ",") if daily_rate else 0)
+            consultantRow.append(numberformat.format(bought_daily_rate, ",") if bought_daily_rate else 0)
             # Timesheet row
             for budgetType, quantity in (("done", doneDays), ("forecast", forecastedDays)):
                 row = consultantRow[:]  # Copy
                 row.append(budgetType)
-                row.append(formats.number_format(quantity))
-                row.append(formats.number_format(quantity * daily_rate))
+                row.append(numberformat.format(quantity, ",") if quantity else 0)
+                row.append(numberformat.format(quantity * daily_rate, ",") if (quantity > 0 and daily_rate > 0) else 0)
                 writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
 #
     for expense in Expense.objects.filter(expense_date__gte=start_date, expense_date__lt=nextMonth(end_date), chargeable=False).select_related():
