@@ -138,14 +138,14 @@ def pre_billing(request, year=None, month=None):
     fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
                                       timesheet__working_date__gte=month,
                                       timesheet__working_date__lt=next_month)
-    fixedPriceMissions = fixedPriceMissions.order_by("lead__deal_id").distinct()
+    fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
 
     timesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
                                           mission__nature="PROD", mission__billing_mode="TIME_SPENT")
 
-    timesheet_data = timesheets.order_by("mission", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
+    timesheet_data = timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
     for mission_id, consultant_id, charge in timesheet_data:
-        mission = Mission.objects.get(id=mission_id)
+        mission = Mission.objects.select_related("lead").get(id=mission_id)
         if mission.lead:
             lead = mission.lead
         else:
