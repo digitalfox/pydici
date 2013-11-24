@@ -18,7 +18,7 @@ import pydici.settings
 
 # Feeds definition
 from leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
-from staffing.feeds import LatestStaffing, MyLatestStaffing
+from staffing.feeds import LatestStaffing, MyLatestStaffing, ArchivedMission
 
 
 # Overide internal server error view
@@ -47,6 +47,7 @@ pydici_patterns += patterns('',
     url(r'^feeds/mine/?$', MyLatestLeads(), name='mine'),
     url(r'^feeds/latestStaffing/?$', LatestStaffing(), name='latestStaffing'),
     url(r'^feeds/myLatestStaffing/?$', MyLatestStaffing(), name='myLatestStaffing'),
+    url(r'^feeds/archivedMission/?$', ArchivedMission(), name='archivedMission'),
 )
 
 

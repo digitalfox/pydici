@@ -22,12 +22,11 @@
     {% block mobileheader %}{% endblock %}
 
     {% if not request.session.mobile %}
-    
+
         {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}css/rtl.css{% endblock %}" />{% endif %}
-        
+
         <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
-        
-        
+
         <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last modified leads' %}"
               href="{% url 'latest' %}" />
         <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last created leads' %}"
@@ -40,6 +39,9 @@
               href="{% url 'latestStaffing' %}" />
         <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my latest staffing forecast' %}"
               href="{% url 'myLatestStaffing' %}" />
+        <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last archived Mission' %}"
+              href="{% url 'archivedMission' %}" />
+
     {% endif %}
 
 
