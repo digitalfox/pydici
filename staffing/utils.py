@@ -7,7 +7,7 @@ appropriate to live in Staffing models or view
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 from django.db import transaction
 from django.utils import formats
@@ -47,11 +47,11 @@ def gatherTimesheetData(consultant, missions, month):
     timesheetTotal["ticket"] = totalTicket
     # Compute warnings (overbooking and no data)
     for i in totalPerDay:
-        if i > 1: # Surbooking
+        if i > 1:  # Surbooking
             warning.append(1)
-        elif i == 1: # Ok
+        elif i == 1:  # Ok
             warning.append(0)
-        else: # warning (no data, or half day)
+        else:  # warning (no data, or half day)
             warning.append(2)
     # Don't emit warning for no data during week ends and holidays
     holiday_days = holidayDays(month)
@@ -60,6 +60,7 @@ def gatherTimesheetData(consultant, missions, month):
             warning[day.day - 1] = None
 
     return (timesheetData, timesheetTotal, warning)
+
 
 @transaction.commit_on_success
 def saveTimesheetData(consultant, month, data, oldData):
@@ -102,10 +103,11 @@ def saveTimesheetData(consultant, month, data, oldData):
                 # remove data user just deleted
                 timesheet.delete()
 
+
 def saveFormsetAndLog(formset, request):
     """Save the given staffing formset and log last user"""
     now = datetime.now()
-    now = now.replace(microsecond=0) # Remove useless microsecond that pollute form validation in callback
+    now = now.replace(microsecond=0)  # Remove useless microsecond that pollute form validation in callback
     formset.save()
     deleted_forms = list(formset.deleted_forms)
     for form in formset.forms:
@@ -117,6 +119,7 @@ def saveFormsetAndLog(formset, request):
             staffing.last_user = unicode(request.user)
             staffing.update_date = now
             staffing.save()
+
 
 def sortMissions(missions):
     """Sort mission list in the following way:
@@ -137,7 +140,7 @@ def sortMissions(missions):
         elif mission.nature == "PROD":
             prodMissions.append(mission)
         else:
-            #Oups, we should never go here. Just log, in case of
+            # Oups, we should never go here. Just log, in case of
             print "Unknown mission nature (%s). Cannot sort" % mission.nature
 
     # Sort each list
@@ -147,6 +150,7 @@ def sortMissions(missions):
 
     return prodMissions + nonProdMissions + holidaysMissions
 
+
 def holidayDays(month=None):
     """
     @param month: month (datetime) to consider for holidays. Current month if None
@@ -155,6 +159,7 @@ def holidayDays(month=None):
         month = date.today()
     month = month.replace(day=1)
     return [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth(month))]
+
 
 def staffingDates(n=12, format=None):
     """Returns a list of n next month as datetime (if format="datetime") or
@@ -166,6 +171,6 @@ def staffingDates(n=12, format=None):
             dates.append(staffingDate)
         else:
             dates.append({"short": formats.localize_input(staffingDate),
-                          "long" : formats.date_format(staffingDate, format="YEAR_MONTH_FORMAT").encode("latin-1"), })
+                          "long": formats.date_format(staffingDate, format="YEAR_MONTH_FORMAT").encode("latin-1"), })
         staffingDate = nextMonth(staffingDate)
     return dates

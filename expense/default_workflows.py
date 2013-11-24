@@ -10,8 +10,8 @@ import os
 import sys
 from os.path import abspath, dirname, join, pardir
 
-## Setup django envt & django imports
-sys.path.append(abspath(join(dirname(__file__), pardir, pardir))) # Add project path to python path
+# # Setup django envt & django imports
+sys.path.append(abspath(join(dirname(__file__), pardir, pardir)))  # Add project path to python path
 
 # Ensure we are in the good current working directory (pydici home)
 os.chdir(abspath(join(dirname(__file__), pardir)))
@@ -28,6 +28,7 @@ from workflows.models import WorkflowModelRelation, WorkflowPermissionRelation, 
                              Workflow, State, Transition
 from permissions.models import Permission, Role, PrincipalRoleRelation
 
+
 def install_expense_workflow():
 
     # Permissions
@@ -36,7 +37,6 @@ def install_expense_workflow():
     permission_expense_edit = Permission.objects.create(name=u'expense edit', codename=u'expense_edit')
 
     # Roles
-    role_administrator = Role.objects.create(name=u'expense administrator')
     role_manager = Role.objects.create(name=u'expense manager')
     role_owner = Role.objects.create(name=u'expense owner')
     role_paymaster = Role.objects.create(name=u'expense paymaster')
@@ -71,7 +71,6 @@ def install_expense_workflow():
     # Start by requested state
     expense_workflow.initial_state = state_requested
     expense_workflow.save()
-
 
     # At each state, we create permissions
     StatePermissionRelation.objects.create(state=state_requested,
@@ -114,7 +113,6 @@ def install_expense_workflow():
                                                        destination=state_paid,
                                                        condition=u'',
                                                        permission=permission_expense_payment)
-
 
     # Add transition allowed from each state
     state_requested.transitions.add(transition_validate)

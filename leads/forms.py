@@ -13,6 +13,7 @@ from ajax_select.fields import AutoCompleteSelectField
 
 from leads.models import Lead
 
+
 class LeadForm(models.ModelForm):
     class Meta:
         model = Lead
@@ -33,7 +34,7 @@ class LeadForm(models.ModelForm):
             raise ValidationError(_("Sales amount must be defined at this step of the commercial process"))
 
     def clean_deal_id(self):
-        """Ensure deal id is unique. 
+        """Ensure deal id is unique.
         Cannot be done at database level because we tolerate null/blank value and all db engines are
         not consistent in the way they handle that. SQL ISO is really fuzzy about that. Sad"""
         if not self.cleaned_data["deal_id"]:

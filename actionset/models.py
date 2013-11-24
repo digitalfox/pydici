@@ -29,7 +29,8 @@ class ActionSet(models.Model):
     trigger = models.CharField(_("Trigger"), max_length=50, choices=ACTIONSET_TRIGGERS, blank=True, null=True)
     active = models.BooleanField(_("Active"), default=True)
 
-    def __unicode__(self): return self.name
+    def __unicode__(self):
+        return self.name
 
     def start(self, user, targetObject=None):
         """Start this action set for given user"""

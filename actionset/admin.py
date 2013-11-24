@@ -31,7 +31,7 @@ class ActionAdmin(admin.ModelAdmin):
 
 class ActionStateAdmin(admin.ModelAdmin):
     list_display = ("action", "user", "target", "state", "creation_date", "update_date")
-    fieldsets = [(ugettext("Action state"), {"fields": ["action", "user", "state" ]}),
+    fieldsets = [(ugettext("Action state"), {"fields": ["action", "user", "state"]}),
                  (ugettext("Target object"), {"fields": ["target_type", "target_id"]})]
     search_fields = ["action__actionset__name", "action__name", "user"]
     actions = None

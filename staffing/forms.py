@@ -187,18 +187,17 @@ class MissionContactForm(forms.ModelForm):
 
 class TimesheetField(forms.ChoiceField):
     widget = forms.widgets.TextInput
-    TS_VALUES = {u"0" : None,
-                u"¼" : "0.25",
-                u"½" : "0.5",
-                u"¾" : "0.75",
-                u"1" : "1"
+    TS_VALUES = {u"0": None,
+                u"¼": "0.25",
+                u"½": "0.5",
+                u"¾": "0.75",
+                u"1": "1"
                 }
-    TS_VALUES_R = {0 : "",
-                   0.25 : u"¼",
-                   0.5 : u"½",
-                   0.75 : u"¾",
-                   1 : u"1"}
-
+    TS_VALUES_R = {0: "",
+                   0.25: u"¼",
+                   0.5: u"½",
+                   0.75: u"¾",
+                   1: u"1"}
 
     def __init__(self, choices=(), required=True, widget=None, label=None,
                  initial=None, help_text=None, *args, **kwargs):

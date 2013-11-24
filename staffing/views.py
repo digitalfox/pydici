@@ -30,7 +30,7 @@ from django.contrib import messages
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from people.models import Consultant
 from leads.models import Lead
-from people.models import ConsultantProfile, RateObjective
+from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
                                   TimesheetForm, MassStaffingForm, MissionContactForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
@@ -133,6 +133,7 @@ def consultant_staffing(request, consultant_id):
                    "consultant": consultant,
                    "staffing_dates": staffingDates(),
                    "user": request.user})
+
 
 @pydici_non_public
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -562,7 +563,6 @@ def mission_timesheet(request, mission_id):
         estimatedData = (timesheetData[-2] + staffingData[-2], timesheetData[-1] + staffingData[-1])
         # Add tuple to data
         missionData.append((consultant, timesheetData, staffingData, estimatedData))
-
 
     # Compute the total daily rate for each month of the mission
     timesheetTotalRate = []

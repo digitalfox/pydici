@@ -83,6 +83,7 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
                    "labels": json.dumps(labels),
                    "user": request.user})
 
+
 @pydici_non_public
 @cache_page(60 * 60)
 def graph_company_business_activity_jqp(request, company_id):

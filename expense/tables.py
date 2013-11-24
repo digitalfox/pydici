@@ -11,7 +11,6 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_bytes
 
 import django_tables2 as tables
-from django_tables2.utils import A
 
 from expense.models import Expense
 from core.templatetags.pydici_filters import link_to_consultant

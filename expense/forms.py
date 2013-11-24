@@ -5,14 +5,9 @@ Expense form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import datetime
-
 from django import forms
-from django.forms.models import BaseInlineFormSet
 from django.forms.widgets import TextInput, Textarea
-from django.db.models import Q
 from django.utils.translation import ugettext as _
-from django.core.exceptions import ValidationError
 
 from ajax_select.fields import AutoCompleteSelectField
 
@@ -24,10 +19,10 @@ class ExpenseForm(forms.ModelForm):
     class Meta:
         model = Expense
         fields = ("description", "lead", "chargeable", "amount", "category", "receipt", "expense_date", "corporate_card", "comment")
-        widgets = {"description": TextInput(attrs={"size": 40}), # Increase default size
-                   "comment": Textarea(attrs={'cols': 17, 'rows': 2})} # Reduce height and increase width 
+        widgets = {"description": TextInput(attrs={"size": 40}),  # Increase default size
+                   "comment": Textarea(attrs={'cols': 17, 'rows': 2})}  # Reduce height and increase width
 
-    lead = AutoCompleteSelectField('lead', required=False, label=_("Lead")) # Ajax it
+    lead = AutoCompleteSelectField('lead', required=False, label=_("Lead"))  # Ajax it
 
     def clean(self):
         """Additional check on expense form"""

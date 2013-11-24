@@ -25,7 +25,8 @@ class ConsultantProfile(models.Model):
     name = models.CharField(_("Name"), max_length=50, unique=True)
     level = models.IntegerField(_("Level"))
 
-    def __unicode__(self): return self.name
+    def __unicode__(self):
+        return self.name
 
     class Meta:
         ordering = ["level"]
@@ -44,9 +45,11 @@ class Consultant(models.Model):
     subcontractor = models.BooleanField(_("Subcontractor"), default=False)
     subcontractor_company = models.CharField(max_length=200, null=True, blank=True)
 
-    def __unicode__(self): return self.name
+    def __unicode__(self):
+        return self.name
 
-    def full_name(self): return u"%s (%s)" % (self.name, self.trigramme)
+    def full_name(self):
+        return u"%s (%s)" % (self.name, self.trigramme)
 
     def save(self, force_insert=False, force_update=False):
         self.name = capitalize(self.name)
@@ -217,7 +220,8 @@ class SalesMan(models.Model):
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)
 
-    def __unicode__(self): return "%s (%s)" % (self.name, self.company)
+    def __unicode__(self):
+        return "%s (%s)" % (self.name, self.company)
 
     def save(self, force_insert=False, force_update=False):
         self.name = capitalize(self.name)

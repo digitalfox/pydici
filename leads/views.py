@@ -33,7 +33,6 @@ from core.utils import capitalize, getLeadDirs, createProjectTree
 from core.decorator import pydici_non_public
 
 
-
 @pydici_non_public
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""

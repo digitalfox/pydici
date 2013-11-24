@@ -172,8 +172,8 @@ class SimpleTest(TestCase):
     def test_pdc_review(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         url = PREFIX + "/staffing/pdcreview/2009/07"
-        for arg in ({}, {"projected":None}, {"groupby": "manager"}, {"groupby": "position"},
-                    {"n_month":"5"}, {"n_month":"50"}):
+        for arg in ({}, {"projected": None}, {"groupby": "manager"}, {"groupby": "position"},
+                    {"n_month": "5"}, {"n_month": "50"}):
             response = self.client.get(url, arg)
             self.failUnlessEqual(response.status_code, 200,
                 "Failed to test pdc_review with arg %s (got %s instead of 200" % (arg, response.status_code))
