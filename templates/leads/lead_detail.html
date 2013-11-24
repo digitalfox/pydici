@@ -96,7 +96,7 @@
         <div class='lead_description'>{{ lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
     {% endif %}
     <hr>
-    <b>{% trans "Contact: " %}</b>{{ lead.client.contact|default_if_none:_("Unknown")}} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}<br/>
+    <b>{% trans "Contact: " %}</b>{% if lead.client.contact %}<a href="{% url 'admin:crm_contact_change' lead.client.contact.id %}?return_to={{ request.get_full_path }}">{{ lead.client.contact }}</a> {% else %}{% trans "Unknown" %}}} {% endif %} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}<br/>
     <b>{% trans "Deal id:" %}</b> {{ lead.deal_id }}<br/>
     {%if lead.client_deal_id %}
         <b>{% trans "Client deal id:" %}</b> {{ lead.client_deal_id }}
