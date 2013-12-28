@@ -23,38 +23,6 @@ table.pydici-tables2 th {
     text-align: left;
 }
 
-table.pydici-tables2 thead th:first-child,
-table.pydici-tables2 thead td:first-child {
-    border-left: none !important;
-}
-
-table.pydici-tables2 thead th,
-table.pydici-tables2 thead td {
-    background: #FCFCFC url(../img/header-bg.png) left bottom repeat-x;
-    border-bottom: 1px solid #DDD;
-    padding: 2px 5px;
-    font-size: 11px;
-    vertical-align: middle;
-    color: #666;
-}
-
-table.pydici-tables2 thead th > a:link,
-table.pydici-tables2 thead th > a:visited {
-    color: #666;
-}
-
-table.pydici-tables2 thead th.orderable > a {
-    padding-right: 20px;
-    background: url(../img/arrow-inactive-up.png) right center no-repeat;
-}
-table.pydici-tables2 thead th.orderable.asc > a {
-    background-image: url(../img/arrow-active-up.png);
-}
-table.pydici-tables2 thead th.orderable.desc > a {
-    background-image: url(../img/arrow-active-down.png);
-}
-
-
 table.pydici-tables2 + ul.pagination {
     background: white url(../img/pagination-bg.gif) left 180% repeat-x;
     overflow: auto;
@@ -80,6 +48,7 @@ table.pydici-tables2 + ul.pagination > li.cardinality {
     float: right;
     color: #8d8d8d;
 }
+
 
 table.pydici-tables2 > tbody > tr > td > span.true,
 table.pydici-tables2 > tbody > tr > td > span.false {
