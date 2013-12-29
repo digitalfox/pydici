@@ -24,11 +24,11 @@ class LeadsTable(tables.Table):
         sequence = ("client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "due_date", "start_date")
         fields = sequence
         attrs = {"class": "pydici-tables2"}
-        orderable = False  # Sort is done by jquery.datatable on client side
 
 
 class ActiveLeadsTable(LeadsTable):
     class Meta:
+        orderable = False  # Sort is done by jquery.datatable on client side
         attrs = {"class": "pydici-tables2", "id": "active_leads_table"}
         prefix = "active_leads_table"
         order_by = "creation_date"
@@ -36,5 +36,6 @@ class ActiveLeadsTable(LeadsTable):
 
 class RecentArchivedLeadsTable(LeadsTable):
     class Meta:
+        orderable = False  # Sort is done by jquery.datatable on client side
         attrs = {"class": "pydici-tables2", "id": "recent_archived_leads_table"}
         prefix = "recent_archived_leads_table"
