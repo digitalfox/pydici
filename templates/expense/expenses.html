@@ -51,6 +51,7 @@
 {% if user_expense_table.data %}
 <h1>{% trans "My expenses" %}</h1>
     {% render_table user_expense_table %}
+    {% with "user_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
 <br/><hr/><br/>
 {% endif %}
 
@@ -58,7 +59,7 @@
 {% if managed_expense_table.data %}
     <h1>{% trans "Expenses I manage" %}</h1>
     {% render_table managed_expense_table %}
-
+    {% with "managed_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
 {% endif %}
 
 <br/><hr/><br/>

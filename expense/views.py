@@ -22,7 +22,7 @@ from django.contrib import messages
 
 from expense.forms import ExpenseForm
 from expense.models import Expense
-from expense.tables import ExpenseTable, ExpenseWorkflowTable
+from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable
 from people.models import Consultant
 from staffing.models import Mission
 from core.decorator import pydici_non_public
@@ -86,13 +86,13 @@ def expenses(request, expense_id=None):
     else:
         managed_expenses = team_expenses
 
-    userExpenseTable = ExpenseWorkflowTable(user_expenses)
-    userExpenseTable.transitions = dict([(e.id, []) for e in user_expenses])  # Inject expense allowed transitions. Always empty for own expense
+    userExpenseTable = UserExpenseWorkflowTable(user_expenses)
+    userExpenseTable.transitionsData = dict([(e.id, []) for e in user_expenses])  # Inject expense allowed transitions. Always empty for own expense
     userExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in user_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 50}).configure(userExpenseTable)
 
-    managedExpenseTable = ExpenseWorkflowTable(managed_expenses)
-    managedExpenseTable.transitions = dict([(e.id, e.transitions(request.user)) for e in managed_expenses])  # Inject expense allowed transitions
+    managedExpenseTable = ManagedExpenseWorkflowTable(managed_expenses)
+    managedExpenseTable.transitionsData = dict([(e.id, e.transitions(request.user)) for e in managed_expenses])  # Inject expense allowed transitions
     managedExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in managed_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 50}).configure(managedExpenseTable)
 
@@ -145,7 +145,7 @@ def expenses_history(request):
 
     expenses = expenses.order_by("-expense_date")
     expenseTable = ExpenseTable(expenses)
-    RequestConfig(request, paginate={"per_page": 50}).configure(expenseTable)
+    RequestConfig(request, paginate={"per_page": 100}).configure(expenseTable)
 
     if "csv" in request.GET:
         return tableToCSV(expenseTable, filename="expenses.csv")

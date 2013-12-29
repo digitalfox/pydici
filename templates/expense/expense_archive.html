@@ -16,6 +16,7 @@
 <h1>{% trans "Expenses archive" %}</h1>
 <div class="content-large">
     {% render_table expense_table %}
+    {% with "expense_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
 </div>
 <br/>
 <a href="{% url 'expense.views.expenses_history' %}?csv">{% trans "Export expenses in a spreadsheet" %}</a>
