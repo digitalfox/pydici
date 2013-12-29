@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-29 00:02+0100\n"
-"PO-Revision-Date: 2013-12-29 00:02+0100\n"
+"POT-Creation-Date: 2013-12-29 19:10+0100\n"
+"PO-Revision-Date: 2013-12-29 19:10+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -89,7 +89,7 @@ msgstr "N/A"
 
 #: actionset/models.py:62 billing/admin.py:34 billing/admin.py:48
 #: billing/models.py:108 billing/models.py:145 expense/tables.py:23
-#: expense/tables.py:39 leads/models.py:66 leads/views.py:141
+#: leads/models.py:66 leads/views.py:141
 #: templates/billing/_lead_billing.html:11
 #: templates/billing/_lead_billing.html:45
 #: templates/expense/expense_list.html:19
@@ -165,14 +165,14 @@ msgstr "Lien avec les notes de frais"
 
 #: billing/forms.py:18 billing/models.py:57 expense/forms.py:25
 #: expense/models.py:46 leads/models.py:245 staffing/models.py:41
-#: staffing/views.py:793 templates/billing/bill_review.html:179
+#: staffing/views.py:793 templates/billing/bill_review.html:202
 #: templates/core/index.html:19 templates/core/index.html.py:44
 #: templates/core/index.html:68 templates/core/index.html.py:92
 #: templates/expense/expense_list.html:15
 msgid "Lead"
 msgstr "Affaire"
 
-#: billing/forms.py:19 expense/models.py:77 templates/admin/base_site.html:140
+#: billing/forms.py:19 expense/models.py:77 templates/admin/base_site.html:141
 #: templates/staffing/mission.html:46
 msgid "Expenses"
 msgstr "Notes de frais"
@@ -184,15 +184,15 @@ msgstr "Fournisseur"
 
 #: billing/models.py:58 templates/billing/_lead_billing.html:10
 #: templates/billing/_lead_billing.html:42
-#: templates/billing/bill_review.html:19 templates/billing/bill_review.html:61
-#: templates/billing/bill_review.html:103
-#: templates/billing/bill_review.html:145
+#: templates/billing/bill_review.html:20 templates/billing/bill_review.html:68
+#: templates/billing/bill_review.html:116
+#: templates/billing/bill_review.html:165
 msgid "Bill id"
 msgstr "N° facture"
 
 #: billing/models.py:59 templates/billing/_lead_billing.html:13
 #: templates/billing/_lead_billing.html:47
-#: templates/billing/bill_review.html:149
+#: templates/billing/bill_review.html:169
 msgid "Creation date"
 msgstr "Date de création"
 
@@ -212,9 +212,9 @@ msgid "Previous year bill"
 msgstr "Facture de l'année N-1"
 
 #: billing/models.py:63 expense/models.py:55 staffing/models.py:246
-#: templates/billing/bill_review.html:25 templates/billing/bill_review.html:67
-#: templates/billing/bill_review.html:109
-#: templates/billing/bill_review.html:152
+#: templates/billing/bill_review.html:26 templates/billing/bill_review.html:74
+#: templates/billing/bill_review.html:122
+#: templates/billing/bill_review.html:172
 #: templates/expense/expense_list.html:22
 #: templates/staffing/consultant_staffing.html:13
 #: templates/staffing/mission_staffing.html:13
@@ -223,9 +223,9 @@ msgstr "Remarques"
 
 #: billing/models.py:64 templates/billing/_lead_billing.html:12
 #: templates/billing/_lead_billing.html:46
-#: templates/billing/bill_review.html:21 templates/billing/bill_review.html:63
-#: templates/billing/bill_review.html:105
-#: templates/billing/bill_review.html:147
+#: templates/billing/bill_review.html:22 templates/billing/bill_review.html:70
+#: templates/billing/bill_review.html:118
+#: templates/billing/bill_review.html:167
 msgid "Amount (€ excl tax)"
 msgstr "Montant (€ HT)"
 
@@ -260,9 +260,9 @@ msgstr "Annulée"
 #: billing/models.py:109 billing/models.py:146
 #: templates/billing/_lead_billing.html:16
 #: templates/billing/_lead_billing.html:50
-#: templates/billing/bill_review.html:24 templates/billing/bill_review.html:66
-#: templates/billing/bill_review.html:108
-#: templates/billing/bill_review.html:151
+#: templates/billing/bill_review.html:25 templates/billing/bill_review.html:73
+#: templates/billing/bill_review.html:121
+#: templates/billing/bill_review.html:171
 msgid "File"
 msgstr "Fichier"
 
@@ -323,7 +323,7 @@ msgstr "Filiales"
 msgid "Business owner"
 msgstr "Responsable business"
 
-#: crm/models.py:57 templates/admin/base_site.html:203
+#: crm/models.py:57 templates/admin/base_site.html:204
 #: templates/crm/_contact_list.html:10
 #: templates/crm/clientcompany_detail.html:124
 #: templates/staffing/mission_contacts.html:14
@@ -430,10 +430,10 @@ msgid "Strategic alignment"
 msgstr "Alignement stratégique"
 
 #: crm/models.py:210 leads/forms.py:25 leads/models.py:68 leads/tables.py:17
-#: leads/views.py:139 templates/billing/bill_review.html:20
-#: templates/billing/bill_review.html:62
-#: templates/billing/bill_review.html:104
-#: templates/billing/bill_review.html:146
+#: leads/views.py:139 templates/billing/bill_review.html:21
+#: templates/billing/bill_review.html:69
+#: templates/billing/bill_review.html:117
+#: templates/billing/bill_review.html:166
 #: templates/billing/payment_delay.html:19 templates/core/index.html:18
 #: templates/core/index.html.py:43 templates/core/index.html:67
 #: templates/core/index.html.py:91
@@ -509,14 +509,13 @@ msgstr "Payé avec la carte société"
 msgid "Expense"
 msgstr "Note de frais"
 
-#: expense/tables.py:20 expense/tables.py:36 people/models.py:204
-#: staffing/forms.py:52 staffing/views.py:794
-#: templates/staffing/mission.html:86
+#: expense/tables.py:20 people/models.py:204 staffing/forms.py:52
+#: staffing/views.py:794 templates/staffing/mission.html:86
 #: templates/staffing/mission_staffing.html:9
 msgid "Consultant"
 msgstr "Consultant"
 
-#: expense/tables.py:47
+#: expense/tables.py:44
 msgid "Edit"
 msgstr "Modifier"
 
@@ -555,7 +554,7 @@ msgid "Commercial"
 msgstr "Commercial"
 
 #: leads/admin.py:27 leads/views.py:141 staffing/models.py:263
-#: templates/billing/bill_review.html:181
+#: templates/billing/bill_review.html:204
 msgid "Staffing"
 msgstr "Staffing"
 
@@ -615,7 +614,7 @@ msgstr ""
 "Les dernières affaires actives dont je suis responsable ou ressource "
 "pressentie"
 
-#: leads/forms.py:21 leads/models.py:61 templates/billing/bill_review.html:180
+#: leads/forms.py:21 leads/models.py:61 templates/billing/bill_review.html:203
 #: templates/core/index.html:20 templates/core/index.html.py:45
 #: templates/core/index.html:69 templates/core/index.html.py:93
 msgid "Responsible"
@@ -720,7 +719,7 @@ msgstr "affaires.csv"
 msgid "Managed by"
 msgstr "Géré par"
 
-#: leads/views.py:142 templates/billing/bill_review.html:182
+#: leads/views.py:142 templates/billing/bill_review.html:205
 #: templates/core/index.html:22 templates/core/index.html.py:47
 #: templates/core/index.html:71 templates/core/index.html.py:95
 msgid "Sales (k€)"
@@ -795,15 +794,15 @@ msgstr ""
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/forms.py:65 templates/admin/base_site.html:87
-#: templates/admin/base_site.html.py:202 templates/core/m.index.html:57
+#: staffing/forms.py:65 templates/admin/base_site.html:88
+#: templates/admin/base_site.html.py:203 templates/core/m.index.html:57
 #: templates/core/search.html:60 templates/leads/lead_detail.html:62
 #: templates/people/consultant.html:38
 msgid "Missions"
 msgstr "Missions"
 
 #: staffing/forms.py:66 staffing/views.py:650
-#: templates/admin/base_site.html:205 templates/core/search.html:24
+#: templates/admin/base_site.html:206 templates/core/search.html:24
 #: templates/crm/clientcompany_detail.html:37
 #: templates/staffing/mission.html:39
 msgid "Consultants"
@@ -829,7 +828,7 @@ msgstr "Dates de staffing"
 msgid "Days without lunch ticket"
 msgstr "Jours sans ticket restaurant"
 
-#: staffing/forms.py:128 templates/admin/base_site.html:204
+#: staffing/forms.py:128 templates/admin/base_site.html:205
 #: templates/core/search.html:33 templates/staffing/mission.html:40
 msgid "Contacts"
 msgstr "Contacts"
@@ -1015,7 +1014,7 @@ msgstr "Montant mission (k€)"
 msgid "Past done days"
 msgstr "Jours réalisés dans le passé"
 
-#: staffing/views.py:794 templates/billing/bill_review.html:183
+#: staffing/views.py:794 templates/billing/bill_review.html:206
 #: templates/leads/lead_detail.html:148 templates/staffing/mission.html:107
 #: templates/staffing/mission_timesheet.html:9
 msgid "Done days"
@@ -1120,7 +1119,7 @@ msgid "Action set launched"
 msgstr "Train d'action lancé"
 
 #: templates/admin/app_index.html:8 templates/admin/base.html:25
-#: templates/admin/base_site.html:230 templates/admin/change_list.html:41
+#: templates/admin/base_site.html:231 templates/admin/change_list.html:41
 #: templates/core/m.index.html:37 templates/leads/lead_detail.html:18
 #: templates/people/consultant.html:28 templates/people/consultant.html:30
 #: templates/staffing/consultant_base.html:17
@@ -1133,203 +1132,203 @@ msgstr "Accueil"
 msgid "%(name)s"
 msgstr "%(name)s"
 
-#: templates/admin/base_site.html:32
+#: templates/admin/base_site.html:33
 msgid "ATOM feed of last modified leads"
 msgstr "Flux ATOM des dernières affaires modifiées"
 
-#: templates/admin/base_site.html:34
+#: templates/admin/base_site.html:35
 msgid "ATOM feed of last created leads"
 msgstr "Flux ATOM des dernières affaires créées"
 
-#: templates/admin/base_site.html:36
+#: templates/admin/base_site.html:37
 msgid "ATOM feed of last won leads"
 msgstr "Flux ATOM des dernières affaires gagnées"
 
-#: templates/admin/base_site.html:38
+#: templates/admin/base_site.html:39
 msgid "ATOM feed of my leads"
 msgstr "Flux ATOM des mes affaires"
 
-#: templates/admin/base_site.html:40
+#: templates/admin/base_site.html:41
 msgid "ATOM feed of latest staffing forecast"
 msgstr "Flux ATOM des dernières prévisions de staffing"
 
-#: templates/admin/base_site.html:42
+#: templates/admin/base_site.html:43
 msgid "ATOM feed of my latest staffing forecast"
 msgstr "Flux ATOM de mes dernières prévisions de staffing"
 
-#: templates/admin/base_site.html:44
+#: templates/admin/base_site.html:45
 msgid "ATOM feed of last archived Mission"
 msgstr "Flux ATOM des dernières missions archivées"
 
-#: templates/admin/base_site.html:67
+#: templates/admin/base_site.html:68
 msgid "Welcome,"
 msgstr "Bienvenue, "
 
-#: templates/admin/base_site.html:71 templates/admin/base_site.html.py:199
+#: templates/admin/base_site.html:72 templates/admin/base_site.html.py:200
 #: templates/core/m.index.html:70 templates/core/search.html:51
 #: templates/crm/clientcompany_detail.html:36
 #: templates/crm/clientcompany_detail.html:69
 msgid "Leads"
 msgstr "Affaires"
 
-#: templates/admin/base_site.html:75 templates/core/m.index.html:29
+#: templates/admin/base_site.html:76 templates/core/m.index.html:29
 #: templates/leads/review.html:15
 msgid "Current leads review"
 msgstr "Revue des affaires en cours"
 
-#: templates/admin/base_site.html:78
+#: templates/admin/base_site.html:79
 #: templates/crm/graph_company_business_activity_jqp.html:27
 #: templates/leads/graph_bar_jqp.html:29
 msgid "All leads"
 msgstr "Toutes les affaires"
 
-#: templates/admin/base_site.html:79
+#: templates/admin/base_site.html:80
 msgid "New lead"
 msgstr "Nouvelle affaire"
 
-#: templates/admin/base_site.html:91 templates/core/m.index.html:30
+#: templates/admin/base_site.html:92 templates/core/m.index.html:30
 #: templates/staffing/pdc_review.html:14 templates/staffing/pdc_review.html:22
 msgid "Workload schedule"
 msgstr "Plan de charge"
 
-#: templates/admin/base_site.html:94 templates/staffing/missions.html:16
+#: templates/admin/base_site.html:95 templates/staffing/missions.html:16
 #: templates/staffing/missions.html:27
 msgid "Active missions"
 msgstr "Liste des missions actives"
 
-#: templates/admin/base_site.html:101
+#: templates/admin/base_site.html:102
 msgid "Mass staffing"
 msgstr "Staffing en masse"
 
-#: templates/admin/base_site.html:109
+#: templates/admin/base_site.html:110
 msgid "Third parties"
 msgstr "Tiers"
 
-#: templates/admin/base_site.html:113
+#: templates/admin/base_site.html:114
 msgid "All clients"
 msgstr "Tous les clients"
 
-#: templates/admin/base_site.html:116
+#: templates/admin/base_site.html:117
 msgid "Contact address directory"
 msgstr "Carnet d'adresses"
 
-#: templates/admin/base_site.html:117
+#: templates/admin/base_site.html:118
 msgid "New client"
 msgstr "Nouveau client"
 
-#: templates/admin/base_site.html:118
+#: templates/admin/base_site.html:119
 msgid "New mission contact"
 msgstr "Nouveau contact mission"
 
-#: templates/admin/base_site.html:119
+#: templates/admin/base_site.html:120
 msgid "New business broker"
 msgstr "Nouvel apporteur d'affaires"
 
-#: templates/admin/base_site.html:120
+#: templates/admin/base_site.html:121
 msgid "New administrative contact"
 msgstr "Nouveau contact administratif"
 
-#: templates/admin/base_site.html:121
+#: templates/admin/base_site.html:122
 msgid "New supplier"
 msgstr "Nouveau fournisseur"
 
-#: templates/admin/base_site.html:129
+#: templates/admin/base_site.html:130
 msgid "Management"
 msgstr "Gestion"
 
-#: templates/admin/base_site.html:133
+#: templates/admin/base_site.html:134
 #: templates/staffing/holidays_planning.html:11
 #: templates/staffing/holidays_planning.html:17
 msgid "Holidays planning"
 msgstr "Planning des congés"
 
-#: templates/admin/base_site.html:136
+#: templates/admin/base_site.html:137
 msgid "Actionset catalog"
 msgstr "Liste des trains d'action"
 
-#: templates/admin/base_site.html:138
+#: templates/admin/base_site.html:139
 msgid "On going actions"
 msgstr "Actions en cours"
 
-#: templates/admin/base_site.html:141
+#: templates/admin/base_site.html:142
 msgid "Pre billing"
 msgstr "Pré facturation"
 
-#: templates/admin/base_site.html:142
+#: templates/admin/base_site.html:143
 msgid "All client bills"
 msgstr "Toutes les factures clients"
 
-#: templates/admin/base_site.html:143
+#: templates/admin/base_site.html:144
 msgid "New client bill"
 msgstr "Nouvelle facture client"
 
-#: templates/admin/base_site.html:144
+#: templates/admin/base_site.html:145
 msgid "All supplier bills"
 msgstr "Toutes les factures fournisseurs"
 
-#: templates/admin/base_site.html:145
+#: templates/admin/base_site.html:146
 msgid "New supplier bill"
 msgstr "Nouvelle facture fournisseur"
 
-#: templates/admin/base_site.html:153
+#: templates/admin/base_site.html:154
 msgid "Reports"
 msgstr "Rapports"
 
-#: templates/admin/base_site.html:157 templates/core/dashboard.html:15
+#: templates/admin/base_site.html:158 templates/core/dashboard.html:15
 msgid "Management dashboard"
 msgstr "Tableau de bord de gestion"
 
-#: templates/admin/base_site.html:160
+#: templates/admin/base_site.html:161
 msgid "Active leads (csv)"
 msgstr "Affaires en cours (csv)"
 
-#: templates/admin/base_site.html:161
+#: templates/admin/base_site.html:162
 msgid "All leads (csv)"
 msgstr "Toutes les affaires (csv)"
 
-#: templates/admin/base_site.html:162
+#: templates/admin/base_site.html:163
 msgid "Week summary mail (html)"
 msgstr "Courriel de bilan hebdomadaire (html)"
 
-#: templates/admin/base_site.html:163
+#: templates/admin/base_site.html:164
 msgid "Week summary mail (text)"
 msgstr "Courriel de bilan hebdomadaire (texte)"
 
-#: templates/admin/base_site.html:164
+#: templates/admin/base_site.html:165
 msgid "All people timesheet"
 msgstr "Feuille de temps globale"
 
-#: templates/admin/base_site.html:165 templates/billing/bill_review.html:10
+#: templates/admin/base_site.html:166 templates/billing/bill_review.html:10
 msgid "Bills review"
 msgstr "Suivi de facturation"
 
-#: templates/admin/base_site.html:166 templates/billing/payment_delay.html:10
+#: templates/admin/base_site.html:167 templates/billing/payment_delay.html:10
 msgid "Payment delay review"
 msgstr "Délais de règlement"
 
-#: templates/admin/base_site.html:167
+#: templates/admin/base_site.html:168
 #: templates/expense/expense_archive.html:12
-#: templates/expense/expenses.html:65
+#: templates/expense/expenses.html:66
 msgid "Expenses history"
 msgstr "Historique des notes de frais"
 
-#: templates/admin/base_site.html:168
+#: templates/admin/base_site.html:169
 msgid "Financial control"
 msgstr "Contrôle de gestion"
 
-#: templates/admin/base_site.html:176
+#: templates/admin/base_site.html:177
 msgid "Help"
 msgstr "Aide"
 
-#: templates/admin/base_site.html:180
+#: templates/admin/base_site.html:181
 msgid "Admin console"
 msgstr "Console d'administration"
 
-#: templates/admin/base_site.html:183
+#: templates/admin/base_site.html:184
 msgid "Help page"
 msgstr "Page d'aide"
 
-#: templates/admin/base_site.html:206
+#: templates/admin/base_site.html:207
 msgid "Bills"
 msgstr "Factures"
 
@@ -1458,60 +1457,60 @@ msgstr "Factures fournisseurs"
 msgid "Add a supplier bill for this lead"
 msgstr "Ajouter une facture fournisseur pour cette affaire"
 
-#: templates/billing/bill_review.html:17
+#: templates/billing/bill_review.html:16
 msgid "Overdue bills"
-msgstr "Facture en retard"
+msgstr "Factures en retard"
 
-#: templates/billing/bill_review.html:22 templates/billing/bill_review.html:64
-#: templates/billing/bill_review.html:106
-#: templates/billing/bill_review.html:148
+#: templates/billing/bill_review.html:23 templates/billing/bill_review.html:71
+#: templates/billing/bill_review.html:119
+#: templates/billing/bill_review.html:168
 msgid "Amount (€ with tax)"
 msgstr "Montant (€ TTC)"
 
-#: templates/billing/bill_review.html:23 templates/billing/bill_review.html:65
-#: templates/billing/bill_review.html:107
+#: templates/billing/bill_review.html:24 templates/billing/bill_review.html:72
+#: templates/billing/bill_review.html:120
 msgid "Wait"
 msgstr "Retard"
 
-#: templates/billing/bill_review.html:42 templates/billing/bill_review.html:84
-#: templates/billing/bill_review.html:126
+#: templates/billing/bill_review.html:45 templates/billing/bill_review.html:93
+#: templates/billing/bill_review.html:141
 msgid "Mark this bill as paid"
 msgstr "Marquer cette facture comme payée"
 
-#: templates/billing/bill_review.html:48
+#: templates/billing/bill_review.html:53
 msgid "Total amount: "
 msgstr "Montant total : "
 
-#: templates/billing/bill_review.html:59
+#: templates/billing/bill_review.html:64
 msgid "Bills due soon"
 msgstr "Factures bientôt à échéance"
 
-#: templates/billing/bill_review.html:90
-#: templates/billing/bill_review.html:132
+#: templates/billing/bill_review.html:101
+#: templates/billing/bill_review.html:149
 msgid "Total amount (€ exc. tax.): "
 msgstr "Montant total (€ HT) : "
 
-#: templates/billing/bill_review.html:101
+#: templates/billing/bill_review.html:112
 msgid "Litigious bills"
 msgstr "Factures en litige"
 
-#: templates/billing/bill_review.html:143
+#: templates/billing/bill_review.html:161
 msgid "Recently paid bills"
 msgstr "Factures réglées récemment"
 
-#: templates/billing/bill_review.html:150
+#: templates/billing/bill_review.html:170
 msgid "Payment delay"
 msgstr "Délai de règlement"
 
-#: templates/billing/bill_review.html:176
+#: templates/billing/bill_review.html:198
 msgid "Recent leads without bill"
 msgstr "Affaires récentes sans facture"
 
-#: templates/billing/bill_review.html:184
+#: templates/billing/bill_review.html:207
 msgid "Done work (€)"
 msgstr "Montant réalisé (€)"
 
-#: templates/billing/bill_review.html:189 templates/core/index.html:31
+#: templates/billing/bill_review.html:214 templates/core/index.html:31
 #: templates/core/index.html.py:56 templates/core/index.html:80
 #: templates/core/index.html.py:104 templates/crm/clientcompany_detail.html:93
 #: templates/leads/lead_detail.html:106 templates/leads/lead_detail.html:131
@@ -1591,6 +1590,26 @@ msgstr ""
 "<h2>Votre profil ne vous permet pas d'accéder à cette page.</h2>\n"
 "<p>Si vous pensez qu'il s'agit d'une anomalie, merci d'envoyer\n"
 "un mail à un administrateur pour mettre à jour vos droits :</p>\n"
+
+#: templates/core/_datatables.html:17
+msgid "Nothing found"
+msgstr "Aucun résultat"
+
+#: templates/core/_datatables.html:18
+msgid "Showing _START_ to _END_ of _TOTAL_ records"
+msgstr "Affichage de _START_ à _END_ sur _TOTAL_ enregistrements"
+
+#: templates/core/_datatables.html:19
+msgid "Showing 0 to 0 of 0 records"
+msgstr "Affichage de 0 à 0 sur 0 enregistrement"
+
+#: templates/core/_datatables.html:20
+msgid "(filtered from _MAX_ total records)"
+msgstr "(filtrés parmi _MAX_ enregistrements au total)"
+
+#: templates/core/_datatables.html:21
+msgid "Search:"
+msgstr "Rechercher :"
 
 #: templates/core/_init_tabs.html:9
 msgid "Could not load this tab. Sorry"
@@ -1756,7 +1775,7 @@ msgstr "Répartition du CA par client depuis le %(min_date)s"
 msgid "Expenses archive"
 msgstr "Historique des notes de frais"
 
-#: templates/expense/expense_archive.html:21
+#: templates/expense/expense_archive.html:22
 msgid "Export expenses in a spreadsheet"
 msgstr "Exporter ces notes de frais dans un tableur"
 
@@ -1802,7 +1821,7 @@ msgstr "Enregistrer"
 msgid "My expenses"
 msgstr "Mes notes de frais"
 
-#: templates/expense/expenses.html:59
+#: templates/expense/expenses.html:60
 msgid "Expenses I manage"
 msgstr "Les notes de frais à traiter"
 
@@ -2044,7 +2063,7 @@ msgstr "Mise à jour : "
 msgid "All active leads"
 msgstr "Toutes les affaires actives"
 
-#: templates/leads/review.html:33
+#: templates/leads/review.html:34
 msgid "Recent won, lost or forgiven leads"
 msgstr "Affaires récemment gagnées, perdues ou abandonnées"
 
@@ -2467,10 +2486,6 @@ msgstr "Afficher également les missions archivées"
 #: templates/staffing/missions.html:41
 msgid "Archiving failed"
 msgstr "Échec de l'archivage"
-
-#: templates/staffing/missions.html:60
-msgid "Search:"
-msgstr "Rechercher :"
 
 #: templates/staffing/pdc_review.html:36
 msgid "Workload shedule review"
