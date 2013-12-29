@@ -14,7 +14,7 @@
 
 jQuery.extend( jQuery.fn.dataTableExt.oSort, {
 	"numeric-comma-pre": function ( a ) {
-		var x = (a == "-") ? 0 : a.replace( /,/, "." );
+		var x = (a == "-" || a == "—") ? 0 : a.replace( /,/, "." );
 		return parseFloat( x );
 	},
 
