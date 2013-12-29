@@ -1,0 +1,28 @@
+{# Standard pydici datatables definition #}
+{# context: table_id #}
+
+{% load i18n %}
+
+
+<script type="text/JavaScript">
+<!--
+
+$(document).ready(function() {
+        $('#missions-table *').removeClass('odd').removeClass('even'); // Remove tables2 odd/even class - we use datables ones that support sorting 
+        $('#missions-table').dataTable({
+            "bPaginate": false,
+            "bInfo": false,
+            "bStateSave": true,
+            "oLanguage": {
+                "sZeroRecords": "Nothing found",
+                "sInfo": "{% trans 'Showing _START_ to _END_ of _TOTAL_ records' %}",
+                "sInfoEmpty": "{% trans 'Showing 0 to 0 of 0 records' %}",
+                "sInfoFiltered": "{% trans '(filtered from _MAX_ total records)' %}",
+                "sSearch": "{% trans 'Search:' %}",
+            }
+        });
+    } );
+-->
+</script>
+
+
