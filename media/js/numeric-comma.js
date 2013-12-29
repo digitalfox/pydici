@@ -49,11 +49,9 @@ jQuery.fn.dataTableExt.aTypes.unshift(
                         Char = sData.charAt(i);
                         if (sValidChars.indexOf(Char) == -1)
                         {
-                            console.log("noncomma: " + sData);
                             return null;
                         }
                 }
-                console.log("comma: " + sData);
                 return 'numeric-comma';
         }
 );
