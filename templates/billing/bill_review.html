@@ -11,20 +11,23 @@
 
 {% block content %}
 <div class="content-large">
+    <br/>
     {% if overdue_bills %}
-    <div class="imodule">
-        <table>
-        <caption>{% trans "Overdue bills" %}</caption>
+    <h1>{% trans "Overdue bills" %}</h1>
+        <table id="overdue_bills" class="pydici-tables2">
+        <thead>
         <tr>
-                <td><b>{% trans "Bill id" %}</b></td>
-                <td><b>{% trans "Client" %}</b></td>
-                <td><b>{% trans "Amount (€ excl tax)" %}</b></td>
-                <td><b>{% trans "Amount (€ with tax)" %}</b></td>
-                <td><b>{% trans "Wait" %}</b></td>
-                <td><b>{% trans "File" %}</b></td>
-                <td><b>{% trans "Comments" %}</b></td>
-                <td></td>
+                <th>{% trans "Bill id" %}</th>
+                <th>{% trans "Client" %}</th>
+                <th>{% trans "Amount (€ excl tax)" %}</th>
+                <th>{% trans "Amount (€ with tax)" %}</th>
+                <th>{% trans "Wait" %}</th>
+                <th>{% trans "File" %}</th>
+                <th>{% trans "Comments" %}</th>
+                <th></th>
         </tr>
+        </thead>
+        <tbody>
         {% for bill in overdue_bills %}
             <tr>
                 {% if perms.billing.change_clientbill %}
@@ -44,29 +47,35 @@
                  </td>
             </tr>
         {% endfor %}
+        </tbody>
+        <tfoot>
         <tr><td></td>
-            <td><b>{% trans "Total amount: " %}</b></td>
+            <td style="text-align: right"><b>{% trans "Total amount: " %}</b></td>
             <td style="text-align: right"><b>{{ overdue_bills_total|floatformat:-2 }}</b></td>
             <td style="text-align: right"><b>{{ overdue_bills_total_with_vat|floatformat:-2 }}</b></td>
             <td></td>
         </tr>
+        </tfoot>
         </table>
-    </div>
+    {% with "overdue_bills" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
     {% endif %}
     {% if soondue_bills %}
-    <div class="imodule">
-        <table>
-        <caption>{% trans "Bills due soon" %}</caption>
+    <br/><br/>
+    <h1>{% trans "Bills due soon" %}</h1>
+        <table id="due_soon_bills" class="pydici-tables2">
+        <thead>
         <tr>
-                <td><b>{% trans "Bill id" %}</b></td>
-                <td><b>{% trans "Client" %}</b></td>
-                <td><b>{% trans "Amount (€ excl tax)" %}</b></td>
-                <td><b>{% trans "Amount (€ with tax)" %}</b></td>
-                <td><b>{% trans "Wait" %}</b></td>
-                <td><b>{% trans "File" %}</b></td>
-                <td><b>{% trans "Comments" %}</b></td>
-                <td></td>
+                <th>{% trans "Bill id" %}</th>
+                <th>{% trans "Client" %}</th>
+                <th>{% trans "Amount (€ excl tax)" %}</th>
+                <th>{% trans "Amount (€ with tax)" %}</th>
+                <th>{% trans "Wait" %}</th>
+                <th>{% trans "File" %}</th>
+                <th>{% trans "Comments" %}</th>
+                <th></th>
         </tr>
+        </thead>
+        <tbody>
         {% for bill in soondue_bills %}
             <tr>
                 {% if perms.billing.change_clientbill %}
@@ -86,29 +95,35 @@
                  </td>
             </tr>
         {% endfor %}
+        </tbody>
+        <tfoot>
         <tr><td></td>
-            <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
+            <td style="text-align: right"><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
             <td style="text-align: right"><b>{{ soondue_bills_total|floatformat:-2 }}</b></td>
             <td style="text-align: right"><b>{{ soondue_bills_total_with_vat|floatformat:-2 }}</b></td>
             <td></td>
         </tr>
+        </tfoot>
         </table>
-    </div>
+        {% with "due_soon_bills" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
     {% endif %}
     {% if litigious_bills %}
-    <div class="imodule">
-        <table>
-        <caption>{% trans "Litigious bills" %}</caption>
+        <br/><br/>
+        <h1>{% trans "Litigious bills" %}</h1>
+        <table id="litigious_bills" class="pydici-tables2">
+        <thead>
         <tr>
-                <td><b>{% trans "Bill id" %}</b></td>
-                <td><b>{% trans "Client" %}</b></td>
-                <td><b>{% trans "Amount (€ excl tax)" %}</b></td>
-                <td><b>{% trans "Amount (€ with tax)" %}</b></td>
-                <td><b>{% trans "Wait" %}</b></td>
-                <td><b>{% trans "File" %}</b></td>
-                <td><b>{% trans "Comments" %}</b></td>
-                <td></td>
+                <th>{% trans "Bill id" %}</th>
+                <th>{% trans "Client" %}</th>
+                <th>{% trans "Amount (€ excl tax)" %}</th>
+                <th>{% trans "Amount (€ with tax)" %}</th>
+                <th>{% trans "Wait" %}</th>
+                <th>{% trans "File" %}</th>
+                <th>{% trans "Comments" %}</th>
+                <th></th>
         </tr>
+        </thead>
+        <tbody>
         {% for bill in litigious_bills %}
             <tr>
                 {% if perms.billing.change_clientbill %}
@@ -128,29 +143,36 @@
                  </td>
             </tr>
         {% endfor %}
+        </tbody>
+        <tfoot>
         <tr><td></td>
-            <td><b>{% trans "Total amount (€ exc. tax.): " %}</b></td>
+            </th>{% trans "Total amount (€ exc. tax.): " %}</b></td>
             <td style="text-align: right"><b>{{ litigious_bills_total|floatformat:-2 }}</b></td>
             <td style="text-align: right"><b>{{ litigious_bills_total_with_vat|floatformat:-2 }}</b></td>
             <td></td>
         </tr>
+        </tfoot>
         </table>
-    </div>
+    {% with "litigious_bills" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
     {% endif %}
+    
     {% if recent_bills %}
-    <div class="imodule">
-        <table>
-        <caption>{% trans "Recently paid bills" %}</caption>
+        <br/><br/>
+        <h1>{% trans "Recently paid bills" %}</h1>
+        <table id="recent_bills" class="pydici-tables2">
+        <thead>
         <tr>
-                <td><b>{% trans "Bill id" %}</b></td>
-                <td><b>{% trans "Client" %}</b></td>
-                <td><b>{% trans "Amount (€ excl tax)" %}</b></td>
-                <td><b>{% trans "Amount (€ with tax)" %}</b></td>
-                <td><b>{% trans "Creation date" %}</b></td>
-                <td><b>{% trans "Payment delay" %}</b></td>
-                <td><b>{% trans "File" %}</b></td>
-                <td><b>{% trans "Comments" %}</b></td>
+                <th>{% trans "Bill id" %}</th>
+                <th>{% trans "Client" %}</th>
+                <th>{% trans "Amount (€ excl tax)" %}</th>
+                <th>{% trans "Amount (€ with tax)" %}</th>
+                <th>{% trans "Creation date" %}</th>
+                <th>{% trans "Payment delay" %}</th>
+                <th>{% trans "File" %}</th>
+                <th>{% trans "Comments" %}</th>
         </tr>
+        </thead>
+        <tbody>
         {% for bill in recent_bills %}
             <tr>
                 {% if perms.billing.change_clientbill %}
@@ -167,22 +189,25 @@
                 <td>{{ bill.comment }}</td>
             </tr>
         {% endfor %}
+        </tbody>
         </table>
-    </div>
+        {% with "recent_bills" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
     {% endif %}
     {% if leads_without_bill %}
-    <div class="imodule">
-        <table>
-        <caption>{% trans "Recent leads without bill" %}</caption>
-
+        <br/><br/>
+        <h1>{% trans "Recent leads without bill" %}</h1>
+        <table id="recent_leads" class="pydici-tables2">
+        <thead>
         <tr>
-                <td><b>{% trans "Lead" %}</b></td>
-                <td><b>{% trans "Responsible" %}</b></td>
-                <td><b>{% trans "Staffing" %}</b></td>
-                <td><b>{% trans "Sales (k€)" %}</b></td>
-                <td><b>{% trans "Done days" %}</b></td>
-                <td><b>{% trans "Done work (€)" %}</b></td>
+                <th>{% trans "Lead" %}</th>
+                <th>{% trans "Responsible" %}</th>
+                <th>{% trans "Staffing" %}</th>
+                <th>{% trans "Sales (k€)" %}</th>
+                <th>{% trans "Done days" %}</th>
+                <th>{% trans "Done work (€)" %}</th>
         </tr>
+        <thead>
+        <tbody>
         {% for lead in leads_without_bill %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
                 <td><a href="{% url 'leads.views.detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
@@ -193,7 +218,9 @@
                 <td>{{ lead.done_work.1 }}</td>
             </tr>
         {% endfor %}
+        </tbody>
         </table>
+        {% with "recent_leads" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
     </div>
     {% endif %}
 
