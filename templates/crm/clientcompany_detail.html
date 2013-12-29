@@ -105,20 +105,27 @@ $(document).ready(function() {
 {% if not request.session.mobile %}
 <div id="tab-contacts">
 <br/>
-<h4>{% trans "Business contacts" %}</h4>
+<h2>{% trans "Business contacts" %}</h2>
 {% with business_contacts as contacts %}
+{% with "business_contacts_table" as table_id %}
      {% include "crm/_contact_list.html" %}
+     {% include "core/_datatables.html" %}
 {% endwith %}
-<br/>
-<h4>{% trans "Mission contacts" %}</h4>
+{% endwith %}
+<br/><br/>
+<h2>{% trans "Mission contacts" %}</h2>
 {% with mission_contacts as contacts %}
+{% with "mission_contacts_table" as table_id %}
      {% include "crm/_contact_list.html" %}
+     {% include "core/_datatables.html" %}
 {% endwith %}
-<br/>
-<h4>{% trans "Administrative contacts" %}</h4>
+{% endwith %}
 
-<div class="imodule">
-<table>
+<br/><br/>
+<h2>{% trans "Administrative contacts" %}</h2>
+
+<table class="pydici-tables2" id="admin_contacts_table">
+    <thead>
     <tr>
         <th>{% trans "Name" %}</th>
         <th>{% trans "Company" %}</th>
@@ -128,8 +135,10 @@ $(document).ready(function() {
         <th>{% trans "Mobile phone" %}</th>
         <th>{% trans "Fax" %}</th>
     </tr>
+    </thead>
+    <tbody>
     {% for admincontact in administrative_contacts %}
-        <tr {%cycle 'class="row1"' 'class="row2"' %}>
+        <tr>
         {% if admincontact.contact %}
            <td><a rel=external href="{% url 'admin:crm_contact_change' admincontact.contact.id %}?return_to={{ request.get_full_path }}#tab-contacts">{{ contact.name }}</a></td>
         {% else %}
@@ -137,14 +146,18 @@ $(document).ready(function() {
         {% endif %}
            <td>{{ admincontact.company }}</td>
            <td>{{ admincontact.function }}</td>
-           <td>{{ admincontact.email }}</td>
+           <td>{{ admincontact.email|urlize }}</td>
            <td>{{ admincontact.phone }}</td>
            <td>{{ admincontact.contact.mobile_phone }}</td>
            <td>{{ admincontact.fax }}</td>
         </tr>
     {% endfor %}
+    </tbody>
 </table>
-</div>
+{% with "admin_contacts_table" as table_id %}
+     {% include "core/_datatables.html" %}
+{% endwith %}
+
 </div>
 {% endif %}
 

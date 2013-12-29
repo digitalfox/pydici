@@ -3,8 +3,8 @@
 
 {% load i18n %}
 
-<div class="imodule">
-<table>
+<table class="pydici-tables2" id="{{ table_id }}">
+    <thead>
     <tr>
         <th>{% trans "Name" %}</th>
         <th>{% trans "Company" %}</th>
@@ -14,8 +14,10 @@
         <th>{% trans "Mobile phone" %}</th>
         <th>{% trans "Fax" %}</th>
     </tr>
+    </thead>
+    <tbody>
     {% for contact in contacts %}
         {% include "crm/_contact_item.html" %}
     {% endfor %}
+    </tbody>
 </table>
-</div>
