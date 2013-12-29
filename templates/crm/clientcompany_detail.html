@@ -140,7 +140,7 @@ $(document).ready(function() {
     {% for admincontact in administrative_contacts %}
         <tr>
         {% if admincontact.contact %}
-           <td><a rel=external href="{% url 'admin:crm_contact_change' admincontact.contact.id %}?return_to={{ request.get_full_path }}#tab-contacts">{{ contact.name }}</a></td>
+           <td><a rel=external href="{% url 'admin:crm_contact_change' admincontact.contact.id %}?return_to={{ request.get_full_path }}#tab-contacts">{{ admincontact.contact.name }}</a></td>
         {% else %}
             <td></td>
         {% endif %}
