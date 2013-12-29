@@ -161,7 +161,7 @@ def mission_expenses(request, mission_id):
     try:
         mission = Mission.objects.get(id=mission_id)
         if mission.lead:
-            expenses = Expense.objects.filter(lead=mission.lead)
+            expenses = Expense.objects.filter(lead=mission.lead).select_related().prefetch_related("clientbill_set")
         else:
             expenses = []
     except Mission.DoesNotExist:
@@ -169,6 +169,17 @@ def mission_expenses(request, mission_id):
     return render(request, "expense/expense_list.html",
                   {"expenses": expenses,
                    "user": request.user})
+
+
+@pydici_non_public
+def chargeable_expenses(request):
+    """Display all chargeable expenses that are not yet charged in a bill"""
+    expenses = Expense.objects.filter(chargeable=True).select_related().prefetch_related("clientbill_set")
+    expenses = [e for e in expenses if e.clientbill_set.all().count() == 0]
+    return render(request, "expense/chargeable_expenses.html",
+                  {"expenses": expenses,
+                   "user": request.user})
+
 
 
 @pydici_non_public

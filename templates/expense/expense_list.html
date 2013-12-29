@@ -7,8 +7,8 @@
 {% load pydici_filters %}
 
 {% if expenses %}
-<div class="imodule">
-<table>
+<table id="expenses-table" class="pydici-tables2">
+<thead>
 <tr>
     <th>{% trans "People" %}</th>
     <th>{% trans "Description" %}</th>
@@ -21,6 +21,8 @@
     <th>{% trans "Update date" %}</th>
     <th>{% trans "Comments" %}</th>
 </tr>
+</thead>
+<tbody>
 {% for expense in expenses %}
     <tr {%cycle 'class="row1"' 'class="row2"' %}>
     <td>{{ expense.user.username|link_to_consultant }}</td>
@@ -46,8 +48,9 @@
     <td>{{ expense.comment }}</td>
     </tr>
 {% endfor %}
+</tbody>
 </table>
-</div>
+{% with "expenses-table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
 {% else %}
     {% trans "No expense" %}
 {% endif %}
