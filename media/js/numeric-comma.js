@@ -10,11 +10,13 @@
  *  @name Commas for decimal place
  *  @anchor numeric_comma
  *  @author <a href="http://sprymedia.co.uk">Allan Jardine</a>
+ *  @author Modified by Sebastien Renard
  */
 
+ 
 jQuery.extend( jQuery.fn.dataTableExt.oSort, {
 	"numeric-comma-pre": function ( a ) {
-		var x = (a == "-" || a == "—") ? 0 : a.replace( /,/, "." );
+		var x = (a == "-" || a == "—") ? 0 : a.replace( /,/, "." ).replace(/\s+/, "").replace(/\xA0/, "").replace("&nbsp;", "");
 		return parseFloat( x );
 	},
 
@@ -30,10 +32,11 @@ jQuery.extend( jQuery.fn.dataTableExt.oSort, {
 jQuery.fn.dataTableExt.aTypes.unshift(
         function ( sData )
         {
-                var sValidChars = "0123456789,.—";
+                var sValidChars = "0123456789,.— \xA0";
                 var Char;
                 var bDecimal = false;
                 var iStart=0;
+                sData = sData.replace("&nbsp;", "");
 
                 /* Negative sign is valid - shift the number check start point */
                 if ( sData.charAt(0) === '-' ) {
@@ -46,10 +49,11 @@ jQuery.fn.dataTableExt.aTypes.unshift(
                         Char = sData.charAt(i);
                         if (sValidChars.indexOf(Char) == -1)
                         {
-                                return null;
+                            console.log("noncomma: " + sData);
+                            return null;
                         }
                 }
-
+                console.log("comma: " + sData);
                 return 'numeric-comma';
         }
 );
