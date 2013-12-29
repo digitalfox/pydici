@@ -13,14 +13,28 @@ from django_tables2.utils import A
 from leads.models import Lead
 
 
-class LeadTable(tables.Table):
+class LeadsTable(tables.Table):
     client = tables.LinkColumn(verbose_name=_("Client"), viewname="crm.views.company_detail", args=[A("client.organisation.company.id")])
     name = tables.LinkColumn(verbose_name=_("Name"), viewname="leads.views.detail", args=[A("pk")])
     responsible = tables.LinkColumn(accessor="responsible", viewname="people.views.consultant_home", args=[A("responsible.id")])
-    staffing_list = tables.Column(orderable=False)
+    staffing_list = tables.Column()
 
     class Meta:
         model = Lead
         sequence = ("client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "due_date", "start_date")
         fields = sequence
         attrs = {"class": "pydici-tables2"}
+        orderable = False  # Sort is done by jquery.datatable on client side
+
+
+class ActiveLeadsTable(LeadsTable):
+    class Meta:
+        attrs = {"class": "pydici-tables2", "id": "active_leads_table"}
+        prefix = "active_leads_table"
+        order_by = "creation_date"
+
+
+class RecentArchivedLeadsTable(LeadsTable):
+    class Meta:
+        attrs = {"class": "pydici-tables2", "id": "recent_archived_leads_table"}
+        prefix = "recent_archived_leads_table"

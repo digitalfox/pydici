@@ -8,8 +8,8 @@
 <!--
 
 $(document).ready(function() {
-        $('#missions-table *').removeClass('odd').removeClass('even'); // Remove tables2 odd/even class - we use datables ones that support sorting 
-        $('#missions-table').dataTable({
+        $('#{{ table_id }} *').removeClass('odd').removeClass('even'); // Remove tables2 odd/even class - we use datables ones that support sorting 
+        $('#{{ table_id }}').dataTable({
             "bPaginate": false,
             "bInfo": false,
             "bStateSave": true,

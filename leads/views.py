@@ -27,7 +27,7 @@ from django_tables2   import RequestConfig
 
 from core.utils import send_lead_mail, sortedValues, COLORS
 from leads.models import Lead
-from leads.tables import LeadTable
+from leads.tables import ActiveLeadsTable, RecentArchivedLeadsTable
 import pydici.settings
 from core.utils import capitalize, getLeadDirs, createProjectTree
 from core.decorator import pydici_non_public
@@ -171,13 +171,14 @@ def mail_lead(request, lead_id=0):
 @pydici_non_public
 def review(request):
     today = datetime.today()
-    delay = timedelta(days=10)  # (10 days)
+    delay = timedelta(days=40)
     recentArchivedLeads = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
                                                       Q(state="SLEEPING"))
     recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date").select_related()
-    recentArchivedLeadsTable = LeadTable(recentArchivedLeads)
+    recentArchivedLeadsTable = RecentArchivedLeadsTable(recentArchivedLeads)
     RequestConfig(request, paginate={"per_page": 50}).configure(recentArchivedLeadsTable)
-    activeLeadsTable = LeadTable(Lead.objects.active().select_related(), order_by="creation_date")
+
+    activeLeadsTable = ActiveLeadsTable(Lead.objects.active().select_related())  # , order_by="creation_date")
     RequestConfig(request, paginate={"per_page": 50}).configure(activeLeadsTable)
     return render(request, "leads/review.html",
                   {"recent_archived_leads": recentArchivedLeads,
