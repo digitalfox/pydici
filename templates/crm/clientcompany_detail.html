@@ -157,7 +157,7 @@ $(document).ready(function() {
 {% with "admin_contacts_table" as table_id %}
      {% include "core/_datatables.html" %}
 {% endwith %}
-
+<br/><i><a href="{% url 'admin:crm_administrativecontact_add' %}?company={{ company.id  }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
 </div>
 {% endif %}
 
