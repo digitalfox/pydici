@@ -1,5 +1,6 @@
 {# Standard pydici datatables definition #}
 {# context: table_id #}
+{# contact: datatable_options #}
 
 {% load i18n %}
 
@@ -10,6 +11,7 @@
 $(document).ready(function() {
         $('#{{ table_id }} *').removeClass('odd').removeClass('even'); // Remove tables2 odd/even class - we use datables ones that support sorting 
         $('#{{ table_id }}').dataTable({
+            {{ datatable_options }}
             "bPaginate": false,
             "bInfo": false,
             "bStateSave": true,
