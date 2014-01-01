@@ -82,3 +82,4 @@ class ExpensePaymentTable(tables.Table):
         fields = sequence
         attrs = {"class": "pydici-tables2", "id": "expense_payment_table"}
         order_by = "-id"
+        orderable = False

@@ -5,7 +5,7 @@ Pydici expense views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date, timedelta
+from datetime import date
 import mimetypes
 import workflows.utils as wf
 import permissions.utils as perm

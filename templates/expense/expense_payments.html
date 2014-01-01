@@ -19,6 +19,7 @@
 <h1>{% trans "Expenses to pay" %}</h1>
 {% if expense_to_pay_table.data %}
     {% render_table expense_to_pay_table %}
+    {% with "expense_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
 {% else %}
     {% trans "No expense to pay" %}
 {% endif %}
@@ -43,6 +44,7 @@
 {% if expense_payment_table.data %}
 <h1>{% trans "Expense payments" %}</h1>
     {% render_table expense_payment_table %}
+    {% with "expense_payment_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
 <br/><hr/><br/>
 {% endif %}
 
