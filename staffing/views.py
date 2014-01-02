@@ -1120,7 +1120,7 @@ def graph_consultant_rates_jqp(request, consultant_id):
     consultant = Consultant.objects.get(id=consultant_id)
     startDate = (date.today() - timedelta(24 * 30)).replace(day=1)
 
-    timesheets = Timesheet.objects.filter(consultant=consultant, charge__gt=0, working_date__gte=startDate)
+    timesheets = Timesheet.objects.filter(consultant=consultant, charge__gt=0, working_date__gte=startDate, working_date__lt=nextMonth(date.today()))
     kdates = list(timesheets.dates("working_date", "month"))
 
     # Avg daily rate / month and objective rate
