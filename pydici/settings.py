@@ -31,7 +31,7 @@ PYDICI_HOST = "http://localhost:8888"
 # Can be overided for each bills. This is just the default proposed value on form
 # Value **must** be quoted as a string
 # Ex. "19.6"
-PYDICI_DEFAULT_VAT_RATE = 19.6
+PYDICI_DEFAULT_VAT_RATE = "20.0"
 
 LEADS_MAIL_FROM = "sebastien.renard@digitalfox.org"
 LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
