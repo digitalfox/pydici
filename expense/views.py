@@ -202,8 +202,9 @@ def update_expense_state(request, expense_id, transition_id):
 
 @pydici_non_public
 def expense_payments(request, expense_payment_id=None):
+    readOnly = False
     if not request.user.groups.filter(name="expense_paymaster").exists() and not request.user.is_superuser:
-        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+        readOnly = True
     try:
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
@@ -212,10 +213,26 @@ def expense_payments(request, expense_payment_id=None):
         expense_payment_id = None
         expensePayment = None
 
-    expensesToPay = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
-    expensesToPay = [expense for expense in expensesToPay if wf.get_state(expense).transitions.count() == 0]
+    if readOnly:
+        expensesToPay = []
+    else:
+        expensesToPay = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
+        expensesToPay = [expense for expense in expensesToPay if wf.get_state(expense).transitions.count() == 0]
+
+    try:
+        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+        user_team = consultant.userTeam()
+    except Consultant.DoesNotExist:
+        user_team = []
+
+    expensePayments = ExpensePayment.objects.all()
+    if not perm.has_role(request.user, "expense paymaster"):
+        expensePayments = expensePayments.filter(Q(expense__user=request.user) | Q(expense__user__in=user_team)).distinct()
 
     if request.method == "POST":
+        if readOnly:
+            # A bad user is playing with urls...
+            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
         form = ExpensePaymentForm(request.POST)
         if form.is_valid():
             if expense_payment_id:
@@ -242,8 +259,9 @@ def expense_payments(request, expense_payment_id=None):
 
     return render(request, "expense/expense_payments.html",
                   {"modify_expense_payment": bool(expense_payment_id),
-                   "expense_payment_table": ExpensePaymentTable(ExpensePayment.objects.all()),
+                   "expense_payment_table": ExpensePaymentTable(expensePayments),
                    "expense_to_pay_table": ExpenseTable(expensesToPay),
+                   "read_only": readOnly,
                    "form": form,
                    "user": request.user})
 
@@ -256,6 +274,11 @@ def expense_payment_detail(request, expense_payment_id):
     try:
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
+        if not (expensePayment.user() == request.user or\
+           perm.has_role(request.user, "expense paymaster") or\
+           perm.has_role(request.user, "expense manager")):
+            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+
     except ExpensePayment.DoesNotExist:
         messages.add_message(request, messages.ERROR, _("Expense payment %s does not exist" % expense_payment_id))
         return redirect(expense_payments)
