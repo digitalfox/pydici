@@ -30,6 +30,19 @@ jQuery.extend( jQuery.fn.dataTableExt.oSort, {
     "numeric-html-desc": function ( a, b ) {
         return ((a < b) ? 1 : ((a > b) ?  -1 : 0));
     },
+
+    "title-numeric-pre": function ( a ) {
+        var x = a.match(/title="*(-?[0-9\.]+)/)[1];
+        return parseInt( x );
+    },
+ 
+    "title-numeric-asc": function ( a, b ) {
+        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+    },
+ 
+    "title-numeric-desc": function ( a, b ) {
+        return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+    }
 } );
 
 // Add type detection
@@ -65,6 +78,21 @@ jQuery.fn.dataTableExt.aTypes.unshift(
                }
                if ((a % 1) == 0) {
                    return 'numeric-html';
+               } else {
+                   return null;
+               }
+        }
+);
+
+jQuery.fn.dataTableExt.aTypes.unshift(
+        function ( sData ) {
+               var a = sData.match(/title="*(-?[0-9\.]+)/);
+               if ((a == "") || (a == null)) {
+                   return null;
+               }
+               a = [1];
+               if ((a % 1) == 0) {
+                   return 'title-numeric';
                } else {
                    return null;
                }

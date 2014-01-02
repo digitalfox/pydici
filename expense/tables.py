@@ -24,6 +24,8 @@ class ExpenseTable(tables.Table):
     state = tables.TemplateColumn("""{% load i18n %}{% if record.expensePayment %}
                                                         <a href="{% url 'expense.views.expense_payment_detail' record.expensePayment.id %}">{% trans "Paid" %}</a>
                                                     {% else %}{{ record.state }}{% endif %}""", verbose_name=_("State"))
+    expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
+    update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
 
     def render_user(self, value):
         return link_to_consultant(value)
@@ -72,6 +74,7 @@ class ExpensePaymentTable(tables.Table):
     id = tables.LinkColumn(viewname="expense.views.expense_payment_detail", args=[A("pk")])
     detail = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_payment_detail' record.id %}"><img src='{{MEDIA_URL}}pydici/menu/magnifier.png'/></a>""", verbose_name=_("detail"), sortable=False)
     modify = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>""", verbose_name=_("change"), sortable=False)
+    payment_date = tables.TemplateColumn("""<span title="{{ record.payment_date|date:"Ymd" }}">{{ record.payment_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
 
     def render_user(self, value):
         return link_to_consultant(value)
