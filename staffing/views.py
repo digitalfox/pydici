@@ -272,11 +272,11 @@ def pdc_review(request, year=None, month=None):
                     holidays.append(current_staffing.charge * current_staffing.mission.probability / 100)
 
             # Staffing computation
-            prod = to_int_or_round(sum(prod))
-            unprod = to_int_or_round(sum(unprod))
-            holidays = to_int_or_round(sum(holidays))
+            prod = sum(prod)
+            unprod = sum(unprod)
+            holidays = sum(holidays)
             available = available_month[month] - (prod + unprod + holidays)
-            staffing[consultant].append([prod, unprod, holidays, available])
+            staffing[consultant].append([to_int_or_round(prod), to_int_or_round(unprod), to_int_or_round(holidays), to_int_or_round(available)])
             total[month]["prod"] += prod
             total[month]["unprod"] += unprod
             total[month]["holidays"] += holidays
