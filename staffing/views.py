@@ -209,8 +209,13 @@ def pdc_review(request, year=None, month=None):
 
     if "projected" in request.GET:
         projected = True
+        worst_case = False
+    elif "worst_case" in request.GET:
+        projected = True
+        worst_case = True
     else:
         projected = False
+        worst_case = False
 
     groupby = "manager"
     if "groupby" in request.GET:
@@ -265,11 +270,20 @@ def pdc_review(request, year=None, month=None):
                 nature = current_staffing.mission.nature
                 if nature == "PROD":
                     missions.add(current_staffing.mission)  # Store prod missions for this consultant
-                    prod.append(current_staffing.charge * current_staffing.mission.probability / 100)
+                    if worst_case:
+                        prod.append(current_staffing.charge)
+                    else:
+                        prod.append(current_staffing.charge * current_staffing.mission.probability / 100)
                 elif nature == "NONPROD":
-                    unprod.append(current_staffing.charge * current_staffing.mission.probability / 100)
+                    if worst_case:
+                        unprod.append(current_staffing.charge)
+                    else:
+                        unprod.append(current_staffing.charge * current_staffing.mission.probability / 100)
                 elif nature == "HOLIDAYS":
-                    holidays.append(current_staffing.charge * current_staffing.mission.probability / 100)
+                    if worst_case:
+                        holidays.append(current_staffing.charge)
+                    else:
+                        holidays.append(current_staffing.charge * current_staffing.mission.probability / 100)
 
             # Staffing computation
             prod = to_int_or_round(sum(prod))
@@ -323,6 +337,7 @@ def pdc_review(request, year=None, month=None):
                    "rates": rates,
                    "user": request.user,
                    "projected": projected,
+                   "worst_case": worst_case,
                    "previous_slice_date": previous_slice_date,
                    "next_slice_date": next_slice_date,
                    "start_date": start_date,
