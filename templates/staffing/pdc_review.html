@@ -36,12 +36,18 @@
 	{% trans "Workload shedule review" %}
 	<a href="{% url 'pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};{% if projected %}projected{% endif %}" title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
 	</h1>
-{% if projected %}
-    <strong>{% trans "With staffing projection" %}</strong>
+{% if worst_case %}
+    <strong>{% trans "With worst staffing projection" %}</strong>
     (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}}"><em>{% trans "remove projections" %}</em></a>)
+    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projected"><em>{% trans "add balanced projections" %}</em></a>)
+{% elif projected %}
+    <strong>{% trans "With balanced staffing projection" %}</strong>
+    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}}"><em>{% trans "remove projections" %}</em></a>)
+    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};worst_case"><em>{% trans "add worst projections" %}</em></a>)
 {% else %}
     <strong>{% trans "Without staffing projection" %}</strong>
-    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projected"><em>{% trans "add projections" %}</em></a>)
+    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projected"><em>{% trans "add balanced projections" %}</em></a>)
+    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};worst_case"><em>{% trans "add worst projections" %}</em></a>)
 {% endif %}
 <br>
 {% ifequal groupby "manager" %}
