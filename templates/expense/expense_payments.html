@@ -21,25 +21,22 @@
     {% if expense_to_pay_table.data %}
         {% render_table expense_to_pay_table %}
         {% with "expense_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
-    {% else %}
-        {% trans "No expense to pay" %}
-    {% endif %}
     <br/><hr/><br/>
-    
-    
+
     {% if modify_expense_payment %}
         <h1>{% trans "Modify the expense payment" %}</h1>
     {% else %}
         <h1>{% trans "Add an expense payment" %}</h1>
     {% endif %}
-    
+
     <form enctype="multipart/form-data" action='' method="POST">
         {{ form.non_field_errors }}
         {{ form }}
         <input type="submit" value="{% trans 'Save' %}"/>
-    
     </form>
-    
+    {% else %}
+        {% trans "No expense to pay" %}
+    {% endif %}
     <br/><hr/><br/>
 {% endif %}
 
