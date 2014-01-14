@@ -11,7 +11,7 @@
 
 {% block breadcrumbs %}{% endblock %}
 
-{% block title %}{% trans "Expense payments" %}{% endblock %}
+{% block title %}{% trans "Expenses payments" %}{% endblock %}
 
 {% block content %}
 <div class="content-large">
@@ -41,7 +41,7 @@
 {% endif %}
 
 {% if expense_payment_table.data %}
-<h1>{% trans "Expense payments" %}</h1>
+<h1>{% trans "Expenses payments" %}</h1>
     {% render_table expense_payment_table %}
     {% with "expense_payment_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
 <br/><hr/><br/>
