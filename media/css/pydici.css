@@ -223,6 +223,10 @@ a.tagrlink { color: #999999 }
 .pydici-mass-staffing label { width: 15em; float: left; text-align: right; margin-right: 1em; margin-bottom: -1em; padding-bottom: 0.5em; display: block ; vertical-align: middle; }
 .pydici-expense p+p { line-height: 100%; margin-bottom:1em; margin-top:1.25em;  }
 
+/* pdc review radio box */
+.pydici-select-radio input { margin-right: 10px; margin-top: 0px; } label { width: 250px; display: inline-block;}
+.pydici-select-radio-title { display: inline-block; width:100px; text-align: right; }
+
 /* jquery tooltip */
 .tooltip{width:500px;margin:0;padding:5px;font-size:11px;color:#666;background:#fff;border:2px solid #ccc;}
 .tooltip p{margin:0;text-align:justify;}

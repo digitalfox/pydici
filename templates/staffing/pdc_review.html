@@ -22,8 +22,8 @@
         <h1>{% trans "Workload schedule" %}</h1>
         <div data-role="navbar">
             <ul>
-               <li><a href="{% url 'pdcreview' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/?groupby={{groupby}};{% if projected %}projected{% endif %}" data-direction="reverse">{% trans 'Previous months' %}</a></li>
-               <li><a href="{% url 'pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};{% if projected %}projected{% endif %}" >{% trans 'Next months' %}</a></li>
+               <li><a href="{% url 'pdcreview' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}" data-direction="reverse">{% trans 'Previous months' %}</a></li>
+               <li><a href="{% url 'pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}" >{% trans 'Next months' %}</a></li>
             </ul>
         </div><!-- /navbar -->
     </div>
@@ -36,23 +36,24 @@
 	{% trans "Workload shedule review" %}
 	<a href="{% url 'pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};{% if projected %}projected{% endif %}" title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
 	</h1>
-{% if projected %}
-    <strong>{% trans "With staffing projection" %}</strong>
-    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}}"><em>{% trans "remove projections" %}</em></a>)
-{% else %}
-    <strong>{% trans "Without staffing projection" %}</strong>
-    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projected"><em>{% trans "add projections" %}</em></a>)
-{% endif %}
-<br>
-{% ifequal groupby "manager" %}
-    <strong>{% trans "Grouped by manager" %}</strong>
-    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=position;projected"><em>{% trans "group by level" %}</em></a>)
-{% else %}
-    <strong>{% trans "Grouped by level" %}</strong>
-    (<a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=manager;projected"><em>{% trans "group by manager" %}</em></a>)
-{% endifequal %}
-<br>
-<br>
+
+<br/>
+<span class="pydici-select-radio-title"><strong>{% trans "Projections: " %}</strong></span>
+<span class="pydici-select-radio">
+<label><input type="radio" onclick="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}}'" {% ifequal projection "none" %}checked{% endifequal %}/>{% trans "Only won leads" %}</label>
+<label><input type="radio" onclick="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=balanced'" {% ifequal projection "balanced" %}checked{% endifequal %}/>{% trans "Balanced staffing projection" %}</label>
+<label><input type="radio" onclick="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=full'" {% ifequal projection "full" %}checked{% endifequal %}/>{% trans "Full staffing projection" %}</label>
+</span>
+<br/>
+<span class="pydici-select-radio-title"><strong>{% trans "Group by: " %}</strong></span>
+<span class="pydici-select-radio">
+<label><input type="radio" onclick="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=manager;projection={{projection}}'" {% ifequal groupby "manager" %}checked{% endifequal %}/>{% trans "Manager" %}</label>
+<label><input type="radio" onclick="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=position;projection={{projection}}'" {% ifequal groupby "position" %}checked{% endifequal %}/>{% trans "Level" %}</label>
+</span>
+<br/>
+<br/>
+
+
 <table style="white-space: nowrap;">
 {% endif %}
 
