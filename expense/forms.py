@@ -53,4 +53,4 @@ class ExpensePaymentForm(forms.Form):
 
     class Meta:
         model = ExpensePayment
-        fields = {"payment_date", "expenses"}
+        fields = ("payment_date", "expenses")
