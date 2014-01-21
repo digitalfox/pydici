@@ -207,15 +207,10 @@ def pdc_review(request, year=None, month=None):
         except ValueError:
             pass
 
-    if "projected" in request.GET:
-        projected = True
-        worst_case = False
-    elif "worst_case" in request.GET:
-        projected = True
-        worst_case = True
-    else:
-        projected = False
-        worst_case = False
+    projection = "none"
+    if "projection" in request.GET:
+        if request.GET["projection"] in ("none", "balanced", "full"):
+            projection = request.GET["projection"]
 
     groupby = "manager"
     if "groupby" in request.GET:
@@ -255,7 +250,7 @@ def pdc_review(request, year=None, month=None):
         staffing[consultant] = []
         missions = set()
         for month in months:
-            if projected:
+            if projection in ("balanced", "full"):
                 # Only exclude null (0%) mission
                 current_staffings = consultant.staffing_set.filter(staffing_date=month, mission__probability__gt=0).order_by()
             else:
@@ -270,17 +265,17 @@ def pdc_review(request, year=None, month=None):
                 nature = current_staffing.mission.nature
                 if nature == "PROD":
                     missions.add(current_staffing.mission)  # Store prod missions for this consultant
-                    if worst_case:
+                    if projection == "full":
                         prod.append(current_staffing.charge)
                     else:
                         prod.append(current_staffing.charge * current_staffing.mission.probability / 100)
                 elif nature == "NONPROD":
-                    if worst_case:
+                    if projection == "full":
                         unprod.append(current_staffing.charge)
                     else:
                         unprod.append(current_staffing.charge * current_staffing.mission.probability / 100)
                 elif nature == "HOLIDAYS":
-                    if worst_case:
+                    if projection == "full":
                         holidays.append(current_staffing.charge)
                     else:
                         holidays.append(current_staffing.charge * current_staffing.mission.probability / 100)
@@ -336,8 +331,7 @@ def pdc_review(request, year=None, month=None):
                    "total": total,
                    "rates": rates,
                    "user": request.user,
-                   "projected": projected,
-                   "worst_case": worst_case,
+                   "projection": projection,
                    "previous_slice_date": previous_slice_date,
                    "next_slice_date": next_slice_date,
                    "start_date": start_date,
