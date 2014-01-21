@@ -33,7 +33,7 @@ def install_expense_workflow():
 
     # Permissions
     permission_expense_management = Permission.objects.create(name=u'expense management', codename=u'expense_management')
-    permission_expense_payment = Permission.objects.create(name=u'expense payment', codename=u'expense_payment')
+    permission_expense_control = Permission.objects.create(name=u'expense control', codename=u'expense_control')
     permission_expense_edit = Permission.objects.create(name=u'expense edit', codename=u'expense_edit')
 
     # Roles
@@ -57,7 +57,7 @@ def install_expense_workflow():
                                          workflow=expense_workflow)
 
     # Associates permissions to workflow
-    for permission in (permission_expense_management, permission_expense_payment, permission_expense_edit):
+    for permission in (permission_expense_management, permission_expense_control, permission_expense_edit):
         WorkflowPermissionRelation.objects.create(workflow=expense_workflow,
                                                   permission=permission)
 
@@ -86,7 +86,7 @@ def install_expense_workflow():
                                            role=role_owner)
 
     StatePermissionRelation.objects.create(state=state_validated,
-                                           permission=permission_expense_payment,
+                                           permission=permission_expense_control,
                                            role=role_paymaster)
 
     # Workflow transitions between states
@@ -100,7 +100,7 @@ def install_expense_workflow():
                                                        workflow=expense_workflow,
                                                        destination=state_needs_information,
                                                        condition=u'',
-                                                       permission=permission_expense_payment)
+                                                       permission=permission_expense_control)
 
     transition_reject = Transition.objects.create(name=u'reject',
                                                        workflow=expense_workflow,
@@ -108,11 +108,11 @@ def install_expense_workflow():
                                                        condition=u'',
                                                        permission=permission_expense_management)
 
-    transition_pay = Transition.objects.create(name=u'pay',
+    transition_control = Transition.objects.create(name=u'control',
                                                        workflow=expense_workflow,
                                                        destination=state_paid,
                                                        condition=u'',
-                                                       permission=permission_expense_payment)
+                                                       permission=permission_expense_control)
 
     # Add transition allowed from each state
     state_requested.transitions.add(transition_validate)
@@ -120,7 +120,7 @@ def install_expense_workflow():
     state_requested.transitions.add(transition_reject)
 
     state_validated.transitions.add(transition_ask_information)
-    state_validated.transitions.add(transition_pay)
+    state_validated.transitions.add(transition_control)
 
     state_needs_information.transitions.add(transition_validate)
     state_needs_information.transitions.add(transition_reject)

@@ -11,8 +11,9 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_bytes
 
 import django_tables2 as tables
+from django_tables2.utils import A
 
-from expense.models import Expense
+from expense.models import Expense, ExpensePayment
 from core.templatetags.pydici_filters import link_to_consultant
 
 
@@ -20,7 +21,11 @@ class ExpenseTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"))
     lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads.views.detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
     receipt = tables.TemplateColumn("""{% if record.receipt %}<a href="{% url 'expense.views.expense_receipt' record.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}""")
-    state = tables.Column(verbose_name=_("State"))
+    state = tables.TemplateColumn("""{% load i18n %}{% if record.expensePayment %}
+                                                        <a href="{% url 'expense.views.expense_payment_detail' record.expensePayment.id %}">{% trans "Paid" %}</a>
+                                                    {% else %}{{ record.state }}{% endif %}""", verbose_name=_("State"))
+    expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
+    update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
 
     def render_user(self, value):
         return link_to_consultant(value)
@@ -60,4 +65,24 @@ class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
     class Meta:
         attrs = {"class": "pydici-tables2", "id": "managed_expense_workflow_table"}
         prefix = "managed_expense_workflow_table"
+        orderable = False
+
+
+class ExpensePaymentTable(tables.Table):
+    user = tables.Column(verbose_name=_("Consultant"), sortable=False)
+    amount = tables.Column(verbose_name=_("Amount"), sortable=False)
+    id = tables.LinkColumn(viewname="expense.views.expense_payment_detail", args=[A("pk")])
+    detail = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_payment_detail' record.id %}"><img src='{{MEDIA_URL}}pydici/menu/magnifier.png'/></a>""", verbose_name=_("detail"), sortable=False)
+    modify = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>""", verbose_name=_("change"), sortable=False)
+    payment_date = tables.TemplateColumn("""<span title="{{ record.payment_date|date:"Ymd" }}">{{ record.payment_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
+
+    def render_user(self, value):
+        return link_to_consultant(value)
+
+    class Meta:
+        model = ExpensePayment
+        sequence = ("id", "user", "amount", "payment_date")
+        fields = sequence
+        attrs = {"class": "pydici-tables2", "id": "expense_payment_table"}
+        order_by = "-id"
         orderable = False

@@ -7,7 +7,8 @@ Django administration setup
 
 from django.contrib import admin
 
-from expense.models import Expense, ExpenseCategory
+from expense.models import Expense, ExpenseCategory, ExpensePayment
+from expense.forms import ExpensePaymentForm
 
 
 class ExpenseAdmin(admin.ModelAdmin):
@@ -22,5 +23,11 @@ class ExpenseCategoryAdmin(admin.ModelAdmin):
     list_display = ("name",)
     actions = None
 
+
+class ExpensePaymentAdmin(admin.ModelAdmin):
+    list_display = ("id", "payment_date", "user", "amount")
+
+
 admin.site.register(Expense, ExpenseAdmin)
 admin.site.register(ExpenseCategory, ExpenseCategoryAdmin)
+admin.site.register(ExpensePayment, ExpensePaymentAdmin)

@@ -21,7 +21,7 @@ from leads.models import Lead
 from people.models import Consultant, ConsultantProfile
 from crm.models import Client, Subsidiary, BusinessBroker
 from staffing.models import Mission
-from expense.models import Expense, ExpenseCategory
+from expense.models import Expense, ExpenseCategory, ExpensePayment
 from expense.default_workflows import install_expense_workflow
 import pydici.settings
 
@@ -435,11 +435,19 @@ class WorkflowTest(TestCase):
         self.assertEqual(len(wf.get_allowed_transitions(e, tco)), 0)  # No transition allowed for user
         self.assertTrue(wf.do_transition(e, validate, abr))  # Validate it again
 
-        # Pay it
-        pay = Transition.objects.get(name="pay")
-        self.assertTrue(wf.do_transition(e, pay, fla))
+        # Check it
+        control = Transition.objects.get(name="control")
+        self.assertTrue(wf.do_transition(e, control, fla))
         for user in (tco, abr, fla):
             self.assertEqual(len(wf.get_allowed_transitions(e, user)), 0)  # No transition allowed
+
+        # Create a payment for that expense
+        expensePayment = ExpensePayment(payment_date=date.today())
+        expensePayment.save()
+        e.expensePayment = expensePayment
+        e.save()
+        self.assertEqual(expensePayment.user(), tco)
+        self.assertEqual(expensePayment.amount(), 123)
 
 
 # ######
