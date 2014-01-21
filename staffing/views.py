@@ -242,7 +242,7 @@ def pdc_review(request, year=None, month=None):
     # Initialize total dict and available dict
     holidays_days = Holiday.objects.all().values_list("day", flat=True)
     for month in months:
-        total[month] = {"prod": 0, "unprod": 0, "holidays": 0, "available": 0}
+        total[month] = {"prod": 0, "unprod": 0, "holidays": 0, "available": 0, "total": 0}
         available_month[month] = working_days(month, holidays_days)
 
     # Get consultants staffing
@@ -272,15 +272,20 @@ def pdc_review(request, year=None, month=None):
                     holidays.append(current_staffing.charge * current_staffing.mission.probability / 100)
 
             # Staffing computation
-            prod = to_int_or_round(sum(prod))
-            unprod = to_int_or_round(sum(unprod))
-            holidays = to_int_or_round(sum(holidays))
+            prod = sum(prod)
+            unprod = sum(unprod)
+            holidays = sum(holidays)
+            prod_round = to_int_or_round(prod)
+            unprod_round = to_int_or_round(unprod)
+            holidays_round = to_int_or_round(holidays)
             available = available_month[month] - (prod + unprod + holidays)
-            staffing[consultant].append([prod, unprod, holidays, available])
+            available_displayed = available_month[month] - (prod_round + unprod_round + holidays_round)
+            staffing[consultant].append([prod_round, unprod_round, holidays_round, available_displayed])
             total[month]["prod"] += prod
             total[month]["unprod"] += unprod
             total[month]["holidays"] += holidays
             total[month]["available"] += available
+            total[month]["total"] += available_month[month]
         # Add client synthesis to staffing dict
         if not mobile:
             company = set([m.lead.client.organisation.company for m in list(missions)])
@@ -306,7 +311,7 @@ def pdc_review(request, year=None, month=None):
     total = [(to_int_or_round(i[1]["prod"]),
             to_int_or_round(i[1]["unprod"]),
             to_int_or_round(i[1]["holidays"]),
-            to_int_or_round(i[1]["available"])) for i in total]
+            i[1]["total"] - (to_int_or_round(i[1]["prod"]) + to_int_or_round(i[1]["unprod"]) + to_int_or_round(i[1]["holidays"]))) for i in total]
 
     # Order staffing list
     staffing = staffing.items()
