@@ -311,7 +311,7 @@ def pdc_review(request, year=None, month=None):
     total = [(to_int_or_round(i[1]["prod"]),
             to_int_or_round(i[1]["unprod"]),
             to_int_or_round(i[1]["holidays"]),
-            i[1]["total"]-(to_int_or_round(i[1]["prod"])+to_int_or_round(i[1]["unprod"])+to_int_or_round(i[1]["holidays"]))) for i in total]
+            i[1]["total"] - (to_int_or_round(i[1]["prod"]) + to_int_or_round(i[1]["unprod"]) + to_int_or_round(i[1]["holidays"]))) for i in total]
 
     # Order staffing list
     staffing = staffing.items()
