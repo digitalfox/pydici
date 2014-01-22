@@ -72,7 +72,7 @@ jQuery.fn.dataTableExt.aTypes.unshift(
 
 jQuery.fn.dataTableExt.aTypes.unshift(
         function ( sData ) {
-               var a = $(sData).text();
+               var a = $("<div/>").html(sData).text();  // we need both html() and text() to understand escaped html and extract text from html tags
                if (a == "") {
                    return null;
                }
