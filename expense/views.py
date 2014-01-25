@@ -137,9 +137,8 @@ def expenses_history(request):
     if not perm.has_role(request.user, "expense paymaster"):
         expenses = expenses.filter(Q(user=request.user) | Q(user__in=user_team))
 
-    expenses = expenses.order_by("-expense_date")
-    expenseTable = ExpenseTable(expenses)
-    RequestConfig(request, paginate={"per_page": 100}).configure(expenseTable)
+    expenseTable = ExpenseTable(expenses, orderable=True)
+    RequestConfig(request, paginate={"per_page": 50}).configure(expenseTable)
 
     if "csv" in request.GET:
         return tableToCSV(expenseTable, filename="expenses.csv")

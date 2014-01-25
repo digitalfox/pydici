@@ -23,7 +23,7 @@ class ExpenseTable(tables.Table):
     receipt = tables.TemplateColumn("""{% if record.receipt %}<a href="{% url 'expense.views.expense_receipt' record.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}""")
     state = tables.TemplateColumn("""{% load i18n %}{% if record.expensePayment %}
                                                         <a href="{% url 'expense.views.expense_payment_detail' record.expensePayment.id %}">{% trans "Paid" %}</a>
-                                                    {% else %}{{ record.state }}{% endif %}""", verbose_name=_("State"))
+                                                    {% else %}{{ record.state }}{% endif %}""", verbose_name=_("State"), orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
     update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
 
@@ -36,6 +36,7 @@ class ExpenseTable(tables.Table):
         fields = sequence
         attrs = {"class": "pydici-tables2", "id": "expense_table"}
         orderable = False
+        order_by = "-expense_date"
 
 
 class ExpenseWorkflowTable(ExpenseTable):
