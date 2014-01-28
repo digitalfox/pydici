@@ -75,7 +75,7 @@ tr:hover {
 }
 table.small-form-row td { padding:0px; font-size:9px; margin:0px; vertical-align: middle;}
 
-/* SORTABLE TABLES 
+/* SORTABLE TABLES */ 
 thead th a:link, thead th a:visited { color:#666; display:block; }
 table thead th.sorted { background-position:bottom left !important; }
 table thead th.sorted a { padding-right:13px; }
@@ -305,3 +305,7 @@ a.tagrlink { color: #999999 }
 #content-related h3 { font-size:12px; color:#666; margin-bottom:3px; }
 #content-related h4 { font-size:11px; }
 #content-related .module h2 { background:#eee url(../img/nav-bg.gif) bottom left repeat-x; color:#666; }
+
+/* jquery ui customisation */
+.ui-widget-header { background:None; border:None}
+.ui-widget-content { border: None}
