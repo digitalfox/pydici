@@ -54,7 +54,7 @@
 <br/>
 
 
-<table style="white-space: nowrap;">
+<table style="white-space: nowrap;" id="pdc_table">
 {% endif %}
 
 <tr>
@@ -66,10 +66,10 @@
 </tr>
     <th></th>
     {% for month in months %}
-        <th style="border-left:1px solid #C3C3C3;">{% trans "prod" %}</th>
-        <th>{% trans "unprod" %}</th>
-        <th>{% trans "hol." %}</th>
-        <th>{% trans "avai." %}</th>
+        <th style="border-left:1px solid #C3C3C3;">{% trans "prod" %}<span title="{{ month|date:'Ym' }}"></span></th>
+        <th>{% trans "unprod" %}<span title="{{ month|date:'Ym' }}"></span></th>
+        <th>{% trans "hol." %}<span title="{{ month|date:'Ym' }}"></span></th>
+        <th>{% trans "avai." %}<span title="{{ month|date:'Ym' }}"></span></th>
     {% endfor %}
     {% if not request.session.mobile %}
         <th style="border-left:1px solid #C3C3C3;">{% trans "Clients" %}</th>
@@ -94,10 +94,10 @@
     {% endifequal %}
 
     <tr {%cycle 'class="row1"' 'class="row2"' %}>
-        <td><a href="{% url 'people.views.consultant_home' consultant.id %}#tab-staffing">{{ consultant }}</a></td>
+        <td><a href="{% url 'people.views.consultant_home' consultant.id %}#tab-staffing">{{ consultant }}</a><span title="{{consultant.id}}"></span></td>
         {% autoescape off %}
         {% for charge in charges %}
-            <td style="border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td class='charge'>" }}</td>
+            <td class='pdc-tooltip' style="border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td class='charge pdc-tooltip'>" }}</td>
         {% endfor %}
         {% endautoescape %}
     </tr>
@@ -157,6 +157,24 @@ for(i in cells)
         }
     }
 }
+
+$(document).ready(function(){
+
+    $(".pdc-tooltip").tooltip(
+        {
+          //content:  function() { return $(this).closest('table').find('span').eq($(this).index()-1).attr('title')},
+          //content:  function() { return $(this).closest('tr').find('span').attr('title')},
+          content:  function(callback) {
+              var staffing_date = $(this).closest('table').find('span').eq($(this).index()-1).attr('title');
+              var consultant = $(this).closest('tr').find('span').attr('title');
+              var url = '{% url 'staffing.views.pdc_detail' '123456' '19700101' %}'.replace("123456", consultant).replace("19700101", staffing_date);
+              return $.get( url, function(data) {callback(data);})
+              },
+          items: "td['']",
+        }
+        
+    );
+});
 //-->
 </SCRIPT>
 

@@ -344,6 +344,25 @@ def pdc_review(request, year=None, month=None):
 
 
 @pydici_non_public
+def pdc_detail(request, consultant_id, staffing_date):
+    """Display detail of consultant staffing for this month"""
+    try:
+        consultant = Consultant.objects.get(id=consultant_id)
+        name = consultant.name
+    except Consultant.DoesNotExist:
+        return Http404()
+    try:
+        month = date(int(staffing_date[0:4]), int(staffing_date[4:6]), 1)
+    except ValueError, IndexError:
+        return Http404()
+
+    staffings = Staffing.objects.filter(mission__active=True, consultant=consultant, staffing_date__gte=month, staffing_date__lt=nextMonth(month))
+    return HttpResponse("<br/>".join(["%s : %s" % (s.mission, s.charge) for s in staffings]))
+    return HttpResponse(json.dumps({"consultant": name}),
+                        content_type="application/json")
+
+
+@pydici_non_public
 def deactivate_mission(request, mission_id):
     """Deactivate the given mission"""
     try:
