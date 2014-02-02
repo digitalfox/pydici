@@ -7,9 +7,12 @@ Ajax custom lookup
 
 from django.contrib.auth.models import User
 from django.db.models import Q
+from ajax_select import LookupChannel
 
 
-class UserLookup(object):
+class UserLookup(LookupChannel):
+    model = User
+
     def get_query(self, q, request):
         """ return a query set.  you also have access to request.user if needed """
         qs = User.objects.filter(is_active=True)
@@ -19,16 +22,10 @@ class UserLookup(object):
                        Q(last_name__icontains=q))
         return qs
 
-    def format_result(self, user):
-        """ the search results display in the dropdown menu.  may contain html and multiple-lines. will remove any |  """
-        return u"%s %s" % (user.first_name, user.last_name)
-
-    def format_item(self, user):
-        """ the display of a currently selected object in the area below the search box. html is OK """
+    def get_result(self, user):
+        """ The text result of autocompleting the entered query """
         return user.username
 
-    def get_objects(self, ids):
-        """ given a list of ids, return the objects ordered as you would like them on the admin page.
-            this is for displaying the currently selected items (in the case of a ManyToMany field)
-        """
-        return User.objects.filter(pk__in=ids).order_by("username")
+    def format_match(self, user):
+        """ (HTML) formatted item for displaying item in the dropdown """
+        return u"%s %s" % (user.first_name, user.last_name)

@@ -38,7 +38,7 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["mission"] = AutoCompleteSelectField('mission', required=True, label=_("Mission"))  # Ajax it
+        form.fields["mission"] = AutoCompleteSelectField('mission', required=True, label=_("Mission"), show_help_text=False)
         form.fields["mission"].widget.attrs.setdefault("size", 8)  # Reduce default size
         form.fields["staffing_date"].widget.attrs.setdefault("size", 10)  # Reduce default size
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
@@ -49,7 +49,7 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["consultant"] = AutoCompleteSelectField('consultant', required=True, label=_("Consultant"))  # Ajax it
+        form.fields["consultant"] = AutoCompleteSelectField('consultant', required=True, label=_("Consultant"), show_help_text=False)
         form.fields["consultant"].widget.attrs.setdefault("size", 8)  # Reduce default size
         form.fields["staffing_date"].widget.attrs.setdefault("size", 10)  # Reduce default size
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
@@ -62,8 +62,8 @@ class MassStaffingForm(forms.Form):
         staffing_dates = kwargs.pop("staffing_dates", [])
         super(MassStaffingForm, self).__init__(*args, **kwargs)
 
-        self.fields["missions"] = AutoCompleteSelectMultipleField('mission', required=True, label=_("Missions"))
-        self.fields["consultants"] = AutoCompleteSelectMultipleField('consultant', required=False, label=_("Consultants"))
+        self.fields["missions"] = AutoCompleteSelectMultipleField('mission', required=True, label=_("Missions"), show_help_text=False)
+        self.fields["consultants"] = AutoCompleteSelectMultipleField('consultant', required=False, label=_("Consultants"), show_help_text=False)
         self.fields["charge"] = forms.fields.FloatField(label=_("Charge"), min_value=0.25, max_value=31)
         self.fields["comment"] = forms.fields.CharField(label=_("Comment"), max_length=100, required=False)
         self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
@@ -125,7 +125,7 @@ class TimesheetForm(forms.Form):
 class MissionAdminForm(forms.ModelForm):
     """Form used to validate mission price field in admin"""
 
-    contacts = AutoCompleteSelectMultipleField('mission_contact', required=False, label=_("Contacts"))
+    contacts = AutoCompleteSelectMultipleField('mission_contact', required=False, label=_("Contacts"), show_help_text=False)
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
@@ -178,7 +178,7 @@ class FinancialConditionAdminForm(forms.ModelForm):
 
 
 class MissionContactForm(forms.ModelForm):
-    contacts = AutoCompleteSelectMultipleField('mission_contact', required=False, label=_("New contacts"))
+    contacts = AutoCompleteSelectMultipleField('mission_contact', required=False, label=_("New contacts"), show_help_text=False, help_text="")
 
     class Meta:
         model = Mission

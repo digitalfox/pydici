@@ -18,11 +18,11 @@ class LeadForm(models.ModelForm):
     class Meta:
         model = Lead
     # declare a field and specify the named channel that it uses
-    responsible = AutoCompleteSelectField('internal_consultant', required=False, label=_("Responsible"))
-    salesman = AutoCompleteSelectField('salesman', required=False, label=_("Salesman"))
-    business_broker = AutoCompleteSelectField('business_broker', required=False, label=_("Business broker"))
-    paying_authority = AutoCompleteSelectField('business_broker', required=False, label=_("Paying authority"))
-    client = AutoCompleteSelectField('client', required=True, label=_("Client"))
+    responsible = AutoCompleteSelectField('internal_consultant', required=False, label=_("Responsible"), show_help_text=False)
+    salesman = AutoCompleteSelectField('salesman', required=False, label=_("Salesman"), show_help_text=False)
+    business_broker = AutoCompleteSelectField('business_broker', required=False, label=_("Business broker"), show_help_text=False)
+    paying_authority = AutoCompleteSelectField('business_broker', required=False, label=_("Paying authority"), show_help_text=False)
+    client = AutoCompleteSelectField('client', required=True, label=_("Client"), show_help_text=False)
 
     def clean_sales(self):
         """Ensure sale amount is defined at lead when commercial proposition has been sent"""

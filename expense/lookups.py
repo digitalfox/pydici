@@ -11,9 +11,12 @@ from django.utils import formats
 
 from expense.models import Expense
 from django.db.models import Q
+from ajax_select import LookupChannel
 
 
-class ExpenseLookup(object):
+class ExpenseLookup(LookupChannel):
+    model = Expense
+
     def get_query(self, q, request):
         """ return expenses that match query """
         return Expense.objects.filter(Q(description__icontains=q) |
@@ -24,21 +27,15 @@ class ExpenseLookup(object):
                                       Q(lead__deal_id__icontains=q) |
                                       Q(lead__client__organisation__company__name__icontains=q))
 
-    def format_result(self, expense):
-        """ the search results display in the dropdown menu.  may contain html and multiple-lines. will remove any |  """
+    def format_match(self, expense):
+        """ (HTML) formatted item for displaying item in the dropdown """
         return u"%s (%s %s) - %s" % (expense, expense.user.first_name, expense.user.last_name,
                                      formats.date_format(expense.expense_date))
 
-    def format_item(self, expense):
-        """ the display of a currently selected object in the area below the search box. html is OK """
+    def format_item_display(self, expense):
+        """ (HTML) formatted item for displaying item in the selected deck area """
         return u"%s (%s %s) - %s" % (expense, expense.user.first_name, expense.user.last_name,
                                      formats.date_format(expense.expense_date))
-
-    def get_objects(self, ids):
-        """ given a list of ids, return the objects ordered as you would like them on the admin page.
-            this is for displaying the currently selected items (in the case of a ManyToMany field)
-        """
-        return Expense.objects.filter(pk__in=ids).order_by("expense_date")
 
 
 class ChargeableExpenseLookup(ExpenseLookup):

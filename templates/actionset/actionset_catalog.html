@@ -49,10 +49,9 @@
 
 <script type="text/JavaScript">
 <!--
-    $("input[name^='actionset_target_user']").autocomplete('{% url 'ajax_lookup' "user"%}',
-                                                      { formatItem: function(row) { return row[2]; },
-                                                        formatResult: function(row) { return row[1]; },
-                                                        dataType: "text"
+    $("input[name^='actionset_target_user']").autocomplete(
+                                                      { source : '{% url 'ajax_lookup' "user"%}',
+                                                       minLength: 0,
                                                  });
     // Functions that process ajax callback
     function process_launch_actionset(data) {

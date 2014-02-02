@@ -52,11 +52,11 @@
 
 <script type="text/JavaScript">
 <!--
+$(document).ready(function(){
 
-    $("input[name^='deleguate_user']").autocomplete('{% url "ajax_lookup" "user"%}',
-                                          { formatItem: function(row) { return row[2]; },
-                                            formatResult: function(row) { return row[1]; },
-                                            dataType: "text"
+    $("input[name^='deleguate_user_']").autocomplete(
+                                          { source: '{% url "ajax_lookup" "user"%}',
+                                            minLength: 1,
                                           });
 
     $("a.tooltiplink").simpletooltip({margin : 100,
@@ -64,6 +64,7 @@
                                       hideDelay : 2,
                                       showEffect: "fadeIn", hideEffect: "fadeOut" });
 
+});
     // Function call URL for deleguate
     function call_deleguate_action(url, action_id) {
         var username = $("input[name^='deleguate_user_" + action_id + "']").val();

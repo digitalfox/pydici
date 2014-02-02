@@ -24,7 +24,7 @@ class ExpenseForm(forms.ModelForm):
         widgets = {"description": TextInput(attrs={"size": 40}),  # Increase default size
                    "comment": Textarea(attrs={'cols': 17, 'rows': 2})}  # Reduce height and increase width
 
-    lead = AutoCompleteSelectField('lead', required=False, label=_("Lead"))  # Ajax it
+    lead = AutoCompleteSelectField('lead', required=False, label=_("Lead"), show_help_text=False)
 
     def clean(self):
         """Additional check on expense form"""
@@ -35,7 +35,7 @@ class ExpenseForm(forms.ModelForm):
 
 class ExpensePaymentForm(forms.Form):
     """Expense payment form based on ExpensePayemnt model"""
-    expenses = AutoCompleteSelectMultipleField('payable_expense', required=True, label=_("Expenses"))  # Ajax it
+    expenses = AutoCompleteSelectMultipleField('payable_expense', required=True, label=_("Expenses"), show_help_text=False)
     payment_date = forms.fields.DateField()
 
     def clean(self):

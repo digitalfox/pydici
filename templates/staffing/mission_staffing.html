@@ -75,3 +75,14 @@
 {% endif %}
 
 {% include "staffing/_complete_staffing_date.html" %}
+
+<script type="text/javascript">
+<!--
+$(document).ready(function () {
+    // As this page is loaded through ajax, we need to fire up again ajax-autocomplete init routine
+    $(window).trigger('init-autocomplete');
+  });
+
+//-->
+</script>
+  

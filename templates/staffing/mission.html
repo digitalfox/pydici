@@ -125,7 +125,12 @@
             <script type="text/javascript">
             // Disable other mission tabs
             $(document).ready(function() {
-                $('#mission-tabs').tabs().tabs('remove', '#tab-other-missions');
+                // Remove the tab (thanks to jquery-ui 1.9, this is badly ugly)
+                var idx = $('#mission-tabs a[href="#tab-other-missions"]').parent().index();
+                var tab = $("#mission-tabs").find( ".ui-tabs-nav li:eq("+idx+")" ).remove();
+                var panelId = tab.attr( "aria-controls" );
+                $( "#" + panelId ).remove();
+                $('#mission-tabs').tabs("refresh");
             });
             </script>
         {% endif %}

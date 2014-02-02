@@ -7,9 +7,12 @@ Ajax custom lookup
 
 from leads.models import Lead
 from django.db.models import Q
+from ajax_select import LookupChannel
 
 
-class LeadLookup(object):
+class LeadLookup(LookupChannel):
+    model = Lead
+
     def get_query(self, q, request):
         """ return a query set.  you also have access to request.user if needed """
         qs = Lead.objects.filter(state="WON")
@@ -20,16 +23,6 @@ class LeadLookup(object):
                        Q(client__organisation__company__name__icontains=q))
         return qs
 
-    def format_result(self, lead):
-        """ the search results display in the dropdown menu.  may contain html and multiple-lines. will remove any |  """
+    def format_item_display(self, lead):
+        """ (HTML) formatted item for displaying item in the selected deck area """
         return u"%s (%s)" % (lead, lead.deal_id)
-
-    def format_item(self, lead):
-        """ the display of a currently selected object in the area below the search box. html is OK """
-        return unicode(lead)
-
-    def get_objects(self, ids):
-        """ given a list of ids, return the objects ordered as you would like them on the admin page.
-            this is for displaying the currently selected items (in the case of a ManyToMany field)
-        """
-        return Lead.objects.filter(pk__in=ids).order_by("name")
