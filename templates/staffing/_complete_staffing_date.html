@@ -6,21 +6,11 @@
 <script type="text/javascript">
 <!--
 $(document).ready(function() {
-    // Function to complete staffing month field    
-   $("input[id$='staffing_date']").autocomplete({{ staffing_dates|safe }},
+    // Function to complete staffing month field   
+   $("input[id$='staffing_date']").autocomplete(
             {
-                matchContains : true,
-                width: 150,
-                minChars: 0,
-                formatItem: function(row, i, max) {
-                    return row.long;
-                },
-                formatMatch: function(row, i, max) {
-                    return row.long + " " + row.short;
-                },
-                formatResult: function(row) {
-                    return row.short;
-                }
+                source : {{ staffing_dates|safe }},
+                minLength: 0,
             });
 });
 //-->

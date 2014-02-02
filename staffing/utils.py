@@ -170,7 +170,7 @@ def staffingDates(n=12, format=None):
         if format == "datetime":
             dates.append(staffingDate)
         else:
-            dates.append({"short": formats.localize_input(staffingDate),
-                          "long": formats.date_format(staffingDate, format="YEAR_MONTH_FORMAT").encode("latin-1"), })
+            dates.append({"value": formats.localize_input(staffingDate),
+                          "label": formats.date_format(staffingDate, format="YEAR_MONTH_FORMAT").encode("latin-1"), })
         staffingDate = nextMonth(staffingDate)
     return dates
