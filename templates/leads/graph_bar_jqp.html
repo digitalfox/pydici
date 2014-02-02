@@ -6,8 +6,26 @@
 
 <script type="text/javascript">
 
+//This script format the array of leads into an html string.
+//This is necessary because of the jqplot's highlighter's syntax.
+var data = {{ graph_data|safe }};
+data.forEach(function(series) {
+    series.forEach(function(point) {
+        if(typeof point[2] != 'undefined') //This is the case for "All leads" and "Won leads" series.
+        {
+          var html_string = "<table border=\"1\">";
+          point[2].forEach(function(leads) {
+              html_string += '<tr><td>' + leads + '</td></tr>'
+            });
+          html_string += '</table>'
+          point[2] = html_string;
+        }
+    });
+});
+
+
 $.jqplot.config.enablePlugins = true;
-$.jqplot('graph_bar_jqp',  {{ graph_data|safe }},
+$.jqplot('graph_bar_jqp', data,
 		{
          animate : false,
          stackSeries: true,
@@ -23,7 +41,15 @@ $.jqplot('graph_bar_jqp',  {{ graph_data|safe }},
          },
          series:[
                {% for label in series_label %}
-                   {label: "{{ label }}"},
+                   {label: "{{ label }}",
+                    highlighter: {
+                    tooltipAxes: 'y',
+                    yvalues: 3,
+                    formatString:"<div align=\'center\'>%u {% trans 'Lead' %}(s) {{ label }} %s </div>",
+                    showLabel: true,
+                    sizeAdjust: 7.5,
+                      },
+                    },
                {% endfor %}
                    {
                 	   label: "{% trans 'All leads' %}",
@@ -34,6 +60,7 @@ $.jqplot('graph_bar_jqp',  {{ graph_data|safe }},
                 	   markerOptions : { size : 5},
                 	   yaxis: 'y2axis',
                 	   disableStack : true,
+
                    },
                    {
                 	   label: "{% trans 'Won leads' %}",
@@ -50,7 +77,7 @@ $.jqplot('graph_bar_jqp',  {{ graph_data|safe }},
                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                tickOptions:{
             	   formatString:'%b %y',
-            	   angle: -40 
+            	   angle: -40
                },
                min: '{{ min_date }}',
                tickInterval: '1 month',

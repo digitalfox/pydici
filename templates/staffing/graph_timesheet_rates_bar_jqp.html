@@ -38,7 +38,7 @@ $.jqplot('timesheet_profile_rates_graph_jqp',  {{ graph_data|safe }}, {
                  tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                  tickOptions:{
                      formatString:'%b %y',
-                     angle: -40 
+                     angle: -40
                  },
                  min: '{{ min_date }}',
                  tickInterval: '1 month',
@@ -59,6 +59,8 @@ $.jqplot('timesheet_profile_rates_graph_jqp',  {{ graph_data|safe }}, {
          },
          highlighter: {
              tooltipAxes: 'y',
+             yvalues: 2,
+             formatString:"%u%, {% trans 'that is' %} %u {% trans 'days' %}",
              showLabel: true,
              sizeAdjust: 7.5,
          },
