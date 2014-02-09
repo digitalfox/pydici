@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-02 21:03+0100\n"
-"PO-Revision-Date: 2014-01-21 23:05+0100\n"
+"POT-Creation-Date: 2014-02-09 16:04+0100\n"
+"PO-Revision-Date: 2014-02-09 16:04+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -169,7 +169,6 @@ msgstr "Lien avec les notes de frais"
 #: templates/core/index.html:19 templates/core/index.html.py:44
 #: templates/core/index.html:68 templates/core/index.html.py:92
 #: templates/expense/expense_list.html:15
-#: templates/leads/graph_bar_jqp.html:48
 msgid "Lead"
 msgstr "Affaire"
 
@@ -1909,6 +1908,10 @@ msgstr "Les livrables sont manquants. Merci de les ranger ici : "
 #: templates/leads/_tag_cloud.html:8 templates/leads/tag.html:11
 msgid "All lead tags"
 msgstr "Toutes les étiquettes des affaires"
+
+#: templates/leads/graph_bar_jqp.html:48
+msgid "Lead(s) in state"
+msgstr "Affaire(s) en état"
 
 #: templates/leads/graph_bar_jqp.html:89
 msgid "Number of leads"
