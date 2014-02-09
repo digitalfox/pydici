@@ -271,6 +271,9 @@ a.tagrlink { color: #999999 }
   color: black;
   font-size: 1em;
 }
+.jqplot-highlighter-tooltip, .jqplot-canvasOverlay-tooltip {
+    background: none repeat scroll 0 0 rgba(208, 208, 208, 0.8);
+}
 
 /**********/
 /* Layout */
