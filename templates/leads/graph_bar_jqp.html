@@ -13,7 +13,7 @@ data.forEach(function(series) {
     series.forEach(function(point) {
         if(typeof point[2] != 'undefined') //This is the case for "All leads" and "Won leads" series.
         {
-          var html_string = "<table border=\"1\">";
+          var html_string = "<table>";
           point[2].forEach(function(leads) {
               html_string += '<tr><td>' + leads + '</td></tr>'
             });
