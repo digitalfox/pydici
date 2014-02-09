@@ -1027,6 +1027,7 @@ def graph_timesheet_rates_bar_jqp(request):
     data = {}  # Graph data
     natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures
     nature_data = {}
+    nature_data_days = {}
     holiday_days = [h.day for h in  Holiday.objects.all()]
     graph_data = []
 
@@ -1054,11 +1055,13 @@ def graph_timesheet_rates_bar_jqp(request):
 
     for nature in natures:
         nature_data[nature] = []
+        nature_data_days[nature] = []
         data = dict(timesheets.filter(mission__nature=nature).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
         data = convertDictKeyToDateTime(data)
         for month in timesheetMonths:
             nature_data[nature].append(100 * data.get(month, 0) / (working_days(month, holiday_days) * nConsultant.get(month, 1)))
-        graph_data.append(zip(isoTimesheetMonths, nature_data[nature]))
+            nature_data_days[nature].append(data.get(month, 0))
+        graph_data.append(zip(isoTimesheetMonths, nature_data[nature], nature_data_days[nature]))
 
     prodRate = []
     for prod, nonprod in zip(nature_data["PROD"], nature_data["NONPROD"]):
