@@ -344,6 +344,7 @@ def pdc_review(request, year=None, month=None):
 
 
 @pydici_non_public
+@cache_page(10)
 def pdc_detail(request, consultant_id, staffing_date):
     """Display detail of consultant staffing for this month"""
     try:
