@@ -268,8 +268,8 @@ def graph_bar_jqp(request):
         graph_data.append(zip(isoKdates, ydata, ydata_detailed))
 
     # Draw lead amount by month
-    yAllLead = [sum([i.sales for i in x if i.sales]) for x in sortedValues(data)]
-    yWonLead = [sum([i.sales for i in x if (i.sales and i.state == "WON")]) for x in sortedValues(data)]
+    yAllLead = [float(sum([i.sales for i in x if i.sales])) for x in sortedValues(data)]
+    yWonLead = [float(sum([i.sales for i in x if (i.sales and i.state == "WON")])) for x in sortedValues(data)]
     graph_data.append(zip(isoKdates, yAllLead))
     graph_data.append(zip(isoKdates, yWonLead))
     if kdates:
