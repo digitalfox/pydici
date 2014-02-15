@@ -236,7 +236,7 @@ $(document).ready(function() {
     // Function to add new tags asynchronously
 
     // Add autocomplete on existings tags
-    $("#newtag").autocomplete("{{ completion_url }}");
+    $("#newtag").autocomplete({ source:"{{ completion_url }}", minLength: 0});
 
     // Connect form validation to ajax request
     $("#tag_form").submit(function(e) {

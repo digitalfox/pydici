@@ -238,9 +238,9 @@ def remove_tag(request, tag_id, lead_id):
 def tags(request, lead_id):
     """@return: all tags that contains q parameter and are not already associated to this lead as a simple text list"""
     tags = Tag.objects.all().exclude(lead__id=lead_id)  # Exclude existing tags
-    tags = tags.filter(name__icontains=request.GET["q"])
+    tags = tags.filter(name__icontains=request.GET["term"])
     tags = tags.values_list("name", flat=True)
-    return HttpResponse("\n".join(tags))
+    return HttpResponse(json.dumps(list(tags)), content_type="application/json")
 
 
 @pydici_non_public
