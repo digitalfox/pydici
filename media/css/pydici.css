@@ -227,10 +227,6 @@ a.tagrlink { color: #999999 }
 .pydici-select-radio input { margin-right: 10px; margin-top: 0px; } label { width: 250px; display: inline-block;}
 .pydici-select-radio-title { display: inline-block; width:100px; text-align: right; }
 
-/* jquery tooltip */
-.tooltip{width:500px;margin:0;padding:5px;font-size:11px;color:#666;background:#fff;border:2px solid #ccc;}
-.tooltip p{margin:0;text-align:justify;}
-
 /* jeditable clickable field - need to look like a link */
 .jeditable-rate, .jeditable-mission-update { color: #883915; text-decoration:none; cursor:pointer; style="display:inline"}
 
@@ -313,6 +309,11 @@ a.tagrlink { color: #999999 }
 /* jquery ui customisation */
 .ui-widget-header { background:None; border:None}
 .ui-widget-content { border: None}
+
+div.ui-tooltip {
+    max-width: 500px;
+    white-space: nowrap;
+}
 
 /* highlight results */
 .ui-autocomplete {

@@ -358,9 +358,7 @@ def pdc_detail(request, consultant_id, staffing_date):
         raise Http404
 
     staffings = Staffing.objects.filter(mission__active=True, consultant=consultant, staffing_date__gte=month, staffing_date__lt=nextMonth(month))
-    return HttpResponse("<br/>".join(["%s : %s" % (s.mission, s.charge) for s in staffings]))
-    return HttpResponse(json.dumps({"consultant": name}),
-                        content_type="application/json")
+    return HttpResponse("<br/>".join(["%s : <b>%s</b>" % (s.mission, s.charge) for s in staffings]))
 
 
 @pydici_non_public
