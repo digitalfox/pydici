@@ -65,6 +65,7 @@
          {% endif %}
          {% if mission.lead %}{% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}{% endif %}
          {% if not mission.billing_mode %}<div class="errornote">{% trans "Please defined billing mode below" %}</div>{% endif %}
+         {% if not mission.defined_rates %}<div class="errornote">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
          <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
          <h3>{% trans "Subsidiary:" %} {{ mission.subsidiary }}</h3>
          <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
