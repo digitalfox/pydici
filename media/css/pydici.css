@@ -311,7 +311,7 @@ a.tagrlink { color: #999999 }
 .ui-widget-content { border: None}
 
 div.ui-tooltip {
-    max-width: 500px;
+    max-width: 800px;
     white-space: nowrap;
 }
 
