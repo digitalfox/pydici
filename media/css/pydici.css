@@ -225,7 +225,7 @@ a.tagrlink { color: #999999 }
 
 /* pdc review radio box */
 .pydici-select-radio input { margin-right: 10px; margin-top: 0px; } label { width: 250px; display: inline-block;}
-.pydici-select-radio-title { display: inline-block; width:100px; text-align: right; }
+.pydici-select-radio-title { display: inline-block; width: 120px; text-align: right; }
 
 /* jeditable clickable field - need to look like a link */
 .jeditable-rate, .jeditable-mission-update { color: #883915; text-decoration:none; cursor:pointer; style="display:inline"}

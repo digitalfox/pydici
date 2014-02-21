@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-19 10:06+0100\n"
-"PO-Revision-Date: 2014-02-19 10:06+0100\n"
+"POT-Creation-Date: 2014-02-21 19:30+0100\n"
+"PO-Revision-Date: 2014-02-21 19:30+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -283,15 +283,15 @@ msgstr "N° de facture fournisseur"
 msgid "Supplier Bill"
 msgstr "Facture fournisseur"
 
-#: billing/views.py:271
+#: billing/views.py:281
 msgid "Done work"
 msgstr "Montant réalisé"
 
-#: billing/views.py:271
+#: billing/views.py:281
 msgid "Forecasted work"
 msgstr "Montant prévu"
 
-#: billing/views.py:271
+#: billing/views.py:281
 msgid "Weighted forecasted work"
 msgstr "Montant prévu pondéré"
 
@@ -1023,7 +1023,7 @@ msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
 #: staffing/views.py:522 staffing/views.py:683
-#: templates/billing/pre_billing.html:20 templates/billing/pre_billing.html:24
+#: templates/billing/pre_billing.html:30 templates/billing/pre_billing.html:34
 msgid "total"
 msgstr "total"
 
@@ -1207,7 +1207,7 @@ msgstr "Affaires"
 msgid "Current leads review"
 msgstr "Revue des affaires en cours"
 
-#: templates/admin/base_site.html:78
+#: templates/admin/base_site.html:78 templates/billing/pre_billing.html:19
 #: templates/crm/graph_company_business_activity_jqp.html:27
 #: templates/leads/graph_bar_jqp.html:55
 msgid "All leads"
@@ -1483,7 +1483,7 @@ msgid "No bill yet"
 msgstr "Aucune facture"
 
 #: templates/billing/_lead_billing.html:34
-#: templates/billing/pre_billing.html:32
+#: templates/billing/pre_billing.html:42
 msgid "Add a client bill for this lead"
 msgstr "Ajouter une facture client pour cette affaire"
 
@@ -1577,41 +1577,49 @@ msgstr "Organismes payeurs"
 msgid "Billing preparation"
 msgstr "Préparation de la facturation"
 
-#: templates/billing/pre_billing.html:14
+#: templates/billing/pre_billing.html:16
+msgid "Leads selection: "
+msgstr "Sélection des affaires :"
+
+#: templates/billing/pre_billing.html:18
+msgid "Only my leads"
+msgstr "Uniquement mes affaires"
+
+#: templates/billing/pre_billing.html:24
 msgid "Pre billing for time spent missions"
 msgstr "Pré facturation pour les missions au temps passé"
 
-#: templates/billing/pre_billing.html:20
+#: templates/billing/pre_billing.html:30
 msgid "consultant"
 msgstr "consultant"
 
-#: templates/billing/pre_billing.html:20
+#: templates/billing/pre_billing.html:30
 #: templates/staffing/graph_timesheet_rates_bar_jqp.html:63
 msgid "days"
 msgstr "jours"
 
-#: templates/billing/pre_billing.html:20
+#: templates/billing/pre_billing.html:30
 msgid "rate"
 msgstr "Taux"
 
-#: templates/billing/pre_billing.html:30
+#: templates/billing/pre_billing.html:40
 msgid "Total:"
 msgstr "Total : "
 
-#: templates/billing/pre_billing.html:36
+#: templates/billing/pre_billing.html:46
 msgid "Pre billing for fixed price missions"
 msgstr "Pré facturation pour les missions au forfait"
 
-#: templates/billing/pre_billing.html:44
+#: templates/billing/pre_billing.html:54
 msgid "Fixed price mission(s)"
 msgstr "Mission(s) au forfait"
 
-#: templates/billing/pre_billing.html:48
+#: templates/billing/pre_billing.html:58
 #, python-format
 msgid "%(done)s k€ done "
 msgstr "%(done)s k€ réalisés "
 
-#: templates/billing/pre_billing.html:48
+#: templates/billing/pre_billing.html:58
 msgid "sold:"
 msgstr "Vendu :"
 

@@ -124,7 +124,7 @@ def bill_file(request, bill_id=0, nature="client"):
 
 
 @pydici_non_public
-def pre_billing(request, year=None, month=None):
+def pre_billing(request, year=None, month=None, mine=False):
     """Pre billing page: help to identify bills to send"""
     if year and month:
         month = date(int(year), int(month), 1)
@@ -135,14 +135,23 @@ def pre_billing(request, year=None, month=None):
     timeSpentBilling = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
     rates = {}  # Key is mission, value is Consultant rates dict
 
+    try:
+        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+    except Consultant.DoesNotExist:
+        consultant = None
+        mine = False
+
     fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
                                       timesheet__working_date__gte=month,
                                       timesheet__working_date__lt=next_month)
+    if mine:
+        fixedPriceMissions = fixedPriceMissions.filter(lead__responsible=consultant)
     fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
 
     timesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
                                           mission__nature="PROD", mission__billing_mode="TIME_SPENT")
-
+    if mine:
+        timesheets = timesheets.filter(mission__lead__responsible=consultant)
     timesheet_data = timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
     for mission_id, consultant_id, charge in timesheet_data:
         mission = Mission.objects.select_related("lead").get(id=mission_id)
@@ -171,6 +180,7 @@ def pre_billing(request, year=None, month=None):
                   {"time_spent_billing": timeSpentBilling,
                    "fixed_price_missions": fixedPriceMissions,
                    "month": month,
+                   "mine": mine,
                    "user": request.user})
 
 

@@ -11,6 +11,16 @@
 
 {% block content %}
 <div class="content-large">
+
+<br/>
+<span class="pydici-select-radio-title" style='width: 200px;'><strong>{% trans "Leads selection: " %}</strong></span>
+<span class="pydici-select-radio">
+<label><input type="radio" onclick="window.location='{% url 'billing.views.pre_billing' year=month.year month=month.month mine=True %}'" {% if mine %}checked{% endif %} />{% trans "Only my leads" %}</label>
+<label><input type="radio" onclick="window.location='{% url 'billing.views.pre_billing' year=month.year month=month.month mine=False %}'" {% if not mine %}checked{% endif %} />{% trans "All leads" %}</label>
+</span>
+<br/><br/>
+
+
 <h1>{% trans "Pre billing for time spent missions" %} - {{ month|date:"F Y" }}</h1>
 {% for lead, lead_data in time_spent_billing %}
     <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
