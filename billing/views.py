@@ -144,9 +144,15 @@ def pre_billing(request, year=None, month=None, mine=False):
     fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
                                       timesheet__working_date__gte=month,
                                       timesheet__working_date__lt=next_month)
+    undefinedBillingModeMissions = Mission.objects.filter(nature="PROD", billing_mode=None,
+                                      timesheet__working_date__gte=month,
+                                      timesheet__working_date__lt=next_month)
     if mine:
         fixedPriceMissions = fixedPriceMissions.filter(lead__responsible=consultant)
+        undefinedBillingModeMissions = undefinedBillingModeMissions.filter(lead__responsible=consultant)
+
     fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
+    undefinedBillingModeMissions = undefinedBillingModeMissions.order_by("lead").distinct()
 
     timesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
                                           mission__nature="PROD", mission__billing_mode="TIME_SPENT")
@@ -179,6 +185,7 @@ def pre_billing(request, year=None, month=None, mine=False):
     return render(request, "billing/pre_billing.html",
                   {"time_spent_billing": timeSpentBilling,
                    "fixed_price_missions": fixedPriceMissions,
+                   "undefined_billing_mode_missions": undefinedBillingModeMissions,
                    "month": month,
                    "mine": mine,
                    "user": request.user})

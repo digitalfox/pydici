@@ -60,4 +60,21 @@
 {% endfor %}
 
 </div>
+{% if undefined_billing_mode_missions %}
+<br/><hr><br/>
+<h1 class="errornote">{% trans "Missions without defined billing mode" %} - {{ month|date:"F Y" }}</h1>
+<div><ul>
+{% for mission in undefined_billing_mode_missions %}
+    {% ifchanged mission.lead %}
+        </ul></div><hr/>
+        <h2>{{ mission.lead }} ({{ mission.lead.deal_id }})</h2>
+        <ul>
+    {% endifchanged %}
+    <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }}) : </a>
+    {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
+{% endfor %}
+
+</div>
+{% endif %}
+
 {% endblock %}
