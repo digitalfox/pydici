@@ -25,8 +25,17 @@ Pydici can be installed as any Django application. Just drop the code somewhere
 and setup Apache.
 
 Prerequisite:
-- django (1.1.x is recommended)
+- django (1.5.x is recommended)
+- django additionnal modules:
+	- ajax_select
+	- taggit
+	- taggit_suggest,
+	- taggit_templatetags,
+	- permissions,
+	- workflows
+	- tables2
 - matplotlib
+- pycarddav (and its dependancies)
 
 Here's a sample Apache/mod_python config file. Pydici code live
 is /var/www/pydici and application is published as '/pydici/'.

@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
 from core.utils import capitalize
+from crm.utils import createOrUpdateContact
 
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
@@ -81,12 +82,17 @@ class Contact(models.Model):
     mobile_phone = models.CharField(_("Mobile phone"), max_length=30, blank=True)
     fax = models.CharField(_("Fax"), max_length=30, blank=True)
     function = models.CharField(_("Function"), max_length=200, blank=True)
+    carddav = models.CharField(max_length=200, blank=True, null=True)
 
     def __unicode__(self):
         return self.name
 
     def save(self, *args, **kargs):
+        remoteSave = kargs.pop("remoteSave", True)
         self.name = capitalize(self.name)
+        # Create or update remote DAV contact
+        if remoteSave:
+            self.carddav = createOrUpdateContact(self)
         super(Contact, self).save(*args, **kargs)
 
     def companies(self):

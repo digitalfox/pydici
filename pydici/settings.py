@@ -192,3 +192,8 @@ DOCUMENT_PROJECT_LEAD_DIR = u"{deal_id}_{name}"
 DOCUMENT_PROJECT_BUSINESS_DIR = u"commerce"
 DOCUMENT_PROJECT_DELIVERY_DIR = u"delivery"
 DOCUMENT_PROJECT_INPUT_DIR = u"input"
+
+# Carddav setting - trail slash is needed. Set to None to disable
+CARDDAV_SERVER = "http://localhost/oc/owncloud/remote.php/carddav/addressbooks/admin/contacts/"
+CARDDAV_USER = "admin"
+CARDDAV_PASSWD = "admin"
