@@ -9,21 +9,8 @@ Pydici batch module
 
 # python import
 from datetime import date, timedelta
-from os.path import abspath, dirname, join, pardir
-import sys
-import os
 from optparse import OptionParser
 
-# # Setup django envt & django imports
-PYDICI_DIR = abspath(join(dirname(__file__), pardir))
-os.environ['DJANGO_SETTINGS_MODULE'] = "pydici.settings"
-
-sys.path.append(PYDICI_DIR)  # Add project path to python path
-
-# Ensure we are in the good current working directory (pydici home)
-os.chdir(PYDICI_DIR)
-
-import pydici.settings
 
 # Django import
 from django.core import urlresolvers
@@ -32,7 +19,12 @@ from django.utils.translation import ugettext as _
 from django.template.loader import get_template
 from django.template import Context
 
+# Setup batch environnement
+from utils import setupBatchEnv
+setupBatchEnv()
+
 # Pydici imports
+import pydici.settings
 from people.models import Consultant
 from staffing.utils import gatherTimesheetData
 
