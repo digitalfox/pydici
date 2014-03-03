@@ -29,7 +29,6 @@
     {% else %}
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
-    <br/>
     {% if perms.billing.add_clientbill %}
         <i><a href="{% url 'admin:billing_clientbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a client bill for this lead" %}</a></i>
     {% endif %}
@@ -65,7 +64,6 @@
     {% else %}
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
-    <br/>
     {% if perms.billing.add_supplierbill %}
         <i><a href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a></i>
     {% endif %}
