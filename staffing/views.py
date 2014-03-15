@@ -191,8 +191,9 @@ def pdc_review(request, year=None, month=None):
     # Don't display this page if no productive consultant are defined
     people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False).count()
     if people == 0:
-        # TODO: make this message nice
-        return HttpResponse(_("No productive consultant defined !"))
+        return render(request, 'core/error.html',
+              {"error_title": _("Workload schedule"),
+               "error_message": _("No productive consultant defined !")})
 
     if mobile:
         n_month = 1

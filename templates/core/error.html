@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block title %}{{ error_title }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ error_title }}</h1>
+<div class="content-large">
+{{ error_message}}
+</div>
+{% endblock %}
