@@ -21,11 +21,11 @@ Sébastien Renard (Sebastien.Renard@digitalfox.org).
 INSTALLATION
 ============
 
-Pydici can be installed as any Django application. Just drop the code somewhere
+Pydici can be installed as any Django project. Just drop the code somewhere
 and setup Apache.
 
 Prerequisite:
-- django (1.1.x is recommended)
+- django (1.5.x is recommended)
 - matplotlib
 
 Here's a sample Apache/mod_python config file. Pydici code live
