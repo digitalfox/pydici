@@ -49,6 +49,7 @@ class Mission(models.Model):
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     contacts = models.ManyToManyField(MissionContact, blank=True)
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
+    archived_date = models.DateTimeField(_("Archived date"), blank=True, null=True)
 
     def __unicode__(self):
         if self.description and not self.lead:
@@ -315,6 +316,12 @@ def missionSignalHandler(sender, **kwargs):
     targetUser = None
     if not mission.active:
         # Mission is archived. Remove all staffing
+        if not mission.archived_date:
+            mission.archived_date = datetime.now()
+            mission.save()
+            if mission.lead and mission.lead.state == "WON":
+                launchTrigger("ARCHIVED_MISSION", [targetUser, ], mission)
+
         for staffing in mission.staffing_set.all():
             staffing.delete()
         if mission.lead:
@@ -341,8 +348,6 @@ def missionSignalHandler(sender, **kwargs):
 
     if  kwargs.get("created", False):
         launchTrigger("NEW_MISSION", [targetUser, ], mission)
-    if not mission.active and mission.lead and mission.lead.state == "WON":
-        launchTrigger("ARCHIVED_MISSION", [targetUser, ], mission)
 
 # Signal connection to throw actionset
 post_save.connect(missionSignalHandler, sender=Mission)

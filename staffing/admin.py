@@ -21,7 +21,7 @@ class MissionAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
                    "lead__client__contact__name")
     ordering = ("lead", "description")
     date_hierarchy = "update_date"
-    list_filter = ["nature", "probability", "subsidiary", "active"]
+    list_filter = ["nature", "probability", "subsidiary", "active", "archived_date"]
 
     actions = None
     form = MissionAdminForm

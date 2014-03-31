@@ -217,7 +217,8 @@ def financialControl(request, start_date=None, end_date=None):
     missions = Mission.objects.filter(id__in=missionsIds)
     missions = missions.distinct().select_related().prefetch_related("lead__client__organisation__company", "lead__responsible")
 
-    for mission in missions:
+    def createMissionRow(mission, start_date, end_date):
+        """Inner function to create mission row"""
         missionRow = []
         missionRow.append(start_date.year)
         missionRow.append(end_date.isoformat())
@@ -244,6 +245,10 @@ def financialControl(request, start_date=None, end_date=None):
         missionRow.append(mission.mission_id())
         missionRow.append(mission.billing_mode or "")
         missionRow.append(numberformat.format(mission.price, ",") if mission.price else 0)
+        return missionRow
+
+    for mission in missions:
+        missionRow = createMissionRow(mission, start_date, end_date)
         for consultant in mission.consultants().select_related().prefetch_related("manager"):
             consultantRow = missionRow[:]  # copy
             daily_rate, bought_daily_rate = financialConditions.get("%s-%s" % (mission.id, consultant.id), [0, 0])
@@ -270,7 +275,17 @@ def financialControl(request, start_date=None, end_date=None):
                 row.append(numberformat.format(quantity, ",") if quantity else 0)
                 row.append(numberformat.format(quantity * daily_rate, ",") if (quantity > 0 and daily_rate > 0) else 0)
                 writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
-#
+
+    archivedMissions = Mission.objects.filter(active=False, archived_date__gte=start_date, archived_date__lt=end_date)
+    archivedMissions = archivedMissions.filter(lead__state="WON")
+    archivedMissions = archivedMissions.prefetch_related("lead__client__organisation__company", "lead__responsible")
+    for mission in archivedMissions:
+        if mission in missions:
+            # Mission has already been processed for this period
+            continue
+        missionRow = createMissionRow(mission, start_date, end_date)
+        writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in missionRow])
+
     for expense in Expense.objects.filter(expense_date__gte=start_date, expense_date__lt=nextMonth(end_date), chargeable=False).select_related():
         row = []
         row.append(start_date.year)
