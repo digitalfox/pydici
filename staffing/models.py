@@ -314,6 +314,18 @@ def missionSignalHandler(sender, **kwargs):
     """Signal handler for new/updated missions"""
     mission = kwargs["instance"]
     targetUser = None
+    if mission.lead and mission.lead.responsible:
+        targetUser = mission.lead.responsible.getUser()
+    else:
+        # try to pick up one of staffee
+        for consultant in mission.consultants():
+            targetUser = consultant.getUser()
+            if targetUser:
+                break
+    if not targetUser:
+        # Default to admin
+        targetUser = User.objects.filter(is_superuser=True)[0]
+
     if not mission.active:
         # Mission is archived. Remove all staffing
         if not mission.archived_date:
@@ -334,17 +346,6 @@ def missionSignalHandler(sender, **kwargs):
     if not mission.nature == "PROD":
         # Don't throw actions for non prod missions
         return
-    if mission.lead and mission.lead.responsible:
-        targetUser = mission.lead.responsible.getUser()
-    else:
-        # try to pick up one of staffee
-        for consultant in mission.consultants():
-            targetUser = consultant.getUser()
-            if targetUser:
-                break
-    if not targetUser:
-        # Default to admin
-        targetUser = User.objects.filter(is_superuser=True)[0]
 
     if  kwargs.get("created", False):
         launchTrigger("NEW_MISSION", [targetUser, ], mission)
