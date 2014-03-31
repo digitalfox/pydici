@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-21 19:30+0100\n"
-"PO-Revision-Date: 2014-02-21 19:30+0100\n"
+"POT-Creation-Date: 2014-03-31 08:33+0200\n"
+"PO-Revision-Date: 2014-03-31 08:33+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -91,7 +91,7 @@ msgstr "N/A"
 #: billing/models.py:108 billing/models.py:145 expense/tables.py:26
 #: leads/models.py:66 leads/views.py:141
 #: templates/billing/_lead_billing.html:11
-#: templates/billing/_lead_billing.html:45
+#: templates/billing/_lead_billing.html:44
 #: templates/expense/expense_list.html:19
 msgid "State"
 msgstr "État"
@@ -178,12 +178,12 @@ msgid "Expenses"
 msgstr "Notes de frais"
 
 #: billing/forms.py:28 crm/models.py:148
-#: templates/billing/_lead_billing.html:43
+#: templates/billing/_lead_billing.html:42
 msgid "Supplier"
 msgstr "Fournisseur"
 
 #: billing/models.py:58 templates/billing/_lead_billing.html:10
-#: templates/billing/_lead_billing.html:42
+#: templates/billing/_lead_billing.html:41
 #: templates/billing/bill_review.html:20 templates/billing/bill_review.html:68
 #: templates/billing/bill_review.html:116
 #: templates/billing/bill_review.html:165
@@ -191,20 +191,20 @@ msgid "Bill id"
 msgstr "N° facture"
 
 #: billing/models.py:59 templates/billing/_lead_billing.html:13
-#: templates/billing/_lead_billing.html:47
+#: templates/billing/_lead_billing.html:46
 #: templates/billing/bill_review.html:169
 msgid "Creation date"
 msgstr "Date de création"
 
 #: billing/models.py:60 leads/views.py:141
 #: templates/billing/_lead_billing.html:14
-#: templates/billing/_lead_billing.html:48
+#: templates/billing/_lead_billing.html:47
 msgid "Due date"
 msgstr "Date d'échéance"
 
 #: billing/models.py:61 expense/models.py:44
 #: templates/billing/_lead_billing.html:15
-#: templates/billing/_lead_billing.html:49
+#: templates/billing/_lead_billing.html:48
 msgid "Payment date"
 msgstr "Date de paiement"
 
@@ -223,7 +223,7 @@ msgid "Comments"
 msgstr "Remarques"
 
 #: billing/models.py:64 templates/billing/_lead_billing.html:12
-#: templates/billing/_lead_billing.html:46
+#: templates/billing/_lead_billing.html:45
 #: templates/billing/bill_review.html:22 templates/billing/bill_review.html:70
 #: templates/billing/bill_review.html:118
 #: templates/billing/bill_review.html:167
@@ -260,7 +260,7 @@ msgstr "Annulée"
 
 #: billing/models.py:109 billing/models.py:146
 #: templates/billing/_lead_billing.html:16
-#: templates/billing/_lead_billing.html:50
+#: templates/billing/_lead_billing.html:49
 #: templates/billing/bill_review.html:25 templates/billing/bill_review.html:73
 #: templates/billing/bill_review.html:121
 #: templates/billing/bill_review.html:171
@@ -275,7 +275,7 @@ msgstr "Facture client"
 msgid "Received"
 msgstr "Reçue"
 
-#: billing/models.py:148 templates/billing/_lead_billing.html:44
+#: billing/models.py:148 templates/billing/_lead_billing.html:43
 msgid "Supplier Bill id"
 msgstr "N° de facture fournisseur"
 
@@ -283,15 +283,15 @@ msgstr "N° de facture fournisseur"
 msgid "Supplier Bill"
 msgstr "Facture fournisseur"
 
-#: billing/views.py:281
+#: billing/views.py:288
 msgid "Done work"
 msgstr "Montant réalisé"
 
-#: billing/views.py:281
+#: billing/views.py:288
 msgid "Forecasted work"
 msgstr "Montant prévu"
 
-#: billing/views.py:281
+#: billing/views.py:288
 msgid "Weighted forecasted work"
 msgstr "Montant prévu pondéré"
 
@@ -464,6 +464,10 @@ msgstr "Fax générique"
 #: crm/models.py:278
 msgid "Administrative contact"
 msgstr "Contact administratif"
+
+#: crm/views.py:79
+msgid "Others"
+msgstr "Autres"
 
 #: expense/forms.py:32
 msgid "You must define a lead if expense is chargeable"
@@ -1478,20 +1482,20 @@ msgid "Clients bills"
 msgstr "Factures clients"
 
 #: templates/billing/_lead_billing.html:30
-#: templates/billing/_lead_billing.html:66
+#: templates/billing/_lead_billing.html:65
 msgid "No bill yet"
 msgstr "Aucune facture"
 
-#: templates/billing/_lead_billing.html:34
+#: templates/billing/_lead_billing.html:33
 #: templates/billing/pre_billing.html:42
 msgid "Add a client bill for this lead"
 msgstr "Ajouter une facture client pour cette affaire"
 
-#: templates/billing/_lead_billing.html:38
+#: templates/billing/_lead_billing.html:37
 msgid "Suppliers bills"
 msgstr "Factures fournisseurs"
 
-#: templates/billing/_lead_billing.html:70
+#: templates/billing/_lead_billing.html:68
 msgid "Add a supplier bill for this lead"
 msgstr "Ajouter une facture fournisseur pour cette affaire"
 
@@ -1614,14 +1618,18 @@ msgstr "Pré facturation pour les missions au forfait"
 msgid "Fixed price mission(s)"
 msgstr "Mission(s) au forfait"
 
-#: templates/billing/pre_billing.html:58
+#: templates/billing/pre_billing.html:58 templates/billing/pre_billing.html:74
 #, python-format
 msgid "%(done)s k€ done "
 msgstr "%(done)s k€ réalisés "
 
-#: templates/billing/pre_billing.html:58
+#: templates/billing/pre_billing.html:58 templates/billing/pre_billing.html:74
 msgid "sold:"
 msgstr "Vendu :"
+
+#: templates/billing/pre_billing.html:65
+msgid "Missions without defined billing mode"
+msgstr "Missions sans mode de facturation défini"
 
 #: templates/core/_access_forbiden.html:5
 msgid ""
@@ -2408,9 +2416,8 @@ msgid "Max daily rate (€)"
 msgstr "Taux journalier maxi (€)"
 
 #: templates/staffing/graph_consultant_rate_jqp.html:45
-#, python-format
-msgid "Production rate (%%)"
-msgstr "Taux de production (%%)"
+msgid "Production rate (%)"
+msgstr "Taux de production (%)"
 
 #: templates/staffing/graph_consultant_rate_jqp.html:76
 #: templates/staffing/graph_timesheet_rates_bar_jqp.html:27
