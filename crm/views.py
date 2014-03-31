@@ -11,6 +11,7 @@ from datetime import date, timedelta
 from django.shortcuts import render
 from django.db.models import Sum, Min
 from django.views.decorators.cache import cache_page
+from django.utils.translation import ugettext as _
 
 from crm.models import Company, Client, Contact, AdministrativeContact
 from staffing.models import Timesheet
@@ -61,6 +62,7 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
     """Sales repartition per company"""
     graph_data = []
     labels = []
+    small_clients_amount = 0
     minDate = ClientBill.objects.aggregate(Min("creation_date")).values()[0]
     if onlyLastYear:
         data = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(365)))
@@ -68,9 +70,14 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
         data = ClientBill.objects.all()
     data = data.values("lead__client__organisation__company__name")
     data = data.order_by("lead__client__organisation__company").annotate(Sum("amount"))
-    data = data.order_by("amount__sum").reverse()[0:9]
+    data = data.order_by("amount__sum").reverse()
+    small_clients = data[8:]
+    for i in small_clients:
+        small_clients_amount += float(i["amount__sum"])
+    data = data[0:8]
     for i in data:
         graph_data.append((i["lead__client__organisation__company__name"], float(i["amount__sum"])))
+    graph_data.append((_("Others"), small_clients_amount))
     total = sum([i[1] for i in graph_data])
     for company, amount in graph_data:
         labels.append(u"%d k€ (%d%%)" % (amount / 1000, 100 * amount / total))
