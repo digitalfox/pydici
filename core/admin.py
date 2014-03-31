@@ -6,6 +6,7 @@ Admin module for pydici core module
 """
 
 from django.contrib import admin
+from django.utils.encoding import iri_to_uri
 
 
 class ReturnToAppAdmin(admin.ModelAdmin):
@@ -17,11 +18,11 @@ class ReturnToAppAdmin(admin.ModelAdmin):
     def add_view(self, request, form_url='', extra_context=None):
         result = super(ReturnToAppAdmin, self).add_view(request, form_url=form_url, extra_context=extra_context)
         if request.GET.get('return_to', False):
-            result['Location'] = request.GET['return_to']
+            result['Location'] = iri_to_uri(request.GET['return_to'])
         return result
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         result = super(ReturnToAppAdmin, self).change_view(request, object_id, form_url=form_url, extra_context=extra_context)
         if request.GET.get('return_to', False):
-            result['Location'] = request.GET['return_to']
+            result['Location'] = iri_to_uri(request.GET['return_to'])
         return result
