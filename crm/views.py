@@ -72,12 +72,14 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
     data = data.order_by("lead__client__organisation__company").annotate(Sum("amount"))
     data = data.order_by("amount__sum").reverse()
     small_clients = data[8:]
-    for i in small_clients:
-        small_clients_amount += float(i["amount__sum"])
     data = data[0:8]
     for i in data:
         graph_data.append((i["lead__client__organisation__company__name"], float(i["amount__sum"])))
-    graph_data.append((_("Others"), small_clients_amount))
+    #If there are more than 8 clients, we aggregate all the "small clients" under "Others"
+    if len(small_clients) > 0:
+      for i in small_clients:
+          small_clients_amount += float(i["amount__sum"])
+      graph_data.append((_("Others"), small_clients_amount))
     total = sum([i[1] for i in graph_data])
     for company, amount in graph_data:
         labels.append(u"%d k€ (%d%%)" % (amount / 1000, 100 * amount / total))
