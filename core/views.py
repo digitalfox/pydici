@@ -199,7 +199,7 @@ def financialControl(request, start_date=None, end_date=None):
     # Header
     header = ["FiscalYear", "Month", "Type", "Nature", "Archived", "AccountingColumn",
               "MissionSubsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
-              "Lead", "DealId", "LeadPrice", "LeadResponsible", "LeadResponsibleTrigramme",
+              "Lead", "DealId", "LeadPrice", "LeadResponsible", "LeadResponsibleTrigramme", "LeadTeam",
               "Mission", "MissionId", "BillingMode", "MissionPrice",
               "ConsultantSubsidiary", "ConsultantTeam", "Trigramme", "Consultant", "Subcontractor", "CrossBilling",
               "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros"]
@@ -237,10 +237,11 @@ def financialControl(request, start_date=None, end_date=None):
             if mission.lead.responsible:
                 missionRow.append(mission.lead.responsible.name)
                 missionRow.append(mission.lead.responsible.trigramme)
+                missionRow.append(mission.lead.responsible.manager.trigramme if mission.lead.responsible.manager else "")
             else:
-                missionRow.extend(["", ""])
+                missionRow.extend(["", "", ""])
         else:
-            missionRow.extend(["", "", "", "", "", 0, "", ""])
+            missionRow.extend(["", "", "", "", "", 0, "", "", ""])
         missionRow.append(mission.description or "")
         missionRow.append(mission.mission_id())
         missionRow.append(mission.billing_mode or "")
