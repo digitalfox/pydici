@@ -201,6 +201,7 @@ def financialControl(request, start_date=None, end_date=None):
               "MissionSubsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
               "Lead", "DealId", "LeadPrice", "LeadResponsible", "LeadResponsibleTrigramme", "LeadTeam",
               "Mission", "MissionId", "BillingMode", "MissionPrice",
+              "TotalQuantityInDays", "TotalQuantityInEuros",
               "ConsultantSubsidiary", "ConsultantTeam", "Trigramme", "Consultant", "Subcontractor", "CrossBilling",
               "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros"]
 
@@ -246,6 +247,7 @@ def financialControl(request, start_date=None, end_date=None):
         missionRow.append(mission.mission_id())
         missionRow.append(mission.billing_mode or "")
         missionRow.append(numberformat.format(mission.price, ",") if mission.price else 0)
+        missionRow.extend(mission.done_work())
         return missionRow
 
     for mission in missions:
