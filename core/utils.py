@@ -146,7 +146,7 @@ def nextMonth(month):
 
 
 def previousMonth(month):
-    """Compute previoujs month
+    """Compute previous month
     @param month: date or datetime object
     @return: date or datetime object (depending on input parameter) of the first day of previous month"""
     return (month.replace(day=1) - timedelta(days=10)).replace(day=1)

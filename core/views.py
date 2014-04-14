@@ -197,7 +197,7 @@ def financialControl(request, start_date=None, end_date=None):
         financialConditions["%s-%s" % (fc.mission_id, fc.consultant_id)] = (fc.daily_rate, fc.bought_daily_rate)
 
     # Header
-    header = ["FiscalYear", "Month", "Type", "Nature", "Archived", "AccountingColumn",
+    header = ["FiscalYear", "Month", "Type", "Nature", "Archived",
               "MissionSubsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
               "Lead", "DealId", "LeadPrice", "LeadResponsible", "LeadResponsibleTrigramme", "LeadTeam",
               "Mission", "MissionId", "BillingMode", "MissionPrice",
@@ -226,7 +226,6 @@ def financialControl(request, start_date=None, end_date=None):
         missionRow.append("timesheet")
         missionRow.append(mission.nature)
         missionRow.append(not mission.active)
-        missionRow.append("mission accounting (tbd)")
         missionRow.append(mission.subsidiary)
         if mission.lead:
             missionRow.append(mission.lead.client.organisation.company.name)
@@ -295,7 +294,6 @@ def financialControl(request, start_date=None, end_date=None):
         row.append(end_date.isoformat())
         row.append("expense")
         row.append(expense.category)
-        row.append("expense accounting (tbd)")
         if expense.lead:
             row.append(expense.lead.subsidiary)
             row.extend(["", "", "", ""])
