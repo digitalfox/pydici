@@ -54,7 +54,10 @@
     <div id="tab-description">
         {% if mission.active %}
                {% if mission.no_more_staffing_since %}
-                   <div class="errornote">{% trans "This mission has no staffing in future" %}</div>
+                   <div id="mission_no_staffing_warning" class="errornote">{% trans "This mission has no staffing in future" %}. <a href="javascript:;"
+                        onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}', process_mission_archive)">
+                        {% trans "Do you want to archive this mission ?" %}</a>
+                   </div>
                {% else %}
                    {% if mission.no_staffing_update_since %}
                        <div class="errornote">{% trans "Staffing has not been updated recently" %}</div>
@@ -192,6 +195,17 @@ $(".jeditable-mission-update").editable("{% url 'staffing.views.mission_update' 
     submit : 'OK',
     onblur : 'submit',
 });
+
+    // Function that process mission archiving ajax callback
+    function process_mission_archive(data) {
+        if (data.error==true) {
+            alert("{% trans 'Archiving failed' %}");
+        }
+        else {
+            $("#mission_no_staffing_warning").hide("fast");
+        }
+    };
+
 </script>
 
 {% endblock %}
