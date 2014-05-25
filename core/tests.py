@@ -29,6 +29,7 @@ import pydici.settings
 from urllib2 import urlparse
 from datetime import date
 import os
+from decimal import Decimal
 
 TEST_USERNAME = "sre"
 TEST_PASSWORD = "sre"
@@ -339,7 +340,7 @@ class LeadModelTest(TestCase):
             e = lead.unused()
             f = lead.totalObjectiveMargin()
             for x in (a, b, c, d, e, f):
-                self.assertIsInstance(x, (int, float))
+                self.assertIsInstance(x, (int, float, Decimal))
 
     def test_checkDoc(self):
         for i in (1, 2, 3):
