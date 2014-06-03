@@ -514,16 +514,16 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
     writer = csv.writer(response, delimiter=';')
 
     # Header
-    writer.writerow([("%s - %s" % (unicode(consultant), month)).encode("ISO-8859-15"), ])
+    writer.writerow([("%s - %s" % (unicode(consultant), month)).encode("ISO-8859-15", "replace"), ])
 
     # Days
     writer.writerow(["", ""] + [d.day for d in days])
-    writer.writerow([_("Mission").encode("ISO-8859-15", "ignore"), _("Deal id").encode("ISO-8859-15", "ignore")]
+    writer.writerow([_("Mission").encode("ISO-8859-15", "replace"), _("Deal id").encode("ISO-8859-15", "replace")]
                      + [_(d.strftime("%a")) for d in days] + [_("total")])
 
     for mission in missions:
         total = 0
-        row = [i.encode("ISO-8859-15", "ignore") for i in [unicode(mission), mission.mission_id()]]
+        row = [i.encode("ISO-8859-15", "replace") for i in [unicode(mission), mission.mission_id()]]
         timesheets = Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission)
         for day in days:
             try:
@@ -675,16 +675,16 @@ def mission_csv_timesheet(request, mission, consultants):
         days = daysOfMonth(month)
         next_month = nextMonth(month)
         # Header
-        writer.writerow([("%s - %s" % (mission.full_name(), formats.date_format(month, format="YEAR_MONTH_FORMAT"))).encode("ISO-8859-15"), ])
+        writer.writerow([("%s - %s" % (mission.full_name(), formats.date_format(month, format="YEAR_MONTH_FORMAT"))).encode("ISO-8859-15", "replace"), ])
 
         # Days
         writer.writerow(["", ] + [d.day for d in days])
-        writer.writerow([_("Consultants").encode("ISO-8859-15", "ignore")]
+        writer.writerow([_("Consultants").encode("ISO-8859-15", "replace")]
                          + [_(d.strftime("%a")) for d in days] + [_("total")])
 
         for consultant in consultants:
             total = 0
-            row = [unicode(consultant).encode("ISO-8859-15", "ignore"), ]
+            row = [unicode(consultant).encode("ISO-8859-15", "replace"), ]
             consultant_timesheets = timesheets.select_related().filter(consultant=consultant,
                                                             working_date__gte=month,
                                                             working_date__lt=next_month)
@@ -793,14 +793,14 @@ def all_csv_timesheet(request, charges, month):
     writer = csv.writer(response, delimiter=';')
 
     # Header
-    writer.writerow([unicode(month).encode("ISO-8859-15"), ])
+    writer.writerow([unicode(month).encode("ISO-8859-15", "replace"), ])
     for charge in charges:
         row = []
         for i in charge:
             if isinstance(i, float):
                 i = formats.number_format(i)
             else:
-                i = unicode(i).encode("ISO-8859-15", "ignore")
+                i = unicode(i).encode("ISO-8859-15", "replace")
             row.append(i)
         writer.writerow(row)
     return response
@@ -824,8 +824,8 @@ def detailed_csv_timesheet(request, year=None, month=None):
     # Header
     header = [_("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
               _("Consultant"), _("Daily rate"), _("Bought daily rate"), _("Past done days"), _("Done days"), _("Days to be done")]
-    writer.writerow([unicode(month).encode("ISO-8859-15"), ])
-    writer.writerow([unicode(i).encode("ISO-8859-15") for i in header])
+    writer.writerow([unicode(month).encode("ISO-8859-15", "replace"), ])
+    writer.writerow([unicode(i).encode("ISO-8859-15", "replace") for i in header])
 
     missions = Mission.objects.filter(Q(timesheet__working_date__gte=month, timesheet__working_date__lt=next_month) |
                                       Q(staffing__staffing_date__gte=month, staffing__staffing_date__lt=next_month))
@@ -858,7 +858,7 @@ def detailed_csv_timesheet(request, year=None, month=None):
                                                staffing_date__gte=next_month).aggregate(Sum("charge")).values()[0]
             row.append(formats.number_format(forecast) if forecast else 0)
 
-            writer.writerow([unicode(i).encode("ISO-8859-15") for i in row])
+            writer.writerow([unicode(i).encode("ISO-8859-15", "replace") for i in row])
 
     return response
 
