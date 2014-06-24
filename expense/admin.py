@@ -14,7 +14,7 @@ from expense.forms import ExpensePaymentForm
 class ExpenseAdmin(admin.ModelAdmin):
     list_display = ("user", "description", "lead", "chargeable", "creation_date", "update_date")
     odering = ("creation_date")
-    search_fields = ["description", "lead__name", "lead__client__organisation__company__name", "consultant__name"]
+    search_fields = ["description", "lead__name", "lead__client__organisation__company__name", "user__first_name", "user__last_name", "user__username"]
     list_filter = ["workflow_in_progress", "chargeable", "corporate_card", "user"]
     actions = None
 
