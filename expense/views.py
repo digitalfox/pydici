@@ -5,7 +5,7 @@ Pydici expense views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date
+from datetime import date, timedelta
 import mimetypes
 import workflows.utils as wf
 import permissions.utils as perm
@@ -95,6 +95,13 @@ def expenses(request, expense_id=None):
     managedExpenseTable.transitionsData = dict([(e.id, e.transitions(request.user)) for e in managed_expenses])  # Inject expense allowed transitions
     managedExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in managed_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 50}).configure(managedExpenseTable)
+
+    # Prune old expense in terminal state (no more transition) and without payment (ie paid ith corporate card)
+    # Expense that need to be paid are pruned during payment process.
+    for expense in Expense.objects.filter(workflow_in_progress=True, corporate_card=True, update_date__lt=(date.today() - timedelta(30))):
+        if wf.get_state(expense).transitions.count() == 0:
+            expense.workflow_in_progress = False
+            expense.save()
 
     return render(request, "expense/expenses.html",
                   {"user_expense_table": userExpenseTable,
