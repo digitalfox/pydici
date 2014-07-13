@@ -1,4 +1,4 @@
-{% extends "admin/base_site.html" %}
+{% extends "core/pydici.html" %}
 
 {% load i18n %}
 
@@ -22,23 +22,29 @@
 {% endif %}
 </h1>
 
-<div id="consultant-tabs">
-    <ul>
+<div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="consultant-tabs">
         {% if consultant.subcontractor %}
-            <li><a title="#tab-detail"  href="{% url 'people.views.subcontractor_detail' consultant.id %}">{% trans "Home" %}</a></li>
+            <li class="active"><a data-toggle="tab" href="#tab-home" data-tab-url="{% url 'people.views.subcontractor_detail' consultant.id %}">{% trans "Home" %}</a></li>
         {% else %}
-            <li><a title="#tab-detail"  href="{% url 'people.views.consultant_detail' consultant.id %}">{% trans "Home" %}</a></li>
+            <li class="active"><a data-toggle="tab" href="#tab-home" data-tab-url="{% url 'people.views.consultant_detail' consultant.id %}">{% trans "Home" %}</a></li>
         {% endif %}
         {% if request.GET.year and request.GET.month %}
-            <li><a title="#tab-timesheet" href="{% url 'staffing.views.consultant_timesheet' consultant.id request.GET.year request.GET.month %}">{% trans "Timesheet" %}</a></li>
+            <li><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing.views.consultant_timesheet' consultant.id request.GET.year request.GET.month %}">{% trans "Timesheet" %}</a></li>
         {% else %}
-            <li><a title="#tab-timesheet" href="{% url 'staffing.views.consultant_timesheet' consultant.id %}">{% trans "Timesheet" %}</a></li>
+            <li><a href="#tab-timesheet" data-tab-url="{% url 'staffing.views.consultant_timesheet' consultant.id %}">{% trans "Timesheet" %}</a></li>
         {% endif %}
-        <li><a title="#tab-staffing"  href="{% url 'staffing.views.consultant_staffing' consultant.id %}">{% trans "Forecast staffing" %}</a></li>
-        <li><a href="#tab-missions">{% trans "Missions" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-staffing"  data-tab-url="{% url 'staffing.views.consultant_staffing' consultant.id %}">{% trans "Forecast staffing" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-missions">{% trans "Missions" %}</a></li>
     </ul>
-
-    <div id="tab-missions">
+</div>
+    
+<div class="tab-content">
+    <div id="tab-home" class="tab-pane active" ></div>
+    <div id="tab-timesheet" class="tab-pane"></div>
+    <div id="tab-staffing" class="tab-pane" ></div>
+    <div id="tab-missions" class="tab-pane">
         <h2>{% trans "Consultant's missions" %}</h2>
         <table id="consultant_missions" class="pydici-tables2">
         <thead>
@@ -61,6 +67,6 @@
         </table>
         {% with "consultant_missions" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
     </div>
+</div>
 
-</div> <!-- end of tabs -->
 {% endblock %}

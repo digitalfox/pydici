@@ -3,17 +3,24 @@
 {% load i18n %}
 <script>
 $(document).ready(function() {
-    $("#{{ tabs }}" ).tabs({
-        ajaxOptions: {
-            error: function( xhr, status, index, anchor ) {
-                $( anchor.hash ).html('{% trans "Could not load this tab. Sorry" %}');
-            }
-        },
-        fx: [{opacity:'toggle', duration:50},
-             {opacity:'toggle', duration:50}],
+    $("#{{ tabs }} a" ).click(function (e) {
+       e.preventDefault();
+        $(this).tab('show');
+        var url = $(this).attr("data-tab-url");
+        var href = this.hash;
+        var pane = $(this);
+
+        // ajax load from data-url
+        $(href).load(url,function(result){
+            pane.tab('show');
+        });
+        
     });
-    $("#{{ tabs }}").bind("tabsshow", function(event, ui) {
-        window.location.hash = ui.tab.hash;
-      });
+    
+//       load first tab content
+        $('#tab-home').load($('.active a').attr("data-tab-url"),function(result){
+            $('tab-content').find('.active a').tab('show');
+       });
+
 });
 </script>

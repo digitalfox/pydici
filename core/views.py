@@ -30,9 +30,6 @@ import pydici.settings
 
 @login_required
 def index(request):
-
-    request.session["mobile"] = False
-
     try:
         consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
     except Consultant.DoesNotExist:
@@ -42,7 +39,7 @@ def index(request):
         return consultant_home(request, consultant.id)
     else:
         # User is not a consultant. Go for default index page.
-        return render(request, "core/index.html",
+        return render(request, "core/pydici.html",
                       {"user": request.user})
 
 
