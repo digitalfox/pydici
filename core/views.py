@@ -43,115 +43,74 @@ def index(request):
                       {"user": request.user})
 
 
-def mobile_index(request):
-    """Mobile device index page"""
-    # Mark session as "mobile"
-    request.session["mobile"] = True
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-    except Consultant.DoesNotExist:
-        # Mobile pydici does not exist for non consultant users
-        # switch back to classical home page
-        request.session["mobile"] = False
-        return index(request)
-    if consultant.subcontractor:
-        # Don't show that to subcontractors
-        companies = []
-        missions = []
-        leads = []
-    else:
-        companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
-        missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
-        leads = Lead.objects.active().order_by("creation_date")
-    return render(request, "core/m.index.html",
-                  {"user": request.user,
-                   "consultant": consultant,
-                   "companies": companies,
-                   "missions": missions,
-                   "leads": leads})
-
-
 @pydici_non_public
 def search(request):
     """Very simple search function on all major pydici objects"""
-
-    consultants = None
-    companies = None
-    leads = None
-    missions = None
-    contacts = None
-    bills = None
 
     words = request.GET.get("q", "")
     words = words.split()
 
     if words:
         # Consultant
-        if request.GET.get("consultant"):
-            consultants = Consultant.objects.filter(active=True)
-            for word in words:
-                consultants = consultants.filter(Q(name__icontains=word) |
-                                                 Q(trigramme__icontains=word))
-            consultants = consultants.distinct()
+        consultants = Consultant.objects.filter(active=True)
+        for word in words:
+            consultants = consultants.filter(Q(name__icontains=word) |
+                                             Q(trigramme__icontains=word))
+        consultants = consultants.distinct()
 
         # Companies
-        if request.GET.get("company"):
-            companies = Company.objects.all()
-            for word in words:
-                companies = companies.filter(name__icontains=word)
-            companies = companies.distinct()
+        companies = Company.objects.all()
+        for word in words:
+            companies = companies.filter(name__icontains=word)
+        companies = companies.distinct()
 
         # Contacts
-        if request.GET.get("contact"):
-            contacts = Contact.objects.all()
-            for word in words:
-                contacts = contacts.filter(name__icontains=word)
-            contacts = contacts.distinct()
+        contacts = Contact.objects.all()
+        for word in words:
+            contacts = contacts.filter(name__icontains=word)
+        contacts = contacts.distinct()
 
         # Leads
-        if request.GET.get("lead"):
-            leads = Lead.objects.all()
-            for word in words:
-                leads = leads.filter(Q(name__icontains=word) |
-                                     Q(description__icontains=word) |
-                                     Q(tags__name__iexact=word) |
-                                     Q(client__contact__name__icontains=word) |
-                                     Q(client__organisation__company__name__icontains=word) |
-                                     Q(client__organisation__name__iexact=word) |
-                                     Q(deal_id__icontains=word[:-1]))  # Squash last letter that could be mission letter
-            leads = leads.distinct()
+        leads = Lead.objects.all()
+        for word in words:
+            leads = leads.filter(Q(name__icontains=word) |
+                                 Q(description__icontains=word) |
+                                 Q(tags__name__iexact=word) |
+                                 Q(client__contact__name__icontains=word) |
+                                 Q(client__organisation__company__name__icontains=word) |
+                                 Q(client__organisation__name__iexact=word) |
+                                 Q(deal_id__icontains=word[:-1]))  # Squash last letter that could be mission letter
+        leads = leads.distinct()
 
         # Missions
-        if request.GET.get("mission"):
-            missions = Mission.objects.all()
-            for word in words:
-                missions = missions.filter(Q(deal_id__icontains=word) |
-                                           Q(description__icontains=word))
+        missions = Mission.objects.all()
+        for word in words:
+            missions = missions.filter(Q(deal_id__icontains=word) |
+                                       Q(description__icontains=word))
 
-            # Add missions from lead
-            if leads:
-                missions = set(missions)
-                for lead in leads:
-                    for mission in lead.mission_set.all():
-                        missions.add(mission)
-                missions = list(missions)
+        # Add missions from lead
+        if leads:
+            missions = set(missions)
+            for lead in leads:
+                for mission in lead.mission_set.all():
+                    missions.add(mission)
+            missions = list(missions)
 
         # Bills
-        if request.GET.get("bill"):
-            bills = ClientBill.objects.all()
-            for word in words:
-                bills = bills.filter(Q(bill_id__icontains=word) |
-                                     Q(comment__icontains=word))
+        bills = ClientBill.objects.all()
+        for word in words:
+            bills = bills.filter(Q(bill_id__icontains=word) |
+                                 Q(comment__icontains=word))
 
-            # Add bills from lead
-            if leads:
-                bills = set(bills)
-                for lead in leads:
-                    for bill in lead.clientbill_set.all():
-                        bills.add(bill)
-            # Sort
-            bills = list(bills)
-            bills.sort(key=lambda x: x.creation_date)
+        # Add bills from lead
+        if leads:
+            bills = set(bills)
+            for lead in leads:
+                for bill in lead.clientbill_set.all():
+                    bills.add(bill)
+        # Sort
+        bills = list(bills)
+        bills.sort(key=lambda x: x.creation_date)
 
     return render(request, "core/search.html",
                   {"query": " ".join(words),
