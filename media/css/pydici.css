@@ -8,6 +8,8 @@ body {
 
 .nav li { list-style-type: none; }
 
+#header a:link, #header a:visited { color: #777777; }
+
 /* jquery ui customisation */
 .ui-widget-header { background:None; border:None}
 .ui-widget-content { border: None}
@@ -35,7 +37,6 @@ a:hover { color: #883915; }
 /* h4 { font-size:12px; margin:1em 0 .8em 0; padding-bottom:3px; } */
 /* h5 { font-size:10px; margin:1.5em 0 .5em 0; color:#666; text-transform:uppercase; letter-spacing:1px; } */
 
-/* ul li { list-style-type:square; padding:1px 0; } */
 /* ul.plainlist { margin-left:0 !important; } */
 /* ul.plainlist li { list-style-type:none; } */
 /* li ul { margin-bottom:0; } */
@@ -43,8 +44,8 @@ a:hover { color: #883915; }
 /* dt { font-weight:bold; margin-top:4px; } */
 /* dd { margin-left:0; } */
 
-/* form { margin:0; padding:0; } */
-/* fieldset { margin:0; padding:0; } */
+form { margin:0; padding:0; }
+fieldset { margin:0; padding:0; }
 
 /* blockquote { font-size:11px; color:#777; margin-left:2px; padding-left:10px; border-left:5px solid #ddd; } */
 /* code, pre { font-family:"Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace; background:inherit; color:#666; font-size:11px; } */
@@ -80,7 +81,7 @@ td, th { font-size:11px; line-height:9px; border-bottom:1px solid #eee; vertical
 /* thead th:first-child,  */
 /* tfoot td:first-child { border-left:none !important; } */
 /* thead th.optional { font-weight:normal !important; } */
-/* fieldset table { border-right:1px solid #eee; } */
+fieldset table { border-right:1px solid #eee; }
 
 tr.row-label td { font-size:9px; padding-top:2px; padding-bottom:0; border-bottom:none; color:#666; margin-top:-1px; }
 tr.alt { background:#f6f6f6; }
@@ -110,10 +111,10 @@ table.small-form-row input[type=text], input[type=password], textarea, select, .
 
 
 /* /* FORM DEFAULTS */ */
-/* input, textarea, select { margin:2px 0; padding:2px 3px; vertical-align:middle; font-family:Verdana, "Lucida Grande", Arial, sans-serif; font-weight:normal; font-size:11px; } */
-/* textarea { vertical-align:top !important; } */
-/* input[type=text], input[type=password], textarea, select, .vTextField { border:1px solid #ccc; background: white;} */
-/* input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; } */
+input, textarea, select { margin:2px 0; padding:2px 3px; vertical-align:middle; font-weight:normal; font-size:11px; }
+textarea { vertical-align:top !important; }
+input[type=text], input[type=password], textarea, select, .vTextField { border:1px solid #ccc; background: white;}
+input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 
 /* /*  FORM BUTTONS  */ */
 /* input[type=submit], input[type=button], .submit-row input { background:white url(../img/nav-bg.gif) bottom repeat-x; padding:3px; color:black; border:1px solid #bbb; border-color:#ddd #aaa #aaa #ddd; } */
@@ -179,7 +180,7 @@ table.small-form-row input[type=text], input[type=password], textarea, select, .
 
 /* /* OBJECT TOOLS */ */
 /* .object-tools { font-size:10px; font-weight:bold; font-family:Arial,Helvetica,sans-serif; padding-left:0; float:right; position:relative; margin-top:-2.4em; margin-bottom:-2em; } */
-/* .form-row .object-tools { margin-top:5px; margin-bottom:5px; float:none; height:2em; padding-left:3.5em; } */
+.form-row .object-tools { margin-top:5px; margin-bottom:5px; float:none; height:2em; padding-left:3.5em; }
 /* .object-tools li { display:block; float:left; background:url(../img/tool-left.gif) 0 0 no-repeat; padding:0 0 0 8px; margin-left:2px; height:16px; } */
 /* .object-tools li:hover { background:url(../img/tool-left_over.gif) 0 0 no-repeat; } */
 /* .object-tools a:link, .object-tools a:visited { display:block; float:left; color:white; padding:.1em 14px .1em 8px; height:14px; background:#999 url(../img/tool-right.gif) 100% 0 no-repeat; } */

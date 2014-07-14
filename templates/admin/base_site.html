@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {% trans 'Django site admin' %}{% endblock %}
+
+
+{% block stylesheet %}{% endblock %}
+
+{% block extrastyle %}
+<link href="{{ MEDIA_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
+<link href="{{ MEDIA_URL }}css/pydici-admin-base.css" rel="stylesheet">
+{% endblock %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/admin/ajax_select.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block branding %}
+{% include "core/_pydici_menu.html" %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+
+{% block footer %}
+        <script type="text/javascript">
+            // Disable other mission tabs
+            $(document).ready(function() {
+                $('#user-tools').hide();
+            });
+        </script>
+{% endblock %}
