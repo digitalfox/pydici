@@ -15,7 +15,7 @@ body {
 
 /* LINKS */
 a { color: #8F6749; }
-a:link { color: #8F6749; }
+a:link, a:visited { color: #8F6749; }
 a:hover { color: #883915; }
 
 /* a img { border:none; } */
@@ -79,6 +79,7 @@ td, th { font-size:11px; line-height:9px; border-bottom:1px solid #eee; vertical
 /* tfoot td:first-child { border-left:none !important; } */
 /* thead th.optional { font-weight:normal !important; } */
 /* fieldset table { border-right:1px solid #eee; } */
+
 tr.row-label td { font-size:9px; padding-top:2px; padding-bottom:0; border-bottom:none; color:#666; margin-top:-1px; }
 tr.alt { background:#f6f6f6; }
 .row1 { background:#FFF2ED; }
@@ -119,13 +120,16 @@ table.small-form-row input[type=text], input[type=password], textarea, select, .
 /* input[type=submit].default:active { background-image:url(../img/default-bg-reverse.gif); background-position:top; } */
 
 /* /* MODULES */ */
-/* .module { border:1px solid #ccc; margin-bottom:5px; background:white; } */
-/* .module p, .module ul, .module h3, .module h4, .module dl, .module pre { padding-left:10px; padding-right:10px; } */
-/* .module blockquote { margin-left:12px; } */
-/* .module ul, .module ol { margin-left:1.5em; } */
-/* .module h3 { margin-top:.6em; } */
-/* /* .module h2, .module caption, .inline-group h2 { margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background: url(../img/default-bg.gif) top left repeat-x; color:white; }*/ */
-/* .module table { border-collapse: collapse; } */
+.module { border:1px solid #ccc; margin-bottom:5px; background:white; }
+.module p, .module ul, .module h3, .module h4, .module dl, .module pre { padding-left:10px; padding-right:10px; }
+.module blockquote { margin-left:12px; }
+.module ul, .module ol { margin-left:1.5em; }
+.module h3 { margin-top:.6em; }
+.module h2, .module caption, .inline-group h2 { margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background: none; }
+.module a.section:visited, a.section:link { color: #666666;}
+.module table { border-collapse: collapse;   table-layout: fixed;}
+.module th,td { width: 400px; }
+
 
 /* /* Index MODULES */ */
 /* .imodule { border:1px solid #ccc; margin-bottom:5px; background:white; } */
