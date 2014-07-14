@@ -6,6 +6,8 @@ body {
     margin-bottom: 20px;
 }
 
+.nav li { list-style-type: none; }
+
 /* jquery ui customisation */
 .ui-widget-header { background:None; border:None}
 .ui-widget-content { border: None}
@@ -128,7 +130,7 @@ table.small-form-row input[type=text], input[type=password], textarea, select, .
 .module h2, .module caption, .inline-group h2 { margin:0; padding:2px 5px 3px 5px; font-size:11px; text-align:left; font-weight:bold; background: none; }
 .module a.section:visited, a.section:link { color: #666666;}
 .module table { border-collapse: collapse;   table-layout: fixed;}
-.module th,td { width: 400px; }
+.module th, .module td { width: 400px; }
 
 
 /* /* Index MODULES */ */
