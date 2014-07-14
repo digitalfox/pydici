@@ -1,16 +1,10 @@
-{% extends "admin/base_site.html" %}
+{% extends "core/pydici.html" %}
 {% load i18n %}
 {% load pydici_filters %}
-
-{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
 
 {% block extrajs %}
     {% include "core/_jqplot.html" %}
 {% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
 
 {% block title %}{% trans "Management dashboard" %}{% endblock %}
 
