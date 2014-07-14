@@ -1,6 +1,6 @@
 {% load i18n %}
 {% load pydici_filters %}
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html><html lang="{{ LANGUAGE_CODE|default:"en-us" }}">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,15 +19,28 @@
     <link href="{{ MEDIA_URL }}tables2/css/screen.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/jquery.dataTables.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/ajax_select.css" rel="stylesheet">
+    {% block extracss %}{% endblock %}
     <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
 
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <!-- <script src="../../assets/js/ie-emulation-modes-warning.js"></script> -->
 
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last modified leads' %}"
+              href="{% url 'latest' %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last created leads' %}"
+              href="{% url 'new' %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last won leads' %}"
+              href="{% url 'won' %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my leads' %}"
+              href="{% url 'mine' %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of latest staffing forecast' %}"
+              href="{% url 'latestStaffing' %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my latest staffing forecast' %}"
+              href="{% url 'myLatestStaffing' %}" />
+    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last archived Mission' %}"
+              href="{% url 'archivedMission' %}" />
+    
   </head>
 
-  <body>
+  <body {% block bodyattr %}{% endblock %}>
 
     <!-- Fixed navbar -->
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -43,8 +56,7 @@
           <a class="navbar-brand" href="#">Pydici
           <img alt="" src="{{ MEDIA_URL }}pydici/company_logo.png" height=20/></a>
         </div>
-        
-        
+
         <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
         {% if user.is_staff %}
@@ -139,10 +151,8 @@
         {% endif %} {# End of menu for staff users only #}  
 
         </div><!--/.navbar-collapse -->
-        
-          
 
-        </div><!--/.nav-collapse -->
+        </div><!-- containter-->
       </div>
 
     <!-- JavaScript -->
@@ -153,13 +163,15 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}js/datatables_custom_sort.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/admin/ajax_select.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
-<!--     <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-remote-tabs.min.js"></script> -->
 
     {% block extrajs %}{% endblock %}
     
-     <div class="container">
-    {% block content %}{% endblock %}
-    </div> <!-- /container -->
     
+    {% block supercontent %}
+        <div class="container">
+            {% block messages %}{% endblock %}
+            {% block content %}{% endblock %}
+        </div> <!-- /container -->
+    {% endblock %}
 
 </body></html>
