@@ -86,7 +86,11 @@ tr.alt { background:#f6f6f6; }
 .odd { background:#FFF2ED; }
 .even { background:white; }
 tr:hover {  background-color: #E9E5E3; color: #000; }
-/* table.small-form-row td { padding:0px; font-size:9px; margin:0px; vertical-align: middle;} */
+
+/* Small grid like timesheet */
+table.small-form-row td { padding:0px; font-size:9px; margin:0px; vertical-align: middle;}
+table.small-form-row input[type=text], input[type=password], textarea, select, .vTextField { border:1px solid #ccc; background: white; margin 2px 0; padding: 2px 3px;}
+
 
 /* /* SORTABLE TABLES */  */
 /* thead th a:link, thead th a:visited { color:#666; display:block; } */

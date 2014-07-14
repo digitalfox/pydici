@@ -46,8 +46,9 @@
         <div id="readonly-warning"><em>{% trans "Note: Past month timesheet and other people timesheets are read only" %}</em></div>
     {% else %}
         <div class="submit-row">
-            <input type="submit" value="{% trans 'Save' %}"/>
+            <button type='submit' class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span> {% trans 'Save' %}</a>
         </div>
+        
     {% endif %}
     </form>
     <br/><p>{% trans "Working days in this month: " %} {{ working_days }}</p>
