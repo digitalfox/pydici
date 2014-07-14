@@ -1,15 +1,9 @@
-{% extends "admin/base_site.html" %}
+{% extends "core/pydici.html" %}
 
 {% load i18n %}
 {% load permissions_tags %}
 {% load pydici_filters %}
 {% load render_table from django_tables2 %}
-
-{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
 
 {% block title %}{% trans "Expense" %}{% endblock %}
 

@@ -1,13 +1,7 @@
-{% extends "admin/base_site.html" %}
+{% extends "core/pydici.html" %}
 
 {% load i18n %}
 {% load pydici_filters %}
-
-{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
 
 {% block title %}{{ lead }}{% endblock %}
 {% block content %}

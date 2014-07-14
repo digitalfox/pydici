@@ -1,12 +1,6 @@
-{% extends "admin/base_site.html" %}
+{% extends "core/pydici.html" %}
 
 {% load i18n %}
-
-{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
 
 {% block extrajs %}
 {% include "core/_jqplot.html" %}

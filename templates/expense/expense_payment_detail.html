@@ -1,4 +1,4 @@
-{% extends "admin/base.html" %}
+{% extends "core/pydici.html" %}
 
 {% load i18n %}
 {% load permissions_tags %}
@@ -9,10 +9,6 @@
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/pydici.css" />
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}tables2/css/screen.css" />
 {% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
 
 {% block title %}{% trans "Expense payment detail" %}{% endblock %}
 
