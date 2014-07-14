@@ -1,13 +1,9 @@
-{% extends "admin/base_site.html" %}
+{% extends "core/pydici.html" %}
 
 {% load i18n %}
 {% load pydici_filters %}
 
-{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
+<!-- {% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %} -->
 
 {% block extrajs %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jeditable.mini.js"></script>
@@ -29,29 +25,30 @@
     <a href="{% url 'crm.views.company_detail' mission.lead.client.organisation.company.id %}">{{ mission.lead.client.organisation }}</a> : 
 {% endif %}
     <a href="{% url 'admin:staffing_mission_change' mission.id %}?return_to={% url 'staffing.views.mission_home' mission.id %}" class='changelink' >{{ mission.short_name }}</a>
-
-
 </h1>
 
-<div id="mission-tabs">
-    <ul>
-        <li><a href="#tab-description">{% trans "Description" %}</a></li>
-        <li><a href="#tab-consultants">{% trans "Consultants" %}</a></li>
-        <li><a title="#tab-contacts" href="{% url 'staffing.views.mission_contacts' mission.id %}">{% trans "Contacts" %}</a></li>
-        <li><a href="#tab-other-missions">{% trans "Other missions" %}</a></li>
-        <li><a title="#tab-timesheet" href="{% url 'staffing.views.mission_timesheet' mission.id %}">{% trans "Timesheet" %}</a></li>
+<div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="mission-tabs">
+        <li class="active"><a data-toggle="tab" href="#tab-home"><span class="glyphicon glyphicon-home"> {% trans "Description" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"> {% trans "Consultants" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-contacts" data-tab-url="{% url 'staffing.views.mission_contacts' mission.id %}"><span class="glyphicon glyphicon-envelope"> {% trans "Contacts" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-other-missions" id="tabheader-other-missions"><span class="glyphicon glyphicon-list"> {% trans "Other missions" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing.views.mission_timesheet' mission.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
         {% if mission.active %}
-            <li><a title="#tab-staffing" href="{% url 'staffing.views.mission_staffing' mission.id %}">{% trans "Forecast staffing" %}</a></li>
+            <li><a data-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'staffing.views.mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
         {% endif %}
-        <li><a title="#tab-expenses" href="{% url 'expense.views.mission_expenses' mission.id %}">{% trans "Expenses" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense.views.mission_expenses' mission.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
         {% if mission.lead %}
-            <li><a title="#tab-documents" href="{% url 'leads.views.lead_documents' mission.lead.id %}">{% trans "Documents" %}</a></li>
+            <li><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads.views.lead_documents' mission.lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
         {% endif %}
-        <li><a href="#tab-actions">{% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
-        {% if mission.lead %}<li><a href="#tab-billing">{% trans "Billing" %}</a></li>{% endif %}
+        <li><a data-toggle="tab" href="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
+        {% if mission.lead %}<li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>{% endif %}
     </ul>
+</div>
 
-    <div id="tab-description">
+<div class="tab-content">
+    <div id="tab-home" class="tab-pane active">
         {% if mission.active %}
                {% if mission.no_more_staffing_since %}
                    <div id="mission_no_staffing_warning" class="errornote">{% trans "This mission has no staffing in future" %}. <a href="javascript:;"
@@ -83,7 +80,7 @@
          {% endif %}
     </div>
 
-    <div id="tab-consultants">
+    <div id="tab-consultants" class="tab-pane">
 	    <h2>{% trans "Consultants currently implicated in this mission" %}</h2>
 	    <div class="timesheet">
 	    <table>
@@ -100,7 +97,9 @@
 	    </div>
     </div>
 
-    <div id="tab-other-missions">
+    <div id="tab-contacts" class="tab-pane"></div>
+    
+    <div id="tab-other-missions" class="tab-pane">
         {% if mission.sister_missions %}
         <h2>{% trans "Other missions linked to this lead" %}</h2>
         <div class="imodule">
@@ -129,18 +128,21 @@
             <script type="text/javascript">
             // Disable other mission tabs
             $(document).ready(function() {
-                // Remove the tab (thanks to jquery-ui 1.9, this is badly ugly)
-                var idx = $('#mission-tabs a[href="#tab-other-missions"]').parent().index();
-                var tab = $("#mission-tabs").find( ".ui-tabs-nav li:eq("+idx+")" ).remove();
-                var panelId = tab.attr( "aria-controls" );
-                $( "#" + panelId ).remove();
-                $('#mission-tabs').tabs("refresh");
+                $('#tabheader-other-missions').hide();
             });
             </script>
         {% endif %}
     </div>
 
-    <div id="tab-billing">
+    <div id="tab-timesheet" class="tab-pane"></div>
+    
+    <div id="tab-staffing" class="tab-pane"></div>
+    
+    <div id="tab-expenses" class="tab-pane"></div>
+    
+    <div id="tab-documents" class="tab-pane"></div>
+    
+    <div id="tab-billing" class="tab-pane">
     <br/>
 	    {% if mission.lead %}
 	        {% with mission.lead as lead %}
@@ -149,7 +151,7 @@
 	    {% endif %}
     </div>
 
-    <div id="tab-actions">
+    <div id="tab-actions" class="tab-pane">
     <br/>
 
     <h2>{% trans "Pending actions" %}</h2>
@@ -157,7 +159,7 @@
         {% include "actionset/_lead_mission_actions.html" %}
     {% endwith %}
 
-<h2>{% trans "Done actions" %}</h2>
+    <h2>{% trans "Done actions" %}</h2>
     <ul>
     {% for action in mission.done_actions %}
         <li>{{ action.action.name }} - {{ action.get_state_display }} ({{ action.user.first_name }} {{ action.user.last_name }}, {{ action.update_date }})</li>

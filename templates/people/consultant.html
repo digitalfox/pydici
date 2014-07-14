@@ -26,22 +26,22 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="consultant-tabs">
         {% if consultant.subcontractor %}
-            <li class="active"><a data-toggle="tab" href="#tab-home" data-tab-url="{% url 'people.views.subcontractor_detail' consultant.id %}">{% trans "Home" %}</a></li>
+            <li class="active"><a data-toggle="tab" href="#tab-home" data-tab-url="{% url 'people.views.subcontractor_detail' consultant.id %}"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
         {% else %}
-            <li class="active"><a data-toggle="tab" href="#tab-home" data-tab-url="{% url 'people.views.consultant_detail' consultant.id %}">{% trans "Home" %}</a></li>
+            <li class="active"><a data-toggle="tab" href="#tab-home" data-tab-url="{% url 'people.views.consultant_detail' consultant.id %}"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
         {% endif %}
         {% if request.GET.year and request.GET.month %}
-            <li><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing.views.consultant_timesheet' consultant.id request.GET.year request.GET.month %}">{% trans "Timesheet" %}</a></li>
+            <li><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing.views.consultant_timesheet' consultant.id request.GET.year request.GET.month %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
         {% else %}
-            <li><a href="#tab-timesheet" data-tab-url="{% url 'staffing.views.consultant_timesheet' consultant.id %}">{% trans "Timesheet" %}</a></li>
+            <li><a href="#tab-timesheet" data-tab-url="{% url 'staffing.views.consultant_timesheet' consultant.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
         {% endif %}
-        <li><a data-toggle="tab" href="#tab-staffing"  data-tab-url="{% url 'staffing.views.consultant_staffing' consultant.id %}">{% trans "Forecast staffing" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-missions">{% trans "Missions" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-staffing"  data-tab-url="{% url 'staffing.views.consultant_staffing' consultant.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-missions"><span class="glyphicon glyphicon-list"></span> {% trans "Missions" %}</a></li>
     </ul>
 </div>
     
 <div class="tab-content">
-    <div id="tab-home" class="tab-pane active" ></div>
+    <div id="tab-home" class="tab-pane active"></div>
     <div id="tab-timesheet" class="tab-pane"></div>
     <div id="tab-staffing" class="tab-pane" ></div>
     <div id="tab-missions" class="tab-pane">
