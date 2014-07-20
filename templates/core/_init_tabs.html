@@ -5,6 +5,9 @@
 
 
 $(document).ready(function() {
+    tabprefix = "goto_";
+
+    // Display a tab and load its content with ajax if data-tab-url is defined
     function displayBsTab(tab, href) {
         tab.tab('show');
         var url = tab.attr("data-tab-url");
@@ -12,37 +15,33 @@ $(document).ready(function() {
             $(href).load(url,function(result) {
                 tab.tab('show');
             });
-            //window.scrollTo(0,0);
         }
     }
 
-    
+    // Bind click on tab event
     $("#{{ tabs }} a" ).click(function (e) {
        e.preventDefault();
        href = this.hash;
        displayBsTab($(this), href);
-    });    
+    });
 
-    
+    // If url has a hash, switch to the target tab
     $(function () {
-        var activeTab = $('[href=' + location.hash + ']');
+        var activeTab = $('[href=' + location.hash.replace(tabprefix,"") + ']');
         activeTab && activeTab.click();
      });
 
-//      // Javascript to enable link to tab
-//         var url = document.location.toString();
-//         if (url.match('#')) {
-//             href = '#' + url.split('#')[1];
-// //             $('.nav-tabs a[href='+href+']').tab('show');
-// //             displayBsTab($("#{{ tabs }} a" ), href);
-//         }
-    
-//         // Change hash for page-reload
-//         $('.nav-tabs a').on('shown.bs.tab', function (e) {
-//             window.location.hash = e.target.hash;
-//         });
 
-    
+    // Change hash for page-reload
+    $('.nav-tabs a').on('shown.bs.tab', function (e) {
+        var hash = e.target.hash.replace("#", "#" + tabprefix)
+        if(history.pushState) {
+            history.pushState(null, null, hash); 
+        } else {
+            window.location.hash = hash;
+        }
+    });
+
     // load first tab content
     $('#tab-home').load($('.active a').attr("data-tab-url"),function(result){
         $('tab-content').find('.active a').tab('show');
