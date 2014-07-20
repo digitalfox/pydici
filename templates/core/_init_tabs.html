@@ -28,7 +28,15 @@ $(document).ready(function() {
     // If url has a hash, switch to the target tab
     $(function () {
         var activeTab = $('[href=' + location.hash.replace(tabprefix,"") + ']');
-        activeTab && activeTab.click();
+        var url = document.location.toString();
+        if (!url.match('#')) {
+            // No hash, so we load first tab
+            $('#tab-home').load($('.active a').attr("data-tab-url"),function(result){
+                $('tab-content').find('.active a').tab('show');
+            });
+        }else {
+            activeTab.click();
+        }
      });
 
 
@@ -41,11 +49,5 @@ $(document).ready(function() {
             window.location.hash = hash;
         }
     });
-
-    // load first tab content
-    $('#tab-home').load($('.active a').attr("data-tab-url"),function(result){
-        $('tab-content').find('.active a').tab('show');
-   });
-
 });
 </script>
