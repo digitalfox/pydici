@@ -5,16 +5,6 @@
 {% block title %}{% trans "Forecast/timesheet " %}{{ consultant }}{% endblock %}
 
 {% block content %}
-{% if request.session.mobile %}
-<div data-role="page" data-theme="c">
-    <div data-role="header">
-        <a href="{% url 'mobile_index' %}" data-transition="flip">{% trans "Home" %}</a>
-        {% block mobile-page-header %}
-        {% endblock %}
-    </div>
-    <div data-role="content">
-{% else %}
-
 <div class="content-large">
     <h1>{{ consultant.full_name }} {% if consultant.subcontractor %} - {% trans "subcontractor" %} {% endif %}</h1>
 
@@ -34,13 +24,8 @@
 		{% endfor %}
 		</table>
 
-{% endif %}
 
 {% block consultant_detail %} {% endblock %}
 
-{% if not request.session.mobile %}
-    <br><hr><br><br>
-    <a href="{% url 'staffing.views.pdc_review' %}">{% trans "Back to work load schedule" %}</a>
-{% endif %}
 </div>
 {% endblock %}

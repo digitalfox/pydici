@@ -9,10 +9,9 @@
 <h3>{% trans "This consultant does not work anymore for the company" %}</h3>
 {% endif %}
 
-<div class="pydici-grid">
-<ul>
-<li>
-    <div class="pydici-grid-long-item">
+<div class="row">
+
+    <div class="col-md-4 col-sm-6">
     <h3>{% trans "This month" %}</h3>
     {% url 'people.views.consultant_home' consultant.id as consultant_url %}
         <ul>
@@ -77,11 +76,8 @@ $(document).ready(function() {
 });
 </script>
     </div>
-</li>
 
-
-<li>
-    <div class="pydici-grid-item">
+    <div class="col-md-4 col-sm-6">
 	<p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href="{% url 'people.views.consultant_home' consultant.manager.id %}">{{ consultant.manager.full_name }}</a>{% endifnotequal %}{% endif %}</p>
 	{% if staff %}
 	    <h3>{% trans "Staff" %}</h3>
@@ -92,18 +88,17 @@ $(document).ready(function() {
 	    </ul>
 	{% endif %}
 	</div>
-</li>
-<li>
-    <div class="pydici-grid-long-item">
+
+    <div class="col-md-4 col-sm-6">
     <h3>{% trans "Pending actions" %}</h3>
     {% with consultant.pending_actions|slice:":20" as actions %}
         {% include "actionset/_consultant_actions.html" %}
     {% endwith %}
     </div>
-</li>
+
 {% if business_territory %}
-<li>
-    <div class="pydici-grid-item">
+
+    <div class="col-md-4 col-sm-6">
     <h3>{% trans "Business territory" %}</h3>
     <ul>
     {% for company in business_territory %}
@@ -111,10 +106,10 @@ $(document).ready(function() {
     {% endfor %}
     </ul>
     </div>
-</li>
+
 {% endif %}
-<li>
-    <div class="pydici-grid-item">
+
+    <div class="col-md-4 col-sm-6">
 	<h3>{% trans "Clients" %}</h3>
 	<ul>
 	{% for company in companies %}
@@ -122,9 +117,8 @@ $(document).ready(function() {
 	{% endfor %}
 	</ul>
 	</div>
-</li>
-<li>
-    <div class="pydici-grid-long-item">
+
+    <div class="col-md-4 col-sm-6">
 	<h3>{% trans "Current missions" %}</h3>
 	<ul>
 	{% for mission in missions %}
@@ -132,9 +126,8 @@ $(document).ready(function() {
 	{% endfor %}
 	</ul>
 	</div>
-</li>
-<li>
-    <div class="pydici-grid-long-item">
+
+    <div class="col-md-4 col-sm-6">
 	{% if leads_as_responsible %}
 	<h3>{% trans "Current leads as responsible" %}</h3>
 	<ul>
@@ -144,9 +137,9 @@ $(document).ready(function() {
 	</ul>
 	{% endif %}
 	</div>
-</li>
-<li>
-    <div class="pydici-grid-long-item">
+
+
+    <div class="col-md-4 col-sm-6">
 	{% if leads_as_staffee %}
 	<h3>{% trans "Current leads as resource" %}</h3>
 	<ul>
@@ -156,18 +149,17 @@ $(document).ready(function() {
 	</ul>
 	{% endif %}	
 	</div>
-</li>
-<div style="clear:both">&nbsp;</div>
-<li>
-    <div id="consultant_rate_graph_jqp_content"></div>
+</div>
+
+<div class="row">
+    <div id="consultant_rate_graph_jqp_content" class="col-lg-12"></div>
     <script type="text/javascript">
     $('#consultant_rate_graph_jqp_content').load("{% url 'staffing.views.graph_consultant_rates_jqp' consultant.id %}")
     </script>
-</li>
-</ul>
 </div>
-<br/>
 
-<div style="clear:both;"></div>
-{% include "leads/_tag_cloud.html" %}
+<div class="row">
+    <div class="col-lg-12">
+        {% include "leads/_tag_cloud.html" %}
+    </div>
 </div>
