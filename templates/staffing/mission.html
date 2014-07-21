@@ -49,35 +49,42 @@
 
 <div class="tab-content">
     <div id="tab-home" class="tab-pane active">
-        {% if mission.active %}
-               {% if mission.no_more_staffing_since %}
-                   <div id="mission_no_staffing_warning" class="errornote">{% trans "This mission has no staffing in future" %}. <a href="javascript:;"
-                        onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}', process_mission_archive)">
-                        {% trans "Do you want to archive this mission ?" %}</a>
-                   </div>
-               {% else %}
-                   {% if mission.no_staffing_update_since %}
-                       <div class="errornote">{% trans "Staffing has not been updated recently" %}</div>
+        <div class="row">
+            <br/>
+            {% if mission.active %}
+                   {% if mission.no_more_staffing_since %}
+                       <div id="mission_no_staffing_warning" class="alert alert-warning">{% trans "This mission has no staffing in future" %}. <a href="javascript:;"
+                            onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}', process_mission_archive)">
+                            {% trans "Do you want to archive this mission ?" %}</a>
+                       </div>
+                   {% else %}
+                       {% if mission.no_staffing_update_since %}
+                           <div class="alert alert-warning">{% trans "Staffing has not been updated recently" %}</div>
+                       {% endif %}
                    {% endif %}
-               {% endif %}
-         {% else %}
-                <div class="infonote">{% trans "This mission is archived" %}</div>
-         {% endif %}
-         {% if mission.lead %}{% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}{% endif %}
-         {% if not mission.billing_mode %}<div class="errornote">{% trans "Please defined billing mode below" %}</div>{% endif %}
-         {% if not mission.defined_rates %}<div class="errornote">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
-         <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
-         <h3>{% trans "Subsidiary:" %} {{ mission.subsidiary }}</h3>
-         <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
-         {% if mission.lead %}
-            {% if mission.lead.client_deal_id %}<h3>{% trans "Client lead id: " %} {{ mission.lead.client_deal_id }}</h3>{% endif %}
-            <h3>{% trans "Billing mode: " %} <div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></h3>
-            <h3>{% trans "Probability:" %} <div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_probability_display }}</div></h3>
-            <h3>{% trans "Lead of this mission:" %} <a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></h3>
-	        {% if mission.lead.description %}
-	            <div class='lead_description'>{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
-	        {% endif %}
-         {% endif %}
+             {% else %}
+                    <div class="alert alert-info col-lg-6">{% trans "This mission is archived" %}</div>
+             {% endif %}
+         </div>
+         <div class="row">
+             {% if mission.lead %}{% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}{% endif %}
+             {% if not mission.billing_mode %}<div class="alert alert-warning col-lg-6">{% trans "Please defined billing mode below" %}</div>{% endif %}
+             {% if not mission.defined_rates %}<div class="alert alert-warning col-lg-6">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
+         </div>
+         <div class="row">
+             <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
+             <h3>{% trans "Subsidiary:" %} {{ mission.subsidiary }}</h3>
+             <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
+             {% if mission.lead %}
+                {% if mission.lead.client_deal_id %}<h3>{% trans "Client lead id: " %} {{ mission.lead.client_deal_id }}</h3>{% endif %}
+                <h3>{% trans "Billing mode: " %} <div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></h3>
+                <h3>{% trans "Probability:" %} <div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_probability_display }}</div></h3>
+                <h3>{% trans "Lead of this mission:" %} <a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></h3>
+    	        {% if mission.lead.description %}
+    	            <div class='lead_description'>{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
+    	        {% endif %}
+             {% endif %}
+         </div>
     </div>
 
     <div id="tab-consultants" class="tab-pane">

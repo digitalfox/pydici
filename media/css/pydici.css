@@ -273,16 +273,6 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 /* } */
 
 
-.infonote {
-    font-size: 12px !important;
-    display: block;
-    padding: 4px 5px 4px 25px;
-    margin: 0 0 3px 0;
-    border: 1px solid lightgrey;
-    background: #ffc url(../img/icon_alert.gif) 5px .3em no-repeat;
-}
-
-
 /* jqplot */
 .jqplot-point-label {
   padding: 1px 3px;

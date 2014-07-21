@@ -2,5 +2,5 @@
 {# Context/Argument: Lead #}
 
 {% load i18n %}
-{% if not lead.checkBusinessDoc %}<div class="errornote">{% trans "Business documents are missing. Please put them here: " %}{{ lead.getDocURL|urlize }}</div>{% endif %}
-{% if not lead.checkDeliveryDoc %}<div class="errornote">{% trans "Delivery documents are missing. Please put them here: " %}{{ lead.getDocURL|urlize }}</div>{% endif %}
+{% if not lead.checkBusinessDoc %}<div class="alert alert-warning col-lg-6">{% trans "Business documents are missing. Please put them here: " %}{{ lead.getDocURL|urlize }}</div>{% endif %}
+{% if not lead.checkDeliveryDoc %}<div class="alert alert-warning col-lg-6">{% trans "Delivery documents are missing. Please put them here: " %}{{ lead.getDocURL|urlize }}</div>{% endif %}

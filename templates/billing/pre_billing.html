@@ -56,7 +56,7 @@
 </div>
 {% if undefined_billing_mode_missions %}
 <br/><hr><br/>
-<h1 class="errornote">{% trans "Missions without defined billing mode" %} - {{ month|date:"F Y" }}</h1>
+<h1 class="alert alert-warning">{% trans "Missions without defined billing mode" %} - {{ month|date:"F Y" }}</h1>
 <div><ul>
 {% for mission in undefined_billing_mode_missions %}
     {% ifchanged mission.lead %}
