@@ -48,7 +48,7 @@
 </div>
 
 <div class="tab-content">
-    <div id="tab-home" class="tab-pane active">
+    <div id="tab-home" class="tab-pane active fade in">
         <div class="row">
             <br/>
             {% if mission.active %}
@@ -87,7 +87,7 @@
          </div>
     </div>
 
-    <div id="tab-consultants" class="tab-pane">
+    <div id="tab-consultants" class="tab-pane fade">
 	    <h2>{% trans "Consultants currently implicated in this mission" %}</h2>
 	    <div class="timesheet">
 	    <table>
@@ -104,9 +104,9 @@
 	    </div>
     </div>
 
-    <div id="tab-contacts" class="tab-pane"></div>
+    <div id="tab-contacts" class="tab-pane fade"></div>
     
-    <div id="tab-other-missions" class="tab-pane">
+    <div id="tab-other-missions" class="tab-pane fade">
         {% if mission.sister_missions %}
         <h2>{% trans "Other missions linked to this lead" %}</h2>
         <div class="imodule">
@@ -141,15 +141,15 @@
         {% endif %}
     </div>
 
-    <div id="tab-timesheet" class="tab-pane"></div>
+    <div id="tab-timesheet" class="tab-pane fade"></div>
     
-    <div id="tab-staffing" class="tab-pane"></div>
+    <div id="tab-staffing" class="tab-pane fade"></div>
     
-    <div id="tab-expenses" class="tab-pane"></div>
+    <div id="tab-expenses" class="tab-pane fade"></div>
     
-    <div id="tab-documents" class="tab-pane"></div>
+    <div id="tab-documents" class="tab-pane fade"></div>
     
-    <div id="tab-billing" class="tab-pane">
+    <div id="tab-billing" class="tab-pane fade">
     <br/>
 	    {% if mission.lead %}
 	        {% with mission.lead as lead %}
@@ -158,7 +158,7 @@
 	    {% endif %}
     </div>
 
-    <div id="tab-actions" class="tab-pane">
+    <div id="tab-actions" class="tab-pane fade">
     <br/>
 
     <h2>{% trans "Pending actions" %}</h2>
