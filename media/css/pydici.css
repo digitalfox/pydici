@@ -207,13 +207,13 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 /* } */
 
 /* /* Text frame */ */
-/* .tag_banner { */
-/*     background:#F6F6F6; */
-/*     margin: 10px; */
-/*     padding: 6px 8px; */
-/*     border-radius: 8px 8px 8px 8px; */
-/*     box-shadow: 1px 1px 2px #555; */
-/* } */
+.tag_banner {
+    background:#F6F6F6;
+    margin: 10px;
+    padding: 6px 8px;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: 1px 1px 2px #555;
+}
 
 /* a.tagrlink { color: #999999 } */
 

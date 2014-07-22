@@ -18,8 +18,6 @@
     {% include "core/_init_tabs.html" %}
 {% endwith %}
 
-<div class="content-large">
-
 <h1>
 {% if mission.lead.client %}
     <a href="{% url 'crm.views.company_detail' mission.lead.client.organisation.company.id %}">{{ mission.lead.client.organisation }}</a> : 
@@ -178,7 +176,6 @@
 
 
 </div> <!-- end of tabs -->
-</div>
 
 <script type="text/javascript">
 
