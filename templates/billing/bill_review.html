@@ -1,16 +1,10 @@
 {% extends "core/pydici.html" %}
 {% load i18n %}
 
-{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
 {% block title %}{% trans "Bills review" %}{% endblock %}
 
 {% block content %}
-<div class="content-large">
+
     <br/>
     {% if overdue_bills %}
     <h1>{% trans "Overdue bills" %}</h1>
@@ -226,5 +220,4 @@
 
     <img src="{% url 'billing.views.graph_stat_bar' %}"/>
 
-</div>
 {% endblock %}

@@ -2,14 +2,10 @@
 
 {% load i18n %}
 
-{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
 {% block extrajs %}
     {% include "core/_jqplot.html" %}
 {% endblock %}
-{% block breadcrumbs %}{% endblock %}
+
 
 {% block title %}{% trans "Workload schedule" %}{% endblock %}
 
@@ -30,29 +26,45 @@
     <div data-role="content">
     <table>
 {% else %}
-<div id="content-main">
+
+
 	<h1>
 	<a href="{% url 'pdcreview' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}" title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
 	{% trans "Workload shedule review" %}
 	<a href="{% url 'pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}" title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
 	</h1>
 
-<br/>
-<span class="pydici-select-radio-title"><strong>{% trans "Projections: " %}</strong></span>
-<span class="pydici-select-radio">
-<label><input type="radio" onclick="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}}'" {% ifequal projection "none" %}checked{% endifequal %}/>{% trans "Only won leads" %}</label>
-<label><input type="radio" onclick="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=balanced'" {% ifequal projection "balanced" %}checked{% endifequal %}/>{% trans "Balanced staffing projection" %}</label>
-<label><input type="radio" onclick="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=full'" {% ifequal projection "full" %}checked{% endifequal %}/>{% trans "Full staffing projection" %}</label>
-</span>
-<br/>
-<span class="pydici-select-radio-title"><strong>{% trans "Group by: " %}</strong></span>
-<span class="pydici-select-radio">
-<label><input type="radio" onclick="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=manager;projection={{projection}}'" {% ifequal groupby "manager" %}checked{% endifequal %}/>{% trans "Manager" %}</label>
-<label><input type="radio" onclick="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=position;projection={{projection}}'" {% ifequal groupby "position" %}checked{% endifequal %}/>{% trans "Level" %}</label>
-</span>
-<br/>
-<br/>
+<div class="row">
+    <div class="btn-group col-lg-8" data-toggle="buttons">
+        <label class="btn btn-default col-lg-4 {% ifequal projection "none" %}active{% endifequal %}">
+            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}}'"/>
+            {% trans "Only won leads" %}
+        </label>
+        <label class="btn btn-default col-lg-4 {% ifequal projection "balanced" %}active{% endifequal %}">
+            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=balanced'"/>
+            {% trans "Balanced staffing projection" %}
+        </label>
+        <label class="btn btn-default col-lg-4 {% ifequal projection "full" %}active{% endifequal %}">
+            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=full'"/>
+            {% trans "Full staffing projection" %}
+        </label>
+    </div>
+</div>
+<div class="row"><br/></div>
+<div class="row">
+    <div class="btn-group col-lg-8" data-toggle="buttons">
+        <label class="btn btn-default col-lg-6 {% ifequal groupby "manager" %}active{% endifequal %}">
+            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=manager;projection={{projection}}'" />
+            {% trans "Group by Manager" %}
+        </label>
+        <label class="btn btn-default col-lg-6 {% ifequal groupby "position" %}active{% endifequal %}">
+            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=position;projection={{projection}}'"/>
+            {% trans "Group by Level" %}
+        </label>
+    </div>
+</div>
 
+<div class="row"><br/></div>
 
 <table style="white-space: nowrap;" id="pdc_table">
 {% endif %}
@@ -117,7 +129,7 @@
 </table>
 <br/><br/>
 
-{% if not request.session.mobile %}
+
     <h1>{% trans "Production rates and daily rates review" %}</h1>
     
     <div id="graph_timesheet_rates_bar_jqp_content"></div>
@@ -131,9 +143,7 @@
     </script>
 
 	<br/>
-{% endif %}
 
-</div>
 
 <SCRIPT type="text/JavaScript">
 <!-- 
