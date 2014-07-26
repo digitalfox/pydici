@@ -10,6 +10,7 @@
 
 $(document).ready(function() {
         $('#{{ table_id }} *').removeClass('odd').removeClass('even'); // Remove tables2 odd/even class - we use datables ones that support sorting 
+        $('#{{ table_id }} *').removeClass('lead'); // Remove tables2 lead class that trigger bootstrap lead css class
         $('#{{ table_id }}').dataTable({
             {{ datatable_options }}
             "bPaginate": false,

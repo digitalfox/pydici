@@ -9,7 +9,6 @@ from django import forms
 from django.forms.widgets import TextInput, Textarea
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
-from django.utils.safestring import mark_safe
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column

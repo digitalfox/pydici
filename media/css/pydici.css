@@ -78,18 +78,8 @@ p img, h1 img, h2 img, h3 img, h4 img, td img { vertical-align:middle; }
 .example { margin:10px 0; padding:5px 10px; background:#efefef; }
 .nowrap { white-space:nowrap; }
 
-/* TABLES */
-table { border-collapse:collapse; border-color:#ccc; }
-td, th { font-size:11px; line-height:9px; border-bottom:1px solid #eee; vertical-align:top; padding:5px;  }
-/* th { text-align:left; font-size:12px; font-weight:bold; } */
-/* thead th,  */
-/* tfoot td { color:#666; padding:2px 5px; font-size:11px; background:#e1e1e1 url(../img/nav-bg.gif) top left repeat-x; border-left:1px solid #ddd; border-bottom:1px solid #ddd; } */
-/* tfoot td { border-bottom:none; border-top:1px solid #ddd; } */
-/* thead th:first-child,  */
-/* tfoot td:first-child { border-left:none !important; } */
-/* thead th.optional { font-weight:normal !important; } */
+/* TABLES  TODO: look if it is possible to remove those lines */
 fieldset table { border-right:1px solid #eee; }
-
 tr.row-label td { font-size:9px; padding-top:2px; padding-bottom:0; border-bottom:none; color:#666; margin-top:-1px; }
 tr.alt { background:#f6f6f6; }
 .row1 { background:#FFF2ED; }
