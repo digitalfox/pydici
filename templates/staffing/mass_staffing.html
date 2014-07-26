@@ -1,29 +1,12 @@
 {% extends "core/pydici.html" %}
 {% load i18n %}
+{% load crispy_forms_tags %}
 
 {% block title %}{% trans "Massive staffing" %}{% endblock %}
 
 {% block content %}
 
-<form enctype="multipart/form-data" action='' method="POST">
-    {{ form.non_field_errors }}
-    <div class="pydici-mass-staffing-col1">
-        <div class="pydici-mass-staffing">
-            <p>{{ form.missions.errors }} {{ form.missions.label_tag }} : {{ form.missions }}</p>
-            <div id="consultants_block"><p>{{ form.consultants.errors }} {{ form.consultants.label_tag }} : {{ form.consultants }}</p></div>
-            <p>{{ form.all_consultants.errors }} {{ form.all_consultants.label_tag }} : {{ form.all_consultants }}</p>
-            <p>{{ form.charge.errors }} {{ form.charge.label_tag }} : {{ form.charge }}</p>
-            <p>{{ form.comment.errors }} {{ form.comment.label_tag }} : {{ form.comment }}</p>
-        </div>
-    </div>
-    <div class="pydici-mass-staffing-col2">
-        <div class="pydici-mass-staffing">
-            <p>{{ form.staffing_dates.errors }} {{ form.staffing_dates.label_tag }} : {{ form.staffing_dates }}</p>
-        </div>
-    </div>
-    <div style="clear:both"></div>
-    <button type='submit' class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span> {% trans 'Save' %}</a>
-</form>
+{% crispy form form.helper %}
 
 <script type="text/JavaScript">
  /* TODO: java script that hide consultants_block when all_consultants checkbox is true */

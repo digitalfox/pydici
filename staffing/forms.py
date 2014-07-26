@@ -13,6 +13,9 @@ from django.forms.models import BaseInlineFormSet
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Div, Column
+
 from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
 
 from staffing.models import Mission, FinancialCondition
@@ -61,13 +64,19 @@ class MassStaffingForm(forms.Form):
     def __init__(self, *args, **kwargs):
         staffing_dates = kwargs.pop("staffing_dates", [])
         super(MassStaffingForm, self).__init__(*args, **kwargs)
-
+        self.helper = FormHelper()
         self.fields["missions"] = AutoCompleteSelectMultipleField('mission', required=True, label=_("Missions"), show_help_text=False)
         self.fields["consultants"] = AutoCompleteSelectMultipleField('consultant', required=False, label=_("Consultants"), show_help_text=False)
         self.fields["charge"] = forms.fields.FloatField(label=_("Charge"), min_value=0.25, max_value=31)
         self.fields["comment"] = forms.fields.CharField(label=_("Comment"), max_length=100, required=False)
         self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
         self.fields["staffing_dates"] = forms.fields.MultipleChoiceField(label=_("Staffing dates"), choices=staffing_dates)
+        submit = Submit("Submit", _("Save"))
+        submit.field_classes = "btn btn-default"
+        self.helper.layout = Layout(Div(Column("missions", "consultants", "all_consultants", css_class='col-md-6'),
+                                        Column("charge", "staffing_dates", "comment", css_class='col-md-6'),
+                                        css_class='row'),
+                                    submit)
 
 
 class TimesheetForm(forms.Form):
