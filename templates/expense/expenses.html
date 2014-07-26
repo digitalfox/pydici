@@ -4,6 +4,7 @@
 {% load permissions_tags %}
 {% load pydici_filters %}
 {% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
 
 {% block title %}{% trans "Expense" %}{% endblock %}
 
@@ -16,45 +17,26 @@
     <h1>{% trans "Add an expense" %}</h1>
 {% endif %}
 
-<form enctype="multipart/form-data" action='' method="POST">
-    {{ form.non_field_errors }}
-    <div class="pydici-expense-col1">
-    <div class="pydici-expense">
-            <p>{{ form.description.errors }} {{ form.description.label_tag }} : {{ form.description }}</p>
-            <p>{{ form.amount.errors }} {{ form.amount.label_tag }} : {{ form.amount }}</p>
-            <p>{{ form.chargeable.errors }} {{ form.chargeable.label_tag }} : {{ form.chargeable }}</p>
-            <p>{{ form.corporate_card.label_tag }} : {{ form.corporate_card }}</p>
-            <p>{{ form.receipt.erros }} {{ form.receipt.label_tag }} : {{ form.receipt }}</p>
-     </div></div>
-     <div class="pydici-expense-col2">
-     <div class="pydici-expense">
-            <p>{{ form.category.errors }} {{ form.category.label_tag }} : {{ form.category }}</p>
-            <p>{{ form.lead.errors }} {{ form.lead.label_tag }} : {{ form.lead }}</p>
-            <p>{{ form.expense_date.errors }} {{ form.expense_date.label_tag }} : {{ form.expense_date }}</p>
-            <p>{{ form.comment.errors }} {{ form.comment.label_tag }} : {{ form.comment }}</p>
-    </div></div>
-    <div style="clear:both"></div>
-
-    <input type="submit" value="{% trans 'Save' %}"/>
-
-</form>
+   {% crispy form form.helper %}
+   
 
 <br/><hr/><br/>
 
-
+<div class="row">
 {% if user_expense_table.data %}
 <h1>{% trans "My expenses" %}</h1>
     {% render_table user_expense_table %}
     {% with "user_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
 <br/><hr/><br/>
 {% endif %}
-
-
+</div>
+<div class="row">
 {% if managed_expense_table.data %}
     <h1>{% trans "Expenses I manage" %}</h1>
     {% render_table managed_expense_table %}
     {% with "managed_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
 {% endif %}
+</div>
 
 <br/><hr/><br/>
 <a href="{% url 'expense.views.expenses_history' %}">{% trans "Expenses history" %}</a>

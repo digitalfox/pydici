@@ -9,6 +9,10 @@ from django import forms
 from django.forms.widgets import TextInput, Textarea
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Div, Column
 
 
 from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
@@ -25,6 +29,16 @@ class ExpenseForm(forms.ModelForm):
                    "comment": Textarea(attrs={'cols': 17, 'rows': 2})}  # Reduce height and increase width
 
     lead = AutoCompleteSelectField('lead', required=False, label=_("Lead"), show_help_text=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ExpenseForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        submit = Submit("Submit", _("Save"))
+        submit.field_classes = "btn btn-default"
+        self.helper.layout = Layout(Div(Column("description", "category", "amount", "expense_date", css_class='col-md-6'),
+                                        Column("lead", "chargeable", "corporate_card", "receipt", "comment", css_class='col-md-6'),
+                                        css_class='row'),
+                                    submit)
 
     def clean(self):
         """Additional check on expense form"""

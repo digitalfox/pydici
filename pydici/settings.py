@@ -161,6 +161,7 @@ INSTALLED_APPS = [
     'permissions',
     'workflows',
     'django_tables2',
+    'crispy_forms',
 ]
 
 if DEBUG:
@@ -192,3 +193,5 @@ DOCUMENT_PROJECT_LEAD_DIR = u"{deal_id}_{name}"
 DOCUMENT_PROJECT_BUSINESS_DIR = u"commerce"
 DOCUMENT_PROJECT_DELIVERY_DIR = u"delivery"
 DOCUMENT_PROJECT_INPUT_DIR = u"input"
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_FAIL_SILENTLY = not DEBUG
