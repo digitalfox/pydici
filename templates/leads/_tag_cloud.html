@@ -11,7 +11,7 @@
 
 <ul class="row list-unstyled">
 {% for tag in tags %}
-    <li class="col-sm-3 col-md-2">
+    <li class="col-xs-6 col-sm-3 col-md-2">
         <font size={{tag.weight|floatformat:0}}>
             <a href="{% url 'leads.views.tag' tag.id %}">{{ tag }} ({{tag.num_times}})</a>
         </font>

@@ -8,42 +8,49 @@
 <ul class="more-items">
 {% for action in actions %}
     <div id="action_{{ action.id|unlocalize }}">
-        <li><a href="#action_tooltip_{{ action.id|unlocalize }}" class="tooltiplink">{{ action.action }}</a></li>
-        <div id="action_tooltip_{{ action.id|unlocalize }}" class="tooltip">
-        <div style='float:left;'><strong>{{ action.action }}</strong></div>
-        <div style='float:right;'><a href="javascript:;" rel="close">X</a></div>
-        <div style="clear:both"></div>
-        <hr/><br/>
-        {% if action.action.description %}<p><em>{{ action.action.description|urlize }}</em></p><br/>{% endif %}
-        {% block action_target %}{% if action.target %}
-            <p><strong>{% trans "Scope: " %}</strong>
-            {% if action.target.get_absolute_url %}
-                <a href="{{ action.target.get_absolute_url }}">{{ action.target }}</a>
-            {% else %}
-                {{ action.target }}
-            {% endif %}
-            </p><br/>
-        {% endif %}{% endblock %}
-        {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
-        {% ifequal request.user action.user %}
-        <p><a href="javascript:;"
-              onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DONE' %}',
-                              process_update_action_state);">
-              {% trans "Mark as done" %}</a>
-           &nbsp;-&nbsp;
-           <a href="javascript:;" 
-              onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'NA' %}',
-                              process_update_action_state);">
-              {% trans "N/A" %}</a>
-           &nbsp;-&nbsp;
-           <a href="javascript:;" 
-              onClick="call_deleguate_action('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DELEGUATE' %}', '{{ action.id|unlocalize }}');">
-              {% trans "Delegate to: " %}</a>
-           <input name="deleguate_user_{{ action.id|unlocalize }}" type="text"/>
-         </p>
-         {% endifequal %}
-        </div>
+        <li><a href="#" data-toggle="modal" data-target="#action_tooltip_{{ action.id|unlocalize }}">{{ action.action }}</a></li>
     </div>
+    <div id="action_tooltip_{{ action.id|unlocalize }}" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel"><strong>{{ action.action }}</strong></h4>
+                    </div>
+                    <div class="modal-body">
+                        {% if action.action.description %}<p><em>{{ action.action.description|urlize }}</em></p><br/>{% endif %}
+                        {% block action_target %}{% if action.target %}
+                            <p><strong>{% trans "Scope: " %}</strong>
+                            {% if action.target.get_absolute_url %}
+                                <a href="{{ action.target.get_absolute_url }}">{{ action.target }}</a>
+                            {% else %}
+                                {{ action.target }}
+                            {% endif %}
+                            </p><br/>
+                        {% endif %}{% endblock %}
+                        {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
+                        {% ifequal request.user action.user %}
+                        <p><button type="button" class="btn btn-default"
+                              onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DONE' %}',
+                                              process_update_action_state);">
+                              {% trans "Mark as done" %}</button>
+                           
+                           <button type="button" class="btn btn-default" 
+                              onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'NA' %}',
+                                              process_update_action_state);">
+                              {% trans "N/A" %}</button>
+                           
+                           <button type="button" class="btn btn-default" 
+                              onClick="call_deleguate_action('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DELEGUATE' %}', '{{ action.id|unlocalize }}');">
+                              {% trans "Delegate to: " %}</button>
+                           <input name="deleguate_user_{{ action.id|unlocalize }}" type="text"/>
+                         </p>
+                         {% endifequal %}
+                    </div>
+                </div>
+            </div>
+      </div>
+    
 {% empty %}
     {% trans "No pending action" %}
 {% endfor %}
@@ -59,11 +66,6 @@ $(document).ready(function(){
                                             minLength: 1,
                                           });
 
-    $("a.tooltiplink").simpletooltip({margin : 100,
-                                      click : true,
-                                      hideDelay : 2,
-                                      showEffect: "fadeIn", hideEffect: "fadeOut" });
-
 });
     // Function call URL for deleguate
     function call_deleguate_action(url, action_id) {
@@ -78,7 +80,7 @@ $(document).ready(function(){
         }
         else {
             $("#action_" + data.id).hide("slow");
-            $("#action_tooltip_" + data.id).hide("fast");
+            $("#action_tooltip_" + data.id).modal('hide');
             $("#action_" + data.id).remove();
             limit_action_list(); // Update to 5 first actions
         }
