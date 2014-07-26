@@ -47,13 +47,13 @@
 
 <div class="tab-content">
     <div id="tab-home" class="tab-pane active fade in">
-        <div class="row">
+        <div class="row-fluid">
             <br/>
             {% if mission.active %}
                    {% if mission.no_more_staffing_since %}
-                       <div id="mission_no_staffing_warning" class="alert alert-warning">{% trans "This mission has no staffing in future" %}. <a href="javascript:;"
-                            onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}', process_mission_archive)">
-                            {% trans "Do you want to archive this mission ?" %}</a>
+                       <div id="mission_no_staffing_warning" class="alert alert-warning">{% trans "This mission has no staffing in future" %}. 
+                        <button onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}', process_mission_archive)"
+                               class="btn btn-default">{% trans "Archive this mission" %}</button>
                        </div>
                    {% else %}
                        {% if mission.no_staffing_update_since %}
@@ -61,15 +61,15 @@
                        {% endif %}
                    {% endif %}
              {% else %}
-                    <div class="alert alert-info col-lg-6">{% trans "This mission is archived" %}</div>
+                    <div class="alert alert-info">{% trans "This mission is archived" %}</div>
              {% endif %}
          </div>
-         <div class="row">
+         <div class="row-fluid">
              {% if mission.lead %}{% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}{% endif %}
-             {% if not mission.billing_mode %}<div class="alert alert-warning col-lg-6">{% trans "Please defined billing mode below" %}</div>{% endif %}
-             {% if not mission.defined_rates %}<div class="alert alert-warning col-lg-6">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
+             {% if not mission.billing_mode %}<div class="alert alert-warning col-md-6">{% trans "Please defined billing mode below" %}</div>{% endif %}
+             {% if not mission.defined_rates %}<div class="alert alert-warning col-md-6">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
          </div>
-         <div class="row">
+         <div class="row-fluid">
              <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
              <h3>{% trans "Subsidiary:" %} {{ mission.subsidiary }}</h3>
              <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
