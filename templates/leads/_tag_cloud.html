@@ -9,9 +9,9 @@
 
 {% get_tagcloud as tags for 'leads.lead' %}
 
-<ul style='float: left; width: 80em;'>
+<ul class="row list-unstyled">
 {% for tag in tags %}
-    <li style='float: left; width: 20em;'>
+    <li class="col-sm-3 col-md-2">
         <font size={{tag.weight|floatformat:0}}>
             <a href="{% url 'leads.views.tag' tag.id %}">{{ tag }} ({{tag.num_times}})</a>
         </font>

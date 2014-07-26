@@ -26,7 +26,7 @@
             {% if late %}<li>{% blocktrans with late|floatformat:-2 as days %}<a href="{{ consultant_url }}#tab-timesheet">Timesheet</a> is <b>{{ days }} day(s)</b> late{% endblocktrans %}</li>{% endif %}
 
         </ul>
-        <br/><br/><br/><br/><div id="consultant_timesheet_status" style="height: 50px; width: 350px;"></div>
+        <div id="consultant_timesheet_status" style="height: 50px; width: 350px;"></div>
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -81,9 +81,9 @@ $(document).ready(function() {
 	<p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href="{% url 'people.views.consultant_home' consultant.manager.id %}">{{ consultant.manager.full_name }}</a>{% endifnotequal %}{% endif %}</p>
 	{% if staff %}
 	    <h3>{% trans "Staff" %}</h3>
-	    <ul>
+	    <ul class="row">
 	    {% for people in staff %}
-	        <li><a href="{% url 'people.views.consultant_home' people.id %}">{{ people.full_name }}</a></li>
+	        <li class="col-sm-6"><a href="{% url 'people.views.consultant_home' people.id %}">{{ people.full_name }}</a></li>
 	    {% endfor %}
 	    </ul>
 	{% endif %}
@@ -100,9 +100,9 @@ $(document).ready(function() {
 
     <div class="col-md-4 col-sm-6">
     <h3>{% trans "Business territory" %}</h3>
-    <ul>
+    <ul class="row">
     {% for company in business_territory %}
-        <li><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
+        <li class="col-sm-6"><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
     {% endfor %}
     </ul>
     </div>
@@ -111,16 +111,16 @@ $(document).ready(function() {
 
     <div class="col-md-4 col-sm-6">
 	<h3>{% trans "Clients" %}</h3>
-	<ul>
+	<ul class="row">
 	{% for company in companies %}
-	    <li><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
+	    <li class="col-sm-6"><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
 	{% endfor %}
 	</ul>
 	</div>
 
     <div class="col-md-4 col-sm-6">
 	<h3>{% trans "Current missions" %}</h3>
-	<ul>
+	<ul class="row">
 	{% for mission in missions %}
 	    <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></li>
 	{% endfor %}
@@ -130,7 +130,7 @@ $(document).ready(function() {
     <div class="col-md-4 col-sm-6">
 	{% if leads_as_responsible %}
 	<h3>{% trans "Current leads as responsible" %}</h3>
-	<ul>
+	<ul class="row">
 	{% for lead in leads_as_responsible %}
 	    <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
 	{% endfor %}

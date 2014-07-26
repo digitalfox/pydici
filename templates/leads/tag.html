@@ -10,9 +10,9 @@
 
 <h1>{% blocktrans %}Leads for tag <em>{{ tag }}</em>{% endblocktrans %}</h1>
 
-<ul style='float: left; width: 64em;'>
+<ul class="row">
 {% for lead in leads %}
-    <li style='float: left; width: 32em;'>
+    <li class="col-sm-6 col-md-4">
         <a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a>
     </li>
 {% endfor %}
