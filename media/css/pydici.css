@@ -291,12 +291,12 @@ div.ui-tooltip {
     white-space: nowrap;
 }
 
-/* highlight results */
+/* Style jquery autocomplete */
 .ui-autocomplete {
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1000;
+  z-index: 1100;
   float: left;
   display: none;
   min-width: 160px;
