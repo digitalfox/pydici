@@ -3,6 +3,7 @@
 	cursor: pointer;
 }
 .results_on_deck {
+	display:inline-block;
 	padding: 0.25em 0;
 }
 form .aligned .results_on_deck {

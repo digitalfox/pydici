@@ -18,9 +18,9 @@
            {% for form in formset.forms %}
                {% ifchanged form.initial.staffing_date %}
 	               {% if form.initial.staffing_date %}
-	                   <tr><th style="background-color:white" colspan=8>{{ form.initial.staffing_date|date:"F Y" }}</th></tr>
+	                   <tr><th style="backround-color:white" colspan=8>{{ form.initial.staffing_date|date:"F Y" }}</th></tr>
 	               {% else %}
-	                   <tr><th style="background-color:white" colspan=8>{% trans "New staffing:" %}</th></tr>
+	                   <tr><th style="backround-color:white" colspan=8>{% trans "New staffing:" %}</th></tr>
 	               {% endif %}
                {% endifchanged%}
                {% if form.non_field_errors %}
