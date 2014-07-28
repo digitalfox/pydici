@@ -11,15 +11,16 @@ import django_tables2 as tables
 from django_tables2.utils import A
 
 from leads.models import Lead
+from core.utils import TABLES2_HIDE_COL_MD
 
 
 class LeadsTable(tables.Table):
     client = tables.LinkColumn(verbose_name=_("Client"), viewname="crm.views.company_detail", args=[A("client.organisation.company.id")])
     name = tables.LinkColumn(verbose_name=_("Name"), viewname="leads.views.detail", args=[A("pk")])
     responsible = tables.LinkColumn(accessor="responsible", viewname="people.views.consultant_home", args=[A("responsible.id")])
-    staffing_list = tables.Column()
-    due_date = tables.TemplateColumn("""<span title="{{ record.due_date|date:"Ymd" }}">{{ record.due_date|default_if_none:"-" }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
-    start_date = tables.TemplateColumn("""<span title="{{ record.start_date|date:"Ymd" }}">{{ record.start_date|default_if_none:"-" }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
+    staffing_list = tables.Column(attrs=TABLES2_HIDE_COL_MD)
+    due_date = tables.TemplateColumn("""<span title="{{ record.due_date|date:"Ymd" }}">{{ record.due_date|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
+    start_date = tables.TemplateColumn("""<span title="{{ record.start_date|date:"Ymd" }}">{{ record.start_date|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
 
     class Meta:
         model = Lead

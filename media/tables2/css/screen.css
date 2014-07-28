@@ -7,13 +7,6 @@ table.pydici-tables2 {
 }
 
 
-table.pydici-tables2 a:link,
-table.pydici-tables2 a:visited,
-table.pydici-tables2 + ul.pagination > li > a {
-    text-decoration: none;
-}
-
-
 table.pydici-tables2 td,
 table.pydici-tables2 th {
     padding: 5px;

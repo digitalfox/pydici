@@ -29,6 +29,9 @@ import pydici.settings
 # Graph colors
 COLORS = ["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFE32C", "#AAFF86", "#D972FF", "#FF8D8F", "#6BE7FF", "#FF1616"]
 
+# Tables 2 css to hide columns on small devices
+TABLES2_HIDE_COL_MD = {"td": {"class": "hidden-xs hidden-sm hidden-md"}, "th": {"class": "hidden-xs hidden-sm hidden-md"}}
+
 
 def send_lead_mail(lead, request, fromAddr=pydici.settings.LEADS_MAIL_FROM, fromName=""):
     """ Send a mail with lead detailed description.

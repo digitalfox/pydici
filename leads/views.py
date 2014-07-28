@@ -23,7 +23,7 @@ from django.contrib.auth.decorators import permission_required
 
 from taggit.models import Tag
 from taggit_suggest.utils import suggest_tags
-from django_tables2   import RequestConfig
+from django_tables2 import RequestConfig
 
 from core.utils import send_lead_mail, sortedValues, COLORS
 from leads.models import Lead
