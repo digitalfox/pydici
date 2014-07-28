@@ -4,7 +4,7 @@
     <form action="{% url 'staffing.views.mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-staffing">
         {{ formset.management_form }}
         <div class="form-row">
-        <table>
+        <table class="table table-striped table-hover table-condensed">
            <tr>
                <th>{% trans "Consultant" %}</th>
                <th></th>
@@ -18,9 +18,9 @@
            {% for form in formset.forms %}
                {% ifchanged form.initial.staffing_date %}
                {% if form.initial.staffing_date %}
-                       <tr><th>{{ form.initial.staffing_date|date:"F Y" }}</th></tr>
+                       <tr><th style="backround-color:white" colspan=8>{{ form.initial.staffing_date|date:"F Y" }}</th></tr>
                    {% else %}
-                       <tr><th>{% trans "New staffing:" %}</th></tr>
+                       <tr><th style="backround-color:white" colspan=8>{% trans "New staffing:" %}</th></tr>
                    {% endif %}
                {% endifchanged%}
                {% if form.non_field_errors %}
