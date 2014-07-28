@@ -2,8 +2,6 @@
 {% load i18n %}
 {% load render_table from django_tables2 %}
 
-{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
-
 {% block extrajs %}
     {% include "core/_jqplot.html" %}
 {% endblock %}
@@ -12,25 +10,26 @@
 
 {% block content %}
 
-<div class="content-large">
-	<div id="graph_bar_jqp_content"></div>
+
+	<div id="graph_bar_jqp_content" class="row-fluid"></div>
 	<script type="text/javascript">
 	$('#graph_bar_jqp_content').load('{% url 'leads.views.graph_bar_jqp' %}')
 	</script>
 
-<br/>
 
+    <div class="row-fluid">
     {% if active_leads_table.data %}
     <h2>{% trans "All active leads" %}</h2>
         {% render_table active_leads_table %}
         {% with "active_leads_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
     {% endif %}
-
+    </div>
+    <div class="row-fluid">
     {% if recent_archived_leads_table.data %}
     <h2>{% trans "Recent won, lost or forgiven leads" %}</h2>
         {% render_table recent_archived_leads_table %}
         {% with "recent_archived_leads_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
     {% endif %}
-</div>
+    </div>
 
 {% endblock %}

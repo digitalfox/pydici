@@ -2,7 +2,7 @@
 {# One must include in its extrajs block core/_jqplot.html to load according js/css #}
 {% load i18n %}
 
-<div id="graph_bar_jqp" style="height:300px;width:1000px; "></div>
+<div id="graph_bar_jqp" class="col-lg-12" style="height:300px"></div>
 
 <script type="text/javascript">
 
@@ -25,7 +25,7 @@ data.forEach(function(series) {
 
 
 $.jqplot.config.enablePlugins = true;
-$.jqplot('graph_bar_jqp', data,
+var plot_graph_bar_jqp = $.jqplot('graph_bar_jqp', data,
 		{
          animate : false,
          stackSeries: true,
@@ -111,4 +111,9 @@ $.jqplot('graph_bar_jqp', data,
              tooltipLocation: 'se',
          },
 });
+
+$(window).bind('resize', function(event, ui) {
+    plot_graph_bar_jqp.replot( { resetAxes: true } );
+});
+
 </script>
