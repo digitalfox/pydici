@@ -12,7 +12,8 @@
 <a href="{% url 'staffing.views.holidays_planning' year=next_month|date:'Y' month=next_month|date:'m' %}"><img id="next-month" src="{{ MEDIA_URL }}pydici/fd.png" border=0 title="{% trans 'Next month' %}" /></a>
 </h2>
 
-<table style="text-align:center">
+<div class="table-responsive">
+<table class="table table-hover table-pydici-holiday">
         <tr><td></td>
         {% for day in days %}
             <td>{{ day|date:"j" }}</td>
@@ -32,4 +33,5 @@
         </tr>
         {% endfor %}
 </table>
+</div>
 {% endblock %}
