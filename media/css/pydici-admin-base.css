@@ -4,7 +4,8 @@
 
 body {
     margin: 0;
-    padding: 0;
+    padding-bottom: 60px;
+    padding-top: 60px;
 /*     font-size: 12px; */
 /*     font-family: "Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif; */
     color: #333;
@@ -675,7 +676,7 @@ a.deletelink:hover {
     float: left;
     color: white;
     padding: .1em 14px .1em 8px;
-    height: 14px;
+/*     height: 14px; */
     background: #999 url(../img/tool-right.gif) 100% 0 no-repeat;
 }
 
@@ -791,9 +792,9 @@ table#change-history tbody th {
 /*     color: white; */
 /* } */
 
-#header a:hover {
-    text-decoration: underline;
-}
+/* #header a:hover { */
+/*     text-decoration: underline; */
+/* } */
 
 #branding h1 {
     padding: 0 10px;

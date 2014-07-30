@@ -32,9 +32,10 @@
 
 {% block footer %}
         <script type="text/javascript">
-            // Disable other mission tabs
+            // Disable django admin tool-bar and breadcrumbs
             $(document).ready(function() {
                 $('#user-tools').hide();
+                $('.breadcrumbs').hide();
             });
         </script>
 {% endblock %}
