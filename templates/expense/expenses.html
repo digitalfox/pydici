@@ -9,37 +9,41 @@
 {% block title %}{% trans "Expense" %}{% endblock %}
 
 {% block content %}
-<div class="content-large">
 
-{% if modify_expense %}
-    <h1>{% trans "Modify the expense" %}</h1>
-{% else %}
-    <h1>{% trans "Add an expense" %}</h1>
-{% endif %}
+<div class="row-fluid">
+    {% if modify_expense %}
+        <h1>{% trans "Modify the expense" %}</h1>
+    {% else %}
+        <h1>{% trans "Add an expense" %}</h1>
+    {% endif %}
 
-   {% crispy form form.helper %}
-   
+     {% crispy form form.helper %}
+</div>
 
-<br/><hr/><br/>
+<br/><hr/>
 
-<div class="row">
+
 {% if user_expense_table.data %}
-<h1>{% trans "My expenses" %}</h1>
-    {% render_table user_expense_table %}
-    {% with "user_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
-<br/><hr/><br/>
+    <div class="row-fluid">
+        <h1>{% trans "My expenses" %}</h1>
+            {% render_table user_expense_table %}
+            {% with "user_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+    </div>
+    <br/><hr/>
 {% endif %}
-</div>
-<div class="row">
-{% if managed_expense_table.data %}
-    <h1>{% trans "Expenses I manage" %}</h1>
-    {% render_table managed_expense_table %}
-    {% with "managed_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
-{% endif %}
+
+
+<div class="row-fluid">
+    {% if managed_expense_table.data %}
+        <h1>{% trans "Expenses I manage" %}</h1>
+        {% render_table managed_expense_table %}
+        {% with "managed_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+    {% endif %}
 </div>
 
-<br/><hr/><br/>
-<a href="{% url 'expense.views.expenses_history' %}">{% trans "Expenses history" %}</a>
+<br/><hr/>
+<div class="row-fluid">
+    <button href="{% url 'expense.views.expenses_history' %}" class="btn btn-default">{% trans "Expenses history" %}</button>
 </div>
 
 {% endblock %}
