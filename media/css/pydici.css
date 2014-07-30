@@ -29,6 +29,21 @@ h2 { font-size:18px; }
 h3 { font-size:16px; }
 h4 { font-size:14px; }
 
+
+/* Add alias (kind of..) on alert-error to please django admin message std class */
+.alert-error {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+.alert-error hr {
+  border-top-color: #e4b9c0;
+}
+.alert-error .alert-link {
+  color: #843534;
+}
+
+
 /* Colors */
 
 /* ul.plainlist { margin-left:0 !important; } */
