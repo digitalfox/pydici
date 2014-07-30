@@ -26,7 +26,7 @@
 
 <br/><br/>
 <div class="row-fluid">
-<button href="{% url 'staffing.views.all_timesheet' year=month.year month=month.month %}/?csv" class="btn btn-default">{% trans "Export this timesheet in a spreadsheet" %}</button>
-<button href="{% url 'staffing.views.detailed_csv_timesheet' year=month.year month=month.month %}/?csv" class="btn btn-default">{% trans "Export detailed timesheet in a spreadsheet" %}</button>
+<a href="{% url 'staffing.views.all_timesheet' year=month.year month=month.month %}/?csv" class="btn btn-default">{% trans "Export this timesheet in a spreadsheet" %}</a>
+<a href="{% url 'staffing.views.detailed_csv_timesheet' year=month.year month=month.month %}/?csv" class="btn btn-default">{% trans "Export detailed timesheet in a spreadsheet" %}</a>
 </div>
 {% endblock %}
