@@ -9,11 +9,10 @@
     {% trans "All people timesheet for " %} {{ month|date:"F Y"}}
     <a href="{% url 'staffing.views.all_timesheet' year=next_date|date:'Y' month=next_date|date:'m' %}" title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a></h2>
 
-    <br/><br/><hr/>
 
-    <div class="timesheet">
+    <div class="row-fluid table-responsive">
     {% if charges %}
-	    <table>
+	    <table class="table table-striped table-hover table-pydici-extra-condensed">
 	    {% for charge in charges %}
 	        <tr>
 	        <td>{{ charge|join:"</td><td>" }}</td>
@@ -26,7 +25,8 @@
     </div>
 
 <br/><br/>
-
-<a href="{% url 'staffing.views.all_timesheet' year=month.year month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a><br/>
-<a href="{% url 'staffing.views.detailed_csv_timesheet' year=month.year month=month.month %}/?csv">{% trans "Export detailed timesheet in a spreadsheet" %}</a>
+<div class="row-fluid">
+<button href="{% url 'staffing.views.all_timesheet' year=month.year month=month.month %}/?csv" class="btn btn-default">{% trans "Export this timesheet in a spreadsheet" %}</button>
+<button href="{% url 'staffing.views.detailed_csv_timesheet' year=month.year month=month.month %}/?csv" class="btn btn-default">{% trans "Export detailed timesheet in a spreadsheet" %}</button>
+</div>
 {% endblock %}
