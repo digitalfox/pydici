@@ -67,9 +67,7 @@
         <th>{% trans "hol." %}<span title="{{ month|date:'Ym' }}"></span></th>
         <th>{% trans "avai." %}<span title="{{ month|date:'Ym' }}"></span></th>
     {% endfor %}
-    {% if not request.session.mobile %}
-        <th style="border-left:1px solid #C3C3C3;">{% trans "Clients" %}</th>
-    {% endif %}
+        <th style="border-left:1px solid #C3C3C3;" class="hidden-xs hidden-sm">{% trans "Clients" %}</th>
 </tr>
 <tr>
     <th>{% trans "Rates"%} (%)</th>
