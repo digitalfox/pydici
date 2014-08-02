@@ -2,11 +2,12 @@
 {# One must include in its extrajs block core/_jqplot.html to load according js/css #} {% load i18n %}
 
 {% if graph_data %}
-<div id="consultant_rate_graph_jqp" style="height: 300px; width: 900px;"></div>
+<div id="consultant_rate_graph_jqp" class="col-lg-12" style="height: 300px;"></div>
+
 <script type="text/javascript">
 
 $.jqplot.config.enablePlugins = true;
-$.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
+var plot_graph_consutlant_rate_jqp = $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
          animate : false,
          stackSeries: false,
          captureRightClick: true,
@@ -90,5 +91,11 @@ $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
              sizeAdjust: 7.5,
          },
 });
+
+$(window).bind('resize', function(event, ui) {
+    plot_graph_consutlant_rate_jqp.replot( { resetAxes: true } );
+});
+
+
 </script>
 {% endif %}
