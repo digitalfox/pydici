@@ -1,0 +1,6 @@
+{# Display django admin message with boostrap style #}
+
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+
