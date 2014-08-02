@@ -13,13 +13,10 @@ from datetime import timedelta, date, datetime
 import unicodedata
 from functools import wraps
 
-os.environ['MPLCONFIGDIR'] = '/tmp'  # Needed for matplotlib
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 from django.template.loader import get_template
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
-from django.http import HttpResponse
 from django.core.mail import EmailMultiAlternatives
 from django.core import urlresolvers
 from django.core.cache import cache
@@ -217,17 +214,6 @@ def monthWeekNumber(cDate):
         if tDate.isoweekday() == 1:
             nWeek += 1
     return nWeek
-
-
-def print_png(fig):
-    """Return http response with fig rendered as png
-    @param fig: fig to render
-    @type fig: matplotlib.Figure
-    @return: HttpResponse"""
-    canvas = FigureCanvas(fig)
-    response = HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
 
 
 def sortedValues(data):

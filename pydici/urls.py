@@ -136,7 +136,7 @@ pydici_patterns += patterns('billing.views',
     url(r'^billing/pre_billing/mine$', 'pre_billing', {"mine": True, }),
     url(r'^billing/pre_billing/(?P<year>\d+)/(?P<month>\d+)/$', 'pre_billing', {"mine": False, }),
     url(r'^billing/pre_billing/(?P<year>\d+)/(?P<month>\d+)/mine$', 'pre_billing', {"mine": True, }),
-    (r'^billing/graph/bar', 'graph_stat_bar'),
+    (r'^billing/graph/billing-jqp$', 'graph_billing_jqp'),
 )
 
 # Expense module

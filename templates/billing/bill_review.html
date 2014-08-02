@@ -1,6 +1,10 @@
 {% extends "core/pydici.html" %}
 {% load i18n %}
 
+{% block extrajs %}
+    {% include "core/_jqplot.html" %}
+{% endblock %}
+
 {% block title %}{% trans "Bills review" %}{% endblock %}
 
 {% block content %}
@@ -217,7 +221,14 @@
         {% with "recent_leads" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
     </div>
     {% endif %}
+    
+    <div class="row"></div>
+    <br/>
+    
+    <div id="graph_billing_jqp_content"></div>
+    <script type="text/javascript">
+    $('#graph_billing_jqp_content').load('{% url 'billing.views.graph_billing_jqp' %}')
+    </script>
 
-    <img src="{% url 'billing.views.graph_stat_bar' %}"/>
 
 {% endblock %}

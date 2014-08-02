@@ -32,7 +32,11 @@ $('#graph_bar_jqp').load('{% url 'leads.views.graph_bar_jqp' %}')
 <br/>
 
 <center><h1>{% trans "Billing review and done work" %}</h1></center>
-<img src="{% url 'billing.views.graph_stat_bar' %}"/>
+    <div id="graph_billing_jqp_content"></div>
+    <script type="text/javascript">
+    $('#graph_billing_jqp_content').load('{% url 'billing.views.graph_billing_jqp' %}')
+    </script>
+
 <br/>
 
 <center><h1>{% trans "Sales repartition per client" %}</h1></center>

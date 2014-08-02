@@ -26,7 +26,7 @@ and setup Apache.
 
 Prerequisite:
 - django (1.5.x is recommended)
-- matplotlib
+- see requiretements.txt
 
 Here's a sample Apache/mod_python config file. Pydici code live
 is /var/www/pydici and application is published as '/pydici/'.

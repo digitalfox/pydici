@@ -6,17 +6,15 @@ Pydici billing views. Http request are processed here.
 """
 
 from datetime import date, timedelta
-import itertools
 import mimetypes
 from collections import defaultdict
+import json
 
-from matplotlib.figure import Figure
 
 from django.shortcuts import render
 from django.core import urlresolvers
 from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import Sum
-from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_page
 
 from billing.models import ClientBill, SupplierBill
@@ -24,7 +22,7 @@ from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
 from crm.models import Company
-from core.utils import print_png, COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round
+from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round
 from core.decorator import pydici_non_public
 
 
@@ -193,28 +191,22 @@ def pre_billing(request, year=None, month=None, mine=False):
 
 @pydici_non_public
 @cache_page(60 * 10)
-def graph_stat_bar(request):
+def graph_billing_jqp(request):
     """Nice graph bar of incomming cash from bills
     @todo: per year, with start-end date"""
     billsData = defaultdict(list)  # Bill graph Data
     tsData = {}  # Timesheet done work graph data
     staffingData = {}  # Staffing forecasted work graph data
     wStaffingData = {}  # Weighted Staffing forecasted work graph data
-    plots = []  # List of plots - needed to add legend
     today = date.today()
     start_date = today - timedelta(24 * 30)  # Screen data about 24 month before today
     end_date = today + timedelta(6 * 30)  # No more than 6 month forecasted
-    colors = itertools.cycle(COLORS)
-
-    # Setting up graph
-    fig = Figure(figsize=(12, 8))
-    fig.set_facecolor("white")
-    ax = fig.add_subplot(111)
+    graph_data = []  # Data that will be returned to jqplot
 
     # Gathering billsData
     bills = ClientBill.objects.filter(creation_date__gt=start_date)
     if bills.count() == 0:
-        return print_png(fig)
+        return
 
     for bill in bills:
         # Using first day of each month as key date
@@ -248,47 +240,39 @@ def graph_stat_bar(request):
     # Set bottom of each graph. Starts if [0, 0, 0, ...]
     billKdates = billsData.keys()
     billKdates.sort()
-    bottom = [0] * len(billKdates)
+    isoBillKdates = [a.isoformat() for a in billKdates]  # List of date as string in ISO format
 
     # Draw a bar for each state
     for state in ClientBill.CLIENT_BILL_STATE:
-        ydata = [sum([i.amount / 1000 for i in x if i.state == state[0]]) for x in sortedValues(billsData)]
-        b = ax.bar(billKdates, ydata, bottom=bottom, align="center", width=15,
-               color=colors.next())
-        plots.append(b[0])
-        for i in range(len(ydata)):
-            bottom[i] += ydata[i]  # Update bottom
+        ydata = [sum([float(i.amount) / 1000 for i in x if i.state == state[0]]) for x in sortedValues(billsData)]
+        graph_data.append(zip(isoBillKdates, ydata))
 
     # Sort keys
     tsKdates = tsData.keys()
     tsKdates.sort()
+    isoTsKdates = [a.isoformat() for a in tsKdates]  # List of date as string in ISO format
     staffingKdates = staffingData.keys()
     staffingKdates.sort()
+    isoStaffingKdates = [a.isoformat() for a in staffingKdates]  # List of date as string in ISO format
     wStaffingKdates = staffingData.keys()
     wStaffingKdates.sort()
+    isoWstaffingKdates = [a.isoformat() for a in wStaffingKdates]  # List of date as string in ISO format
+
     # Sort values according to keys
     tsYData = sortedValues(tsData)
     staffingYData = sortedValues(staffingData)
     wStaffingYData = sortedValues(wStaffingData)
+
     # Draw done work
-    plots.append(ax.plot(tsKdates, tsYData, '-o', ms=10, lw=4, color="green"))
-    for kdate, ydata in tsData.items():
-        ax.text(kdate, ydata + 5, int(ydata))
+    graph_data.append(zip(isoTsKdates, tsYData))
+
     # Draw forecasted work
-    plots.append(ax.plot(staffingKdates, staffingYData, ':o', ms=10, lw=2, color="magenta"))
-    plots.append(ax.plot(wStaffingKdates, wStaffingYData, ':o', ms=10, lw=2, color="cyan"))
+    graph_data.append(zip(isoStaffingKdates, staffingYData))
+    graph_data.append(zip(isoWstaffingKdates, wStaffingYData))
 
-    # Add Legend and setup axes
-    kdates = list(set(tsKdates + staffingKdates))
-    ax.set_xticks(kdates)
-    ax.set_xticklabels([d.strftime("%b %y") for d in kdates])
-    if tsYData:
-        ax.set_ylim(ymax=max(int(max(bottom)), int(max(tsYData))) + 10)
-    ax.set_ylabel(u"k€")
-    ax.legend(plots, [i[1] for i in ClientBill.CLIENT_BILL_STATE] + [_(u"Done work"), _(u"Forecasted work"), _(u"Weighted forecasted work")],
-              bbox_to_anchor=(0., 1.02, 1., .102), loc=4,
-              ncol=4, borderaxespad=0.)
-    ax.grid(True)
-    fig.autofmt_xdate()
-
-    return print_png(fig)
+    return render(request, "billing/graph_billing_jqp.html",
+                  {"graph_data": json.dumps(graph_data),
+                   "series_label": [i[1] for i in ClientBill.CLIENT_BILL_STATE],
+                   "series_colors": COLORS,
+                   # "min_date": min_date,
+                   "user": request.user})
