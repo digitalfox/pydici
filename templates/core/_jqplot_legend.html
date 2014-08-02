@@ -1,0 +1,8 @@
+{# Define legend position according to screen width #}
+
+var showLegend = true;
+var legendPosition = 'outsideGrid';
+if ($(window).width() < 800) {
+    showLegend = false;
+    legendPosition = 'insideGrid'; // workaround a jqplot bug. Legend must be insidegrid when hidden.
+}

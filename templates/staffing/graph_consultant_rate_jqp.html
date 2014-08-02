@@ -6,6 +6,8 @@
 
 <script type="text/javascript">
 
+{% include "core/_jqplot_legend.html" %}
+
 $.jqplot.config.enablePlugins = true;
 var plot_graph_consutlant_rate_jqp = $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
          animate : false,
@@ -81,9 +83,9 @@ var plot_graph_consutlant_rate_jqp = $.jqplot('consultant_rate_graph_jqp',  {{ g
            },
          },
          legend: {
-             show:true,
+             show: showLegend,
              location: 'e',
-             placement: 'outsideGrid',
+             placement: legendPosition,
          },
          highlighter: {
              tooltipAxes: 'xy',

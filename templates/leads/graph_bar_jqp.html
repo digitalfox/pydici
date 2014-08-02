@@ -23,6 +23,7 @@ data.forEach(function(series) {
     });
 });
 
+{% include "core/_jqplot_legend.html" %}
 
 $.jqplot.config.enablePlugins = true;
 var plot_graph_bar_jqp = $.jqplot('graph_bar_jqp', data,
@@ -100,9 +101,9 @@ var plot_graph_bar_jqp = $.jqplot('graph_bar_jqp', data,
            }
          },
          legend: {
-        	 show:true,
+        	 show: showLegend,
         	  location: 'e',
-        	  placement: 'outsideGrid',
+        	  placement: legendPosition,
          },
          highlighter: {
              tooltipAxes: 'y',
