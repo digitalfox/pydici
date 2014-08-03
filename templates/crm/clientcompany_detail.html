@@ -11,185 +11,171 @@
 
 {% block content %}
 
-{% if request.session.mobile %}
-<div data-role="page" data-theme="c">
-    <div data-role="header">
-        <h1>{{ company }}</h1>
-    </div>
-    <div data-role="content">
-{% else %}
-<div id="content-main">
 <h1><a href="{% url 'admin:crm_company_change' company.id %}?return_to={{ request.get_full_path }}" class='changelink'>{{ company }}</a></h1>
 
 {% with "company-tabs" as tabs %}
     {% include "core/_init_tabs.html" %}
 {% endwith %}
 
-<div id="company-tabs">
-    <ul>
-        <li><a href="#tab-leads">{% trans "Leads" %}</a></li>
-        <li><a href="#tab-consultants">{% trans "Consultants" %}</a></li>
-        <li><a href="#tab-contacts">{% trans "Client contacts" %}</a></li>
-        <li><a href="#tab-rates">{% trans "Rates" %}</a></li>
-        <li><a href="#tab-billing">{% trans "Billing" %}</a></li>
-        <li><a href="#tab-all-companies">{% trans "All companies list" %}</a></li>
+<div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="company-tabs">
+        <li class="active"><a data-toggle="tab" href="#tab-leads"><span class="glyphicon glyphicon-home"> {% trans "Leads" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"> {% trans "Consultants" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-contacts"><span class="glyphicon glyphicon-envelope"> {% trans "Client contacts" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-rates"><span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Rates" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-all-companies"><span class="glyphicon glyphicon-list"></span> {% trans "All companies list" %}</a></li>
     </ul>
-
-{% endif %}
-
-<div id="tab-leads">
-
-<div id="graph_company_business_activity_jqp_content"></div>
-<script type="text/javascript">
-$(document).ready(function() {
-    $('#graph_company_business_activity_jqp_content').load('{% url 'graph_company_business_activity' company.id %}');
-});
-</script>
-
-<h2>{% trans "Sales with this client: "%} {{ company.sales|floatformat:-1 }} k€</h2>
-
-<h2>{% trans "Current active missions" %}</h2>
-<ul>
-{% for clientorganisation in company.clientorganisation_set.all %}
-    {% for client in clientorganisation.client_set.all %}
-        <li>{{ client }} <ul>
-        {% for mission in client.getActiveMissions %}
-            <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission.short_name }}</a></li>
-        {% endfor %}
-        </ul></li>
-    {% endfor %}
-{% endfor %}
-</ul>
-<h2>{% trans "Leads" %}</h2>
-<ul>
-{% for lead in leads %}
-    {% ifchanged lead.client %}
-        {% if request.session.mobile %}</ul><ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d"><li data-role="list-divider">{% else %}<h2>{% endif %}
-        {% if lead.client.contact %}
-            {{ lead.client.organisation }} (
-            <a rel=external href="{% url 'admin:crm_contact_change' lead.client.contact.id %}?return_to={{ request.get_full_path }}#tab-leads">{{ lead.client.contact }}</a>)
-        {% else %}
-            {{ lead.client }}
-        {% endif %}
-        {% if request.session.mobile %}</li>{% else %}</h2>{% endif %}
-    {% endifchanged %}
-
-    <li><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
-{% endfor %}
-</ul>
 </div>
 
-<div id="tab-consultants">
-{% if consultants %}
-    <h2>{% trans "Business owner for this company:" %}</h2>
-        <ul data-role="listview" data-inset="true" data-theme="c">
-            <li>{% if company.businessOwner %}<a href="{% url 'people.views.consultant_home' company.businessOwner.id %}">{{ company.businessOwner.full_name }}</a>
-                {% else %} <a href="{% url 'admin:crm_company_change' company.id %}?return_to={{ request.get_full_path }}#tab-consultants">{% trans "To be defined" %}</a>
-                {% endif %}</li>
-        </ul>
-    <h2>{% trans "Consultants that work for this company:" %}</h2>
-        <ul data-role="listview" data-inset="true" data-theme="c">
-        {% for consultant in consultants %}
-            <li><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant.full_name }}</a></li>
+<div class="tab-content">
+    <div id="tab-leads" class="tab-pane active fade in">
+        <div id="graph_company_business_activity_jqp_content"></div>
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $('#graph_company_business_activity_jqp_content').load('{% url 'graph_company_business_activity' company.id %}');
+        });
+        </script>
+
+        <h2>{% trans "Sales with this client: "%} {{ company.sales|floatformat:-1 }} k€</h2>
+
+        <h2>{% trans "Current active missions" %}</h2>
+        <ul>
+        {% for clientorganisation in company.clientorganisation_set.all %}
+            {% for client in clientorganisation.client_set.all %}
+                <li>{{ client }} <ul>
+                {% for mission in client.getActiveMissions %}
+                    <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission.short_name }}</a></li>
+                {% endfor %}
+                </ul></li>
+            {% endfor %}
         {% endfor %}
         </ul>
-{% endif %}
-</div>
-
-{% if not request.session.mobile %}
-<div id="tab-contacts">
-<br/>
-<h2>{% trans "Business contacts" %}</h2>
-{% with business_contacts as contacts %}
-{% with "business_contacts_table" as table_id %}
-     {% include "crm/_contact_list.html" %}
-     {% include "core/_datatables.html" %}
-{% endwith %}
-{% endwith %}
-<br/><br/>
-<h2>{% trans "Mission contacts" %}</h2>
-{% with mission_contacts as contacts %}
-{% with "mission_contacts_table" as table_id %}
-     {% include "crm/_contact_list.html" %}
-     {% include "core/_datatables.html" %}
-{% endwith %}
-{% endwith %}
-
-<br/><br/>
-<h2>{% trans "Administrative contacts" %}</h2>
-
-<table class="pydici-tables2" id="admin_contacts_table">
-    <thead>
-    <tr>
-        <th>{% trans "Name" %}</th>
-        <th>{% trans "Company" %}</th>
-        <th>{% trans "Function" %}</th>
-        <th>{% trans "Email" %}</th>
-        <th>{% trans "Phone" %}</th>
-        <th>{% trans "Mobile phone" %}</th>
-        <th>{% trans "Fax" %}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for admincontact in administrative_contacts %}
-        <tr>
-        {% if admincontact.contact %}
-           <td><a rel=external href="{% url 'admin:crm_contact_change' admincontact.contact.id %}?return_to={{ request.get_full_path }}#tab-contacts">{{ admincontact.contact.name }}</a></td>
-        {% else %}
-            <td></td>
-        {% endif %}
-           <td>{{ admincontact.company }}</td>
-           <td>{{ admincontact.function }}</td>
-           <td>{{ admincontact.email|urlize }}</td>
-           <td>{{ admincontact.phone }}</td>
-           <td>{{ admincontact.contact.mobile_phone }}</td>
-           <td>{{ admincontact.fax }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% with "admin_contacts_table" as table_id %}
-     {% include "core/_datatables.html" %}
-{% endwith %}
-<br/><i><a href="{% url 'admin:crm_administrativecontact_add' %}?company={{ company.id  }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
-</div>
-{% endif %}
-
-
-<div id="tab-rates">
-<h2>{% trans "Used rates for this company" %}</h2>
-<ul>
-{% for client in clients %}
-<li>{{ client.organisation.name }} {% if client.contact %}({{ client.contact }}){% endif %}<ul>
-    {% for profil, rate in client.getFinancialConditions %}
-        <li>{{ profil }} : {{ rate }} €</li>
-    {% empty %}
-    {% trans "No rate defined" %}
-    {% endfor %}
-    </ul></li>
-{% endfor %}
-</ul>
-</div>
-
-<div id="tab-billing">
-<ul>
-{% for lead in leads %}
-    {% ifequal lead.state "WON" %}
-        <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a></h2>
-            {% include "billing/_lead_billing.html" %}
-            <br/>
-    {% endifequal %}
-{% endfor %}
-</ul>
-</div>
-
-
-
-{% if not request.session.mobile %}
-    <div id="tab-all-companies">
-    {% include "crm/_clientcompany_list.html" %}
+        <h2>{% trans "Leads" %}</h2>
+        <ul>
+        {% for lead in leads %}
+            {% ifchanged lead.client %}
+                {% if request.session.mobile %}</ul><ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d"><li data-role="list-divider">{% else %}<h2>{% endif %}
+                {% if lead.client.contact %}
+                    {{ lead.client.organisation }} (
+                    <a rel=external href="{% url 'admin:crm_contact_change' lead.client.contact.id %}?return_to={{ request.get_full_path }}#tab-leads">{{ lead.client.contact }}</a>)
+                {% else %}
+                    {{ lead.client }}
+                {% endif %}
+                {% if request.session.mobile %}</li>{% else %}</h2>{% endif %}
+            {% endifchanged %}
+        
+            <li><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
+        {% endfor %}
+        </ul>
     </div>
-    </div> <!-- End of tabs div -->
-{% endif %}
-</div>
+    
+    <div id="tab-consultants" class="tab-pane fade">
+    {% if consultants %}
+        <h2>{% trans "Business owner for this company:" %}</h2>
+            <ul data-role="listview" data-inset="true" data-theme="c">
+                <li>{% if company.businessOwner %}<a href="{% url 'people.views.consultant_home' company.businessOwner.id %}">{{ company.businessOwner.full_name }}</a>
+                    {% else %} <a href="{% url 'admin:crm_company_change' company.id %}?return_to={{ request.get_full_path }}#tab-consultants">{% trans "To be defined" %}</a>
+                    {% endif %}</li>
+            </ul>
+        <h2>{% trans "Consultants that work for this company:" %}</h2>
+            <ul data-role="listview" data-inset="true" data-theme="c">
+            {% for consultant in consultants %}
+                <li><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant.full_name }}</a></li>
+            {% endfor %}
+            </ul>
+    {% endif %}
+    </div>
+
+    <div id="tab-contacts" class="tab-pane fade">
+        <br/>
+        <h2>{% trans "Business contacts" %}</h2>
+        {% with business_contacts as contacts %}
+        {% with "business_contacts_table" as table_id %}
+             {% include "crm/_contact_list.html" %}
+             {% include "core/_datatables.html" %}
+        {% endwith %}
+        {% endwith %}
+        <br/><br/>
+        <h2>{% trans "Mission contacts" %}</h2>
+        {% with mission_contacts as contacts %}
+        {% with "mission_contacts_table" as table_id %}
+             {% include "crm/_contact_list.html" %}
+             {% include "core/_datatables.html" %}
+        {% endwith %}
+        {% endwith %}
+        
+        <br/><br/>
+        <h2>{% trans "Administrative contacts" %}</h2>
+        
+        <table class="pydici-tables2" id="admin_contacts_table">
+            <thead>
+            <tr>
+                <th>{% trans "Name" %}</th>
+                <th>{% trans "Company" %}</th>
+                <th>{% trans "Function" %}</th>
+                <th>{% trans "Email" %}</th>
+                <th>{% trans "Phone" %}</th>
+                <th>{% trans "Mobile phone" %}</th>
+                <th>{% trans "Fax" %}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for admincontact in administrative_contacts %}
+                <tr>
+                {% if admincontact.contact %}
+                   <td><a rel=external href="{% url 'admin:crm_contact_change' admincontact.contact.id %}?return_to={{ request.get_full_path }}#tab-contacts">{{ admincontact.contact.name }}</a></td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                   <td>{{ admincontact.company }}</td>
+                   <td>{{ admincontact.function }}</td>
+                   <td>{{ admincontact.email|urlize }}</td>
+                   <td>{{ admincontact.phone }}</td>
+                   <td>{{ admincontact.contact.mobile_phone }}</td>
+                   <td>{{ admincontact.fax }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% with "admin_contacts_table" as table_id %}
+             {% include "core/_datatables.html" %}
+        {% endwith %}
+        <br/><i><a href="{% url 'admin:crm_administrativecontact_add' %}?company={{ company.id  }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
+    </div>
+
+    <div id="tab-rates" class="tab-pane fade">
+        <h2>{% trans "Used rates for this company" %}</h2>
+        <ul>
+        {% for client in clients %}
+        <li>{{ client.organisation.name }} {% if client.contact %}({{ client.contact }}){% endif %}<ul>
+            {% for profil, rate in client.getFinancialConditions %}
+                <li>{{ profil }} : {{ rate }} €</li>
+            {% empty %}
+            {% trans "No rate defined" %}
+            {% endfor %}
+            </ul></li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <div id="tab-billing" class="tab-pane fade">
+        <ul>
+        {% for lead in leads %}
+            {% ifequal lead.state "WON" %}
+                <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a></h2>
+                    {% include "billing/_lead_billing.html" %}
+                    <br/>
+            {% endifequal %}
+        {% endfor %}
+        </ul>
+    </div>
+
+    <div id="tab-all-companies" class="tab-pane fade">
+        {% include "crm/_clientcompany_list.html" %}
+    </div>
+
+</div> <!-- End of tabs div -->
+
 {% endblock %}
