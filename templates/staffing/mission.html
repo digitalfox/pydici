@@ -70,20 +70,36 @@
              {% if not mission.billing_mode %}<div class="alert alert-warning col-md-6">{% trans "Please defined billing mode below" %}</div>{% endif %}
              {% if not mission.defined_rates %}<div class="alert alert-warning col-md-6">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
          
-            <div class="row"></div>
-             <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
-             <h3>{% trans "Subsidiary:" %} {{ mission.subsidiary }}</h3>
-             <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
-             {% if mission.lead %}
-                {% if mission.lead.client_deal_id %}<h3>{% trans "Client lead id: " %} {{ mission.lead.client_deal_id }}</h3>{% endif %}
-                <h3>{% trans "Billing mode: " %} <div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></h3>
-                <h3>{% trans "Probability:" %} <div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_probability_display }}</div></h3>
-                <h3>{% trans "Lead of this mission:" %} <a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></h3>
-    	        {% if mission.lead.description %}
-    	            <div class='lead_description'>{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
-    	        {% endif %}
+            <table class="table table-hover table-striped table-condensed">
+                <tr>
+                    <th>{% trans "Type" %}</th><td>{{ mission.get_nature_display }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans "Subsidiary" %}</th><td>{{ mission.subsidiary }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans "Mission id" %}</th><td>{{ mission.mission_id }}</td>
+                </tr>
+                {% if mission.lead %}
+                    {% if mission.lead.client_deal_id %}
+                        <tr>
+                            <th>{% trans "Client lead id" %}</th><td>{{ mission.lead.client_deal_id }}</td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th>{% trans "Billing mode" %}</th><td><div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></td>
+                    </tr>
+                    <tr>
+                        <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_probability_display }}</div></td>
+                    </tr>
+                    <tr>
+                        <th>{% trans "Lead of this mission" %}</th><td><a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></td>
+                    </tr>
              {% endif %}
-         
+            </table>
+            {% if mission.lead.description %}
+                    <div class='jumbotron'>{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }}</div>
+            {% endif %}
     </div>
 
     <div id="tab-consultants" class="tab-pane fade">
