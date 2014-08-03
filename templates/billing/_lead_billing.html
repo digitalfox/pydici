@@ -2,11 +2,11 @@
 {# Context/Argument: lead object #}
 
 {% load i18n %}
-<div class="timesheet">
+
     <h3>{% trans "Clients bills" %}</h3>
     {% with lead.clientbill_set.all as client_bills %}
     {% if client_bills %}
-    <table>
+    <table class="table table-hover table-striped table-condensed">
             <th>{% trans "Bill id" %}</th>
             <th>{% trans "State" %}</th>
             <th>{% trans "Amount (€ excl tax)" %}</th>
@@ -22,7 +22,7 @@
                     <td>{{ bill.creation_date }}</td>
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date }}</td>
-                    <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
+                    <td><a href='{{ bill.bill_file_url }}'><span class="glyphicon glyphicon-file"></span></a></td>
                 </tr>
             {% endfor %}
     </table>
@@ -37,7 +37,7 @@
     <h3>{% trans "Suppliers bills" %}</h3>
     {% with lead.supplierbill_set.all as supplier_bills %}
     {% if supplier_bills %}
-    <table>
+    <table class="table table-hover table-striped table-condensed">
             <th>{% trans "Bill id" %}</th>
             <th>{% trans "Supplier" %}</th>
             <th>{% trans "Supplier Bill id" %}</th>
@@ -57,7 +57,7 @@
                     <td>{{ bill.creation_date }}</td>
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date }}</td>
-                    <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
+                    <td><a href='{{ bill.bill_file_url }}'><span class="glyphicon glyphicon-file"></span></a></td>
                 </tr>
             {% endfor %}
     </table>
@@ -68,4 +68,3 @@
         <i><a href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a></i>
     {% endif %}
     {% endwith %}
-</div>
