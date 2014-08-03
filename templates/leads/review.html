@@ -11,25 +11,30 @@
 {% block content %}
 
 
-	<div id="graph_bar_jqp_content" class="row-fluid"></div>
+	<div id="graph_bar_jqp_content" class="col-lg-12"></div>
 	<script type="text/javascript">
 	$('#graph_bar_jqp_content').load('{% url 'leads.views.graph_bar_jqp' %}')
 	</script>
 
 
-    <div class="row-fluid">
-    {% if active_leads_table.data %}
-    <h2>{% trans "All active leads" %}</h2>
-        {% render_table active_leads_table %}
-        {% with "active_leads_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
-    {% endif %}
+    <div class="row">
+        <div class="col-lg-12">
+        {% if active_leads_table.data %}
+        <h2>{% trans "All active leads" %}</h2>
+            {% render_table active_leads_table %}
+            {% with "active_leads_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+        {% endif %}
+        </div>
     </div>
-    <div class="row-fluid">
-    {% if recent_archived_leads_table.data %}
-    <h2>{% trans "Recent won, lost or forgiven leads" %}</h2>
-        {% render_table recent_archived_leads_table %}
-        {% with "recent_archived_leads_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
-    {% endif %}
+    
+    <div class="row">
+        <div class="col-lg-12">
+            {% if recent_archived_leads_table.data %}
+            <h2>{% trans "Recent won, lost or forgiven leads" %}</h2>
+                {% render_table recent_archived_leads_table %}
+                {% with "recent_archived_leads_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+            {% endif %}
+        </div>
     </div>
 
 {% endblock %}

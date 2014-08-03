@@ -47,7 +47,7 @@
 
 <div class="tab-content">
     <div id="tab-home" class="tab-pane active fade in">
-        <div class="row-fluid">
+        
             <br/>
             {% if mission.active %}
                    {% if mission.no_more_staffing_since %}
@@ -63,13 +63,14 @@
              {% else %}
                     <div class="alert alert-info">{% trans "This mission is archived" %}</div>
              {% endif %}
-         </div>
-         <div class="row-fluid">
-             {% if mission.lead %}{% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}{% endif %}
+        
+         
+         {% if mission.lead %}{% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}{% endif %}
+         
              {% if not mission.billing_mode %}<div class="alert alert-warning col-md-6">{% trans "Please defined billing mode below" %}</div>{% endif %}
              {% if not mission.defined_rates %}<div class="alert alert-warning col-md-6">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
-         </div>
-         <div class="row-fluid">
+         
+            <div class="row"></div>
              <h3>{% trans "Type:" %} {{ mission.get_nature_display }}</h3>
              <h3>{% trans "Subsidiary:" %} {{ mission.subsidiary }}</h3>
              <h3>{% trans "Mission id: " %} {{ mission.mission_id }}</h3>
@@ -82,7 +83,7 @@
     	            <div class='lead_description'>{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }} </div>
     	        {% endif %}
              {% endif %}
-         </div>
+         
     </div>
 
     <div id="tab-consultants" class="tab-pane fade">

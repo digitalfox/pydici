@@ -10,7 +10,7 @@
 
 {% block content %}
 
-<div class="row-fluid">
+
     {% if modify_expense %}
         <h1>{% trans "Modify the expense" %}</h1>
     {% else %}
@@ -18,32 +18,36 @@
     {% endif %}
 
      {% crispy form form.helper %}
-</div>
+
 
 <br/><hr/>
 
 
 {% if user_expense_table.data %}
-    <div class="row-fluid">
-        <h1>{% trans "My expenses" %}</h1>
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>{% trans "My expenses" %}</h1>
             {% render_table user_expense_table %}
             {% with "user_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+        </div>
     </div>
     <br/><hr/>
 {% endif %}
 
 
-<div class="row-fluid">
+<div class="row">
+    <div class="col-lg-12">
     {% if managed_expense_table.data %}
         <h1>{% trans "Expenses I manage" %}</h1>
         {% render_table managed_expense_table %}
         {% with "managed_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
     {% endif %}
+    </div>
 </div>
 
 <br/><hr/>
-<div class="row-fluid">
+
     <a href="{% url 'expense.views.expenses_history' %}" class="btn btn-default">{% trans "Expenses history" %}</a>
-</div>
+
 
 {% endblock %}
