@@ -56,14 +56,14 @@
         <ul>
         {% for lead in leads %}
             {% ifchanged lead.client %}
-                {% if request.session.mobile %}</ul><ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d"><li data-role="list-divider">{% else %}<h2>{% endif %}
-                {% if lead.client.contact %}
-                    {{ lead.client.organisation }} (
-                    <a rel=external href="{% url 'admin:crm_contact_change' lead.client.contact.id %}?return_to={{ request.get_full_path }}#tab-leads">{{ lead.client.contact }}</a>)
-                {% else %}
-                    {{ lead.client }}
-                {% endif %}
-                {% if request.session.mobile %}</li>{% else %}</h2>{% endif %}
+                <h2>
+                    {% if lead.client.contact %}
+                        {{ lead.client.organisation }} (
+                        <a rel=external href="{% url 'admin:crm_contact_change' lead.client.contact.id %}?return_to={{ request.get_full_path }}#tab-leads">{{ lead.client.contact }}</a>)
+                    {% else %}
+                        {{ lead.client }}
+                    {% endif %}
+                </h2>
             {% endifchanged %}
         
             <li><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>

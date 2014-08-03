@@ -185,19 +185,13 @@ def pdc_review(request, year=None, month=None):
     @param year: start date year. None means current year
     @param year: start date year. None means current month"""
 
-    # TODO: factorise this code in a decorator
-    mobile = request.session.get("mobile", False)
-
     # Don't display this page if no productive consultant are defined
     people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False).count()
     if people == 0:
         # TODO: make this message nice
         return HttpResponse(_("No productive consultant defined !"))
 
-    if mobile:
-        n_month = 1
-    else:
-        n_month = 3
+    n_month = 3  # Default number of month to display
 
     if "n_month" in request.GET:
         try:
@@ -296,12 +290,11 @@ def pdc_review(request, year=None, month=None):
             total[month]["available"] += available
             total[month]["total"] += available_month[month]
         # Add client synthesis to staffing dict
-        if not mobile:
-            company = set([m.lead.client.organisation.company for m in list(missions)])
-            client_list = ", ".join(["<a href='%s'>%s</a>" %
-                                    (urlresolvers.reverse("crm.views.company_detail", args=[c.id]), unicode(c)) for c in company])
-            client_list = "<div class='hidden-xs hidden-sm'>%s</div>" % client_list
-            staffing[consultant].append([client_list])
+        company = set([m.lead.client.organisation.company for m in list(missions)])
+        client_list = ", ".join(["<a href='%s'>%s</a>" %
+                                (urlresolvers.reverse("crm.views.company_detail", args=[c.id]), unicode(c)) for c in company])
+        client_list = "<div class='hidden-xs hidden-sm'>%s</div>" % client_list
+        staffing[consultant].append([client_list])
 
     # Compute indicator rates
     for month in months:
@@ -379,7 +372,6 @@ def deactivate_mission(request, mission_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
     """Consultant timesheet"""
-    mobile = request.session.get("mobile", False)
 
     # We use the first day to represent month
     if year and month:
@@ -389,9 +381,6 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
 
     if week:
         week = int(week)
-    elif mobile:
-        # Force week display
-        week = monthWeekNumber(date.today())
 
     forecastTotal = {}  # forecast charge (value) per mission (key is mission.id)
     missions = set()  # Set of all consultant missions for this month
@@ -482,13 +471,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
     if week:
         warning = warning[days[0].day - 1:days[-1].day]
 
-    # Select proper template if user is mobile
-    if mobile:
-        template = "staffing/m.consultant_timesheet.html"
-    else:
-        template = "staffing/consultant_timesheet.html"
-
-    return render(request, template,
+    return render(request, "staffing/consultant_timesheet.html",
                   {"consultant": consultant,
                    "form": form,
                    "read_only": readOnly,
