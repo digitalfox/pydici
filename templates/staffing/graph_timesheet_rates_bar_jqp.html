@@ -2,13 +2,13 @@
 {# One must include in its extrajs block core/_jqplot.html to load according js/css #} {% load i18n %}
 
 {% if graph_data %}
-<div id="timesheet_profile_rates_graph_jqp" class="col-lg-12" style="height:300px;"></div>
+<div id="timesheet_profile_rates_graph_jqp" style="height:300px;"></div>
 <script type="text/javascript">
 
 {% include "core/_jqplot_legend.html" %}
 
 $.jqplot.config.enablePlugins = true;
-var timesheet_profile_rates_graph_jqp = $.jqplot('timesheet_profile_rates_graph_jqp',  {{ graph_data|safe }}, {
+var plot_timesheet_profile_rates_graph_jqp = $.jqplot('timesheet_profile_rates_graph_jqp',  {{ graph_data|safe }}, {
          animate : false,
          stackSeries: true,
          captureRightClick: true,
@@ -68,7 +68,7 @@ var timesheet_profile_rates_graph_jqp = $.jqplot('timesheet_profile_rates_graph_
          },
 });
 
-{% with "timesheet_profile_rates_graph_jqp" as plot %}
+{% with "plot_timesheet_profile_rates_graph_jqp" as plot %}
     {% include "core/_jqplot_resize.html" %}
 {% endwith %}
 
