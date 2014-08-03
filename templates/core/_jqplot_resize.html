@@ -1,0 +1,6 @@
+{# js fragement that resize a jqplot graph named {{ plot }} #}
+
+
+$(window).bind('resize', function(event, ui) {
+    {{ plot }}.replot( { resetAxes: true } );
+});

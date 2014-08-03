@@ -25,6 +25,7 @@ data.forEach(function(series) {
 
 {% include "core/_jqplot_legend.html" %}
 
+
 $.jqplot.config.enablePlugins = true;
 var plot_graph_bar_jqp = $.jqplot('graph_bar_jqp', data,
 		{
@@ -113,8 +114,8 @@ var plot_graph_bar_jqp = $.jqplot('graph_bar_jqp', data,
          },
 });
 
-$(window).bind('resize', function(event, ui) {
-    plot_graph_bar_jqp.replot( { resetAxes: true } );
-});
+{% with "plot_graph_bar_jqp" as plot %}
+    {% include "core/_jqplot_resize.html" %}
+{% endwith %}
 
 </script>

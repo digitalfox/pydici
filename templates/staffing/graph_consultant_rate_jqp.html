@@ -9,7 +9,7 @@
 {% include "core/_jqplot_legend.html" %}
 
 $.jqplot.config.enablePlugins = true;
-var plot_graph_consutlant_rate_jqp = $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
+var plot_graph_consultant_rate_jqp = $.jqplot('consultant_rate_graph_jqp',  {{ graph_data|safe }}, {
          animate : false,
          stackSeries: false,
          captureRightClick: true,
@@ -94,9 +94,9 @@ var plot_graph_consutlant_rate_jqp = $.jqplot('consultant_rate_graph_jqp',  {{ g
          },
 });
 
-$(window).bind('resize', function(event, ui) {
-    plot_graph_consutlant_rate_jqp.replot( { resetAxes: true } );
-});
+{% with " plot_graph_consultant_rate_jqp" as plot %}
+    {% include "core/_jqplot_resize.html" %}
+{% endwith %}
 
 
 </script>

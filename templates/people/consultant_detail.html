@@ -26,12 +26,12 @@
             {% if late %}<li>{% blocktrans with late|floatformat:-2 as days %}<a href="{{ consultant_url }}#tab-timesheet">Timesheet</a> is <b>{{ days }} day(s)</b> late{% endblocktrans %}</li>{% endif %}
 
         </ul>
-        <div id="consultant_timesheet_status" style="height: 50px; width: 350px;"></div>
+        <div id="consultant_timesheet_status" style="height: 50px;"></div>
 
 <script type="text/javascript">
 $(document).ready(function() {
     $.jqplot.config.enablePlugins = true;
-    var plot_consultant_timesheet_status =$.jqplot('consultant_timesheet_status',  [[{{ done_days|safe }},0], [{{ late|safe }},0] ,[{{ to_be_done|safe }},0]] , {
+    var plot_consultant_timesheet_status = $.jqplot('consultant_timesheet_status',  [[{{ done_days|safe }},0], [{{ late|safe }},0] ,[{{ to_be_done|safe }},0]] , {
          animate : false,
          stackSeries: true,
          title: '{% trans "Timesheet" %}',
@@ -73,7 +73,13 @@ $(document).ready(function() {
            },
      });
 
+    {% with "plot_consultant_timesheet_status" as plot %}
+        {% include "core/_jqplot_resize.html" %}
+    {% endwith %}
+
 });
+
+
 </script>
     </div>
 
