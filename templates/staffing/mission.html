@@ -88,14 +88,19 @@
 
     <div id="tab-consultants" class="tab-pane fade">
 	    <h2>{% trans "Consultants currently implicated in this mission" %}</h2>
-	    <div class="timesheet">
-	    <table>
-	    <tr><th>{% trans "Consultant" %}</th><th>{% trans "Daily rate (€)" %}</th><th></th><th>{% trans "Objective rate (€)" %}</th></tr>
+	    <div class="col-lg-6 col-md-8 col-sm-12">
+	    <table class="table table-hover table-striped table-condensed">
+	    <tr>
+            <th>{% trans "Consultant" %}</th>
+            <th style="text-align:right;">{% trans "Daily rate (€)" %}</th>
+            <th style="text-align:right;">{% trans "Buy rate (€)" %}</th>
+            <th style="text-align:right;">{% trans "Objective rate (€)" %}</th>
+        </tr>
 	    {% for consultant, rate in mission.consultant_rates.items %}
-	        <tr {%cycle 'class="row1"' 'class="row2"' %}>
+	        <tr>
 	            <td><a href="{% url 'people.views.consultant_home' consultant.id %}", title='{{ consultant }}'>{{ consultant }}</a></td>
 	            <td align="right"><div id="sold-{{ mission.id }}-{{ consultant.id }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
-	            <td align="right">{% if consultant.subcontractor %}(<div id="bought-{{ mission.id }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>){% endif %}</td>
+	            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>{% endif %}</td>
                 <td align="right">{{ consultant.getRateObjective.daily_rate }}</td>
 	        </tr>
 	    {% endfor %}
