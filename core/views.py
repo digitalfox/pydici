@@ -49,6 +49,7 @@ def search(request):
 
     words = request.GET.get("q", "")
     words = words.split()
+    consultants = companies = contacts = leads = missions = bills = None
 
     if words:
         # Consultant

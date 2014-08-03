@@ -111,9 +111,6 @@ PYDICI_PAGES = ("/",
                 "/admin/leads/lead/",
                 )
 
-PYDICI_MOBILE_PAGES = ("/mobile",
-                      )
-
 
 class SimpleTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
@@ -126,22 +123,13 @@ class SimpleTest(TestCase):
             self.failUnlessEqual(response.status_code, 200,
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
 
-    def test_basic_mobile_page(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        for page in PYDICI_MOBILE_PAGES + PYDICI_PAGES[1:]:  # Remove first URL from PYDICI_PAGES (/) that disable mobile mode
-            response = self.client.get(PREFIX + page)
-            self.failUnlessEqual(response.status_code, 200,
-                                 "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
 
     def test_page_with_args(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        searchParams = {"lead": "on", "mission": "on", "company": "on", "contact": "on",
-                        "consultant": "on", "bill": "on"}
         for page, args in  (("/search", {"q": "a"}),
                             ("/search", {"q": "sre"}),
                             ("/search", {"q": "a+e"})
                             ):
-            args.update(searchParams)
             response = self.client.get(PREFIX + page, args)
             self.failUnlessEqual(response.status_code, 200,
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))

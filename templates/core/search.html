@@ -18,6 +18,8 @@
     {% else %}
         <h1>{% blocktrans with query|escape as value %}No results for <em>{{ value }}</em>{% endblocktrans %}</h1>
     {% endif %}
+{% else %}
+    <h1>{% trans "Type at least one word to search for something !" %}</h1>
 {% endif %}
     
 {% if consultants %}
