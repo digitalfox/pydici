@@ -103,8 +103,8 @@ def expenses(request, expense_id=None):
             expense.workflow_in_progress = False
             expense.save()
 
-    # And prune every expense not updated since 60 days. For instance, rejected expense.
-    for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(60))):
+    # And prune every expense not updated since 180 days. For instance, rejected expense.
+    for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(180))):
         if wf.get_state(expense).transitions.count() == 0:
             expense.workflow_in_progress = False
             expense.save()
