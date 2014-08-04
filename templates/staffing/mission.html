@@ -129,8 +129,8 @@
     <div id="tab-other-missions" class="tab-pane fade">
         {% if mission.sister_missions %}
         <h2>{% trans "Other missions linked to this lead" %}</h2>
-        <div class="imodule">
-        <table>
+        <div class="table-responsive">
+        <table class="table table-hover table-striped table-condensed">
         <tr>
 	        <th>{% trans "Mission" %}</th>
 	        <th>{% trans "id" %}</th>
@@ -140,7 +140,7 @@
 	        <th>{% trans "Billing mode" %}</th>
         </tr>
         {% for sister_mission in mission.sister_missions %}
-        <tr {%cycle 'class="row1"' 'class="row2"' %}>
+        <tr>
 	        <td><a href="{% url 'staffing.views.mission_home' sister_mission.id %}">{{ sister_mission }}</a></td>
 	        <td>{{ sister_mission.mission_id }}</td>
 	        <td>{{ sister_mission.done_work_k.0 }}</td>

@@ -10,7 +10,7 @@
     {% include "core/_init_tabs.html" %}
 {% endwith %}
 
-<div id="content-main">
+
     <h1>{% trans "Lead detail" %}</h1>
     {% if active_count %}
 	    {% if previous_lead %}
@@ -22,7 +22,7 @@
 	    {% endif %}
     {% endif %}
 
-    <div class="form-row name  ">
+    
     <h2><a href="{% url 'crm.views.company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a> - <a href="{% url 'admin:leads_lead_change' lead.id %}?return_to={{ lead.get_absolute_url }}" class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
 <div>
@@ -89,7 +89,7 @@
             {% if lead.paying_authority %}
                 <b>{% trans "Paying authority: " %}</b>{{ lead.paying_authority }}
             {% endif %}
-        
+
             <br><br><hr>
             <b>{% trans "Due date: " %}</b><span {% if lead.is_late %}style='color:red'{% endif %}>{{ lead.due_date|default_if_none:_("Unknown") }}</span><br>
             <b>{% trans "Start date: " %} </b>{{ lead.start_date|default_if_none:_("Unknown") }}
@@ -98,7 +98,7 @@
             <b>{% trans "Potential resource(s): " %} </b>{{ lead.staffing_list }}<br>
             <b>{% trans "Action: " %}</b>{% if lead.action %}{{ lead.action }}{% else %}{% trans "Nothing" %}{% endif %}<br>
             <br><br><hr>
-        
+
             {% ifequal lead.state "WON" %}
             <h2>{% trans "Profitability" %}</h2>
             <table>
@@ -110,14 +110,14 @@
                 <tr><td>{% trans "Margin over rate objective" %}</td><td>{{ lead.totalObjectiveMargin }} €</td></tr>
             </table>
             {% endifequal %}
-        </div>    
+        </div>
     </div> {# End of description tab #}
 
     <div id="tab-missions" class="tab-pane fade">
     {% if lead.mission_set.count %}
         <h2>{% trans "Missions of this lead:" %}</h2>
-        <div class="imodule">
-        <table>
+        <div class="table-responsive)">
+        <table class="table table-hover table-striped table-condensed">
         <tr>
             <th>{% trans "Mission" %}</th>
             <th>{% trans "id" %}</th>
@@ -138,18 +138,18 @@
         {% endfor %}
         {% ifnotequal lead.mission_set.count 1 %}
     	    <tr>
-    	        <td>{% trans "Total" %}</td>
-    	        <td></td>
-    	        <td>{{ lead.done_work_k.0 }}</td>
-    	        <td>{{ lead.done_work_k.1|floatformat }}</td>
-    	        <td>{{ lead.sales }}</td>
-    	        <td></td>
+    	        <th>{% trans "Total" %}</th>
+    	        <th></th>
+    	        <th>{{ lead.done_work_k.0 }}</th>
+    	        <th>{{ lead.done_work_k.1|floatformat }}</th>
+    	        <th>{{ lead.sales }}</th>
+    	        <th></th>
     	    </tr>
     	{% endifnotequal %}
         </table>
         </div>
         {% if perms.staffing.add_mission %}
-            <a href="{% url 'staffing.views.create_new_mission_from_lead' lead.id %}"><i>{% trans "Create a new mission for this lead" %}</i></a>
+            <a class="btn btn-default" href="{% url 'staffing.views.create_new_mission_from_lead' lead.id %}">{% trans "Create a new mission for this lead" %}</a>
         {% endif %}
     {% else %}
         {% trans "A mission is created once a commercial proposal has been sent." %}
@@ -184,7 +184,7 @@
     <div id="tab-history" class="tab-pane fade">
         {% if action_list %}
             <h2>{% trans "Change history" %}</h2>
-            <table id="change-history">
+            <table id="change-history" class="table table-hover table-striped table-condensed">
                 <thead>
                 <tr>
                     <th scope="col">{% trans 'Date/time' %}</th>

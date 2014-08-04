@@ -7,6 +7,7 @@
     {% with lead.clientbill_set.all as client_bills %}
     {% if client_bills %}
     <table class="table table-hover table-striped table-condensed">
+        <tr>
             <th>{% trans "Bill id" %}</th>
             <th>{% trans "State" %}</th>
             <th>{% trans "Amount (€ excl tax)" %}</th>
@@ -14,8 +15,9 @@
             <th>{% trans "Due date" %}</th>
             <th>{% trans "Payment date" %}</th>
             <th>{% trans "File" %}</th>
+        </tr>
             {% for bill in client_bills %}
-                <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <tr>
                     <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
                     <td>{{ bill.get_state_display }}</td>
                     <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
@@ -30,7 +32,7 @@
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
     {% if perms.billing.add_clientbill %}
-        <i><a href="{% url 'admin:billing_clientbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a client bill for this lead" %}</a></i>
+        <a class="btn btn-default" href="{% url 'admin:billing_clientbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
     {% endif %}
     {% endwith %}
 
@@ -38,6 +40,7 @@
     {% with lead.supplierbill_set.all as supplier_bills %}
     {% if supplier_bills %}
     <table class="table table-hover table-striped table-condensed">
+        <tr>
             <th>{% trans "Bill id" %}</th>
             <th>{% trans "Supplier" %}</th>
             <th>{% trans "Supplier Bill id" %}</th>
@@ -47,8 +50,9 @@
             <th>{% trans "Due date" %}</th>
             <th>{% trans "Payment date" %}</th>
             <th>{% trans "File" %}</th>
+        </tr>
             {% for bill in supplier_bills %}
-                <tr {%cycle 'class="row1"' 'class="row2"' %}>
+                <tr>
                     <td><a href="{% url 'admin:billing_supplierbill_change' bill.id %}">{{ bill }}</a></td>
                     <td>{{ bill.supplier }}</td>
                     <td>{{ bill.supplier_bill_id }}</td>
@@ -65,6 +69,6 @@
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
     {% if perms.billing.add_supplierbill %}
-        <i><a href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a></i>
+        <a class="btn btn-default" href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
     {% endif %}
     {% endwith %}
