@@ -2,8 +2,8 @@
 {# Fragment of page to be included in a mission_home tab #}
 
     <h2>{% trans "Mission timesheet and forecast" %}</h2>
-    <div class="timesheet">
-    <table>
+    <div class="table-responsive">
+    <table class="table table-hover table-striped table-pydici-extra-condensed">
     <tr>
         <td></td>
         <th style="text-align:center" colspan={{ timesheet_months|length|add:2 }}>{% trans "Done days" %}</th>
@@ -61,37 +61,42 @@
 
     </table>
     <br/>
-    <a href="{% url 'staffing.views.mission_timesheet' mission_id=mission.id %}?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
+    <a class="btn btn-default" href="{% url 'staffing.views.mission_timesheet' mission_id=mission.id %}?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
     </div>
     <br/>
     {% ifequal mission.nature "PROD" %}
-    <h2>{% trans "Profitability" %}</h2>
-    <table>
-        <tr><td>{% trans "Sold" %}</td>
-        <td>{% if mission.price %}{{ mission.price }}  k€ {% ifequal mission.billing_mode "TIME_SPENT" %}{% trans "(maximum)" %}{% endifequal %}
-            {% else %} <a href="{% url 'admin:staffing_mission_change' mission.id %}?return_to={% url 'staffing.views.mission_home' mission.id %}#tab-timesheet">{% trans "To be defined" %}</a>
-            {% endif %}</td></tr>
-        {% ifequal mission.billing_mode "FIXED_PRICE" %}
-            <tr><td>{% trans "Margin" %}</td><td>{{ margin }}  k€</td></tr>
-            <tr><td>{% trans "Average daily rate" %}</td><td>{{ avg_daily_rate }}  €</td></tr>
-        {% else %}
-            <tr><td>{% trans "Currently unused" %}</td><td>{{ current_unused }} k€</td></tr>
-            <tr><td>{% trans "Forecasted unused" %}</td><td>{{ forecasted_unused }} k€</td></tr>
-        {% endifequal %}
-    </table>
-    <h2>{% trans "Margin over rate objective" %}</h2>
-    <div class="timesheet">
-    <table>
-    {% for consultant, consultant_objective_margin in objective_margin.items %}
-        <tr align="right">
-        <td>{{ consultant }}</td>
-        <td>{{ consultant_objective_margin }} €</td>
-        </tr>
-    {% endfor %}
-    <tr align="right" style="font-weight:bold">
-        <td>{% trans "Total" %}</td>
-        <td>{{ objective_margin_total }} €</td>
-    </tr>
-    </table>
-    </div>
+        
+            <div class="col-sm-6 col-md-4">
+                <h2>{% trans "Profitability" %}</h2>
+                <table class="table table-hover">
+                    <tr><td>{% trans "Sold" %}</td>
+                    <td>{% if mission.price %}{{ mission.price }}  k€ {% ifequal mission.billing_mode "TIME_SPENT" %}{% trans "(maximum)" %}{% endifequal %}
+                        {% else %} <a href="{% url 'admin:staffing_mission_change' mission.id %}?return_to={% url 'staffing.views.mission_home' mission.id %}#tab-timesheet">{% trans "To be defined" %}</a>
+                        {% endif %}</td></tr>
+                    {% ifequal mission.billing_mode "FIXED_PRICE" %}
+                        <tr><td>{% trans "Margin" %}</td><td>{{ margin }}  k€</td></tr>
+                        <tr><td>{% trans "Average daily rate" %}</td><td>{{ avg_daily_rate }}  €</td></tr>
+                    {% else %}
+                        <tr><td>{% trans "Currently unused" %}</td><td>{{ current_unused }} k€</td></tr>
+                        <tr><td>{% trans "Forecasted unused" %}</td><td>{{ forecasted_unused }} k€</td></tr>
+                    {% endifequal %}
+                </table>
+            </div>
+
+            <div class="col-sm-6 col-md-4 col-md-offset-2 col-sm-offset-0 col-xs-offset-0">
+                <h2>{% trans "Margin over rate objective" %}</h2>
+                <table class="table table-hover">
+                {% for consultant, consultant_objective_margin in objective_margin.items %}
+                    <tr>
+                    <td>{{ consultant }}</td>
+                    <td>{{ consultant_objective_margin }} €</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <th>{% trans "Total" %}</th>
+                    <th>{{ objective_margin_total }} €</th>
+                </tr>
+                </table>
+            </div>
+        
     {% endifequal %}
