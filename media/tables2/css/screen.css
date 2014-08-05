@@ -9,11 +9,11 @@ table.pydici-tables2 {
 
 table.pydici-tables2 td,
 table.pydici-tables2 th {
-    padding: 5px;
-    line-height: 13px;
-    border-bottom: 1px solid #EEE;
+/*     padding: 5px; */
+/*     line-height: 13px; */
+/*     border-bottom: 1px solid #EEE; */
     border-left: 1px solid #DDD;
-    text-align: left;
+/*     text-align: left; */
 }
 
 table.pydici-tables2 + ul.pagination {

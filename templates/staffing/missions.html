@@ -22,10 +22,10 @@
 <div class="content-large">
 {% if all %}
     <h1>{% trans "All missions" %}</h1>
-    <br/><i><a href='{% url 'missions' %}'>{% trans "Only display active missions" %}</a></i><br/><br/>
+    <br/><a class="btn btn-default" href='{% url 'missions' %}'>{% trans "Only display active missions" %}</a><br/><br/>
 {% else %}
     <h1>{% trans "Active missions" %}</h1>
-    <br/><i><a href="{% url 'all-missions' %}">{% trans "Also display inactive missions" %}</a></i><br/><br/>
+    <br/><a class="btn btn-default" href="{% url 'all-missions' %}">{% trans "Also display inactive missions" %}</a><br/><br/>
 {% endif %}
 
   {% render_table missionTable %}

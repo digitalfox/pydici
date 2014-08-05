@@ -178,7 +178,8 @@
             <a class="btn btn-default" href="{% url 'staffing.views.create_new_mission_from_lead' lead.id %}">{% trans "Create a new mission for this lead" %}</a>
         {% endif %}
     {% else %}
-        {% trans "A mission is created once a commercial proposal has been sent." %}
+        <br/>
+        <div class="alert alert-info">{% trans "A mission is created once a commercial proposal has been sent." %}</div>
     {% endif %}
     </div> {# end of tab missions #}
     

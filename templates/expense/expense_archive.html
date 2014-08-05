@@ -8,11 +8,12 @@
 {% block content %}
 
 <h1>{% trans "Expenses archive" %}</h1>
-
-    {% render_table expense_table %}
-    {% with '"bSort" : false,' as datatable_options %}
-        {% with "expense_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
-    {% endwith %}
+    <div class="table-responsive col-lg-12">
+        {% render_table expense_table %}
+        {% with '"bSort" : false,' as datatable_options %}
+            {% with "expense_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+        {% endwith %}
+    </div>
 
 <br/>
 <a href="{% url 'expense.views.expenses_history' %}?csv" class="btn btn-default">{% trans "Export expenses in a spreadsheet" %}</a>

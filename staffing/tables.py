@@ -30,5 +30,5 @@ class MissionTable(tables.Table):
         model = Mission
         sequence = ("name", "subsidiary", "nature", "mission_id", "probability", "price", "active", "no_forecast", "old_forecast", "archive")
         fields = sequence
-        attrs = {"class": "pydici-tables2", "id": "missions-table"}
+        attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "missions-table"}
         orderable = False  # Sort is done by jquery.datatable on client side

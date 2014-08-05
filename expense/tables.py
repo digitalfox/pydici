@@ -34,7 +34,7 @@ class ExpenseTable(tables.Table):
         model = Expense
         sequence = ("user", "description", "lead", "amount", "chargeable", "corporate_card", "receipt", "state", "expense_date", "update_date", "comment")
         fields = sequence
-        attrs = {"class": "pydici-tables2", "id": "expense_table"}
+        attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "expense_table"}
         orderable = False
         order_by = "-expense_date"
 
@@ -57,14 +57,14 @@ class ExpenseWorkflowTable(ExpenseTable):
 
 class UserExpenseWorkflowTable(ExpenseWorkflowTable):
     class Meta:
-        attrs = {"class": "pydici-tables2", "id": "user_expense_workflow_table"}
+        attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "user_expense_workflow_table"}
         prefix = "user_expense_workflow_table"
         orderable = False
 
 
 class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
     class Meta:
-        attrs = {"class": "pydici-tables2", "id": "managed_expense_workflow_table"}
+        attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "managed_expense_workflow_table"}
         prefix = "managed_expense_workflow_table"
         orderable = False
 
@@ -84,6 +84,6 @@ class ExpensePaymentTable(tables.Table):
         model = ExpensePayment
         sequence = ("id", "user", "amount", "payment_date")
         fields = sequence
-        attrs = {"class": "pydici-tables2", "id": "expense_payment_table"}
+        attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "expense_payment_table"}
         order_by = "-id"
         orderable = False
