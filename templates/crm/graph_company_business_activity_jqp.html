@@ -3,12 +3,12 @@
 {% load i18n %}
 
 
-<div id="company_business_activity_jqp" style="height: 400px; width: 1000px;"></div>
+<div id="company_business_activity_jqp" style="height: 400px;"></div>
 
 <script type="text/javascript">
 $(document).ready(function() {
 $.jqplot.config.enablePlugins = true;
-$.jqplot('company_business_activity_jqp',  {{ graph_data|safe }}, {
+var plot_company_business_activity_jqp = $.jqplot('company_business_activity_jqp',  {{ graph_data|safe }}, {
     animate : false,
     stackSeries: true,
     captureRightClick: true,
@@ -80,6 +80,11 @@ $.jqplot('company_business_activity_jqp',  {{ graph_data|safe }}, {
         sizeAdjust: 7.5,
     },
 });
+
+{% with "plot_company_business_activity_jqp" as plot %}
+{% include "core/_jqplot_resize.html" %}
+{% endwith %}
+
 
 }); // End of ready()
 </script>
