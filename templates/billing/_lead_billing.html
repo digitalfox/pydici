@@ -14,6 +14,7 @@
             <th>{% trans "Creation date" %}</th>
             <th>{% trans "Due date" %}</th>
             <th>{% trans "Payment date" %}</th>
+            <th>{% trans "Comment" %}</th>
             <th>{% trans "File" %}</th>
         </tr>
             {% for bill in client_bills %}
@@ -24,6 +25,7 @@
                     <td>{{ bill.creation_date }}</td>
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date }}</td>
+                    <td>{{ bill.comment }}</td>
                     <td><a href='{{ bill.bill_file_url }}'><span class="glyphicon glyphicon-file"></span></a></td>
                 </tr>
             {% endfor %}
@@ -49,6 +51,7 @@
             <th>{% trans "Creation date" %}</th>
             <th>{% trans "Due date" %}</th>
             <th>{% trans "Payment date" %}</th>
+            <th>{% trans "Comment" %}</th>
             <th>{% trans "File" %}</th>
         </tr>
             {% for bill in supplier_bills %}
@@ -61,6 +64,7 @@
                     <td>{{ bill.creation_date }}</td>
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date }}</td>
+                    <td>{{ bill.comment }}</td>
                     <td><a href='{{ bill.bill_file_url }}'><span class="glyphicon glyphicon-file"></span></a></td>
                 </tr>
             {% endfor %}
