@@ -10,7 +10,7 @@ import csv
 import json
 
 from ajax_select.fields import autoselect_fields_check_can_add
-from django_tables2   import RequestConfig
+from django_tables2 import RequestConfig
 
 
 from django.shortcuts import render, redirect
@@ -32,12 +32,12 @@ from people.models import Consultant
 from leads.models import Lead
 from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
-                                  TimesheetForm, MassStaffingForm, MissionContactForm
+    TimesheetForm, MassStaffingForm, MissionContactForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-                              to_int_or_round, COLORS, convertDictKeyToDateTime
+    to_int_or_round, COLORS, convertDictKeyToDateTime
 from core.decorator import pydici_non_public
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
-                                  sortMissions, holidayDays, staffingDates
+    sortMissions, holidayDays, staffingDates
 from staffing.tables import MissionTable
 
 
@@ -343,16 +343,17 @@ def pdc_detail(request, consultant_id, staffing_date):
     """Display detail of consultant staffing for this month"""
     try:
         consultant = Consultant.objects.get(id=consultant_id)
-        name = consultant.name
     except Consultant.DoesNotExist:
         raise Http404
     try:
         month = date(int(staffing_date[0:4]), int(staffing_date[4:6]), 1)
-    except ValueError, IndexError:
+    except (ValueError, IndexError):
         raise Http404
 
     staffings = Staffing.objects.filter(mission__active=True, consultant=consultant, staffing_date__gte=month, staffing_date__lt=nextMonth(month))
-    return HttpResponse("<br/>".join(["%s : <b>%s</b>" % (s.mission, s.charge) for s in staffings]))
+    return render(request, "staffing/pdc_detail.html",
+                  {"staffings": staffings,
+                   "user": request.user})
 
 
 @pydici_non_public

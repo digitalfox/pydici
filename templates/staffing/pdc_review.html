@@ -160,24 +160,41 @@ for(i in cells)
 
 $(document).ready(function(){
 
-    $(".pdc-tooltip").tooltip(
+    $(".pdc-tooltip").popover(
         {
-          content:  function(callback) {
+          container: "body",
+          html: true,
+          content: function() {
+              
               var staffing_date = $(this).closest('table').find('span').eq($(this).index()-1).attr('title');
               var consultant = $(this).closest('tr').find('span').attr('title');
               if (staffing_date.length == 6) {
                   var url = '{% url 'staffing.views.pdc_detail' '123456' '19700101' %}'.replace("123456", consultant).replace("19700101", staffing_date);
-                  return $.get( url, function(data) {callback(data);})
+                  return $.ajax({
+                      url: url,
+                      dataType: 'html',
+                      async: false
+                      }).responseText;
               } else {
                   // Invalid staffing_date. It means we are outside pdc array (like client column)
                   return '';
               }
           },
-          items: "td['']",
-          show: { delay : 500 },
+           delay: { show : 500, hide:200 },
+           template: '<div class="popover" style="max-width:800px;" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
         }
-        
     );
+    
+    
+    $(".pdc-tooltip").bind("hover", function() {
+        var e=$(this);
+        e.popover("show");
+    });
+    $(".pdc-tooltip").bind("mouseout", function() {
+        var e=$(this);
+        e.popover("hide");
+    });
+
 });
 //-->
 </SCRIPT>
