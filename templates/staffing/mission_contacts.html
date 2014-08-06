@@ -2,13 +2,12 @@
 {# of a page loaded in ajax #}
 {% load i18n %}
 
-<h2>{% trans "Mission contacts" %}</h2>
 <div id="contact_display">
 {% for mission_contact in mission_contacts %}
     {% ifchanged mission_contact.company %}
         {% if not loop.first %}</table>{% endif %}
-        <h4>{{ mission_contact.company }}</h4>
-        <table>
+        <h3><a href="{% url 'crm.views.company_detail' mission_contact.company.id %}">{{ mission_contact.company }}</a></h3>
+        <table class="pydici-tables2 table table-hover table-striped table-condensed">
          <tr>
             <th>{% trans "Name" %}</th>
             <th>{% trans "Company" %}</th>
@@ -25,9 +24,9 @@
     {% endwith %}
 {% endfor %}
 </table>
-<a href="javascript:;" 
+<br/>
+<a class="btn btn-default" href="javascript:;" 
    onClick="$('#contact_display').hide();$('#contact_edit').show();">
-   <br/>
    {% trans "Add or edit" %}</a>
 </div>
 
@@ -35,11 +34,11 @@
 <form action="{% url 'staffing.views.mission_contacts' mission.id %}#tab-contacts" method="POST"> 
     {{ mission_contact_form.non_field_errors }}
     {{ mission_contact_form }}
-    <input type="submit" value="{% trans 'Save' %}"/>
+    <input class="btn btn-default" type="submit" value="{% trans 'Save' %}"/>
 </form>
-<a href="javascript:;" 
-   onClick="$('#contact_display').show();$('#contact_edit').hide();">
    <br/>
+<a class="btn btn-default" href="javascript:;"
+   onClick="$('#contact_display').show();$('#contact_edit').hide();">
    {% trans "Close" %}</a>
 </div>
 <script type="text/javascript">
