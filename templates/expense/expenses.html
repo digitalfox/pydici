@@ -25,10 +25,12 @@
 
 {% if user_expense_table.data %}
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-md-12">
             <h1>{% trans "My expenses" %}</h1>
-            {% render_table user_expense_table %}
-            {% with "user_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+            <div class="table-responsive">
+                {% render_table user_expense_table %}
+                {% with "user_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+            </div>
         </div>
     </div>
     <br/><hr/>
@@ -36,11 +38,13 @@
 
 
 <div class="row">
-    <div class="col-lg-12">
+    <div class="col-md-12">
     {% if managed_expense_table.data %}
         <h1>{% trans "Expenses I manage" %}</h1>
-        {% render_table managed_expense_table %}
-        {% with "managed_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+        <div class="table-responsive">
+            {% render_table managed_expense_table %}
+            {% with "managed_expense_workflow_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+        </div>
     {% endif %}
     </div>
 </div>

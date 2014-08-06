@@ -15,6 +15,7 @@ from django_tables2.utils import A
 
 from expense.models import Expense, ExpensePayment
 from core.templatetags.pydici_filters import link_to_consultant
+from core.utils import TABLES2_HIDE_COL_MD
 
 
 class ExpenseTable(tables.Table):
@@ -25,7 +26,7 @@ class ExpenseTable(tables.Table):
                                                         <a href="{% url 'expense.views.expense_payment_detail' record.expensePayment.id %}">{% trans "Paid" %}</a>
                                                     {% else %}{{ record.state }}{% endif %}""", verbose_name=_("State"), orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
-    update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
+    update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title attr is just used to have an easy to parse hidden value for sorting
 
     def render_user(self, value):
         return link_to_consultant(value)
