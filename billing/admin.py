@@ -38,7 +38,7 @@ class ClientBillAdmin(BillAdmin):
 
 class SupplierBillAdmin(BillAdmin):
     form = SupplierBillForm
-    search_fields = BillAdmin.search_fields + ["supplier_contact__name", "supplier__company__name"]
+    search_fields = BillAdmin.search_fields + ["supplier__contact__name", "supplier__company__name"]
     list_display = list(BillAdmin.list_display)  # Copy list before changing it
     list_display.insert(2, "supplier")
     fieldsets = [
