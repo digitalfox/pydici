@@ -15,7 +15,7 @@ from collections import defaultdict
 
 from django.shortcuts import render
 from django.core import urlresolvers
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
@@ -28,6 +28,8 @@ from django_tables2 import RequestConfig
 from core.utils import send_lead_mail, sortedValues, COLORS
 from leads.models import Lead
 from leads.tables import ActiveLeadsTable, RecentArchivedLeadsTable
+from leads.forms import LeadForm
+from leads.utils import postSaveLead
 import pydici.settings
 from core.utils import capitalize, getLeadDirs, createProjectTree
 from core.decorator import pydici_non_public
@@ -93,6 +95,40 @@ def detail(request, lead_id):
                    "completion_url": urlresolvers.reverse("leads.views.tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
                    "user": request.user})
+
+
+@pydici_non_public
+def lead(request, lead_id=None):
+    """Lead creation or modification"""
+    lead = None
+    try:
+        if lead_id:
+            lead = Lead.objects.get(id=lead_id)
+    except Lead.DoesNotExist:
+        pass
+
+    if request.method == "POST":
+        print "POST"
+        if lead:
+            form = LeadForm(request.POST, instance=lead)
+        else:
+            form = LeadForm(request.POST)
+        if form.is_valid():
+            lead = form.save()
+            lead.save()
+            postSaveLead(request, lead, form, bool(lead_id))
+            # TODO: add all stuff hooked in model.save_model()
+            return HttpResponseRedirect(urlresolvers.reverse("leads.views.detail", args=[lead.id]))
+    else:
+        if lead:
+            form = LeadForm(instance=lead)  # A form that edit current lead
+        else:
+            form = LeadForm()  # An unbound form
+
+    return render(request, "leads/lead.html",
+              {"lead": lead,
+               "form": form,
+               "user": request.user})
 
 
 @pydici_non_public

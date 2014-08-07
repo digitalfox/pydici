@@ -23,7 +23,7 @@
     {% endif %}
 
     
-    <h2><a href="{% url 'crm.views.company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a> - <a href="{% url 'admin:leads_lead_change' lead.id %}?return_to={{ lead.get_absolute_url }}" class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
+    <h2><a href="{% url 'crm.views.company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a> - <a href="{% url 'leads.views.lead' lead.id %}" class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
 <div>
     <!-- Nav tabs -->

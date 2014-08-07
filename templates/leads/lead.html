@@ -1,0 +1,17 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Lead" %}{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/admin/RelatedObjectLookups.js"></script>
+{% endblock %}
+
+{% block content %}
+
+     {% crispy form form.helper %}
+
+
+{% endblock %}

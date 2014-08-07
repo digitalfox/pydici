@@ -6,10 +6,14 @@ Leads form setup
 """
 
 from django.forms import models
+from django.forms.widgets import DateTimeInput
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from ajax_select.fields import AutoCompleteSelectField
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Div, Column, Fieldset, Field
 
 from leads.models import Lead
 
@@ -17,6 +21,7 @@ from leads.models import Lead
 class LeadForm(models.ModelForm):
     class Meta:
         model = Lead
+
     # declare a field and specify the named channel that it uses
     responsible = AutoCompleteSelectField('internal_consultant', required=False, label=_("Responsible"), show_help_text=False)
     salesman = AutoCompleteSelectField('salesman', required=False, label=_("Salesman"), show_help_text=False)
@@ -24,9 +29,24 @@ class LeadForm(models.ModelForm):
     paying_authority = AutoCompleteSelectField('business_broker', required=False, label=_("Paying authority"), show_help_text=False)
     client = AutoCompleteSelectField('client', required=True, label=_("Client"), show_help_text=False)
 
+    def __init__(self, *args, **kwargs):
+        super(LeadForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        submit = Submit("Submit", _("Save"))
+        submit.field_classes = "btn btn-default"
+
+        self.helper.layout = Layout(Fieldset(_("Identification"), "name", "client", "subsidiary", "description", "action"),
+                                    Fieldset(_("State and tracking"), Div(Column("responsible", "due_date", "start_date", css_class='col-md-6'),
+                                                                          Column("deal_id", "client_deal_id", "state", css_class='col-md-6'))),
+                                    Fieldset(_("Commercial"), "sales", "business_broker", "paying_authority", "salesman"),
+                                    Fieldset(_("Staffing"), "staffing", "external_staffing"),
+                                    Fieldset("", "send_email"),
+                                    Field("creation_date", type="hidden"),
+                                    submit)
+
     def clean_sales(self):
         """Ensure sale amount is defined at lead when commercial proposition has been sent"""
-        if self.cleaned_data["sales"] or self.cleaned_data["state"] in ('QUALIF', 'WRITE_OFFER', 'SLEEPING', 'LOST', 'FORGIVEN'):
+        if self.cleaned_data["sales"] or self.data["state"] in ('QUALIF', 'WRITE_OFFER', 'SLEEPING', 'LOST', 'FORGIVEN'):
             # Sales is defined or we are in early step, nothing to say
             return self.cleaned_data["sales"]
         else:
