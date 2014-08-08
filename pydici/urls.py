@@ -31,6 +31,9 @@ pydici_patterns = patterns('',
 
     # Ajax select
     (r'^admin/lookups/', include(ajax_select_urls)),
+
+    # Django_select2
+    url(r'^select2/', include('django_select2.urls')),
 )
 
 pydici_patterns += patterns('',

@@ -8,8 +8,24 @@ People form setup
 from django.forms import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.core.validators import EMPTY_VALUES
+
+from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField
 
 from people.models import Consultant
+from core.forms import PydiciSelect2Field
+
+
+class ConsultantChoices(PydiciSelect2Field, AutoModelSelect2Field):
+    queryset = Consultant.objects
+    search_fields = ['name__icontains', 'trigramme__icontains']
+    empty_values = EMPTY_VALUES
+
+
+class ConsultantMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
+    queryset = Consultant.objects
+    search_fields = ['name__icontains', 'trigramme__icontains']
+    empty_values = EMPTY_VALUES
 
 
 class ConsultantForm(models.ModelForm):

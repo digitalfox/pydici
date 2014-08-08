@@ -108,7 +108,6 @@ def lead(request, lead_id=None):
         pass
 
     if request.method == "POST":
-        print "POST"
         if lead:
             form = LeadForm(request.POST, instance=lead)
         else:
@@ -117,7 +116,6 @@ def lead(request, lead_id=None):
             lead = form.save()
             lead.save()
             postSaveLead(request, lead, form, bool(lead_id))
-            # TODO: add all stuff hooked in model.save_model()
             return HttpResponseRedirect(urlresolvers.reverse("leads.views.detail", args=[lead.id]))
     else:
         if lead:
@@ -125,10 +123,9 @@ def lead(request, lead_id=None):
         else:
             form = LeadForm()  # An unbound form
 
-    return render(request, "leads/lead.html",
-              {"lead": lead,
-               "form": form,
-               "user": request.user})
+    return render(request, "leads/lead.html", {"lead": lead,
+                                               "form": form,
+                                               "user": request.user})
 
 
 @pydici_non_public
