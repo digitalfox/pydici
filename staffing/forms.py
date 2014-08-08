@@ -15,10 +15,19 @@ from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column
+from django_select2 import AutoModelSelect2Field
 
 from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
 
 from staffing.models import Mission, FinancialCondition
+from core.forms import PydiciSelect2Field
+from people.forms import ConsultantChoices
+
+
+class MissionChoices(PydiciSelect2Field, AutoModelSelect2Field):
+    queryset = Mission.objects.filter(active=True)
+    search_fields = ["deal_id__icontains", "description__icontains", "lead__name__icontains", "lead__deal_id__icontains",
+                     "lead__client__organisation__name__icontains", "lead__client__organisation__company__name__icontains"]
 
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
@@ -41,7 +50,7 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["mission"] = AutoCompleteSelectField('mission', required=True, label=_("Mission"), show_help_text=False)
+        form.fields["mission"] = MissionChoices(label=_("Mission"))
         form.fields["mission"].widget.attrs.setdefault("size", 8)  # Reduce default size
         form.fields["staffing_date"].widget.attrs.setdefault("size", 10)  # Reduce default size
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
@@ -52,8 +61,7 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["consultant"] = AutoCompleteSelectField('consultant', required=True, label=_("Consultant"), show_help_text=False)
-        form.fields["consultant"].widget.attrs.setdefault("size", 8)  # Reduce default size
+        form.fields["consultant"] = ConsultantChoices(label=_("Consultant"))
         form.fields["staffing_date"].widget.attrs.setdefault("size", 10)  # Reduce default size
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
