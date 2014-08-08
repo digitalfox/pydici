@@ -162,6 +162,7 @@ INSTALLED_APPS = [
     'workflows',
     'django_tables2',
     'crispy_forms',
+    'django_select2',
 ]
 
 if DEBUG:

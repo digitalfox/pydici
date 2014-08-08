@@ -5,7 +5,7 @@ Leads form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.forms import models
+from django.forms import models, ModelMultipleChoiceField
 from django.forms.widgets import DateTimeInput
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
@@ -14,8 +14,11 @@ from ajax_select.fields import AutoCompleteSelectField
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Fieldset, Field
+from django_select2.widgets import Select2MultipleWidget
+from django_select2.fields import Select2MultipleChoiceField
 
 from leads.models import Lead
+from people.models import Consultant
 
 
 class LeadForm(models.ModelForm):
@@ -28,6 +31,7 @@ class LeadForm(models.ModelForm):
     business_broker = AutoCompleteSelectField('business_broker', required=False, label=_("Business broker"), show_help_text=False)
     paying_authority = AutoCompleteSelectField('business_broker', required=False, label=_("Paying authority"), show_help_text=False)
     client = AutoCompleteSelectField('client', required=True, label=_("Client"), show_help_text=False)
+    staffing = ModelMultipleChoiceField(queryset=Consultant.objects.all(), widget=Select2MultipleWidget)
 
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)

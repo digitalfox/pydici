@@ -24,9 +24,7 @@ INSTALLATION
 Pydici can be installed as any Django project. Just drop the code somewhere
 and setup Apache.
 
-Prerequisite:
-- django (1.5.x is recommended)
-- see requiretements.txt
+To install all python prerequisites, just do that: pip install -r requirements.txt
 
 Here's a sample Apache/mod_python config file. Pydici code live
 is /var/www/pydici and application is published as '/pydici/'.
@@ -52,10 +50,6 @@ LoadModule python_module modules/mod_python.so
 Alias /pydici/media /var/www/pydici/media
 --------------8<-------------------------------
 
-Then, please read and update settings.py file according to your configuration. If you want to use 
-apache authentication, please add pydici.authenticate.RemoteUserAuthMiddleware
-in your MIDDLEWARE_CLASSES and update you AUTHENTICATION_BACKENDS.
-Since Django 1.1, this is not necessary. Please see Django docs : 
-http://docs.djangoproject.com/en/dev/howto/auth-remote-user/#howto-auth-remote-user
+Then, please read and update settings.py file according to your configuration. 
 
 Finally, to initialise database, go to pydici directory and run "./manage.py syncdb"

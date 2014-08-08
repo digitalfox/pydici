@@ -9,3 +9,5 @@ django-workflows
 django-extensions
 django-debug-toolbar
 django-userswitch
+django-crispy-forms
+django-ajax-selects
