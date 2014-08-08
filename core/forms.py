@@ -6,6 +6,7 @@ Core form setup
 """
 
 from django import forms
+from django.core.validators import EMPTY_VALUES
 
 
 class SearchForm(forms.Form):
@@ -13,6 +14,8 @@ class SearchForm(forms.Form):
 
 
 class PydiciSelect2Field():
+    empty_values = EMPTY_VALUES
+
     def security_check(self, request, *args, **kwargs):
         """
         Returns ``False`` if security check fails.

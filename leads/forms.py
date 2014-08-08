@@ -9,25 +9,24 @@ from django.forms import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 
-from ajax_select.fields import AutoCompleteSelectField
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Fieldset, Field
 
 
 from leads.models import Lead
-from people.forms import ConsultantChoices, ConsultantMChoices
+from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
+from crm.forms import ClientChoices, BusinessBrokerChoices
 
 
 class LeadForm(models.ModelForm):
     class Meta:
         model = Lead
 
-    responsible = ConsultantChoices(required=False)
-    salesman = AutoCompleteSelectField('salesman', required=False, label=_("Salesman"), show_help_text=False)
-    business_broker = AutoCompleteSelectField('business_broker', required=False, label=_("Business broker"), show_help_text=False)
-    paying_authority = AutoCompleteSelectField('business_broker', required=False, label=_("Paying authority"), show_help_text=False)
-    client = AutoCompleteSelectField('client', required=True, label=_("Client"), show_help_text=False)
+    responsible = ConsultantChoices(required=False, label=_("Responsible"))
+    salesman = SalesManChoices(required=False, label=_("Salesman"))
+    business_broker = BusinessBrokerChoices(required=False, label=_("Business broker"))
+    paying_authority = BusinessBrokerChoices(required=False, label=_("Paying authority"))
+    client = ClientChoices()
     staffing = ConsultantMChoices(required=False)
 
     def __init__(self, *args, **kwargs):
