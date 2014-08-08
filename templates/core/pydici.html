@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load pydici_filters %}
+{% load django_select2_tags %}
 <!DOCTYPE html><html lang="{{ LANGUAGE_CODE|default:"en-us" }}">
 <head>
     <meta charset="utf-8">
@@ -17,6 +18,7 @@
     <link href="{{ MEDIA_URL }}tables2/css/screen.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/jquery.dataTables.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/ajax_select.css" rel="stylesheet">
+    {% import_django_select2_css %}
     <link href="{{ MEDIA_URL }}css/select2-bootstrap.css" rel="stylesheet">
     {% block extracss %}{% endblock %}
     
@@ -53,6 +55,7 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}js/datatables_custom_sort.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/admin/ajax_select.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+    {% import_django_select2_js %}
 
     {% block extrajs %}{% endblock %}
     
