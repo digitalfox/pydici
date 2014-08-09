@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Fieldset, Field
+from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
 
 
 from leads.models import Lead
@@ -35,12 +36,12 @@ class LeadForm(models.ModelForm):
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-default"
 
-        self.helper.layout = Layout(Fieldset(_("Identification"), "name", "client", "subsidiary", "description", "action"),
-                                    Fieldset(_("State and tracking"), Div(Column("responsible", "due_date", "start_date", css_class='col-md-6'),
-                                                                          Column("deal_id", "client_deal_id", "state", css_class='col-md-6'))),
-                                    Fieldset(_("Commercial"), Div(Column("sales", "salesman", css_class='col-md-6'),
-                                                                  Column("business_broker", "paying_authority", css_class='col-md-6'))),
-                                    Fieldset(_("Staffing"), "staffing", "external_staffing"),
+        self.helper.layout = Layout(TabHolder(Tab(_("Identification"), "name", "client", "subsidiary", "description", "action"),
+                                              Tab(_("State and tracking"), Div(Column("responsible", "due_date", "start_date", css_class='col-md-6'),
+                                                                               Column("deal_id", "client_deal_id", "state", css_class='col-md-6'))),
+                                              Tab(_("Commercial"), Div(Column(AppendedText("sales", "k€"), "salesman", css_class='col-md-6'),
+                                                                       Column("business_broker", "paying_authority", css_class='col-md-6'))),
+                                              Tab(_("Staffing"), "staffing", "external_staffing"),),
                                     Fieldset("", "send_email"),
                                     Field("creation_date", type="hidden"),
                                     submit)
