@@ -8,6 +8,7 @@ Leads form setup
 from django.forms import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Fieldset, Field
@@ -35,9 +36,12 @@ class LeadForm(models.ModelForm):
         self.helper = FormHelper()
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-default"
-        self.helper.layout = Layout(TabHolder(Tab(_("Identification"), "name", "client", "subsidiary", "description", "action"),
-                                              Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next next")),
-                                                                                      Field("start_date", placeholder=_("Date of the operational start")), css_class='col-md-6'),
+        self.helper.layout = Layout(TabHolder(Tab(_("Identification"), "name",
+                                                  AppendedText("client", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("admin:crm_client_add")),
+                                                  "subsidiary", "description", "action"),
+                                              Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next next"), css_class="datepicker"),
+                                                                                      Field("start_date", placeholder=_("Date of the operational start"), css_class="datepicker"),
+                                                                                      css_class='col-md-6'),
                                                                                Column(Field("deal_id", placeholder=_("Leave blank to auto generate")),
                                                                                       Field("client_deal_id", placeholder=_("Internal client reference")), "state", css_class='col-md-6'))),
                                               Tab(_("Commercial"), Div(Column(AppendedText("sales", "k€"), "salesman", css_class='col-md-6'),
