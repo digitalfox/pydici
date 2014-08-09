@@ -1,0 +1,7 @@
+{# Add a bootstrap date pickup to every input with datepickup css class #}
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('input.datepicker').datepicker({format: {% ifequal LANGUAGE 'fr-fr' %}'dd/mm/yyyy'{% else %}'mm/dd/yyyy'{% endifequal %}});
+});
+</script>

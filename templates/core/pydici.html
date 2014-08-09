@@ -13,6 +13,7 @@
     <title>{% block title %}Pydici{% endblock %}</title>
 
     <link href="{{ MEDIA_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ MEDIA_URL }}css/datepicker.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/iconic.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/jquery-ui-1.10.4.custom.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}tables2/css/screen.css" rel="stylesheet">
@@ -55,8 +56,9 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}js/datatables_custom_sort.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/admin/ajax_select.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.js"></script>
     {% import_django_select2_js %}
-
+    
     {% block extrajs %}{% endblock %}
     
     
