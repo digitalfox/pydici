@@ -20,7 +20,7 @@
             <ul class="dropdown-menu" role="menu">
                 <li> <a href="{% url 'leads.views.review' %}">{% trans "Current leads review" %}</a></li>
                 <li><a href="{% url 'admin:leads_lead_changelist' %}">{% trans "All leads" %}</a></li>
-                <li><a href="{% url 'admin:leads_lead_add' %}?return_to={{ request.get_full_path }}">{% trans 'New lead' %}</a></li>
+                <li><a href="{% url 'leads.views.lead' %}">{% trans 'New lead' %}</a></li>
             </ul>
         </li>
         

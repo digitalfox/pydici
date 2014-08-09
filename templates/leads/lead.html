@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 
-{% block title %}{% trans "Lead" %}{% endblock %}
+{% block title %}{% trans "Add or modify a Lead" %}{% endblock %}
 
 {% block extrajs %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/admin/RelatedObjectLookups.js"></script>
@@ -11,7 +11,7 @@
 
 {% block content %}
 
-     {% crispy form form.helper %}
+{% crispy form form.helper %}
 
 
 {% endblock %}
