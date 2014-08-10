@@ -37,7 +37,7 @@ class LeadForm(models.ModelForm):
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-default"
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"), "name",
-                                                  AppendedText("client", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("admin:crm_client_add")),
+                                                  AppendedText("client", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.client")),
                                                   "subsidiary", "description", "action"),
                                               Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next next"), css_class="datepicker"),
                                                                                       Field("start_date", placeholder=_("Date of the operational start"), css_class="datepicker"),

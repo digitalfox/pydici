@@ -12,14 +12,46 @@ from django.shortcuts import render
 from django.db.models import Sum, Min
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext as _
+from django.http import HttpResponseRedirect
+from django.core import urlresolvers
 
 from crm.models import Company, Client, Contact, AdministrativeContact
+from crm.forms import ClientForm
 from staffing.models import Timesheet
 from leads.models import Lead
 from core.decorator import pydici_non_public
 from core.utils import sortedValues, previousMonth, COLORS
 from billing.models import ClientBill
 
+
+@pydici_non_public
+def client(request, client_id=None):
+    """Client creation or modification"""
+    client = None
+    try:
+        if client_id:
+            client = Client.objects.get(id=client_id)
+    except Client.DoesNotExist:
+        pass
+
+    if request.method == "POST":
+        if client:
+            form = ClientForm(request.POST, instance=client)
+        else:
+            form = ClientForm(request.POST)
+        if form.is_valid():
+            client = form.save()
+            client.save()
+            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[client.organisation.company.id]))
+    else:
+        if client:
+            form = ClientForm(instance=client)  # A form that edit current client
+        else:
+            form = ClientForm()  # An unbound form
+
+    return render(request, "crm/client.html", {"client": client,
+                                               "form": form,
+                                               "user": request.user})
 
 @pydici_non_public
 def company_detail(request, company_id):

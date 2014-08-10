@@ -42,7 +42,7 @@
             <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'crm.views.company_list' %}">{% trans "All clients" %}</a></li>
                 <li><a href="{% url 'admin:crm_contact_changelist' %}">{% trans "Contact address directory" %}</a></li>
-                <li><a href="{% url 'admin:crm_client_add' %}?return_to={{ request.get_full_path }}">{% trans "New client" %}</a></li>
+                <li><a href="{% url 'crm.views.client' %}">{% trans "New client" %}</a></li>
                 <li><a href="{% url 'admin:crm_missioncontact_add' %}?return_to={{ request.get_full_path }}">{% trans "New mission contact" %}</a></li>
                 <li><a href="{% url 'admin:crm_businessbroker_add' %}?return_to={{ request.get_full_path }}">{% trans "New business broker" %}</a></li>
                 <li><a href="{% url 'admin:crm_administrativecontact_add' %}?return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></li>
