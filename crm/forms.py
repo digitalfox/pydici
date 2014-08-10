@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 
 from django_select2 import AutoModelSelect2Field
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Column, Fieldset, Field
+from crispy_forms.layout import Submit, Layout, Div, Column
 from crispy_forms.bootstrap import AppendedText
 
 from core.forms import PydiciSelect2Field

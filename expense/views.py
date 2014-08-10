@@ -256,8 +256,7 @@ def expense_payments(request, expense_payment_id=None):
                 expense.expensePayment = None  # Remove any previous association
                 expense.save()
             if form.cleaned_data["expenses"]:
-                for expense_id in form.cleaned_data["expenses"]:
-                    expense = Expense.objects.get(id=expense_id)
+                for expense in form.cleaned_data["expenses"]:
                     expense.expensePayment = expensePayment
                     expense.workflow_in_progress = False
                     expense.save()

@@ -13,11 +13,24 @@ from django.core.urlresolvers import reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Fieldset, Field
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
+from django_select2 import AutoModelSelect2Field
 
 
 from leads.models import Lead
 from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
 from crm.forms import ClientChoices, BusinessBrokerChoices
+from core.forms import PydiciSelect2Field
+
+
+class LeadChoices(PydiciSelect2Field, AutoModelSelect2Field):
+    queryset = Lead.objects
+    search_fields = ["name__icontains", "description__icontains", "action__icontains",
+                     "responsible__name__icontains", "responsible__trigramme__icontains",
+                     "salesman__name__icontains", "salesman__trigramme__icontains",
+                     "client__contact__name__icontains", "client__organisation__company__name__icontains",
+                     "client__organisation__name__icontains",
+                     "staffing__trigramme__icontains", "staffing__name__icontains",
+                     "deal_id__icontains", "client_deal_id__icontains"]
 
 
 class LeadForm(models.ModelForm):
