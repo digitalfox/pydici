@@ -7,6 +7,7 @@ Core form setup
 
 from django import forms
 from django.core.validators import EMPTY_VALUES
+from django.contrib.auth.models import User
 
 
 class SearchForm(forms.Form):
@@ -31,3 +32,8 @@ class PydiciSelect2Field():
 
         """
         return request.user.is_authenticated() and request.user.is_active
+
+
+class UserChoices(PydiciSelect2Field):
+    queryset = User.objects.filter(is_active=True)
+    search_fields = ["username__icontains", "first_name__icontains", "last_name__icontains"]

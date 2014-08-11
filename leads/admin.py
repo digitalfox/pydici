@@ -8,9 +8,6 @@ Django administration setup
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-
-from ajax_select.admin import AjaxSelectAdmin
-
 from leads.models import Lead
 
 from leads.forms import LeadForm
@@ -18,7 +15,7 @@ from leads.utils import postSaveLead
 from core.admin import ReturnToAppAdmin
 
 
-class LeadAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
+class LeadAdmin(ReturnToAppAdmin):
     list_display = ("name", "client", "subsidiary", "responsible", "state", "due_date", "update_date_strf")
     fieldsets = [
         (None, {"fields": ["name", "client", "subsidiary", "description", "action"]}),

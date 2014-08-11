@@ -17,11 +17,12 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column
 from django_select2 import AutoModelSelect2Field
 
-from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField
+from ajax_select.fields import AutoCompleteSelectMultipleField
 
 from staffing.models import Mission, FinancialCondition
 from core.forms import PydiciSelect2Field
 from people.forms import ConsultantChoices
+from crm.forms import MissionContactsChoices
 
 
 class MissionChoices(PydiciSelect2Field, AutoModelSelect2Field):
@@ -142,7 +143,7 @@ class TimesheetForm(forms.Form):
 class MissionAdminForm(forms.ModelForm):
     """Form used to validate mission price field in admin"""
 
-    contacts = AutoCompleteSelectMultipleField('mission_contact', required=False, label=_("Contacts"), show_help_text=False)
+    contacts = MissionContactsChoices(required=False, label=_("Contacts"))
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
@@ -195,7 +196,7 @@ class FinancialConditionAdminForm(forms.ModelForm):
 
 
 class MissionContactForm(forms.ModelForm):
-    contacts = AutoCompleteSelectMultipleField('mission_contact', required=False, label=_("New contacts"), show_help_text=False, help_text="")
+    contacts = MissionContactsChoices(required=False, label=_("New contacts"))
 
     class Meta:
         model = Mission

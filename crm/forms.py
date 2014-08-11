@@ -9,7 +9,7 @@ from django.forms import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
-from django_select2 import AutoModelSelect2Field
+from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column
 from crispy_forms.bootstrap import AppendedText
@@ -40,7 +40,18 @@ class MissionContactChoices(ThirdPartyChoices):
     queryset = MissionContact.objects
 
 
+class MissionContactsChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
+    queryset = MissionContact.objects
+    search_fields = ThirdPartyChoices.search_fields
+
+
 class ContactChoices(PydiciSelect2Field, AutoModelSelect2Field):
+    queryset = Contact.objects
+    search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
+                     "client__organisation__name__icontains"]
+
+
+class ContactsChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
     queryset = Contact.objects
     search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
                      "client__organisation__name__icontains"]
