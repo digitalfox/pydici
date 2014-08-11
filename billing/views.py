@@ -206,7 +206,7 @@ def graph_billing_jqp(request):
     # Gathering billsData
     bills = ClientBill.objects.filter(creation_date__gt=start_date)
     if bills.count() == 0:
-        return
+        return HttpResponse()
 
     for bill in bills:
         # Using first day of each month as key date
