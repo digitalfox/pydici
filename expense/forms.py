@@ -24,7 +24,8 @@ from core.forms import PydiciSelect2Field
 
 class ExpenseMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
     queryset = Expense.objects
-    search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains", "lead__name__icontains", "lead__client__organisation__name",
+    search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains",
+                     "lead__name__icontains", "lead__deal_id__icontains", "lead__client__organisation__name",
                      "lead__client__organisation__company__name__icontains", "lead__client__organisation__company__code__icontains"]
 
 

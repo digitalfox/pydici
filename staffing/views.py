@@ -9,7 +9,6 @@ from datetime import date, timedelta, datetime
 import csv
 import json
 
-from ajax_select.fields import autoselect_fields_check_can_add
 from django_tables2 import RequestConfig
 
 
@@ -994,7 +993,7 @@ def mission_contacts(request, mission_id):
 
     # Unbound form
     form = MissionContactForm(instance=mission)
-    autoselect_fields_check_can_add(form, Mission, request.user)
+    # TODO: add link to add mission contact
     missionContacts = mission.contacts.select_related().order_by("company")
     return render(request, "staffing/mission_contacts.html",
                   {"mission": mission,
