@@ -22,7 +22,7 @@ class ConsultantChoices(PydiciSelect2Field, AutoModelSelect2Field):
 
 class ConsultantMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
     queryset = Consultant.objects.filter(active=True)
-    search_fields = ['name__icontains', 'trigramme__icontains']
+    search_fields = ConsultantChoices.search_fields
 
 
 class SalesManChoices(PydiciSelect2Field, AutoModelSelect2Field):

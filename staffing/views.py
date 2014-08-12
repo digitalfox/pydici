@@ -148,19 +148,19 @@ def mass_staffing(request):
             # Process the data in form.cleaned_data
             if form.cleaned_data["all_consultants"]:
                 # Get all active, productive non subcontractors consultants
-                consultantIds = [c.id for c in Consultant.objects.filter(active=True, productive=True, subcontractor=False)]
+                consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
             else:
                 # Use selected consultants
-                consultantIds = form.cleaned_data["consultants"]
-            for missionId in form.cleaned_data["missions"]:
-                for consultantId in consultantIds:
+                consultants = form.cleaned_data["consultants"]
+            for mission in form.cleaned_data["missions"]:
+                for consultant in consultants:
                     for staffing_date in form.cleaned_data["staffing_dates"]:
                         staffing_date = date(*[int(i) for i in staffing_date.split("-")])
-                        staffing, created = Staffing.objects.get_or_create(consultant__id=consultantId,
-                                                                           mission__id=missionId,
+                        staffing, created = Staffing.objects.get_or_create(consultant=consultant,
+                                                                           mission=mission,
                                                                            staffing_date=staffing_date,
-                                                                           defaults={"consultant_id": consultantId,
-                                                                                     "mission_id": missionId,
+                                                                           defaults={"consultant": consultant,
+                                                                                     "mission": mission,
                                                                                      "staffing_date": staffing_date})
                         staffing.charge = form.cleaned_data["charge"]
                         staffing.comment = form.cleaned_data["comment"]

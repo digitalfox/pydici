@@ -40,7 +40,7 @@ class MissionContactChoices(ThirdPartyChoices):
     queryset = MissionContact.objects
 
 
-class MissionContactsChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
+class MissionContactMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
     queryset = MissionContact.objects
     search_fields = ThirdPartyChoices.search_fields
 
@@ -51,7 +51,7 @@ class ContactChoices(PydiciSelect2Field, AutoModelSelect2Field):
                      "client__organisation__name__icontains"]
 
 
-class ContactsChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
+class ContactMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
     queryset = Contact.objects
     search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
                      "client__organisation__name__icontains"]

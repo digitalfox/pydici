@@ -22,17 +22,17 @@ from leads.forms import LeadChoices
 from core.forms import PydiciSelect2Field
 
 
-class ExpensesChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
+class ExpenseMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
     queryset = Expense.objects
     search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains", "lead__name__icontains", "lead__client__organisation__name",
                      "lead__client__organisation__company__name__icontains", "lead__client__organisation__company__code__icontains"]
 
 
-class ChargeableExpensesChoices(ExpensesChoices):
+class ChargeableExpenseMChoices(ExpenseMChoices):
     queryset = Expense.objects.filter(chargeable=True, clientbill=None)
 
 
-class PayableExpensesChoices(ExpensesChoices):
+class PayableExpenseMChoices(ExpenseMChoices):
     queryset = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
 
     def get_results(self, request, term, page, context):
@@ -87,7 +87,7 @@ class ExpenseForm(forms.ModelForm):
 
 class ExpensePaymentForm(forms.Form):
     """Expense payment form based on ExpensePayemnt model"""
-    expenses = PayableExpensesChoices(label=_("Expenses"))
+    expenses = PayableExpenseMChoices(label=_("Expenses"))
     payment_date = forms.fields.DateField()
 
     def clean(self):

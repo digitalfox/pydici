@@ -15,20 +15,24 @@ from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column
-from django_select2 import AutoModelSelect2Field
+from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField
 
-from ajax_select.fields import AutoCompleteSelectMultipleField
 
 from staffing.models import Mission, FinancialCondition
 from core.forms import PydiciSelect2Field
-from people.forms import ConsultantChoices
-from crm.forms import MissionContactsChoices
+from people.forms import ConsultantChoices, ConsultantMChoices
+from crm.forms import MissionContactMChoices
 
 
 class MissionChoices(PydiciSelect2Field, AutoModelSelect2Field):
     queryset = Mission.objects.filter(active=True)
     search_fields = ["deal_id__icontains", "description__icontains", "lead__name__icontains", "lead__deal_id__icontains",
                      "lead__client__organisation__name__icontains", "lead__client__organisation__company__name__icontains"]
+
+
+class MissionMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
+    queryset = Mission.objects.filter(active=True)
+    search_fields = MissionChoices.search_fields
 
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
@@ -74,8 +78,8 @@ class MassStaffingForm(forms.Form):
         staffing_dates = kwargs.pop("staffing_dates", [])
         super(MassStaffingForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields["missions"] = AutoCompleteSelectMultipleField('mission', required=True, label=_("Missions"), show_help_text=False)
-        self.fields["consultants"] = AutoCompleteSelectMultipleField('consultant', required=False, label=_("Consultants"), show_help_text=False)
+        self.fields["missions"] = MissionMChoices(label=_("Missions"))
+        self.fields["consultants"] = ConsultantMChoices(required=False, label=_("Consultants"))
         self.fields["charge"] = forms.fields.FloatField(label=_("Charge"), min_value=0.25, max_value=31)
         self.fields["comment"] = forms.fields.CharField(label=_("Comment"), max_length=100, required=False)
         self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
@@ -143,7 +147,7 @@ class TimesheetForm(forms.Form):
 class MissionAdminForm(forms.ModelForm):
     """Form used to validate mission price field in admin"""
 
-    contacts = MissionContactsChoices(required=False, label=_("Contacts"))
+    contacts = MissionContactMChoices(required=False, label=_("Contacts"))
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
@@ -196,7 +200,7 @@ class FinancialConditionAdminForm(forms.ModelForm):
 
 
 class MissionContactForm(forms.ModelForm):
-    contacts = MissionContactsChoices(required=False, label=_("New contacts"))
+    contacts = MissionContactMChoices(required=False, label=_("New contacts"))
 
     class Meta:
         model = Mission
@@ -206,11 +210,10 @@ class MissionContactForm(forms.ModelForm):
 class TimesheetField(forms.ChoiceField):
     widget = forms.widgets.TextInput
     TS_VALUES = {u"0": None,
-                u"¼": "0.25",
-                u"½": "0.5",
-                u"¾": "0.75",
-                u"1": "1"
-                }
+                 u"¼": "0.25",
+                 u"½": "0.5",
+                 u"¾": "0.75",
+                 u"1": "1"}
     TS_VALUES_R = {0: "",
                    0.25: u"¼",
                    0.5: u"½",
@@ -220,7 +223,7 @@ class TimesheetField(forms.ChoiceField):
     def __init__(self, choices=(), required=True, widget=None, label=None,
                  initial=None, help_text=None, *args, **kwargs):
         super(TimesheetField, self).__init__(required=required, widget=widget, label=label,
-                                        initial=initial, help_text=help_text, *args, **kwargs)
+                                             initial=initial, help_text=help_text, *args, **kwargs)
         self.choices = self.TS_VALUES.items()
 
     def prepare_value(self, value):
