@@ -1,0 +1,14 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Add or modify a Client" %}{% endblock %}
+
+{% block content %}
+
+{% crispy form form.helper %}
+
+{% include "core/_datepicker.html" %}
+
+{% endblock %}
