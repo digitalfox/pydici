@@ -8,14 +8,12 @@ Django administration setup
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from ajax_select.admin import AjaxSelectAdmin
-
 from billing.models import ClientBill, SupplierBill
 from billing.forms import ClientBillForm, SupplierBillForm
 from core.admin import ReturnToAppAdmin
 
 
-class BillAdmin(AjaxSelectAdmin, ReturnToAppAdmin):
+class BillAdmin(ReturnToAppAdmin):
     list_display = ["id", "bill_id", "lead", "state", "amount", "creation_date", "due_date", "payment_date", "comment"]
     ordering = ("-creation_date",)
     actions = None

@@ -10,7 +10,6 @@ import os
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
-from ajax_select import urls as ajax_select_urls
 
 admin.autodiscover()
 
@@ -28,9 +27,6 @@ handler500 = "core.views.internal_error"
 pydici_patterns = patterns('',
     # Admin
     (r'^admin/', include(admin.site.urls)),
-
-    # Ajax select
-    (r'^admin/lookups/', include(ajax_select_urls)),
 
     # Django_select2
     url(r'^select2/', include('django_select2.urls')),

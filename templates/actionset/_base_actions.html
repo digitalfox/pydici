@@ -43,7 +43,9 @@
                            <button type="button" class="btn btn-default" 
                               onClick="call_deleguate_action('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DELEGUATE' %}', '{{ action.id|unlocalize }}');">
                               {% trans "Delegate to: " %}</button>
-                           <input name="deleguate_user_{{ action.id|unlocalize }}" type="text"/>
+                           {# <input name="deleguate_user_{{ action.id|unlocalize }}" type="text"/> #}
+                           {% for field in action.delegateForm %}{{ field }}{% endfor %}
+                           
                          </p>
                          {% endifequal %}
                     </div>
@@ -61,15 +63,15 @@
 <!--
 $(document).ready(function(){
 
-    $("input[name^='deleguate_user_']").autocomplete(
-                                          { source: '{% url "ajax_lookup" "user"%}',
-                                            minLength: 1,
-                                          });
+//     $("input[name^='deleguate_user_']").autocomplete(
+//                                           { source: ',
+//                                             minLength: 1,
+//                                           });
 
 });
     // Function call URL for deleguate
     function call_deleguate_action(url, action_id) {
-        var username = $("input[name^='deleguate_user_" + action_id + "']").val();
+        var username = $("#deleguate_user_"+ action_id).attr("txt")
         $.get(url + '?username=' + username, process_update_action_state);
     };
 
@@ -96,5 +98,9 @@ $(document).ready(function(){
     };
     // Call it once. Then it is called after each action update
     limit_action_list();
+    
+    // Fix focus issue of select2 inside a bootstrap modal
+    $.fn.modal.Constructor.prototype.enforceFocus = function() {};
     -->
+
 </script>

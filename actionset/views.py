@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 
 from actionset.models import ActionSet, ActionState
 from core.decorator import pydici_non_public
+from actionset.forms import LaunchActionSetForm
 
 
 def update_action_state(request, action_state_id, state):
@@ -50,9 +51,13 @@ def actionset_catalog(request):
         can_change = True
     else:
         can_change = False
+    actionsets = []
+    for actionset in ActionSet.objects.all():
+        actionsets.append([actionset, LaunchActionSetForm(actionset.id, initial={"actionset": actionset})])
     return render(request, "actionset/actionset_catalog.html",
-                  {"actionsets": ActionSet.objects.all(),
+                  {"actionsets": actionsets,
                    "can_change": can_change})
+
 
 
 @pydici_non_public

@@ -38,17 +38,6 @@ LEADS_MAIL_TO = "sebastien.renard@digitalfox.org"
 LEADS_MAIL_SMTP = "www.digitalfox.org"
 LEADS_HELP_PAGE = "/my_custom_help_page.html"  # May be absolute or relative
 
-AJAX_LOOKUP_CHANNELS = {
-    'consultant' : ('people.lookups', 'ConsultantLookup'),
-    'internal_consultant' : ('people.lookups', 'InternalConsultantLookup'),
-    'salesman' : ('people.lookups', 'SalesmanLookup'),
-    'mission' : ('staffing.lookups', 'MissionLookup'),
-    'lead' : ('leads.lookups', 'LeadLookup'),
-    'user' : ('core.lookups', 'UserLookup'),
-    'expense' : ('expense.lookups', 'ExpenseLookup'),
-    'chargeable_expense' : ('expense.lookups', 'ChargeableExpenseLookup'),
-    'payable_expense' : ('expense.lookups', 'PayableExpenseLookup'),
-}
 
 DATABASES = {
     'default': {
@@ -135,6 +124,7 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = [
+    # Django apps
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -142,6 +132,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    # Pydici modules
     'core',
     'people',
     'leads',
@@ -150,7 +141,7 @@ INSTALLED_APPS = [
     'billing',
     'expense',
     'actionset',
-    'ajax_select',
+    # Third party apps
     'taggit',
     'taggit_suggest',
     'taggit_templatetags',

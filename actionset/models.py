@@ -14,6 +14,8 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
+from actionset.forms import DelegateActionForm
+
 
 class ActionSet(models.Model):
     """Set of action that needs to be done when triggered by a process"""
@@ -73,3 +75,7 @@ class ActionState(models.Model):
             return u"%s (%s)" % (self.action, self.target)
         else:
             return unicode(self.action)
+
+    def delegateForm(self):
+        """A user selection Form for action delagation to be used in templates"""
+        return DelegateActionForm(actionstate_id=self.id)
