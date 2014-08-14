@@ -12,22 +12,28 @@
 {% block content %}
 
 	<h1>
-	<a href="{% url 'pdcreview' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}" title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
-	{% trans "Workload shedule review" %}
-	<a href="{% url 'pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}" title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
+    <div id="time-travel">
+    	<a href="{% url 'pdcreview' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}" title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
+    	{% trans "Workload shedule review" %}
+    	<a href="{% url 'pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}" title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
+    </div>
 	</h1>
+    
 
 <div class="row">
-    <div class="btn-group col-lg-8" data-toggle="buttons">
-        <label class="btn btn-default col-lg-4 {% ifequal projection "none" %}active{% endifequal %}">
+    <div class="btn-group col-lg-8" data-toggle="buttons" id="buttons-projection">
+        <label class="btn btn-default col-lg-4 {% ifequal projection "none" %}active{% endifequal %}" data-toggle="tooltip"
+        data-placement="bottom" title="{% trans 'Only consider won leads for staffing forecasting' %}">
             <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}}'"/>
             {% trans "Only won leads" %}
         </label>
-        <label class="btn btn-default col-lg-4 {% ifequal projection "balanced" %}active{% endifequal %}">
+        <label class="btn btn-default col-lg-4 {% ifequal projection "balanced" %}active{% endifequal %}" data-toggle="tooltip"
+        data-placement="bottom" title="{% trans 'Add missions forcecast staffing even if still not won with a ponderation based on the mission won probability' %}">
             <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=balanced'"/>
             {% trans "Balanced staffing projection" %}
         </label>
-        <label class="btn btn-default col-lg-4 {% ifequal projection "full" %}active{% endifequal %}">
+        <label class="btn btn-default col-lg-4 {% ifequal projection "full" %}active{% endifequal %}" data-toggle="tooltip"
+        data-placement="bottom" title="{% trans 'Add missions forcecast staffing even if still not won without any ponderation. 100% forecast is considered.' %}">
             <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=full'"/>
             {% trans "Full staffing projection" %}
         </label>
@@ -190,10 +196,17 @@ $(document).ready(function(){
         var e=$(this);
         e.popover("show");
     });
+    
     $(".pdc-tooltip").bind("mouseout", function() {
         var e=$(this);
         e.popover("hide");
     });
+    
+    $('#buttons-projection label').tooltip({
+        "container": "body"
+    });
+    
+    $('#time-travel a').tooltip();
 
 });
 //-->
