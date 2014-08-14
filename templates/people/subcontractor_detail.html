@@ -5,23 +5,21 @@
 {% endif %}
 
 
-<div class="pydici-grid">
-<ul>
-<li>
-    <div class="pydici-grid-item">
-	<p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{% trans "Contact: " %} {{ consultant.manager.full_name }}{% endifnotequal %}{% endif %}</p>
+    <div class="col-md-4 col-sm-6">
+        <h3>{% trans "Contact" %}</h3>
+	   <p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{{ consultant.manager.full_name }}{% endifnotequal %}{% endif %}</p>
 	</div>
-</li>
-<li>
-    <div class="pydici-grid-long-item">
-    <h3>{% trans "Pending actions" %}</h3>
+
     {% with consultant.pending_actions as actions %}
-        {% include "actionset/_consultant_actions.html" %}
-    {% endwith %}
+    {% if actions %}
+    <div class="col-md-4 col-sm-6">
+        <h3>{% trans "Pending actions" %}</h3>
+            {% include "actionset/_consultant_actions.html" %}
     </div>
-</li>
-<li>
-    <div class="pydici-grid-item">
+    {% endif %}
+    {% endwith %}
+
+    <div class="col-md-4 col-sm-6">
 	<h3>{% trans "Clients" %}</h3>
 	<ul>
 	{% for company in companies %}
@@ -29,9 +27,8 @@
 	{% endfor %}
 	</ul>
 	</div>
-</li>
-<li>
-    <div class="pydici-grid-long-item">
+
+    <div class="col-md-4 col-sm-6">
 	<h3>{% trans "Current missions" %}</h3>
 	<ul>
 	{% for mission in missions %}
@@ -39,9 +36,8 @@
 	{% endfor %}
 	</ul>
 	</div>
-</li>
-<li>
-    <div class="pydici-grid-long-item">
+
+    <div class="col-md-4 col-sm-6">
 	{% if leads_as_staffee %}
 	<h3>{% trans "Current leads as resource" %}</h3>
 	<ul>
@@ -51,8 +47,4 @@
 	</ul>
 	{% endif %}	
 	</div>
-</li>
-<div style="clear:both">&nbsp;</div>
-</ul>
-</div>
 <br/>
