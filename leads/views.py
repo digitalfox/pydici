@@ -33,6 +33,7 @@ from leads.utils import postSaveLead
 import pydici.settings
 from core.utils import capitalize, getLeadDirs, createProjectTree
 from core.decorator import pydici_non_public
+from people.models import Consultant
 
 
 @pydici_non_public
@@ -121,7 +122,11 @@ def lead(request, lead_id=None):
         if lead:
             form = LeadForm(instance=lead)  # A form that edit current lead
         else:
-            form = LeadForm()  # An unbound form
+            try:
+                consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+                form = LeadForm(initial={"responsible": consultant})  # An unbound form
+            except Consultant.DoesNotExist:
+                form = LeadForm()  # An unbound form
 
     return render(request, "leads/lead.html", {"lead": lead,
                                                "form": form,
