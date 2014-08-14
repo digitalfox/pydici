@@ -57,6 +57,9 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.js"></script>
 <!--     <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script> -->
     {% import_django_select2_js %}
+    {% ifequal LANGUAGE_CODE "fr-fr" %}
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/select2_locale_fr.js"></script>
+    {% endifequal %}
     
     {% block extrajs %}{% endblock %}
     
