@@ -52,7 +52,7 @@ class LeadForm(models.ModelForm):
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"), "name",
                                                   AppendedText("client", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.client")),
                                                   "subsidiary", "description", "action"),
-                                              Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next next"), css_class="datepicker"),
+                                              Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
                                                                                       Field("start_date", placeholder=_("Date of the operational start"), css_class="datepicker"),
                                                                                       css_class='col-md-6'),
                                                                                Column(Field("deal_id", placeholder=_("Leave blank to auto generate")),
