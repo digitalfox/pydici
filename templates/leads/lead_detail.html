@@ -130,7 +130,7 @@
                 <table class="table table-hover table-striped table-condensed">
                     <tr><th>{% trans "Sold" %}</th>
                     <td>{% if lead.sales %}{{ lead.sales }} k€
-                        {% else %} <a href="{% url 'admin:leads_lead_change' lead.id %}?return_to={{ lead.get_absolute_url }}">{% trans "To be defined" %}</a>
+                        {% else %} <a href="{% url 'leads.views.lead' lead.id %}">{% trans "To be defined" %}</a>
                         {% endif %}</td></tr>
                     <tr><th>{% trans "Unused" %}</th><td>{{ lead.unused }} k€</td></tr>
                     <tr><th>{% trans "Margin over rate objective" %}</th><td>{{ lead.totalObjectiveMargin }} €</td></tr>
@@ -182,19 +182,18 @@
         <div class="alert alert-info">{% trans "A mission is created once a commercial proposal has been sent." %}</div>
     {% endif %}
     </div> {# end of tab missions #}
-    
-    
+
+
     <div id="tab-billing" class="tab-pane fade">
-        <h2>{% trans "Billing" %}</h2>
-            {% include "billing/_lead_billing.html" %}
+        {% include "billing/_lead_billing.html" %}
     </div>
-    
+
     <div id="tab-actions" class="tab-pane fade">
         <h2>{% trans "Pending actions" %}</h2>
             {% with lead.pending_actions as actions %}
                 {% include "actionset/_lead_mission_actions.html" %}
             {% endwith %}
-        
+
         <h2>{% trans "Done actions" %}</h2>
             <ul>
             {% for action in lead.done_actions %}
@@ -204,10 +203,11 @@
             {% endfor %}
             </ul>
     </div>
-    
-    
+
+
     <div id="tab-documents" class="tab-pane fade"></div>
-    
+
+
     <div id="tab-history" class="tab-pane fade">
         {% if action_list %}
             <h2>{% trans "Change history" %}</h2>
