@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column
-from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField, Select2ChoiceField
+from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField, Select2ChoiceField, AutoHeavySelect2Widget, Select2Widget
 from django.utils import formats
 
 
@@ -40,7 +40,7 @@ class MissionMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
 class StaffingDateChoices(Select2ChoiceField):
     def __init__(self, *args, **kwargs):
         kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=24)]
-        kwargs["choices"].extend([("", "")])  # Add the empty choice for extra empty choices
+        kwargs["choices"].insert(0, ("", ""))  # Add the empty choice for extra empty choices
         super(StaffingDateChoices, self).__init__(*args, **kwargs)
 
 
@@ -64,10 +64,12 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["mission"] = MissionChoices(label=_("Mission"))
+        form.fields["mission"] = MissionChoices(label=_("Mission"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
+                                                                                                                   "placeholder": _("Select a mission to add forecast...")}))
         form.fields["mission"].widget.attrs.setdefault("size", 8)  # Reduce default size
-        form.fields["staffing_date"] = StaffingDateChoices()
+        form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}))
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
+
 
 
 class MissionStaffingInlineFormset(BaseInlineFormSet):
@@ -75,8 +77,9 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["consultant"] = ConsultantChoices(label=_("Consultant"))
-        form.fields["staffing_date"] = StaffingDateChoices()
+        form.fields["consultant"] = ConsultantChoices(label=_("Consultant"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
+                                                                                                                   "placeholder": _("Select a conultant to add forecast...")}))
+        form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}))
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
 
