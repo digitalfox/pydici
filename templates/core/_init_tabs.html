@@ -25,22 +25,7 @@ $(document).ready(function() {
        displayBsTab($(this), href);
     });
 
-    // If url has a hash, switch to the target tab
-    $(function () {
-        var activeTab = $('[href=' + location.hash.replace(tabprefix,"") + ']');
-        var url = document.location.toString();
-        if (!url.match('#')) {
-            // No hash, so we load first tab
-            $('a[data-toggle="tab"]:first').trigger("shown.bs.tab");
-            $('#tab-home').load($('.active a').attr("data-tab-url"),function(result){
-                $('tab-content').find('.active a').tab('show');
-            });
-        }else {
-            activeTab.click();
-        }
-     });
-
-
+    
     // Change hash for page-reload
     $('.nav-tabs a').on('shown.bs.tab', function (e) {
         var hash = e.target.hash.replace("#", "#" + tabprefix)
@@ -50,5 +35,21 @@ $(document).ready(function() {
             window.location.hash = hash;
         }
     });
+    
+    // If url has a hash, switch to the target tab
+    $(function () {
+        var url = document.location.toString();
+        if (!url.match('#')) {
+            // No hash, so we load first tab
+            $('a[data-toggle="tab"]:first').trigger("shown.bs.tab");
+            $('#tab-home').load($('.active a').attr("data-tab-url"),function(result){
+                $('tab-content').find('.active a').tab('show');
+            });
+        }else {
+            var activeTab = $('[href=' + location.hash.replace(tabprefix,"") + ']');
+            activeTab.click();
+        }
+     });
+
 });
 </script>
