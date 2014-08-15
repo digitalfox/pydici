@@ -49,17 +49,18 @@ class LeadForm(models.ModelForm):
         self.helper = FormHelper()
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-default"
-        self.helper.layout = Layout(TabHolder(Tab(_("Identification"), "name",
+        self.helper.layout = Layout(TabHolder(Tab(_("Identification"), Field("name", placeholder=("Name of the lead. don't include client name")),
                                                   AppendedText("client", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.client")),
-                                                  "subsidiary", "description", "action"),
+                                                  "subsidiary", "description", Field("action", placeholder=_("Next commercial action to be done"))),
                                               Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
                                                                                       Field("start_date", placeholder=_("Date of the operational start"), css_class="datepicker"),
                                                                                       css_class='col-md-6'),
                                                                                Column(Field("deal_id", placeholder=_("Leave blank to auto generate")),
                                                                                       Field("client_deal_id", placeholder=_("Internal client reference")), "state", css_class='col-md-6'))),
                                               Tab(_("Commercial"), Div(Column(AppendedText("sales", "k€"), "salesman", css_class='col-md-6'),
-                                                                       Column("business_broker", "paying_authority", css_class='col-md-6'))),
-                                              Tab(_("Staffing"), "staffing", Field("external_staffing", placeholder=_("People outside company that could contribute..."))),),
+                                                                       Column(Field("business_broker", placeholder=_("If the leads was brought by a third party")),
+                                                                              Field("paying_authority", placeholder=_("If payment is done by a third party")), css_class='col-md-6'))),
+                                              Tab(_("Staffing"), Field("staffing", placeholder=_("People that could contribute...")), Field("external_staffing", placeholder=_("People outside company that could contribute..."))),),
                                     Fieldset("", "send_email"),
                                     Field("creation_date", type="hidden"),
                                     submit)

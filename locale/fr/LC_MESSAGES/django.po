@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-15 11:57+0200\n"
-"PO-Revision-Date: 2014-08-15 11:57+0200\n"
+"POT-Creation-Date: 2014-08-15 12:27+0200\n"
+"PO-Revision-Date: 2014-08-15 12:27+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -591,7 +591,7 @@ msgstr "État et suivi"
 msgid "Commercial"
 msgstr "Commercial"
 
-#: leads/admin.py:24 leads/forms.py:62 leads/views.py:179
+#: leads/admin.py:24 leads/forms.py:63 leads/views.py:179
 #: staffing/models.py:268 templates/billing/bill_review.html:202
 msgid "Staffing"
 msgstr "Staffing"
@@ -655,6 +655,10 @@ msgstr "Organisme payeur"
 msgid "Identification"
 msgstr "Identification"
 
+#: leads/forms.py:54
+msgid "Next commercial action to be done"
+msgstr "Prochaine action commercial à prendre"
+
 #: leads/forms.py:55
 msgid "Due date for next step"
 msgstr "Échéance de la prochaine étape"
@@ -671,17 +675,29 @@ msgstr "Laissez vide pour auto générer"
 msgid "Internal client reference"
 msgstr "Référence interne du client"
 
+#: leads/forms.py:61
+msgid "If the leads was brought by a third party"
+msgstr "Si l'affaire a été apportée par un tiers"
+
 #: leads/forms.py:62
+msgid "If payment is done by a third party"
+msgstr "Si la facturation est faite via un tiers"
+
+#: leads/forms.py:63
+msgid "People that could contribute..."
+msgstr "Personnes qui pourraient contribuer..."
+
+#: leads/forms.py:63
 msgid "People outside company that could contribute..."
 msgstr "Personnes externes à la société qui pourraient contribuer..."
 
-#: leads/forms.py:74
+#: leads/forms.py:75
 msgid "Sales amount must be defined at this step of the commercial process"
 msgstr ""
 "Le montant de l'affaire doit être connu à cette étape du processus d'avant-"
 "vente"
 
-#: leads/forms.py:85
+#: leads/forms.py:86
 msgid ""
 "Deal id must be unique. Use another value or let the field blank for "
 "automatic computation"
