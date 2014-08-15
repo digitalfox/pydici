@@ -1,0 +1,18 @@
+{% extends "core/pydici.html" %}
+{# Standard pydici form for generic views #}
+
+{% load i18n %}
+{% load crispy_forms_tags %} 
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+
+{% crispy form form.helper %}
+
+
+
+{% include "core/_datepicker.html" %}
+
+{% endblock %}

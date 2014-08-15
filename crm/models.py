@@ -12,8 +12,6 @@ from django.db.models import Sum, Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
-from core.utils import capitalize
-
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -84,10 +82,6 @@ class Contact(models.Model):
 
     def __unicode__(self):
         return self.name
-
-    def save(self, *args, **kargs):
-        self.name = capitalize(self.name)
-        super(Contact, self).save(*args, **kargs)
 
     def companies(self):
         """Return companies for whom this contact currently works"""

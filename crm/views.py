@@ -11,17 +11,46 @@ from datetime import date, timedelta
 from django.shortcuts import render
 from django.db.models import Sum, Min
 from django.views.decorators.cache import cache_page
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.core import urlresolvers
 
+
 from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact
-from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm
+from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm
 from staffing.models import Timesheet
 from leads.models import Lead
 from core.decorator import pydici_non_public
 from core.utils import sortedValues, previousMonth, COLORS
 from billing.models import ClientBill
+
+
+# TODO: handle security (@pydici_non_public)
+class ContactCreate(CreateView):
+    model = Contact
+    template_name = "core/form.html"
+    form_class = ContactForm
+    success_url = urlresolvers.reverse_lazy("admin:crm_contact_changelist")  # TODO: update this to contact page once it will exist
+
+
+class ContactUpdate(UpdateView):
+    model = Contact
+    template_name = "core/form.html"
+    form_class = ContactForm
+    success_url = urlresolvers.reverse_lazy("admin:crm_contact_changelist")  # TODO: update this to contact page once it will exist
+
+
+class ContactDelete(DeleteView):
+    model = Contact
+    template_name = "core/delete.html"
+    form_class = ContactForm
+    success_url = urlresolvers.reverse_lazy("admin:crm_contact_changelist")  # TODO: update this to contact page once it will exist
+
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.INFO, _("Contact removed successfully"))
+        return super(ContactDelete, self).form_valid(form)
 
 
 @pydici_non_public
@@ -110,8 +139,8 @@ def company(request, company_id=None):
             form = CompanyForm()  # An unbound form
 
     return render(request, "crm/clientcompany.html", {"company": company,
-                                                "form": form,
-                                                "user": request.user})
+                                                      "form": form,
+                                                      "user": request.user})
 
 
 @pydici_non_public

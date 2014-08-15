@@ -17,6 +17,7 @@ from crispy_forms.bootstrap import AppendedText
 from core.forms import PydiciSelect2Field
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company
 from people.forms import ConsultantChoices
+from core.utils import capitalize
 
 
 class ClientChoices(PydiciSelect2Field, AutoModelSelect2Field):
@@ -120,3 +121,21 @@ class CompanyForm(models.ModelForm):
                                         Column(css_class="col-md-6"),
                                         css_class="row"),
                                     submit)
+
+
+class ContactForm(models.ModelForm):
+    class Meta:
+        model = Contact
+
+    def __init__(self, *args, **kwargs):
+        super(ContactForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        submit = Submit("Submit", _("Save"))
+        submit.field_classes = "btn btn-default"
+        self.helper.layout = Layout(Div(Column("name", "email", "function", css_class="col-md-6"),
+                                        Column("mobile_phone", "phone", "fax", css_class="col-md-6"),
+                                        css_class="row"),
+                                    submit)
+
+    def clean_name(self):
+        return capitalize(self.cleaned_data["name"])
