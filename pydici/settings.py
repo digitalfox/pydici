@@ -110,9 +110,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 if DEBUG:
-    MIDDLEWARE_CLASSES.extend(('userswitch.middleware.UserSwitchMiddleware',
-                               'debug_toolbar.middleware.DebugToolbarMiddleware',
-                               ))
+    MIDDLEWARE_CLASSES.append('userswitch.middleware.UserSwitchMiddleware')
 
 ROOT_URLCONF = 'pydici.urls'
 
