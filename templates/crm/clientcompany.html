@@ -1,0 +1,12 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Add or modify a company" %}{% endblock %}
+
+{% block content %}
+
+{% crispy form form.helper %}
+
+{% endblock %}

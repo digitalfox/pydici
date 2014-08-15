@@ -15,8 +15,8 @@ from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.core import urlresolvers
 
-from crm.models import Company, Client, Contact, AdministrativeContact
-from crm.forms import ClientForm
+from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact
+from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm
 from staffing.models import Timesheet
 from leads.models import Lead
 from core.decorator import pydici_non_public
@@ -52,6 +52,67 @@ def client(request, client_id=None):
     return render(request, "crm/client.html", {"client": client,
                                                "form": form,
                                                "user": request.user})
+
+
+@pydici_non_public
+def clientOrganisation(request, client_organisation_id=None):
+    """Client creation or modification"""
+    clientOrganisation = None
+    try:
+        if client_organisation_id:
+            clientOrganisation = ClientOrganisation.objects.get(id=client_organisation_id)
+    except ClientOrganisation.DoesNotExist:
+        pass
+
+    if request.method == "POST":
+        if client:
+            form = ClientOrganisationForm(request.POST, instance=ClientOrganisation)
+        else:
+            form = ClientOrganisationForm(request.POST)
+        if form.is_valid():
+            clientOrganisation = form.save()
+            clientOrganisation.save()
+            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[clientOrganisation.company.id]))
+    else:
+        if clientOrganisation:
+            form = ClientOrganisationForm(instance=clientOrganisation)  # A form that edit current client organisation
+        else:
+            form = ClientOrganisationForm()  # An unbound form
+
+    return render(request, "crm/client_organisation.html", {"client_organisation": clientOrganisation,
+                                                            "form": form,
+                                                            "user": request.user})
+
+
+@pydici_non_public
+def company(request, company_id=None):
+    """Client creation or modification"""
+    company = None
+    try:
+        if company_id:
+            company = Company.objects.get(id=company_id)
+    except Company.DoesNotExist:
+        pass
+
+    if request.method == "POST":
+        if company:
+            form = CompanyForm(request.POST, instance=company)
+        else:
+            form = CompanyForm(request.POST)
+        if form.is_valid():
+            company = form.save()
+            company.save()
+            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[company.id]))
+    else:
+        if company:
+            form = CompanyForm(instance=company)  # A form that edit current company
+        else:
+            form = CompanyForm()  # An unbound form
+
+    return render(request, "crm/clientcompany.html", {"company": company,
+                                                "form": form,
+                                                "user": request.user})
+
 
 @pydici_non_public
 def company_detail(request, company_id):

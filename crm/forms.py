@@ -15,7 +15,8 @@ from crispy_forms.layout import Submit, Layout, Div, Column
 from crispy_forms.bootstrap import AppendedText
 
 from core.forms import PydiciSelect2Field
-from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact
+from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company
+from people.forms import ConsultantChoices
 
 
 class ClientChoices(PydiciSelect2Field, AutoModelSelect2Field):
@@ -62,6 +63,11 @@ class ClientOrganisationChoices(PydiciSelect2Field, AutoModelSelect2Field):
     search_fields = ["name__icontains", "company__name__icontains", "company__code__icontains"]
 
 
+class CompanyChoices(PydiciSelect2Field, AutoModelSelect2Field):
+    queryset = Company.objects
+    search_fields = ["name__icontains", "code__icontains"]
+
+
 class ClientForm(models.ModelForm):
     class Meta:
         model = Client
@@ -74,9 +80,43 @@ class ClientForm(models.ModelForm):
         self.helper = FormHelper()
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-default"
-        self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("admin:crm_clientorganisation_add")),
+        self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation")),
                                                "expectations", css_class="col-md-6"),
                                         Column("contact", "alignment", css_class="col-md-6"),
                                         css_class="row"),
                                     "active",
+                                    submit)
+
+
+class ClientOrganisationForm(models.ModelForm):
+    class Meta:
+        model = ClientOrganisation
+
+    company = CompanyChoices(label=_("Company"))
+
+    def __init__(self, *args, **kwargs):
+        super(ClientOrganisationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        submit = Submit("Submit", _("Save"))
+        submit.field_classes = "btn btn-default"
+        self.helper.layout = Layout(Div(Column("name", AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")), css_class="col-md-6"),
+                                        Column(css_class="col-md-6"),
+                                        css_class="row"),
+                                    submit)
+
+
+class CompanyForm(models.ModelForm):
+    class Meta:
+        model = Company
+
+    businessOwner = ConsultantChoices(label=_("Business Owner"))
+
+    def __init__(self, *args, **kwargs):
+        super(CompanyForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        submit = Submit("Submit", _("Save"))
+        submit.field_classes = "btn btn-default"
+        self.helper.layout = Layout(Div(Column("name", "code", "businessOwner", css_class="col-md-6"),
+                                        Column(css_class="col-md-6"),
+                                        css_class="row"),
                                     submit)

@@ -11,7 +11,7 @@
 
 {% block content %}
 
-<h1><a href="{% url 'admin:crm_company_change' company.id %}?return_to={{ request.get_full_path }}" class='changelink'>{{ company }}</a></h1>
+<h1><a href="{% url 'crm.views.company' company.id %}" class='changelink'>{{ company }}</a></h1>
 
 {% with "company-tabs" as tabs %}
     {% include "core/_init_tabs.html" %}
@@ -84,7 +84,7 @@
         <h2>{% trans "Business owner for this company:" %}</h2>
             <ul data-role="listview" data-inset="true" data-theme="c">
                 <li>{% if company.businessOwner %}<a href="{% url 'people.views.consultant_home' company.businessOwner.id %}">{{ company.businessOwner.full_name }}</a>
-                    {% else %} <a href="{% url 'admin:crm_company_change' company.id %}?return_to={{ request.get_full_path }}#tab-consultants">{% trans "To be defined" %}</a>
+                    {% else %} <a href="{% url 'crm.views.company' company.id %}">{% trans "To be defined" %}</a>
                     {% endif %}</li>
             </ul>
         <h2>{% trans "Consultants that work for this company:" %}</h2>
