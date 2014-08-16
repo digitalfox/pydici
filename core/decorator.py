@@ -6,6 +6,7 @@ Pydici views decorators
 """
 
 from django.contrib.auth.decorators import user_passes_test
+from django.utils.decorators import method_decorator
 
 
 def pydici_non_public(function=None):
@@ -18,3 +19,9 @@ def pydici_non_public(function=None):
     if function:
         return actual_decorator(function)
     return actual_decorator
+
+
+class PydiciNonPublicdMixin(object):
+    @method_decorator(pydici_non_public)
+    def dispatch(self, request, *args, **kwargs):
+        return super(PydiciNonPublicdMixin, self).dispatch(request, *args, **kwargs)

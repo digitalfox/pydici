@@ -23,19 +23,18 @@ from crm.models import Company, Client, ClientOrganisation, Contact, Administrat
 from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm
 from staffing.models import Timesheet
 from leads.models import Lead
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, PydiciNonPublicdMixin
 from core.utils import sortedValues, previousMonth, COLORS
 from billing.models import ClientBill
 
 
-# TODO: handle security (@pydici_non_public)
-class ContactCreate(CreateView):
+class ContactCreate(PydiciNonPublicdMixin, CreateView):
     model = Contact
     template_name = "core/form.html"
     form_class = ContactForm
 
 
-class ContactUpdate(UpdateView):
+class ContactUpdate(PydiciNonPublicdMixin, UpdateView):
     model = Contact
     template_name = "core/form.html"
     form_class = ContactForm
@@ -44,7 +43,7 @@ class ContactUpdate(UpdateView):
         return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("contact_detail", args=[self.object.id, ])
 
 
-class ContactDelete(DeleteView):
+class ContactDelete(PydiciNonPublicdMixin, DeleteView):
     model = Contact
     template_name = "core/delete.html"
     form_class = ContactForm
@@ -55,11 +54,11 @@ class ContactDelete(DeleteView):
         return super(ContactDelete, self).form_valid(form)
 
 
-class ContactDetail(DetailView):
+class ContactDetail(PydiciNonPublicdMixin, DetailView):
     model = Contact
 
 
-class ContactList(ListView):
+class ContactList(PydiciNonPublicdMixin, ListView):
     model = Contact
 
 
