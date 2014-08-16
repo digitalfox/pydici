@@ -1,0 +1,30 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Contact detail" %} {{ contact }}{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-hover table-striped">
+        <tr><th><span class="glyphicon glyphicon-user"></span> {% trans "name" %}</th><td>{{ contact.name }}</td></tr>
+        <tr><th><span class="glyphicon glyphicon-earphone"></span> {% trans "phone" %}</th><td>{{ contact.phone }}</td></tr>
+        <tr><th><span class="glyphicon glyphicon-phone"></span> {% trans "mobile phone" %}</th><td>{{ contact.mobile_phone }}</td></tr>
+        <tr><th><span class="glyphicon glyphicon-print"></span> {% trans "fax" %}</th><td>{{ contact.fax }}</td></tr>
+        <tr><th><span class="glyphicon glyphicon-envelope"></span> {% trans "email" %}</th><td>{{ contact.email|urlize }}</td></tr>
+        <tr><th><span class="glyphicon glyphicon-briefcase"></span> {% trans "function" %}</th><td>{{ contact.function }}</td></tr>
+        <tr><th><span class="glyphicon glyphicon-home"></span> {% trans "companies" %}</th><td>{{ contact.companies }}</td></tr>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <!-- placeholder for photo -->
+    </div>
+</div>
+
+
+    <a role="button" class="btn btn-default" href="{% url 'contact_update' contact.id %}">{% trans "edit" %}</a>
+    <a role="button" class="btn btn-danger" style="color:#FFFFFF" href="{% url 'contact_delete' contact.id %}">{% trans "delete" %}</a>
+
+{% endblock %}

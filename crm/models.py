@@ -11,6 +11,7 @@ from django.db import models
 from django.db.models import Sum, Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.core import urlresolvers
 
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
@@ -97,6 +98,9 @@ class Contact(models.Model):
         elif companies.count() > 1:
             return u", ".join([unicode(i) for i in companies])
     companies.short_description = _("Companies")
+
+    def get_absolute_url(self):
+        return urlresolvers.reverse("contact_detail", args=[self.id, ])
 
     class Meta:
         ordering = ["name"]
