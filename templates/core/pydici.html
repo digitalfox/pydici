@@ -74,11 +74,15 @@
     {% endblock %}
 
     <script type="text/javascript">
-    // Enable tooltip for all objects with pydici-tooltip class
     <!--
     $(document).ready(function() {
-
+        // Enable tooltip for all objects with pydici-tooltip class
         $(".pydici-tooltip").tooltip();
+
+        // Prevent menu closing when using in-menu search form
+        $(document).on('click', '.dropdown-menu', function (e) {
+            $(this).hasClass('keep-open') && e.stopPropagation();
+        }); 
     });
     -->
     </script>
