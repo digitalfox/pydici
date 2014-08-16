@@ -477,7 +477,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                    "read_only": readOnly,
                    "days": days,
                    "month": month,
-                   "week": week,
+                   "week": week or 0,
                    "missions": missions,
                    "working_days_balance": wDaysBalance,
                    "working_days": wDays,
