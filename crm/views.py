@@ -12,7 +12,7 @@ from django.shortcuts import render
 from django.db.models import Sum, Min
 from django.views.decorators.cache import cache_page
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
@@ -40,17 +40,15 @@ class ContactUpdate(UpdateView):
     template_name = "core/form.html"
     form_class = ContactForm
 
-    def form_valid(self, form):
-        if self.request.GET.get('return_to', False):
-            self.success_url = urlresolvers.reverse_lazy("contact_detail", args=[self.object.id, ])
-        return super(ContactUpdate, self).form_valid(form)
+    def get_success_url(self):
+        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("contact_detail", args=[self.object.id, ])
 
 
 class ContactDelete(DeleteView):
     model = Contact
     template_name = "core/delete.html"
     form_class = ContactForm
-    success_url = urlresolvers.reverse_lazy("admin:crm_contact_changelist")  # TODO: update this to contact page once it will exist
+    success_url = urlresolvers.reverse_lazy("contact_list")
 
     def form_valid(self, form):
         messages.add_message(self.request, messages.INFO, _("Contact removed successfully"))
@@ -58,6 +56,10 @@ class ContactDelete(DeleteView):
 
 
 class ContactDetail(DetailView):
+    model = Contact
+
+
+class ContactList(ListView):
     model = Contact
 
 

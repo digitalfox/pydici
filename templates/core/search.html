@@ -35,7 +35,7 @@
     <h2>{% trans "Contacts"%}</h2>
     <ul>
     {% for contact in contacts %}
-        <li><a href="{% url 'admin:crm_contact_change' contact.id %}?return_to={{ request.get_full_path }}">{{ contact }} ({{ contact.company }})</a></li>
+        <li><a href="{% url 'contact_detail' contact.id %}">{{ contact }} ({{ contact.company }})</a></li>
     {% endfor %}
     </ul>
 {% endif %}

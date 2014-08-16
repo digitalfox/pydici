@@ -91,11 +91,12 @@ class Contact(models.Model):
                                            Q(missioncontact__contact__id=self.id) |
                                            Q(administrativecontact__contact__id=self.id) |
                                            Q(supplier__contact__id=self.id)).distinct()
-        if companies.count() == 0:
+        companies_count = companies.count()
+        if companies_count == 0:
             return _("None")
-        elif companies.count() == 1:
+        elif companies_count == 1:
             return companies[0]
-        elif companies.count() > 1:
+        elif companies_count > 1:
             return u", ".join([unicode(i) for i in companies])
     companies.short_description = _("Companies")
 

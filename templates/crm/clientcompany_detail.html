@@ -67,7 +67,7 @@
                 <h2>
                     {% if lead.client.contact %}
                         {{ lead.client.organisation }} (
-                        <a rel=external href="{% url 'admin:crm_contact_change' lead.client.contact.id %}?return_to={{ request.get_full_path }}#tab-leads">{{ lead.client.contact }}</a>)
+                        <a rel=external href="{% url 'contact_detail' lead.client.contact.id %}">{{ lead.client.contact }}</a>)
                     {% else %}
                         {{ lead.client }}
                     {% endif %}
@@ -133,7 +133,7 @@
             {% for admincontact in administrative_contacts %}
                 <tr>
                 {% if admincontact.contact %}
-                   <td><a rel=external href="{% url 'admin:crm_contact_change' admincontact.contact.id %}?return_to={{ request.get_full_path }}#tab-contacts">{{ admincontact.contact.name }}</a></td>
+                   <td><a rel=external href="{% url 'contact_update' admincontact.contact.id %}?return_to={{ request.get_full_path }}">{{ admincontact.contact.name }}</a></td>
                 {% else %}
                     <td></td>
                 {% endif %}

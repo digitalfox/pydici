@@ -76,7 +76,7 @@
             <table class="table table-hover table-striped table-condensed">
                 <tr>
                     <th>{% trans "Contact" %}</th>
-                    <td>{% if lead.client.contact %}<a href="{% url 'admin:crm_contact_change' lead.client.contact.id %}?return_to={{ request.get_full_path }}">{{ lead.client.contact }}</a> {% else %}{% trans "Unknown" %} {% endif %} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}</td>
+                    <td>{% if lead.client.contact %}<a href="{% url 'contact_detail' lead.client.contact.id %}">{{ lead.client.contact }}</a> {% else %}{% trans "Unknown" %} {% endif %} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}</td>
                 </tr>
                 <tr>
                     <th>{% trans "Deal id" %}</th><td>{{ lead.deal_id }}</td>

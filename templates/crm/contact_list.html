@@ -1,0 +1,13 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Contacts adressebook" %}{% endblock %}
+
+{% block content %}
+
+{% with contact_list as contacts %}
+    {% include "crm/_contact_list.html" %}
+{% endwith %}
+
+{% endblock %}
