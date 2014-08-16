@@ -79,11 +79,12 @@
     $('#next-week').click(function () {
         $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' week=next_week %}');
     });
-    {% if next_week < previous_week %}
-        $("#previous-week").parent().addClass("disabled");
-    {% else %}
-        $("#next-week").parent().addClass("disabled");
+    {% if next_week < week %}
+        $("#next-week").parent().hide();
     {% endif %}
+    {% ifequal week 1 %}
+        $("#previous-week").parent().hide();
+    {% endifequal %}
 {% else %}
     $('#previous-month').click(function () {
     	$('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=previous_date|date:'Y' month=previous_date|date:'m' %}');
