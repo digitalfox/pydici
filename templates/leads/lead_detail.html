@@ -69,7 +69,7 @@
         
         
         {% if lead.description %}
-            <div class='jumbotron'>{{ lead.description|urlize|pydici_simple_format|linebreaksbr }}</div>
+            <div class='well'>{{ lead.description|urlize|pydici_simple_format|linebreaksbr }}</div>
         {% endif %}
         <div class="col-lg-6 col-md-8 col-sm-12">
             <h2>{% trans "Informations" %}</h2>
