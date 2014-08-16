@@ -10,19 +10,19 @@
     {% include "core/_init_tabs.html" %}
 {% endwith %}
 
-
     <h1>{% trans "Lead detail" %}</h1>
     {% if active_count %}
+    <ul class="pager" style="text-align:left">
 	    {% if previous_lead %}
-	        <a href="{% url 'leads.views.detail' previous_lead.id %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
+	        <li><a href="{% url 'leads.views.detail' previous_lead.id %}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
 	    {% endif %}
 	    {{ active_rank }} / {{ active_count }}
 	    {% if next_lead %}
-	        <a href="{% url 'leads.views.detail' next_lead.id %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
+	        <li><a href="{% url 'leads.views.detail' next_lead.id %}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
 	    {% endif %}
+    </ul>
     {% endif %}
 
-    
     <h2><a href="{% url 'crm.views.company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a> - <a href="{% url 'leads.views.lead' lead.id %}" class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
 <div>

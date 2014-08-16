@@ -6,11 +6,13 @@
 
 {% block content %}
 
-<h2>
-<a href="{% url 'staffing.views.holidays_planning' year=previous_month|date:'Y' month=previous_month|date:'m' %}"><img id="previous-month" src="{{ MEDIA_URL }}pydici/fg.png" border=0 title="{% trans 'Previous month' %}" /></a>
-{% trans "Holidays planning" %} {{ month|date:"F Y"}}
-<a href="{% url 'staffing.views.holidays_planning' year=next_month|date:'Y' month=next_month|date:'m' %}"><img id="next-month" src="{{ MEDIA_URL }}pydici/fd.png" border=0 title="{% trans 'Next month' %}" /></a>
-</h2>
+<h1>
+<ul class="pager" style="text-align:left">
+    <li class="pydici-tooltip" title="{% trans 'Previous month' %}"><a href="{% url 'staffing.views.holidays_planning' year=previous_month|date:'Y' month=previous_month|date:'m' %}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+    {% trans "Holidays planning" %} {{ month|date:"F Y"}}
+    <li class="pydici-tooltip" title="{% trans 'Next month' %}"><a href="{% url 'staffing.views.holidays_planning' year=next_month|date:'Y' month=next_month|date:'m' %}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+</ul>
+</h1>
 
 <div class="table-responsive">
 <table class="table table-hover table-pydici-extra-condensed">

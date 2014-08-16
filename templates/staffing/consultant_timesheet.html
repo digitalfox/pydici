@@ -1,14 +1,16 @@
 {% load i18n %}
 {% load pydici_filters %}
 
-<div id="pydici-ajax-form-content-consultant-timesheet" class="content-large">
+<div id="pydici-ajax-form-content-consultant-timesheet">
     <h2>
-    <img id="previous-month" src="{{ MEDIA_URL }}pydici/fg.png" border=0 style="cursor:pointer;"  title="{% trans 'Previous month' %}" />
-    {% trans "Timesheet" %} {{ month|date:"F Y"}}
-    <img id="next-month" src="{{ MEDIA_URL }}pydici/fd.png" border=0 style="cursor:pointer;" title="{% trans 'Next month' %}" />
+    <ul class="pager" style="text-align:left">
+        <li class="pydici-tooltip" title="{% trans 'Previous month' %}"><span class="glyphicon glyphicon-chevron-left" id="previous-month" style="cursor:pointer;color:#8F6749"></span></li>
+        {% trans "Timesheet" %} {{ month|date:"F Y"}}
+        <li class="pydici-tooltip" title="{% trans 'Next month' %}"><span class="glyphicon glyphicon-chevron-right" id="next-month" style="cursor:pointer;color:#8F6749"></li>
+    </ul>
     </h2>
     <form action="{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' %}" method="POST" id="pydici-ajax-form-consultant-timesheet">
-    <table class='small-form-row' style="text-align:center">
+    <table id="pydici-consultant-timesheet-table" class='table table-pydici-extra-condensed table-hover tablesmall-form-row' style="text-align:center">
             <tr>
             {% for day in days %}
                 <td></td><td>{{ day|date:"j" }}</td>
@@ -70,6 +72,12 @@ $('#previous-month').click(function () {
 $('#next-month').click(function () {
     $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=next_date|date:'Y' month=next_date|date:'m' %}');
 });
+
+$(".pydici-tooltip").tooltip();
+
+/* Hide last column for small devices */
+$("#pydici-consultant-timesheet-table td:last-child").addClass("hidden-xs hidden-sm hidden-md");
+
 </script>
 
 {% if not read_only %}

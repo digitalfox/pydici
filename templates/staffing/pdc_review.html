@@ -12,11 +12,11 @@
 {% block content %}
 
 	<h1>
-    <div id="time-travel">
-    	<a href="{% url 'pdcreview' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}" title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
+    <ul class="pager" style="text-align:left">
+    	<li class="pydici-tooltip" title="{% trans 'Previous months' %}"><a href="{% url 'pdcreview' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
     	{% trans "Workload shedule review" %}
-    	<a href="{% url 'pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}" title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a>
-    </div>
+    	<li class="pydici-tooltip" title="{% trans 'Next months' %}" ><a href="{% url 'pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+    </ul>
 	</h1>
     
 
@@ -205,9 +205,6 @@ $(document).ready(function(){
     $('#buttons-projection label').tooltip({
         "container": "body"
     });
-    
-    $('#time-travel a').tooltip();
-
 });
 //-->
 </SCRIPT>
