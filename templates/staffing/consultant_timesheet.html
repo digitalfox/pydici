@@ -4,9 +4,17 @@
 <div id="pydici-ajax-form-content-consultant-timesheet">
     <h2>
     <ul class="pager" style="text-align:left">
+    {% if week %}
+        <li class="pydici-tooltip" title="{% trans 'Previous week' %}"><span class="glyphicon glyphicon-chevron-left" id="previous-week" style="cursor:pointer;color:#8F6749"></span></li>
+        {% trans "Timesheet" %} {{ month|date:"F Y"}} - {% trans "week " %} {{ week }}
+        <li class="pydici-tooltip" title="{% trans 'Next week' %}"><span class="glyphicon glyphicon-chevron-right" id="next-week" style="cursor:pointer;color:#8F6749"></li>
+        <div class="pull-right"><button id="switch-month" class="btn btn-default">{% trans "Switch to month mode" %}</button></div>
+    {% else %}
         <li class="pydici-tooltip" title="{% trans 'Previous month' %}"><span class="glyphicon glyphicon-chevron-left" id="previous-month" style="cursor:pointer;color:#8F6749"></span></li>
         {% trans "Timesheet" %} {{ month|date:"F Y"}}
         <li class="pydici-tooltip" title="{% trans 'Next month' %}"><span class="glyphicon glyphicon-chevron-right" id="next-month" style="cursor:pointer;color:#8F6749"></li>
+        <div class="pull-right"><button id="switch-week" class="btn btn-default">{% trans "Switch to week mode" %}</button></div>
+    {% endif %}
     </ul>
     </h2>
     <form action="{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' %}" method="POST" id="pydici-ajax-form-consultant-timesheet">
@@ -43,16 +51,15 @@
             {% endfor %}
             </tr>
     </table>
-    <br/>
     {% if read_only %}
         <div id="readonly-warning"><em>{% trans "Note: Past month timesheet and other people timesheets are read only" %}</em></div>
     {% else %}
         <div class="submit-row">
             <button type='submit' class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span> {% trans 'Save' %}</button>
         </div>
-        
     {% endif %}
     </form>
+
     <br/><p>{% trans "Working days in this month: " %} {{ working_days }}</p>
     {% if working_days_balance %}
         <p>{% trans "Working days balance: " %} {{ working_days_balance|floatformat:-2 }}</p>
@@ -65,18 +72,42 @@
 
 <script type="text/javascript">
 /* Bind time nav bar to ajax calls */
-$('#previous-month').click(function () {
-	$('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=previous_date|date:'Y' month=previous_date|date:'m' %}');
+{% if week %}
+    $('#previous-week').click(function () {
+        $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' week=previous_week%}');
+    });
+    $('#next-week').click(function () {
+        $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' week=next_week %}');
+    });
+    {% if next_week < previous_week %}
+        $("#previous-week").parent().addClass("disabled");
+    {% else %}
+        $("#next-week").parent().addClass("disabled");
+    {% endif %}
+{% else %}
+    $('#previous-month').click(function () {
+    	$('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=previous_date|date:'Y' month=previous_date|date:'m' %}');
+    });
+    
+    $('#next-month').click(function () {
+        $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=next_date|date:'Y' month=next_date|date:'m' %}');
+    });
+{% endif %}
+
+$('#switch-week').click(function () {
+    $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' week=1 %}');
 });
 
-$('#next-month').click(function () {
-    $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=next_date|date:'Y' month=next_date|date:'m' %}');
+$('#switch-month').click(function () {
+    $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' %}');
 });
+
+
 
 $(".pydici-tooltip").tooltip();
 
 /* Hide last column for small devices */
-$("#pydici-consultant-timesheet-table td:last-child").addClass("hidden-xs hidden-sm hidden-md");
+$("#pydici-consultant-timesheet-table td:last-child").addClass("hidden-xs");
 
 </script>
 
