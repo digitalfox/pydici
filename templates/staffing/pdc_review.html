@@ -33,7 +33,7 @@
             {% trans "Balanced staffing projection" %}
         </label>
         <label class="btn btn-default col-lg-4 {% ifequal projection "full" %}active{% endifequal %}" data-toggle="tooltip"
-        data-placement="bottom" title="{% trans 'Add missions forcecast staffing even if still not won without any ponderation. 100% forecast is considered.' %}">
+        data-placement="bottom" title="{% trans 'Add missions forcecast staffing even if still not won without any ponderation. All forecast is considered.' %}">
             <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=full'"/>
             {% trans "Full staffing projection" %}
         </label>

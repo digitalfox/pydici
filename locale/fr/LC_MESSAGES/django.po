@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-16 20:32+0200\n"
-"PO-Revision-Date: 2014-08-16 20:31+0200\n"
+"POT-Creation-Date: 2014-08-16 23:30+0200\n"
+"PO-Revision-Date: 2014-08-16 23:30+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -470,11 +470,11 @@ msgstr "Fax générique"
 msgid "Administrative contact"
 msgstr "Contact administratif"
 
-#: crm/views.py:54
+#: crm/views.py:53
 msgid "Contact removed successfully"
 msgstr "Contact supprimé avec succès "
 
-#: crm/views.py:214
+#: crm/views.py:213
 msgid "Others"
 msgstr "Autres"
 
@@ -660,6 +660,10 @@ msgstr "Organisme payeur"
 #: leads/forms.py:52
 msgid "Identification"
 msgstr "Identification"
+
+#: leads/forms.py:52
+msgid "Name of the lead. don't include client name"
+msgstr "Nom de l'affaire. Ne pas inclure le nom du client"
 
 #: leads/forms.py:54
 msgid "Next commercial action to be done"
@@ -1664,7 +1668,7 @@ msgstr "Console d'administration"
 msgid "Help page"
 msgstr "Page d'aide"
 
-#: templates/core/_pydici_menu.html:107
+#: templates/core/_pydici_menu.html:103 templates/core/_pydici_menu.html:113
 msgid "search"
 msgstr "chercher"
 
@@ -2665,13 +2669,12 @@ msgid "Balanced staffing projection"
 msgstr "Projections de staffing pondérées"
 
 #: templates/staffing/pdc_review.html:36
-#, python-format
 msgid ""
 "Add missions forcecast staffing even if still not won without any "
-"ponderation. 100%% forecast is considered."
+"ponderation. All forecast is considered."
 msgstr ""
 "Ajoute les prévisions de charge des missions même si elles ne sont pas "
-"gagnées sans aucun pondération. 100%% des prévisions sont prises en compte."
+"gagnées sans aucun pondération. Toutes les prévisions sont prises en compte."
 
 #: templates/staffing/pdc_review.html:38
 msgid "Full staffing projection"
