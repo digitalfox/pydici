@@ -44,7 +44,7 @@
         	    {% for tag in lead.tags.all %}
         	    <div id="tag_{{ tag.id }}" style="display:inline">
         	    	<a href="{% url 'leads.views.tag' tag.id %}">{{ tag }}</a>
-        	    	<a class='tagrlink' href='javascript:;' onClick="$.get('{% url 'leads.views.remove_tag' tag.id lead.id %}', hide_tag);">[x]</a>&nbsp;
+        	    	<a class='tagrlink' href='javascript:;' onClick="$.get('{% url 'leads.views.remove_tag' tag.id lead.id %}', hide_tag);"><span class="glyphicon glyphicon-remove-circle"></span></a>&nbsp;
                 </div>
         	    {% endfor %}
         	    <div id="newtags" style="display:inline"></div>
@@ -252,7 +252,7 @@ $(document).ready(function() {
 	                function(data) {
 	                    if (data.tag_created) {
 	                        // Add new tag on list
-				var remove_link = "<a class='tagrlink' href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "', hide_tag)\">[x]</a>";
+				var remove_link = "<a class='tagrlink' href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "', hide_tag)\"><span class=\"glyphicon glyphicon-remove-circle\"></span></a>";
 				$("#newtags").append("<div id='tag_" + data.id + "' style='display:inline'><a href='"+ data.tag_url + "'>" + data.tag_name + "</a>" + remove_link + "&nbsp;&nbsp;");
 	                        $("#newtag").val("");
 	                    }
@@ -271,7 +271,7 @@ $(document).ready(function() {
                 { tag : $(this).text(), lead_id : {{lead.id}} },
                 function(data) {
 	                // Add new tag on list
-		var remove_link = "<a href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "')\">[x]</a>";
+		var remove_link = "<a href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "')\"><span class=\"glyphicon glyphicon-remove-circle\"></span></a>";
 		$("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>" + remove_link + "&nbsp;&nbsp;");
                 });
         // Remove from suggested list
