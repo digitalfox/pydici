@@ -5,7 +5,6 @@ Leads form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.forms import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -19,7 +18,7 @@ from django_select2 import AutoModelSelect2Field
 from leads.models import Lead
 from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
 from crm.forms import ClientChoices, BusinessBrokerChoices
-from core.forms import PydiciSelect2Field
+from core.forms import PydiciSelect2Field, PydiciCrispyModelForm
 
 
 class LeadChoices(PydiciSelect2Field, AutoModelSelect2Field):
@@ -33,7 +32,7 @@ class LeadChoices(PydiciSelect2Field, AutoModelSelect2Field):
                      "deal_id__icontains", "client_deal_id__icontains"]
 
 
-class LeadForm(models.ModelForm):
+class LeadForm(PydiciCrispyModelForm):
     class Meta:
         model = Lead
 
@@ -46,9 +45,6 @@ class LeadForm(models.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        submit = Submit("Submit", _("Save"))
-        submit.field_classes = "btn btn-default"
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"), Field("name", placeholder=_("Name of the lead. don't include client name")),
                                                   AppendedText("client", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.client")),
                                                   "subsidiary", "description", Field("action", placeholder=_("Next commercial action to be done"))),
@@ -63,7 +59,7 @@ class LeadForm(models.ModelForm):
                                               Tab(_("Staffing"), Field("staffing", placeholder=_("People that could contribute...")), Field("external_staffing", placeholder=_("People outside company that could contribute..."))),),
                                     Fieldset("", "send_email"),
                                     Field("creation_date", type="hidden"),
-                                    submit)
+                                    self.submit)
 
     def clean_sales(self):
         """Ensure sale amount is defined at lead when commercial proposition has been sent"""

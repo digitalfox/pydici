@@ -31,7 +31,7 @@ from people.models import Consultant
 from leads.models import Lead
 from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
-    TimesheetForm, MassStaffingForm, MissionContactForm
+    TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
     to_int_or_round, COLORS, convertDictKeyToDateTime
 from core.decorator import pydici_non_public
@@ -986,13 +986,13 @@ def mission_contacts(request, mission_id):
 
     mission = Mission.objects.get(id=mission_id)
     if request.method == "POST":
-        form = MissionContactForm(request.POST, instance=mission)
+        form = MissionContactsForm(request.POST, instance=mission)
         if form.is_valid():
             form.save()
         return HttpResponseRedirect(urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]))
 
     # Unbound form
-    form = MissionContactForm(instance=mission)
+    form = MissionContactsForm(instance=mission)
     # TODO: add link to add mission contact
     missionContacts = mission.contacts.select_related().order_by("company")
     return render(request, "staffing/mission_contacts.html",

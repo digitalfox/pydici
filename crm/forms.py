@@ -5,13 +5,11 @@ CRM form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.forms import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
 from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Column
+from crispy_forms.layout import Layout, Div, Column
 from crispy_forms.bootstrap import AppendedText
 
 from core.forms import PydiciSelect2Field
@@ -70,7 +68,7 @@ class CompanyChoices(PydiciSelect2Field, AutoModelSelect2Field):
     search_fields = ["name__icontains", "code__icontains"]
 
 
-class ClientForm(models.ModelForm):
+class ClientForm(PydiciCrispyModelForm):
     class Meta:
         model = Client
 
@@ -79,18 +77,15 @@ class ClientForm(models.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ClientForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        submit = Submit("Submit", _("Save"))
-        submit.field_classes = "btn btn-default"
         self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation")),
                                                "expectations", css_class="col-md-6"),
                                         Column("contact", "alignment", css_class="col-md-6"),
                                         css_class="row"),
                                     "active",
-                                    submit)
+                                    self.submit)
 
 
-class ClientOrganisationForm(models.ModelForm):
+class ClientOrganisationForm(PydiciCrispyModelForm):
     class Meta:
         model = ClientOrganisation
 
@@ -98,16 +93,13 @@ class ClientOrganisationForm(models.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ClientOrganisationForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        submit = Submit("Submit", _("Save"))
-        submit.field_classes = "btn btn-default"
         self.helper.layout = Layout(Div(Column("name", AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")), css_class="col-md-6"),
                                         Column(css_class="col-md-6"),
                                         css_class="row"),
-                                    submit)
+                                    self.submit)
 
 
-class CompanyForm(models.ModelForm):
+class CompanyForm(PydiciCrispyModelForm):
     class Meta:
         model = Company
 
@@ -115,28 +107,22 @@ class CompanyForm(models.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CompanyForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        submit = Submit("Submit", _("Save"))
-        submit.field_classes = "btn btn-default"
         self.helper.layout = Layout(Div(Column("name", "code", "businessOwner", css_class="col-md-6"),
                                         Column(css_class="col-md-6"),
                                         css_class="row"),
-                                    submit)
+                                    self.submit)
 
 
-class ContactForm(models.ModelForm):
+class ContactForm(PydiciCrispyModelForm):
     class Meta:
         model = Contact
 
     def __init__(self, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        submit = Submit("Submit", _("Save"))
-        submit.field_classes = "btn btn-default"
         self.helper.layout = Layout(Div(Column("name", "email", "function", css_class="col-md-6"),
                                         Column("mobile_phone", "phone", "fax", css_class="col-md-6"),
                                         css_class="row"),
-                                    submit)
+                                    self.submit)
 
     def clean_name(self):
         return capitalize(self.cleaned_data["name"])

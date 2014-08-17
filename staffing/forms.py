@@ -71,14 +71,13 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
 
-
 class MissionStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
         form.fields["consultant"] = ConsultantChoices(label=_("Consultant"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
-                                                                                                                   "placeholder": _("Select a consultant to add forecast...")}))
+                                                                                                                            "placeholder": _("Select a consultant to add forecast...")}))
         form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}))
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
@@ -211,7 +210,7 @@ class FinancialConditionAdminForm(forms.ModelForm):
                 return self.cleaned_data["bought_daily_rate"]
 
 
-class MissionContactForm(forms.ModelForm):
+class MissionContactsForm(forms.ModelForm):
     contacts = MissionContactMChoices(required=False, label=_("New contacts"))
 
     class Meta:
