@@ -14,8 +14,6 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
-from actionset.forms import DelegateActionForm
-
 
 class ActionSet(models.Model):
     """Set of action that needs to be done when triggered by a process"""
@@ -78,4 +76,5 @@ class ActionState(models.Model):
 
     def delegateForm(self):
         """A user selection Form for action delagation to be used in templates"""
+        from actionset.forms import DelegateActionForm  # Defer import to avoid circular import
         return DelegateActionForm(actionstate_id=self.id)
