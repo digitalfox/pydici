@@ -19,8 +19,8 @@ from django.http import HttpResponseRedirect
 from django.core import urlresolvers
 
 
-from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact
-from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm
+from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact
+from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm
 from staffing.models import Timesheet
 from leads.models import Lead
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin
@@ -60,6 +60,21 @@ class ContactDetail(PydiciNonPublicdMixin, DetailView):
 
 class ContactList(PydiciNonPublicdMixin, ListView):
     model = Contact
+
+
+class MissionContactCreate(PydiciNonPublicdMixin, CreateView):
+    model = MissionContact
+    template_name = "core/form.html"
+    form_class = MissionContactForm
+
+
+class MissionContactUpdate(PydiciNonPublicdMixin, UpdateView):
+    model = MissionContact
+    template_name = "core/form.html"
+    form_class = MissionContactForm
+
+    def get_success_url(self):
+        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("contact_detail", args=[self.object.contact.id, ])
 
 
 @pydici_non_public

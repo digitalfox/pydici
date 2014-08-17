@@ -218,6 +218,10 @@ class MissionContact(models.Model):
     def __unicode__(self):
         return u"%s (%s)" % (self.contact, self.company)
 
+    def get_absolute_url(self):
+        return urlresolvers.reverse("contact_detail", args=[self.contact.id, ])
+
+
     class Meta:
         ordering = ["company", "contact"]
         verbose_name = _("Mission contact")

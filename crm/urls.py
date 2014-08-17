@@ -9,8 +9,10 @@ from django.conf.urls import patterns, url
 from crm import views as v
 
 crm_urls = patterns('crm.views',
-                    url(r'contact/add/$', v.ContactCreate.as_view(), name='contact_add'),
-                    url(r'contact/(?P<pk>\d+)/update$', v.ContactUpdate.as_view(), name='contact_update'),
+                    url(r'^contact/add/$', v.ContactCreate.as_view(), name='contact_add'),
+                    url(r'^contact/(?P<pk>\d+)/update$', v.ContactUpdate.as_view(), name='contact_update'),
+                    url(r'^mission/contact/add/$', v.MissionContactCreate.as_view(), name='mission_contact_add'),
+                    url(r'^mission/contact/(?P<pk>\d+)/update$', v.MissionContactUpdate.as_view(), name='mission_contact_update'),
                     url(r'contact/(?P<pk>\d+)/delete/$', v.ContactDelete.as_view(), name='contact_delete'),
                     url(r'contact/(?P<pk>\d+)/$', v.ContactDetail.as_view(), name='contact_detail'),
                     url(r'contact/all/$', v.ContactList.as_view(), name='contact_list'),

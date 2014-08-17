@@ -18,6 +18,7 @@ from core.forms import PydiciSelect2Field
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company
 from people.forms import ConsultantChoices
 from core.utils import capitalize
+from core.forms import PydiciCrispyModelForm
 
 
 class ClientChoices(PydiciSelect2Field, AutoModelSelect2Field):
@@ -139,3 +140,18 @@ class ContactForm(models.ModelForm):
 
     def clean_name(self):
         return capitalize(self.cleaned_data["name"])
+
+
+class MissionContactForm(PydiciCrispyModelForm):
+    class Meta:
+        model = MissionContact
+
+    contact = ContactChoices()
+    company = CompanyChoices()
+
+    def __init__(self, *args, **kwargs):
+        super(MissionContactForm, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(Div(Column("contact", css_class="col-md-6"),
+                                        Column("company", css_class="col-md-6"),
+                                        css_class="row"),
+                                    self.submit)
