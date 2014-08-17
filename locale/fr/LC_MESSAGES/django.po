@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-16 23:30+0200\n"
-"PO-Revision-Date: 2014-08-16 23:30+0200\n"
+"POT-Creation-Date: 2014-08-17 11:56+0200\n"
+"PO-Revision-Date: 2014-08-17 11:56+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -30,27 +30,27 @@ msgstr "Objet cible"
 msgid "user"
 msgstr "utilisateur"
 
-#: actionset/models.py:23
+#: actionset/models.py:21
 msgid "When a lead is created"
 msgstr "Quand une affaire est créée"
 
-#: actionset/models.py:24
+#: actionset/models.py:22
 msgid "When a lead is won"
 msgstr "Quand une affaire est gagnée"
 
-#: actionset/models.py:25
+#: actionset/models.py:23
 msgid "When a mission is created"
 msgstr "Quand une mission est créée"
 
-#: actionset/models.py:26
+#: actionset/models.py:24
 msgid "When mission is archived"
 msgstr "Quand une mission est archivée"
 
-#: actionset/models.py:27
+#: actionset/models.py:25
 msgid "When a consultant is created"
 msgstr "Quand un consultant est créé"
 
-#: actionset/models.py:29 actionset/models.py:50 crm/models.py:22
+#: actionset/models.py:27 actionset/models.py:48 crm/models.py:22
 #: crm/models.py:77 crm/models.py:229 expense/models.py:32 leads/models.py:54
 #: leads/tables.py:19 leads/views.py:177 people/models.py:25
 #: people/models.py:216 staffing/tables.py:26
@@ -61,7 +61,7 @@ msgstr "Quand un consultant est créé"
 msgid "Name"
 msgstr "Nom"
 
-#: actionset/models.py:30 actionset/models.py:51 billing/admin.py:29
+#: actionset/models.py:28 actionset/models.py:49 billing/admin.py:29
 #: billing/admin.py:43 expense/models.py:63 leads/models.py:125
 #: leads/views.py:177 staffing/models.py:43 staffing/models.py:239
 #: templates/expense/expense_list.html:14 templates/leads/lead_detail.html:31
@@ -69,28 +69,28 @@ msgstr "Nom"
 msgid "Description"
 msgstr "Description"
 
-#: actionset/models.py:31
+#: actionset/models.py:29
 msgid "Trigger"
 msgstr "Déclencheur"
 
-#: actionset/models.py:32 crm/models.py:168 people/models.py:42
+#: actionset/models.py:30 crm/models.py:168 people/models.py:42
 #: people/models.py:219 staffing/models.py:46
 msgid "Active"
 msgstr "Active"
 
-#: actionset/models.py:60
+#: actionset/models.py:58
 msgid "To be done"
 msgstr "À faire"
 
-#: actionset/models.py:61
+#: actionset/models.py:59
 msgid "Done"
 msgstr "Faite"
 
-#: actionset/models.py:62 templates/actionset/_base_actions.html:41
+#: actionset/models.py:60 templates/actionset/_base_actions.html:41
 msgid "N/A"
 msgstr "N/A"
 
-#: actionset/models.py:64 billing/admin.py:32 billing/admin.py:46
+#: actionset/models.py:62 billing/admin.py:32 billing/admin.py:46
 #: billing/models.py:108 billing/models.py:145 expense/tables.py:27
 #: leads/models.py:66 leads/views.py:179
 #: templates/billing/_lead_billing.html:12
@@ -99,22 +99,22 @@ msgstr "N/A"
 msgid "State"
 msgstr "État"
 
-#: actionset/models.py:67 leads/models.py:69 leads/views.py:180
+#: actionset/models.py:65 leads/models.py:69 leads/views.py:180
 msgid "Creation"
 msgstr "Création"
 
-#: actionset/models.py:68 expense/models.py:69 leads/models.py:73
+#: actionset/models.py:66 expense/models.py:69 leads/models.py:73
 #: leads/models.py:117 leads/views.py:181 staffing/models.py:49
 #: templates/core/index.html:18 templates/core/index.html.py:43
 #: templates/core/index.html:67 templates/core/index.html.py:91
 msgid "Updated"
 msgstr "Mise à jour"
 
-#: actionset/models.py:69
+#: actionset/models.py:67
 msgid "Target content type"
 msgstr "Type de la cible"
 
-#: actionset/models.py:70
+#: actionset/models.py:68
 msgid "Content id"
 msgstr "Identifiant"
 
@@ -481,6 +481,10 @@ msgstr "Autres"
 #: expense/forms.py:85
 msgid "You must define a lead if expense is chargeable"
 msgstr "Vous devez définir une affaire si les frais sont refacturables"
+
+#: expense/forms.py:92
+msgid "payment date"
+msgstr "date de paiement"
 
 #: expense/forms.py:103
 msgid "All expenses of a payment must belongs to same user"

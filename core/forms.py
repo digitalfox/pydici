@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 
 from django_select2.fields import AutoModelSelect2Field
 
+
 class SearchForm(forms.Form):
     search = forms.CharField(max_length=100)
 

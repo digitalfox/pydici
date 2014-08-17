@@ -89,7 +89,7 @@ class ExpenseForm(forms.ModelForm):
 class ExpensePaymentForm(forms.Form):
     """Expense payment form based on ExpensePayemnt model"""
     expenses = PayableExpenseMChoices(label=_("Expenses"))
-    payment_date = forms.fields.DateField()
+    payment_date = forms.fields.DateField(_("payment date"))
 
     def clean(self):
         """Ensure expenses belongs to the same users"""
