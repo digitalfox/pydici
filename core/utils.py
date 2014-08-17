@@ -12,6 +12,7 @@ import os
 from datetime import timedelta, date, datetime
 import unicodedata
 from functools import wraps
+import json
 
 
 from django.template.loader import get_template
@@ -322,3 +323,36 @@ def convertDictKeyToDateTime(data):
         return dict((datetime.strptime(k, "%Y-%m-%d %H:%M:%S"), v) for k, v in data.items())
     else:
         return data
+
+
+class CNode(object):
+    """Cytoscape node object wrapper"""
+    def __init__(self, id_, name, parent=None):
+        self.id_ = id_
+        self.name = name
+        self.parent = parent
+
+    def data(self):
+        data = {"id": self.id_, "name": self.name}
+        if self.parent:
+            data["parent"] = self.parent.id_
+        return data
+
+
+class CNodes(set):
+    """A set of CNodes that can be dumped in json"""
+    def dump(self):
+        return json.dumps([{"data": node.data()} for node in self])
+
+
+class CEdge(object):
+    """Cytoscape edge object wrapper"""
+    def __init__(self, source, target):
+        self.source = source
+        self.target = target
+
+
+class CEdges(list):
+    """A list of CEdges that can be dumped in json"""
+    def dump(self):
+        return json.dumps([{"data": {"source": edge.source.id_, "target": edge.target.id_}} for edge in self])

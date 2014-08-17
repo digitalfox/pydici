@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core import urlresolvers
 
+from core.utils import CNodes, CNode, CEdges, CEdge
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -100,6 +101,31 @@ class Contact(models.Model):
         elif companies_count > 1:
             return u", ".join([unicode(i) for i in companies])
     companies.short_description = _("Companies")
+
+    def relationData(self):
+        """Compute relational data in json format usable by cytoscape library"""
+        nodes = CNodes()
+        edges = CEdges()
+        try:
+            me = CNode(unicode(self.id), unicode(self))
+            nodes.add(me)
+            for missionContact in self.missioncontact_set.all():
+                companyNode = CNode("company-%s" % missionContact.company.id, unicode(missionContact.company))
+                nodes.add(companyNode)
+                # edges.append(CEdge(me, companyNode))
+                for mission in missionContact.mission_set.all():
+                    missionNode = CNode("mission-%s" % mission.id, mission.short_name(), parent=companyNode)
+                    nodes.add(missionNode)
+                    edges.append(CEdge(me, missionNode))
+                    for consultant in mission.consultants():
+                        consultantNode = CNode("consultant-%s" % consultant.id, unicode(consultant))
+                        nodes.add(consultantNode)
+                        edges.append(CEdge(missionNode, consultantNode))
+
+            print """{nodes: %s, edges: %s }""" % (nodes.dump(), edges.dump())
+            return """{nodes: %s, edges: %s }""" % (nodes.dump(), edges.dump())
+        except Exception, e:
+            print e
 
     def get_absolute_url(self):
         return urlresolvers.reverse("contact_detail", args=[self.id, ])
