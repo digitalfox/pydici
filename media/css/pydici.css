@@ -69,7 +69,7 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 
 /* Small grid like timesheet */
 .tablesmall-form-row > tbody > tr > td { padding:0px; margin:0px; vertical-align: middle;}
-.tablesmall-form-row > tbody > tr > td > input {  background: #F9F9F9; margin: 1px -2px; padding: 3px 4px;}
+.tablesmall-form-row > tbody > tr > td > input {  background: #F9F9F9; margin: 1px -2px;}
 .tablesmall-form-row input:focus { border:0px; }
 
 
