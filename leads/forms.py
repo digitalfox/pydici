@@ -8,9 +8,9 @@ Leads form setup
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Column, Fieldset, Field
+from crispy_forms.layout import Layout, Div, Column, Fieldset, Field
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
 from django_select2 import AutoModelSelect2Field
 
@@ -45,7 +45,7 @@ class LeadForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(TabHolder(Tab(_("Identification"), Field("name", placeholder=_("Name of the lead. don't include client name")),
+        self.helper.layout = Layout(TabHolder(Tab(_("Identification"), Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))),
                                                   AppendedText("client", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.client")),
                                                   "subsidiary", "description", Field("action", placeholder=_("Next commercial action to be done"))),
                                               Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
