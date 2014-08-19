@@ -60,16 +60,18 @@ p img, h1 img, h2 img, h3 img, h4 img, td img { vertical-align:middle; }
 .example { margin:10px 0; padding:5px 10px; background:#efefef; }
 .nowrap { white-space:nowrap; }
 
-/* Small grid like timesheet */
-table.small-form-row td { padding:0px; font-size:9px; margin:0px; vertical-align: middle;}
-table.small-form-row input[type=text], input[type=password], textarea, select, .vTextField { border:1px solid #ccc; background: white; margin 2px 0; padding: 2px 3px;}
-
-
 /* FORM DEFAULTS */
 input, textarea, select { margin:2px 0; padding:2px 3px; vertical-align:middle; font-weight:normal; font-size:11px; }
 textarea { vertical-align:top !important; }
 input[type=text], input[type=password], textarea, select, .vTextField { border:1px solid #ccc; background: white;}
 input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
+
+
+/* Small grid like timesheet */
+.tablesmall-form-row > tbody > tr > td { padding:0px; margin:0px; vertical-align: middle;}
+.tablesmall-form-row > tbody > tr > td > input {  background: #F9F9F9; margin: 1px -2px; padding: 3px 4px;}
+.tablesmall-form-row input:focus { border:0px; }
+
 
 /* To be removed ? Need to be checked */
 ul.errorlist { margin:0 !important; padding:0 !important; }
