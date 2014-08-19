@@ -4,7 +4,13 @@
 
 {% block title %}{% trans "Contact detail" %} {{ contact }}{% endblock %}
 
-{% block extrajs %}<script type="text/javascript" src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>{% endblock %}
+{% block extrajs %}
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://cpettitt.github.io/project/dagre-d3/v0.2.9/dagre-d3.min.js"></script>
+
+
+{% endblock %}
 
 {% block content %}
 
@@ -30,9 +36,9 @@
     <a role="button" class="btn btn-danger" style="color:#FFFFFF" href="{% url 'contact_delete' contact.id %}">{% trans "delete" %}</a>
 
 
-<div id="cy" style="height: 100%;width: 100%;position: absolute;"></div>
-
-
+<svg width=650 height=680>
+    <g transform="translate(20,20)"/>
+</svg>
 
 
 
@@ -40,63 +46,15 @@
 <!--
 $(document).ready(function() {
     console.log("go");
-
-    $('#cy').cytoscape({
-      style: cytoscape.stylesheet()
-        .selector('node')
-          .css({
-            'content': 'data(name)',
-            'text-valign': 'center',
-            'color': 'grey',
-            'background-color': '#EEE',
-          })
-        .selector('edge')
-          .css({
-            'target-arrow-shape': 'triangle'
-          })
-        .selector(':selected')
-          .css({
-            'background-color': 'black',
-            'line-color': 'black',
-            'target-arrow-color': 'black',
-            'source-arrow-color': 'black'
-          })
-        .selector('.faded')
-          .css({
-            'opacity': 0.25,
-            'text-opacity': 0
-          }),
-
-      elements: {{ contact.relationData|safe }},
-
-      layout: {
-        name: 'breadthfirst',
-        directed: true,
-        padding: 0,
-        fit: true,
-      },
-      
-      ready: function(){
-        window.cy = this;
-        
-        cy.elements().unselectify();
-        
-        cy.on('tap', 'node', function(e){
-          var node = e.cyTarget; 
-          var neighborhood = node.neighborhood().add(node);
-          
-          cy.elements().addClass('faded');
-          neighborhood.removeClass('faded');
-        });
-        
-        cy.on('tap', function(e){
-          if( e.cyTarget === cy ){
-            cy.elements().removeClass('faded');
-          }
-        });
-      }
-    });
-
+    
+  
+    {{ contact.relationData|safe }}
+    
+    var g = dagreD3.json.decode(nodes, edges);
+    
+    var renderer = new dagreD3.Renderer();
+    renderer.run(g, d3.select("svg g"));
+ 
 });
 -->
 </script>

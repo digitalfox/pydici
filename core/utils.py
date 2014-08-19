@@ -325,34 +325,34 @@ def convertDictKeyToDateTime(data):
         return data
 
 
-class CNode(object):
-    """Cytoscape node object wrapper"""
-    def __init__(self, id_, name, parent=None):
+class GNode(object):
+    """Graph node object wrapper"""
+    def __init__(self, id_, value):
         self.id_ = id_
-        self.name = name
-        self.parent = parent
+        self.value = value
 
     def data(self):
-        data = {"id": self.id_, "name": self.name}
-        if self.parent:
-            data["parent"] = self.parent.id_
+        data = {"id": self.id_, "value": self.value}
         return data
 
+    def __hash__(self):
+        return hash(self.id_)
 
-class CNodes(set):
-    """A set of CNodes that can be dumped in json"""
+
+class GNodes(set):
+    """A set of GNodes that can be dumped in json"""
     def dump(self):
-        return json.dumps([{"data": node.data()} for node in self])
+        return json.dumps([node.data() for node in self])
 
 
-class CEdge(object):
-    """Cytoscape edge object wrapper"""
+class GEdge(object):
+    """Graph edge object wrapper"""
     def __init__(self, source, target):
         self.source = source
         self.target = target
 
 
-class CEdges(list):
+class GEdges(list):
     """A list of CEdges that can be dumped in json"""
     def dump(self):
-        return json.dumps([{"data": {"source": edge.source.id_, "target": edge.target.id_}} for edge in self])
+        return json.dumps([{"u": edge.source.id_, "v": edge.target.id_} for edge in self])

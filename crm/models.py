@@ -13,7 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core import urlresolvers
 
-from core.utils import CNodes, CNode, CEdges, CEdge
+from core.utils import GEdge, GEdges, GNode, GNodes
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -104,26 +104,28 @@ class Contact(models.Model):
 
     def relationData(self):
         """Compute relational data in json format usable by cytoscape library"""
-        nodes = CNodes()
-        edges = CEdges()
+        nodes = GNodes()
+        edges = GEdges()
         try:
-            me = CNode(unicode(self.id), unicode(self))
+            me = GNode(unicode(self.id), unicode(self))
             nodes.add(me)
             for missionContact in self.missioncontact_set.all():
-                companyNode = CNode("company-%s" % missionContact.company.id, unicode(missionContact.company))
+                companyNode = GNode("company-%s" % missionContact.company.id, unicode(missionContact.company))
                 nodes.add(companyNode)
                 # edges.append(CEdge(me, companyNode))
                 for mission in missionContact.mission_set.all():
-                    missionNode = CNode("mission-%s" % mission.id, mission.short_name(), parent=companyNode)
+                    missionNode = GNode("mission-%s" % mission.id, mission.short_name())
                     nodes.add(missionNode)
-                    edges.append(CEdge(me, missionNode))
+                    edges.append(GEdge(me, missionNode))
                     for consultant in mission.consultants():
-                        consultantNode = CNode("consultant-%s" % consultant.id, unicode(consultant))
+                        consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
                         nodes.add(consultantNode)
-                        edges.append(CEdge(missionNode, consultantNode))
+                        edges.append(GEdge(missionNode, consultantNode))
 
-            print """{nodes: %s, edges: %s }""" % (nodes.dump(), edges.dump())
-            return """{nodes: %s, edges: %s }""" % (nodes.dump(), edges.dump())
+            print """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
+            print "\n".join([i.id_ for i in nodes])
+            return """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
+
         except Exception, e:
             print e
 
