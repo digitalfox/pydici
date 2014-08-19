@@ -6,6 +6,7 @@ Database access layer for pydici CRM module
 """
 
 from datetime import date, timedelta
+from textwrap import fill
 
 from django.db import models
 from django.db.models import Sum, Q
@@ -111,10 +112,10 @@ class Contact(models.Model):
             nodes.add(me)
             for missionContact in self.missioncontact_set.all():
                 companyNode = GNode("company-%s" % missionContact.company.id, unicode(missionContact.company))
-                nodes.add(companyNode)
+                # nodes.add(companyNode)
                 # edges.append(CEdge(me, companyNode))
                 for mission in missionContact.mission_set.all():
-                    missionNode = GNode("mission-%s" % mission.id, mission.short_name())
+                    missionNode = GNode("mission-%s" % mission.id, fill(mission.short_name(), 18))
                     nodes.add(missionNode)
                     edges.append(GEdge(me, missionNode))
                     for consultant in mission.consultants():
@@ -123,7 +124,6 @@ class Contact(models.Model):
                         edges.append(GEdge(missionNode, consultantNode))
 
             print """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
-            print "\n".join([i.id_ for i in nodes])
             return """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
 
         except Exception, e:

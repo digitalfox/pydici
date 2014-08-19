@@ -36,8 +36,32 @@
     <a role="button" class="btn btn-danger" style="color:#FFFFFF" href="{% url 'contact_delete' contact.id %}">{% trans "delete" %}</a>
 
 
-<svg width=650 height=680>
-    <g transform="translate(20,20)"/>
+
+<style>
+svg {
+    overflow: hidden;
+}
+
+.node rect {
+    stroke: #333;
+    stroke-width: 1.5px;
+    fill: #fff;
+}
+
+.edgeLabel rect {
+    fill: #fff;
+}
+
+.edgePath {
+    stroke: #333;
+    stroke-width: 1.5px;
+    fill: none;
+}
+
+</style>
+
+<svg width="100%" height="500px">
+    <g />
 </svg>
 
 

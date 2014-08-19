@@ -327,22 +327,28 @@ def convertDictKeyToDateTime(data):
 
 class GNode(object):
     """Graph node object wrapper"""
-    def __init__(self, id_, value):
+    def __init__(self, id_, label):
         self.id_ = id_
-        self.value = value
+        self.value = label
 
     def data(self):
-        data = {"id": self.id_, "value": self.value}
+        data = {"id": self.id_, "value": {"label": self.value}}
         return data
 
     def __hash__(self):
         return hash(self.id_)
 
 
-class GNodes(set):
+class GNodes(object):
     """A set of GNodes that can be dumped in json"""
+    _nodes = {}
+
+    def add(self, node):
+        if node.id_ not in self._nodes:
+            self._nodes[node.id_] = node
+
     def dump(self):
-        return json.dumps([node.data() for node in self])
+        return json.dumps([node.data() for node in self._nodes.values()])
 
 
 class GEdge(object):
