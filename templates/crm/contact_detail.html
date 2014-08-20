@@ -78,7 +78,11 @@ $(document).ready(function() {
     
     var renderer = new dagreD3.Renderer();
     renderer.run(g, d3.select("svg g"));
- 
+
+    $('.graph-tooltip').tooltip({
+        "container": "body"
+    });
+
 });
 -->
 </script>

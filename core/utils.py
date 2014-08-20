@@ -355,12 +355,13 @@ class GNodes(object):
 
 class GEdge(object):
     """Graph edge object wrapper"""
-    def __init__(self, source, target):
+    def __init__(self, source, target, color="#BBB"):
         self.source = source
         self.target = target
+        self.color = color
 
 
 class GEdges(list):
     """A list of CEdges that can be dumped in json"""
     def dump(self):
-        return json.dumps([{"u": edge.source.id_, "v": edge.target.id_} for edge in self])
+        return json.dumps([{"u": edge.source.id_, "v": edge.target.id_, "value": { "style": "stroke: %s;" % edge.color}} for edge in self])

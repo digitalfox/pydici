@@ -115,7 +115,7 @@ class Contact(models.Model):
                 # nodes.add(companyNode)
                 # edges.append(CEdge(me, companyNode))
                 for mission in missionContact.mission_set.all():
-                    missionNode = GNode("mission-%s" % mission.id, fill(mission.short_name(), 18))
+                    missionNode = GNode("mission-%s" % mission.id, "<span class='graph-tooltip' title='%s'>%s</span>" % (mission.short_name(), mission.mission_id()))
                     nodes.add(missionNode)
                     edges.append(GEdge(me, missionNode))
                     for consultant in mission.consultants():
@@ -123,6 +123,11 @@ class Contact(models.Model):
                         nodes.add(consultantNode)
                         edges.append(GEdge(missionNode, consultantNode))
 
+            for client in self.client_set.all():
+                for lead in client.lead_set.all():
+                    leadNode = GNode("lead-%s" % lead.id, "<span class='graph-tooltip' title='%s'>%s</span>" % (unicode(lead), lead.deal_id))
+                    nodes.add(leadNode)
+                    edges.append(GEdge(leadNode, me))
             # print "\n".join([n.label.replace("\n", "") for n in nodes._nodes.values()])
             # print "\n".join(["%s -> %s" % (e.source.label.replace("\n", ""), e.target.label.replace("\n", "")) for e in edges])
             return """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
