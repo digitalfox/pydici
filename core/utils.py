@@ -329,10 +329,10 @@ class GNode(object):
     """Graph node object wrapper"""
     def __init__(self, id_, label):
         self.id_ = id_
-        self.value = label
+        self.label = label
 
     def data(self):
-        data = {"id": self.id_, "value": {"label": self.value}}
+        data = {"id": self.id_, "value": {"label": self.label}}
         return data
 
     def __hash__(self):
@@ -341,7 +341,9 @@ class GNode(object):
 
 class GNodes(object):
     """A set of GNodes that can be dumped in json"""
-    _nodes = {}
+
+    def __init__(self):
+        self._nodes = {}
 
     def add(self, node):
         if node.id_ not in self._nodes:

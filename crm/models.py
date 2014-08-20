@@ -123,7 +123,8 @@ class Contact(models.Model):
                         nodes.add(consultantNode)
                         edges.append(GEdge(missionNode, consultantNode))
 
-            print """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
+            # print "\n".join([n.label.replace("\n", "") for n in nodes._nodes.values()])
+            # print "\n".join(["%s -> %s" % (e.source.label.replace("\n", ""), e.target.label.replace("\n", "")) for e in edges])
             return """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
 
         except Exception, e:
