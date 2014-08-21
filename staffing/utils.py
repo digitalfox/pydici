@@ -161,10 +161,10 @@ def holidayDays(month=None):
     return [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth(month))]
 
 
-def staffingDates(n=12, format=None):
+def staffingDates(n=12, format=None, minDate=None):
     """Returns a list of n next month as datetime (if format="datetime") or
     as a list of dict() with short/long(encoded) string date"""
-    staffingDate = date.today().replace(day=1)
+    staffingDate = minDate or date.today().replace(day=1)
     dates = []
     for i in range(n):
         if format == "datetime":

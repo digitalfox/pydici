@@ -12,6 +12,8 @@ from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
+from django.db.models import Min
+
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column
@@ -39,7 +41,8 @@ class MissionMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
 
 class StaffingDateChoices(Select2ChoiceField):
     def __init__(self, *args, **kwargs):
-        kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=24)]
+        minDate = kwargs.pop("minDate", None)
+        kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=24, minDate=minDate)]
         kwargs["choices"].insert(0, ("", ""))  # Add the empty choice for extra empty choices
         super(StaffingDateChoices, self).__init__(*args, **kwargs)
 
@@ -76,9 +79,15 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
+        minDate = self.instance.staffing_set.all().aggregate(Min("staffing_date")).values()
+        if minDate:
+            minDate = minDate[0]
+        else:
+            minDate = None
         form.fields["consultant"] = ConsultantChoices(label=_("Consultant"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
                                                                                                                             "placeholder": _("Select a consultant to add forecast...")}))
-        form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}))
+        form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}),
+                                                           minDate=minDate)
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
 
