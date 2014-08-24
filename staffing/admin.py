@@ -8,7 +8,7 @@ Django administration setup
 from django.contrib import admin
 
 from staffing.models import Mission, Holiday, Timesheet, FinancialCondition, Staffing
-from staffing.forms import MissionAdminForm, FinancialConditionAdminForm
+from staffing.forms import MissionForm, FinancialConditionAdminForm
 from core.admin import ReturnToAppAdmin
 
 
@@ -22,7 +22,7 @@ class MissionAdmin(ReturnToAppAdmin):
     list_filter = ["nature", "probability", "subsidiary", "active", "archived_date"]
 
     actions = None
-    form = MissionAdminForm
+    form = MissionForm
 
 
 class HolidayAdmin(admin.ModelAdmin):

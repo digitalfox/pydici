@@ -20,7 +20,7 @@
 {% if mission.lead.client %}
     <a href="{% url 'crm.views.company_detail' mission.lead.client.organisation.company.id %}">{{ mission.lead.client.organisation }}</a> : 
 {% endif %}
-    <a href="{% url 'admin:staffing_mission_change' mission.id %}?return_to={% url 'staffing.views.mission_home' mission.id %}" class='changelink' >{{ mission.short_name }}</a>
+    <a href="{% url 'mission_update' mission.id %}?return_to={% url 'staffing.views.mission_home' mission.id %}" class='changelink' >{{ mission.short_name }}</a>
 </h1>
 
 <div>

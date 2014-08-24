@@ -5,6 +5,7 @@
 """
 
 from django.conf.urls import patterns, url
+import staffing.views as v
 
 staffing_urls = patterns('staffing.views',
                          url(r'^pdcreview/?$', 'pdc_review', name='pdcreview-index'),
@@ -12,7 +13,8 @@ staffing_urls = patterns('staffing.views',
                          url(r'^mission/$', 'missions', name='missions'),
                          url(r'^mission/all', 'missions', {'onlyActive': False}, 'all-missions'),
                          (r'^mission/(?P<mission_id>\d+)/$', 'mission_home'),
-                         (r'^mission/update/$', 'mission_update'),
+                         url(r'^mission/update/$', 'mission_update', name="mission_inline_update"),
+                         url(r'^mission/(?P<pk>\d+)/update$', v.MissionUpdate.as_view(), name='mission_update'),
                          (r'^mission/newfromdeal/(?P<lead_id>\d+)/$', 'create_new_mission_from_lead'),
                          (r'^forecast/mission/(?P<mission_id>\d+)/$', 'mission_staffing'),
                          (r'^mission/(?P<mission_id>\d+)/deactivate$', 'deactivate_mission'),

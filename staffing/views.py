@@ -24,6 +24,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
 from django.views.decorators.cache import cache_page, cache_control
+from django.views.generic.edit import UpdateView
 from django.contrib import messages
 
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
@@ -34,10 +35,11 @@ from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlin
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
     to_int_or_round, COLORS, convertDictKeyToDateTime
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates
 from staffing.tables import MissionTable
+from staffing.forms import MissionForm
 
 
 @pydici_non_public
@@ -999,6 +1001,15 @@ def mission_contacts(request, mission_id):
                   {"mission": mission,
                    "mission_contacts": missionContacts,
                    "mission_contact_form": form})
+
+
+class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
+    model = Mission
+    template_name = "core/form.html"
+    form_class = MissionForm
+
+    def get_success_url(self):
+        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("mission_home", args=[self.object.id, ])
 
 
 @pydici_non_public

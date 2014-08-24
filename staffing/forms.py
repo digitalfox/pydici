@@ -16,16 +16,18 @@ from django.db.models import Min
 
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Column
+from crispy_forms.layout import Submit, Layout, Div, Column, Field
+from crispy_forms.bootstrap import AppendedText
 from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField, Select2ChoiceField, AutoHeavySelect2Widget, Select2Widget
 from django.utils import formats
 
 
 from staffing.models import Mission, FinancialCondition
-from core.forms import PydiciSelect2Field
+from core.forms import PydiciSelect2Field, PydiciCrispyModelForm
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
 from staffing.utils import staffingDates
+from leads.forms import LeadChoices
 
 
 class MissionChoices(PydiciSelect2Field, AutoModelSelect2Field):
@@ -164,10 +166,20 @@ class TimesheetForm(forms.Form):
             self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
 
 
-class MissionAdminForm(forms.ModelForm):
-    """Form used to validate mission price field in admin"""
+class MissionForm(PydiciCrispyModelForm):
+    """Form used to change mission name and price"""
+    contacts = MissionContactMChoices(required=False)
+    lead = LeadChoices(required=False)
 
-    contacts = MissionContactMChoices(required=False, label=_("Contacts"))
+    def __init__(self, *args, **kwargs):
+        super(MissionForm, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(Div(Column(Field("description", placeholder=_("Name of this mission. Leave blank when leads has only one mission")),
+                                               AppendedText("price", "k€"), "billing_mode", "probability", "active", css_class="col-md-6"),
+                                        Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "subsidiary", "nature", "contacts",
+                                               css_class="col-md-6"),
+                                        css_class="row"),
+                                    Field("lead", type="hidden"), Field("archived_date", type="hidden"),
+                                    self.submit)
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
