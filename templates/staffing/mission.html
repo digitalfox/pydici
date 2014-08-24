@@ -76,6 +76,10 @@
                     <th>{% trans "Subsidiary" %}</th><td>{{ mission.subsidiary }}</td>
                 </tr>
                 <tr>
+                    <th>{% trans "Responsible" %}</th><td>{% if mission.responsible %}<a href="{% url 'people.views.consultant_home' mission.responsible.id %}">{{ mission.responsible }}</a> {% endif %}</td>
+                </tr>
+                
+                <tr>
                     <th>{% trans "Mission id" %}</th><td>{{ mission.mission_id }}</td>
                 </tr>
                 {% if mission.lead %}

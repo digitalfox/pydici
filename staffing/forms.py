@@ -170,12 +170,13 @@ class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""
     contacts = MissionContactMChoices(required=False)
     lead = LeadChoices(required=False)
+    responsible = ConsultantChoices(required=False)
 
     def __init__(self, *args, **kwargs):
         super(MissionForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column(Field("description", placeholder=_("Name of this mission. Leave blank when leads has only one mission")),
-                                               AppendedText("price", "k€"), "billing_mode", "probability", "active", css_class="col-md-6"),
-                                        Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "subsidiary", "nature", "contacts",
+                                               AppendedText("price", "k€"), "billing_mode", "probability", "nature", "active", css_class="col-md-6"),
+                                        Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "subsidiary", "responsible", "contacts",
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     Field("lead", type="hidden"), Field("archived_date", type="hidden"),

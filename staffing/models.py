@@ -50,6 +50,7 @@ class Mission(models.Model):
     contacts = models.ManyToManyField(MissionContact, blank=True)
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
     archived_date = models.DateTimeField(_("Archived date"), blank=True, null=True)
+    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True)
 
     def __unicode__(self):
         if self.description and not self.lead:

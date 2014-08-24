@@ -29,12 +29,13 @@ def postSaveLead(request, lead, form, change):
         except Exception, e:
             messages.add_message(request, messages.ERROR, ugettext("Failed to send mail: %s") % e)
 
-    # Create or update mission leadect if needed
+    # Create or update mission  if needed
     if lead.mission_set.count() == 0:
         if lead.state in ("OFFER_SENT", "NEGOTIATION", "WON"):
             mission = Mission(lead=lead)
             mission.price = lead.sales  # Initialise with lead price
             mission.subsidiary = lead.subsidiary
+            mission.responsible = lead.responsible
             mission.save()
             # Create default staffing
             mission.create_default_staffing()

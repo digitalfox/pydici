@@ -14,7 +14,7 @@ import json
 from django.shortcuts import render
 from django.core import urlresolvers
 from django.http import HttpResponseRedirect, HttpResponse
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.views.decorators.cache import cache_page
 
 from billing.models import ClientBill, SupplierBill
@@ -140,14 +140,14 @@ def pre_billing(request, year=None, month=None, mine=False):
         mine = False
 
     fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
-                                      timesheet__working_date__gte=month,
-                                      timesheet__working_date__lt=next_month)
+                                                timesheet__working_date__gte=month,
+                                                timesheet__working_date__lt=next_month)
     undefinedBillingModeMissions = Mission.objects.filter(nature="PROD", billing_mode=None,
-                                      timesheet__working_date__gte=month,
-                                      timesheet__working_date__lt=next_month)
+                                                          timesheet__working_date__gte=month,
+                                                          timesheet__working_date__lt=next_month)
     if mine:
-        fixedPriceMissions = fixedPriceMissions.filter(lead__responsible=consultant)
-        undefinedBillingModeMissions = undefinedBillingModeMissions.filter(lead__responsible=consultant)
+        fixedPriceMissions = fixedPriceMissions.filter(Q(lead__responsible=consultant) | Q(responsible=consultant))
+        undefinedBillingModeMissions = undefinedBillingModeMissions.filter(Q(lead__responsible=consultant) | Q(responsible=consultant))
 
     fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
     undefinedBillingModeMissions = undefinedBillingModeMissions.order_by("lead").distinct()
