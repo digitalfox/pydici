@@ -28,19 +28,22 @@ from core.utils import sortedValues, previousMonth, COLORS
 from billing.models import ClientBill
 
 
-class ContactCreate(PydiciNonPublicdMixin, CreateView):
-    model = Contact
-    template_name = "core/form.html"
-    form_class = ContactForm
-
-
-class ContactUpdate(PydiciNonPublicdMixin, UpdateView):
-    model = Contact
-    template_name = "core/form.html"
-    form_class = ContactForm
-
+class ContactReturnToMixin(object):
+    """Mixin class to return to contact detail if return_to args is not provided"""
     def get_success_url(self):
         return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("contact_detail", args=[self.object.id, ])
+
+
+class ContactCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
+    model = Contact
+    template_name = "core/form.html"
+    form_class = ContactForm
+
+
+class ContactUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
+    model = Contact
+    template_name = "core/form.html"
+    form_class = ContactForm
 
 
 class ContactDelete(PydiciNonPublicdMixin, DeleteView):
@@ -62,19 +65,16 @@ class ContactList(PydiciNonPublicdMixin, ListView):
     model = Contact
 
 
-class MissionContactCreate(PydiciNonPublicdMixin, CreateView):
+class MissionContactCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
     model = MissionContact
     template_name = "core/form.html"
     form_class = MissionContactForm
 
 
-class MissionContactUpdate(PydiciNonPublicdMixin, UpdateView):
+class MissionContactUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
     model = MissionContact
     template_name = "core/form.html"
     form_class = MissionContactForm
-
-    def get_success_url(self):
-        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("contact_detail", args=[self.object.contact.id, ])
 
 
 @pydici_non_public
