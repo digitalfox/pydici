@@ -133,11 +133,13 @@ class MissionContactForm(PydiciCrispyModelForm):
         model = MissionContact
 
     contact = ContactChoices()
-    company = CompanyChoices()
+    company = CompanyChoices(label=_("Company"))
 
     def __init__(self, *args, **kwargs):
         super(MissionContactForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column("contact", css_class="col-md-6"),
-                                        Column("company", css_class="col-md-6"),
+        self.helper.layout = Layout(Div(Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
+                                               css_class="col-md-6"),
+                                        Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
+                                               css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)

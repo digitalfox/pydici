@@ -233,7 +233,7 @@ class FinancialConditionAdminForm(forms.ModelForm):
 
 
 class MissionContactsForm(forms.ModelForm):
-    contacts = MissionContactMChoices(required=False, label=_("New contacts"))
+    contacts = MissionContactMChoices(required=False, label=_("Add existing contacts"))
 
     class Meta:
         model = Mission
