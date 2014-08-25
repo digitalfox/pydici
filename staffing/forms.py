@@ -11,6 +11,8 @@ from decimal import Decimal
 from django import forms
 from django.forms.models import BaseInlineFormSet
 from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy
+from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.db.models import Min
 
@@ -141,7 +143,8 @@ class TimesheetForm(forms.Form):
                 self.fields[key].widget.attrs.setdefault("tabindex", tabIndex)
 
                 if day == days[0]:  # Only show label for first day
-                    self.fields[key].label = unicode(mission)
+                    tooltip = _("mission id: %s") % mission.mission_id()
+                    self.fields[key].label = mark_safe("<span class='pydici-tooltip' title='%s'>%s</span>" % (tooltip, unicode(mission)))
                 else:
                     self.fields[key].label = ""
             # Add staffing total and forecast in hidden field
