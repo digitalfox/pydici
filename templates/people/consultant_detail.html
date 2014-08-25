@@ -83,7 +83,7 @@ $(document).ready(function() {
     </div>
 
     <div class="col-md-4 col-sm-6">
-	<p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{% trans "Manager: " %} <a href="{% url 'people.views.consultant_home' consultant.manager.id %}">{{ consultant.manager.full_name }}</a>{% endifnotequal %}{% endif %}</p>
+	{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}<h3>{% trans "Manager: " %} <a href="{% url 'people.views.consultant_home' consultant.manager.id %}">{{ consultant.manager.full_name }}</a></h3>{% endifnotequal %}{% endif %}
 	{% if staff %}
 	    <h3>{% trans "Staff" %}</h3>
 	    <ul class="row">
