@@ -56,7 +56,8 @@
 <div class="row"><br/></div>
 
 <div class="row">
-    <div class="table-responsive col-lg-12">
+    <div class="col-md-12">
+    <div class="table-responsive">
 
     <table class="table table-striped table-hover table-pydici-extra-condensed" id="pdc_table">
 
@@ -79,7 +80,7 @@
     <tr>
         <th>{% trans "Rates"%} (%)</th>
         {% for month_rates in rates %}
-            <th style="border-left:2px solid #C3C3C3;">{{ month_rates|join:" %</th><th>" }} %</th>
+            <th style="border-left:2px solid #C3C3C3;">{{ month_rates|join:"</th><th>" }}</th>
         {% endfor %}
     </tr>
     {% for consultant, charges in staffing %}
@@ -112,10 +113,11 @@
     <tr>
         <th>{% trans "Rates" %} (%)</th>
         {% for month_rates in rates %}
-            <th style="border-left:2px solid #C3C3C3;">{{ month_rates|join:" %</th><th>" }} %</th>
+            <th style="border-left:2px solid #C3C3C3;">{{ month_rates|join:"</th><th>" }}</th>
         {% endfor %}
     </tr>
     </table>
+    </div>
     </div>
 </div>
 
