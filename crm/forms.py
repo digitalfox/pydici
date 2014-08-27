@@ -79,7 +79,8 @@ class ClientForm(PydiciCrispyModelForm):
         super(ClientForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation")),
                                                "expectations", css_class="col-md-6"),
-                                        Column("contact", "alignment", css_class="col-md-6"),
+                                        Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
+                                               "alignment", css_class="col-md-6"),
                                         css_class="row"),
                                     "active",
                                     self.submit)
