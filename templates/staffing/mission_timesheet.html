@@ -5,7 +5,7 @@
     <div class="table-responsive">
     <table class="table table-hover table-striped table-pydici-extra-condensed pydici-mission-timesheet">
     <tr>
-        <td></td>
+        <th></th>
         <th style="text-align:center" colspan={{ timesheet_months|length|add:2 }}>{% trans "Done days" %}</th>
         <th class="table-separator"></th>
         <th style="text-align:center" colspan={{ staffing_months|length|add:2 }}>{% trans "Days to be done" %}</th>
@@ -100,3 +100,40 @@
             </div>
         
     {% endifequal %}
+
+<script type="text/javascript">
+<!--
+
+$(document).ready(function() {
+    function toggleFirstMonths(n) {
+        // Toggle n first months visibility
+        for (i = 2; i < n+1; i++) {
+            $('.pydici-mission-timesheet td:nth-child('+i+')').toggle();
+            }
+    }
+    var doneDaysTitle = $('.pydici-mission-timesheet tr:eq(0) th:eq(1)');
+    var forecastedDaysTitle = $('.pydici-mission-timesheet tr:eq(0) th:eq(3)');
+    var doneCol=parseInt(doneDaysTitle.attr('colspan'));
+    var forecastCol=parseInt(forecastedDaysTitle.attr('colspan'));
+    var maxcol = 20; // Beyond maxcol, we hide first column
+    if ((doneCol + forecastCol) > maxcol) {
+        var n = doneCol + forecastCol - maxcol +1;
+        n = Math.max(n, 2); // Never hide less than 1 col
+        if (n > doneCol-2) {
+            n = 2; // Table has very few done days. Don't hide more than 1 col
+        }
+        toggleFirstMonths(n);
+        doneDaysTitle.attr('colspan', parseInt(doneDaysTitle.attr('colspan')) - n + 1); // reduce colspan of done days title (th)
+
+        var newFirstMonth = $('.pydici-mission-timesheet tr:eq(1) td:eq('+n+')');
+        newFirstMonth.html("<span id='show-more-timesheet', title='{% trans 'Click to show past timesheet' %}'>...</span> " + newFirstMonth.html());
+        $('#show-more-timesheet').tooltip({"container": "body"});
+        newFirstMonth.bind("click", function() {
+            toggleFirstMonths(n);
+            doneDaysTitle.attr('colspan', parseInt(doneDaysTitle.attr('colspan')) + n -1); // reset colspan of done days title (th) to normal size
+            $('#show-more-timesheet').hide();
+            });
+    }
+});
+-->
+</script>
