@@ -46,7 +46,12 @@ class MissionMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
 class StaffingDateChoices(Select2ChoiceField):
     def __init__(self, *args, **kwargs):
         minDate = kwargs.pop("minDate", None)
-        kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=24, minDate=minDate)]
+        if minDate:
+            missionDuration = (date.today() - minDate).days / 30
+            numberOfMonth = 24 + missionDuration
+        else:
+            numberOfMonth = 24
+        kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=numberOfMonth, minDate=minDate)]
         kwargs["choices"].insert(0, ("", ""))  # Add the empty choice for extra empty choices
         super(StaffingDateChoices, self).__init__(*args, **kwargs)
 
