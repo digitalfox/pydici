@@ -119,7 +119,7 @@ def clientOrganisation(request, client_organisation_id=None):
 
     if request.method == "POST":
         if client:
-            form = ClientOrganisationForm(request.POST, instance=ClientOrganisation)
+            form = ClientOrganisationForm(request.POST, instance=clientOrganisation)
         else:
             form = ClientOrganisationForm(request.POST)
         if form.is_valid():
