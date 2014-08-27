@@ -20,7 +20,7 @@ from django.core import urlresolvers
 
 
 from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact
-from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm
+from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm, AdministrativeContactForm
 from staffing.models import Timesheet
 from leads.models import Lead
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin
@@ -75,6 +75,24 @@ class MissionContactUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateVi
     model = MissionContact
     template_name = "core/form.html"
     form_class = MissionContactForm
+
+
+class AdministrativeContactCreate(PydiciNonPublicdMixin, CreateView):
+    model = AdministrativeContact
+    template_name = "core/form.html"
+    form_class = AdministrativeContactForm
+
+    def get_success_url(self):
+        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[self.object.company.id, ])
+
+
+class AdministrativeContactUpdate(PydiciNonPublicdMixin, UpdateView):
+    model = AdministrativeContact
+    template_name = "core/form.html"
+    form_class = AdministrativeContactForm
+
+    def get_success_url(self):
+        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[self.object.company.id, ])
 
 
 @pydici_non_public

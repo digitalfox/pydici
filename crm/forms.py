@@ -13,7 +13,7 @@ from crispy_forms.layout import Layout, Div, Column
 from crispy_forms.bootstrap import AppendedText
 
 from core.forms import PydiciSelect2Field
-from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company
+from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
 from people.forms import ConsultantChoices
 from core.utils import capitalize
 from core.forms import PydiciCrispyModelForm
@@ -141,6 +141,25 @@ class MissionContactForm(PydiciCrispyModelForm):
         self.helper.layout = Layout(Div(Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
                                                css_class="col-md-6"),
                                         Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
+                                               css_class="col-md-6"),
+                                        css_class="row"),
+                                    self.submit)
+
+
+class AdministrativeContactForm(PydiciCrispyModelForm):
+    class Meta:
+        model = AdministrativeContact
+
+    contact = ContactChoices()
+    company = CompanyChoices(label=_("Company"))
+
+    def __init__(self, *args, **kwargs):
+        super(AdministrativeContactForm, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(Div(Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
+                                               "function", "default_phone", "default_mail",
+                                               css_class="col-md-6"),
+                                        Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
+                                               "default_fax",
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)

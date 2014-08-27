@@ -45,7 +45,7 @@
                 <li><a href="{% url 'crm.views.client' %}">{% trans "New client" %}</a></li>
                 <li><a href="{% url 'mission_contact_add' %}?return_to={{ request.get_full_path }}">{% trans "New mission contact" %}</a></li>
                 <li><a href="{% url 'admin:crm_businessbroker_add' %}?return_to={{ request.get_full_path }}">{% trans "New business broker" %}</a></li>
-                <li><a href="{% url 'admin:crm_administrativecontact_add' %}?return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></li>
+                <li><a href="{% url 'administrative_contact_add' %}?return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></li>
                 <li><a href="{% url 'admin:crm_supplier_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier" %}</a></li>
             </ul>
         </li>
