@@ -680,9 +680,7 @@ def mission_csv_timesheet(request, mission, consultants):
                                                working_date__gte=month,
                                                working_date__lt=next_month):
                 consultant_timesheets[timesheet.working_date] = timesheet.charge
-            print consultant_timesheets
             for day in days:
-                print day
                 try:
                     charge = consultant_timesheets.get(day.date())
                     if charge:
