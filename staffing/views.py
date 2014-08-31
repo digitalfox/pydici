@@ -675,14 +675,21 @@ def mission_csv_timesheet(request, mission, consultants):
         for consultant in consultants:
             total = 0
             row = [unicode(consultant).encode("ISO-8859-15", "replace"), ]
-            consultant_timesheets = timesheets.select_related().filter(consultant=consultant,
-                                                            working_date__gte=month,
-                                                            working_date__lt=next_month)
+            consultant_timesheets = {}
+            for timesheet in timesheets.filter(consultant_id=consultant.id,
+                                               working_date__gte=month,
+                                               working_date__lt=next_month):
+                consultant_timesheets[timesheet.working_date] = timesheet.charge
+            print consultant_timesheets
             for day in days:
+                print day
                 try:
-                    timesheet = consultant_timesheets.get(working_date=day)
-                    row.append(formats.number_format(timesheet.charge))
-                    total += timesheet.charge
+                    charge = consultant_timesheets.get(day.date())
+                    if charge:
+                        row.append(formats.number_format(charge))
+                        total += charge
+                    else:
+                        row.append("")
                 except Timesheet.DoesNotExist:
                     row.append("")
             if padding:
