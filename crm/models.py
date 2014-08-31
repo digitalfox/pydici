@@ -21,6 +21,7 @@ class AbstractCompany(models.Model):
     """Abstract Company base class for subsidiary, client/supplier/broker/.. company"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
     code = models.CharField(_("Code"), max_length=3, unique=True)
+    web = models.URLField(blank=True, null=True)
 
     def __unicode__(self):
         return unicode(self.name)

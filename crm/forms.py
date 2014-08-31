@@ -108,7 +108,7 @@ class CompanyForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CompanyForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column("name", "code", "businessOwner", css_class="col-md-6"),
+        self.helper.layout = Layout(Div(Column("name", "code", "businessOwner", "web", css_class="col-md-6"),
                                         Column(css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
