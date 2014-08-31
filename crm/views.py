@@ -19,8 +19,8 @@ from django.http import HttpResponseRedirect
 from django.core import urlresolvers
 
 
-from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact
-from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm, AdministrativeContactForm
+from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact, BusinessBroker
+from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm, AdministrativeContactForm, BusinessBrokerForm
 from staffing.models import Timesheet
 from leads.models import Lead
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin
@@ -31,7 +31,11 @@ from billing.models import ClientBill
 class ContactReturnToMixin(object):
     """Mixin class to return to contact detail if return_to args is not provided"""
     def get_success_url(self):
-        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("contact_detail", args=[self.object.id, ])
+        if self.model in (MissionContact, BusinessBroker):
+            target = self.object.contact.id
+        else:
+            target = self.object.id
+        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("contact_detail", args=[target, ])
 
 
 class ContactCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
@@ -77,10 +81,25 @@ class MissionContactUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateVi
     form_class = MissionContactForm
 
 
+class BusinessBrokerCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
+    model = BusinessBroker
+    template_name = "core/form.html"
+    form_class = BusinessBrokerForm
+
+
+class BusinessBrokerUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
+    model = BusinessBroker
+    template_name = "core/form.html"
+    form_class = BusinessBrokerForm
+
+
 class AdministrativeContactCreate(PydiciNonPublicdMixin, CreateView):
     model = AdministrativeContact
     template_name = "core/form.html"
     form_class = AdministrativeContactForm
+
+    def get_initial(self):
+        return {'company': self.request.GET.get("company")}
 
     def get_success_url(self):
         return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[self.object.company.id, ])

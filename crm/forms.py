@@ -146,6 +146,23 @@ class MissionContactForm(PydiciCrispyModelForm):
                                     self.submit)
 
 
+class BusinessBrokerForm(PydiciCrispyModelForm):
+    class Meta:
+        model = BusinessBroker
+
+    contact = ContactChoices()
+    company = CompanyChoices(label=_("Company"))
+
+    def __init__(self, *args, **kwargs):
+        super(BusinessBrokerForm, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(Div(Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
+                                               css_class="col-md-6"),
+                                        Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
+                                               css_class="col-md-6"),
+                                        css_class="row"),
+                                    self.submit)
+
+
 class AdministrativeContactForm(PydiciCrispyModelForm):
     class Meta:
         model = AdministrativeContact
