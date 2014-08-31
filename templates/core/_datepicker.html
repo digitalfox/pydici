@@ -2,6 +2,8 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $('input.datepicker').datepicker({format: {% ifequal LANGUAGE_CODE 'fr-fr' %}'dd/mm/yyyy'{% else %}'mm/dd/yyyy'{% endifequal %}});
+    $('input.datepicker').datepicker(
+            {language: {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %},
+             autoclose: true});
 });
 </script>

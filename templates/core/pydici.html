@@ -59,6 +59,7 @@
     {% import_django_select2_js %}
     {% ifequal LANGUAGE_CODE "fr-fr" %}
         <script type="text/javascript" src="{{ MEDIA_URL }}js/select2_locale_fr.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.fr.js"></script>
     {% endifequal %}
     
     {% block extrajs %}{% endblock %}
