@@ -22,7 +22,7 @@ from core.forms import PydiciSelect2Field, PydiciCrispyModelForm
 
 
 class LeadChoices(PydiciSelect2Field, AutoModelSelect2Field):
-    queryset = Lead.objects
+    queryset = Lead.objects.distinct()
     search_fields = ["name__icontains", "description__icontains", "action__icontains",
                      "responsible__name__icontains", "responsible__trigramme__icontains",
                      "salesman__name__icontains", "salesman__trigramme__icontains",
