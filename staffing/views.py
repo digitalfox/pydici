@@ -682,7 +682,8 @@ def mission_csv_timesheet(request, mission, consultants):
                 except Timesheet.DoesNotExist:
                     row.append("")
             row.append(formats.number_format(total))
-            writer.writerow(row)
+            if total > 0:
+                writer.writerow(row)
         writer.writerow([""])
     return response
 
