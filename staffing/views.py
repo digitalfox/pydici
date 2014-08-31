@@ -660,13 +660,17 @@ def mission_csv_timesheet(request, mission, consultants):
     for month in months:
         days = daysOfMonth(month)
         next_month = nextMonth(month)
+        padding = 31 - len(days)  # Padding for month with less than 31 days to align total column
         # Header
         writer.writerow([("%s - %s" % (mission.full_name(), formats.date_format(month, format="YEAR_MONTH_FORMAT"))).encode("ISO-8859-15", "replace"), ])
 
         # Days
         writer.writerow(["", ] + [d.day for d in days])
-        writer.writerow([_("Consultants").encode("ISO-8859-15", "replace")]
-                         + [_(d.strftime("%a")) for d in days] + [_("total")])
+        dayHeader = [_("Consultants").encode("ISO-8859-15", "replace")] + [_(d.strftime("%a")) for d in days]
+        if padding:
+            dayHeader.extend([""] * padding)
+        dayHeader.append(_("total"))
+        writer.writerow(dayHeader)
 
         for consultant in consultants:
             total = 0
@@ -681,6 +685,8 @@ def mission_csv_timesheet(request, mission, consultants):
                     total += timesheet.charge
                 except Timesheet.DoesNotExist:
                     row.append("")
+            if padding:
+                row.extend([""] * padding)
             row.append(formats.number_format(total))
             if total > 0:
                 writer.writerow(row)
