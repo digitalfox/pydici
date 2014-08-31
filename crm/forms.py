@@ -167,16 +167,16 @@ class AdministrativeContactForm(PydiciCrispyModelForm):
     class Meta:
         model = AdministrativeContact
 
-    contact = ContactChoices()
+    contact = ContactChoices(required=False)
     company = CompanyChoices(label=_("Company"))
 
     def __init__(self, *args, **kwargs):
         super(AdministrativeContactForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
-                                               "function", "default_phone", "default_mail",
+        self.helper.layout = Layout(Div(Column("function", "default_phone", "default_mail",
                                                css_class="col-md-6"),
                                         Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
                                                "default_fax",
+                                               AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
