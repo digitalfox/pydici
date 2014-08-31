@@ -173,7 +173,6 @@ $(document).ready(function(){
           container: "body",
           html: true,
           content: function() {
-              
               var staffing_date = $(this).closest('table').find('span').eq($(this).index()-1).attr('title');
               var consultant = $(this).closest('tr').find('span').attr('title');
               if (staffing_date.length == 6) {
@@ -189,21 +188,11 @@ $(document).ready(function(){
               }
           },
            delay: { show : 500, hide:200 },
+           trigger: "hover",
            template: '<div class="popover" style="max-width:800px;" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
         }
     );
-    
-    
-    $(".pdc-tooltip").bind("mouseenter", function() {
-        var e=$(this);
-        e.popover("show");
-    });
-    
-    $(".pdc-tooltip").bind("mouseout", function() {
-        var e=$(this);
-        e.popover("hide");
-    });
-    
+
     $('#buttons-projection label').tooltip({
         "container": "body"
     });
