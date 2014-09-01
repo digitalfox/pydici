@@ -62,13 +62,13 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
         if not hasattr(self, '_queryset'):
             qs = super(ConsultantStaffingInlineFormset, self).get_queryset()
             if date.today().day > 5:
-                lowerDayBound = date.today().replace(day=1)
+                self.lowerDayBound = date.today().replace(day=1)
             else:
                 lastDayOfPreviousMonth = date.today().replace(day=1) + timedelta(-1)
-                lowerDayBound = lastDayOfPreviousMonth.replace(day=1)
+                self.lowerDayBound = lastDayOfPreviousMonth.replace(day=1)
 
             qs = qs.filter(mission__active=True,  # Remove archived mission
-                           staffing_date__gte=lowerDayBound)  # Remove past missions
+                           staffing_date__gte=self.lowerDayBound)  # Remove past missions
 
             self._queryset = qs
         return self._queryset
@@ -79,7 +79,8 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
         form.fields["mission"] = MissionChoices(label=_("Mission"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
                                                                                                                    "placeholder": _("Select a mission to add forecast...")}))
         form.fields["mission"].widget.attrs.setdefault("size", 8)  # Reduce default size
-        form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}))
+        form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}),
+                                                           minDate=self.lowerDayBound)
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
 
