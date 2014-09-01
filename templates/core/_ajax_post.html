@@ -15,10 +15,12 @@
         url = $form.attr('action');
 
         /* Send the data using post and put the results inplace */
-        $.post(url, formData,
-                function(data) {
-                    $("#{{ formcontent }}").empty().append(data);
-                }
-        );
+        $.ajax({
+            url: url,
+            data: formData,
+            type: 'POST',
+            success: function(data) { $("#{{ formcontent }}").empty().append(data).css("opacity", "1"); },
+            beforeSend: function () { $("#{{ formcontent }}").css("opacity", "0.5"); },
+        });
     });
 </script>
