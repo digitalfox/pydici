@@ -27,6 +27,7 @@
     <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
 
 
+    {% block pydici_rss %}
     <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last modified leads' %}"
               href="{% url 'latest' %}" />
     <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last created leads' %}"
@@ -41,6 +42,7 @@
               href="{% url 'myLatestStaffing' %}" />
     <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last archived Mission' %}"
               href="{% url 'archivedMission' %}" />
+    {% endblock %}
     
   </head>
 

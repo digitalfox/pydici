@@ -1,0 +1,74 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+
+{% block pydici-menu %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block pydici_rss %}{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-xs-5">
+        <img alt="" src="{{ MEDIA_URL }}pydici/company_logo.png" height=40/><br/>
+        21, rue de la vanoie<br/>
+        78180 Montigny<br/>
+        <br/>
+        N° TVA : FR 179239299293
+        CC: CCFR12/00009<br/>
+        Cde: CDFR13/00009 du 04/04/2013<br/>
+        Réf code contrat ORESYS: O2013048<br/>
+        N/réf: OGEO1301<br/>
+    </div>
+    <div class="col-xs-offset-1 col-xs-6">
+        <div class="well"><div class="lead text-uppercase"><strong>{% trans "Bill" %}</strong></div>N° F-123123 - 12 fév. 2014</div>
+
+        <div class="lead">Mon super client</div>
+        30 rue des petits champs<br/>
+        75 001 Paris
+    </div>
+</div>
+<br/><br/>
+<table class="table table-condensed">
+<thead>
+    <tr><th>{% trans "Description" %}</th><th class="text-center">{% trans "Quantity" %}</th><th class="text-right">{% trans "Unit Price € HT" %}</th><th class="text-right">{% trans "Amount €" %}</th></tr>
+</thead>
+<tbody>
+
+<tr>
+    <td class="text-center" style="border-top:0px"><span class="lead">Architecture TMS</span></td>
+</tr>
+<tr>
+    <td style="border-top:0px"><strong>Septembre</strong></td>
+</tr>
+<tr>
+    <td>Marc-Antoine Gouillart</td><td class="text-center">8</td><td class="text-right">1000</td><td class="text-right">8 000</td>
+</tr>
+<tr>
+    <td>Sébastien Renard</td><td class="text-center">8</td><td class="text-right">1500</td><td class="text-right">12 000</td>
+</tr>
+<tr>
+    <td style="border-top:0px"><strong>Octobre</strong></td>
+</tr>
+<tr>
+    <td>Sébastien Renard</td><td class="text-center">8</td><td class="text-right">1500</td><td class="text-right">12 000</td>
+</tr>
+
+<tr>
+    <td></td><td></td><td class="text-right"><b>{% trans "Sub Total" %}</b></td><td class="text-right"><b>24 000</b></td>
+</tr>
+<tr>
+    <td colspan=3 class="text-right" style="border-top:0px"><b>{% trans "VAT 20%" %}</b></td><td class="text-right"><b>4800</b></td>
+</tr>
+<tr>
+    <td colspan=3 class="text-right" style="border-top:0px"><b>{% trans "Total" %}</b></td><td class="text-right"><b>28 800</b></td>
+</tr>
+
+</tbody>
+
+</table>
+
+<p><small>Veuillez rédiger vos chèques à l'ordre ENIOKA SAS ou régler par virement<br/>
+IBAN FR76 30003 03392 00020301101 81<br/>
+Paiement à 30 jours fin de mois</small></p>
+
+{% endblock %}

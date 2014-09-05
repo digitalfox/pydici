@@ -6,12 +6,15 @@
 
 from django.conf.urls import patterns, url
 
+import billing.views as v
+
 
 billing_urls = patterns('billing.views',
                         (r'^bill_review', 'bill_review'),
                         (r'^bill_delay', 'bill_payment_delay'),
                         (r'^bill/(?P<bill_id>\d+)/mark_bill_paid$', 'mark_bill_paid'),
                         (r'^file/(?P<nature>.+)/(?P<bill_id>\d+)$', 'bill_file'),
+                        (r'^pdf/(?P<bill_id>\d+)$', v.BillPdf.as_view()),
                         url(r'^pre_billing$', 'pre_billing', {"mine": False, }),
                         url(r'^pre_billing/mine$', 'pre_billing', {"mine": True, }),
                         url(r'^pre_billing/(?P<year>\d+)/(?P<month>\d+)/$', 'pre_billing', {"mine": False, }),
