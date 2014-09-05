@@ -16,13 +16,19 @@ from core.forms import PydiciSelect2Field
 
 
 class ConsultantChoices(PydiciSelect2Field, AutoModelSelect2Field):
-    queryset = Consultant.objects.filter(active=True)
+    queryset = Consultant.objects
     search_fields = ['name__icontains', 'trigramme__icontains']
+
+    def get_queryset(self):
+        return Consultant.objects.filter(active=True)
 
 
 class ConsultantMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
-    queryset = Consultant.objects.filter(active=True)
+    queryset = Consultant.objects
     search_fields = ConsultantChoices.search_fields
+
+    def get_queryset(self):
+        return Consultant.objects.filter(active=True)
 
 
 class SalesManChoices(PydiciSelect2Field, AutoModelSelect2Field):
