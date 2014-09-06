@@ -25,9 +25,23 @@ class AbstractCompany(models.Model):
     name = models.CharField(_("Name"), max_length=200, unique=True)
     code = models.CharField(_("Code"), max_length=3, unique=True)
     web = models.URLField(blank=True, null=True)
+    street = models.TextField(_("Street"), blank=True, null=True)
+    city = models.CharField(_("City"), max_length=200, blank=True, null=True)
+    zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
+    country = models.CharField(_("Country"), max_length=50, blank=True, null=True)
+    billing_street = models.TextField(_("Street"), blank=True, null=True)
+    billing_city = models.CharField(_("City"), max_length=200, blank=True, null=True)
+    billing_zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
+    billing_country = models.CharField(_("Country"), max_length=50, blank=True, null=True)
 
     def __unicode__(self):
         return unicode(self.name)
+
+    def main_address(self):
+        return "%s\n%s %s\n%s" % (self.street, self.zipcode, self.city, self.country)
+
+    def billing_address(self):
+        return "%s\n%s %s\n%s" % (self.billing_street, self.billing_zipcode, self.billing_city, self.billing_country)
 
     class Meta:
         abstract = True

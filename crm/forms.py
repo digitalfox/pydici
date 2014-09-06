@@ -9,11 +9,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.utils.encoding import smart_unicode
 from django.core.urlresolvers import reverse
-from django import forms
+
+from django.forms.widgets import Textarea
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from crispy_forms.layout import Layout, Div, Column, Fieldset
-from crispy_forms.bootstrap import AppendedText, FieldWithButtons, StrictButton
+from crispy_forms.bootstrap import AppendedText, FieldWithButtons, StrictButton, Tab, TabHolder
 
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
 from people.forms import ConsultantChoices, ConsultantMChoices
@@ -133,13 +134,21 @@ class CompanyForm(PydiciCrispyModelForm):
     class Meta:
         model = Company
         exclude = ["external_id",]
-        widgets = { "businessOwner" : ConsultantChoices}
+        widgets = { "businessOwner" : ConsultantChoices,
+                    "billing_street": Textarea(attrs={'cols': 17, 'rows': 2}),
+                    "street": Textarea(attrs={'cols': 17, 'rows': 2})}
 
 
     def __init__(self, *args, **kwargs):
         super(CompanyForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column("name", "code", "businessOwner", "web", css_class="col-md-6"),
-                                        Column(css_class="col-md-6"),
+                                        Column(TabHolder(Tab(_("Main address"), "street",
+                                                             Div(Column("city", css_class="col-md-6"), Column("zipcode", css_class="col-md-6"), css_class="row"),
+                                                             "country"),
+                                                         Tab(_("Billing address"), "billing_street",
+                                                             Div(Column("billing_city", css_class="col-md-6"), Column("billing_zipcode", css_class="col-md-6"), css_class="row"),
+                                                             "billing_country"),),
+                                               css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Company"),
