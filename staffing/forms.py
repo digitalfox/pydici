@@ -58,6 +58,9 @@ class StaffingDateChoices(Select2ChoiceField):
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
+
+    lowerDayBound = None  # Bound of staffing used to hide past staffing
+
     def get_queryset(self):
         if not hasattr(self, '_queryset'):
             qs = super(ConsultantStaffingInlineFormset, self).get_queryset()
