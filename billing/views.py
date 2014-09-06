@@ -155,7 +155,7 @@ def pre_billing(request, year=None, month=None, mine=False):
     timesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
                                           mission__nature="PROD", mission__billing_mode="TIME_SPENT")
     if mine:
-        timesheets = timesheets.filter(mission__lead__responsible=consultant)
+        timesheets = timesheets.filter(Q(mission__lead__responsible=consultant) | Q(mission__responsible=consultant))
     timesheet_data = timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
     for mission_id, consultant_id, charge in timesheet_data:
         mission = Mission.objects.select_related("lead").get(id=mission_id)
