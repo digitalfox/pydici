@@ -4,9 +4,9 @@ django-taggit
 -e git://github.com/frankwiles/django-taggit-suggest.git#egg=django-taggit-suggest
 django-taggit-templatetags
 django-ajax-selects
-django-permissions
-django-workflows
-django-extensions
+django-permissions==1.0.3
+django-workflows==1.0.2
+django-extensions==1.1.1
 django-debug-toolbar
 django-userswitch
 django-crispy-forms
