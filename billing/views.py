@@ -139,8 +139,17 @@ class BillPdf(PydiciNonPublicdMixin, PDFTemplateView):
     footer_template = 'billing/bill_footer.html'
     cmd_options = {
         'margin-top': 3,
-        # "header": "[page] / [toPage]"
     }
+
+    def get_context_data(self, **kwargs):
+        context = super(BillPdf, self).get_context_data(**kwargs)
+        try:
+            bill = ClientBill.objects.get(id=kwargs.get("bill_id"))
+            context["bill"] = bill
+        except ClientBill.DoesNotExist:
+            bill = None
+        # context['book_list'] = Book.objects.all()
+        return context
 
 
 @pydici_non_public

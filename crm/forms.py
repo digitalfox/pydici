@@ -136,12 +136,13 @@ class CompanyForm(PydiciCrispyModelForm):
         exclude = ["external_id",]
         widgets = { "businessOwner" : ConsultantChoices,
                     "billing_street": Textarea(attrs={'cols': 17, 'rows': 2}),
-                    "street": Textarea(attrs={'cols': 17, 'rows': 2})}
+                    "street": Textarea(attrs={'cols': 17, 'rows': 2}),
+                    "legal_description": Textarea(attrs={'cols': 17, 'rows': 2})}
 
 
     def __init__(self, *args, **kwargs):
         super(CompanyForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column("name", "code", "businessOwner", "web", css_class="col-md-6"),
+        self.helper.layout = Layout(Div(Column("name", "code", "businessOwner", "web", "legal_description", css_class="col-md-6"),
                                         Column(TabHolder(Tab(_("Main address"), "street",
                                                              Div(Column("city", css_class="col-md-6"), Column("zipcode", css_class="col-md-6"), css_class="row"),
                                                              "country"),

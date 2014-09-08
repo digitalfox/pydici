@@ -33,6 +33,7 @@ class AbstractCompany(models.Model):
     billing_city = models.CharField(_("City"), max_length=200, blank=True, null=True)
     billing_zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
     billing_country = models.CharField(_("Country"), max_length=50, blank=True, null=True)
+    legal_description = models.TextField("Legal description", blank=True, null=True)
 
     def __unicode__(self):
         return unicode(self.name)
