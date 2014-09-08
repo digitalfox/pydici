@@ -3,7 +3,9 @@
 .*.swp
 .py*
 .pydevproject
+.idea/
 .project
 .settings
 data
 venv
+document
