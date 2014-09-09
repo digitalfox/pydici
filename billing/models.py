@@ -17,6 +17,8 @@ from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 
 from leads.models import Lead
+from staffing.models import Mission
+from people.models import Consultant
 from expense.models import Expense
 from crm.models import Supplier
 from core.utils import sanitizeName
@@ -169,3 +171,22 @@ class SupplierBill(AbstractBill):
     class Meta:
         verbose_name = _("Supplier Bill")
         unique_together = (("supplier", "supplier_bill_id"),)
+
+
+class BillDetail(models.Model):
+    """Lines of a client bill that describe what's actually billed"""
+    BILL_DETAIL_TYPE = (("TIME_SPENT_MISSION", ugettext("Time spent mission")),
+                        ("FIXED_PRICE_MISSION", ugettext("Fixed price mission")),
+                        ("EXPENSE", ugettext("Expense")),
+                        ("OTHER", ugettext("Other")),
+                        )
+    detail_type = models.CharField("Bill detail type", max_length=30, choices=BILL_DETAIL_TYPE, default=BILL_DETAIL_TYPE[0][0])
+    bill = models.ForeignKey(ClientBill)
+    mission = models.ForeignKey(Mission)
+    month = models.DateField(blank=True, null=True)
+    consultant = models.ForeignKey(Consultant, null=True)
+    quantity = models.FloatField(_("Quantity"))
+    unit_price = models.DecimalField(_(u"Unit price (€)"), max_digits=10, decimal_places=2, blank=True, null=True)
+    amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
+    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
+    label = models.CharField(_("Label"), max_length=200, blank=True, null=True)
