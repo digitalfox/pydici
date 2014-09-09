@@ -13,15 +13,19 @@ import json
 
 from django.shortcuts import render
 from django.core import urlresolvers
-from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import Sum, Q, F
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext as _
+from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.views.generic.edit import CreateView, UpdateView
+from django.views.decorators.cache import cache_page
+from django.forms.models import inlineformset_factory
 
 from wkhtmltopdf.views import PDFTemplateView
 
-from billing.models import ClientBill, SupplierBill
 from billing.utils import get_billing_info
+
+from billing.models import ClientBill, SupplierBill, BillDetail
 from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
@@ -32,6 +36,8 @@ from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round, working_days
 from staffing.utils import holidayDays
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature
+from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper
+
 
 
 @pydici_non_public
@@ -148,8 +154,61 @@ class BillPdf(PydiciNonPublicdMixin, PDFTemplateView):
             context["bill"] = bill
         except ClientBill.DoesNotExist:
             bill = None
-        # context['book_list'] = Book.objects.all()
         return context
+
+
+def client_bill(request, bill_id=None):
+    if bill_id:
+        try:
+            bill = ClientBill.objects.get(id=bill_id)
+        except ClientBill.DoesNotExist:
+            raise Http404
+    else:
+        bill = ClientBill()
+    BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, form=BillDetailForm)
+    if request.POST:
+        form = ClientBillForm(request.POST, request.FILES, instance=bill)
+        billDetailFormSet = BillDetailFormSet(request.POST, instance=bill)
+        if form.is_valid() and billDetailFormSet.is_valid():
+            form.save()
+            billDetailFormSet.save()
+            success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
+            return HttpResponseRedirect(success_url)
+    else:
+        form = ClientBillForm(instance=bill)
+        billDetailFormSet = BillDetailFormSet(instance=bill)
+
+    return render(request, "billing/bill_form.html",
+                  {"bill_form": form,
+                   "formset": billDetailFormSet,
+                   "formset_helper": BillDetailFormSetHelper(),
+                   "user": request.user})
+
+
+class ClientBillMixin(object):
+    """Mixin class to add common parts to create and update views"""
+    def get_success_url(self):
+        """return to client bill page if no return_to args is not provided"""
+        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[self.object.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
+
+    def get_context_data(self, **kwargs):
+        context = super(ClientBillMixin, self).get_context_data(**kwargs)
+        BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, form=BillDetailForm, can_order=True)  # , form, formset, fk_name, fields, exclude, extra, can_order, can_delete, max_num, formfield_callback)
+        context["formset"] = BillDetailFormSet()
+        context["formset_helper"] = BillDetailFormSetHelper()
+        return context
+
+
+class ClientBillCreate(PydiciNonPublicdMixin, ClientBillMixin, CreateView):
+    model = ClientBill
+    template_name = "billing/bill_form.html"
+    form_class = ClientBillForm
+
+
+class ClientBillUpdate(PydiciNonPublicdMixin, ClientBillMixin, UpdateView):
+    model = ClientBill
+    template_name = "billing/bill_form.html"
+    form_class = ClientBillForm
 
 
 @pydici_non_public

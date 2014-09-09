@@ -19,7 +19,7 @@
         </tr>
             {% for bill in client_bills %}
                 <tr>
-                    <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                    <td><a href="{% url 'client_bill_update' bill.id %}">{{ bill }}</a></td>
                     <td>{{ bill.get_state_display }}</td>
                     <td>{{ bill.amount|floatformat:-2 }}</td>
                     <td>{{ bill.creation_date }}</td>
@@ -34,7 +34,7 @@
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
     {% if perms.billing.add_clientbill %}
-        <a class="btn btn-default" href="{% url 'admin:billing_clientbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
+        <a class="btn btn-default" href="{% url 'client_bill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
     {% endif %}
     {% endwith %}
 

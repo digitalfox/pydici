@@ -32,7 +32,7 @@
     <td>{% if expense.chargeable %}
             {% if expense.clientbill_set.all %}
                 {% for bill in expense.clientbill_set.all %}
-                    <a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a>
+                    <a href="{% url 'client_bill_update' bill.id %}">{{ bill }}</a>
                     <a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
                 {% endfor %}
             {% else %}

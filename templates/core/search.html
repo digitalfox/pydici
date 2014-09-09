@@ -65,6 +65,16 @@
     {% endif %}
 </div>
 
+{% if bills %}
+    <h2>{% trans "Client Bills" %}</h2>
+    <ul>
+    {% for bill in bills %}
+        <li><a href="{% url 'client_bill_update' bill.id %}?return_to={{ request.get_full_path }}">{{ bill }} - {{ bill.lead }} ({{ bill.get_state_display }})</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+
 <div class="row">
     {% if leads %}
         <h2 class="col-lg-12">{% trans "Leads" %}</h2>

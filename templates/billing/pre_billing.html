@@ -57,7 +57,7 @@
      {% else %}
         <h4>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</h4>
      {% endifequal %}
-     <a class="btn btn-default" href="{% url 'admin:billing_clientbill_add' %}?lead={{ lead.id }};amount={{ lead_data.0|stringformat:".2f" }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
+     <a class="btn btn-default" href="{% url 'client_bill_add' %}?lead={{ lead.id }};amount={{ lead_data.0|stringformat:'.2f' }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
      <br/><br/><hr/>
 {% endfor %}
 

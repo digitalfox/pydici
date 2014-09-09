@@ -180,7 +180,7 @@ class BillDetail(models.Model):
                         ("EXPENSE", ugettext("Expense")),
                         ("OTHER", ugettext("Other")),
                         )
-    detail_type = models.CharField("Bill detail type", max_length=30, choices=BILL_DETAIL_TYPE, default=BILL_DETAIL_TYPE[0][0])
+    detail_type = models.CharField("type", max_length=30, choices=BILL_DETAIL_TYPE, default=BILL_DETAIL_TYPE[0][0])
     bill = models.ForeignKey(ClientBill)
     mission = models.ForeignKey(Mission)
     month = models.DateField(blank=True, null=True)
