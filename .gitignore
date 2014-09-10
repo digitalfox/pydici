@@ -6,7 +6,9 @@
 .idea/
 .project
 .settings
-data
-venv
-document
-static
+static/
+venv/
+data/*
+!data/documents/
+data/documents/*
+!data/documents/README

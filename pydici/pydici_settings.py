@@ -30,11 +30,10 @@ LEADS_HELP_PAGE = "/my_custom_help_page.html"  # May be absolute or relative
 
 # Filesystem for commercial and mission delivery. It is intented to be
 # accessed localy by pydici and exposed though a web server and/or a webdav server
-DOCUMENT_PROJECT_PATH = os.path.join(PYDICI_ROOTDIR, 'document')
+DOCUMENT_PROJECT_PATH = os.path.join(PYDICI_ROOTDIR, 'data/documents')
 DOCUMENT_PROJECT_URL = "http://localhost:9999/client/"
 DOCUMENT_PROJECT_CLIENT_DIR = u"{name}_{code}"
 DOCUMENT_PROJECT_LEAD_DIR = u"{deal_id}_{name}"
 DOCUMENT_PROJECT_BUSINESS_DIR = u"commerce"
 DOCUMENT_PROJECT_DELIVERY_DIR = u"delivery"
 DOCUMENT_PROJECT_INPUT_DIR = u"input"
-
