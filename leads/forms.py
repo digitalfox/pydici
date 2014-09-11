@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
+from django.utils.encoding import smart_bytes
 
 from crispy_forms.layout import Layout, Div, Column, Fieldset, Field
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
@@ -30,6 +31,9 @@ class LeadChoices(PydiciSelect2Field, AutoModelSelect2Field):
                      "client__organisation__name__icontains",
                      "staffing__trigramme__icontains", "staffing__name__icontains",
                      "deal_id__icontains", "client_deal_id__icontains"]
+
+    def label_from_instance(self, obj):
+        return smart_bytes("%s (%s)" % (unicode(obj), obj.deal_id))
 
 
 class LeadForm(PydiciCrispyModelForm):
