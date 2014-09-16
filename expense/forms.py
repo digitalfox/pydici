@@ -30,7 +30,7 @@ class ExpenseMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
 
 
 class ChargeableExpenseMChoices(ExpenseMChoices):
-    queryset = Expense.objects.filter(chargeable=True, clientbill=None)
+    queryset = Expense.objects.filter(chargeable=True)
 
 
 class PayableExpenseMChoices(ExpenseMChoices):
