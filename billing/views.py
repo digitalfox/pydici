@@ -165,7 +165,7 @@ def client_bill(request, bill_id=None):
             raise Http404
     else:
         bill = ClientBill()
-    BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, form=BillDetailForm)
+    BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, formset=BillDetailInlineFormset)
     if request.POST:
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
         billDetailFormSet = BillDetailFormSet(request.POST, instance=bill)
@@ -183,32 +183,6 @@ def client_bill(request, bill_id=None):
                    "formset": billDetailFormSet,
                    "formset_helper": BillDetailFormSetHelper(),
                    "user": request.user})
-
-
-class ClientBillMixin(object):
-    """Mixin class to add common parts to create and update views"""
-    def get_success_url(self):
-        """return to client bill page if no return_to args is not provided"""
-        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[self.object.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
-
-    def get_context_data(self, **kwargs):
-        context = super(ClientBillMixin, self).get_context_data(**kwargs)
-        BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, form=BillDetailForm, can_order=True)  # , form, formset, fk_name, fields, exclude, extra, can_order, can_delete, max_num, formfield_callback)
-        context["formset"] = BillDetailFormSet()
-        context["formset_helper"] = BillDetailFormSetHelper()
-        return context
-
-
-class ClientBillCreate(PydiciNonPublicdMixin, ClientBillMixin, CreateView):
-    model = ClientBill
-    template_name = "billing/bill_form.html"
-    form_class = ClientBillForm
-
-
-class ClientBillUpdate(PydiciNonPublicdMixin, ClientBillMixin, UpdateView):
-    model = ClientBill
-    template_name = "billing/bill_form.html"
-    form_class = ClientBillForm
 
 
 @pydici_non_public

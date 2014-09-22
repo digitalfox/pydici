@@ -30,7 +30,7 @@
         {% for bill in overdue_bills %}
             <tr>
                 {% if perms.billing.change_clientbill %}
-                    <td><a href="{% url 'client_bill_update' bill.id %}">{{ bill }}</a></td>
+                    <td><a href="{% url 'client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
@@ -78,7 +78,7 @@
         {% for bill in soondue_bills %}
             <tr>
                 {% if perms.billing.change_clientbill %}
-                    <td><a href="{% url 'client_bill_update' bill.id %}">{{ bill }}</a></td>
+                    <td><a href="{% url 'client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
@@ -126,7 +126,7 @@
         {% for bill in litigious_bills %}
             <tr>
                 {% if perms.billing.change_clientbill %}
-                    <td><a href="{% url 'client_bill_update' bill.id %}">{{ bill }}</a></td>
+                    <td><a href="{% url 'client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
@@ -175,7 +175,7 @@
         {% for bill in recent_bills %}
             <tr>
                 {% if perms.billing.change_clientbill %}
-                    <td><a href="{% url 'client_bill_update' bill.id %}">{{ bill }}</a></td>
+                    <td><a href="{% url 'client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}

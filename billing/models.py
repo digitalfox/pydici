@@ -115,7 +115,7 @@ class ClientBill(AbstractBill):
             ('3_LITIGIOUS', ugettext("Litigious")),
             ('4_CANCELED', ugettext("Canceled")),)
     state = models.CharField(_("State"), max_length=30, choices=CLIENT_BILL_STATE, default="1_SENT")
-    bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path, storage=BillStorage(nature="client"))
+    bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path, storage=BillStorage(nature="client"), null=True, blank=True)
 
     def client(self):
         if self.lead.paying_authority:

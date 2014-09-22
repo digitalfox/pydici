@@ -8,17 +8,20 @@ Bill form setup
 from django.forms import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.forms.models import BaseInlineFormSet
 
 
 from crispy_forms.layout import Layout, Div, Column
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
 from crispy_forms.helper import FormHelper
+from django_select2 import ModelSelect2Field
 
 from billing.models import ClientBill, SupplierBill, BillDetail
+from staffing.models import Mission
 from leads.forms import LeadChoices
 from expense.forms import ChargeableExpenseMChoices
 from crm.forms import SupplierChoices
-from staffing.forms import MissionChoices
+from staffing.forms import MissionChoices, LeadMissionChoices
 from people.forms import ConsultantChoices
 from core.forms import PydiciCrispyModelForm
 
@@ -61,12 +64,11 @@ class SupplierBillForm(models.ModelForm):
                    "supplier": SupplierChoices}
 
 
-class BillDetailForm(models.ModelForm):
-    class Meta:
-        model = BillDetail
-
-    mission = MissionChoices(label=_("Mission"))  # TODO: filter on lead's mission and use shorter name
-    consultant = ConsultantChoices(label=_("Consultant"))
+class BillDetailInlineFormset(BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super(BillDetailInlineFormset, self).add_fields(form, index)
+        form.fields["mission"] = LeadMissionChoices(queryset=Mission.objects.filter(lead=self.instance.lead))
+        form.fields["consultant"] = ConsultantChoices(label=_("Consultant"))
 
 
 class BillDetailFormSetHelper(FormHelper):

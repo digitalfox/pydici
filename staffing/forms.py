@@ -50,6 +50,14 @@ class MissionMChoices(ModelSelect2MultipleWidget):
         return Mission.objects.filter(active=True)
 
 
+class LeadMissionChoices(ModelSelect2Field):
+    def label_from_instance(self, mission):
+        if mission.description:
+            return "%s (%s)" % (mission.mission_id(), mission.description)
+        else:
+            return mission.mission_id()
+
+
 class StaffingDateChoicesField(ChoiceField):
     widget = Select2Widget(attrs={'data-placeholder':_("Select a month...")})
     def __init__(self, *args, **kwargs):
