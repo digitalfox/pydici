@@ -4,17 +4,21 @@
 {% load permissions_tags %}
 {% load pydici_filters %}
 {% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
 
 {% block title %}{% trans "Expenses payments" %}{% endblock %}
 
 {% block content %}
-<div class="content-large">
 
 {% if not read_only %}
     <h1>{% trans "Expenses to pay" %}</h1>
     {% if expense_to_pay_table.data %}
         {% render_table expense_to_pay_table %}
         {% with "expense_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+    {% else %}
+        {% trans "No expense to pay" %}
+    {% endif %}
+
     <br/><hr/><br/>
 
     {% if modify_expense_payment %}
@@ -23,14 +27,8 @@
         <h1>{% trans "Add an expense payment" %}</h1>
     {% endif %}
 
-    <form enctype="multipart/form-data" action='' method="POST">
-        {{ form.non_field_errors }}
-        {{ form }}
-        <input class="btn btn-default" type="submit" value="{% trans 'Save' %}"/>
-    </form>
-    {% else %}
-        {% trans "No expense to pay" %}
-    {% endif %}
+    {% crispy form form.helper %}
+
     <br/><hr/><br/>
 {% endif %}
 
@@ -44,5 +42,6 @@
 <br/><hr/><br/>
 <a href="{% url 'expense.views.expenses_history' %}">{% trans "Expenses history" %}</a>
 
+{% include "core/_datepicker.html" %}
 
 {% endblock %}

@@ -17,9 +17,9 @@ from django_select2.fields import AutoModelSelect2MultipleField
 from django_select2.views import NO_ERR_RESP
 import workflows.utils as wf
 
-from expense.models import Expense, ExpensePayment
+from expense.models import Expense
 from leads.forms import LeadChoices
-from core.forms import PydiciSelect2Field
+from core.forms import PydiciSelect2Field, PydiciCrispyForm
 
 
 class ExpenseMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
@@ -34,10 +34,13 @@ class ChargeableExpenseMChoices(ExpenseMChoices):
 
 
 class PayableExpenseMChoices(ExpenseMChoices):
-    queryset = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
+    queryset = Expense.objects
+
+    def get_queryset(self):
+        return Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
 
     def get_results(self, request, term, page, context):
-        """ Override standad method to filter according to wrokflow state. Cannot be done in a simple query set..."""
+        """ Override standard method to filter according to workflow state. Cannot be done in a simple query set..."""
         qs = copy.deepcopy(self.get_queryset())
         params = self.prepare_qs_params(request, term, self.search_fields)
 
@@ -86,10 +89,18 @@ class ExpenseForm(forms.ModelForm):
         return self.cleaned_data
 
 
-class ExpensePaymentForm(forms.Form):
-    """Expense payment form based on ExpensePayemnt model"""
+class ExpensePaymentForm(PydiciCrispyForm):
+    """Expense payment form based on ExpensePayment model"""
     expenses = PayableExpenseMChoices(label=_("Expenses"))
-    payment_date = forms.fields.DateField(label=_("payment date"))
+    payment_date = forms.fields.DateField(label=_("payment date"), widget=forms.widgets.DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
+
+    def __init__(self, *args, **kwargs):
+        super(ExpensePaymentForm, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(Div(Column("expenses", css_class="col-md-3"),
+                                        Column(Field("payment_date", css_class="datepicker"), css_class="col-md-3"),
+                                        css_class="row"),
+                                    self.submit)
+
 
     def clean(self):
         """Ensure expenses belongs to the same users"""
@@ -103,6 +114,3 @@ class ExpensePaymentForm(forms.Form):
                         raise ValidationError(_("All expenses of a payment must belongs to same user"))
         return self.cleaned_data
 
-    class Meta:
-        model = ExpensePayment
-        fields = ("payment_date", "expenses")

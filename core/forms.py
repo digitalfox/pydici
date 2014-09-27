@@ -44,10 +44,19 @@ class UserChoices(PydiciSelect2Field, AutoModelSelect2Field):
     search_fields = ["username__icontains", "first_name__icontains", "last_name__icontains"]
 
 
-class PydiciCrispyModelForm(forms.ModelForm):
+class PydiciCrispyBaseForm(object):
     """A base form to be subclassed. Factorise common things of all pydici crispy forms"""
     def __init__(self, *args, **kwargs):
-        super(PydiciCrispyModelForm, self).__init__(*args, **kwargs)
+        super(PydiciCrispyBaseForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.submit = Submit("Submit", _("Save"))
         self.submit.field_classes = "btn btn-default"
+
+
+class PydiciCrispyModelForm(PydiciCrispyBaseForm, forms.ModelForm):
+    """pydici model forms"""
+    pass
+
+class PydiciCrispyForm(PydiciCrispyBaseForm, forms.Form):
+    """pydici standard (non-model) forms"""
+    pass

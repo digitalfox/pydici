@@ -249,9 +249,10 @@ def expense_payments(request, expense_payment_id=None):
         if form.is_valid():
             if expense_payment_id:
                 expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
+                expensePayment.payment_date = form.cleaned_data["payment_date"]
             else:
                 expensePayment = ExpensePayment(payment_date=form.cleaned_data["payment_date"])
-                expensePayment.save()
+            expensePayment.save()
             for expense in Expense.objects.filter(expensePayment=expensePayment):
                 expense.expensePayment = None  # Remove any previous association
                 expense.save()
@@ -260,11 +261,14 @@ def expense_payments(request, expense_payment_id=None):
                     expense.expensePayment = expensePayment
                     expense.workflow_in_progress = False
                     expense.save()
-
             return HttpResponseRedirect(urlresolvers.reverse("expense.views.expense_payments"))
+        else:
+            print "form is not valid"
+
     else:
         if expense_payment_id:
-            form = ExpensePaymentForm({"expenses": "|".join([str(e.id) for e in Expense.objects.filter(expensePayment=expensePayment)]), "payment_date": expensePayment.payment_date})  # A form that edit current expense payment
+            expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
+            form = ExpensePaymentForm({"expenses": list(Expense.objects.filter(expensePayment=expensePayment)), "payment_date": expensePayment.payment_date})  # A form that edit current expense payment
         else:
             form = ExpensePaymentForm(initial={"payment_date": date.today()})  # An unbound form
 
