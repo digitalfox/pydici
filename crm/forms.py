@@ -20,8 +20,11 @@ from core.forms import PydiciCrispyModelForm
 
 
 class ClientChoices(PydiciSelect2Field, AutoModelSelect2Field):
-    queryset = Client.objects.filter(active=True)
+    queryset = Client.objects
     search_fields = ["organisation__name__icontains", "organisation__company__name__icontains", "contact__name__icontains"]
+
+    def get_queryset(self):
+        return Client.objects.filter(active=True)
 
 
 class ThirdPartyChoices(PydiciSelect2Field, AutoModelSelect2Field):

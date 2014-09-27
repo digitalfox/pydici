@@ -40,8 +40,11 @@ class PydiciSelect2Field():
 
 
 class UserChoices(PydiciSelect2Field, AutoModelSelect2Field):
-    queryset = User.objects.filter(is_active=True)
+    queryset = User.objects
     search_fields = ["username__icontains", "first_name__icontains", "last_name__icontains"]
+
+    def get_queryset(self):
+        return User.objects.filter(is_active=True)
 
 
 class PydiciCrispyBaseForm(object):

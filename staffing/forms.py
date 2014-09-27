@@ -33,14 +33,19 @@ from leads.forms import LeadChoices
 
 
 class MissionChoices(PydiciSelect2Field, AutoModelSelect2Field):
-    queryset = Mission.objects.filter(active=True)
+    queryset = Mission.objects
     search_fields = ["deal_id__icontains", "description__icontains", "lead__name__icontains", "lead__deal_id__icontains",
                      "lead__client__organisation__name__icontains", "lead__client__organisation__company__name__icontains"]
 
+    def get_queryset(self):
+        return Mission.objects.filter(active=True)
 
 class MissionMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
-    queryset = Mission.objects.filter(active=True)
+    queryset = Mission.objects
     search_fields = MissionChoices.search_fields
+
+    def get_queryset(self):
+        return Mission.objects.filter(active=True)
 
 
 class StaffingDateChoices(Select2ChoiceField):

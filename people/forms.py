@@ -32,9 +32,11 @@ class ConsultantMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
 
 
 class SalesManChoices(PydiciSelect2Field, AutoModelSelect2Field):
-    queryset = SalesMan.objects.filter(active=True)
+    queryset = SalesMan.objects
     search_fields = ['name__icontains', 'trigramme__icontains']
 
+    def get_queryset(self):
+        return SalesMan.objects.filter(active=True)
 
 class ConsultantForm(models.ModelForm):
     class Meta:
