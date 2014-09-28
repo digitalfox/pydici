@@ -117,7 +117,9 @@ class Contact(models.Model):
                 # nodes.add(companyNode)
                 # edges.append(CEdge(me, companyNode))
                 for mission in missionContact.mission_set.all():
-                    missionNode = GNode("mission-%s" % mission.id, "<span class='graph-tooltip' title='%s'>%s</span>" % (mission.short_name(), mission.mission_id()))
+                    missionNode = GNode("mission-%s" % mission.id, "<span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>" % (mission.short_name(),
+                                                                                                                                                      mission.get_absolute_url(),
+                                                                                                                                                      mission.mission_id()))
                     nodes.add(missionNode)
                     edges.append(GEdge(me, missionNode))
                     for consultant in mission.consultants():
@@ -127,9 +129,13 @@ class Contact(models.Model):
             # Business / Lead relations
             for client in self.client_set.all():
                 for lead in client.lead_set.all():
-                    leadNode = GNode("lead-%s" % lead.id, "<span class='graph-tooltip' title='%s'>%s</span>" % (unicode(lead), lead.deal_id))
+                    leadNode = GNode("lead-%s" % lead.id, "<span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>" % (unicode(lead), lead.get_absolute_url(), lead.deal_id))
                     nodes.add(leadNode)
-                    edges.append(GEdge(leadNode, me))
+                    edges.append(GEdge(me,leadNode))
+                    if lead.responsible:
+                        consultantNode = GNode("consultant-%s" % lead.responsible.id, unicode(lead.responsible))
+                        nodes.add(consultantNode)
+                        edges.append(GEdge(leadNode, consultantNode))
             # Direct contact relation
             for consultant in self.contact_points.all():
                 consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
