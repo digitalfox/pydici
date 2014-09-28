@@ -327,12 +327,13 @@ def convertDictKeyToDateTime(data):
 
 class GNode(object):
     """Graph node object wrapper"""
-    def __init__(self, id_, label):
+    def __init__(self, id_, label, color="blank"):
         self.id_ = id_
         self.label = label
+        self.color = color
 
     def data(self):
-        data = {"id": self.id_, "value": {"label": self.label}}
+        data = {"id": self.id_, "value": {"label": self.label, "style": "fill: %s; stroke: #BBB" % self.color}}
         return data
 
     def __hash__(self):

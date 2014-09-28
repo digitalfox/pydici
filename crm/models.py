@@ -108,8 +108,12 @@ class Contact(models.Model):
         """Compute relational data in json format usable by Dagre / D3 library"""
         nodes = GNodes()
         edges = GEdges()
+        leadColor = "#8AA7FF"
+        directColor= "#82D887"
+        missionColor = "#E4C160"
+
         try:
-            me = GNode(unicode(self.id), unicode(self))
+            me = GNode(unicode(self.id), unicode(self), color="#EEE")
             nodes.add(me)
             # Mission relations
             for missionContact in self.missioncontact_set.all():
@@ -117,30 +121,34 @@ class Contact(models.Model):
                 # nodes.add(companyNode)
                 # edges.append(CEdge(me, companyNode))
                 for mission in missionContact.mission_set.all():
-                    missionNode = GNode("mission-%s" % mission.id, "<span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>" % (mission.short_name(),
-                                                                                                                                                      mission.get_absolute_url(),
-                                                                                                                                                      mission.mission_id()))
+                    missionNode = GNode("mission-%s" % mission.id, """<span class='glyphicon glyphicon-cog'></span>
+                                                                      <span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>""" % (mission.short_name(),
+                                                                                                                                                          mission.get_absolute_url(),
+                                                                                                                                                          mission.mission_id()))
                     nodes.add(missionNode)
-                    edges.append(GEdge(me, missionNode))
+                    edges.append(GEdge(me, missionNode, color=missionColor))
                     for consultant in mission.consultants():
                         consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
                         nodes.add(consultantNode)
-                        edges.append(GEdge(missionNode, consultantNode))
+                        edges.append(GEdge(missionNode, consultantNode, color=missionColor))
             # Business / Lead relations
             for client in self.client_set.all():
                 for lead in client.lead_set.all():
-                    leadNode = GNode("lead-%s" % lead.id, "<span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>" % (unicode(lead), lead.get_absolute_url(), lead.deal_id))
+                    leadNode = GNode("lead-%s" % lead.id, """<span class='glyphicon glyphicon-euro'></span>
+                                                             <span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>""" % (unicode(lead),
+                                                                                                                                                 lead.get_absolute_url(),
+                                                                                                                                                 lead.deal_id))
                     nodes.add(leadNode)
-                    edges.append(GEdge(me,leadNode))
+                    edges.append(GEdge(me,leadNode, color=leadColor))
                     if lead.responsible:
                         consultantNode = GNode("consultant-%s" % lead.responsible.id, unicode(lead.responsible))
                         nodes.add(consultantNode)
-                        edges.append(GEdge(leadNode, consultantNode))
+                        edges.append(GEdge(leadNode, consultantNode, color=leadColor))
             # Direct contact relation
             for consultant in self.contact_points.all():
                 consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
                 nodes.add(consultantNode)
-                edges.append(GEdge(me, consultantNode))
+                edges.append(GEdge(me, consultantNode, color=directColor))
 
             return """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
 

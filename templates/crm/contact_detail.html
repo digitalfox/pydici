@@ -60,10 +60,11 @@ svg {
 
 </style>
 
-<svg width="100%" height="500px">
-    <g />
-</svg>
-
+        <div class=""col-md-12">
+            <svg width="100%" height="500px">
+                <g />
+            </svg>
+        </div>
 
 
 <script type="text/javascript">
@@ -75,9 +76,12 @@ $(document).ready(function() {
     {{ contact.relationData|safe }}
     
     var g = dagreD3.json.decode(nodes, edges);
-    
+    var layout = dagreD3.layout()
+                    .nodeSep(20)
+                    .rankDir("LR");
     var renderer = new dagreD3.Renderer();
-    renderer.run(g, d3.select("svg g"));
+    renderer.zoom(false);
+    renderer.layout(layout).run(g, d3.select("svg g"));
 
     $('.graph-tooltip').tooltip({
         "container": "body"
