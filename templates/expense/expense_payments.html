@@ -32,7 +32,7 @@
     <br/><hr/><br/>
 {% endif %}
 
-{% if expense_payment_table.data %}
+{% if expense_payment_table.data and not modify_expense_payment %}
 <h1>{% trans "Expenses payments" %}</h1>
     {% render_table expense_payment_table %}
     {% with "expense_payment_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
