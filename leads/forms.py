@@ -14,6 +14,7 @@ from django.utils.encoding import smart_bytes
 from crispy_forms.layout import Layout, Div, Column, Fieldset, Field
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
 from django_select2 import AutoModelSelect2Field
+from taggit.forms import TagField
 
 
 from leads.models import Lead
@@ -46,6 +47,7 @@ class LeadForm(PydiciCrispyModelForm):
     paying_authority = BusinessBrokerChoices(required=False, label=_("Paying authority"))
     client = ClientChoices()
     staffing = ConsultantMChoices(required=False)
+    tags = TagField(label="", required=False)
 
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)
@@ -66,9 +68,10 @@ class LeadForm(PydiciCrispyModelForm):
                                                                                            placeholder=_("If payment is done by a third party")), css_class='col-md-6'))),
                                               Tab(_("Staffing"), Div(Field("staffing", placeholder=_("People that could contribute...")),
                                                                      Field("external_staffing", placeholder=_("People outside company that could contribute...")),
-                                                                     css_class="col-md-6")),),
+                                                                     css_class="col-md-6"))),
                                     Fieldset("", "send_email"),
                                     Field("creation_date", type="hidden"),
+                                    Field("tags", css_class="hide"),  # Don't use type=hidden, it breaks tag parsing.
                                     self.submit)
 
     def clean_sales(self):

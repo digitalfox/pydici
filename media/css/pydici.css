@@ -108,6 +108,9 @@ td ul.errorlist li { margin:0 !important; }
     font-size: 1em;
 }
 
+.hide {
+    display: none;
+}
 
 div.ui-tooltip {
     max-width: 800px;

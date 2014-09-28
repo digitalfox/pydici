@@ -115,7 +115,6 @@ def lead(request, lead_id=None):
             form = LeadForm(request.POST)
         if form.is_valid():
             lead = form.save()
-            lead.save()
             postSaveLead(request, lead, form, bool(lead_id))
             return HttpResponseRedirect(urlresolvers.reverse("leads.views.detail", args=[lead.id]))
     else:
