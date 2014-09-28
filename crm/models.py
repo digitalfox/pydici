@@ -83,6 +83,7 @@ class Contact(models.Model):
     mobile_phone = models.CharField(_("Mobile phone"), max_length=30, blank=True)
     fax = models.CharField(_("Fax"), max_length=30, blank=True)
     function = models.CharField(_("Function"), max_length=200, blank=True)
+    contact_points = models.ManyToManyField("people.Consultant", verbose_name="Points of contact", blank=True)
 
     def __unicode__(self):
         return self.name
@@ -104,12 +105,13 @@ class Contact(models.Model):
     companies.short_description = _("Companies")
 
     def relationData(self):
-        """Compute relational data in json format usable by cytoscape library"""
+        """Compute relational data in json format usable by Dagre / D3 library"""
         nodes = GNodes()
         edges = GEdges()
         try:
             me = GNode(unicode(self.id), unicode(self))
             nodes.add(me)
+            # Mission relations
             for missionContact in self.missioncontact_set.all():
                 companyNode = GNode("company-%s" % missionContact.company.id, unicode(missionContact.company))
                 # nodes.add(companyNode)
@@ -122,14 +124,18 @@ class Contact(models.Model):
                         consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
                         nodes.add(consultantNode)
                         edges.append(GEdge(missionNode, consultantNode))
-
+            # Business / Lead relations
             for client in self.client_set.all():
                 for lead in client.lead_set.all():
                     leadNode = GNode("lead-%s" % lead.id, "<span class='graph-tooltip' title='%s'>%s</span>" % (unicode(lead), lead.deal_id))
                     nodes.add(leadNode)
                     edges.append(GEdge(leadNode, me))
-            # print "\n".join([n.label.replace("\n", "") for n in nodes._nodes.values()])
-            # print "\n".join(["%s -> %s" % (e.source.label.replace("\n", ""), e.target.label.replace("\n", "")) for e in edges])
+            # Direct contact relation
+            for consultant in self.contact_points.all():
+                consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
+                nodes.add(consultantNode)
+                edges.append(GEdge(me, consultantNode))
+
             return """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
 
         except Exception, e:

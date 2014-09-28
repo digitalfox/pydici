@@ -14,7 +14,7 @@ from crispy_forms.bootstrap import AppendedText
 
 from core.forms import PydiciSelect2Field
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
-from people.forms import ConsultantChoices
+from people.forms import ConsultantChoices, ConsultantMChoices
 from core.utils import capitalize
 from core.forms import PydiciCrispyModelForm
 
@@ -121,9 +121,10 @@ class ContactForm(PydiciCrispyModelForm):
     class Meta:
         model = Contact
 
+    contact_points = ConsultantMChoices(label=_("Points of contact"))
     def __init__(self, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column("name", "email", "function", css_class="col-md-6"),
+        self.helper.layout = Layout(Div(Column("name", "email", "function", "contact_points", css_class="col-md-6"),
                                         Column("mobile_phone", "phone", "fax", css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
