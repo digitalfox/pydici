@@ -117,9 +117,6 @@ class Contact(models.Model):
             nodes.add(me)
             # Mission relations
             for missionContact in self.missioncontact_set.all():
-                companyNode = GNode("company-%s" % missionContact.company.id, unicode(missionContact.company))
-                # nodes.add(companyNode)
-                # edges.append(CEdge(me, companyNode))
                 for mission in missionContact.mission_set.all():
                     missionNode = GNode("mission-%s" % mission.id, """<span class='glyphicon glyphicon-cog'></span>
                                                                       <span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>""" % (mission.short_name(),
@@ -133,17 +130,38 @@ class Contact(models.Model):
                         edges.append(GEdge(missionNode, consultantNode, color=missionColor))
             # Business / Lead relations
             for client in self.client_set.all():
-                for lead in client.lead_set.all():
-                    leadNode = GNode("lead-%s" % lead.id, """<span class='glyphicon glyphicon-euro'></span>
-                                                             <span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>""" % (unicode(lead),
-                                                                                                                                                 lead.get_absolute_url(),
-                                                                                                                                                 lead.deal_id))
-                    nodes.add(leadNode)
-                    edges.append(GEdge(me,leadNode, color=leadColor))
-                    if lead.responsible:
-                        consultantNode = GNode("consultant-%s" % lead.responsible.id, unicode(lead.responsible))
+                if client.lead_set.count() < 5 :
+                    for lead in client.lead_set.all():
+                        leadNode = GNode("lead-%s" % lead.id, """<span class='glyphicon glyphicon-euro'></span>
+                                                                 <span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>""" % (unicode(lead),
+                                                                                                                                                     lead.get_absolute_url(),
+                                                                                                                                                     lead.deal_id))
+                        nodes.add(leadNode)
+                        edges.append(GEdge(me,leadNode, color=leadColor))
+                        if lead.responsible:
+                            consultantNode = GNode("consultant-%s" % lead.responsible.id, unicode(lead.responsible))
+                            nodes.add(consultantNode)
+                            edges.append(GEdge(leadNode, consultantNode, color=leadColor))
+                else:
+                    # Group link for highly linked contact
+                    leads = []
+                    responsibles = []
+                    for lead in client.lead_set.all():
+                        leads.append(lead)
+                        if lead.responsible:
+                            responsibles.append(lead.responsible)
+                    leadsId = "-".join([unicode(l.id) for l in leads])
+                    leadsTitle = unicode(client.organisation)
+                    leadsLabel = _("%s leads" % len(leads))
+                    leadsNode = GNode("leads-%s" % leadsId, """<span class='glyphicon glyphicon-euro'></span>
+                                                               <span class='graph-tooltip' title='%s'>&nbsp;%s&nbsp;</span>""" % (leadsTitle, leadsLabel))
+                    nodes.add(leadsNode)
+                    edges.append(GEdge(me,leadsNode, color=leadColor))
+                    for responsible in responsibles:
+                        consultantNode = GNode("consultant-%s" % responsible.id, unicode(responsible))
                         nodes.add(consultantNode)
-                        edges.append(GEdge(leadNode, consultantNode, color=leadColor))
+                        edges.append(GEdge(leadsNode, consultantNode, color=leadColor))
+
             # Direct contact relation
             for consultant in self.contact_points.all():
                 consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
