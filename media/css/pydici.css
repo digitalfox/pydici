@@ -112,6 +112,18 @@ td ul.errorlist li { margin:0 !important; }
     display: none;
 }
 
+/* a slightly modified version of bootstrap glyphicon class that can be embeded in an svg. */
+.glyphicon-svg {
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
 div.ui-tooltip {
     max-width: 800px;
     white-space: nowrap;

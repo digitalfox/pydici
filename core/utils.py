@@ -342,7 +342,6 @@ class GNode(object):
 
 class GNodes(object):
     """A set of GNodes that can be dumped in json"""
-
     def __init__(self):
         self._nodes = {}
 

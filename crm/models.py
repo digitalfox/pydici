@@ -118,7 +118,7 @@ class Contact(models.Model):
             # Mission relations
             for missionContact in self.missioncontact_set.all():
                 for mission in missionContact.mission_set.all():
-                    missionNode = GNode("mission-%s" % mission.id, """<span class='glyphicon glyphicon-cog'></span>
+                    missionNode = GNode("mission-%s" % mission.id, """<span class='glyphicon-svg glyphicon-cog'></span>
                                                                       <span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>""" % (mission.short_name(),
                                                                                                                                                           mission.get_absolute_url(),
                                                                                                                                                           mission.mission_id()))
@@ -132,10 +132,10 @@ class Contact(models.Model):
             for client in self.client_set.all():
                 if client.lead_set.count() < 5 :
                     for lead in client.lead_set.all():
-                        leadNode = GNode("lead-%s" % lead.id, """<span class='glyphicon glyphicon-euro'></span>
-                                                                 <span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>""" % (unicode(lead),
-                                                                                                                                                     lead.get_absolute_url(),
-                                                                                                                                                     lead.deal_id))
+                        leadNode = GNode("lead-%s" % lead.id, """<span class="glyphicon-svg glyphicon-euro"></span>
+                                                                 <span class='graph-tooltip' title='%s'><a href='%s'>%s&nbsp;</a></span>""" % (unicode(lead),
+                                                                                                                                               lead.get_absolute_url(),
+                                                                                                                                               lead.deal_id))
                         nodes.add(leadNode)
                         edges.append(GEdge(me,leadNode, color=leadColor))
                         if lead.responsible:
@@ -153,7 +153,7 @@ class Contact(models.Model):
                     leadsId = "-".join([unicode(l.id) for l in leads])
                     leadsTitle = unicode(client.organisation)
                     leadsLabel = _("%s leads" % len(leads))
-                    leadsNode = GNode("leads-%s" % leadsId, """<span class='glyphicon glyphicon-euro'></span>
+                    leadsNode = GNode("leads-%s" % leadsId, """<span class='glyphicon-svg glyphicon-euro'></span>
                                                                <span class='graph-tooltip' title='%s'>&nbsp;%s&nbsp;</span>""" % (leadsTitle, leadsLabel))
                     nodes.add(leadsNode)
                     edges.append(GEdge(me,leadsNode, color=leadColor))
