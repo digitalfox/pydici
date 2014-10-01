@@ -113,6 +113,7 @@ INSTALLED_APPS = [
     'expense',
     'actionset',
     # Third party apps
+    'django_extensions',
     'taggit',
     'taggit_suggest',
     'taggit_templatetags',
@@ -125,7 +126,6 @@ INSTALLED_APPS = [
 
 if DEBUG:
     INSTALLED_APPS.extend(('debug_toolbar',
-                           'django_extensions',
                            'django.contrib.staticfiles',  # Static files are served by web server in production mode
             ))
 
