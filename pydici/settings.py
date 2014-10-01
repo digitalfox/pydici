@@ -55,7 +55,7 @@ else:
 
 # STATICFILES_DIRS = (os.path.join(PYDICI_ROOTDIR, 'media'),)
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(PYDICI_ROOTDIR, "static")
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
