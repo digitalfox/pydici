@@ -7,50 +7,49 @@ Pydici is a software for consulting/IT services company to manage:
 It is written in Python using the Django framework.
 
 
-LICENSE
-=======
+# LICENSE
 
 Pydici is available under the GNU Affero Public License v3 or newer (AGPL 3+).
 http://www.gnu.org/licenses/agpl-3.0.html
 
-AUTHOR
-======
+# AUTHOR
 
 Sébastien Renard (Sebastien.Renard@digitalfox.org).
 
 
-INSTALLATION
-============
+# INSTALLATION
 
 Pydici can be installed as any Django project. Just drop the code somewhere
 and setup Apache.
 
-To install all python prerequisites, just do that: pip install -r requirements.txt
+To install all python prerequisites, just do that: pip install -r requirements.txt. It is strongly advised to use a virtual env.
 
-Here's a sample Apache/mod_python config file. Pydici code live
-is /var/www/pydici and application is published as '/pydici/'.
-This prefix (pydici) can be changed in settings.py. Make sure it's
-consistent with you Apache/mod_python setup.
+## Detailed installation
 
---------------8<-------------------------------
-LoadModule python_module modules/mod_python.so
+Drop source code in a directory readable by your apache user
+   git clone https://github.com/digitalfox/pydici.git
 
+Create a virtual env in a directory readable by your apache user and activate it
+   virtual-env pydici-venv
+   . pydici-venv/bin/activate
 
-<Location "/pydici/">
-   SetHandler python-program
-    PythonHandler django.core.handlers.modpython
-    SetEnv DJANGO_SETTINGS_MODULE pydici.settings
-    PythonDebug On
-    PythonPath "['/var/www/pydici', '/var/www/'] + sys.path"
-</Location>
+Install prerequisites :
+   pip install -r <path to pydici source code>/requirements.txt
 
-<Location "/pydici/media/">
-    SetHandler None
-</Location>
+Setup your favorite database (mysql/mariaDB or postgresql) and create a schema/base (with UTF-8 character set please) with a valid user that can create/alterselect/delete/update its objects.
 
-Alias /pydici/media /var/www/pydici/media
---------------8<-------------------------------
+Configure your database in pydici/settings.py. Look at django docs to understand the various database options.
 
-Then, please read and update settings.py file according to your configuration. 
+Create tables with :
+   ./manage.py syncdb
 
-Finally, to initialise database, go to pydici directory and run "./manage.py syncdb"
+Generate a new secret key with ./manage.py generate_secret_key and put it in pydici/settings.py
+
+Collect static files with ./manage.py collectstatic
+
+Setup your apache virtual env:
+- activate mod_wsgi.
+- activate ssl
+- active mod_expires
+- add Alias to /media and /static
+- define auth backend. By default, pydici is designed to work with an http front end authentication. Look at https://docs.djangoproject.com/en/dev/howto/auth-remote-user/
