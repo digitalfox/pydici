@@ -114,6 +114,7 @@ INSTALLED_APPS = [
     'actionset',
     # Third party apps
     'django_extensions',
+    'django.contrib.staticfiles',  # Static files are served by web server in production mode, but this apps allow collectstatic
     'taggit',
     'taggit_suggest',
     'taggit_templatetags',
@@ -126,7 +127,6 @@ INSTALLED_APPS = [
 
 if DEBUG:
     INSTALLED_APPS.extend(('debug_toolbar',
-                           'django.contrib.staticfiles',  # Static files are served by web server in production mode
             ))
 
 WSGI_APPLICATION = "pydici.wsgi.application"
