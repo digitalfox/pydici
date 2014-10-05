@@ -5,7 +5,6 @@
 {% block title %}{% trans "Forecast/timesheet " %}{{ consultant }}{% endblock %}
 
 {% block content %}
-<div class="content-large">
     <h1>{{ consultant.full_name }} {% if consultant.subcontractor %} - {% trans "subcontractor" %} {% endif %}</h1>
 
     <h2>{% trans "Consultant's missions" %}</h2>
@@ -19,7 +18,7 @@
                 <th scope="row"><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></th>
 		        <td>{{ mission.mission_id }}</td>
 		        <td>{{ mission.get_probability_display }}</td>
-		        <td scope="row"><a href="{% url 'admin:staffing_mission_change' mission.id %}", title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', target='_blank', class='changelink'><em>{% trans "Change" %}</em></a></td>
+		        <td scope="row"><a href="{% url 'mission_update' mission.id %}" title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}' target='_blank' class='changelink'><em>{% trans "Change" %}</em></a></td>
 		    </tr>
 		{% endfor %}
 		</table>
@@ -27,5 +26,4 @@
 
 {% block consultant_detail %} {% endblock %}
 
-</div>
 {% endblock %}

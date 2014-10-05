@@ -921,6 +921,7 @@ def create_new_mission_from_lead(request, lead_id):
     # Create new mission on this lead
     mission = Mission()
     mission.lead = lead
+    mission.responsible = lead.responsible
     mission.nature = modelMission.nature
     mission.probability = modelMission.probability
     mission.subsidiary = lead.subsidiary
@@ -929,7 +930,7 @@ def create_new_mission_from_lead(request, lead_id):
 
     # Redirect user to change page of the mission
     # in order to type description and deal id
-    return HttpResponseRedirect(urlresolvers.reverse("admin:staffing_mission_change", args=[mission.id, ]) + "?return_to=" + lead.get_absolute_url())
+    return HttpResponseRedirect(urlresolvers.reverse("mission_update", args=[mission.id, ]) + "?return_to=" + lead.get_absolute_url() + "#goto_tab-missions")
 
 
 @pydici_non_public

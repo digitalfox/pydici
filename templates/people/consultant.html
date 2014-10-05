@@ -54,7 +54,7 @@
                 <th scope="row"><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></th>
                 <td>{{ mission.mission_id }}</td>
                 <td>{{ mission.get_probability_display }}</td>
-                <td scope="row"><a href="{% url 'admin:staffing_mission_change' mission.id %}?return_to={% url 'people.views.consultant_home' consultant.id %}#tab-missions", title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}', class='changelink'><em>{% trans "Change" %}</em></a></td>
+                <td scope="row"><a href="{% url 'mission_update' mission.id %}?return_to={% url 'people.views.consultant_home' consultant.id %}#goto_tab-missions" title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}' class='changelink'><em>{% trans "Change" %}</em></a></td>
             </tr>
         {% endfor %}
         </tbody>

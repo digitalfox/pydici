@@ -71,7 +71,7 @@
                 <table class="table table-hover">
                     <tr><td>{% trans "Sold" %}</td>
                     <td>{% if mission.price %}{{ mission.price }}  k€ {% ifequal mission.billing_mode "TIME_SPENT" %}{% trans "(maximum)" %}{% endifequal %}
-                        {% else %} <a href="{% url 'admin:staffing_mission_change' mission.id %}?return_to={% url 'staffing.views.mission_home' mission.id %}#tab-timesheet">{% trans "To be defined" %}</a>
+                        {% else %} <a href="{% url 'mission_update' mission.id %}?return_to={% url 'staffing.views.mission_home' mission.id %}#goto_tab-timesheet">{% trans "To be defined" %}</a>
                         {% endif %}</td></tr>
                     {% ifequal mission.billing_mode "FIXED_PRICE" %}
                         <tr><td>{% trans "Margin" %}</td><td>{{ margin }}  k€</td></tr>
