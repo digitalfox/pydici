@@ -24,7 +24,7 @@ class ClientChoices(PydiciSelect2Field, AutoModelSelect2Field):
     search_fields = ["organisation__name__icontains", "organisation__company__name__icontains", "contact__name__icontains"]
 
     def get_queryset(self):
-        return Client.objects.filter(active=True)
+        return Client.objects.order_by("-active")
 
 
 class ThirdPartyChoices(PydiciSelect2Field, AutoModelSelect2Field):
