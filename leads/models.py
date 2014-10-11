@@ -251,11 +251,7 @@ def leadSignalHandler(sender, **kwargs):
     """Signal handler for new/updated leads"""
     lead = kwargs["instance"]
     targetUser = None
-    client = lead.client
-    # If this was the last active mission of its client and not more active lead, flag client as inactive
-    if len(client.getActiveMissions()) == 0 and len(client.getActiveLeads().exclude(state="WON")) == 0:
-        client.active = False
-        client.save()
+
     if lead.responsible:
         targetUser = lead.responsible.getUser()
     if not targetUser:
