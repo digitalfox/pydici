@@ -29,11 +29,6 @@ def postSaveLead(request, lead, form, change):
         except Exception, e:
             messages.add_message(request, messages.ERROR, ugettext("Failed to send mail: %s") % e)
 
-    # Mark client as active if it was not
-    if not lead.client.active:
-        lead.client.active = True
-        lead.client.save()
-
     # Create or update mission  if needed
     if lead.mission_set.count() == 0:
         if lead.state in ("OFFER_SENT", "NEGOTIATION", "WON"):
