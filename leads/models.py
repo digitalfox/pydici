@@ -266,6 +266,7 @@ def leadSignalHandler(sender, **kwargs):
         launchTrigger("NEW_LEAD", [targetUser, ], lead)
         createProjectTree(lead)
         client.active = True
+        client.save()
     if lead.state == "WON":
         # Ensure actionset has not already be fired for this lead and this user
         if not ActionState.objects.filter(user=targetUser,

@@ -318,6 +318,7 @@ class LeadModelTest(TestCase):
         newLead.subsidiary_id = 1
         newLead.client = lead.client
         newLead.save()
+        lead = Lead.objects.get(id=1)
         self.assertTrue(lead.client.active)  # A new lead on this client should mark it as active again
 
     def test_lead_done_work(self):
