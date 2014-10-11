@@ -6,6 +6,8 @@ CRM form setup
 """
 
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
+from django.utils.encoding import smart_unicode
 from django.core.urlresolvers import reverse
 
 from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField
@@ -25,6 +27,13 @@ class ClientChoices(PydiciSelect2Field, AutoModelSelect2Field):
 
     def get_queryset(self):
         return Client.objects.order_by("-active")
+
+    def label_from_instance(self, obj):
+        if obj.active:
+            return smart_unicode(unicode(obj))
+        else:
+            return smart_unicode(ugettext("%s (inactive)" % obj))
+
 
 
 class ThirdPartyChoices(PydiciSelect2Field, AutoModelSelect2Field):
