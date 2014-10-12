@@ -8,17 +8,30 @@ appropriate to live in Lead models or view
 """
 from django.utils.translation import ugettext
 from django.contrib import messages
+from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, ContentType
+from django.utils.encoding import force_unicode
 
 from staffing.models import Mission
 from core.utils import send_lead_mail
 
 
-def postSaveLead(request, lead, form, change):
+def postSaveLead(request, lead, updated_fields):
     mail = False
     if lead.send_email:
         mail = True
         lead.send_email = False
+
     lead.save()
+
+    # Log it
+    LogEntry.objects.log_action(
+        user_id         = request.user.pk,
+        content_type_id = ContentType.objects.get_for_model(lead).pk,
+        object_id       = lead.pk,
+        object_repr     = force_unicode(lead),
+        action_flag     = ADDITION,
+        change_message  = ", ".join(updated_fields),
+    )
 
     if mail:
         try:

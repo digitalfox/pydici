@@ -17,9 +17,11 @@ from django.shortcuts import render
 from django.core import urlresolvers
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
+from django.utils.encoding import force_text
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
+from django.db.models.query import QuerySet
 
 from taggit.models import Tag
 from taggit_suggest.utils import suggest_tags
@@ -102,6 +104,9 @@ def detail(request, lead_id):
 def lead(request, lead_id=None):
     """Lead creation or modification"""
     lead = None
+    updated_fields = []
+    blacklist_fields = ["creation_date", "tags"]
+    max_length = 50
     try:
         if lead_id:
             lead = Lead.objects.get(id=lead_id)
@@ -114,8 +119,20 @@ def lead(request, lead_id=None):
         else:
             form = LeadForm(request.POST)
         if form.is_valid():
+            changed_fields = form.changed_data
+            for field_name, field in form.fields.items():
+                if field_name in changed_fields and field_name not in blacklist_fields:
+                    value = form.cleaned_data[field_name]
+                    print value
+                    print type(value)
+                    if isinstance(value, (list, QuerySet)):
+                        value = ", ".join([unicode(i) for i in value])
+                    else:
+                        value = force_text(value)
+                    value = value if len(value)<=max_length else value[0:max_length-3]+'...'
+                    updated_fields.append("%s: %s" % (force_text(field.label or field_name), value))
             lead = form.save()
-            postSaveLead(request, lead, form, bool(lead_id))
+            postSaveLead(request, lead, updated_fields)
             return HttpResponseRedirect(urlresolvers.reverse("leads.views.detail", args=[lead.id]))
     else:
         if lead:
