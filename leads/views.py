@@ -33,7 +33,7 @@ from leads.tables import ActiveLeadsTable, RecentArchivedLeadsTable
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
 import pydici.settings
-from core.utils import capitalize, getLeadDirs, createProjectTree
+from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text
 from core.decorator import pydici_non_public
 from people.models import Consultant
 
@@ -107,9 +107,11 @@ def lead(request, lead_id=None):
     updated_fields = []
     blacklist_fields = ["creation_date", "tags"]
     max_length = 50
+    old_lead_description = ""
     try:
         if lead_id:
             lead = Lead.objects.get(id=lead_id)
+            old_lead_description  = lead.description
     except Lead.DoesNotExist:
         pass
 
@@ -123,8 +125,10 @@ def lead(request, lead_id=None):
             for field_name, field in form.fields.items():
                 if field_name in changed_fields and field_name not in blacklist_fields:
                     value = form.cleaned_data[field_name]
-                    print value
-                    print type(value)
+                    if field_name == "description":
+                        if compact_text(value) == old_lead_description:
+                            # Don't consider description field as changed if content is the same
+                            continue
                     if isinstance(value, (list, QuerySet)):
                         value = ", ".join([unicode(i) for i in value])
                     else:
