@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-12 11:46+0200\n"
-"PO-Revision-Date: 2014-10-12 11:46+0200\n"
+"POT-Creation-Date: 2014-10-12 12:07+0200\n"
+"PO-Revision-Date: 2014-10-12 12:06+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -2064,10 +2064,8 @@ msgstr "Étiquette(s) suggérée(s) : "
 msgid "Informations"
 msgstr "Informations"
 
-#: templates/leads/lead_detail.html:79 templates/leads/lead_detail.html:111
-#: templates/leads/lead_detail.html:114 templates/leads/lead_detail.html:117
-#: templates/leads/lead_mail.html:14 templates/leads/lead_mail.txt:15
-#: templates/leads/mail.html:8 templates/leads/mail.txt:8
+#: templates/leads/lead_detail.html:79
+msgctxt "client"
 msgid "Unknown"
 msgstr "Inconnu"
 
@@ -2075,9 +2073,17 @@ msgstr "Inconnu"
 msgid "Broker"
 msgstr "Apporteur"
 
+#: templates/leads/lead_detail.html:111 templates/leads/lead_detail.html:114
+msgid "Unknown date"
+msgstr "Date inconnue"
+
 #: templates/leads/lead_detail.html:114
 msgid "Start date"
 msgstr "Date de début"
+
+#: templates/leads/lead_detail.html:117
+msgid "Unknown amount"
+msgstr "Montant inconnu"
 
 #: templates/leads/lead_detail.html:120
 msgid "Potential resource(s)"
@@ -2200,6 +2206,11 @@ msgstr "Date de démarrage"
 #: templates/leads/lead_mail.html:14 templates/leads/lead_mail.txt:15
 msgid "Sales (kEuros): "
 msgstr "C.A. (k€) : "
+
+#: templates/leads/lead_mail.html:14 templates/leads/lead_mail.txt:15
+#: templates/leads/mail.html:8 templates/leads/mail.txt:8
+msgid "Unknown"
+msgstr "Inconnu"
 
 #: templates/leads/lead_mail.html:16 templates/leads/lead_mail.txt:17
 msgid "Potential resource(s): "

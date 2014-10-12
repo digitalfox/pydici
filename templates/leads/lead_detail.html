@@ -76,7 +76,7 @@
             <table class="table table-hover table-striped table-condensed">
                 <tr>
                     <th>{% trans "Contact" %}</th>
-                    <td>{% if lead.client.contact %}<a href="{% url 'contact_detail' lead.client.contact.id %}">{{ lead.client.contact }}</a> {% else %}{% trans "Unknown" %} {% endif %} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}</td>
+                    <td>{% if lead.client.contact %}<a href="{% url 'contact_detail' lead.client.contact.id %}">{{ lead.client.contact }}</a> {% else %}{% trans "Unknown" context "client" %} {% endif %} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}</td>
                 </tr>
                 <tr>
                     <th>{% trans "Deal id" %}</th><td>{{ lead.deal_id }}</td>
@@ -108,13 +108,13 @@
                     </tr>
                 {% endif %}
                 <tr>
-                    <th>{% trans "Due date" %}</th><td><span {% if lead.is_late %}style='color:red'{% endif %}>{{ lead.due_date|default_if_none:_("Unknown") }}</span></td>
+                    <th>{% trans "Due date" %}</th><td><span {% if lead.is_late %}style='color:red'{% endif %}>{{ lead.due_date|default_if_none:_("Unknown date") }}</span></td>
                 </tr>
                 <tr>
-                    <th>{% trans "Start date" %}</th><td>{{ lead.start_date|default_if_none:_("Unknown") }}</td>
+                    <th>{% trans "Start date" %}</th><td>{{ lead.start_date|default_if_none:_("Unknown date") }}</td>
                 </tr>
                 <tr>
-                    <th>{% trans "Sales (k€)" %}</th><td>{{ lead.sales|default_if_none:_("Unknown") }}</td>
+                    <th>{% trans "Sales (k€)" %}</th><td>{{ lead.sales|default_if_none:_("Unknown amount") }}</td>
                 </tr>
                 <tr>
                     <th>{% trans "Potential resource(s)" %}</th><td>{{ lead.staffing_list }}</td>
