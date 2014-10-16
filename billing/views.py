@@ -158,25 +158,31 @@ class BillPdf(PydiciNonPublicdMixin, PDFTemplateView):
 
 
 def client_bill(request, bill_id=None):
+    billDetailFormSet = None
     if bill_id:
         try:
             bill = ClientBill.objects.get(id=bill_id)
         except ClientBill.DoesNotExist:
             raise Http404
     else:
-        bill = ClientBill()
+        bill = None
     BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, formset=BillDetailInlineFormset)
     if request.POST:
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
-        billDetailFormSet = BillDetailFormSet(request.POST, instance=bill)
-        if form.is_valid() and billDetailFormSet.is_valid():
-            form.save()
-            billDetailFormSet.save()
-            success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
+        if bill:
+            billDetailFormSet = BillDetailFormSet(request.POST, instance=bill)
+        if form.is_valid() and (billDetailFormSet is None or billDetailFormSet.is_valid()):
+            bill = form.save()
+            if billDetailFormSet:
+                billDetailFormSet.save()
+                success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
+            else:
+                success_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
             return HttpResponseRedirect(success_url)
     else:
         form = ClientBillForm(instance=bill)
-        billDetailFormSet = BillDetailFormSet(instance=bill)
+        if bill:
+            billDetailFormSet = BillDetailFormSet(instance=bill)
 
     return render(request, "billing/bill_form.html",
                   {"bill_form": form,

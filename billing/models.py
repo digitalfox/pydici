@@ -68,7 +68,7 @@ class AbstractBill(models.Model):
     payment_date = models.DateField(_("Payment date"), blank=True, null=True)
     previous_year_bill = models.BooleanField(_("Previous year bill"), default=False)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
-    amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2)
+    amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
     vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=Decimal(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
     expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True})
@@ -110,11 +110,12 @@ class AbstractBill(models.Model):
 
 class ClientBill(AbstractBill):
     CLIENT_BILL_STATE = (
+            ('0_DRAFT', ugettext("Draft")),
             ('1_SENT', ugettext("Sent")),
             ('2_PAID', ugettext("Paid")),
             ('3_LITIGIOUS', ugettext("Litigious")),
             ('4_CANCELED', ugettext("Canceled")),)
-    state = models.CharField(_("State"), max_length=30, choices=CLIENT_BILL_STATE, default="1_SENT")
+    state = models.CharField(_("State"), max_length=30, choices=CLIENT_BILL_STATE, default="0_DRAFT")
     bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path, storage=BillStorage(nature="client"), null=True, blank=True)
 
     def client(self):
@@ -134,11 +135,12 @@ class ClientBill(AbstractBill):
             self.state = "2_PAID"
         # Automatically compute amount with VAT if not defined
         if not self.amount_with_vat:
-            self.amount_with_vat = self.amount * (1 + self.vat / 100)
-            if self.expenses.count():
-                for expense in self.expenses.all():
-                    # TODO: handle expense without VAT
-                    self.amount_with_vat += expense.amount
+            if self.amount:
+                self.amount_with_vat = self.amount * (1 + self.vat / 100)
+                if self.expenses.count():
+                    for expense in self.expenses.all():
+                        # TODO: handle expense without VAT
+                        self.amount_with_vat += expense.amount
         super(ClientBill, self).save(*args, **kwargs)  # Save again
 
     class Meta:
