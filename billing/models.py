@@ -69,8 +69,10 @@ class AbstractBill(models.Model):
     previous_year_bill = models.BooleanField(_("Previous year bill"), default=False)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
-    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
-    vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=Decimal(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
+    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
+                                          null=True)
+    vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2,
+                              default=pydici.settings.PYDICI_DEFAULT_VAT_RATE)
     expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True})
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
 
@@ -110,13 +112,14 @@ class AbstractBill(models.Model):
 
 class ClientBill(AbstractBill):
     CLIENT_BILL_STATE = (
-            ('0_DRAFT', ugettext("Draft")),
-            ('1_SENT', ugettext("Sent")),
-            ('2_PAID', ugettext("Paid")),
-            ('3_LITIGIOUS', ugettext("Litigious")),
-            ('4_CANCELED', ugettext("Canceled")),)
+        ('0_DRAFT', ugettext("Draft")),
+        ('1_SENT', ugettext("Sent")),
+        ('2_PAID', ugettext("Paid")),
+        ('3_LITIGIOUS', ugettext("Litigious")),
+        ('4_CANCELED', ugettext("Canceled")),)
     state = models.CharField(_("State"), max_length=30, choices=CLIENT_BILL_STATE, default="0_DRAFT")
-    bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path, storage=BillStorage(nature="client"), null=True, blank=True)
+    bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path,
+                                 storage=BillStorage(nature="client"), null=True, blank=True)
 
     def client(self):
         if self.lead.paying_authority:
@@ -125,23 +128,13 @@ class ClientBill(AbstractBill):
             return unicode(self.lead)
 
     def save(self, *args, **kwargs):
-        # Save it first to define pk and allow browsing relationship
-        super(ClientBill, self).save(*args, **kwargs)
         # Automatically set payment date for paid bills
         if self.state == "2_PAID" and not self.payment_date:
             self.payment_date = date.today()
         # Automatically switch as paid bills with payment date
         elif self.state == "1_SENT" and self.payment_date:
             self.state = "2_PAID"
-        # Automatically compute amount with VAT if not defined
-        if not self.amount_with_vat:
-            if self.amount:
-                self.amount_with_vat = self.amount * (1 + self.vat / 100)
-                if self.expenses.count():
-                    for expense in self.expenses.all():
-                        # TODO: handle expense without VAT
-                        self.amount_with_vat += expense.amount
-        super(ClientBill, self).save(*args, **kwargs)  # Save again
+        super(ClientBill, self).save(*args, **kwargs)  # Save it
 
     class Meta:
         verbose_name = _("Client Bill")
@@ -149,12 +142,13 @@ class ClientBill(AbstractBill):
 
 class SupplierBill(AbstractBill):
     SUPPLIER_BILL_STATE = (
-            ('1_RECEIVED', ugettext("Received")),
-            ('2_PAID', ugettext("Paid")),
-            ('3_LITIGIOUS', ugettext("Litigious")),
-            ('4_CANCELED', ugettext("Canceled")),)
+        ('1_RECEIVED', ugettext("Received")),
+        ('2_PAID', ugettext("Paid")),
+        ('3_LITIGIOUS', ugettext("Litigious")),
+        ('4_CANCELED', ugettext("Canceled")),)
     state = models.CharField(_("State"), max_length=30, choices=SUPPLIER_BILL_STATE, default="1_RECEIVED")
-    bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path, storage=BillStorage(nature="supplier"))
+    bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path,
+                                 storage=BillStorage(nature="supplier"))
     supplier = models.ForeignKey(Supplier)
     supplier_bill_id = models.CharField(_("Supplier Bill id"), max_length=200)
 
@@ -181,14 +175,24 @@ class BillDetail(models.Model):
                         ("FIXED_PRICE_MISSION", ugettext("Fixed price mission")),
                         ("EXPENSE", ugettext("Expense")),
                         ("OTHER", ugettext("Other")),
-                        )
+    )
     detail_type = models.CharField("type", max_length=30, choices=BILL_DETAIL_TYPE, default=BILL_DETAIL_TYPE[0][0])
     bill = models.ForeignKey(ClientBill)
     mission = models.ForeignKey(Mission)
     month = models.DateField(blank=True, null=True)
     consultant = models.ForeignKey(Consultant, null=True)
     quantity = models.FloatField(_("Quantity"))
-    unit_price = models.DecimalField(_(u"Unit price (€)"), max_digits=10, decimal_places=2, blank=True, null=True)
+    unit_price = models.DecimalField(_(u"Unit price (€)"), max_digits=10, decimal_places=2)
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
-    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
+    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
+                                          null=True)
+    vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2,
+                              default=pydici.settings.PYDICI_DEFAULT_VAT_RATE)
     label = models.CharField(_("Label"), max_length=200, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.amount = self.unit_price * Decimal(self.quantity)
+
+        # compute amount with VAT except if given and amount is not defined
+        self.amount_with_vat = self.amount * (1 + self.vat / 100)
+        super(BillDetail, self).save(*args, **kwargs)  # Save it

@@ -36,6 +36,7 @@ from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round, working_days
 from staffing.utils import holidayDays
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature
+from billing.utils import compute_bill
 from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper
 
 
@@ -175,9 +176,11 @@ def client_bill(request, bill_id=None):
             bill = form.save()
             if billDetailFormSet:
                 billDetailFormSet.save()
-                success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
-            else:
+            if bill.state == "0_DRAFT":
+                compute_bill(bill)
                 success_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
+            else:
+                success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
             return HttpResponseRedirect(success_url)
     else:
         form = ClientBillForm(instance=bill)
