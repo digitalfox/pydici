@@ -36,6 +36,7 @@ from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round, working_days
 from staffing.utils import holidayDays
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature
+from billing.forms import ClientBillForm, BillDetailFormSetHelper, BillDetailInlineFormset, BillDetailForm
 from billing.utils import compute_bill
 from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper
 
@@ -167,7 +168,7 @@ def client_bill(request, bill_id=None):
             raise Http404
     else:
         bill = None
-    BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, formset=BillDetailInlineFormset)
+    BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, formset=BillDetailInlineFormset, form=BillDetailForm)
     if request.POST:
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
         if bill:

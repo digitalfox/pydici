@@ -9,13 +9,14 @@
 {% block content %}
 
 
-<form action="" method="POST">
+<form action="" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <h2>{% trans "Bill header" %}</h2>
     {% crispy bill_form %}
     <hr>
     {% if formset %}
         <h2>{% trans "Bill detail" %}</h2>
+        {% include "bootstrap3/errors_formset.html" %}
         {% crispy formset formset_helper %}
     {% endif %}
     <div class="form-actions">

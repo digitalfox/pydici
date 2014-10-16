@@ -5,7 +5,7 @@ Bill form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.forms import models
+from django.forms import models, ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.forms.models import BaseInlineFormSet
@@ -78,6 +78,20 @@ class BillDetailInlineFormset(BaseInlineFormSet):
         form.fields["mission"] = LeadMissionChoices(queryset=Mission.objects.filter(lead=self.instance.lead))
         form.fields["consultant"] = ConsultantChoices(label=_("Consultant"), required=False)
 
+    def clean(self):
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        staffings = []
+        for form in self.forms:
+            if form.cleaned_data.get("detail_type", "") != "TIME_SPENT_MISSION":
+                continue
+            staffing = [form.cleaned_data['mission'].id, form.cleaned_data['month'].toordinal(), form.cleaned_data["consultant"].id]
+            if staffing in staffings:
+                raise ValidationError(_("Cannot declare twice the same consultant for the same mission on a given month"))
+            staffings.append(staffing)
+
+
 
 class BillDetailFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
@@ -85,3 +99,14 @@ class BillDetailFormSetHelper(FormHelper):
         self.form_method = 'post'
         self.form_tag = False
         self.template = 'bootstrap/table_inline_formset.html'
+
+class BillDetailForm(ModelForm):
+    def clean_consultant(self):
+        if not self.cleaned_data["consultant"] and self.cleaned_data["detail_type"] == "TIME_SPENT_MISSION":
+            raise ValidationError(_("Consultant must be defined for time spent mission"))
+        return self.cleaned_data["consultant"]
+
+    def clean_month(self):
+        if not self.cleaned_data["month"] and self.cleaned_data["detail_type"] == "TIME_SPENT_MISSION":
+            raise ValidationError(_("Month must be defined for time spent mission"))
+        return self.cleaned_data["month"]
