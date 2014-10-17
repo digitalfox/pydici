@@ -196,3 +196,6 @@ class BillDetail(models.Model):
         # compute amount with VAT except if given and amount is not defined
         self.amount_with_vat = self.amount * (1 + self.vat / 100)
         super(BillDetail, self).save(*args, **kwargs)  # Save it
+
+    class Meta:
+        ordering = ("mission", "month", "consultant")
