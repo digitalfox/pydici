@@ -7,15 +7,14 @@ Bill form setup
 
 from django.forms import models, ModelForm
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext
 from django.forms.models import BaseInlineFormSet
 from django.forms.util import ValidationError
 
 
 from crispy_forms.layout import Layout, Div, Column
-from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
+from crispy_forms.bootstrap import TabHolder, Tab
 from crispy_forms.helper import FormHelper
-from django_select2 import ModelSelect2Field
 
 from billing.models import ClientBill, SupplierBill, BillDetail
 from staffing.models import Mission
@@ -110,3 +109,14 @@ class BillDetailForm(ModelForm):
         if not self.cleaned_data["month"] and self.cleaned_data["detail_type"] == "TIME_SPENT_MISSION":
             raise ValidationError(_("Month must be defined for time spent mission"))
         return self.cleaned_data["month"]
+
+
+    def clean(self):
+        mission = self.cleaned_data.get("mission", False)
+        if mission:
+            invalid_type = ValidationError(ugettext("Type is not consistent with mission %s billing mode (%s)") % (mission.mission_id(), mission.get_billing_mode_display()))
+            if mission.billing_mode == "FIXED_PRICE" and  self.cleaned_data["detail_type"] != "FIXED_PRICE_MISSION":
+                raise invalid_type
+            if mission.billing_mode == "TIME_SPENT" and  self.cleaned_data["detail_type"] != "TIME_SPENT_MISSION":
+                raise invalid_type
+        return self.cleaned_data
