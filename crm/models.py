@@ -44,6 +44,15 @@ class AbstractCompany(models.Model):
     def billing_address(self):
         return "%s\n%s %s\n%s" % (self.billing_street, self.billing_zipcode, self.billing_city, self.billing_country)
 
+    def save(self, *args, **kwargs):
+        # If billing addresse is not defined, use main address
+        if not (self.billing_street and self.billing_city and self.billing_zipcode and self.billing_country):
+            self.billing_street = self.street
+            self.billing_city = self.city
+            self.billing_zipcode = self.zipcode
+            self.billing_country = self.country
+        super(AbstractCompany, self).save(*args, **kwargs)
+
     class Meta:
         abstract = True
 
