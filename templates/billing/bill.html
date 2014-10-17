@@ -24,11 +24,11 @@
     </div>
 </div>
 <br/><br/>
-<table class="table table-condensed">
+<table class="table table-pydici-extra-condensed">
 <thead>
-    <tr><th>{% trans "Description" %}</th><th class="text-center">{% trans "Quantity" %}</th>
-        <th class="text-right">{% trans "Unit Price € without taxes" %}</th><th class="text-right">{% trans "Amount €" %}</th>
-        <th class="text-right">{% trans "VAT (%)" %}</th><th class="text-right">{% trans "Amount w/ taxes €" %}</th>
+    <tr><th><small>{% trans "Description" %}</small></th><th class="text-center"><small>{% trans "Quantity" %}</small></th>
+        <th class="text-right"><small>{% trans "Unit Price €" %}</small></th><th class="text-right"><small>{% trans "Amount €" %}</small></th>
+        <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount w/ taxes €" %}</small></th>
     </tr>
 </thead>
 <tbody>
@@ -36,7 +36,7 @@
 {% regroup bill.billdetail_set.all by mission as detail_list %}
 
 {% for detail in detail_list %}
-        <tr><td class="text-center" style="border-top:0px"><span class="lead">{{ detail.grouper }} ({{ detail.grouper.mission_id }})</span></td></tr>
+        <tr><td class="text-center" style="border-top:0px"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
         {% regroup detail.list by month as mission_detail_list %}
         {% for mission_detail in mission_detail_list %}
             <tr><td style="border-top:0px"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
@@ -51,17 +51,16 @@
 
 
 <tr>
-    <td></td><td></td><td class="text-right"><b>{% trans "Sub Total" %}</b></td><td class="text-right"><b>24 000</b></td>
+    <td colspan=5 class="text-right"><b>{% trans "Sub Total" %}</b></td><td class="text-right"><b>24 000</b></td>
 </tr>
 <tr>
-    <td colspan=3 class="text-right" style="border-top:0px"><b>{% trans "VAT 20%" %}</b></td><td class="text-right"><b>4800</b></td>
+    <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "VAT 20%" %}</b></td><td class="text-right"><b>4800</b></td>
 </tr>
 <tr>
-    <td colspan=3 class="text-right" style="border-top:0px"><b>{% trans "Total" %}</b></td><td class="text-right"><b>28 800</b></td>
+    <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "Total" %}</b></td><td class="text-right"><b>28 800</b></td>
 </tr>
 
 </tbody>
-
 </table>
 
 <p><small>Veuillez rédiger vos chèques à l'ordre ENIOKA SAS ou régler par virement<br/>
