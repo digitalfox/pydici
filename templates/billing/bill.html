@@ -76,4 +76,27 @@
 IBAN FR76 30003 03392 00020301101 81</small></p>
 <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
 </div>
+
+<div style="page-break-after:always;"></div>
+<br/><br/><br/><br/>
+<h2>{% trans "Expenses details" %}</h2>
+<table class="table table-condensed table-stripped">
+    <tr>
+        <th>{% trans "Date" %}</th>
+        <th>{% trans "Expense label" %}</th>
+        <th>{% trans "Amount (with VAT)" %}</th>
+    </tr>
+    {% for billExpense in bill.billexpense_set.all %}
+        <tr>
+            <td> {{ billExpense.expense_date }}</td>
+            <td> {{ billExpense.label }}</td>
+            <td> {{ billExpense.amount_with_vat }} €</td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <th colspan="2" class="text-right">{% trans "Total" %}</th>
+        <th>{{ bill.expensesTotal }} €</th>
+    </tr>
+
+</table>
 {% endblock %}
