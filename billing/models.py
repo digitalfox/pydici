@@ -127,6 +127,13 @@ class ClientBill(AbstractBill):
         else:
             return unicode(self.lead)
 
+    def taxes(self):
+        """Return taxes subtotal grouped by taxe rate like this [[20, 1923.23], [10, 152]]"""
+        taxes = {}
+        for detail in self.billdetail_set.all():
+            taxes[detail.vat] = taxes.get(detail.vat, 0) + (detail.amount_with_vat - detail.amount)
+        return taxes.items()
+
     def save(self, *args, **kwargs):
         # Automatically set payment date for paid bills
         if self.state == "2_PAID" and not self.payment_date:
