@@ -134,9 +134,12 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
         if any(self.errors):
             # Don't bother validating the formset unless each form is valid on its own
             return
+        expenses = []
         for form in self.forms:
-            pass
-            #TODO: ensure the same expense is not charged twice
+            expense  = form.cleaned_data['expense'].id
+            if expense in expenses:
+                raise ValidationError(_("Cannot declare twice the same expense"))
+            expenses.append(expense)
 
 
 class BillExpenseFormSetHelper(FormHelper):

@@ -16,9 +16,10 @@
     <hr>
     {% if detail_formset %}
         <h2>{% trans "Bill mission detail" %}</h2>
-        {% include "bootstrap3/errors_formset.html" %}
+        {% with detail_formset as formset %}{% include "bootstrap3/errors_formset.html" %}{% endwith %}
         {% crispy detail_formset detail_formset_helper %}
         <h2>{% trans "Bill expense detail" %}</h2>
+        {% with expense_formset as formset %}{% include "bootstrap3/errors_formset.html" %}{% endwith %}
         {% crispy expense_formset expense_formset_helper %}
     {% endif %}
     <div class="form-actions">
