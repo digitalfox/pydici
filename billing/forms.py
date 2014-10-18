@@ -18,8 +18,9 @@ from crispy_forms.helper import FormHelper
 
 from billing.models import ClientBill, SupplierBill, BillDetail
 from staffing.models import Mission
+from expense.models import Expense
 from leads.forms import LeadChoices
-from expense.forms import ChargeableExpenseMChoices
+from expense.forms import ChargeableExpenseMChoices, LeadExpenseChoices
 from crm.forms import SupplierChoices
 from staffing.forms import MissionChoices, LeadMissionChoices
 from people.forms import ConsultantChoices
@@ -99,6 +100,7 @@ class BillDetailFormSetHelper(FormHelper):
         self.form_tag = False
         self.template = 'bootstrap/table_inline_formset.html'
 
+
 class BillDetailForm(ModelForm):
     def clean_consultant(self):
         if not self.cleaned_data["consultant"] and self.cleaned_data["detail_type"] == "TIME_SPENT_MISSION":
@@ -120,3 +122,31 @@ class BillDetailForm(ModelForm):
             if mission.billing_mode == "TIME_SPENT" and  self.cleaned_data["detail_type"] != "TIME_SPENT_MISSION":
                 raise invalid_type
         return self.cleaned_data
+
+
+class BillExpenseInlineFormset(BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super(BillExpenseInlineFormset, self).add_fields(form, index)
+        form.fields["expense"] = LeadExpenseChoices(queryset=Expense.objects.filter(lead=self.instance.lead))
+
+
+    def clean(self):
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        for form in self.forms:
+            pass
+            #TODO: ensure the same expense is not charged twice
+
+
+class BillExpenseFormSetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super(BillExpenseFormSetHelper, self).__init__(*args, **kwargs)
+        self.form_method = 'post'
+        self.form_tag = False
+        self.template = 'bootstrap/table_inline_formset.html'
+
+
+class BillExpenseForm(ModelForm):
+    pass
+    #TODO: add sanity checks

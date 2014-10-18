@@ -177,11 +177,10 @@ class SupplierBill(AbstractBill):
 
 
 class BillDetail(models.Model):
-    """Lines of a client bill that describe what's actually billed"""
+    """Lines of a client bill that describe what's actually billed for mission"""
+    #TODO: remove bill_detail type, we no longuer need that
     BILL_DETAIL_TYPE = (("TIME_SPENT_MISSION", ugettext("Time spent mission")),
                         ("FIXED_PRICE_MISSION", ugettext("Fixed price mission")),
-                        ("EXPENSE", ugettext("Expense")),
-                        ("OTHER", ugettext("Other")),
     )
     detail_type = models.CharField("type", max_length=30, choices=BILL_DETAIL_TYPE, default=BILL_DETAIL_TYPE[0][0])
     bill = models.ForeignKey(ClientBill)
@@ -206,3 +205,15 @@ class BillDetail(models.Model):
 
     class Meta:
         ordering = ("mission", "month", "consultant")
+
+
+class BillExpense(models.Model):
+    """Lines of a client bill that describe what's actually billed for expenses and generic stuff"""
+    bill = models.ForeignKey(ClientBill)
+    expense = models.ForeignKey(Expense)
+    expense_date = models.DateField()
+    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2)
+    label = models.CharField(_("Label"), max_length=200, blank=True, null=True)
+
+    class Meta:
+        ordering = ("expense_date",)
