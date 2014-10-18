@@ -134,6 +134,11 @@ class ClientBill(AbstractBill):
             taxes[detail.vat] = taxes.get(detail.vat, 0) + (detail.amount_with_vat - detail.amount)
         return taxes.items()
 
+    def expensesTotal(self):
+        """Returns the total sum (with taxes) of all expenses of this bill"""
+        return sum([b.amount_with_vat for b in self.billexpense_set.all()])
+
+
     def save(self, *args, **kwargs):
         # Automatically set payment date for paid bills
         if self.state == "2_PAID" and not self.payment_date:

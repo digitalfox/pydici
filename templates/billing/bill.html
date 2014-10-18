@@ -58,6 +58,13 @@
 <tr>
     <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "VAT 20%" %}</b></td><td class="text-right"><b>4800</b></td>
 </tr>
+{% with bill.expensesTotal as expensesTotal %}
+    {% if expensesTotal %}
+        <tr>
+            <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "Expenses" %}</b></td><td class="text-right"><b>{{ expensesTotal }}</b></td>
+        </tr>
+    {% endif %}
+{% endwith %}
 <tr>
     <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "Total" %}</b></td><td class="text-right"><b>28 800</b></td>
 </tr>
