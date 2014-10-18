@@ -178,11 +178,6 @@ class SupplierBill(AbstractBill):
 
 class BillDetail(models.Model):
     """Lines of a client bill that describe what's actually billed for mission"""
-    #TODO: remove bill_detail type, we no longuer need that
-    BILL_DETAIL_TYPE = (("TIME_SPENT_MISSION", ugettext("Time spent mission")),
-                        ("FIXED_PRICE_MISSION", ugettext("Fixed price mission")),
-    )
-    detail_type = models.CharField("type", max_length=30, choices=BILL_DETAIL_TYPE, default=BILL_DETAIL_TYPE[0][0])
     bill = models.ForeignKey(ClientBill)
     mission = models.ForeignKey(Mission)
     month = models.DateField(blank=True, null=True)

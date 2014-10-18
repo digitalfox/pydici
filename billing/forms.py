@@ -102,32 +102,20 @@ class BillDetailFormSetHelper(FormHelper):
 
 
 class BillDetailForm(ModelForm):
-    def clean_consultant(self):
-        if not self.cleaned_data["consultant"] and self.cleaned_data["detail_type"] == "TIME_SPENT_MISSION":
-            raise ValidationError(_("Consultant must be defined for time spent mission"))
-        return self.cleaned_data["consultant"]
-
-    def clean_month(self):
-        if not self.cleaned_data["month"] and self.cleaned_data["detail_type"] == "TIME_SPENT_MISSION":
-            raise ValidationError(_("Month must be defined for time spent mission"))
-        return self.cleaned_data["month"]
-
-
     def clean(self):
-        mission = self.cleaned_data.get("mission", False)
+        mission = self.cleaned_data.get("mission", None)
         if mission:
-            invalid_type = ValidationError(ugettext("Type is not consistent with mission %s billing mode (%s)") % (mission.mission_id(), mission.get_billing_mode_display()))
-            if mission.billing_mode == "FIXED_PRICE" and  self.cleaned_data["detail_type"] != "FIXED_PRICE_MISSION":
-                raise invalid_type
-            if mission.billing_mode == "TIME_SPENT" and  self.cleaned_data["detail_type"] != "TIME_SPENT_MISSION":
-                raise invalid_type
+            if not self.cleaned_data["month"] and mission.billing_mode=="TIME_SPENT":
+                raise ValidationError(_("Month must be defined for time spent mission"))
+            if not self.cleaned_data["consultant"] and mission.billing_mode=="TIME_SPENT":
+                raise ValidationError(_("Consultant must be defined for time spent mission"))
         return self.cleaned_data
 
 
 class BillExpenseInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillExpenseInlineFormset, self).add_fields(form, index)
-        form.fields["expense"] = LeadExpenseChoices(queryset=Expense.objects.filter(lead=self.instance.lead))
+        form.fields["expense"] = LeadExpenseChoices(queryset=Expense.objects.filter(lead=self.instance.lead), required=True)
 
 
     def clean(self):
@@ -136,7 +124,11 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
             return
         expenses = []
         for form in self.forms:
-            expense  = form.cleaned_data['expense'].id
+            expense  = form.cleaned_data.get("expense", None)
+            if expense:
+                expense = expense.id
+            else:
+                continue
             if expense in expenses:
                 raise ValidationError(_("Cannot declare twice the same expense"))
             expenses.append(expense)
