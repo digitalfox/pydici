@@ -138,21 +138,21 @@ def pydici_simple_format(value, arg=None):
         newline = []
         for word in line.split():
             if word in dealIds:
-                word = "<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=word).get_absolute_url(), word)
+                word = u"<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=word).get_absolute_url(), word)
             if word in trigrammes:
-                word = "<a href='%s'>%s</a>" % (Consultant.objects.get(trigramme=word).get_absolute_url(), word)
+                word = u"<a href='%s'>%s</a>" % (Consultant.objects.get(trigramme=word).get_absolute_url(), word)
             newline.append(word)
         line = " ".join(newline)
 
         if bullet_point.match(line):
             if not inList:
-                result.append("<ul>")
+                result.append(u"<ul>")
             result.append(u"<li>%s</li>" % line.strip().lstrip("*").lstrip("-"))
             inList = True
         else:
             if inList:
-                result.append("</ul>")
-            result.append(line + "\n")
+                result.append(u"</ul>")
+            result.append(line + u"\n")
             inList = False
     value = "".join(result)
 
