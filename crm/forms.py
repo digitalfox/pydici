@@ -32,7 +32,7 @@ class ClientChoices(PydiciSelect2Field, AutoModelSelect2Field):
         if obj.active:
             return smart_unicode(unicode(obj))
         else:
-            return smart_unicode(ugettext("%s (inactive)" % obj))
+            return smart_unicode(ugettext(u"%s (inactive)" % obj))
 
 
 
