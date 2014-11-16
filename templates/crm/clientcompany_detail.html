@@ -54,11 +54,15 @@
         <ul>
         {% for clientorganisation in company.clientorganisation_set.all %}
             {% for client in clientorganisation.client_set.all %}
-                <li>{{ client }} <ul>
-                {% for mission in client.getActiveMissions %}
-                    <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission.short_name }}</a></li>
-                {% endfor %}
-                </ul></li>
+                {% with client.getActiveMissions as activeMissions %}
+                    {% if activeMissions %}
+                        <li>{{ client }} <ul>
+                        {% for mission in activeMissions %}
+                            <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission.short_name }}</a></li>
+                        {% endfor %}
+                        </ul></li>
+                    {% endif %}
+                {% endwith %}
             {% endfor %}
         {% endfor %}
         </ul>
