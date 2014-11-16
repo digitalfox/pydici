@@ -80,7 +80,7 @@
                 </h2>
             {% endifchanged %}
         
-            <li><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
+            <li><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
         {% endfor %}
         </ul>
     </div>
