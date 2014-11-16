@@ -17,6 +17,8 @@ from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.core import urlresolvers
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import permission_required
 
 
 from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact, BusinessBroker
@@ -59,6 +61,10 @@ class ContactDelete(PydiciNonPublicdMixin, DeleteView):
     def form_valid(self, form):
         messages.add_message(self.request, messages.INFO, _("Contact removed successfully"))
         return super(ContactDelete, self).form_valid(form)
+
+    @method_decorator(permission_required("crm.delete_contact"))
+    def dispatch(self, *args, **kwargs):
+        return super(ContactDelete, self).dispatch(*args, **kwargs)
 
 
 class ContactDetail(PydiciNonPublicdMixin, DetailView):
