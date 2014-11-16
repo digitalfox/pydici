@@ -184,7 +184,7 @@ class BusinessBroker(models.Model):
     """A business broken: someone that is not a client but an outsider that act
     as a partner to provide some business"""
     company = models.ForeignKey(Company, verbose_name=_("Broker company"))
-    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
+    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
 
     def __unicode__(self):
         if self.company:
@@ -207,7 +207,7 @@ class BusinessBroker(models.Model):
 class Supplier(models.Model):
     """A supplier is defined by a contact and the supplier company where he works at the moment"""
     company = models.ForeignKey(Company, verbose_name=_("Supplier company"))
-    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
+    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
 
     def __unicode__(self):
         if self.contact:
@@ -235,7 +235,7 @@ class Client(models.Model):
             ("3_STRATEGIC", ugettext("Strategic")),
                  )
     organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Company : Organisation"))
-    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
+    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
     expectations = models.CharField(max_length=30, choices=EXPECTATIONS, default=EXPECTATIONS[2][0], verbose_name=_("Expectations"))
     alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
     active = models.BooleanField(_("Active"), default=True)
