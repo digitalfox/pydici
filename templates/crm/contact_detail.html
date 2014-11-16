@@ -23,7 +23,7 @@
         <tr><th><span class="glyphicon glyphicon-print"></span> {% trans "fax" %}</th><td>{{ contact.fax }}</td></tr>
         <tr><th><span class="glyphicon glyphicon-envelope"></span> {% trans "email" %}</th><td>{{ contact.email|urlize }}</td></tr>
         <tr><th><span class="glyphicon glyphicon-briefcase"></span> {% trans "function" %}</th><td>{{ contact.function }}</td></tr>
-        <tr><th><span class="glyphicon glyphicon-home"></span> {% trans "companies" %}</th><td>{{ contact.companies }}</td></tr>
+        <tr><th><span class="glyphicon glyphicon-home"></span> {% trans "companies" %}</th><td>{{ contact.companies_html}}</td></tr>
         </table>
     </div>
     <div class="col-md-6">

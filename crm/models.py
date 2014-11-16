@@ -13,6 +13,8 @@ from django.db.models import Sum, Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core import urlresolvers
+from django.utils.safestring import mark_safe
+
 
 from core.utils import GEdge, GEdges, GNode, GNodes
 
@@ -88,7 +90,7 @@ class Contact(models.Model):
     def __unicode__(self):
         return self.name
 
-    def companies(self):
+    def companies(self, html=False):
         """Return companies for whom this contact currently works"""
         companies = Company.objects.filter(Q(clientorganisation__client__contact__id=self.id) |
                                            Q(businessbroker__contact__id=self.id) |
@@ -99,10 +101,20 @@ class Contact(models.Model):
         if companies_count == 0:
             return _("None")
         elif companies_count == 1:
-            return companies[0]
+            if html:
+                return mark_safe(u"<a href='%s'>%s</a>" % (urlresolvers.reverse("crm.views.company_detail", args=[companies[0].id,]), unicode(companies[0])))
+            else:
+                return companies[0]
         elif companies_count > 1:
-            return u", ".join([unicode(i) for i in companies])
+            if html:
+                return mark_safe(u", ".join([u"<a href='%s'>%s</a>" % (urlresolvers.reverse("crm.views.company_detail", args=[i.id,]), unicode(i)) for i in companies]))
+            else:
+                return u", ".join([unicode(i) for i in companies])
     companies.short_description = _("Companies")
+
+    def companies_html(self):
+        return self.companies(html=True)
+
 
     def relationData(self):
         """Compute relational data in json format usable by Dagre / D3 library"""
