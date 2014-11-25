@@ -99,7 +99,7 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
         minDate = self.instance.staffing_set.all().aggregate(Min("staffing_date")).values()
         if minDate:
-            minDate = minDate[0]
+            minDate = min(minDate[0], date.today())
         else:
             minDate = None
         form.fields["consultant"] = ConsultantChoices(label=_("Consultant"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
