@@ -24,6 +24,7 @@ from django.contrib.auth.decorators import permission_required
 from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact, BusinessBroker
 from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm, AdministrativeContactForm, BusinessBrokerForm
 from staffing.models import Timesheet
+from people.models import Consultant
 from leads.models import Lead
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin
 from core.utils import sortedValues, previousMonth, COLORS
@@ -44,6 +45,13 @@ class ContactCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
     model = Contact
     template_name = "core/form.html"
     form_class = ContactForm
+
+    def get_initial(self):
+        try:
+            defaultPointOfContact = Consultant.objects.get(trigramme=self.request.user.username.upper())
+            return { 'contact_points': [defaultPointOfContact,]}
+        except Consultant.DoesNotExist:
+            return {}
 
 
 class ContactUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
