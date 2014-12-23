@@ -98,7 +98,7 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
         """that adds the field in, overwriting the previous default field"""
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
         minDate = self.instance.staffing_set.all().aggregate(Min("staffing_date")).values()
-        if minDate:
+        if minDate and minDate[0]:
             minDate = min(minDate[0], date.today())
         else:
             minDate = None
