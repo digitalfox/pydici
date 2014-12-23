@@ -82,6 +82,16 @@ class ExpenseForm(forms.ModelForm):
                                         css_class='row'),
                                     submit)
 
+    def clean_receipt(self):
+        valid_extensions = ["pdf", "png", "jpg", "jpeg"]
+
+        if self.cleaned_data["receipt"]:
+            for extension in valid_extensions:
+                if self.cleaned_data["receipt"].name.lower().endswith(extension):
+                    return self.cleaned_data["receipt"]
+            raise ValidationError("Use a valid extension (%s)" % ", ".join(valid_extensions))
+
+
     def clean(self):
         """Additional check on expense form"""
         if self.cleaned_data["chargeable"] and not self.cleaned_data["lead"]:
