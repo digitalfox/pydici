@@ -8,7 +8,7 @@ Database access layer for pydici leads module
 import os
 
 from django.db import models
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.admin.models import LogEntry, ContentType
@@ -32,11 +32,14 @@ SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
 
 class LeadManager(models.Manager):
+    PASSIVE_STATES = ("LOST", "FORGIVEN", "WON", "SLEEPING")
     def active(self):
-        return self.get_query_set().exclude(state__in=("LOST", "FORGIVEN", "WON", "SLEEPING"))
+        today = datetime.today()
+        delay = timedelta(days=1)
+        return self.get_query_set().exclude(Q(state__in=self.PASSIVE_STATES) & Q(update_date__lt=today-delay))
 
     def passive(self):
-        return self.get_query_set().filter(state__in=("LOST", "FORGIVEN", "WON", "SLEEPING"))
+        return self.get_query_set().filter(state__in=self.PASSIVE_STATES)
 
 
 class Lead(models.Model):
