@@ -22,7 +22,9 @@
         {% if active_leads_table.data %}
         <h2>{% trans "All active leads" %}</h2>
             {% render_table active_leads_table %}
-            {% with "active_leads_table" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+            {% with "active_leads_table" as table_id %}{% with '"aaSorting" : [[8, "asc"]],' as datatable_options %}
+                {% include "core/_datatables.html" %}
+            {% endwith %}{% endwith %}
         {% endif %}
         </div>
     </div>
