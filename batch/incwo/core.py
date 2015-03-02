@@ -49,14 +49,14 @@ def generate_unique_company_code(name):
 def download_objects(base_url, auth, sub_dir, page=1):
     """
     Download XML files for all objects
-    Returns a dict of obj_id => obj_as_xml_string
+    Returns a list of tuples (obj_id, obj_as_xml_string)
     """
     url = '{}/{}.xml'.format(base_url, sub_dir)
     logger.info('Downloading {} page={}'.format(url, page))
     res = requests.get(url, auth=auth, params={'page': page})
     root = objectify.fromstring(res.content)
 
-    dct= {}
+    lst = []
     for obj_element in root.iterchildren():
         if obj_element.tag == 'pagination':
             continue
@@ -64,17 +64,18 @@ def download_objects(base_url, auth, sub_dir, page=1):
         url = '{}/{}/{}.xml'.format(base_url, sub_dir, obj_id)
         logger.info('Downloading ' + url)
         res = requests.get(url, auth=auth)
-        dct[obj_id] = res.text
+        lst.append((obj_id, res.text))
 
     total_pages = root.pagination.total_pages
     if page < total_pages:
-        dct.update(download_objects(base_url, auth, sub_dir, page=page + 1))
-    return dct
+        lst.extend(download_objects(base_url, auth, sub_dir, page=page + 1))
+    lst.sort(key=lambda x: x[0])
+    return lst
 
 
-def import_firms(firm_dct):
-    count = len(firm_dct)
-    for pos, (firm_id, firm_xml) in enumerate(firm_dct.items()):
+def import_firms(firm_lst):
+    count = len(firm_lst)
+    for pos, (firm_id, firm_xml) in enumerate(firm_lst):
         firm = objectify.fromstring(firm_xml)
         name = unicode(firm.name)
         logger.info(' {}/{} {} ({})'.format(pos + 1, count, name.encode('utf-8'), firm_id))
@@ -90,22 +91,23 @@ def import_firms(firm_dct):
 
 
 def load_objects(base_download_dir, sub_dir):
-    dct = {}
+    lst = []
     download_dir = os.path.join(base_download_dir, sub_dir)
     for name in os.listdir(download_dir):
         obj_id = int(os.path.splitext(name)[0])
         xml_filename = os.path.join(download_dir, name)
         with open(xml_filename) as f:
             obj_xml = f.read()
-        dct[obj_id] = obj_xml
-    return dct
+        lst.append((obj_id, obj_xml))
+    lst.sort(key=lambda x: x[0])
+    return lst
 
 
-def save_objects(obj_dct, base_download_dir, sub_dir):
+def save_objects(obj_lst, base_download_dir, sub_dir):
     download_dir = os.path.join(base_download_dir, sub_dir)
     if not os.path.exists(download_dir):
         os.makedirs(download_dir)
-    for obj_id, obj_xml in obj_dct.items():
+    for obj_id, obj_xml in obj_lst:
         xml_filename = os.path.join(download_dir, str(obj_id) + '.xml')
         with open(xml_filename, 'w') as f:
             f.write(obj_xml)
