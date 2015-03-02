@@ -79,9 +79,23 @@ def import_firms(firm_lst):
         firm = objectify.fromstring(firm_xml)
         name = unicode(firm.name)
         logger.info(' {}/{} {} ({})'.format(pos + 1, count, name.encode('utf-8'), firm_id))
+
         try:
             company = Company.objects.get(pk=firm_id)
         except Company.DoesNotExist:
+            # If there is a company with the same name already, generate a
+            # unique name
+            idx = 1
+            basename = name + '-'
+            while True:
+                try:
+                    Company.objects.get(name=name)
+                except Company.DoesNotExist:
+                    break
+                name = basename + str(idx)
+                idx += 1
+
+            # Create the company entry
             code = generate_unique_company_code(name)
             company = Company(pk=firm_id, name=name, code=code)
             company.save()
