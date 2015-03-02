@@ -5,7 +5,7 @@ import re
 import requests
 from lxml import objectify
 
-from crm.models import Company, ClientOrganisation
+from crm.models import Company, ClientOrganisation, Client
 
 logger = logging.getLogger('incwo')
 
@@ -101,8 +101,8 @@ def import_firms(firm_lst):
             company = Company(pk=firm_id, name=name, code=code)
             company.save()
 
-        co, created = ClientOrganisation.objects.get_or_create(name=DEFAULT_CLIENT_ORGANIZATION_NAME, company=company)
-        co.save()
+        co, _ = ClientOrganisation.objects.get_or_create(name=DEFAULT_CLIENT_ORGANIZATION_NAME, company=company)
+        client, _ = Client.objects.get_or_create(organisation=co)
 
 
 def load_objects(base_download_dir, sub_dir):
