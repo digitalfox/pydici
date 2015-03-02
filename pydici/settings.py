@@ -112,7 +112,7 @@ INSTALLED_APPS = [
     'billing',
     'expense',
     'actionset',
-    'incwoimport',
+    'batch.incwo',
     # Third party apps
     'django_extensions',
     'django.contrib.staticfiles',  # Static files are served by web server in production mode, but this apps allow collectstatic
