@@ -15,3 +15,11 @@ class FirmImportTest(TestCase):
         nb_objects = len(lst)
         core.import_firms(lst)
         self.assertEquals(len(Company.objects.all()), nb_objects)
+
+    def test_import_firms_twice(self):
+        lst = core.load_objects(os.path.join(TEST_DIR, 'import-twice'), '.')
+        nb_objects = len(lst)
+        core.import_firms(lst)
+        self.assertEquals(len(Company.objects.all()), nb_objects)
+        core.import_firms(lst)
+        self.assertEquals(len(Company.objects.all()), nb_objects)
