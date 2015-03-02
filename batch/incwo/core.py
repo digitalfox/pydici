@@ -5,7 +5,7 @@ import re
 import requests
 from lxml import objectify
 
-from crm.models import Company, ClientOrganisation, Client
+from crm.models import Company, ClientOrganisation, Client, Contact, MissionContact
 
 logger = logging.getLogger('incwo')
 
@@ -74,6 +74,33 @@ def download_objects(base_url, auth, sub_dir, page=1):
     return lst
 
 
+def load_objects(base_download_dir, sub_dir):
+    lst = []
+    download_dir = os.path.join(base_download_dir, sub_dir)
+    for name in os.listdir(download_dir):
+        id_str, ext = os.path.splitext(name)
+        if ext != '.xml':
+            # Skip files like Vim swap files
+            continue
+        obj_id = int(id_str)
+        xml_filename = os.path.join(download_dir, name)
+        with open(xml_filename) as f:
+            obj_xml = f.read()
+        lst.append((obj_id, obj_xml))
+    lst.sort(key=lambda x: x[0])
+    return lst
+
+
+def save_objects(obj_lst, base_download_dir, sub_dir):
+    download_dir = os.path.join(base_download_dir, sub_dir)
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+    for obj_id, obj_xml in obj_lst:
+        xml_filename = os.path.join(download_dir, str(obj_id) + '.xml')
+        with open(xml_filename, 'w') as f:
+            f.write(obj_xml)
+
+
 def import_firms(firm_lst):
     count = len(firm_lst)
     for pos, (firm_id, firm_xml) in enumerate(firm_lst):
@@ -105,24 +132,22 @@ def import_firms(firm_lst):
         client, _ = Client.objects.get_or_create(organisation=co)
 
 
-def load_objects(base_download_dir, sub_dir):
-    lst = []
-    download_dir = os.path.join(base_download_dir, sub_dir)
-    for name in os.listdir(download_dir):
-        obj_id = int(os.path.splitext(name)[0])
-        xml_filename = os.path.join(download_dir, name)
-        with open(xml_filename) as f:
-            obj_xml = f.read()
-        lst.append((obj_id, obj_xml))
-    lst.sort(key=lambda x: x[0])
-    return lst
+def import_contacts(lst):
+    count = len(lst)
+    for pos, (obj_id, obj_xml) in enumerate(lst):
+        contact = objectify.fromstring(obj_xml)
+        # Note: There is a 'first_last_name' field, but it's not documented, so
+        # better ignore it
+        name = unicode(contact.first_name) + ' ' + unicode(contact.last_name)
+        logger.info(' {}/{} {} ({})'.format(pos + 1, count, name.encode('utf-8'), obj_id))
 
+        db_contact, _ = Contact.objects.get_or_create(id=contact.id,
+                                                      name=name,
+                                                      function=unicode(contact.job_title))
 
-def save_objects(obj_lst, base_download_dir, sub_dir):
-    download_dir = os.path.join(base_download_dir, sub_dir)
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
-    for obj_id, obj_xml in obj_lst:
-        xml_filename = os.path.join(download_dir, str(obj_id) + '.xml')
-        with open(xml_filename, 'w') as f:
-            f.write(obj_xml)
+        if hasattr(contact, 'firm_id'):
+            try:
+                company = Company.objects.get(pk=contact.firm_id)
+                MissionContact.objects.get_or_create(contact=db_contact, company=company)
+            except Company.DoesNotExist:
+                pass

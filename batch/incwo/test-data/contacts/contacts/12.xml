@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contact>
+  <id>12</id>
+  <civility_label_id>18</civility_label_id>
+  <last_name>Ramè</last_name>
+  <first_name>Valérie</first_name>
+  <first_last_name>Valérie Ramè</first_last_name>
+  <contact_type>client</contact_type>
+  <contact_type2></contact_type2>
+  <batch>17 jan 12 @ 15:12:02</batch>
+  <batch_kind>CSV</batch_kind>
+  <firm_id>1</firm_id>
+  <accounting_ref></accounting_ref>
+  <accounting_ref_vendor></accounting_ref_vendor>
+  <contact_origin></contact_origin>
+  <job_title>Président</job_title>
+  <job_department></job_department>
+  <keywords></keywords>
+  <firm_name>ACME</firm_name>
+  <country>France</country>
+  <contact_addresses>
+    <contact_address>
+      <id>268273</id>
+      <contact_id>758017</contact_id>
+      <business_file_id>178768</business_file_id>
+      <address_type>21</address_type>
+      <zip_code>12345</zip_code>
+      <city>Bagnères de Bigorre</city>
+      <created_at>17-01-2012-15-14</created_at>
+      <updated_at>07-02-2012-16-13</updated_at>
+      <country>France</country>
+      <country_iso_3166_a3>FRA</country_iso_3166_a3>
+      <street_number>??</street_number>
+      <street_name>????</street_name>
+      <additional_info></additional_info>
+      <street_address>2 avenue Charles de Gaulle</street_address>
+      <street_address2></street_address2>
+    </contact_address>
+  </contact_addresses>
+  <contact_items>
+    <contact_item>
+      <id>305501</id>
+      <contact_id>758017</contact_id>
+      <type_id>23</type_id>
+      <created_at>17-01-2012-15-14</created_at>
+      <updated_at>29-10-2014-17-20</updated_at>
+      <creator_id>160561</creator_id>
+      <modifier_id>160561</modifier_id>
+      <business_file_id>178768</business_file_id>
+      <normalized_phone>0123456789</normalized_phone>
+      <object_zname>users</object_zname>
+      <object_zid>758017</object_zid>
+      <value>01 23 45 67 89</value>
+    </contact_item>
+    <contact_item>
+      <id>305500</id>
+      <contact_id>758017</contact_id>
+      <type_id>24</type_id>
+      <created_at>17-01-2012-15-14</created_at>
+      <updated_at>29-10-2014-17-20</updated_at>
+      <creator_id>160561</creator_id>
+      <modifier_id>160561</modifier_id>
+      <business_file_id>178768</business_file_id>
+      <normalized_phone>0678901234</normalized_phone>
+      <object_zname>users</object_zname>
+      <object_zid>758017</object_zid>
+      <value>06 78 90 12 34</value>
+    </contact_item>
+    <contact_item>
+      <id>305499</id>
+      <contact_id>758017</contact_id>
+      <type_id>27</type_id>
+      <created_at>17-01-2012-15-14</created_at>
+      <updated_at>29-10-2014-17-20</updated_at>
+      <creator_id>160561</creator_id>
+      <modifier_id>160561</modifier_id>
+      <business_file_id>178768</business_file_id>
+      <normalized_phone></normalized_phone>
+      <object_zname>users</object_zname>
+      <object_zid>758017</object_zid>
+      <value>ann.smith@acme.com</value>
+    </contact_item>
+  </contact_items>
+</contact>
