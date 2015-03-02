@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 
 import requests
 from lxml import objectify
@@ -25,7 +26,7 @@ def generate_unique_company_code(name):
     Once done, iterate on existing codes and solve conflicts by replacing the
     last letter with an incrementing digit
     """
-    words = name.split(' ')
+    words = re.split('\W', name)
     if len(words) >= 3:
         code = ''.join([x[0] for x in words])[:3]
     elif len(words) == 2:
