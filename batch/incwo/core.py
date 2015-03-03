@@ -157,9 +157,12 @@ def import_contacts(lst):
         name = unicode(contact.first_name) + ' ' + unicode(contact.last_name)
         logger.info(' {}/{} {} ({})'.format(pos + 1, count, name.encode('utf-8'), obj_id))
 
-        db_contact, _ = Contact.objects.get_or_create(id=contact.id,
-                                                      name=name,
-                                                      function=unicode(contact.job_title))
+        db_contact, _ = Contact.objects.get_or_create(id=contact.id, name=name)
+
+        if hasattr(contact, 'job_title'):
+            db_contact.function = unicode(contact.job_title)
+
+        db_contact.save()
 
         if hasattr(contact, 'firm_id'):
             organisation = ClientOrganisation.objects.get(company_id=contact.firm_id,
