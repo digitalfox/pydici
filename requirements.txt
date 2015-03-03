@@ -11,3 +11,4 @@ django-debug-toolbar
 django-userswitch
 django-crispy-forms
 Django-Select2
+South==1.0.2
