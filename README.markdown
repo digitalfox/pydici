@@ -36,7 +36,7 @@ Create a virtual env in a directory readable by your apache user and activate it
 Install prerequisites :
    pip install -r <path to pydici source code>/requirements.txt
 
-Setup your favorite database (mysql/mariaDB or postgresql) and create a schema/base (with UTF-8 character set please) with a valid user that can create/alterselect/delete/update its objects.
+Setup your favorite database (mysql/mariaDB or postgresql) and create a schema/base (with UTF-8 character set please) with a valid user that can create/alter/select/delete/update its objects.
 
 Configure your database in pydici/settings.py. Look at django docs to understand the various database options.
 
