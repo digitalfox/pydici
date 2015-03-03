@@ -5,7 +5,7 @@ import re
 import requests
 from lxml import objectify
 
-from crm.models import Company, ClientOrganisation, Client, Contact, MissionContact
+from crm.models import Company, ClientOrganisation, Client, Contact
 
 logger = logging.getLogger('incwo')
 
@@ -146,8 +146,6 @@ def import_contacts(lst):
                                                       function=unicode(contact.job_title))
 
         if hasattr(contact, 'firm_id'):
-            try:
-                company = Company.objects.get(pk=contact.firm_id)
-                MissionContact.objects.get_or_create(contact=db_contact, company=company)
-            except Company.DoesNotExist:
-                pass
+            organisation = ClientOrganisation.objects.get(company_id=contact.firm_id,
+                                                          name=DEFAULT_CLIENT_ORGANIZATION_NAME)
+            Client.objects.get_or_create(contact=db_contact, organisation=organisation)

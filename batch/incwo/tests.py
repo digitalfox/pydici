@@ -37,7 +37,7 @@ class ContactImportTest(TestCase):
         company = Company.objects.get(pk=1)
         contact = Contact.objects.get(pk=12)
 
-        company_contacts = Contact.objects.filter(missioncontact__company=company)
+        company_contacts = Contact.objects.filter(client__organisation__company=company)
         self.assertEquals(list(company_contacts), [contact])
 
         # Import twice to check for conflicts
