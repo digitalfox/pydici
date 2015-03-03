@@ -1,7 +1,5 @@
 import os
 
-from unittest import skip
-
 from django.test import TestCase
 
 from batch.incwo import core
@@ -43,7 +41,6 @@ class ContactImportTest(TestCase):
         # Import twice to check for conflicts
         core.import_contacts(lst)
 
-    @skip('Contact.name is unique right now')
     def test_import_homonyms(self):
         lst = core.load_objects(os.path.join(TEST_DIR, 'homonyms'), 'firms')
         core.import_firms(lst)
