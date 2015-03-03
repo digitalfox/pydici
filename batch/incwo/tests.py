@@ -33,11 +33,11 @@ class ContactImportTest(TestCase):
         core.import_contacts(contact_lst)
 
         company = Company.objects.get(pk=1)
-        ann_smith = Contact.objects.get(pk=12)
-        job_less = Contact.objects.get(pk=34)
+        classic_contact = Contact.objects.get(pk=12)
+        jobless_contact = Contact.objects.get(pk=34)
 
         company_contacts = Contact.objects.filter(client__organisation__company=company)
-        self.assertItemsEqual(company_contacts, [ann_smith, job_less])
+        self.assertItemsEqual(company_contacts, [classic_contact, jobless_contact])
 
         # Import twice to check for conflicts
         core.import_firms(firm_lst)
