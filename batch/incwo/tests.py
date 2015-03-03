@@ -51,3 +51,13 @@ class ContactImportTest(TestCase):
 
         contact_lst = Contact.objects.filter(name='John Doe')
         self.assertEquals(len(contact_lst), 2)
+
+    def test_import_contact_items(self):
+        contact_lst = core.load_objects(os.path.join(TEST_DIR, 'contact-items'), '.')
+        core.import_contacts(contact_lst)
+
+        contact = Contact.objects.get(pk=12)
+        self.assertEquals(contact.email, 'valerie.rame@acme.com')
+        self.assertEquals(contact.phone, '01 23 45 67 89')
+        self.assertEquals(contact.mobile_phone, '06 78 90 12 34')
+        self.assertEquals(contact.fax, '01 23 45 67 01')

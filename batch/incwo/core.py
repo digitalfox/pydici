@@ -162,6 +162,47 @@ def import_firms(lst, ignore_errors=False):
     _do_import('firm', lst, import_firm, ignore_errors=ignore_errors)
 
 
+# This list maps a field name in the Contact table with Incwo contact type
+# ids, in order of preference
+CONTACT_TYPE_MAPPING = {
+    'phone': [
+        471,  # main professional phone
+        24,  # professional phone
+        23,  # personal phone
+    ],
+    'mobile_phone': [
+        88,  # professional cell phone
+        554,  # personal cell phone
+    ],
+    'fax': [
+        26,  # professional fax
+        25,  # personal fax
+    ],
+    'email': [
+        27,  # professional email
+        28,  # personal email
+    ]
+}
+# Unsupported for now
+#     430,  # Skype address
+#     431,  # Yahoo messenger id
+#     432,  # MSN messenger id
+#     433,  # AIM messenger id
+#     457,  # ICQ messenger id
+
+def import_contact_items(db_contact, items):
+    dct = dict((x.type_id, x.value) for x in items.iterchildren())
+
+    # For each field, look for the best available contact entry if any and use
+    # it
+    for field, type_id_lst in CONTACT_TYPE_MAPPING.items():
+        for type_id in type_id_lst:
+            value = dct.get(type_id)
+            if value:
+                setattr(db_contact, field, value)
+                break
+
+
 def import_contact(obj_id, obj_xml):
     contact = objectify.fromstring(obj_xml)
     # Note: There is a 'first_last_name' field, but it's not documented, so
@@ -171,6 +212,9 @@ def import_contact(obj_id, obj_xml):
 
     if hasattr(contact, 'job_title'):
         db_contact.function = unicode(contact.job_title)
+
+    if hasattr(contact, 'contact_items'):
+        import_contact_items(db_contact, contact.contact_items)
 
     db_contact.save()
 
