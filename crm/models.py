@@ -79,7 +79,7 @@ class ClientOrganisation(models.Model):
 
 class Contact(models.Model):
     """Third party contact definition, client contact, broker, business contact etc."""
-    name = models.CharField(_("Name"), max_length=200, unique=True)
+    name = models.CharField(_("Name"), max_length=200)
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)
     mobile_phone = models.CharField(_("Mobile phone"), max_length=30, blank=True)
