@@ -22,6 +22,8 @@ class Command(BaseCommand):
                     help='Incwo password'),
         make_option('--import', action='store_true',
                     help='Import downloaded data from download-dir, do not download anything'),
+        make_option('--ignore-errors', action='store_true',
+                    help='Ignore errors instead of stopping. Errors are still logged though'),
     )
     args = '<download-dir>'
     help = 'Import data from an Incwo account'
@@ -39,20 +41,22 @@ class Command(BaseCommand):
 
         download_dir = args[0]
         if options['import']:
-            self.handle_import(download_dir)
+            self.handle_import(download_dir, options)
         elif options['download']:
             self.handle_download(download_dir, options)
         else:
             # Do the whole thing
-            self.handle_import(download_dir)
+            self.handle_import(download_dir, options)
             self.handle_download(download_dir, options)
 
-    def handle_import(self, download_dir):
+    def handle_import(self, download_dir, options):
+        ignore_errors = options['ignore_errors']
+
         firms = core.load_objects(download_dir, 'firms')
         contacts = core.load_objects(download_dir, 'contacts')
 
-        core.import_firms(firms)
-        core.import_contacts(contacts)
+        core.import_firms(firms, ignore_errors=ignore_errors)
+        core.import_contacts(contacts, ignore_errors=ignore_errors)
 
     def handle_download(self, download_dir, options):
         url = options['host']

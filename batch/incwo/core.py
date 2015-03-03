@@ -117,54 +117,68 @@ def save_objects(obj_lst, base_download_dir, sub_dir):
             f.write(obj_xml)
 
 
-def import_firms(firm_lst):
-    count = len(firm_lst)
-    for pos, (firm_id, firm_xml) in enumerate(firm_lst):
-        firm = objectify.fromstring(firm_xml)
-        name = unicode(firm.name)
-        logger.info(' {}/{} {} ({})'.format(pos + 1, count, name.encode('utf-8'), firm_id))
-
-        try:
-            company = Company.objects.get(pk=firm_id)
-        except Company.DoesNotExist:
-            # If there is a company with the same name already, generate a
-            # unique name
-            idx = 1
-            basename = name + '-'
-            while True:
-                try:
-                    Company.objects.get(name=name)
-                except Company.DoesNotExist:
-                    break
-                name = basename + str(idx)
-                idx += 1
-
-            # Create the company entry
-            code = generate_unique_company_code(name)
-            company = Company(pk=firm_id, name=name, code=code)
-            company.save()
-
-        co, _ = ClientOrganisation.objects.get_or_create(name=DEFAULT_CLIENT_ORGANIZATION_NAME, company=company)
-        _get_list_or_create(Client, organisation=co)
-
-
-def import_contacts(lst):
+def _do_import(obj_type, lst, import_fcn, ignore_errors=False):
     count = len(lst)
     for pos, (obj_id, obj_xml) in enumerate(lst):
-        contact = objectify.fromstring(obj_xml)
-        # Note: There is a 'first_last_name' field, but it's not documented, so
-        # better ignore it
-        name = unicode(contact.first_name) + ' ' + unicode(contact.last_name)
-        logger.info(' {}/{} {} ({})'.format(pos + 1, count, name.encode('utf-8'), obj_id))
+        logger.info('Importing {} {} ({}/{})'.format(obj_type, obj_id, pos + 1, count))
+        try:
+            import_fcn(obj_id, obj_xml)
+        except Exception:
+            if ignore_errors:
+                logger.exception('Failed to import {} {}'.format(obj_type, obj_id))
+            else:
+                raise
 
-        db_contact, _ = Contact.objects.get_or_create(id=contact.id, name=name)
 
-        if hasattr(contact, 'job_title'):
-            db_contact.function = unicode(contact.job_title)
+def import_firm(obj_id, obj_xml):
+    firm = objectify.fromstring(obj_xml)
+    name = unicode(firm.name)
 
-        db_contact.save()
+    try:
+        company = Company.objects.get(pk=obj_id)
+    except Company.DoesNotExist:
+        # If there is a company with the same name already, generate a
+        # unique name
+        idx = 1
+        basename = name + '-'
+        while True:
+            try:
+                Company.objects.get(name=name)
+            except Company.DoesNotExist:
+                break
+            name = basename + str(idx)
+            idx += 1
 
-        if hasattr(contact, 'firm_id'):
-            organisation = ClientOrganisation.objects.get(company_id=contact.firm_id,
-                                                          name=DEFAULT_CLIENT_ORGANIZATION_NAME)
-            Client.objects.get_or_create(contact=db_contact, organisation=organisation)
+        # Create the company entry
+        code = generate_unique_company_code(name)
+        company = Company(pk=obj_id, name=name, code=code)
+        company.save()
+
+    co, _ = ClientOrganisation.objects.get_or_create(name=DEFAULT_CLIENT_ORGANIZATION_NAME, company=company)
+    _get_list_or_create(Client, organisation=co)
+
+
+def import_firms(lst, ignore_errors=False):
+    _do_import('firm', lst, import_firm, ignore_errors=ignore_errors)
+
+
+def import_contact(obj_id, obj_xml):
+    contact = objectify.fromstring(obj_xml)
+    # Note: There is a 'first_last_name' field, but it's not documented, so
+    # better ignore it
+    name = unicode(contact.first_name) + ' ' + unicode(contact.last_name)
+    db_contact, _ = Contact.objects.get_or_create(id=contact.id, name=name)
+
+    if hasattr(contact, 'job_title'):
+        db_contact.function = unicode(contact.job_title)
+
+    db_contact.save()
+
+    if hasattr(contact, 'firm_id'):
+        organisation = ClientOrganisation.objects.get(company_id=contact.firm_id,
+                                                      name=DEFAULT_CLIENT_ORGANIZATION_NAME)
+        Client.objects.get_or_create(contact=db_contact, organisation=organisation)
+
+
+def import_contacts(lst, ignore_errors=False):
+    _do_import('contact', lst, import_contact, ignore_errors=ignore_errors)
