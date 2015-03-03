@@ -9,7 +9,7 @@ from crm.models import Company, ClientOrganisation, Client, Contact
 
 logger = logging.getLogger('incwo')
 
-SUB_DIRS = ('firms', 'contacts')
+SUB_DIRS = ('firms', 'contacts', 'proposal_sheets')
 
 DEFAULT_CLIENT_ORGANIZATION_NAME = 'Default'
 
