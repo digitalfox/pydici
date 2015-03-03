@@ -24,7 +24,7 @@ class SubsidiaryAdmin(ReturnToAppAdmin):
 class CompanyAdmin(ReturnToAppAdmin):
     """Admin model for client companies and suppliers companies"""
     list_display = ("name", "code", "businessOwner", "web")
-    search_fields = ("name", "code", "businessOwner")
+    search_fields = ("name", "code", "businessOwner__name")
     list_filter = ("businessOwner",)
     ordering = ("name",)
 
