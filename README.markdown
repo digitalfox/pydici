@@ -41,7 +41,9 @@ Setup your favorite database (mysql/mariaDB or postgresql) and create a schema/b
 Configure your database in pydici/settings.py. Look at django docs to understand the various database options.
 
 Create tables with :
-   ./manage.py syncdb
+
+    ./manage.py syncdb
+    ./manage.py migrate
 
 Generate a new secret key with ./manage.py generate_secret_key and put it in pydici/settings.py
 
@@ -53,3 +55,22 @@ Setup your apache virtual env:
 - active mod_expires
 - add Alias to /media and /static
 - define auth backend. By default, pydici is designed to work with an http front end authentication. Look at https://docs.djangoproject.com/en/dev/howto/auth-remote-user/
+
+## Updating an existing installation
+
+After pulling the latest changes you need to update the database.
+
+There are two possible situations, depending on whether your installation already uses South. Your installation uses South if there is a `south_migrationhistory` table in your database.
+
+1. Your installation already uses South. Run these commands:
+
+        ./manage.py syncdb
+        ./manage.py migrate
+
+2. Your installation does not use South yet. Run these commands:
+
+        ./manage.py syncdb
+        ./manage.py migrate --all 0001 --fake
+        ./manage.py migrate
+
+    Once this is done, future updates will be handled as situation #1.
