@@ -14,6 +14,22 @@ SUB_DIRS = ('firms', 'contacts')
 DEFAULT_CLIENT_ORGANIZATION_NAME = 'Default'
 
 
+def _get_list_or_create(model, **kwargs):
+    """
+    Create an object using kwargs if no objects match them. Similar to
+    get_or_create, but does not fail if more than one object exists.
+
+    If objects matched, returns a tuple of (object list, False)
+    If no object matched, returns a tuple of ([new object], True)
+    """
+    lst = model.objects.filter(**kwargs)
+    if lst:
+        return lst, False
+    obj = model(**kwargs)
+    obj.save()
+    return [obj], True
+
+
 def generate_unique_company_code(name):
     """
     Try to generate a reasonable company 3 letter code
@@ -129,7 +145,7 @@ def import_firms(firm_lst):
             company.save()
 
         co, _ = ClientOrganisation.objects.get_or_create(name=DEFAULT_CLIENT_ORGANIZATION_NAME, company=company)
-        client, _ = Client.objects.get_or_create(organisation=co)
+        _get_list_or_create(Client, organisation=co)
 
 
 def import_contacts(lst):

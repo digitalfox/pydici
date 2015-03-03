@@ -27,10 +27,10 @@ class FirmImportTest(TestCase):
 
 class ContactImportTest(TestCase):
     def test_import_contact(self):
-        lst = core.load_objects(os.path.join(TEST_DIR, 'contacts'), 'firms')
-        core.import_firms(lst)
-        lst = core.load_objects(os.path.join(TEST_DIR, 'contacts'), 'contacts')
-        core.import_contacts(lst)
+        firm_lst = core.load_objects(os.path.join(TEST_DIR, 'contacts'), 'firms')
+        core.import_firms(firm_lst)
+        contact_lst = core.load_objects(os.path.join(TEST_DIR, 'contacts'), 'contacts')
+        core.import_contacts(contact_lst)
 
         company = Company.objects.get(pk=1)
         contact = Contact.objects.get(pk=12)
@@ -39,7 +39,8 @@ class ContactImportTest(TestCase):
         self.assertEquals(list(company_contacts), [contact])
 
         # Import twice to check for conflicts
-        core.import_contacts(lst)
+        core.import_firms(firm_lst)
+        core.import_contacts(contact_lst)
 
     def test_import_homonyms(self):
         lst = core.load_objects(os.path.join(TEST_DIR, 'homonyms'), 'firms')
