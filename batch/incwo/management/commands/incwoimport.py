@@ -54,8 +54,8 @@ class Command(BaseCommand):
             self.handle_download(download_dir, sub_dirs, options)
         else:
             # Do the whole thing
-            self.handle_import(download_dir, core.SUB_DIRS, options)
             self.handle_download(download_dir, core.SUB_DIRS, options)
+            self.handle_import(download_dir, core.SUB_DIRS, options)
 
     def handle_import(self, download_dir, sub_dirs, options):
         ignore_errors = options['ignore_errors']
