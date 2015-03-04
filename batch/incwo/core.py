@@ -117,15 +117,16 @@ def save_objects(obj_lst, base_download_dir, sub_dir):
             f.write(obj_xml)
 
 
-def _do_import(obj_type, lst, import_fcn, ignore_errors=False):
+def _do_import(sub_dir, lst, import_fcn, ignore_errors=False):
     count = len(lst)
     for pos, (obj_id, obj_xml) in enumerate(lst):
-        logger.info('Importing {} {} ({}/{})'.format(obj_type, obj_id, pos + 1, count))
+        filename = os.path.join(sub_dir, str(obj_id) + '.xml')
+        logger.info('Importing {} ({}/{})'.format(filename, pos + 1, count))
         try:
             import_fcn(obj_id, obj_xml)
         except Exception:
             if ignore_errors:
-                logger.exception('Failed to import {} {}'.format(obj_type, obj_id))
+                logger.exception('Failed to import {}'.format(filename))
             else:
                 raise
 
@@ -159,7 +160,7 @@ def import_firm(obj_id, obj_xml):
 
 
 def import_firms(lst, ignore_errors=False):
-    _do_import('firm', lst, import_firm, ignore_errors=ignore_errors)
+    _do_import('firms', lst, import_firm, ignore_errors=ignore_errors)
 
 
 # This list maps a field name in the Contact table with Incwo contact type
@@ -225,4 +226,4 @@ def import_contact(obj_id, obj_xml):
 
 
 def import_contacts(lst, ignore_errors=False):
-    _do_import('contact', lst, import_contact, ignore_errors=ignore_errors)
+    _do_import('contacts', lst, import_contact, ignore_errors=ignore_errors)
