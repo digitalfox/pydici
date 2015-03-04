@@ -70,14 +70,7 @@
         <ul>
         {% for lead in leads %}
             {% ifchanged lead.client %}
-                <h2>
-                    {% if lead.client.contact %}
-                        {{ lead.client.organisation }} (
-                        <a rel=external href="{% url 'contact_detail' lead.client.contact.id %}">{{ lead.client.contact }}</a>)
-                    {% else %}
-                        {{ lead.client }}
-                    {% endif %}
-                </h2>
+                <h2><a href="{% url 'client_change' lead.client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ lead.client }}</a></h2>
             {% endifchanged %}
         
             <li><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
