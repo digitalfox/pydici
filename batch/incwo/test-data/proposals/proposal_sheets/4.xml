@@ -13,16 +13,18 @@
   <manager_user_id>456</manager_user_id>
   <proposal_lines>
     <proposal_line>
-      <id>123</id>
+      <id>789</id>
       <proposal_sheet_id>4</proposal_sheet_id>
       <description>Foo</description>
       <description_more>Echo Alpha</description_more>
+      <total_price_with_taxes>12</total_price_with_taxes>
     </proposal_line>
     <proposal_line>
-      <id>456</id>
+      <id>101112</id>
       <proposal_sheet_id>4</proposal_sheet_id>
       <description>Bar</description>
       <description_more>Tango</description_more>
+      <total_price_with_taxes>24</total_price_with_taxes>
     </proposal_line>
   </proposal_lines>
   <cash_deposits>

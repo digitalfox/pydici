@@ -9,6 +9,7 @@ from lxml import objectify
 
 from crm.models import Company, ClientOrganisation, Client, Contact
 from leads.models import Lead
+from staffing.models import Mission
 
 logger = logging.getLogger('incwo')
 
@@ -241,6 +242,21 @@ def import_contacts(lst, **kwargs):
     _do_import('contacts', lst, import_contact, **kwargs)
 
 
+def import_proposal_line(lead, line):
+    mission, _ = Mission.objects.get_or_create(id=line.id,
+                                               lead=lead,
+                                               subsidiary=lead.subsidiary)
+    mission.description = unicode(line.description).strip()
+    if hasattr(line, 'description_more'):
+        mission.description += ' - ' + unicode(line.description_more).strip()
+    mission.billing_mode = 'FIXED_PRICE'
+    # FIXME: Compute probability from lead state?
+    # FIXME: Which price to use for mission.price: line.total_price or
+    # line.total_price_with_taxes?
+    mission.price = float(line.total_price_with_taxes) / 1000
+    mission.save()
+
+
 # FIXME: Is 'WON' the right value for 'Terminé'?
 STATE_FOR_PROGRESS_ID = {
     555:    'WRITE_OFFER',  # En rédaction
@@ -290,6 +306,10 @@ def import_proposal_sheet(obj_id, obj_xml, **kwargs):
     lead.description = unicode(sheet.subtitle).strip()
     lead.deal_id = unicode(sheet.reference).strip()
     lead.save()
+
+    if hasattr(sheet, 'proposal_lines'):
+        for proposal_line in sheet.proposal_lines.iterchildren():
+            import_proposal_line(lead, proposal_line)
 
 
 def import_proposal_sheets(lst, **kwargs):
