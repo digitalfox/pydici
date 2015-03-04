@@ -56,7 +56,7 @@ def generate_unique_company_code(name):
     """
     words = re.split('\W', name)
     if len(words) >= 3:
-        code = ''.join([x[0] for x in words])[:3]
+        code = ''.join([x[0] for x in words if x])[:3]
     elif len(words) == 2:
         code = words[0][0] + words[1][:2]
     else:
