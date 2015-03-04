@@ -70,7 +70,10 @@
         <ul>
         {% for lead in leads %}
             {% ifchanged lead.client %}
-                <h2><a href="{% url 'client_change' lead.client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ lead.client }}</a></h2>
+                <h2><a href="{% url 'client_change' lead.client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ lead.client }}</a>
+                {% with lead.client as client %}{% include "crm/_client_picto.html" %}{% endwith %}
+
+                </h2>
             {% endifchanged %}
         
             <li><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
