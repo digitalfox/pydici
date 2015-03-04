@@ -56,7 +56,7 @@
             {% for client in clientorganisation.client_set.all %}
                 {% with client.getActiveMissions as activeMissions %}
                     {% if activeMissions %}
-                        <li>{{ client }} <ul>
+                        <li><a href="{% url 'client_change' client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ client }}</a> {% include "crm/_client_picto.html" %}<ul>
                         {% for mission in activeMissions %}
                             <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission.short_name }}</a></li>
                         {% endfor %}
