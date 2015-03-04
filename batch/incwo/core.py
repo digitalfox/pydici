@@ -1,17 +1,28 @@
+# encoding: utf-8
 import logging
 import os
 import re
+from datetime import datetime
 
 import requests
 from lxml import objectify
 
 from crm.models import Company, ClientOrganisation, Client, Contact
+from leads.models import Lead
 
 logger = logging.getLogger('incwo')
 
 SUB_DIRS = ('firms', 'contacts', 'proposal_sheets')
 
 DEFAULT_CLIENT_ORGANIZATION_NAME = 'Default'
+
+
+class IncwoImportError(Exception):
+    pass
+
+
+def _parse_incwo_date(txt):
+    return datetime.strptime(txt, '%d-%m-%Y')
 
 
 def _get_list_or_create(model, **kwargs):
@@ -227,3 +238,56 @@ def import_contact(obj_id, obj_xml):
 
 def import_contacts(lst, ignore_errors=False):
     _do_import('contacts', lst, import_contact, ignore_errors=ignore_errors)
+
+
+# FIXME: Is 'WON' the right value for 'Terminé'?
+STATE_FOR_PROGRESS_ID = {
+    555:    'WRITE_OFFER',  # En rédaction
+    556:    'OFFER_SENT',   # Envoyé au client
+    557:    'WON',          # Accepté
+    558:    'LOST',         # Refusé
+    559:    'SLEEPING',     # Ajourné
+    620105: 'WON',          # Terminé
+}
+
+def import_proposal_sheet(obj_id, obj_xml, subsidiary):
+    sheet = objectify.fromstring(obj_xml)
+    if sheet.sheet_type != 'proposal':
+        logging.warning('Ignoring proposal sheet {}, sheet_type={}'.format(obj_id, sheet.sheet_type))
+        return
+
+    if sheet.firm_id == 0 and sheet.contact_id == 0:
+        raise IncwoImportError('Invalid proposal sheet {}, both firm_id and contact_id are 0'.format(obj_id))
+
+    name = unicode(sheet.title).strip()
+
+    if sheet.firm_id == 0:
+        # Find client from contact, use the default organisation
+        client = Client.objects.get(contact_id=sheet.contact_id,
+                                    organisation__name=DEFAULT_CLIENT_ORGANIZATION_NAME)
+    else:
+        # Find client from company, use the default organisation and the
+        # default, contact-less, client
+        client = Client.objects.get(organisation__company_id=sheet.firm_id,
+                                    organisation__name=DEFAULT_CLIENT_ORGANIZATION_NAME,
+                                    contact=None)
+
+    try:
+        lead = Lead.objects.get(id=sheet.id)
+        lead.name = name
+        lead.client = client
+        lead.subsidiary = subsidiary
+    except Lead.DoesNotExist:
+        lead = Lead(id=sheet.id, name=name, client=client, subsidiary=subsidiary)
+
+    lead.state = STATE_FOR_PROGRESS_ID[sheet.progress_id]
+    lead.creation_date = _parse_incwo_date(unicode(sheet.billing_date))
+    lead.description = unicode(sheet.subtitle).strip()
+    lead.deal_id = unicode(sheet.reference).strip()
+    lead.save()
+
+
+def import_proposal_sheets(lst, subsidiary, ignore_errors=False):
+    def import_fcn(obj_id, obj_xml):
+        import_proposal_sheet(obj_id, obj_xml, subsidiary)
+    _do_import('proposal_sheets', lst, import_fcn, ignore_errors=ignore_errors)

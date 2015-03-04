@@ -1,9 +1,11 @@
 import os
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 
 from batch.incwo import core
-from crm.models import Company, Contact
+from crm.models import Client, Company, Contact, Subsidiary
+from leads.models import Lead
 
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), 'test-data')
@@ -61,3 +63,42 @@ class ContactImportTest(TestCase):
         self.assertEquals(contact.phone, '01 23 45 67 89')
         self.assertEquals(contact.mobile_phone, '06 78 90 12 34')
         self.assertEquals(contact.fax, '01 23 45 67 01')
+
+
+class ProposalSheetImportTest(TestCase):
+    def setUp(self):
+        self.subsidiary = Subsidiary(name='test', code='t')
+        self.subsidiary.save()
+
+        # Lead.post_save needs a superuser, let's create one
+        user = User.objects.create_user(username='admin')
+        user.is_superuser = True
+        user.save()
+
+
+    def test_import_proposal_sheets(self):
+        firm_lst = core.load_objects(os.path.join(TEST_DIR, 'proposals'), 'firms')
+        core.import_firms(firm_lst)
+        contact_lst = core.load_objects(os.path.join(TEST_DIR, 'proposals'), 'contacts')
+        core.import_contacts(contact_lst)
+        proposal_sheet_lst = core.load_objects(os.path.join(TEST_DIR, 'proposals'), 'proposal_sheets')
+        core.import_proposal_sheets(proposal_sheet_lst, self.subsidiary)
+
+        # Check client 3, linked to a firm
+        lead = Lead.objects.get(pk=3)
+        self.assertEquals(lead.state, 'WON')
+        self.assertEquals(lead.deal_id, 'D1234-56789')
+        self.assertEquals(lead.name, 'Project Foobar')
+        self.assertEquals(lead.description, 'Echo Alpha Tango')
+
+        client = Client.objects.get(organisation__company_id=1, contact=None)
+        self.assertEquals(lead.client, client)
+
+        # Check client 4, linked to a contact
+        lead = Lead.objects.get(pk=4)
+        self.assertEquals(lead.state, 'OFFER_SENT')
+        self.assertEquals(lead.deal_id, 'D5678-90123')
+        self.assertEquals(lead.name, 'No Firm ID Proposal')
+
+        client = Client.objects.get(contact_id=12)
+        self.assertEquals(lead.client, client)

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proposal_sheet>
+  <id>4</id>
+  <progress_id>556</progress_id>
+  <reference>D5678-90123</reference>
+  <billing_date>22-12-2014</billing_date>
+  <title>No Firm ID Proposal</title>
+  <subtitle>Echo Alpha Tango</subtitle>
+  <language>fr</language>
+  <contact_id>12</contact_id>
+  <firm_id>0</firm_id>
+  <sheet_type>proposal</sheet_type>
+  <manager_user_id>456</manager_user_id>
+  <proposal_lines>
+    <proposal_line>
+      <id>123</id>
+      <proposal_sheet_id>4</proposal_sheet_id>
+      <description>Foo</description>
+      <description_more>Echo Alpha</description_more>
+    </proposal_line>
+    <proposal_line>
+      <id>456</id>
+      <proposal_sheet_id>4</proposal_sheet_id>
+      <description>Bar</description>
+      <description_more>Tango</description_more>
+    </proposal_line>
+  </proposal_lines>
+  <cash_deposits>
+    <cash_deposit>
+      <id>11497502</id>
+      <kind>plan</kind>
+      <sheet_name>proposal_sheets</sheet_name>
+      <sheet_id>1002758</sheet_id>
+      <payment_type_info>0</payment_type_info>
+      <payer_staff_id>0</payer_staff_id>
+      <amount_ttc>29850.0</amount_ttc>
+      <deposit_date_model_id>20007</deposit_date_model_id>
+      <deposit_date_estimation>19-09-2013</deposit_date_estimation>
+    </cash_deposit>
+    <cash_deposit>
+      <id>11497505</id>
+      <kind>plan</kind>
+      <sheet_name>proposal_sheets</sheet_name>
+      <sheet_id>1002758</sheet_id>
+      <payment_type_info>0</payment_type_info>
+      <payer_staff_id>0</payer_staff_id>
+      <amount_ttc>29850.0</amount_ttc>
+      <deposit_date_model_id>500035</deposit_date_model_id>
+      <deposit_date_estimation>12-10-2013</deposit_date_estimation>
+    </cash_deposit>
+  </cash_deposits>
+</proposal_sheet>
