@@ -128,13 +128,14 @@ def save_objects(obj_lst, base_download_dir, sub_dir):
             f.write(obj_xml)
 
 
-def _do_import(sub_dir, lst, import_fcn, ignore_errors=False):
+def _do_import(sub_dir, lst, import_fcn, **kwargs):
+    ignore_errors = kwargs.get('ignore_errors', False)
     count = len(lst)
     for pos, (obj_id, obj_xml) in enumerate(lst):
         filename = os.path.join(sub_dir, str(obj_id) + '.xml')
         logger.info('Importing {} ({}/{})'.format(filename, pos + 1, count))
         try:
-            import_fcn(obj_id, obj_xml)
+            import_fcn(obj_id, obj_xml, **kwargs)
         except Exception:
             if ignore_errors:
                 logger.exception('Failed to import {}'.format(filename))
@@ -142,7 +143,7 @@ def _do_import(sub_dir, lst, import_fcn, ignore_errors=False):
                 raise
 
 
-def import_firm(obj_id, obj_xml):
+def import_firm(obj_id, obj_xml, **kwargs):
     firm = objectify.fromstring(obj_xml)
     name = unicode(firm.name)
 
@@ -170,8 +171,8 @@ def import_firm(obj_id, obj_xml):
     _get_list_or_create(Client, organisation=co)
 
 
-def import_firms(lst, ignore_errors=False):
-    _do_import('firms', lst, import_firm, ignore_errors=ignore_errors)
+def import_firms(lst, **kwargs):
+    _do_import('firms', lst, import_firm, **kwargs)
 
 
 # This list maps a field name in the Contact table with Incwo contact type
@@ -215,7 +216,7 @@ def import_contact_items(db_contact, items):
                 break
 
 
-def import_contact(obj_id, obj_xml):
+def import_contact(obj_id, obj_xml, **kwargs):
     contact = objectify.fromstring(obj_xml)
     # Note: There is a 'first_last_name' field, but it's not documented, so
     # better ignore it
@@ -236,8 +237,8 @@ def import_contact(obj_id, obj_xml):
         Client.objects.get_or_create(contact=db_contact, organisation=organisation)
 
 
-def import_contacts(lst, ignore_errors=False):
-    _do_import('contacts', lst, import_contact, ignore_errors=ignore_errors)
+def import_contacts(lst, **kwargs):
+    _do_import('contacts', lst, import_contact, **kwargs)
 
 
 # FIXME: Is 'WON' the right value for 'Terminé'?
@@ -250,18 +251,22 @@ STATE_FOR_PROGRESS_ID = {
     620105: 'WON',          # Terminé
 }
 
-def import_proposal_sheet(obj_id, obj_xml, subsidiary):
+def import_proposal_sheet(obj_id, obj_xml, **kwargs):
+    subsidiary = kwargs['subsidiary']
+
     sheet = objectify.fromstring(obj_xml)
     if sheet.sheet_type != 'proposal':
-        logging.warning('Ignoring proposal sheet {}, sheet_type={}'.format(obj_id, sheet.sheet_type))
+        logging.warning('Ignoring proposal sheet {}: sheet_type is {}'.format(obj_id, sheet.sheet_type))
         return
 
-    if sheet.firm_id == 0 and sheet.contact_id == 0:
-        raise IncwoImportError('Invalid proposal sheet {}, both firm_id and contact_id are 0'.format(obj_id))
+    firm_id = sheet.firm_id if hasattr(sheet, 'firm_id') else 0
+    contact_id = sheet.contact_id if hasattr(sheet, 'contact_id') else 0
+    if firm_id == 0 and contact_id == 0:
+        raise IncwoImportError('Invalid proposal sheet {}: neither firm_id and contact_id are set'.format(obj_id))
 
     name = unicode(sheet.title).strip()
 
-    if sheet.firm_id == 0:
+    if contact_id > 0:
         # Find client from contact, use the default organisation
         client = Client.objects.get(contact_id=sheet.contact_id,
                                     organisation__name=DEFAULT_CLIENT_ORGANIZATION_NAME)
@@ -287,7 +292,5 @@ def import_proposal_sheet(obj_id, obj_xml, subsidiary):
     lead.save()
 
 
-def import_proposal_sheets(lst, subsidiary, ignore_errors=False):
-    def import_fcn(obj_id, obj_xml):
-        import_proposal_sheet(obj_id, obj_xml, subsidiary)
-    _do_import('proposal_sheets', lst, import_fcn, ignore_errors=ignore_errors)
+def import_proposal_sheets(lst, **kwargs):
+    _do_import('proposal_sheets', lst, import_proposal_sheet, **kwargs)
