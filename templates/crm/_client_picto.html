@@ -2,12 +2,14 @@
 {# Context : client #}
 {% load i18n %}
 
-<span class="glyphicon {% ifequal client.expectations '1_NONE' %}glyphicon-ban-circle{% endifequal %}
-                       {% ifequal client.expectations '2_DECREASING' %}glyphicon-thumbs-down{% endifequal %}
-                       {% ifequal client.expectations '3_FLAT' %}glyphicon-hand-right{% endifequal %}
-                       {% ifequal client.expectations '4_INCREASING' %}glyphicon-thumbs-up{% endifequal %}"
+<span class="pydici-tooltip glyphicon
+             {% ifequal client.expectations '1_NONE' %}glyphicon-ban-circle{% endifequal %}
+             {% ifequal client.expectations '2_DECREASING' %}glyphicon-thumbs-down{% endifequal %}
+             {% ifequal client.expectations '3_FLAT' %}glyphicon-hand-right{% endifequal %}
+             {% ifequal client.expectations '4_INCREASING' %}glyphicon-thumbs-up{% endifequal %}"
       title="{% trans 'Expectations: ' %}{{ client.get_expectations_display }}"></span>
 
-<span class="glyphicon {% ifequal client.alignment '1_RESTRAIN' %}glyphicon-exclamation-sign{% endifequal %}
-                       {% ifequal client.alignment '3_STRATEGIC' %}glyphicon-fire{% endifequal %}"
+<span class="pydici-tooltip glyphicon
+             {% ifequal client.alignment '1_RESTRAIN' %}glyphicon-exclamation-sign{% endifequal %}
+             {% ifequal client.alignment '3_STRATEGIC' %}glyphicon-fire{% endifequal %}"
       title="{% trans 'Business alignment: ' %}{{ client.get_alignment_display }}"></span>
