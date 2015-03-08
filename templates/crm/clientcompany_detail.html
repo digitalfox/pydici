@@ -57,7 +57,7 @@
             {% for client in clientorganisation.client_set.all %}
                 {% with client.getActiveMissions as activeMissions %}
                     {% if activeMissions %}
-                        <div class="col-sm-12 col-md-6 col-lg-4">
+                        <div class="col-sm-12 col-md-6 col-lg-4" style="margin-top:20px">
                         <li class="list-group-item disabled"><a href="{% url 'client_change' client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ client }}</a> {% include "crm/_client_picto.html" %}</li>
 
                             {% for mission in activeMissions %}
@@ -73,16 +73,25 @@
         <h2>{% trans "Leads" %}</h2>
         <div class="row">
         <ul class="list-group">
-        {% for lead in leads %}
-            {% ifchanged lead.client %}
-                </div>
-                <div class="col-sm-12 col-md-6 col-lg-4">
-                <li class="list-group-item disabled"><a href="{% url 'client_change' lead.client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ lead.client }}</a>
-                {% with lead.client as client %}{% include "crm/_client_picto.html" %}{% endwith %}
-                </li>
-            {% endifchanged %}
-        
-            <li class="list-group-item"><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
+        {% regroup leads by client as client_list %}
+        {% for client in client_list %}
+            <div class="col-sm-12 col-md-6 col-lg-4" style="margin-top:20px">
+                {% for lead in client.list %}
+                    {% if forloop.counter0 == 0 or forloop.counter0 == 5 or forloop.counter0 == 10 or forloop.counter0 == 15 or forloop.counter0 == 20 or forloop.counter0 == 25 or forloop.counter0 == 30 or forloop.counter0 == 35 %}
+                        {% if forloop.counter0 > 0 %}
+                            </div><div class="col-sm-12 col-md-6 col-lg-4" style="margin-top:20px">
+                        {% endif %}
+                        <li class="list-group-item disabled"><a href="{% url 'client_change' client.grouper.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ client.grouper }}</a>
+                        {% with client.grouper as client %}{% include "crm/_client_picto.html" %}{% endwith %}
+
+                        {% if forloop.counter0 > 0 %}
+                            ...
+                        {% endif %}
+                        </li>
+                    {% endif %}
+                    <li class="list-group-item"><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
+                {% endfor %}
+            </div>
         {% endfor %}
         </ul>
         </div>
