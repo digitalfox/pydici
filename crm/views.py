@@ -225,11 +225,11 @@ def company_detail(request, company_id):
     company = Company.objects.get(id=company_id)
 
     # Find leads of this company
-    leads = Lead.objects.filter(client__organisation__company=company).select_related()
+    leads = Lead.objects.filter(client__organisation__company=company).select_related().prefetch_related("clientbill_set")
     leads = leads.order_by("client", "state", "start_date")
 
     # Find consultant that work (=declare timesheet) for this company
-    consultants = [s.consultant for s in Timesheet.objects.filter(mission__lead__client__organisation__company=company).select_related()]
+    consultants = [s.consultant for s in Timesheet.objects.filter(mission__lead__client__organisation__company=company).select_related("consultant")]
     consultants = list(set(consultants))  # Distinct
 
     companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
@@ -241,7 +241,7 @@ def company_detail(request, company_id):
                    "business_contacts": Contact.objects.filter(client__organisation__company=company).distinct(),
                    "mission_contacts": Contact.objects.filter(missioncontact__company=company).distinct(),
                    "administrative_contacts": AdministrativeContact.objects.filter(company=company),
-                   "clients": Client.objects.filter(organisation__company=company),
+                   "clients": Client.objects.filter(organisation__company=company).select_related(),
                    "companies": companies})
 
 
