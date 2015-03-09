@@ -29,8 +29,12 @@
             <div class="col-lg-4 col-md-6 col-sm-8">
             <table class="table table-condensed table-striped table-hover">
             <tr><th>{% trans "consultant" %}</th><th>{% trans "days" %}</th><th>{% trans "rate" %}</th><th>{% trans "total" %}</th></tr>
-            {% for consultant, charge, rate, total in mission_data.1 %}
-                <tr><td><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant }}</a></td><td>{{ charge }}</td><td>{{ rate|floatformat:"-2" }} €</td><td>{{ total|floatformat:"-2" }} €</td></tr>
+            {% for consultant, charge, rate, total, timesheet_ok in mission_data.1 %}
+                <tr><td><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant }}</a></td>
+                    <td>{{ charge }} {% if not timesheet_ok %}<span title="{% trans 'Timesheet does not seem ok' %}" class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>{% endif %}</td>
+                    <td>{{ rate|floatformat:"-2" }} €</td>
+                    <td>{{ total|floatformat:"-2" }} €</td>
+                </tr>
             {% endfor %}
             <tr><th>{% trans "total" %}</th><td></td><td></td><th>{{ mission_data.0|floatformat:"-2" }} €</th></tr>
             </table>

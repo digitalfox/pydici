@@ -21,6 +21,7 @@ from billing.models import ClientBill, SupplierBill
 from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
+from staffing.utils import gatherTimesheetData
 from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round
 from core.decorator import pydici_non_public
@@ -139,6 +140,17 @@ def pre_billing(request, year=None, month=None, mine=False):
         consultant = None
         mine = False
 
+    # Check consultant timesheet to hint if billing could be done based on a clean state
+    timesheet_ok = {}
+    for consultant in Consultant.objects.filter(active=True, subcontractor=False):
+        missions = consultant.timesheet_missions(month=month)
+        timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
+        warning = [i for i in warning if i]  # Remove None
+        if sum(warning) == 0:
+            timesheet_ok[consultant.id] = True
+        else:
+            timesheet_ok[consultant.id] = False
+
     fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
                                                 timesheet__working_date__gte=month,
                                                 timesheet__working_date__lt=next_month)
@@ -174,7 +186,7 @@ def pre_billing(request, year=None, month=None, mine=False):
         total = charge * rates[mission][consultant][0]
         timeSpentBilling[lead][0] += total
         timeSpentBilling[lead][1][mission][0] += total
-        timeSpentBilling[lead][1][mission][1].append([consultant, to_int_or_round(charge, 2), rates[mission][consultant][0], total])
+        timeSpentBilling[lead][1][mission][1].append([consultant, to_int_or_round(charge, 2), rates[mission][consultant][0], total, timesheet_ok.get(consultant_id, True)])
 
     # Sort data
     timeSpentBilling = timeSpentBilling.items()
