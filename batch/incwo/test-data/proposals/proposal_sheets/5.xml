@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <proposal_sheet>
-  <id>4</id>
-  <progress_id>620105</progress_id> <!-- Terminé -->
-  <reference>D5678-90123</reference>
+  <id>5</id>
+  <progress_id>558</progress_id> <!-- Lost -->
+  <reference>D5678-90124</reference>
   <billing_date>22-12-2014</billing_date>
-  <title>No Firm ID Proposal</title>
+  <title>Lost proposal</title>
   <subtitle>Echo Alpha Tango</subtitle>
   <language>fr</language>
   <contact_id>12</contact_id>
@@ -14,14 +14,14 @@
   <proposal_lines>
     <proposal_line>
       <id>789</id>
-      <proposal_sheet_id>4</proposal_sheet_id>
+      <proposal_sheet_id>5</proposal_sheet_id>
       <description>Foo</description>
       <description_more>Echo Alpha</description_more>
       <total_price_with_taxes>12</total_price_with_taxes>
     </proposal_line>
     <proposal_line>
       <id>101112</id>
-      <proposal_sheet_id>4</proposal_sheet_id>
+      <proposal_sheet_id>5</proposal_sheet_id>
       <description>Bar</description>
       <description_more>Tango</description_more>
       <total_price_with_taxes>24</total_price_with_taxes>

@@ -282,7 +282,12 @@ STATE_FOR_PROGRESS_ID = {
 def import_proposal_sheet(obj_id, obj_xml, context):
     sheet = objectify.fromstring(obj_xml)
     if sheet.sheet_type != 'proposal':
-        logging.warning('Ignoring proposal sheet {}: sheet_type is {}'.format(obj_id, sheet.sheet_type))
+        logger.warning('Skipping proposal sheet {}: sheet_type is {}'.format(obj_id, sheet.sheet_type))
+        return
+
+    state = STATE_FOR_PROGRESS_ID[sheet.progress_id]
+    if state != 'WON':
+        logger.warning('Skipping proposal sheet {}: not won'.format(obj_id))
         return
 
     firm_id = sheet.firm_id if hasattr(sheet, 'firm_id') else 0
@@ -311,7 +316,7 @@ def import_proposal_sheet(obj_id, obj_xml, context):
     except Lead.DoesNotExist:
         lead = Lead(id=sheet.id, name=name, client=client, subsidiary=context.subsidiary)
 
-    lead.state = STATE_FOR_PROGRESS_ID[sheet.progress_id]
+    lead.state = state
     lead.creation_date = _parse_incwo_date(unicode(sheet.billing_date))
     lead.description = unicode(sheet.subtitle).strip()
     lead.deal_id = unicode(sheet.reference).strip()

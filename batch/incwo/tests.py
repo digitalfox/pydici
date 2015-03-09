@@ -1,3 +1,4 @@
+import logging
 import os
 
 from django.contrib.auth.models import User
@@ -75,6 +76,8 @@ class ProposalSheetImportTest(TestCase):
         user.is_superuser = True
         user.save()
 
+        # Silence logger
+        core.logger.addHandler(logging.NullHandler())
 
     def test_import_proposal_sheets(self):
         context = core.ImportContext(subsidiary=self.subsidiary)
@@ -85,7 +88,7 @@ class ProposalSheetImportTest(TestCase):
         proposal_sheet_lst = core.load_objects(os.path.join(TEST_DIR, 'proposals'), 'proposal_sheets')
         core.import_proposal_sheets(proposal_sheet_lst, context)
 
-        # Check client 3, linked to a firm
+        # Check lead 3, linked to a firm
         lead = Lead.objects.get(pk=3)
         self.assertEquals(lead.state, 'WON')
         self.assertEquals(lead.deal_id, 'D1234-56789')
@@ -95,11 +98,14 @@ class ProposalSheetImportTest(TestCase):
         client = Client.objects.get(organisation__company_id=1, contact=None)
         self.assertEquals(lead.client, client)
 
-        # Check client 4, linked to a contact
+        # Check lead 4, linked to a contact
         lead = Lead.objects.get(pk=4)
-        self.assertEquals(lead.state, 'OFFER_SENT')
+        self.assertEquals(lead.state, 'WON')
         self.assertEquals(lead.deal_id, 'D5678-90123')
         self.assertEquals(lead.name, 'No Firm ID Proposal')
 
         client = Client.objects.get(contact_id=12)
         self.assertEquals(lead.client, client)
+
+        # No lead 5, because it was lost
+        self.assertFalse(Lead.objects.filter(pk=5))
