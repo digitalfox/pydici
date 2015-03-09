@@ -23,9 +23,12 @@ class IncwoImportError(Exception):
 
 
 class ImportContext(object):
-    def __init__(self, ignore_errors=False, subsidiary=None):
+    def __init__(self, ignore_errors=False,
+                 subsidiary=None,
+                 import_missions=False):
         self.ignore_errors = ignore_errors
         self.subsidiary = subsidiary
+        self.import_missions = import_missions
 
 
 def _parse_incwo_date(txt):
@@ -314,8 +317,10 @@ def import_proposal_sheet(obj_id, obj_xml, context):
     lead.deal_id = unicode(sheet.reference).strip()
     lead.save()
 
-    if hasattr(sheet, 'proposal_lines'):
-        for proposal_line in sheet.proposal_lines.iterchildren():
+    if hasattr(sheet, 'proposal_lines') and context.import_missions:
+        lst = list(sheet.proposal_lines.iterchildren())
+        for pos, proposal_line in enumerate(lst):
+            logger.info('- Proposal line {}/{}'.format(pos + 1, len(lst)))
             import_proposal_line(lead, proposal_line)
 
 

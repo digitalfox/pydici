@@ -16,6 +16,8 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--download',
                     help='Download objects to download-dir, do not import anything. Value is a combination of {} separated by commas, or "all".'.format(sub_dirs_strings)),
+        make_option('--import',
+                    help='Import downloaded data from download-dir, do not download anything. Value is a combination of {} separated by commas, or "all".'.format(sub_dirs_strings)),
         make_option('--host',
                     help='Incwo host'),
         make_option('-u', '--user',
@@ -24,8 +26,8 @@ class Command(BaseCommand):
                     help='Incwo password'),
         make_option('-s', '--subsidiary',
                     help='ID of subsidiary to use for leads'),
-        make_option('--import',
-                    help='Import downloaded data from download-dir, do not download anything. Value is a combination of {} separated by commas, or "all".'.format(sub_dirs_strings)),
+        make_option('--missions', action='store_true',
+                    help='Import missions in imported leads'),
         make_option('--ignore-errors', action='store_true',
                     help='Ignore errors instead of stopping. Errors are still logged though'),
     )
@@ -64,7 +66,8 @@ class Command(BaseCommand):
         subsidiary = Subsidiary.objects.get(id=subsidiary_id)
 
         context = core.ImportContext(ignore_errors=options['ignore_errors'],
-                                     subsidiary=subsidiary)
+                                     subsidiary=subsidiary,
+                                     import_missions=options['missions'])
 
         for sub_dir in sub_dirs:
             lst = core.load_objects(download_dir, sub_dir)
