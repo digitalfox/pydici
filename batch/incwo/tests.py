@@ -77,12 +77,13 @@ class ProposalSheetImportTest(TestCase):
 
 
     def test_import_proposal_sheets(self):
+        context = core.ImportContext(subsidiary=self.subsidiary)
         firm_lst = core.load_objects(os.path.join(TEST_DIR, 'proposals'), 'firms')
         core.import_firms(firm_lst)
         contact_lst = core.load_objects(os.path.join(TEST_DIR, 'proposals'), 'contacts')
         core.import_contacts(contact_lst)
         proposal_sheet_lst = core.load_objects(os.path.join(TEST_DIR, 'proposals'), 'proposal_sheets')
-        core.import_proposal_sheets(proposal_sheet_lst, subsidiary=self.subsidiary)
+        core.import_proposal_sheets(proposal_sheet_lst, context)
 
         # Check client 3, linked to a firm
         lead = Lead.objects.get(pk=3)

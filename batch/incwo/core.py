@@ -22,6 +22,12 @@ class IncwoImportError(Exception):
     pass
 
 
+class ImportContext(object):
+    def __init__(self, ignore_errors=False, subsidiary=None):
+        self.ignore_errors = ignore_errors
+        self.subsidiary = subsidiary
+
+
 def _parse_incwo_date(txt):
     return datetime.strptime(txt, '%d-%m-%Y')
 
@@ -129,22 +135,21 @@ def save_objects(obj_lst, base_download_dir, sub_dir):
             f.write(obj_xml)
 
 
-def _do_import(sub_dir, lst, import_fcn, **kwargs):
-    ignore_errors = kwargs.get('ignore_errors', False)
+def _do_import(sub_dir, lst, import_fcn, context):
     count = len(lst)
     for pos, (obj_id, obj_xml) in enumerate(lst):
         filename = os.path.join(sub_dir, str(obj_id) + '.xml')
         logger.info('Importing {} ({}/{})'.format(filename, pos + 1, count))
         try:
-            import_fcn(obj_id, obj_xml, **kwargs)
+            import_fcn(obj_id, obj_xml, context)
         except Exception:
-            if ignore_errors:
+            if context.ignore_errors:
                 logger.exception('Failed to import {}'.format(filename))
             else:
                 raise
 
 
-def import_firm(obj_id, obj_xml, **kwargs):
+def import_firm(obj_id, obj_xml, context):
     firm = objectify.fromstring(obj_xml)
     name = unicode(firm.name)
 
@@ -172,8 +177,10 @@ def import_firm(obj_id, obj_xml, **kwargs):
     _get_list_or_create(Client, organisation=co)
 
 
-def import_firms(lst, **kwargs):
-    _do_import('firms', lst, import_firm, **kwargs)
+def import_firms(lst, context=None):
+    if context == None:
+        context = ImportContext()
+    _do_import('firms', lst, import_firm, context)
 
 
 # This list maps a field name in the Contact table with Incwo contact type
@@ -217,7 +224,7 @@ def import_contact_items(db_contact, items):
                 break
 
 
-def import_contact(obj_id, obj_xml, **kwargs):
+def import_contact(obj_id, obj_xml, context):
     contact = objectify.fromstring(obj_xml)
     # Note: There is a 'first_last_name' field, but it's not documented, so
     # better ignore it
@@ -238,8 +245,10 @@ def import_contact(obj_id, obj_xml, **kwargs):
         Client.objects.get_or_create(contact=db_contact, organisation=organisation)
 
 
-def import_contacts(lst, **kwargs):
-    _do_import('contacts', lst, import_contact, **kwargs)
+def import_contacts(lst, context=None):
+    if context == None:
+        context = ImportContext()
+    _do_import('contacts', lst, import_contact, context)
 
 
 def import_proposal_line(lead, line):
@@ -267,9 +276,7 @@ STATE_FOR_PROGRESS_ID = {
     620105: 'WON',          # Terminé
 }
 
-def import_proposal_sheet(obj_id, obj_xml, **kwargs):
-    subsidiary = kwargs['subsidiary']
-
+def import_proposal_sheet(obj_id, obj_xml, context):
     sheet = objectify.fromstring(obj_xml)
     if sheet.sheet_type != 'proposal':
         logging.warning('Ignoring proposal sheet {}: sheet_type is {}'.format(obj_id, sheet.sheet_type))
@@ -297,9 +304,9 @@ def import_proposal_sheet(obj_id, obj_xml, **kwargs):
         lead = Lead.objects.get(id=sheet.id)
         lead.name = name
         lead.client = client
-        lead.subsidiary = subsidiary
+        lead.subsidiary = context.subsidiary
     except Lead.DoesNotExist:
-        lead = Lead(id=sheet.id, name=name, client=client, subsidiary=subsidiary)
+        lead = Lead(id=sheet.id, name=name, client=client, subsidiary=context.subsidiary)
 
     lead.state = STATE_FOR_PROGRESS_ID[sheet.progress_id]
     lead.creation_date = _parse_incwo_date(unicode(sheet.billing_date))
@@ -312,5 +319,7 @@ def import_proposal_sheet(obj_id, obj_xml, **kwargs):
             import_proposal_line(lead, proposal_line)
 
 
-def import_proposal_sheets(lst, **kwargs):
-    _do_import('proposal_sheets', lst, import_proposal_sheet, **kwargs)
+def import_proposal_sheets(lst, context=None):
+    if context == None:
+        context = ImportContext()
+    _do_import('proposal_sheets', lst, import_proposal_sheet, context)

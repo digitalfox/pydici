@@ -58,20 +58,18 @@ class Command(BaseCommand):
             self.handle_import(download_dir, core.SUB_DIRS, options)
 
     def handle_import(self, download_dir, sub_dirs, options):
-        ignore_errors = options['ignore_errors']
         subsidiary_id = options['subsidiary']
         if subsidiary_id is None:
             raise CommandError('The --subsidiary option is missing')
         subsidiary = Subsidiary.objects.get(id=subsidiary_id)
 
-        kwargs = {
-            'subsidiary': subsidiary,
-            'ignore_errors': ignore_errors
-        }
+        context = core.ImportContext(ignore_errors=options['ignore_errors'],
+                                     subsidiary=subsidiary)
+
         for sub_dir in sub_dirs:
             lst = core.load_objects(download_dir, sub_dir)
             import_method = getattr(core, 'import_' + sub_dir)
-            import_method(lst, **kwargs)
+            import_method(lst, context)
 
     def handle_download(self, download_dir, sub_dirs, options):
         url = options['host']
