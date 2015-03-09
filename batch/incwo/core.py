@@ -285,7 +285,7 @@ def import_proposal_sheet(obj_id, obj_xml, context):
     firm_id = sheet.firm_id if hasattr(sheet, 'firm_id') else 0
     contact_id = sheet.contact_id if hasattr(sheet, 'contact_id') else 0
     if firm_id == 0 and contact_id == 0:
-        raise IncwoImportError('Invalid proposal sheet {}: neither firm_id and contact_id are set'.format(obj_id))
+        raise IncwoImportError('Invalid proposal sheet {}: neither firm_id nor contact_id are set'.format(obj_id))
 
     name = unicode(sheet.title).strip()
 
