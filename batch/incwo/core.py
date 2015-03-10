@@ -12,6 +12,9 @@ from crm.models import Company, ClientOrganisation, Client, Contact
 from leads.models import Lead
 from staffing.models import Mission
 
+import dbutils
+
+
 logger = logging.getLogger('incwo')
 
 SUB_DIRS = ('firms', 'contacts', 'proposal_sheets')
@@ -38,22 +41,6 @@ class ImportContext(object):
 
 def _parse_incwo_date(txt):
     return datetime.strptime(txt, '%d-%m-%Y')
-
-
-def _get_list_or_create(model, **kwargs):
-    """
-    Create an object using kwargs if no objects match them. Similar to
-    get_or_create, but does not fail if more than one object exists.
-
-    If objects matched, returns a tuple of (object list, False)
-    If no object matched, returns a tuple of ([new object], True)
-    """
-    lst = model.objects.filter(**kwargs)
-    if lst:
-        return lst, False
-    obj = model(**kwargs)
-    obj.save()
-    return [obj], True
 
 
 def generate_unique_company_code(name):
@@ -185,7 +172,7 @@ def import_firm(obj_id, obj_xml, context):
         company.save()
 
     co, _ = ClientOrganisation.objects.get_or_create(name=DEFAULT_CLIENT_ORGANIZATION_NAME, company=company)
-    _get_list_or_create(Client, organisation=co)
+    dbutils.get_list_or_create(Client, organisation=co)
 
 
 def import_firms(lst, context=None):
@@ -240,7 +227,7 @@ def import_contact(obj_id, obj_xml, context):
     # Note: There is a 'first_last_name' field, but it's not documented, so
     # better ignore it
     name = unicode(contact.first_name) + ' ' + unicode(contact.last_name)
-    db_contact, _ = Contact.objects.get_or_create(id=contact.id, name=name)
+    db_contact, _ = dbutils.update_or_create(Contact, id=contact.id, name=name)
 
     if hasattr(contact, 'job_title'):
         db_contact.function = unicode(contact.job_title)
@@ -267,20 +254,24 @@ def import_proposal_line(lead, line):
     if content_kind not in ('', 'option'):
         return
 
-    mission, _ = Mission.objects.get_or_create(id=line.id,
-                                               lead=lead,
-                                               subsidiary=lead.subsidiary)
-    mission.description = unicode(line.description).strip()
+    description = unicode(line.description).strip()
     if hasattr(line, 'description_more'):
-        mission.description += ' - ' + unicode(line.description_more).strip()
+        description += ' - ' + unicode(line.description_more).strip()
     if content_kind == 'option':
-        mission.description += ' ' + OPTIONAL_MISSION_SUFFIX
-    mission.billing_mode = 'FIXED_PRICE'
+        description += ' ' + OPTIONAL_MISSION_SUFFIX
+
     # FIXME: Compute probability from lead state?
     # FIXME: Which price to use for mission.price: line.total_price or
     # line.total_price_with_taxes?
-    mission.price = Decimal(unicode(line.total_price_with_taxes)) / 1000
-    mission.save()
+    price = Decimal(unicode(line.total_price_with_taxes)) / 1000
+
+    dbutils.update_or_create(Mission,
+                             id=line.id,
+                             lead=lead,
+                             subsidiary=lead.subsidiary,
+                             billing_mode='FIXED_PRICE',
+                             description=description,
+                             price=price)
 
 
 # FIXME: Is 'WON' the right value for 'Terminé'?
@@ -322,19 +313,15 @@ def import_proposal_sheet(obj_id, obj_xml, context):
                                     organisation__name=DEFAULT_CLIENT_ORGANIZATION_NAME,
                                     contact=None)
 
-    try:
-        lead = Lead.objects.get(id=sheet.id)
-        lead.name = name
-        lead.client = client
-        lead.subsidiary = context.subsidiary
-    except Lead.DoesNotExist:
-        lead = Lead(id=sheet.id, name=name, client=client, subsidiary=context.subsidiary)
-
-    lead.state = state
-    lead.creation_date = _parse_incwo_date(unicode(sheet.billing_date))
-    lead.description = unicode(sheet.subtitle).strip()
-    lead.deal_id = unicode(sheet.reference).strip()
-    lead.save()
+    lead, _ = dbutils.update_or_create(Lead,
+                                       id=sheet.id,
+                                       name=name,
+                                       client=client,
+                                       subsidiary=context.subsidiary,
+                                       state=state,
+                                       creation_date=_parse_incwo_date(unicode(sheet.billing_date)),
+                                       description=unicode(sheet.subtitle).strip(),
+                                       deal_id=unicode(sheet.reference).strip())
 
     if hasattr(sheet, 'proposal_lines') and context.import_missions:
         lst = list(sheet.proposal_lines.iterchildren())
