@@ -8,6 +8,8 @@ from decimal import Decimal
 import requests
 from lxml import objectify
 
+from django.utils.translation import ugettext
+
 from crm.models import Company, ClientOrganisation, Client, Contact
 from leads.models import Lead
 from staffing.models import Mission
@@ -252,7 +254,7 @@ def import_contacts(lst, context=None):
 def import_proposal_line(lead, line):
     content_kind = unicode(line.content_kind)
     if content_kind not in ('', 'option'):
-        return
+        return False
 
     description = unicode(line.description).strip()
     if hasattr(line, 'description_more'):
@@ -272,6 +274,29 @@ def import_proposal_line(lead, line):
                              billing_mode='FIXED_PRICE',
                              description=description,
                              price=price)
+    return True
+
+
+MAN_DAY_UNITS = set([
+    "days",
+    "day",
+    "j/h",
+    "jh",
+    "jours",
+    "jr/h",
+    "jrs/h",
+    "man/days",
+    "manday",
+    "md",
+])
+
+def extract_proposal_line_duration(line):
+    if not hasattr(line, 'quantity'):
+        return 0
+    unit = unicode(line.unit).lower()
+    if not unit in MAN_DAY_UNITS:
+        return 0
+    return Decimal(unicode(line.quantity))
 
 
 # FIXME: Is 'WON' the right value for 'Terminé'?
@@ -325,9 +350,17 @@ def import_proposal_sheet(obj_id, obj_xml, context):
 
     if hasattr(sheet, 'proposal_lines') and context.import_missions:
         lst = list(sheet.proposal_lines.iterchildren())
+        duration = 0
         for pos, proposal_line in enumerate(lst):
             logger.info('- Proposal line {}/{}'.format(pos + 1, len(lst)))
-            import_proposal_line(lead, proposal_line)
+            imported = import_proposal_line(lead, proposal_line)
+            if imported:
+                duration += extract_proposal_line_duration(proposal_line)
+        if duration > 0:
+            if lead.description:
+                lead.description += '\n'
+            lead.description += ugettext('man-days: {}').format(duration)
+        lead.save()
 
 
 def import_proposal_sheets(lst, context=None):
