@@ -3,6 +3,7 @@ import logging
 import os
 import re
 from datetime import datetime
+from decimal import Decimal
 
 import requests
 from lxml import objectify
@@ -278,7 +279,7 @@ def import_proposal_line(lead, line):
     # FIXME: Compute probability from lead state?
     # FIXME: Which price to use for mission.price: line.total_price or
     # line.total_price_with_taxes?
-    mission.price = float(line.total_price_with_taxes) / 1000
+    mission.price = Decimal(unicode(line.total_price_with_taxes)) / 1000
     mission.save()
 
 
