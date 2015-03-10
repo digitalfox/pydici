@@ -1,6 +1,8 @@
 import logging
 import os
 
+from decimal import Decimal
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -10,6 +12,16 @@ from leads.models import Lead
 
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), 'test-data')
+
+
+def load_and_import_objects(base_dir, context):
+    for sub_dir in core.SUB_DIRS:
+        object_dir = os.path.join(base_dir, sub_dir)
+        if not os.path.exists(object_dir):
+            continue
+        lst = core.load_objects(base_dir, sub_dir)
+        import_method = getattr(core, 'import_' + sub_dir)
+        import_method(lst, context)
 
 
 class FirmImportTest(TestCase):
@@ -109,3 +121,22 @@ class ProposalSheetImportTest(TestCase):
 
         # No lead 5, because it was lost
         self.assertFalse(Lead.objects.filter(pk=5))
+
+    def test_import_proposal_lines(self):
+        context = core.ImportContext(subsidiary=self.subsidiary,
+                                     import_missions=True)
+        load_and_import_objects(os.path.join(TEST_DIR, 'proposal-lines'), context)
+
+        # Lead should have 2 missions, one of them optional
+        lead = Lead.objects.get(pk=3)
+
+        missions = lead.mission_set.all()
+        self.assertEquals(len(missions), 2)
+
+        mission1 = missions.filter(id=123)[0]
+        self.assertEquals(mission1.description, 'Foo - Echo Alpha')
+        self.assertEquals(mission1.price, Decimal('4.8'))
+
+        mission2 = missions.filter(id=456)[0]
+        self.assertEquals(mission2.price, Decimal('8.64'))
+        self.assert_(mission2.description.endswith(core.OPTIONAL_MISSION_SUFFIX))

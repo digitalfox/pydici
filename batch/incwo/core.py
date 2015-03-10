@@ -18,6 +18,9 @@ SUB_DIRS = ('firms', 'contacts', 'proposal_sheets')
 DEFAULT_CLIENT_ORGANIZATION_NAME = 'Default'
 
 
+OPTIONAL_MISSION_SUFFIX = '(option)'
+
+
 class IncwoImportError(Exception):
     pass
 
@@ -259,12 +262,18 @@ def import_contacts(lst, context=None):
 
 
 def import_proposal_line(lead, line):
+    content_kind = unicode(line.content_kind)
+    if content_kind not in ('', 'option'):
+        return
+
     mission, _ = Mission.objects.get_or_create(id=line.id,
                                                lead=lead,
                                                subsidiary=lead.subsidiary)
     mission.description = unicode(line.description).strip()
     if hasattr(line, 'description_more'):
         mission.description += ' - ' + unicode(line.description_more).strip()
+    if content_kind == 'option':
+        mission.description += ' ' + OPTIONAL_MISSION_SUFFIX
     mission.billing_mode = 'FIXED_PRICE'
     # FIXME: Compute probability from lead state?
     # FIXME: Which price to use for mission.price: line.total_price or

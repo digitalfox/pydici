@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proposal_sheet>
+  <id>3</id>
+  <progress_id>557</progress_id>
+  <reference>D1234-56789</reference>
+  <billing_date>22-12-2014</billing_date>
+  <title>Project Foobar</title>
+  <subtitle>Echo Alpha Tango</subtitle>
+  <language>fr</language>
+  <firm_id>1</firm_id>
+  <sheet_type>proposal</sheet_type>
+  <manager_user_id>123</manager_user_id>
+  <proposal_lines>
+    <proposal_line>
+      <id>0</id>
+      <proposal_sheet_id>3</proposal_sheet_id>
+      <content_kind>comment</content_kind>
+      <description>Engineering</description>
+    </proposal_line>
+    <proposal_line>
+      <id>123</id>
+      <proposal_sheet_id>3</proposal_sheet_id>
+      <content_kind></content_kind>
+      <description>Foo</description>
+      <total_price_with_taxes>4800.0</total_price_with_taxes>
+      <description_more>Echo Alpha</description_more>
+    </proposal_line>
+    <proposal_line>
+      <id>456</id>
+      <proposal_sheet_id>3</proposal_sheet_id>
+      <content_kind>option</content_kind>
+      <vat_value_id>607</vat_value_id>
+      <description>Bar</description>
+      <total_price_with_taxes>8640.0</total_price_with_taxes>
+      <description_more>Tango</description_more>
+    </proposal_line>
+    <proposal_line>
+      <id>789</id>
+      <proposal_sheet_id>3</proposal_sheet_id>
+      <content_kind>total</content_kind>
+      <total_price_with_taxes>13440.0</total_price_with_taxes>
+    </proposal_line>
+  </proposal_lines>
+  <cash_deposits>
+    <cash_deposit>
+      <id>11497502</id>
+      <kind>plan</kind>
+      <sheet_name>proposal_sheets</sheet_name>
+      <sheet_id>1002758</sheet_id>
+      <payment_type_info>0</payment_type_info>
+      <payer_staff_id>0</payer_staff_id>
+      <amount_ttc>29850.0</amount_ttc>
+      <deposit_date_model_id>20007</deposit_date_model_id>
+      <deposit_date_estimation>19-09-2013</deposit_date_estimation>
+    </cash_deposit>
+    <cash_deposit>
+      <id>11497505</id>
+      <kind>plan</kind>
+      <sheet_name>proposal_sheets</sheet_name>
+      <sheet_id>1002758</sheet_id>
+      <payment_type_info>0</payment_type_info>
+      <payer_staff_id>0</payer_staff_id>
+      <amount_ttc>29850.0</amount_ttc>
+      <deposit_date_model_id>500035</deposit_date_model_id>
+      <deposit_date_estimation>12-10-2013</deposit_date_estimation>
+    </cash_deposit>
+  </cash_deposits>
+</proposal_sheet>
