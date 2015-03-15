@@ -8,6 +8,7 @@ from datetime import date, timedelta
 from time import strftime
 from os.path import join, dirname
 import os.path
+from decimal import Decimal
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -63,7 +64,7 @@ class AbstractBill(models.Model):
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2)
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
-    vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=pydici.settings.PYDICI_DEFAULT_VAT_RATE)
+    vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=Decimal(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
     expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True})
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
 
@@ -146,6 +147,18 @@ class SupplierBill(AbstractBill):
     bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path, storage=BillStorage(nature="supplier"))
     supplier = models.ForeignKey(Supplier)
     supplier_bill_id = models.CharField(_("Supplier Bill id"), max_length=200)
+
+    def save(self, *args, **kwargs):
+        # Save it first to define pk and allow browsing relationship
+        super(SupplierBill, self).save(*args, **kwargs)
+        # Automatically set payment date for paid bills
+        if self.state == "2_PAID" and not self.payment_date:
+            self.payment_date = date.today()
+        # Automatically switch as paid bills with payment date
+        elif self.state == "1_RECEIVED" and self.payment_date:
+            self.state = "2_PAID"
+        super(SupplierBill, self).save(*args, **kwargs)
+
 
     class Meta:
         verbose_name = _("Supplier Bill")

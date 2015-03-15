@@ -9,6 +9,7 @@ Test cases
 from django.test import TestCase
 from django.core import urlresolvers
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 
 # Third party modules
 import workflows.utils as wf
@@ -19,8 +20,9 @@ from workflows.models import Transition
 from core.utils import monthWeekNumber, previousWeek, nextWeek
 from leads.models import Lead
 from people.models import Consultant, ConsultantProfile
-from crm.models import Client, Subsidiary, BusinessBroker
+from crm.models import Client, Subsidiary, BusinessBroker, Supplier
 from staffing.models import Mission
+from billing.models import SupplierBill, ClientBill
 from expense.models import Expense, ExpenseCategory, ExpensePayment
 from expense.default_workflows import install_expense_workflow
 import pydici.settings
@@ -374,6 +376,53 @@ class StaffingModelTest(TestCase):
         mission.active = False
         mission.save()
         self.assertEqual(mission.staffing_set.count(), 0)
+
+
+class BillingModelTest(TestCase):
+    """Test Billing application model"""
+    fixtures = ["auth.json", "people.json", "crm.json",
+                "leads.json", "staffing.json", "billing.json"]
+
+    def test_save_supplier_bill(self):
+        lead = Lead.objects.get(id=1)
+        supplier = Supplier.objects.get(id=1)
+        bill = SupplierBill()
+        self.assertEqual(bill.state, "1_RECEIVED")
+        self.assertRaises(IntegrityError, bill.save)  # No lead, no supplier and no amount
+        bill.lead = lead
+        bill.supplier = supplier
+        self.assertRaises(IntegrityError, bill.save)  # Still no amount
+        bill.amount = 100
+        self.assertIsNone(bill.amount_with_vat)
+        bill.save()
+        self.assertIsNone(bill.amount_with_vat)  # No auto computation of VAT for supplier bill
+        self.assertEqual(bill.payment_delay(), 0)
+        self.assertEqual(bill.payment_wait(), -30)
+        bill.payment_date = date.today()
+        bill.save()
+        self.assertEqual(bill.state, "2_PAID")
+
+
+    def test_save_client_bill(self):
+        lead = Lead.objects.get(id=1)
+        client = Client.objects.get(id=1)
+        bill = ClientBill()
+        self.assertEqual(bill.state, "1_SENT")
+        self.assertRaises(IntegrityError, bill.save)  # No lead, no client and no amount
+        bill.lead = lead
+        bill.client = client
+        self.assertRaises(IntegrityError, bill.save)  # Still no amount
+        bill.amount = 100
+        self.assertIsNone(bill.amount_with_vat)
+        bill.save()
+        self.assertIsNotNone(bill.amount_with_vat)
+        self.assertEqual(bill.state, "1_SENT")
+        self.assertEqual(bill.payment_delay(), 0)
+        self.assertEqual(bill.payment_wait(), -30)
+        bill.payment_date = date.today()
+        bill.save()
+        self.assertEqual(bill.state, "2_PAID")
+
 
 
 class WorkflowTest(TestCase):

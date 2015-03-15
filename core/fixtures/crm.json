@@ -73,5 +73,14 @@
             "company": 1, 
             "contact": 1
         }
+    },
+
+    {
+        "pk": 1,
+        "model": "crm.supplier",
+        "fields": {
+            "company": 1,
+            "contact": 1
+        }
     }
 ]
