@@ -2,7 +2,9 @@ import logging
 
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.utils import translation
 
 from batch.incwo import core
 
@@ -46,6 +48,7 @@ class Command(BaseCommand):
     help = 'Import data from an Incwo account'
 
     def handle(self, *args, **options):
+        translation.activate(settings.LANGUAGE_CODE)
         loglevels = {
             '0': logging.WARNING,
             '1': logging.INFO,

@@ -21,24 +21,29 @@
       <id>123</id>
       <proposal_sheet_id>3</proposal_sheet_id>
       <content_kind></content_kind>
-      <description>Foo</description>
-      <total_price_with_taxes>4800.0</total_price_with_taxes>
-      <description_more>Echo Alpha</description_more>
+      <description>Dev</description>
+      <description_more>Dev Foobar</description_more>
+      <unit_price>12</unit_price>
+      <quantity>3</quantity>
+      <unit>M/D</unit>
+      <total_price>36</total_price>
     </proposal_line>
     <proposal_line>
       <id>456</id>
       <proposal_sheet_id>3</proposal_sheet_id>
       <content_kind>option</content_kind>
       <vat_value_id>607</vat_value_id>
-      <description>Bar</description>
-      <total_price_with_taxes>8640.0</total_price_with_taxes>
-      <description_more>Tango</description_more>
+      <description>Dev</description>
+      <description_more>Implement remote control</description_more>
+      <unit_price>11</unit_price>
+      <quantity>2</quantity>
+      <unit>M/D</unit>
+      <total_price>0</total_price>
     </proposal_line>
     <proposal_line>
       <id>789</id>
       <proposal_sheet_id>3</proposal_sheet_id>
       <content_kind>total</content_kind>
-      <total_price_with_taxes>13440.0</total_price_with_taxes>
     </proposal_line>
   </proposal_lines>
   <cash_deposits>

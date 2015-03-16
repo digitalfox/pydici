@@ -21,10 +21,21 @@ import pydici.settings
 
 register = template.Library()
 
-# *star* word
-stared_text = re.compile(r"\*(\w+)\*", re.UNICODE)
-# _underlined_ work
-underlined_text = re.compile(r"_(\w+)_", re.UNICODE)
+regex_template = r"""
+    (?P<before>\W|^)
+    {fence}
+    (?P<content>([^{fence}]|{fence}\w)+)
+    {fence}
+    (?P<after>\W|^)
+    """
+# *star* text
+stared_text = re.compile(
+    regex_template.format(fence=r'\*'),
+    re.UNICODE | re.VERBOSE)
+# _underlined_ text
+underlined_text = re.compile(
+    regex_template.format(fence='_'),
+    re.UNICODE | re.VERBOSE)
 # bullet point
 bullet_point = re.compile(r"\s*[*-]{1,2}[^*-]", re.UNICODE)
 
@@ -130,8 +141,8 @@ def pydici_simple_format(value, arg=None):
     trigrammes = [i[0] for i in Consultant.objects.values_list("trigramme")]
 
     # format *word* and _word_ and look for deal ids
-    value = stared_text.sub(r"<strong>\1</strong>", value)
-    value = underlined_text.sub(r"<em>\1</em>", value)
+    value = stared_text.sub(r"\g<before><strong>\g<content></strong>\g<after>", value)
+    value = underlined_text.sub(r"\g<before><em>\g<content></em>\g<after>", value)
     result = []
     inList = False  # Flag to indicate we are in a list
     for line in value.split("\n"):

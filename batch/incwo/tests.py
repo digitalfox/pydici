@@ -1,7 +1,6 @@
+# encoding: utf-8
 import logging
 import os
-
-from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -127,16 +126,11 @@ class ProposalSheetImportTest(TestCase):
                                      import_missions=True)
         load_and_import_objects(os.path.join(TEST_DIR, 'proposal-lines'), context)
 
-        # Lead should have 2 missions, one of them optional
         lead = Lead.objects.get(pk=3)
-
-        missions = lead.mission_set.all()
-        self.assertEquals(len(missions), 2)
-
-        mission1 = missions.filter(id=123)[0]
-        self.assertEquals(mission1.description, 'Foo - Echo Alpha')
-        self.assertEquals(mission1.price, Decimal('4.8'))
-
-        mission2 = missions.filter(id=456)[0]
-        self.assertEquals(mission2.price, Decimal('8.64'))
-        self.assert_(mission2.description.endswith(core.OPTIONAL_MISSION_SUFFIX))
+        EXPECTED_DESCRIPTION = \
+u"""Echo Alpha Tango
+*Engineering*
+- Dev. Dev Foobar. 3 M/D × 12 € = 36 €
+- Dev _[option]_. Implement remote control. 2 M/D × 11 € = 22 €
+Total: 36 €
+"""

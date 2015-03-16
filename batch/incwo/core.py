@@ -8,6 +8,7 @@ from decimal import Decimal
 import requests
 from lxml import objectify
 
+from django.utils.formats import localize
 from django.utils.translation import ugettext
 
 from crm.models import Company, ClientOrganisation, Client, Contact
@@ -24,7 +25,7 @@ SUB_DIRS = ('firms', 'contacts', 'proposal_sheets')
 DEFAULT_CLIENT_ORGANIZATION_NAME = 'Default'
 
 
-OPTIONAL_MISSION_SUFFIX = '(option)'
+OPTIONAL_MISSION_SUFFIX = '_[option]_'
 
 
 class IncwoImportError(Exception):
@@ -251,52 +252,87 @@ def import_contacts(lst, context=None):
     _do_import('contacts', lst, import_contact, context)
 
 
-def import_proposal_line(lead, line):
+class ProposalLineContext(object):
+    def __init__(self):
+        self._groups = [Decimal(0)]
+
+    def add_to_current_total(self, price):
+        self._groups[-1] += price
+
+    def start_group(self):
+        self._groups.append(Decimal(0))
+
+    def current_total(self):
+        return self._groups[-1]
+
+    def grand_total(self):
+        return sum(self._groups)
+
+
+def simplify_decimal(value):
+    # Convert to int if possible to ensure Decimal(2) is turned into '2', not
+    # '2.0'
+    int_value = value.to_integral_value()
+    return int_value if int_value == value else value
+
+
+def import_proposal_line(lead, line, context):
     content_kind = unicode(line.content_kind)
-    if content_kind not in ('', 'option'):
-        return False
 
-    description = unicode(line.description).strip()
+    if content_kind == '' and not hasattr(line, 'total_price'):
+        content_kind = 'comment'
+
     if hasattr(line, 'description_more'):
-        description += ' - ' + unicode(line.description_more).strip()
-    if content_kind == 'option':
-        description += ' ' + OPTIONAL_MISSION_SUFFIX
+        description_more = unicode(line.description_more).strip()
+    else:
+        description_more = ''
 
-    # FIXME: Compute probability from lead state?
-    # FIXME: Which price to use for mission.price: line.total_price or
-    # line.total_price_with_taxes?
-    price = Decimal(unicode(line.total_price_with_taxes)) / 1000
+    if content_kind == 'total':
+        total = context.current_total()
+        description = u'Total: {} €\n'.format(localize(total))
+        context.start_group()
 
-    dbutils.update_or_create(Mission,
-                             id=line.id,
-                             lead=lead,
-                             subsidiary=lead.subsidiary,
-                             billing_mode='FIXED_PRICE',
-                             description=description,
-                             price=price)
-    return True
+    elif content_kind == 'comment':
+        description = unicode(line.description).strip()
+        if description:
+            description = '*' + description + '*'
+        if description_more:
+            description += '\n' + description_more
 
+    else:
+        # Normal lines + options
+        description = unicode(line.description).strip()
+        description = '- ' + description
+        if content_kind == 'option':
+            description += ' ' + OPTIONAL_MISSION_SUFFIX
+        if description_more:
+            description += '. ' + description_more
 
-MAN_DAY_UNITS = set([
-    "days",
-    "day",
-    "j/h",
-    "jh",
-    "jours",
-    "jr/h",
-    "jrs/h",
-    "man/days",
-    "manday",
-    "md",
-])
+        if hasattr(line, 'unit_price') and hasattr(line, 'quantity'):
+            # This is a product proposal line with an attached price
+            unit_price = Decimal(unicode(line.unit_price))
+            unit_price = simplify_decimal(unit_price)
 
-def extract_proposal_line_duration(line):
-    if not hasattr(line, 'quantity'):
-        return 0
-    unit = unicode(line.unit).lower()
-    if not unit in MAN_DAY_UNITS:
-        return 0
-    return Decimal(unicode(line.quantity))
+            unit = unicode(line.unit)
+            if unit:
+                unit = ' ' + unit
+
+            quantity = Decimal(unicode(line.quantity))
+            quantity = simplify_decimal(quantity)
+
+            # Do not use line.total_price: it is set to 0 for options
+            total_price = unit_price * quantity
+
+            description += '. '
+            if quantity == 1:
+                description += u'{} €'.format(localize(total_price))
+            else:
+                description += u'{}{} × {} € = {} €'.format(quantity, unit,
+                    localize(unit_price), localize(total_price))
+            if not content_kind == 'option':
+                context.add_to_current_total(total_price)
+
+    return description
 
 
 # FIXME: Is 'WON' the right value for 'Terminé'?
@@ -350,16 +386,15 @@ def import_proposal_sheet(obj_id, obj_xml, context):
 
     if hasattr(sheet, 'proposal_lines') and context.import_missions:
         lst = list(sheet.proposal_lines.iterchildren())
-        duration = 0
+        proposal_line_context = ProposalLineContext()
+        lines = []
+        if lead.description:
+            lines.append(lead.description)
         for pos, proposal_line in enumerate(lst):
             logger.info('- Proposal line {}/{}'.format(pos + 1, len(lst)))
-            imported = import_proposal_line(lead, proposal_line)
-            if imported:
-                duration += extract_proposal_line_duration(proposal_line)
-        if duration > 0:
-            if lead.description:
-                lead.description += '\n'
-            lead.description += ugettext('man-days: {}').format(duration)
+            lines.append(import_proposal_line(lead, proposal_line, proposal_line_context))
+        lead.description = '\n'.join(lines)
+        lead.sales = proposal_line_context.grand_total() / 1000  # grand_total is in €, but lead.sales is in k€
         lead.save()
 
 
