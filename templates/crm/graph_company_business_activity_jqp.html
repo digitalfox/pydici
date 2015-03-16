@@ -16,29 +16,39 @@ var plot_company_business_activity_jqp = $.jqplot('company_business_activity_jqp
     seriesDefaults:{
       renderer:$.jqplot.BarRenderer,
       pointLabels: {show: false},
-      rendererOptions: {
+          rendererOptions: {
           barMargin: 20,
           barWidth: 15,
       },
     },
     series:[
-         {label: "{% trans 'Billing' %}" },
          {
-          label: "{% trans 'All leads' %}",
-          renderer: $.jqplot.LineRenderer,
-          rendererOptions: { smooth: true },
-          linePattern: 'dashed',
-          lineWidth: 1,
-          markerOptions : { size : 5},
-          yaxis: 'y2axis',
-          disableStack : true,
+            label: "{% trans 'Billing' %}",
+             renderer: $.jqplot.LineRenderer,
+             rendererOptions: { smooth: true },
+             highlightColors : 'blue', // useless, only here to avoid a warning
+             fill: true,
+             fillAlpha: 0.4,
+             fillAndStroke : true,
+             pointLabels: {show: true},
+             markerOptions : { size : 5},
+             rendererOptions: {
+                lineWidth: 2,
+             },
+            disableStack : true,
+        },
+         {
+              label: "{% trans 'Lost leads' %}",
+              yaxis: 'y2axis',
+              disableStack : true,
          },
          {
              label: "{% trans 'Won leads' %}",
-             renderer: $.jqplot.LineRenderer,
-             rendererOptions: { smooth: true },
              yaxis: 'y2axis',
-             disableStack : true,
+         },
+         {
+             label: "{% trans 'Current leads' %}",
+             yaxis: 'y2axis',
          }
         ],
     axes: {
@@ -56,17 +66,18 @@ var plot_company_business_activity_jqp = $.jqplot('company_business_activity_jqp
       yaxis: {
           syncTicks : true,
           label: "{% trans 'k€' %}",
+          min : 0,
           labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
           tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+          tickOptions: { formatString: '%dk€' },
       },
       y2axis: {
-          //padMin: 1,
+          min : 0,
           pad : 1.2,
           tickInterval: 1,
           syncTicks : true,
           labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
           tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-          //tickOptions: { formatString: '%dk€' },
       }
     },
     legend: {

@@ -303,7 +303,8 @@ def graph_company_business_activity_jqp(request, company_id):
     @todo: extend this graph to multiple companies"""
     graph_data = []
     billsData = dict()
-    allLeadsData = dict()
+    lostLeadsData = dict()
+    currentLeadsData = dict()
     wonLeadsData = dict()
     minDate = date.today()
     company = Company.objects.get(id=company_id)
@@ -317,17 +318,16 @@ def graph_company_business_activity_jqp(request, company_id):
 
     for lead in Lead.objects.filter(client__organisation__company=company):
         kdate = lead.creation_date.date().replace(day=1)
+        for data in (lostLeadsData, wonLeadsData, currentLeadsData, billsData):
+            data[kdate] = data.get(kdate, 0)  # Default to 0 to avoid stacking weirdness in graph
         if lead.state == "WON":
-            datas = (allLeadsData, wonLeadsData)
+            wonLeadsData[kdate] += 1
+        elif lead.state in ("LOST", "FORGIVEN"):
+            lostLeadsData[kdate] += 1
         else:
-            datas = (allLeadsData,)
-        for data in datas:
-            if kdate in data:
-                data[kdate] += 1
-            else:
-                data[kdate] = 1
+            currentLeadsData[kdate] += 1
 
-    for data in (billsData, allLeadsData, wonLeadsData):
+    for data in (billsData, lostLeadsData, wonLeadsData, currentLeadsData):
         kdates = data.keys()
         kdates.sort()
         isoKdates = [a.isoformat() for a in kdates]  # List of date as string in ISO format
