@@ -1,6 +1,7 @@
 # encoding: utf-8
 import logging
 import os
+from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -130,7 +131,15 @@ class ProposalSheetImportTest(TestCase):
         EXPECTED_DESCRIPTION = \
 u"""Echo Alpha Tango
 *Engineering*
-- Dev. Dev Foobar. 3 M/D × 12 € = 36 €
-- Dev _[option]_. Implement remote control. 2 M/D × 11 € = 22 €
-Total: 36 €
+- Dev. Dev Foobar. 3 M/D × 500 € = 1500 €
+- Dev _[option]_. Implement remote control. 2 M/D × 450 € = 900 €
+Total: 2400 €
 """
+
+        self.assertEquals(lead.sales, Decimal('1.5'))
+
+        # There should be one associated mission
+        missions = lead.mission_set.all()
+        self.assertEquals(len(missions), 1)
+        mission = missions[0]
+        self.assertEquals(mission.price, Decimal('1.5'))

@@ -397,6 +397,13 @@ def import_proposal_sheet(obj_id, obj_xml, context):
         lead.sales = proposal_line_context.grand_total() / 1000  # grand_total is in €, but lead.sales is in k€
         lead.save()
 
+        dbutils.update_or_create(Mission,
+                                 id=lead.id,
+                                 lead=lead,
+                                 subsidiary=lead.subsidiary,
+                                 billing_mode='FIXED_PRICE',
+                                 price=lead.sales)
+
 
 def import_proposal_sheets(lst, context=None):
     if context == None:
