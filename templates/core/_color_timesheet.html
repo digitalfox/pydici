@@ -37,6 +37,10 @@ $(document).ready(function()
             hours = Number(hours);
             minutes = Number(minutes);
             hours += Math.floor(minutes / 60);
+            if (hours >= 24) {
+                $input.parent().addClass('timesheet-error');
+                return;
+            }
             minutes = minutes % 60;
 
             // Left pad with 0
