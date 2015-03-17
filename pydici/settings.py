@@ -94,16 +94,7 @@ TEMPLATE_DIRS = (
     os.path.join(PYDICI_ROOTDIR, 'templates'),
 )
 
-INSTALLED_APPS = [
-    # Django apps
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
-    'django.contrib.admin',
-    'django.contrib.admindocs',
-    # Pydici modules
+PYDICI_APPS = [
     'core',
     'people',
     'leads',
@@ -113,6 +104,18 @@ INSTALLED_APPS = [
     'expense',
     'actionset',
     'batch.incwo',
+]
+
+INSTALLED_APPS = [
+    # Django apps
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.admin',
+    'django.contrib.admindocs',
+    ] + PYDICI_APPS + [
     # Third party apps
     'django_extensions',
     'django.contrib.staticfiles',  # Static files are served by web server in production mode, but this apps allow collectstatic
