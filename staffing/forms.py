@@ -300,10 +300,8 @@ class CycleTimesheetField(forms.ChoiceField):
                                         ", ".join(self.TS_VALUES.keys()))
 
 
-class KeyboardTimesheetField(forms.FloatField):
+class KeyboardTimesheetField(forms.Field):
     def __init__(self, *args, **kwargs):
-        kwargs['min_value'] = 0
-        kwargs['max_value'] = settings.TIMESHEET_DAY_DURATION
         kwargs['widget'] = forms.TextInput()
         super(KeyboardTimesheetField, self).__init__(*args, **kwargs)
         self.widget.attrs.setdefault("class", "timesheet-keyboard")
