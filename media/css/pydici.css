@@ -75,6 +75,16 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 .tablesmall-form-row > tbody > tr > td > input {  background: #F9F9F9; margin: 1px -2px;}
 .tablesmall-form-row input:focus { border:0px; }
 
+.tablesmall-form-row input.timesheet-keyboard {
+    margin: 0;
+    padding: 0;
+    width: 2.5em;
+    text-align: center;
+}
+
+.tablesmall-form-row input.timesheet-keyboard:focus {
+    border: 1px solid #8F6749;
+}
 
 /* To be removed ? Need to be checked */
 ul.errorlist { margin:0 !important; padding:0 !important; }
@@ -128,7 +138,6 @@ div.ui-tooltip {
     max-width: 800px;
     white-space: nowrap;
 }
-
 
 /* Style jquery autocomplete */
 .ui-autocomplete {

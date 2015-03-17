@@ -306,7 +306,7 @@ class KeyboardTimesheetField(forms.FloatField):
         kwargs['max_value'] = settings.TIMESHEET_DAY_DURATION
         kwargs['widget'] = forms.TextInput()
         super(KeyboardTimesheetField, self).__init__(*args, **kwargs)
-        self.widget.attrs.setdefault('size', 1)  # Reduce default size
+        self.widget.attrs.setdefault("class", "timesheet-keyboard")
 
     def prepare_value(self, day_percent):
         if isinstance(day_percent, types.StringTypes):
