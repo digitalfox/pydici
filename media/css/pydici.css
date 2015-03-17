@@ -86,6 +86,11 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     border: 1px solid #8F6749;
 }
 
+.tablesmall-form-row input.invalid {
+    border: 1px solid red;
+    text: red;
+}
+
 /* To be removed ? Need to be checked */
 ul.errorlist { margin:0 !important; padding:0 !important; }
 .errorlist li { font-size:12px !important; display:block; padding:4px 5px 4px 25px; margin:0 0 3px 0; border:1px solid red; color:white; background:red url(../img/icon_alert.gif) 5px .3em no-repeat; }

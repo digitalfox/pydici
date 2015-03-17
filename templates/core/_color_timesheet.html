@@ -21,6 +21,44 @@ $(document).ready(function()
     $("input[class=timesheet-keyboard]").change(function() {
         markModified($(this));
     });
+    $("input[class=timesheet-keyboard]").focus(function() {
+        $(this).select();
+    });
+    $("input[class=timesheet-keyboard]").blur(function() {
+        $(this).removeClass('invalid');
+        var val = $(this).val().trim();
+        var HOURS_MINUTES_REGEX = /^(\d+)[h:](\d+)m?/i;
+        var HOURS_ONLY_REGEX = /^(\d+)h?$/i;
+        var MINUTES_ONLY_REGEX = /^(\d+)m$/i;
+
+        var hours = null;
+        var minutes;
+
+        var result = HOURS_MINUTES_REGEX.exec(val);
+        if (result) {
+            hours = result[1];
+            minutes = result[2];
+        } else if (result = HOURS_ONLY_REGEX.exec(val)) {
+            hours = result[1];
+            minutes = 0;
+        } else if (result = MINUTES_ONLY_REGEX.exec(val)) {
+            hours = 0;
+            minutes = result[1];
+        }
+
+        if (hours === null) {
+            $(this).addClass('invalid');
+        } else {
+            hours = Number(hours);
+            minutes = Number(minutes);
+            hours += Math.floor(minutes / 60);
+            minutes = minutes % 60;
+
+            // Left pad with 0
+            var minutesStr = ('0' + String(minutes)).substr(-2);
+            $(this).val(hours + ':' + minutesStr);
+        }
+    });
     $("input[name^='lunch_ticket_']").click(function() {
         markModified($(this));
 	});
