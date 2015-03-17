@@ -4,13 +4,13 @@
 $(document).ready(function()
 {
     function markModified($element) {
-        $element.css("background", "rgba(255,0,0,0.3)");
-        $(".submit-row button").css("background", "rgba(255,0,0,0.2)");
-        $('#readonly-warning').css("background", "rgba(255,0,0,0.2)");
+        $element.addClass('modified');
+        $(".submit-row button").addClass('modified');
+        $('#readonly-warning').addClass('modified');
     }
 
     function coerceTime($input) {
-        $input.removeClass('invalid');
+        $input.parent().removeClass('timesheet-error');
         var val = $input.val().trim();
         var HOURS_MINUTES_REGEX = /^(\d+)[h:](\d+)m?/i;
         var HOURS_ONLY_REGEX = /^(\d+)h?$/i;
@@ -32,7 +32,7 @@ $(document).ready(function()
         }
 
         if (hours === null) {
-            $input.addClass('invalid');
+            $input.parent().addClass('timesheet-error');
         } else {
             hours = Number(hours);
             minutes = Number(minutes);
