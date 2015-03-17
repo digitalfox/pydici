@@ -583,15 +583,15 @@ def mission_timesheet(request, mission_id):
         missionData.append((consultant, timesheetData, staffingData, estimatedData))
 
     # Compute the total daily rate for each month of the mission
-    timesheetTotalRate = []
-    staffingTotalRate = []
+    timesheetTotalAmount = []
+    staffingTotalAmount = []
     for consultant, timesheet, staffing, estimated in missionData:
         rate = consultant_rates[consultant][0]
         # We don't compute the average rate for total (k€) columns, hence the [:-1]
-        valuedTimesheet = [days * rate for days in  timesheet[:-1]]
-        valuedStaffing = [days * rate for days in staffing[:-1]]
-        timesheetTotalRate = map(lambda t, v: (t + v) if t else v, timesheetTotalRate, valuedTimesheet)
-        staffingTotalRate = map(lambda t, v: (t + v) if t else v, staffingTotalRate, valuedStaffing)
+        valuedTimesheet = [days * rate / 1000 for days in  timesheet[:-1]]
+        valuedStaffing = [days * rate / 1000 for days in staffing[:-1]]
+        timesheetTotalAmount = map(lambda t, v: (t + v) if t else v, timesheetTotalAmount, valuedTimesheet)
+        staffingTotalAmount = map(lambda t, v: (t + v) if t else v, staffingTotalAmount, valuedStaffing)
 
     # Compute total per month
     timesheetTotal = [timesheet for consultant, timesheet, staffing, estimated in missionData]
@@ -601,9 +601,9 @@ def mission_timesheet(request, mission_id):
     staffingTotal = zip(*staffingTotal)  # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
     staffingTotal = [sum(t) for t in staffingTotal]
 
-    # average = total rate / number of billed days
-    timesheetAverageRate = map(lambda t, d: (t / d) if d else 0, timesheetTotalRate, timesheetTotal[:-1])
-    staffingAverageRate = map(lambda t, d: (t / d) if d else 0, staffingTotalRate, staffingTotal[:-1])
+    # average = total 1000 * rate / number of billed days
+    timesheetAverageRate = map(lambda t, d: (1000 * t / d) if d else 0, timesheetTotalAmount, timesheetTotal[:-1])
+    staffingAverageRate = map(lambda t, d: (1000 * t / d) if d else 0, staffingTotalAmount, staffingTotal[:-1])
 
     # Total estimated (timesheet + staffing)
     if timesheetTotal and staffingTotal:
@@ -628,6 +628,7 @@ def mission_timesheet(request, mission_id):
         forecastedUnused = 0
 
     missionData.append((None, timesheetTotal, staffingTotal, estimatedTotal,
+                        timesheetTotalAmount[:-1], staffingTotalAmount[:-1],  # We remove last one not to  display total twice
                         timesheetAverageRate, staffingAverageRate))
 
     missionData = map(to_int_or_round, missionData)

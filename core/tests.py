@@ -275,8 +275,9 @@ class StaffingViewsTest(TestCase):
         data = response.context["mission_data"]
         self.assertListEqual(data[0], [c2, [5, 9, 14, 15.4], [1, 6, 7, 7.7], [21, 23.1]])
         self.assertListEqual(data[1], [c1, [8, 11, 19, 15.2], [4, 8, 12, 9.6], [31, 24.8]])
-        self.assertListEqual(data[2], [None, [13, 20, 33, 30.6], [5, 14, 19, 17.3], [52, 47.9], [915.4, 935, 927.3], [860, 928.6, 910.5]])
-
+        self.assertListEqual(data[2], [None, [13, 20, 33, 30.6], [5, 14, 19, 17.3], [52, 47.9],
+                                       [11.9, 18.7], [4.3, 13],
+                                       [915.4, 935, 927.3], [860, 928.6, 910.5]])
 
 
 

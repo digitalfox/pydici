@@ -29,7 +29,7 @@
         <td>{% trans "Days" %}</td>
         <td>{% trans "k€" %}</td>
     </tr>
-    {% for consultant, timesheet, staffing, estimated, timesheetRate, staffingRate in mission_data %}
+    {% for consultant, timesheet, staffing, estimated, timesheetAmount, staffingAmount ,timesheetRate, staffingRate in mission_data %}
         {% ifequal consultant None %}
             <tr align="right" style="font-weight:bold">
             <td>{% trans "Total" %}</td>
@@ -39,7 +39,17 @@
             <td class="table-separator"></td>
             <td>{{ estimated|join:"</td><td>" }}</td>
             <td></td>
-            <tr align="right">
+            </tr><tr align="right" style="font-weight:bold">
+            <td>{% trans "Total (k€)" %}</td>
+            <td>{{ timesheetAmount|join:"</td><td>" }}</td>
+            <td></td>
+            <td></td><td class="table-separator"></td>
+            <td>{{ staffingAmount|join:"</td><td>" }}</td>
+            <td></td>
+            <td></td><td class="table-separator"></td>
+	        <td></td>
+	        <td></td>
+            </tr><tr align="right">
             <td>{% trans "Average daily rate (€)" %}</td>
             <td>{{ timesheetRate|join:"</td><td>" }}</td>
             <td></td><td class="table-separator"></td>
