@@ -4,7 +4,6 @@ Staffing form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-import time
 import types
 
 from datetime import timedelta, date
@@ -31,7 +30,7 @@ from staffing.models import Mission, FinancialCondition
 from core.forms import PydiciSelect2Field, PydiciCrispyModelForm
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
-from staffing.utils import staffingDates
+from staffing.utils import staffingDates, time_string_for_day_percent, day_percent_for_time_string
 from leads.forms import LeadChoices
 
 
@@ -301,8 +300,6 @@ class CycleTimesheetField(forms.ChoiceField):
 
 
 class KeyboardTimesheetField(forms.Field):
-    day_duration = float(settings.TIMESHEET_DAY_DURATION)
-
     def __init__(self, *args, **kwargs):
         kwargs['widget'] = forms.TextInput()
         super(KeyboardTimesheetField, self).__init__(*args, **kwargs)
@@ -313,27 +310,15 @@ class KeyboardTimesheetField(forms.Field):
             # day_percent may already be a string if prepare_value() is called
             # with the final value
             return day_percent
-        if day_percent is None:
-            hours = 0
-            minutes = 0
-        else:
-            # Using round() is important here because int() truncates the
-            # decimal part so int(24.99) returns 24, whereas round(24.99)
-            # returns 25.
-            total_minutes = int(round(day_percent * self.day_duration * 60))
-            hours = total_minutes / 60
-            minutes = total_minutes % 60
-        return '{}:{:02}'.format(hours, minutes)
+        return time_string_for_day_percent(day_percent)
 
     def to_python(self, value):
         if not value and not self.required:
             return 0
         try:
-            value_struct = time.strptime(value, '%H:%M')
+            return day_percent_for_time_string(value)
         except ValueError:
             raise forms.ValidationError('Invalid time string {}'.format(value))
-        duration = value_struct[3] + value_struct[4] / 60.0
-        return duration / self.day_duration
 
 
 TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD = {

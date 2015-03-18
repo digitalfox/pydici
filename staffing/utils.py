@@ -6,9 +6,11 @@ appropriate to live in Staffing models or view
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+import time
 
 from datetime import date, datetime
 
+from django.conf import settings
 from django.db import transaction
 from django.utils import formats
 
@@ -174,3 +176,22 @@ def staffingDates(n=12, format=None, minDate=None):
                           "label": formats.date_format(staffingDate, format="YEAR_MONTH_FORMAT").encode("latin-1"), })
         staffingDate = nextMonth(staffingDate)
     return dates
+
+
+def time_string_for_day_percent(day_percent, day_duration=settings.TIMESHEET_DAY_DURATION):
+    if day_percent is None:
+        hours = 0
+        minutes = 0
+    else:
+        # Using round() is important here because int() truncates the decimal
+        # part so int(24.99) returns 24, whereas round(24.99) returns 25.
+        total_minutes = int(round(day_percent * day_duration * 60))
+        hours = total_minutes / 60
+        minutes = total_minutes % 60
+    return '{}:{:02}'.format(hours, minutes)
+
+
+def day_percent_for_time_string(time_string, day_duration=settings.TIMESHEET_DAY_DURATION):
+    value_struct = time.strptime(time_string, '%H:%M')
+    duration = value_struct[3] + value_struct[4] / 60.0
+    return duration / day_duration

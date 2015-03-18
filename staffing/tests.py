@@ -1,26 +1,23 @@
 from django.test import TestCase
 
-from staffing.forms import KeyboardTimesheetField
+from staffing import utils
 
 
-class KeyboardTimesheetFieldTest(TestCase):
+class TimeStringConversionTest(TestCase):
     def test_prepare_value(self):
         data = (
             # This value is how the percent representing 0:15 is stored in the
             # DB on the staging server
             (0.0357142857142857, '0:15'),
         )
-        field = KeyboardTimesheetField()
-        field.day_duration = 7.0
         for percent, expected in data:
-            output = field.prepare_value(percent)
+            output = utils.time_string_for_day_percent(percent, day_duration=7)
             self.assertEquals(output, expected)
 
     def test_convert_round_trip(self):
         data = ('0:15', '1:01', '2:30', '0:01', '8:00')
-        field = KeyboardTimesheetField()
-        field.day_duration = 7.0
+        day_duration = 7
         for input_str in data:
-            percent = field.to_python(input_str)
-            output_str = field.prepare_value(percent)
+            percent = utils.day_percent_for_time_string(input_str, day_duration)
+            output_str = utils.time_string_for_day_percent(percent, day_duration)
             self.assertEquals(output_str, input_str)
