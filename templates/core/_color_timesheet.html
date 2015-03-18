@@ -62,7 +62,7 @@ $(document).ready(function()
         coerceTime($(this));
         markModified($(this));
     });
-    $("input[class=timesheet-keyboard]").focus(function() {
+    $("input[class=timesheet-keyboard]").click(function() {
         $(this).select();
     });
     $("input[name^='lunch_ticket_']").click(function() {
