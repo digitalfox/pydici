@@ -1,6 +1,7 @@
 {% load i18n %}
 {# Fragment of page to be included in a mission_home tab #}
 
+
     <h2>{% trans "Mission timesheet and forecast" %}</h2>
     <div class="table-responsive">
     <table class="table table-hover table-striped table-pydici-extra-condensed pydici-mission-timesheet">
@@ -146,4 +147,87 @@ $(document).ready(function() {
     }
 });
 -->
+</script>
+
+<div style="clear:both;"></div>
+
+<div id="mission_timesheet_jqp" style="height: 300px;"></div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+
+function display_graph_mission_timesheet() {
+$.jqplot.config.enablePlugins = true;
+var plot_mission_timesheet_jqp = $.jqplot('mission_timesheet_jqp',  {{ graph_data|safe }}, {
+    animate : false,
+    stackSeries: true,
+    captureRightClick: true,
+    seriesColors: {{ series_colors|safe }},
+    seriesDefaults:{
+      renderer:$.jqplot.BarRenderer,
+      pointLabels: {show: false},
+          rendererOptions: {
+          barMargin: 20,
+          barWidth: 15,
+      },
+      showMarker: false,
+    },
+    series:[
+         {
+            label: "{% trans 'done' %}",
+         },
+         {
+            label: "{% trans 'forecast' %}",
+         },
+        ],
+    axes: {
+      xaxis: {
+          renderer: $.jqplot.DateAxisRenderer,
+          labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+          tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+          tickOptions:{
+              formatString:'%b %y',
+              angle: -40
+          },
+          min: '{{ min_date }}',
+          tickInterval: '1 month',
+      },
+      yaxis: {
+          syncTicks : true,
+          label: "{% trans 'k€' %}",
+          min : 0,
+          labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+          tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+          tickOptions: { formatString: '%.1f k€' },
+      },
+    },
+    legend: {
+        show:true,
+         location: 'e',
+         placement: 'outsideGrid',
+    },
+    highlighter: {
+        tooltipAxes: 'y',
+        showLabel: true,
+        sizeAdjust: 7.5
+    },
+});
+{% with "plot_mission_timesheet_jqp" as plot %}
+    {% include "core/_jqplot_resize.html" %}
+{% endwith %}
+}
+
+
+
+
+//display_graph_mission_timesheet();
+// Bind show event to create graph only when tab is shown
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    if (e.target.hash === "#tab-timesheet") {
+            display_graph_mission_timesheet();
+    }
+  })
+
+}); // End of ready()
 </script>

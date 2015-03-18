@@ -634,6 +634,34 @@ def mission_timesheet(request, mission_id):
     missionData = map(to_int_or_round, missionData)
 
     objectiveMargin = mission.objectiveMargin(endDate=nextMonth(current_month))
+
+    # Prepare data for graph
+    graph_data = []
+    isoTimesheetDates = [t.date().isoformat() for t in timesheetMonths]
+    if len(timesheetMonths) > 0:
+        minDate = previousMonth(timesheetMonths[0]).date().isoformat()
+    else:
+        minDate = previousMonth(date.today()).isoformat()
+    isoStaffingDates = [t.date().isoformat() for t in staffingMonths]
+    if len(isoStaffingDates) > 0 and len(isoTimesheetDates) > 0:
+        if isoTimesheetDates[-1] == isoStaffingDates[0]:
+            # We have an overlap
+            isoDates = isoTimesheetDates + isoStaffingDates[1:]
+            graph_timesheet = zip(isoDates, timesheetTotalAmount[:-1] + [0,]*len(isoStaffingDates[1:]))
+            graph_staffing = zip(isoDates, [0,]*len(isoTimesheetDates[:-1]) + staffingTotalAmount[:-1])
+        else:
+            # Both timesheet and staffing but no overlap
+            isoDates = isoTimesheetDates + isoStaffingDates
+            graph_timesheet = zip(isoDates, timesheetTotalAmount[:-1] +  [0,]*len(isoStaffingDates))
+            graph_staffing = zip(isoDates, [0,]*len(isoTimesheetDates) + staffingTotalAmount[:-1])
+    else:
+        # Only timesheet or staffing
+        graph_timesheet = zip(isoTimesheetDates, timesheetTotalAmount[:-1])
+        graph_staffing = zip(isoTimesheetDates + isoStaffingDates, [0,]*len(isoTimesheetDates) + staffingTotalAmount[:-1])
+
+    graph_data.append(graph_timesheet)
+    graph_data.append(graph_staffing)
+
     return render(request, "staffing/mission_timesheet.html",
                   {"mission": mission,
                    "margin": margin,
@@ -645,8 +673,11 @@ def mission_timesheet(request, mission_id):
                    "staffing_months": staffingMonths,
                    "mission_data": missionData,
                    "consultant_rates": consultant_rates,
-                   "user": request.user,
-                   "avg_daily_rate": avgDailyRate})
+                   "avg_daily_rate": avgDailyRate,
+                   "graph_data": json.dumps(graph_data),
+                   "series_colors": COLORS,
+                   "min_date" : minDate,
+                   "user": request.user})
 
 
 def mission_csv_timesheet(request, mission, consultants):
