@@ -301,6 +301,8 @@ class CycleTimesheetField(forms.ChoiceField):
 
 
 class KeyboardTimesheetField(forms.Field):
+    day_duration = float(settings.TIMESHEET_DAY_DURATION)
+
     def __init__(self, *args, **kwargs):
         kwargs['widget'] = forms.TextInput()
         super(KeyboardTimesheetField, self).__init__(*args, **kwargs)
@@ -315,7 +317,10 @@ class KeyboardTimesheetField(forms.Field):
             hours = 0
             minutes = 0
         else:
-            total_minutes = int(day_percent * settings.TIMESHEET_DAY_DURATION * 60)
+            # Using round() is important here because int() truncates the
+            # decimal part so int(24.99) returns 24, whereas round(24.99)
+            # returns 25.
+            total_minutes = int(round(day_percent * self.day_duration * 60))
             hours = total_minutes / 60
             minutes = total_minutes % 60
         return '{}:{:02}'.format(hours, minutes)
@@ -328,7 +333,7 @@ class KeyboardTimesheetField(forms.Field):
         except ValueError:
             raise forms.ValidationError('Invalid time string {}'.format(value))
         duration = value_struct[3] + value_struct[4] / 60.0
-        return duration / float(settings.TIMESHEET_DAY_DURATION)
+        return duration / self.day_duration
 
 
 TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD = {
