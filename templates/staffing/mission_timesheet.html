@@ -157,9 +157,8 @@ $(document).ready(function() {
 $(document).ready(function() {
 
 
-function display_graph_mission_timesheet() {
 $.jqplot.config.enablePlugins = true;
-var plot_mission_timesheet_jqp = $.jqplot('mission_timesheet_jqp',  {{ graph_data|safe }}, {
+plot_mission_timesheet_jqp = $.jqplot('mission_timesheet_jqp',  {{ graph_data|safe }}, {
     animate : false,
     stackSeries: true,
     captureRightClick: true,
@@ -213,21 +212,17 @@ var plot_mission_timesheet_jqp = $.jqplot('mission_timesheet_jqp',  {{ graph_dat
         sizeAdjust: 7.5
     },
 });
+
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+  if (plot_mission_timesheet_jqp._drawCount == 0) {
+    $('#mission_timesheet_jqp').css('width', window.innerWidth - 50 );
+    plot_mission_timesheet_jqp.replot();
+  }
+});
+
 {% with "plot_mission_timesheet_jqp" as plot %}
     {% include "core/_jqplot_resize.html" %}
 {% endwith %}
-}
-
-
-
-
-//display_graph_mission_timesheet();
-// Bind show event to create graph only when tab is shown
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    if (e.target.hash === "#tab-timesheet") {
-            display_graph_mission_timesheet();
-    }
-  })
 
 }); // End of ready()
 </script>

@@ -27,20 +27,20 @@
 
 <div>
     <!-- Nav tabs -->
-    <ul class="nav nav-tabs" id="mission-tabs">
-        <li class="active"><a data-toggle="tab" href="#tab-home"><span class="glyphicon glyphicon-home"> {% trans "Description" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"> {% trans "Consultants" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-contacts" data-tab-url="{% url 'staffing.views.mission_contacts' mission.id %}"><span class="glyphicon glyphicon-envelope"> {% trans "Contacts" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-other-missions" id="tabheader-other-missions"><span class="glyphicon glyphicon-list"> {% trans "Other missions" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing.views.mission_timesheet' mission.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
+    <ul class="nav nav-tabs" id="mission-tabs" role="tablist">
+        <li role="presentation" class="active"><a data-toggle="tab" href="#tab-home"><span class="glyphicon glyphicon-home"> {% trans "Description" %}</a></li>
+        <li role="presentation"><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"> {% trans "Consultants" %}</a></li>
+        <li role="presentation"><a data-toggle="tab" href="#tab-contacts" data-tab-url="{% url 'staffing.views.mission_contacts' mission.id %}"><span class="glyphicon glyphicon-envelope"> {% trans "Contacts" %}</a></li>
+        <li role="presentation"><a data-toggle="tab" href="#tab-other-missions" id="tabheader-other-missions"><span class="glyphicon glyphicon-list"> {% trans "Other missions" %}</a></li>
+        <li role="presentation"><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing.views.mission_timesheet' mission.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
         {% if mission.active %}
-            <li><a data-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'staffing.views.mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'staffing.views.mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
         {% endif %}
-        <li><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense.views.mission_expenses' mission.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
+        <li role="presentation"><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense.views.mission_expenses' mission.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
         {% if mission.lead %}
-            <li><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads.views.lead_documents' mission.lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads.views.lead_documents' mission.lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
         {% endif %}
-        <li><a data-toggle="tab" href="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
+        <li role="presentation"><a data-toggle="tab" href="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
         {% if mission.lead %}<li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>{% endif %}
     </ul>
 </div>
@@ -230,6 +230,7 @@ $(document).ready(function() {
         onblur : 'submit',
     });
 {% endif %}
+
 });
 
 // Function that process mission archiving ajax callback
