@@ -85,8 +85,8 @@
     </tr>
     {% for consultant, charges in staffing %}
         {% ifequal groupby "manager" %}
-    	    {% ifchanged consultant.manager %}
-    	        <tr><th>{% blocktrans with consultant.manager as manager %}{{manager}} staff{% endblocktrans %}</th></tr>
+    	    {% ifchanged consultant.staffing_manager %}
+    	        <tr><th>{% blocktrans with consultant.staffing_manager as manager %}{{manager}} staff{% endblocktrans %}</th></tr>
     	    {% endifchanged %}
     	{% endifequal %}
         {% ifequal groupby "position" %}

@@ -40,7 +40,8 @@ class Consultant(models.Model):
     company = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
     productive = models.BooleanField(_("Productive"), default=True)
     active = models.BooleanField(_("Active"), default=True)
-    manager = models.ForeignKey("self", null=True, blank=True)
+    manager = models.ForeignKey("self", null=True, blank=True, related_name="team_as_manager")
+    staffing_manager = models.ForeignKey("self", null=True, blank=True, related_name="team_as_staffing_manager")
     profil = models.ForeignKey(ConsultantProfile, verbose_name=_("Profil"))
     subcontractor = models.BooleanField(_("Subcontractor"), default=False)
     subcontractor_company = models.CharField(max_length=200, null=True, blank=True)
@@ -156,9 +157,12 @@ class Consultant(models.Model):
         if users.count() >= 1:
             return users[0]
 
-    def team(self, excludeSelf=True, onlyActive=False):
+    def team(self, excludeSelf=True, onlyActive=False, staffing=False):
         """Returns Consultant team as a list of consultant"""
-        team = self.consultant_set.all()
+        if staffing:
+            team = self.team_as_staffing_manager.all()
+        else:
+            team = self.team_as_manager.all()
         if excludeSelf:
             team = team.exclude(id=self.id)
         if onlyActive:
