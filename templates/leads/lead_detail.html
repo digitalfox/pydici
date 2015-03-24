@@ -129,7 +129,7 @@
                 </tr>
                 </table>
             </div>
-            {% ifequal lead.state "WON" %}
+            {% if lead.state == "WON" and pydici_feature.leads_profitability %}
             <div class="col-lg-6 col-md-8 col-sm-12">
                 <h2>{% trans "Profitability" %}</h2>
                 <table class="table table-hover table-striped table-condensed">
@@ -141,7 +141,7 @@
                     <tr><th>{% trans "Margin over rate objective" %}</th><td>{{ lead.totalObjectiveMargin }} €</td></tr>
                 </table>
             </div>
-            {% endifequal %}
+            {% endif %}
     </div> {# End of description tab #}
 
     <div id="tab-missions" class="tab-pane fade">
