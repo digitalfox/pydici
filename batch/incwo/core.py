@@ -39,7 +39,7 @@ class ImportContext(object):
         self.ignore_errors = ignore_errors
         self.subsidiary = subsidiary
         self.import_missions = import_missions
-        self.id_limit_for_sub_dir = {}
+        self.allowed_ids_for_sub_dir = {}
 
 
 def _parse_incwo_date(txt):
@@ -135,9 +135,9 @@ def save_objects(obj_lst, base_download_dir, sub_dir):
 
 def _do_import(sub_dir, lst, import_fcn, context):
     count = len(lst)
-    id_limit = context.id_limit_for_sub_dir.get(sub_dir)
+    allowed_ids = context.allowed_ids_for_sub_dir.get(sub_dir)
     for pos, (obj_id, obj_xml) in enumerate(lst):
-        if id_limit and not obj_id in id_limit:
+        if allowed_ids and not obj_id in allowed_ids:
             continue
         filename = os.path.join(sub_dir, str(obj_id) + '.xml')
         logger.info('Importing {} ({}/{})'.format(filename, pos + 1, count))

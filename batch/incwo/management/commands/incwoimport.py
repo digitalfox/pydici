@@ -19,8 +19,8 @@ def read_ids(filename):
         return set([int(x) for x in f.readlines()])
 
 
-def make_limit_option(sub_dir):
-    name = '--limit-' + sub_dir.replace('_', '-')
+def make_allow_option(sub_dir):
+    name = '--allow-' + sub_dir.replace('_', '-')
     return make_option(name, metavar='FILE',
                        help='Limit import of {} to those whose ids are listed in FILE'.format(sub_dir))
 
@@ -43,7 +43,7 @@ class Command(BaseCommand):
                     help='Import missions in imported leads'),
         make_option('--ignore-errors', action='store_true',
                     help='Ignore errors instead of stopping. Errors are still logged though'),
-    ) + tuple([make_limit_option(x) for x in core.SUB_DIRS])
+    ) + tuple([make_allow_option(x) for x in core.SUB_DIRS])
     args = '<download-dir>'
     help = 'Import data from an Incwo account'
 
@@ -84,9 +84,9 @@ class Command(BaseCommand):
                                      import_missions=options['missions'])
 
         for sub_dir in sub_dirs:
-            name = 'limit_' + sub_dir
+            name = 'allow_' + sub_dir
             if options[name]:
-                context.id_limit_for_sub_dir[sub_dir] = read_ids(options[name])
+                context.allowed_ids_for_sub_dir[sub_dir] = read_ids(options[name])
             lst = core.load_objects(download_dir, sub_dir)
             import_method = getattr(core, 'import_' + sub_dir)
             import_method(lst, context)
