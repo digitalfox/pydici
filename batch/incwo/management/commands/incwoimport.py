@@ -25,6 +25,12 @@ def make_allow_option(sub_dir):
                        help='Limit import of {} to those whose ids are listed in FILE'.format(sub_dir))
 
 
+def make_deny_option(sub_dir):
+    name = '--deny-' + sub_dir.replace('_', '-')
+    return make_option(name, metavar='FILE',
+                       help='Do not import {} whose ids are listed in FILE'.format(sub_dir))
+
+
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--download',
@@ -43,7 +49,10 @@ class Command(BaseCommand):
                     help='Import missions in imported leads'),
         make_option('--ignore-errors', action='store_true',
                     help='Ignore errors instead of stopping. Errors are still logged though'),
-    ) + tuple([make_allow_option(x) for x in core.SUB_DIRS])
+    ) \
+        + tuple([make_allow_option(x) for x in core.SUB_DIRS]) \
+        + tuple([make_deny_option(x) for x in core.SUB_DIRS])
+
     args = '<download-dir>'
     help = 'Import data from an Incwo account'
 
@@ -87,6 +96,9 @@ class Command(BaseCommand):
             name = 'allow_' + sub_dir
             if options[name]:
                 context.allowed_ids_for_sub_dir[sub_dir] = read_ids(options[name])
+            name = 'deny_' + sub_dir
+            if options[name]:
+                context.denied_ids_for_sub_dir[sub_dir] = read_ids(options[name])
             lst = core.load_objects(download_dir, sub_dir)
             import_method = getattr(core, 'import_' + sub_dir)
             import_method(lst, context)
