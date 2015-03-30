@@ -47,6 +47,10 @@ class ThirdPartyMixin(PydiciFeatureMixin):
     pydici_feature = "3rdparties"
 
 
+class FeatureContactsWriteMixin(PydiciFeatureMixin):
+    pydici_feature = { "3rdparties", "contacts_write" }
+
+
 class ContactCreate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin, CreateView):
     model = Contact
     template_name = "core/form.html"
@@ -66,7 +70,7 @@ class ContactUpdate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin
     form_class = ContactForm
 
 
-class ContactDelete(PydiciNonPublicdMixin, ThirdPartyMixin, DeleteView):
+class ContactDelete(PydiciNonPublicdMixin, FeatureContactsWriteMixin, DeleteView):
     model = Contact
     template_name = "core/delete.html"
     form_class = ContactForm
@@ -89,43 +93,43 @@ class ContactList(PydiciNonPublicdMixin, ThirdPartyMixin, ListView):
     model = Contact
 
 
-class MissionContactCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
+class MissionContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
     model = MissionContact
     template_name = "core/form.html"
     form_class = MissionContactForm
 
 
-class MissionContactUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
+class MissionContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, UpdateView):
     model = MissionContact
     template_name = "core/form.html"
     form_class = MissionContactForm
 
 
-class BusinessBrokerCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
+class BusinessBrokerCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
     model = BusinessBroker
     template_name = "core/form.html"
     form_class = BusinessBrokerForm
 
 
-class BusinessBrokerUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
+class BusinessBrokerUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, UpdateView):
     model = BusinessBroker
     template_name = "core/form.html"
     form_class = BusinessBrokerForm
 
 
-class SupplierCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
+class SupplierCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
     model = Supplier
     template_name = "core/form.html"
     form_class = SupplierForm
 
 
-class SupplierUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
+class SupplierUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, UpdateView):
     model = Supplier
     template_name = "core/form.html"
     form_class = SupplierForm
 
 
-class AdministrativeContactCreate(PydiciNonPublicdMixin, CreateView):
+class AdministrativeContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, CreateView):
     model = AdministrativeContact
     template_name = "core/form.html"
     form_class = AdministrativeContactForm
@@ -137,7 +141,7 @@ class AdministrativeContactCreate(PydiciNonPublicdMixin, CreateView):
         return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[self.object.company.id, ])
 
 
-class AdministrativeContactUpdate(PydiciNonPublicdMixin, UpdateView):
+class AdministrativeContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, UpdateView):
     model = AdministrativeContact
     template_name = "core/form.html"
     form_class = AdministrativeContactForm

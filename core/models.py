@@ -20,6 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 
 _FEATURES_CHOICES = (
     ("3rdparties", _("Access to the 'Third parties' menu")),
+    ("contacts_write", _("Allow adding, editing, removing contacts")),
     ("leads", _("Access to the 'Leads' menu")),
     ("leads_list_all", _("Access to the 'Leads > All leads' menu entry")),
     ("leads_profitability", _("Access to the 'Profitability' information in lead description")),
