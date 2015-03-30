@@ -19,15 +19,15 @@ from django.utils.translation import ugettext_lazy as _
 
 
 _FEATURES_CHOICES = (
-    ("3rdparties", _("Access to the 'Third parties' menu")),
-    ("contacts_write", _("Allow adding, editing, removing contacts")),
-    ("leads", _("Access to the 'Leads' menu")),
-    ("leads_list_all", _("Access to the 'Leads > All leads' menu entry")),
-    ("leads_profitability", _("Access to the 'Profitability' information in lead description")),
-    ("management", _("Access to the 'Management' menu")),
-    ("reports", _("Access to the 'Reports' menu")),
-    ("search", _("Allow searching")),
-    ("staffing_mass", _("Access to mass staffing features")),
+    ("3rdparties", _("3rd Parties: Access to the 'Third parties' menu")),
+    ("contacts_write", _("Contacts, write access: Allow adding, editing, removing contacts")),
+    ("leads", _("Leads: Access to the 'Leads' menu")),
+    ("leads_list_all", _("Leads, list all: Access to the 'Leads > All leads' menu entry")),
+    ("leads_profitability", _("Leads, profitability: Access to the 'Profitability' information in lead description")),
+    ("management", _("Management: Access to the 'Management' menu")),
+    ("reports", _("Reports: Access to the 'Reports' menu")),
+    ("search", _("Search: Allow searching")),
+    ("staffing_mass", _("Staffing, mass edit: Access to mass staffing features")),
 )
 
 FEATURES = set([x[0] for x in _FEATURES_CHOICES])
