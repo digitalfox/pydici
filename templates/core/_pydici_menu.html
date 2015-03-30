@@ -15,7 +15,7 @@
 
         <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-        {% if user.is_staff %}
+        {% if user.is_staff and pydici_feature.menubar %}
         {% if pydici_feature.leads %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Leads" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
@@ -140,7 +140,7 @@
             </div>
         </form>
         {% endif %}
-        {% endif %} {# /user.is_staff #}
+        {% endif %} {# /user.is_staff and pydici_feature.menubar #}
 
         </div><!--/.navbar-collapse -->
 

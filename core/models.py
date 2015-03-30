@@ -25,6 +25,7 @@ _FEATURES_CHOICES = (
     ("leads_list_all", _("Leads, list all: Access to the 'Leads > All leads' menu entry")),
     ("leads_profitability", _("Leads, profitability: Access to the 'Profitability' information in lead description")),
     ("management", _("Management: Access to the 'Management' menu")),
+    ("menubar", _("Menubar: Show the menubar")),
     ("reports", _("Reports: Access to the 'Reports' menu")),
     ("search", _("Search: Allow searching")),
     ("staffing", _("Staffing: Access to staffing features")),
