@@ -27,6 +27,7 @@ _FEATURES_CHOICES = (
     ("management", _("Management: Access to the 'Management' menu")),
     ("reports", _("Reports: Access to the 'Reports' menu")),
     ("search", _("Search: Allow searching")),
+    ("staffing", _("Staffing: Access to staffing features")),
     ("staffing_mass", _("Staffing, mass edit: Access to mass staffing features")),
 )
 

@@ -37,9 +37,11 @@
                 {% with user.username|link_to_timesheet as link %}
                     {% if link %}<li>{{ link }}</li>{% endif %}
                 {% endwith %}
-                {% with user.username|link_to_staffing as link %}
-                    {% if link %}<li>{{ link }}</li>{% endif %}
-                {% endwith %}
+                {% if pydici_feature.staffing %}
+                    {% with user.username|link_to_staffing as link %}
+                        {% if link %}<li>{{ link }}</li>{% endif %}
+                    {% endwith %}
+                {% endif %}
                 {% if pydici_feature.staffing_mass %}
                     <li><a href="{% url 'staffing.views.mass_staffing' %}">{% trans "Mass staffing" %}</a></li>
                 {% endif %}

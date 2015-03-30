@@ -113,6 +113,7 @@ def mission_staffing(request, mission_id):
 
 
 @pydici_non_public
+@pydici_feature("staffing")
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
