@@ -62,7 +62,7 @@ class Command(BaseCommand):
         make_option('--import',
                     help='Import downloaded data from download-dir, do not download anything. Value is a combination of {} separated by commas, or "all".'.format(sub_dirs_strings)),
         make_option('--host',
-                    help='Incwo host'),
+                    help='Incwo host, for example https://incwo.com/123456'),
         make_option('-u', '--user',
                     help='Incwo username'),
         make_option('-p', '--password',
@@ -72,13 +72,13 @@ class Command(BaseCommand):
         make_option('--missions', action='store_true',
                     help='Import missions in imported leads'),
         make_option('--ignore-errors', action='store_true',
-                    help='Ignore errors instead of stopping. Errors are still logged though'),
+                    help='Ignore errors instead of stopping. Errors are logged nevertheless.'),
     ) \
         + tuple([make_allow_option(x) for x in utils.SUB_DIRS]) \
         + tuple([make_deny_option(x) for x in utils.SUB_DIRS])
 
     args = '<download-dir>'
-    help = 'Import data from an Incwo account'
+    help = 'Import data from an Incwo account.'
 
     def handle(self, *args, **options):
         translation.activate(settings.LANGUAGE_CODE)
