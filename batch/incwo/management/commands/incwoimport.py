@@ -48,13 +48,15 @@ class Status(object):
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
+    option_list = (
         make_option('--download',
-                    help='Download objects to download-dir, do not import anything. Value is a combination of {} separated by commas, or "all".'.format(sub_dirs_strings)),
+                    help='Perform only the download step. WHAT must be either "all", or a combination of {}, separated by commas.'.format(sub_dirs_strings),
+                    metavar='WHAT'),
         make_option('--import',
-                    help='Import downloaded data from download-dir, do not download anything. Value is a combination of {} separated by commas, or "all".'.format(sub_dirs_strings)),
+                    help='Perform only the import step. WHAT must be either "all", or a combination of {}, separated by commas.'.format(sub_dirs_strings),
+                    metavar='WHAT'),
         make_option('--host',
-                    help='Incwo host, for example https://incwo.com/123456'),
+                    help='Incwo host, for example https://www.incwo.com/123456'),
         make_option('-u', '--user',
                     help='Incwo username'),
         make_option('-p', '--password',
@@ -65,14 +67,38 @@ class Command(BaseCommand):
                     help='Import missions in imported leads'),
         make_option('--ignore-errors', action='store_true',
                     help='Ignore errors instead of stopping. Errors are logged nevertheless.'),
-    ) \
-        + tuple([make_allow_option(x) for x in utils.SUB_DIRS]) \
-        + tuple([make_deny_option(x) for x in utils.SUB_DIRS])
+    ) + tuple([make_allow_option(x) for x in utils.SUB_DIRS]) \
+    + tuple([make_deny_option(x) for x in utils.SUB_DIRS]) \
+    + BaseCommand.option_list
 
     args = '<download-dir>'
-    help = 'Import data from an Incwo account.'
+    help = """Import data from an Incwo account.
 
+Import is done in two steps:
+1. Downloading of the data from Incwo.
+2. Import of the downloaded data in Pydici database.
 
+The downloaded data is stored in <download-dir>.
+
+By default the command will perform both steps, unless you specify the
+--download or the --import option.
+
+Options common to both steps:
+--allow-*
+--deny-*
+
+Options specific to the download step:
+--host
+--user
+--password
+
+Note: Passing the credentials on the command line is not secure, they should be
+kept in a .netrc file instead (see `man netrc`).
+
+Options specific to the import step:
+--subsidiary
+--missions
+--ignore-errors"""
 
     def handle(self, *args, **options):
         translation.activate(settings.LANGUAGE_CODE)
