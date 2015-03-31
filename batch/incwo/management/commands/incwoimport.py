@@ -34,14 +34,6 @@ def make_deny_option(sub_dir):
                        help='Do not import {} whose ids are listed in FILE'.format(sub_dir))
 
 
-def create_log_dir(base_dir):
-    log_dir = datetime.now().isoformat().split('.')[0]
-    full_log_dir = os.path.join(base_dir, log_dir)
-    os.makedirs(full_log_dir)
-    return full_log_dir
-    handler = logging.FileHandler(full_log_dir, encoding='utf-8')
-
-
 class Status(object):
     def __init__(self, path, args):
         self.path = path
@@ -80,25 +72,14 @@ class Command(BaseCommand):
     args = '<download-dir>'
     help = 'Import data from an Incwo account.'
 
+
+
     def handle(self, *args, **options):
         translation.activate(settings.LANGUAGE_CODE)
-        loglevels = {
-            '0': logging.WARNING,
-            '1': logging.INFO,
-            '2': logging.DEBUG,
-            '3': logging.DEBUG
-        }
-        loglevel = loglevels[options['verbosity']]
-
-        utils.logger.setLevel(loglevel)
-        utils.logger.addHandler(logging.StreamHandler())
-
         if len(args) == 0:
             raise CommandError('Missing download dir argument')
 
-        log_dir = create_log_dir(settings.INCWO_LOG_DIR)
-        log_handler = logging.FileHandler(os.path.join(log_dir, 'details.log'), encoding='utf-8')
-        utils.logger.addHandler(log_handler)
+        log_dir = self.setup_logging(options['verbosity'])
 
         status_path = os.path.join(log_dir, 'status.json')
         status = Status(status_path, sys.argv)
@@ -119,6 +100,27 @@ class Command(BaseCommand):
         except:
             status.update('failure')
             raise
+
+    def setup_logging(self, verbosity):
+        loglevels = {
+            '0': logging.WARNING,
+            '1': logging.INFO,
+            '2': logging.DEBUG,
+            '3': logging.DEBUG
+        }
+        loglevel = loglevels[verbosity]
+
+        utils.logger.setLevel(loglevel)
+        utils.logger.addHandler(logging.StreamHandler())
+
+        name = datetime.now().isoformat().split('.')[0]
+        log_dir = os.path.join(settings.INCWO_LOG_DIR, name)
+        os.makedirs(log_dir)
+
+        log_handler = logging.FileHandler(os.path.join(log_dir, 'details.log'), encoding='utf-8')
+        utils.logger.addHandler(log_handler)
+
+        return log_dir
 
     def handle_import(self, download_dir, sub_dirs, options):
         subsidiary_id = options['subsidiary']
