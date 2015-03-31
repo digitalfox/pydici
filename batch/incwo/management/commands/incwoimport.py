@@ -6,12 +6,12 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import translation
 
-from batch.incwo import core
+from batch.incwo import utils
 
 from crm.models import Subsidiary
 
 
-sub_dirs_strings = ', '.join(['"' + x + '"' for x in core.SUB_DIRS])
+sub_dirs_strings = ', '.join(['"' + x + '"' for x in utils.SUB_DIRS])
 
 
 def read_ids(filename):
@@ -50,8 +50,8 @@ class Command(BaseCommand):
         make_option('--ignore-errors', action='store_true',
                     help='Ignore errors instead of stopping. Errors are still logged though'),
     ) \
-        + tuple([make_allow_option(x) for x in core.SUB_DIRS]) \
-        + tuple([make_deny_option(x) for x in core.SUB_DIRS])
+        + tuple([make_allow_option(x) for x in utils.SUB_DIRS]) \
+        + tuple([make_deny_option(x) for x in utils.SUB_DIRS])
 
     args = '<download-dir>'
     help = 'Import data from an Incwo account'
@@ -65,8 +65,8 @@ class Command(BaseCommand):
             '3': logging.DEBUG
         }
         loglevel = loglevels[options['verbosity']]
-        core.logger.setLevel(loglevel)
-        core.logger.addHandler(logging.StreamHandler())
+        utils.logger.setLevel(loglevel)
+        utils.logger.addHandler(logging.StreamHandler())
 
         if len(args) == 0:
             raise CommandError('Missing download dir argument')
@@ -79,8 +79,8 @@ class Command(BaseCommand):
             self.handle_download(download_dir, sub_dirs, options)
         else:
             # Do the whole thing
-            self.handle_download(download_dir, core.SUB_DIRS, options)
-            self.handle_import(download_dir, core.SUB_DIRS, options)
+            self.handle_download(download_dir, utils.SUB_DIRS, options)
+            self.handle_import(download_dir, utils.SUB_DIRS, options)
 
     def handle_import(self, download_dir, sub_dirs, options):
         subsidiary_id = options['subsidiary']
@@ -88,7 +88,7 @@ class Command(BaseCommand):
             raise CommandError('The --subsidiary option is missing')
         subsidiary = Subsidiary.objects.get(id=subsidiary_id)
 
-        context = core.ImportContext(ignore_errors=options['ignore_errors'],
+        context = utils.ImportContext(ignore_errors=options['ignore_errors'],
                                      subsidiary=subsidiary,
                                      import_missions=options['missions'])
 
@@ -99,23 +99,23 @@ class Command(BaseCommand):
             name = 'deny_' + sub_dir
             if options[name]:
                 context.denied_ids_for_sub_dir[sub_dir] = read_ids(options[name])
-            lst = core.load_objects(download_dir, sub_dir)
-            import_method = getattr(core, 'import_' + sub_dir)
+            lst = utils.load_objects(download_dir, sub_dir)
+            import_method = getattr(utils, 'import_' + sub_dir)
             import_method(lst, context)
 
     def handle_download(self, download_dir, sub_dirs, options):
         url = options['host']
         auth = options['user'], options['password']
         for sub_dir in sub_dirs:
-            objects = core.download_objects(url, auth, sub_dir)
-            core.save_objects(objects, download_dir, sub_dir)
+            objects = utils.download_objects(url, auth, sub_dir)
+            utils.save_objects(objects, download_dir, sub_dir)
 
     def parse_sub_dir_arg(self, arg):
         sub_dirs = arg.split(',')
         if sub_dirs == ['all',]:
-            sub_dirs = core.SUB_DIRS
+            sub_dirs = utils.SUB_DIRS
         else:
             for sub_dir in sub_dirs:
-                if not sub_dir in core.SUB_DIRS:
+                if not sub_dir in utils.SUB_DIRS:
                     raise CommandError('Invalid subdir {}'.format(sub_dir))
         return sub_dirs

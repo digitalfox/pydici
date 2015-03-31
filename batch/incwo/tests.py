@@ -6,7 +6,7 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from batch.incwo import core
+from batch.incwo import utils
 from crm.models import Client, Company, Contact, Subsidiary
 from leads.models import Lead
 
@@ -15,37 +15,37 @@ TEST_DIR = os.path.join(os.path.dirname(__file__), 'test-data')
 
 
 def load_and_import_objects(base_dir, context):
-    for sub_dir in core.SUB_DIRS:
+    for sub_dir in utils.SUB_DIRS:
         object_dir = os.path.join(base_dir, sub_dir)
         if not os.path.exists(object_dir):
             continue
-        lst = core.load_objects(base_dir, sub_dir)
-        import_method = getattr(core, 'import_' + sub_dir)
+        lst = utils.load_objects(base_dir, sub_dir)
+        import_method = getattr(utils, 'import_' + sub_dir)
         import_method(lst, context)
 
 
 class FirmImportTest(TestCase):
     def test_duplicate_firms(self):
-        lst = core.load_objects(os.path.join(TEST_DIR, 'duplicate-firms'), '.')
+        lst = utils.load_objects(os.path.join(TEST_DIR, 'duplicate-firms'), '.')
         nb_objects = len(lst)
-        core.import_firms(lst)
+        utils.import_firms(lst)
         self.assertEquals(len(Company.objects.all()), nb_objects)
 
     def test_import_firms_twice(self):
-        lst = core.load_objects(os.path.join(TEST_DIR, 'import-twice'), '.')
+        lst = utils.load_objects(os.path.join(TEST_DIR, 'import-twice'), '.')
         nb_objects = len(lst)
-        core.import_firms(lst)
+        utils.import_firms(lst)
         self.assertEquals(len(Company.objects.all()), nb_objects)
-        core.import_firms(lst)
+        utils.import_firms(lst)
         self.assertEquals(len(Company.objects.all()), nb_objects)
 
 
 class ContactImportTest(TestCase):
     def test_import_contact(self):
-        firm_lst = core.load_objects(os.path.join(TEST_DIR, 'contacts'), 'firms')
-        core.import_firms(firm_lst)
-        contact_lst = core.load_objects(os.path.join(TEST_DIR, 'contacts'), 'contacts')
-        core.import_contacts(contact_lst)
+        firm_lst = utils.load_objects(os.path.join(TEST_DIR, 'contacts'), 'firms')
+        utils.import_firms(firm_lst)
+        contact_lst = utils.load_objects(os.path.join(TEST_DIR, 'contacts'), 'contacts')
+        utils.import_contacts(contact_lst)
 
         company = Company.objects.get(pk=1)
         classic_contact = Contact.objects.get(pk=12)
@@ -55,21 +55,21 @@ class ContactImportTest(TestCase):
         self.assertItemsEqual(company_contacts, [classic_contact, jobless_contact])
 
         # Import twice to check for conflicts
-        core.import_firms(firm_lst)
-        core.import_contacts(contact_lst)
+        utils.import_firms(firm_lst)
+        utils.import_contacts(contact_lst)
 
     def test_import_homonyms(self):
-        lst = core.load_objects(os.path.join(TEST_DIR, 'homonyms'), 'firms')
-        core.import_firms(lst)
-        lst = core.load_objects(os.path.join(TEST_DIR, 'homonyms'), 'contacts')
-        core.import_contacts(lst)
+        lst = utils.load_objects(os.path.join(TEST_DIR, 'homonyms'), 'firms')
+        utils.import_firms(lst)
+        lst = utils.load_objects(os.path.join(TEST_DIR, 'homonyms'), 'contacts')
+        utils.import_contacts(lst)
 
         contact_lst = Contact.objects.filter(name='John Doe')
         self.assertEquals(len(contact_lst), 2)
 
     def test_import_contact_items(self):
-        contact_lst = core.load_objects(os.path.join(TEST_DIR, 'contact-items'), '.')
-        core.import_contacts(contact_lst)
+        contact_lst = utils.load_objects(os.path.join(TEST_DIR, 'contact-items'), '.')
+        utils.import_contacts(contact_lst)
 
         contact = Contact.objects.get(pk=12)
         self.assertEquals(contact.email, 'valerie.rame@acme.com')
@@ -89,16 +89,16 @@ class ProposalSheetImportTest(TestCase):
         user.save()
 
         # Silence logger
-        core.logger.addHandler(logging.NullHandler())
+        utils.logger.addHandler(logging.NullHandler())
 
     def test_import_proposal_sheets(self):
-        context = core.ImportContext(subsidiary=self.subsidiary)
-        firm_lst = core.load_objects(os.path.join(TEST_DIR, 'proposals'), 'firms')
-        core.import_firms(firm_lst)
-        contact_lst = core.load_objects(os.path.join(TEST_DIR, 'proposals'), 'contacts')
-        core.import_contacts(contact_lst)
-        proposal_sheet_lst = core.load_objects(os.path.join(TEST_DIR, 'proposals'), 'proposal_sheets')
-        core.import_proposal_sheets(proposal_sheet_lst, context)
+        context = utils.ImportContext(subsidiary=self.subsidiary)
+        firm_lst = utils.load_objects(os.path.join(TEST_DIR, 'proposals'), 'firms')
+        utils.import_firms(firm_lst)
+        contact_lst = utils.load_objects(os.path.join(TEST_DIR, 'proposals'), 'contacts')
+        utils.import_contacts(contact_lst)
+        proposal_sheet_lst = utils.load_objects(os.path.join(TEST_DIR, 'proposals'), 'proposal_sheets')
+        utils.import_proposal_sheets(proposal_sheet_lst, context)
 
         # Check lead 3, linked to a firm
         lead = Lead.objects.get(pk=3)
@@ -123,7 +123,7 @@ class ProposalSheetImportTest(TestCase):
         self.assertFalse(Lead.objects.filter(pk=5))
 
     def test_import_proposal_lines(self):
-        context = core.ImportContext(subsidiary=self.subsidiary,
+        context = utils.ImportContext(subsidiary=self.subsidiary,
                                      import_missions=True)
         load_and_import_objects(os.path.join(TEST_DIR, 'proposal-lines'), context)
 
