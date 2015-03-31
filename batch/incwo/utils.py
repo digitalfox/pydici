@@ -47,6 +47,14 @@ def _parse_incwo_date(txt):
     return datetime.strptime(txt, '%d-%m-%Y')
 
 
+def is_id_allowed(obj_id, allowed_ids, denied_ids):
+    if allowed_ids and not obj_id in allowed_ids:
+        return False
+    if denied_ids and obj_id in denied_ids:
+        return False
+    return True
+
+
 def generate_unique_company_code(name):
     """
     Try to generate a reasonable company 3 letter code
@@ -80,7 +88,7 @@ def generate_unique_company_code(name):
         idx += 1
 
 
-def download_objects(base_url, auth, sub_dir, page=1):
+def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
     """
     Download XML files for all objects
     Returns a list of tuples (obj_id, obj_as_xml_string)
@@ -97,6 +105,8 @@ def download_objects(base_url, auth, sub_dir, page=1):
         if obj_element.tag == 'pagination':
             continue
         obj_id = obj_element.id
+        if not is_id_allowed(obj_id, allowed_ids, denied_ids):
+            continue
         url = '{}/{}/{}.xml'.format(base_url, sub_dir, obj_id)
         logger.info('Downloading ' + url)
         res = requests.get(url, auth=auth)
@@ -106,7 +116,7 @@ def download_objects(base_url, auth, sub_dir, page=1):
 
     total_pages = root.pagination.total_pages
     if page < total_pages:
-        lst.extend(download_objects(base_url, auth, sub_dir, page=page + 1))
+        lst.extend(download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=page + 1))
     lst.sort(key=lambda x: x[0])
     return lst
 
@@ -143,9 +153,7 @@ def _do_import(sub_dir, lst, import_fcn, context):
     allowed_ids = context.allowed_ids_for_sub_dir.get(sub_dir)
     denied_ids = context.denied_ids_for_sub_dir.get(sub_dir)
     for pos, (obj_id, obj_xml) in enumerate(lst):
-        if allowed_ids and not obj_id in allowed_ids:
-            continue
-        if denied_ids and obj_id in denied_ids:
+        if not is_id_allowed(obj_id, allowed_ids, denied_ids):
             continue
         filename = os.path.join(sub_dir, str(obj_id) + '.xml')
         logger.info('Importing {} ({}/{})'.format(filename, pos + 1, count))

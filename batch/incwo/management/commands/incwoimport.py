@@ -149,7 +149,17 @@ class Command(BaseCommand):
             # Will fetch the user credentials from ~/.netrc
             auth = None
         for sub_dir in sub_dirs:
-            objects = utils.download_objects(url, auth, sub_dir)
+            name = 'allow_' + sub_dir
+            if options[name]:
+                allowed_ids = read_ids(options[name])
+            else:
+                allowed_ids = []
+            name = 'deny_' + sub_dir
+            if options[name]:
+                denied_ids = read_ids(options[name])
+            else:
+                denied_ids = []
+            objects = utils.download_objects(url, auth, sub_dir, allowed_ids, denied_ids)
             utils.save_objects(objects, download_dir, sub_dir)
 
     def parse_sub_dir_arg(self, arg):
