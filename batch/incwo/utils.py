@@ -88,6 +88,8 @@ def download_objects(base_url, auth, sub_dir, page=1):
     url = '{}/{}.xml'.format(base_url, sub_dir)
     logger.info('Downloading {} page={}'.format(url, page))
     res = requests.get(url, auth=auth, params={'page': page})
+    if res.status_code != 200:
+        raise IncwoImportError(res.content)
     root = objectify.fromstring(res.content)
 
     lst = []
@@ -98,6 +100,8 @@ def download_objects(base_url, auth, sub_dir, page=1):
         url = '{}/{}/{}.xml'.format(base_url, sub_dir, obj_id)
         logger.info('Downloading ' + url)
         res = requests.get(url, auth=auth)
+        if res.status_code != 200:
+            raise IncwoImportError(res.content)
         lst.append((obj_id, res.text))
 
     total_pages = root.pagination.total_pages
