@@ -143,7 +143,11 @@ class Command(BaseCommand):
 
     def handle_download(self, download_dir, sub_dirs, options):
         url = options['host']
-        auth = options['user'], options['password']
+        if options['user'] is not None:
+            auth = options['user'], options['password']
+        else:
+            # Will fetch the user credentials from ~/.netrc
+            auth = None
         for sub_dir in sub_dirs:
             objects = utils.download_objects(url, auth, sub_dir)
             utils.save_objects(objects, download_dir, sub_dir)
