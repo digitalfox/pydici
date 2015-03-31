@@ -109,7 +109,7 @@ class Command(BaseCommand):
                 sub_dirs = self.parse_sub_dir_arg(options['import'])
                 self.handle_import(download_dir, sub_dirs, options)
             elif options['download']:
-                sub_dirs = self.parse_sub_dir_arg(options['import'])
+                sub_dirs = self.parse_sub_dir_arg(options['download'])
                 self.handle_download(download_dir, sub_dirs, options)
             else:
                 # Do the whole thing
