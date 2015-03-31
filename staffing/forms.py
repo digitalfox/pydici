@@ -187,7 +187,7 @@ class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""
     contacts = MissionContactMChoices(required=False)
     lead = LeadChoices(required=False)
-    responsible = ConsultantChoices(required=False)
+    responsible = ConsultantChoices(required=False, label=_("Responsible"),)
 
     def __init__(self, *args, **kwargs):
         super(MissionForm, self).__init__(*args, **kwargs)
