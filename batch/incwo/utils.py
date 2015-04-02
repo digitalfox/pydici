@@ -157,7 +157,7 @@ def _do_import(sub_dir, lst, import_fcn, context):
         filename = os.path.join(sub_dir, str(obj_id) + '.xml')
         logger.info('Importing %s (%d/%d)', filename, pos + 1, count)
         try:
-            import_fcn(obj_id, obj_xml, context)
+            import_fcn(obj_xml, context)
         except Exception:
             if context.ignore_errors:
                 logger.exception('Failed to import %s', filename)
@@ -165,8 +165,9 @@ def _do_import(sub_dir, lst, import_fcn, context):
                 raise
 
 
-def import_firm(obj_id, obj_xml, context):
+def import_firm(obj_xml, context):
     firm = objectify.fromstring(obj_xml)
+    obj_id = firm.id
     name = unicode(firm.name)
 
     try:
@@ -241,7 +242,7 @@ def import_contact_items(db_contact, items):
                 break
 
 
-def import_contact(obj_id, obj_xml, context):
+def import_contact(obj_xml, context):
     contact = objectify.fromstring(obj_xml)
     # Note: There is a 'first_last_name' field, but it's not documented, so
     # better ignore it
@@ -365,8 +366,9 @@ STATE_FOR_PROGRESS_ID = {
 }
 
 
-def import_proposal_sheet(obj_id, obj_xml, context):
+def import_proposal_sheet(obj_xml, context):
     sheet = objectify.fromstring(obj_xml)
+    obj_id = sheet.id
     if sheet.sheet_type != 'proposal':
         logger.warning('Skipping proposal sheet %d: sheet_type is %s', obj_id, sheet.sheet_type)
         return
