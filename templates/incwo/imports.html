@@ -1,0 +1,15 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Incwo Imports" %}{% endblock %}
+
+{% block content %}
+
+<h1>{% trans "Incwo import results" %}</h1>
+<ul>
+{% for info in log_infos %}
+    <li>{{ info.date }}: {{ info.status }} (<a href='{% url 'batch.incwo.views.details' info.log_dir %}'>{% trans "details" %}</a>)</li>
+{% endfor %}
+</ul>
+{% endblock %}

@@ -1,5 +1,8 @@
+import json
 import logging
-
+import os
+import sys
+from datetime import datetime
 from optparse import make_option
 
 from django.conf import settings
@@ -29,6 +32,27 @@ def make_deny_option(sub_dir):
     name = '--deny-' + sub_dir.replace('_', '-')
     return make_option(name, metavar='FILE',
                        help='Do not import {} whose ids are listed in FILE'.format(sub_dir))
+
+
+def create_log_dir(base_dir):
+    log_dir = datetime.now().isoformat().split('.')[0]
+    full_log_dir = os.path.join(base_dir, log_dir)
+    os.makedirs(full_log_dir)
+    return full_log_dir
+    handler = logging.FileHandler(full_log_dir, encoding='utf-8')
+
+
+class Status(object):
+    def __init__(self, path, args):
+        self.path = path
+        self.status_dct = {
+            'args': args
+        }
+
+    def update(self, status):
+        self.status_dct['status'] = status
+        with open(self.path, 'w') as f:
+            json.dump(self.status_dct, f, indent=4)
 
 
 class Command(BaseCommand):
@@ -65,22 +89,36 @@ class Command(BaseCommand):
             '3': logging.DEBUG
         }
         loglevel = loglevels[options['verbosity']]
+
         utils.logger.setLevel(loglevel)
         utils.logger.addHandler(logging.StreamHandler())
 
         if len(args) == 0:
             raise CommandError('Missing download dir argument')
-        download_dir = args[0]
-        if options['import']:
-            sub_dirs = self.parse_sub_dir_arg(options['import'])
-            self.handle_import(download_dir, sub_dirs, options)
-        elif options['download']:
-            sub_dirs = self.parse_sub_dir_arg(options['import'])
-            self.handle_download(download_dir, sub_dirs, options)
-        else:
-            # Do the whole thing
-            self.handle_download(download_dir, utils.SUB_DIRS, options)
-            self.handle_import(download_dir, utils.SUB_DIRS, options)
+
+        log_dir = create_log_dir(settings.INCWO_LOG_DIR)
+        log_handler = logging.FileHandler(os.path.join(log_dir, 'details.log'), encoding='utf-8')
+        utils.logger.addHandler(log_handler)
+
+        status_path = os.path.join(log_dir, 'status.json')
+        status = Status(status_path, sys.argv)
+        status.update('running')
+        try:
+            download_dir = args[0]
+            if options['import']:
+                sub_dirs = self.parse_sub_dir_arg(options['import'])
+                self.handle_import(download_dir, sub_dirs, options)
+            elif options['download']:
+                sub_dirs = self.parse_sub_dir_arg(options['import'])
+                self.handle_download(download_dir, sub_dirs, options)
+            else:
+                # Do the whole thing
+                self.handle_download(download_dir, utils.SUB_DIRS, options)
+                self.handle_import(download_dir, utils.SUB_DIRS, options)
+            status.update('success')
+        except:
+            status.update('failure')
+            raise
 
     def handle_import(self, download_dir, sub_dirs, options):
         subsidiary_id = options['subsidiary']

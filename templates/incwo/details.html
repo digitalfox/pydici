@@ -1,0 +1,26 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Incwo Imports" %}{% endblock %}
+
+{% block content %}
+
+<h1><a href='{% url 'batch.incwo.views.imports' %}'>{% trans "Incwo import results" %}</a> /
+{{ log_info.date }}</h1>
+<dl>
+    <dt>{% trans "Status:" %}</dt>
+    <dd>{{ log_info.status }}</dd>
+    <dt>{% trans "Command:" %}</dt>
+    <dd>{{ log_info.args|join:" " }}</dd>
+    <dt>{% trans "Output:" %}</dt>
+    <dd>
+{% if log_info.log %}
+    <pre>{{ log_info.log }}</pre>
+{% else %}
+    <p>{% trans "No log output." %}</p>
+{% endif %}
+    </dd>
+</dl>
+
+{% endblock %}

@@ -37,3 +37,7 @@ DOCUMENT_PROJECT_LEAD_DIR = u"{deal_id}_{name}"
 DOCUMENT_PROJECT_BUSINESS_DIR = u"commerce"
 DOCUMENT_PROJECT_DELIVERY_DIR = u"delivery"
 DOCUMENT_PROJECT_INPUT_DIR = u"input"
+
+# INCWO_LOG_DIR must point to a dir where the `incwoimport` command can write.
+# It defaults to $PYDICI_PREFIX/incwo-log if not set.
+INCWO_LOG_DIR = os.path.join(PYDICI_ROOTDIR, 'incwo-log')
