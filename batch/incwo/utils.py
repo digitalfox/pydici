@@ -94,7 +94,7 @@ def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
     Returns a list of tuples (obj_id, obj_as_xml_string)
     """
     url = '{}/{}.xml'.format(base_url, sub_dir)
-    logger.info('Downloading {} page={}'.format(url, page))
+    logger.info('Downloading %s page=%d', url, page)
     res = requests.get(url, auth=auth, params={'page': page})
     if res.status_code != 200:
         raise IncwoImportError(res.content)
@@ -108,7 +108,7 @@ def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
         if not is_id_allowed(obj_id, allowed_ids, denied_ids):
             continue
         url = '{}/{}/{}.xml'.format(base_url, sub_dir, obj_id)
-        logger.info('Downloading ' + url)
+        logger.info('Downloading %s', url)
         res = requests.get(url, auth=auth)
         if res.status_code != 200:
             raise IncwoImportError(res.content)
@@ -156,12 +156,12 @@ def _do_import(sub_dir, lst, import_fcn, context):
         if not is_id_allowed(obj_id, allowed_ids, denied_ids):
             continue
         filename = os.path.join(sub_dir, str(obj_id) + '.xml')
-        logger.info('Importing {} ({}/{})'.format(filename, pos + 1, count))
+        logger.info('Importing %s (%d/%d)', filename, pos + 1, count)
         try:
             import_fcn(obj_id, obj_xml, context)
         except Exception:
             if context.ignore_errors:
-                logger.exception('Failed to import {}'.format(filename))
+                logger.exception('Failed to import %s', filename)
             else:
                 raise
 
@@ -364,12 +364,12 @@ STATE_FOR_PROGRESS_ID = {
 def import_proposal_sheet(obj_id, obj_xml, context):
     sheet = objectify.fromstring(obj_xml)
     if sheet.sheet_type != 'proposal':
-        logger.warning('Skipping proposal sheet {}: sheet_type is {}'.format(obj_id, sheet.sheet_type))
+        logger.warning('Skipping proposal sheet %d: sheet_type is %s', obj_id, sheet.sheet_type)
         return
 
     state = STATE_FOR_PROGRESS_ID[sheet.progress_id]
     if state != 'WON':
-        logger.warning('Skipping proposal sheet {}: not won'.format(obj_id))
+        logger.warning('Skipping proposal sheet %d: not won', obj_id)
         return
 
     firm_id = sheet.firm_id if hasattr(sheet, 'firm_id') else 0
@@ -407,7 +407,7 @@ def import_proposal_sheet(obj_id, obj_xml, context):
         if lead.description:
             lines.append(lead.description)
         for pos, proposal_line in enumerate(lst):
-            logger.info('- Proposal line {}/{}'.format(pos + 1, len(lst)))
+            logger.info('- Proposal line %d/%d', pos + 1, len(lst))
             lines.append(import_proposal_line(lead, proposal_line, proposal_line_context))
         lead.description = '\n'.join(lines)
         lead.sales = proposal_line_context.grand_total() / 1000  # grand_total is in €, but lead.sales is in k€
