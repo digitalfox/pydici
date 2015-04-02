@@ -196,6 +196,6 @@ Options specific to the import step:
             sub_dirs = utils.SUB_DIRS
         else:
             for sub_dir in sub_dirs:
-                if not sub_dir in utils.SUB_DIRS:
+                if sub_dir not in utils.SUB_DIRS:
                     raise CommandError('Invalid subdir {}'.format(sub_dir))
         return sub_dirs

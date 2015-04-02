@@ -9,7 +9,6 @@ import requests
 from lxml import objectify
 
 from django.utils.formats import localize
-from django.utils.translation import ugettext
 
 from crm.models import Company, ClientOrganisation, Client, Contact
 from leads.models import Lead
@@ -48,7 +47,7 @@ def _parse_incwo_date(txt):
 
 
 def is_id_allowed(obj_id, allowed_ids, denied_ids):
-    if allowed_ids and not obj_id in allowed_ids:
+    if allowed_ids and obj_id not in allowed_ids:
         return False
     if denied_ids and obj_id in denied_ids:
         return False
@@ -67,7 +66,7 @@ def generate_unique_company_code(name):
     Once done, iterate on existing codes and solve conflicts by replacing the
     last letter with an incrementing digit
     """
-    words = re.split('\W', name)
+    words = re.split(r'\W', name)
     if len(words) >= 3:
         code = ''.join([x[0] for x in words if x])[:3]
     elif len(words) == 2:
@@ -195,7 +194,7 @@ def import_firm(obj_id, obj_xml, context):
 
 
 def import_firms(lst, context=None):
-    if context == None:
+    if context is None:
         context = ImportContext()
     _do_import('firms', lst, import_firm, context)
 
@@ -227,6 +226,7 @@ CONTACT_TYPE_MAPPING = {
 #     432,  # MSN messenger id
 #     433,  # AIM messenger id
 #     457,  # ICQ messenger id
+
 
 def import_contact_items(db_contact, items):
     dct = dict((x.type_id, x.value) for x in items.iterchildren())
@@ -263,7 +263,7 @@ def import_contact(obj_id, obj_xml, context):
 
 
 def import_contacts(lst, context=None):
-    if context == None:
+    if context is None:
         context = ImportContext()
     _do_import('contacts', lst, import_contact, context)
 
@@ -292,7 +292,7 @@ def simplify_decimal(value):
     return int_value if int_value == value else value
 
 
-def import_proposal_line(lead, line, context):
+def import_proposal_line(line, context):
     content_kind = unicode(line.content_kind)
 
     if content_kind == '' and not hasattr(line, 'total_price'):
@@ -343,15 +343,18 @@ def import_proposal_line(lead, line, context):
             if quantity == 1:
                 description += u'{} €'.format(localize(total_price))
             else:
-                description += u'{}{} × {} € = {} €'.format(quantity, unit,
-                    localize(unit_price), localize(total_price))
+                description += u'{}{} × {} € = {} €'.format(
+                    quantity,
+                    unit,
+                    localize(unit_price),
+                    localize(total_price))
+
             if not content_kind == 'option':
                 context.add_to_current_total(total_price)
 
     return description
 
 
-# FIXME: Is 'WON' the right value for 'Terminé'?
 STATE_FOR_PROGRESS_ID = {
     555:    'WRITE_OFFER',  # En rédaction
     556:    'OFFER_SENT',   # Envoyé au client
@@ -360,6 +363,7 @@ STATE_FOR_PROGRESS_ID = {
     559:    'SLEEPING',     # Ajourné
     620105: 'WON',          # Terminé
 }
+
 
 def import_proposal_sheet(obj_id, obj_xml, context):
     sheet = objectify.fromstring(obj_xml)
@@ -408,7 +412,7 @@ def import_proposal_sheet(obj_id, obj_xml, context):
             lines.append(lead.description)
         for pos, proposal_line in enumerate(lst):
             logger.info('- Proposal line %d/%d', pos + 1, len(lst))
-            lines.append(import_proposal_line(lead, proposal_line, proposal_line_context))
+            lines.append(import_proposal_line(proposal_line, proposal_line_context))
         lead.description = '\n'.join(lines)
         lead.sales = proposal_line_context.grand_total() / 1000  # grand_total is in €, but lead.sales is in k€
         lead.save()
@@ -422,6 +426,6 @@ def import_proposal_sheet(obj_id, obj_xml, context):
 
 
 def import_proposal_sheets(lst, context=None):
-    if context == None:
+    if context is None:
         context = ImportContext()
     _do_import('proposal_sheets', lst, import_proposal_sheet, context)
