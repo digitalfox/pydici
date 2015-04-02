@@ -68,6 +68,11 @@
                 {% if perms.billing.add_clientbill %}<li><a href="{% url 'admin:billing_clientbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>{% endif %}
                 {% if perms.billing.change_supplierbill %}<li><a href="{% url 'admin:billing_supplierbill_changelist' %}">{% trans "All supplier bills" %}</a></li>{% endif %}
                 {% if perms.billing.add_supplierbill %}<li><a href="{% url 'admin:billing_supplierbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier bill" %}</a></li>{% endif %}
+                {% if pydici_menu.management %}
+                    {% for name in pydici_menu.management %}
+                        {% include name %}
+                    {% endfor %}
+                {% endif %}
             </ul>
         </li>
         
