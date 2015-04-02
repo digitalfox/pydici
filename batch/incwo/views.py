@@ -31,7 +31,10 @@ class LogInfo(object):
 
 
 def imports(request):
-    log_dirs = os.listdir(settings.INCWO_LOG_DIR)
+    if os.path.exists(settings.INCWO_LOG_DIR):
+        log_dirs = os.listdir(settings.INCWO_LOG_DIR)
+    else:
+        log_dirs = []
     log_infos = [LogInfo(x) for x in log_dirs]
     log_infos.sort(key=lambda x: x.date, reverse=True)
 
