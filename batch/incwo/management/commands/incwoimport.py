@@ -25,13 +25,15 @@ def read_ids(filename):
 def make_allow_option(sub_dir):
     name = '--allow-' + sub_dir.replace('_', '-')
     return make_option(name, metavar='FILE',
-                       help='Limit import of {} to those whose ids are listed in FILE'.format(sub_dir))
+                       help='Limit import of {} to those whose ids are listed '
+                            'in FILE.'.format(sub_dir))
 
 
 def make_deny_option(sub_dir):
     name = '--deny-' + sub_dir.replace('_', '-')
     return make_option(name, metavar='FILE',
-                       help='Do not import {} whose ids are listed in FILE'.format(sub_dir))
+                       help='Do not import {} whose ids are listed in FILE.'
+                            .format(sub_dir))
 
 
 class Status(object):
@@ -50,10 +52,14 @@ class Status(object):
 class Command(BaseCommand):
     option_list = (
         make_option('--download',
-                    help='Perform only the download step. WHAT must be either "all", or a combination of {}, separated by commas.'.format(sub_dirs_strings),
+                    help='Perform only the download step. WHAT must be either '
+                         '"all", or a combination of {}, separated by commas.'
+                         .format(sub_dirs_strings),
                     metavar='WHAT'),
         make_option('--import',
-                    help='Perform only the import step. WHAT must be either "all", or a combination of {}, separated by commas.'.format(sub_dirs_strings),
+                    help='Perform only the import step. WHAT must be either '
+                         '"all", or a combination of {}, separated by commas.'
+                         .format(sub_dirs_strings),
                     metavar='WHAT'),
         make_option('--host',
                     help='Incwo host, for example https://www.incwo.com/123456'),
@@ -68,8 +74,8 @@ class Command(BaseCommand):
         make_option('--ignore-errors', action='store_true',
                     help='Ignore errors instead of stopping. Errors are logged nevertheless.'),
     ) + tuple([make_allow_option(x) for x in utils.SUB_DIRS]) \
-    + tuple([make_deny_option(x) for x in utils.SUB_DIRS]) \
-    + BaseCommand.option_list
+        + tuple([make_deny_option(x) for x in utils.SUB_DIRS]) \
+        + BaseCommand.option_list
 
     args = '<download-dir>'
     help = """Import data from an Incwo account.
@@ -155,8 +161,8 @@ Options specific to the import step:
         subsidiary = Subsidiary.objects.get(id=subsidiary_id)
 
         context = utils.ImportContext(ignore_errors=options['ignore_errors'],
-                                     subsidiary=subsidiary,
-                                     import_missions=options['missions'])
+                                      subsidiary=subsidiary,
+                                      import_missions=options['missions'])
 
         for sub_dir in sub_dirs:
             name = 'allow_' + sub_dir
@@ -192,7 +198,7 @@ Options specific to the import step:
 
     def parse_sub_dir_arg(self, arg):
         sub_dirs = arg.split(',')
-        if sub_dirs == ['all',]:
+        if sub_dirs == ['all']:
             sub_dirs = utils.SUB_DIRS
         else:
             for sub_dir in sub_dirs:
