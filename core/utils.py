@@ -105,7 +105,7 @@ def to_int_or_round(x, precision=1):
         return x
 
 
-def working_days(monthDate, holidays=[], upToToday=False):
+def working_days(monthDate, holidays=None, upToToday=False):
     """Compute the number of working days of a month
     @param monthDate: first day of month datetime.date
     @param holidays: list of days (datetime.date) that are not worked
@@ -113,6 +113,7 @@ def working_days(monthDate, holidays=[], upToToday=False):
     @return: number of working days (int)"""
     day = timedelta(1)
     today = date.today()
+    holidays = holidays or []  # Initialise to empty list here, not in default args to avoid funny things
     n = 0
     if isinstance(monthDate, datetime):
         monthDate = monthDate.date()
