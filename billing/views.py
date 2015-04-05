@@ -135,9 +135,9 @@ def pre_billing(request, year=None, month=None, mine=False):
     rates = {}  # Key is mission, value is Consultant rates dict
 
     try:
-        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+        billing_consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
     except Consultant.DoesNotExist:
-        consultant = None
+        billing_consultant = None
         mine = False
 
     # Check consultant timesheet to hint if billing could be done based on a clean state
@@ -158,8 +158,8 @@ def pre_billing(request, year=None, month=None, mine=False):
                                                           timesheet__working_date__gte=month,
                                                           timesheet__working_date__lt=next_month)
     if mine:
-        fixedPriceMissions = fixedPriceMissions.filter(Q(lead__responsible=consultant) | Q(responsible=consultant))
-        undefinedBillingModeMissions = undefinedBillingModeMissions.filter(Q(lead__responsible=consultant) | Q(responsible=consultant))
+        fixedPriceMissions = fixedPriceMissions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
+        undefinedBillingModeMissions = undefinedBillingModeMissions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
 
     fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
     undefinedBillingModeMissions = undefinedBillingModeMissions.order_by("lead").distinct()
@@ -167,7 +167,7 @@ def pre_billing(request, year=None, month=None, mine=False):
     timesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
                                           mission__nature="PROD", mission__billing_mode="TIME_SPENT")
     if mine:
-        timesheets = timesheets.filter(Q(mission__lead__responsible=consultant) | Q(mission__responsible=consultant))
+        timesheets = timesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
     timesheet_data = timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
     for mission_id, consultant_id, charge in timesheet_data:
         mission = Mission.objects.select_related("lead").get(id=mission_id)
