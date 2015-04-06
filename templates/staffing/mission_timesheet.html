@@ -158,6 +158,7 @@ $(document).ready(function() {
 
 
 $.jqplot.config.enablePlugins = true;
+try {
 plot_mission_timesheet_jqp = $.jqplot('mission_timesheet_jqp',  {{ graph_data|safe }}, {
     animate : false,
     stackSeries: true,
@@ -212,6 +213,11 @@ plot_mission_timesheet_jqp = $.jqplot('mission_timesheet_jqp',  {{ graph_data|sa
         sizeAdjust: 7.5
     },
 });
+}
+catch(err)
+{
+    console.log("mission graph failed: " + err);
+}
 
 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
   if (plot_mission_timesheet_jqp._drawCount == 0) {
