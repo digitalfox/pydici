@@ -216,6 +216,7 @@ plot_mission_timesheet_jqp = $.jqplot('mission_timesheet_jqp',  {{ graph_data|sa
 }
 catch(err)
 {
+    plot_mission_timesheet_jqp = "";
     console.log("mission graph failed: " + err);
 }
 
