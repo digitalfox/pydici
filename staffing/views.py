@@ -659,8 +659,8 @@ def mission_timesheet(request, mission_id):
         graph_timesheet = zip(isoTimesheetDates, timesheetTotalAmount[:-1])
         graph_staffing = zip(isoTimesheetDates + isoStaffingDates, [0,]*len(isoTimesheetDates) + staffingTotalAmount[:-1])
 
-    graph_data.append(graph_timesheet)
-    graph_data.append(graph_staffing)
+    graph_data.append(graph_timesheet or [0,0])
+    graph_data.append(graph_staffing or [0,0])
 
     return render(request, "staffing/mission_timesheet.html",
                   {"mission": mission,
