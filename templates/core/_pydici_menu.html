@@ -98,7 +98,7 @@
                 <li><a href="{% url 'admin:index' %}">{% trans "Admin console" %}</a></li>
                 <li><a href="{% url 'help' %}">{% trans "Help page" %}</a></li>
                 <li>{{ foo|get_admin_mail }}</li>
-                <li><form class="navbar-form keep-open hidden-md hidden-lg" role="search" action="{% url 'search' %}" method="GET">
+                <li><form class="navbar-form keep-open hidden-xs hidden-md hidden-lg" role="search" action="{% url 'search' %}" method="GET">
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q"  value="{{ query|escape }}" >
                     </div>
@@ -108,7 +108,7 @@
         </li>
         </ul>
         
-        <form class="navbar-form pull-right hidden-xs hidden-sm" role="search" action="{% url 'search' %}" method="GET">
+        <form class="navbar-form pull-right hidden-sm" role="search" action="{% url 'search' %}" method="GET">
             <div class="form-group">
               <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q"  value="{{ query|escape }}" >
             </div>
