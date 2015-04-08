@@ -16,6 +16,7 @@ from lxml import objectify
 
 from django.utils.formats import localize
 
+from core.utils import to_int_or_round
 from crm.models import Company, ClientOrganisation, Client, Contact
 from leads.models import Lead
 from staffing.models import Mission
@@ -292,13 +293,6 @@ class ProposalLineContext(object):
         return sum(self._groups)
 
 
-def simplify_decimal(value):
-    # Convert to int if possible to ensure Decimal(2) is turned into '2', not
-    # '2.0'
-    int_value = value.to_integral_value()
-    return int_value if int_value == value else value
-
-
 def import_proposal_line(line, context):
     content_kind = unicode(line.content_kind)
 
@@ -334,14 +328,14 @@ def import_proposal_line(line, context):
         if hasattr(line, 'unit_price') and hasattr(line, 'quantity'):
             # This is a product proposal line with an attached price
             unit_price = Decimal(unicode(line.unit_price))
-            unit_price = simplify_decimal(unit_price)
+            unit_price = to_int_or_round(unit_price, 2)
 
             unit = unicode(line.unit)
             if unit:
                 unit = ' ' + unit
 
             quantity = Decimal(unicode(line.quantity))
-            quantity = simplify_decimal(quantity)
+            quantity = to_int_or_round(quantity, 2)
 
             # Do not use line.total_price: it is set to 0 for options
             total_price = unit_price * quantity
