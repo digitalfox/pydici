@@ -1,4 +1,10 @@
-# encoding: utf-8
+# -*- coding: UTF-8 -*-
+"""
+Test cases
+@author: Aurélien Gâteau (mail@agateau.com)
+@license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
+"""
+
 import logging
 import os
 from decimal import Decimal

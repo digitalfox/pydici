@@ -1,3 +1,10 @@
+# -*- coding: UTF-8 -*-
+"""
+Pydici core context processors
+@author: Aurélien Gâteau (mail@agateau.com)
+@license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
+"""
+
 from collections import defaultdict
 from importlib import import_module
 

@@ -1,3 +1,10 @@
+# -*- coding: UTF-8 -*-
+"""
+Management command to start imports from the command line
+@author: Aurélien Gâteau (mail@agateau.com)
+@license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
+"""
+
 import json
 import logging
 import os

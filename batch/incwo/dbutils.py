@@ -1,3 +1,10 @@
+# -*- coding: UTF-8 -*-
+"""
+Database-related helper functions
+@author: Aurélien Gâteau (mail@agateau.com)
+@license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
+"""
+
 def update_or_create(model, **kwargs):
     """
     Similar to get_or_create except it only uses the `id` key to locate
