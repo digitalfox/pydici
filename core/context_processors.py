@@ -35,6 +35,44 @@ class MenuWrapper(object):
 
 
 def menu(request):
+    """Provides a way for applications to extend the Pydici menubar.
+
+    An application willing to add a new entry to the menubar must provide a `menus.py` file which
+    contain a `get_menus()` function. This function must return a dictionary of
+    menu_name => template_name items.
+
+    For example if an application wants to extend the "Foo" menu, it can provides a `menus.py`
+    with the following content:
+
+        def get_menus():
+            return { 'foo': 'myapp/foo_menu.html' }
+
+    The content of the 'myapp/foo_menu.html' template will be inserted in the Foo menu.
+
+    Note: for this to work, `templates/core/_pydici_menu.html` must contain hooks for all top-level
+    menu items. These hooks are implemented using the `pydici_menu` variable exposed by this context
+    processor. Here is how such a hook would look for the "Foo" menu.
+
+        ...
+        <li>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Foo
+                <span class='caret'></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href='bar.html'>Bar</a></li>
+                <li><a href='baz.html'>Baz</a></li>
+                {% if pydici_menu.foo %}
+                    {% for name in pydici_menu.foo %}
+                        {% include name %}
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </li>
+        ...
+
+    With such code, the content of `myapp/foo_menu.html` would be inserted after the "Baz" menu
+    item.
+    """
     if _menu_templates is None:
         _init_menu_templates()
     return {
