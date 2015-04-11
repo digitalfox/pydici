@@ -17,7 +17,7 @@ import permissions.utils as perm
 from workflows.models import Transition
 
 # Pydici modules
-from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth
+from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth, cumulateList
 from leads.models import Lead
 from people.models import Consultant, ConsultantProfile, RateObjective
 from crm.models import Client, Subsidiary, BusinessBroker, Supplier
@@ -214,6 +214,10 @@ class UtilsTest(TestCase):
         for firstDay, weekDay in dates:
             self.assertEqual(firstDay, nextWeek(weekDay))
 
+    def test_cumulateList(self):
+        self.assertListEqual(cumulateList([1, 2, 3]), [1, 3, 6])
+        self.assertListEqual(cumulateList([]), [])
+        self.assertListEqual(cumulateList([8]), [8])
 
 class StaffingViewsTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",

@@ -151,85 +151,40 @@ $(document).ready(function() {
 
 <div style="clear:both;"></div>
 
-<div id="mission_timesheet_jqp" style="height: 300px;"></div>
+<div id="mission_timesheet_graph"></div>
 
 <script type="text/javascript">
 $(document).ready(function() {
 
-
-$.jqplot.config.enablePlugins = true;
-try {
-plot_mission_timesheet_jqp = $.jqplot('mission_timesheet_jqp',  {{ graph_data|safe }}, {
-    animate : false,
-    stackSeries: true,
-    captureRightClick: true,
-    seriesColors: {{ series_colors|safe }},
-    seriesDefaults:{
-      renderer:$.jqplot.BarRenderer,
-      pointLabels: {show: false},
-          rendererOptions: {
-          barMargin: 20,
-          barWidth: 15,
-      },
-      showMarker: false,
+var chart = c3.generate({
+    bindto: '#mission_timesheet_graph',
+    data: {
+         /*xs: {
+            dataStaffing: 'dateStaffing',
+            dataTimesheet: 'dateTimesheet',
+            }, */
+        x: 'dates',
+        columns: {{ graph_data|safe }},
+        names : {
+            dataStaffing: '{% trans "To be done" %}',
+            dataTimesheet: '{% trans "done" %}',
+            },
+        type: 'area',
+        groups: [['dataTimesheet', 'dataStaffing']],
     },
-    series:[
-         {
-            label: "{% trans 'done' %}",
-         },
-         {
-            label: "{% trans 'forecast' %}",
-         },
-        ],
-    axes: {
-      xaxis: {
-          renderer: $.jqplot.DateAxisRenderer,
-          labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-          tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-          tickOptions:{
-              formatString:'%b %y',
-              angle: -40
-          },
-          min: '{{ min_date }}',
-          tickInterval: '1 month',
-      },
-      yaxis: {
-          syncTicks : true,
-          label: "{% trans 'k€' %}",
-          min : 0,
-          labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-          tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-          tickOptions: { formatString: '%.1f k€' },
-      },
-    },
-    legend: {
-        show:true,
-         location: 'e',
-         placement: 'outsideGrid',
-    },
-    highlighter: {
-        tooltipAxes: 'y',
-        showLabel: true,
-        sizeAdjust: 7.5
+    axis: {
+         x: {
+                 type: 'timeseries',
+                 tick: {
+                   format: '%m-%Y',
+                   rotate: 60,
+                    }
+            },
+        y: {
+             tick: { format: function (d) { return d + " k€"; } }
+           },
     },
 });
-}
-catch(err)
-{
-    plot_mission_timesheet_jqp = "";
-    console.log("mission graph failed: " + err);
-}
-
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-  if (plot_mission_timesheet_jqp._drawCount == 0) {
-    $('#mission_timesheet_jqp').css('width', window.innerWidth - 50 );
-    plot_mission_timesheet_jqp.replot();
-  }
-});
-
-{% with "plot_mission_timesheet_jqp" as plot %}
-    {% include "core/_jqplot_resize.html" %}
-{% endwith %}
 
 }); // End of ready()
 </script>

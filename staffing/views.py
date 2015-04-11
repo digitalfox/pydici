@@ -34,7 +34,7 @@ from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-    to_int_or_round, COLORS, convertDictKeyToDateTime
+    to_int_or_round, COLORS, convertDictKeyToDateTime, cumulateList
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates
@@ -647,20 +647,22 @@ def mission_timesheet(request, mission_id):
         if isoTimesheetDates[-1] == isoStaffingDates[0]:
             # We have an overlap
             isoDates = isoTimesheetDates + isoStaffingDates[1:]
-            graph_timesheet = zip(isoDates, timesheetTotalAmount[:-1] + [0,]*len(isoStaffingDates[1:]))
-            graph_staffing = zip(isoDates, [0,]*len(isoTimesheetDates[:-1]) + staffingTotalAmount[:-1])
+            graph_timesheet = timesheetTotalAmount[:-1] + [0,]*len(isoStaffingDates[1:])
+            graph_staffing = [0,]*len(isoTimesheetDates[:-1]) + staffingTotalAmount[:-1]
         else:
             # Both timesheet and staffing but no overlap
             isoDates = isoTimesheetDates + isoStaffingDates
-            graph_timesheet = zip(isoDates, timesheetTotalAmount[:-1] +  [0,]*len(isoStaffingDates))
-            graph_staffing = zip(isoDates, [0,]*len(isoTimesheetDates) + staffingTotalAmount[:-1])
+            graph_timesheet = timesheetTotalAmount[:-1] +  [0,]*len(isoStaffingDates)
+            graph_staffing = [0,]*len(isoTimesheetDates) + staffingTotalAmount[:-1]
     else:
         # Only timesheet or staffing
-        graph_timesheet = zip(isoTimesheetDates, timesheetTotalAmount[:-1])
-        graph_staffing = zip(isoTimesheetDates + isoStaffingDates, [0,]*len(isoTimesheetDates) + staffingTotalAmount[:-1])
+        isoDates = isoTimesheetDates + isoStaffingDates
+        graph_timesheet = timesheetTotalAmount[:-1]
+        graph_staffing = [0,]*len(isoTimesheetDates) + staffingTotalAmount[:-1]
 
-    graph_data.append(graph_timesheet or None)
-    graph_data.append(graph_staffing or [0,0])
+    graph_data = [["dataTimesheet"] + to_int_or_round(cumulateList(graph_timesheet)),
+                  ["dataStaffing"] + to_int_or_round(cumulateList(graph_staffing)),
+                  ["dates"] + isoDates]
 
     return render(request, "staffing/mission_timesheet.html",
                   {"mission": mission,
@@ -675,6 +677,7 @@ def mission_timesheet(request, mission_id):
                    "consultant_rates": consultant_rates,
                    "avg_daily_rate": avgDailyRate,
                    "graph_data": json.dumps(graph_data),
+                   "graph_data_timesheet": json.dumps(graph_data),
                    "series_colors": COLORS,
                    "min_date" : minDate,
                    "user": request.user})

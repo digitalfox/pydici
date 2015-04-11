@@ -325,6 +325,15 @@ def convertDictKeyToDateTime(data):
     else:
         return data
 
+def cumulateList(aList):
+    """Return a list with cumulate element.
+    Ex. [1, 2, 2] => [1, 3, 5]"""
+    s = 0
+    result = []
+    for i in aList:
+        s+=i
+        result.append(s)
+    return result
 
 class GNode(object):
     """Graph node object wrapper"""
