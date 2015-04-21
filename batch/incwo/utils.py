@@ -19,6 +19,7 @@ from django.utils.formats import localize
 from core.utils import to_int_or_round
 from crm.models import Company, ClientOrganisation, Client, Contact
 from leads.models import Lead
+from leads.utils import create_default_mission
 from staffing.models import Mission
 
 import dbutils
@@ -419,12 +420,18 @@ def import_proposal_sheet(obj_xml, context):
         lead.sales = proposal_line_context.grand_total() / 1000  # grand_total is in €, but lead.sales is in k€
         lead.save()
 
-        dbutils.update_or_create(Mission,
-                                 id=lead.id,
-                                 lead=lead,
-                                 subsidiary=lead.subsidiary,
-                                 billing_mode='FIXED_PRICE',
-                                 price=lead.sales)
+        mission_lst = Mission.objects.filter(lead=lead)
+        if len(mission_lst) == 0:
+            mission = create_default_mission(lead)
+            mission.billing_mode = 'FIXED_PRICE'
+            mission.save()
+        elif len(mission_lst) == 1:
+            # Only one mission, assume it's the default mission and update it
+            # based on the lead
+            mission = mission_lst[0]
+            mission.price = lead.sales
+        # Do nothing if there is more than one mission: we can't know which
+        # mission to update
 
 
 def import_proposal_sheets(lst, context=None):
