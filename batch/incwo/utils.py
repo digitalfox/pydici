@@ -179,7 +179,7 @@ def import_firm(obj_xml, context):
     name = unicode(firm.name)
 
     try:
-        company = Company.objects.get(pk=obj_id)
+        company = Company.objects.get(external_id=obj_id)
     except Company.DoesNotExist:
         # If there is a company with the same name already, generate a
         # unique name
@@ -195,7 +195,7 @@ def import_firm(obj_xml, context):
 
         # Create the company entry
         code = generate_unique_company_code(name)
-        company = Company(pk=obj_id, name=name, code=code)
+        company = Company(external_id=obj_id, name=name, code=code)
         company.save()
 
     co, _ = ClientOrganisation.objects.get_or_create(name=DEFAULT_CLIENT_ORGANIZATION_NAME, company=company)

@@ -45,6 +45,7 @@ class Subsidiary(AbstractCompany):
 class Company(AbstractCompany):
     """Company"""
     businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True)
+    external_id = models.CharField(max_length=200, blank=True, null=True)
 
     def sales(self, onlyLastYear=False):
         """Sales billed for this company in keuros"""
