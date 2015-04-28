@@ -167,9 +167,11 @@ Options specific to the import step:
             raise CommandError('The --subsidiary option is missing')
         subsidiary = Subsidiary.objects.get(id=subsidiary_id)
 
+        #TODO: use clientid to compose "id_prefix" to ensure its uniqueness among different incwo instances
         context = utils.ImportContext(ignore_errors=options['ignore_errors'],
                                       subsidiary=subsidiary,
-                                      import_missions=options['missions'])
+                                      import_missions=options['missions'],
+                                      id_prefix="incwo")
 
         for sub_dir in sub_dirs:
             name = 'allow_' + sub_dir

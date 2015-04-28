@@ -42,12 +42,14 @@ class IncwoImportError(Exception):
 class ImportContext(object):
     def __init__(self, ignore_errors=False,
                  subsidiary=None,
-                 import_missions=False):
+                 import_missions=False,
+                 id_prefix=""):
         self.ignore_errors = ignore_errors
         self.subsidiary = subsidiary
         self.import_missions = import_missions
         self.allowed_ids_for_sub_dir = {}
         self.denied_ids_for_sub_dir = {}
+        self.id_prefix = id_prefix
 
 
 def _parse_incwo_date(txt):
@@ -175,7 +177,7 @@ def _do_import(sub_dir, lst, import_fcn, context):
 
 def import_firm(obj_xml, context):
     firm = objectify.fromstring(obj_xml)
-    obj_id = firm.id
+    obj_id = "%s:%s" % (context.id_prefix, firm.id)
     name = unicode(firm.name)
 
     try:
