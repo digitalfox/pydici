@@ -87,6 +87,7 @@ class Contact(models.Model):
     fax = models.CharField(_("Fax"), max_length=30, blank=True)
     function = models.CharField(_("Function"), max_length=200, blank=True)
     contact_points = models.ManyToManyField("people.Consultant", verbose_name="Points of contact", blank=True)
+    external_id = models.CharField(max_length=200, blank=True, null=True, unique=True)
 
     def __unicode__(self):
         return self.name

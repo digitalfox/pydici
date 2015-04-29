@@ -77,6 +77,7 @@ class Lead(models.Model):
     send_email = models.BooleanField(_("Send lead by email"), default=True)
     tags = TaggableManager(blank=True)
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
+    external_id = models.CharField(max_length=200, blank=True, null=True, unique=True)
 
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
 

@@ -43,7 +43,7 @@ class ImportContext(object):
     def __init__(self, ignore_errors=False,
                  subsidiary=None,
                  import_missions=False,
-                 id_prefix=""):
+                 id_prefix="incwo"):
         self.ignore_errors = ignore_errors
         self.subsidiary = subsidiary
         self.import_missions = import_missions
@@ -256,8 +256,9 @@ def import_contact(obj_xml, context):
     contact = objectify.fromstring(obj_xml)
     # Note: There is a 'first_last_name' field, but it's not documented, so
     # better ignore it
+    obj_id = "%s:%s" % (context.id_prefix, contact.id)
     name = unicode(contact.first_name) + ' ' + unicode(contact.last_name)
-    db_contact, _ = dbutils.update_or_create(Contact, id=contact.id, name=name)
+    db_contact, _ = dbutils.update_or_create(Contact, external_id=obj_id, name=name)
 
     if hasattr(contact, 'job_title'):
         db_contact.function = unicode(contact.job_title)
@@ -268,7 +269,7 @@ def import_contact(obj_xml, context):
     db_contact.save()
 
     if hasattr(contact, 'firm_id'):
-        organisation = ClientOrganisation.objects.get(company_id=contact.firm_id,
+        organisation = ClientOrganisation.objects.get(company__external_id="%s:%s" % (context.id_prefix, contact.firm_id),
                                                       name=DEFAULT_CLIENT_ORGANIZATION_NAME)
         Client.objects.get_or_create(contact=db_contact, organisation=organisation)
 
@@ -371,7 +372,7 @@ STATE_FOR_PROGRESS_ID = {
 
 def import_proposal_sheet(obj_xml, context):
     sheet = objectify.fromstring(obj_xml)
-    obj_id = sheet.id
+    obj_id = "%s:%s" % (context.id_prefix, sheet.id)
     if sheet.sheet_type != 'proposal':
         logger.warning('Skipping proposal sheet %d: sheet_type is %s', obj_id, sheet.sheet_type)
         return
@@ -390,17 +391,17 @@ def import_proposal_sheet(obj_xml, context):
 
     if contact_id > 0:
         # Find client from contact, use the default organisation
-        client = Client.objects.get(contact_id=sheet.contact_id,
+        client = Client.objects.get(contact__external_id="%s:%s" % (context.id_prefix, sheet.contact_id),
                                     organisation__name=DEFAULT_CLIENT_ORGANIZATION_NAME)
     else:
         # Find client from company, use the default organisation and the
         # default, contact-less, client
-        client = Client.objects.get(organisation__company_id=sheet.firm_id,
+        client = Client.objects.get(organisation__company__external_id="%s:%s" % (context.id_prefix, sheet.firm_id),
                                     organisation__name=DEFAULT_CLIENT_ORGANIZATION_NAME,
                                     contact=None)
 
     lead, _ = dbutils.update_or_create(Lead,
-                                       id=sheet.id,
+                                       external_id=obj_id,
                                        name=name,
                                        client=client,
                                        subsidiary=context.subsidiary,

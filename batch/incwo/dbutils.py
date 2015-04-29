@@ -7,7 +7,7 @@ Database-related helper functions
 
 def update_or_create(model, **kwargs):
     """
-    Similar to get_or_create except it only uses the `id` key to locate
+    Similar to get_or_create except it only uses the `external_id` key to locate
     existing object, and updates its fields from the kwargs if it exists.
 
     Returns the object and a boolean indicating whether it has been created,
@@ -15,9 +15,9 @@ def update_or_create(model, **kwargs):
     """
     created = False
     try:
-        obj = model.objects.get(id=kwargs['id'])
+        obj = model.objects.get(external_id=kwargs['external_id'])
         for key, value in kwargs.items():
-            if key == 'id':
+            if key == 'external_id':
                 continue
             setattr(obj, key, value)
     except model.DoesNotExist:

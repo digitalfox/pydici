@@ -54,8 +54,8 @@ class ContactImportTest(TestCase):
         utils.import_contacts(contact_lst)
 
         company = Company.objects.get(pk=1)
-        classic_contact = Contact.objects.get(pk=12)
-        jobless_contact = Contact.objects.get(pk=34)
+        classic_contact = Contact.objects.get(external_id="incwo:12")
+        jobless_contact = Contact.objects.get(external_id="incwo:34")
 
         company_contacts = Contact.objects.filter(client__organisation__company=company)
         self.assertItemsEqual(company_contacts, [classic_contact, jobless_contact])
@@ -77,7 +77,7 @@ class ContactImportTest(TestCase):
         contact_lst = utils.load_objects(os.path.join(TEST_DIR, 'contact-items'), '.')
         utils.import_contacts(contact_lst)
 
-        contact = Contact.objects.get(pk=12)
+        contact = Contact.objects.get(external_id="incwo:12")
         self.assertEquals(contact.email, 'valerie.rame@acme.com')
         self.assertEquals(contact.phone, '01 23 45 67 89')
         self.assertEquals(contact.mobile_phone, '06 78 90 12 34')
@@ -107,33 +107,33 @@ class ProposalSheetImportTest(TestCase):
         utils.import_proposal_sheets(proposal_sheet_lst, context)
 
         # Check lead 3, linked to a firm
-        lead = Lead.objects.get(pk=3)
+        lead = Lead.objects.get(external_id="incwo:3")
         self.assertEquals(lead.state, 'WON')
         self.assertEquals(lead.deal_id, 'D1234-56789')
         self.assertEquals(lead.name, 'Project Foobar')
         self.assertEquals(lead.description, 'Echo Alpha Tango')
 
-        client = Client.objects.get(organisation__company_id=1, contact=None)
+        client = Client.objects.get(organisation__company__external_id="incwo:1", contact=None)
         self.assertEquals(lead.client, client)
 
         # Check lead 4, linked to a contact
-        lead = Lead.objects.get(pk=4)
+        lead = Lead.objects.get(external_id="incwo:4")
         self.assertEquals(lead.state, 'WON')
         self.assertEquals(lead.deal_id, 'D5678-90123')
         self.assertEquals(lead.name, 'No Firm ID Proposal')
 
-        client = Client.objects.get(contact_id=12)
+        client = Client.objects.get(contact__external_id="incwo:12")
         self.assertEquals(lead.client, client)
 
         # No lead 5, because it was lost
-        self.assertFalse(Lead.objects.filter(pk=5))
+        self.assertFalse(Lead.objects.filter(external_id="incwo:5"))
 
     def test_import_proposal_lines(self):
         context = utils.ImportContext(subsidiary=self.subsidiary,
                                      import_missions=True)
         load_and_import_objects(os.path.join(TEST_DIR, 'proposal-lines'), context)
 
-        lead = Lead.objects.get(pk=3)
+        lead = Lead.objects.get(external_id="incwo:3")
         EXPECTED_DESCRIPTION = \
 u"""Echo Alpha Tango
 *Engineering*
