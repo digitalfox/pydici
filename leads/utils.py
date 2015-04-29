@@ -15,6 +15,17 @@ from staffing.models import Mission
 from core.utils import send_lead_mail
 
 
+def create_default_mission(lead):
+    mission = Mission(lead=lead)
+    mission.price = lead.sales  # Initialise with lead price
+    mission.subsidiary = lead.subsidiary
+    mission.responsible = lead.responsible
+    mission.save()
+    # Create default staffing
+    mission.create_default_staffing()
+    return mission
+
+
 def postSaveLead(request, lead, updated_fields):
     mail = False
     if lead.send_email:
@@ -45,13 +56,7 @@ def postSaveLead(request, lead, updated_fields):
     # Create or update mission  if needed
     if lead.mission_set.count() == 0:
         if lead.state in ("OFFER_SENT", "NEGOTIATION", "WON"):
-            mission = Mission(lead=lead)
-            mission.price = lead.sales  # Initialise with lead price
-            mission.subsidiary = lead.subsidiary
-            mission.responsible = lead.responsible
-            mission.save()
-            # Create default staffing
-            mission.create_default_staffing()
+            create_default_mission(lead)
             messages.add_message(request, messages.INFO, ugettext("A mission has been initialized for this lead."))
 
     for mission in lead.mission_set.all():

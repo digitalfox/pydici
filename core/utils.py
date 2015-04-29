@@ -13,6 +13,7 @@ from datetime import timedelta, date, datetime
 import unicodedata
 from functools import wraps
 import json
+from decimal import Decimal
 
 
 from django.template.loader import get_template
@@ -91,7 +92,7 @@ def to_int_or_round(x, precision=1):
     if isinstance(x, (list, tuple)):
         # Recurse
         return map(to_int_or_round, x)
-    if isinstance(x, float):
+    if isinstance(x, (float, Decimal)):
         if (int(x) - x) == 0:
             return int(x)
         else:

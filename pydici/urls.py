@@ -29,6 +29,7 @@ from actionset.urls import actionset_urls
 from expense.urls import expense_urls
 from leads.urls import leads_urls
 from core.urls import core_urls
+from batch.incwo.urls import incwo_urls
 
 
 # Overide internal server error view
@@ -73,6 +74,7 @@ pydici_patterns += patterns("",
                             ("actionset/", include(actionset_urls)),
                             ("expense/", include(expense_urls)),
                             ("leads/", include(leads_urls)),
+                            ("incwo/", include(incwo_urls)),
                             )
 
 

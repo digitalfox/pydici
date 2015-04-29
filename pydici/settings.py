@@ -73,7 +73,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
-    "django.core.context_processors.request")
+    "django.core.context_processors.request",
+    "core.context_processors.menu",
+)
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
@@ -94,6 +96,18 @@ TEMPLATE_DIRS = (
     os.path.join(PYDICI_ROOTDIR, 'templates'),
 )
 
+PYDICI_APPS = [
+    'core',
+    'people',
+    'leads',
+    'staffing',
+    'crm',
+    'billing',
+    'expense',
+    'actionset',
+    'batch.incwo',
+]
+
 INSTALLED_APPS = [
     # Django apps
     'django.contrib.auth',
@@ -103,15 +117,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    # Pydici modules
-    'core',
-    'people',
-    'leads',
-    'staffing',
-    'crm',
-    'billing',
-    'expense',
-    'actionset',
+    ] + PYDICI_APPS + [
     # Third party apps
     'django_extensions',
     'django.contrib.staticfiles',  # Static files are served by web server in production mode, but this apps allow collectstatic
