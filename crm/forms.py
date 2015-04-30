@@ -115,6 +115,7 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
 class CompanyForm(PydiciCrispyModelForm):
     class Meta:
         model = Company
+        exclude = ["external_id",]
 
     businessOwner = ConsultantChoices(label=_("Business Owner"))
 
@@ -129,6 +130,7 @@ class CompanyForm(PydiciCrispyModelForm):
 class ContactForm(PydiciCrispyModelForm):
     class Meta:
         model = Contact
+        exclude = ["external_id",]
 
     contact_points = ConsultantMChoices(label=_("Points of contact"))
     def __init__(self, *args, **kwargs):

@@ -45,7 +45,7 @@ class Subsidiary(AbstractCompany):
 class Company(AbstractCompany):
     """Company"""
     businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True)
-    external_id = models.CharField(max_length=200, blank=True, null=True, unique=True)
+    external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
 
     def sales(self, onlyLastYear=False):
         """Sales billed for this company in keuros"""
@@ -87,7 +87,7 @@ class Contact(models.Model):
     fax = models.CharField(_("Fax"), max_length=30, blank=True)
     function = models.CharField(_("Function"), max_length=200, blank=True)
     contact_points = models.ManyToManyField("people.Consultant", verbose_name="Points of contact", blank=True)
-    external_id = models.CharField(max_length=200, blank=True, null=True, unique=True)
+    external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
 
     def __unicode__(self):
         return self.name
