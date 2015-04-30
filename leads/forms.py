@@ -40,6 +40,7 @@ class LeadChoices(PydiciSelect2Field, AutoModelSelect2Field):
 class LeadForm(PydiciCrispyModelForm):
     class Meta:
         model = Lead
+        exclude = ["external_id",]
 
     responsible = ConsultantChoices(required=False, label=_("Responsible"))
     salesman = SalesManChoices(required=False, label=_("Salesman"))
