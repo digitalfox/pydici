@@ -24,7 +24,7 @@
     <div class="btn-group col-lg-8" data-toggle="buttons" id="buttons-projection">
         <label class="btn btn-default col-lg-4 {% ifequal projection "none" %}active{% endifequal %}" data-toggle="tooltip"
         data-placement="bottom" title="{% trans 'Only consider won leads for staffing forecasting' %}">
-            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}}'"/>
+            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=none'"/>
             {% trans "Only won leads" %}
         </label>
         <label class="btn btn-default col-lg-4 {% ifequal projection "balanced" %}active{% endifequal %}" data-toggle="tooltip"

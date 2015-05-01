@@ -202,7 +202,7 @@ def pdc_review(request, year=None, month=None):
         except ValueError:
             pass
 
-    projection = "none"
+    projection = "balanced"
     if "projection" in request.GET:
         if request.GET["projection"] in ("none", "balanced", "full"):
             projection = request.GET["projection"]
