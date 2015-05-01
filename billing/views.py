@@ -23,7 +23,8 @@ from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
 from staffing.utils import gatherTimesheetData
 from crm.models import Company
-from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round
+from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round, working_days
+from staffing.utils import holidayDays
 from core.decorator import pydici_non_public
 
 
@@ -145,8 +146,7 @@ def pre_billing(request, year=None, month=None, mine=False):
     for consultant in Consultant.objects.filter(active=True, subcontractor=False):
         missions = consultant.timesheet_missions(month=month)
         timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
-        warning = [i for i in warning if i]  # Remove None
-        if sum(warning) == 0:
+        if sum(timesheetTotal.values()) == working_days(month, holidayDays(month=month)):
             timesheet_ok[consultant.id] = True
         else:
             timesheet_ok[consultant.id] = False
