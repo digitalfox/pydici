@@ -4,6 +4,8 @@ Staffing form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+import time
+import types
 
 from datetime import timedelta, date
 from decimal import Decimal
@@ -302,8 +304,33 @@ class KeyboardTimesheetField(forms.FloatField):
     def __init__(self, *args, **kwargs):
         kwargs['min_value'] = 0
         kwargs['max_value'] = settings.TIMESHEET_DAY_DURATION
+        kwargs['widget'] = forms.TextInput()
         super(KeyboardTimesheetField, self).__init__(*args, **kwargs)
-        self.widget.attrs.setdefault("size", 1)  # Reduce default size
+        self.widget.attrs.setdefault('size', 1)  # Reduce default size
+
+    def prepare_value(self, day_percent):
+        if isinstance(day_percent, types.StringTypes):
+            # day_percent may already be a string if prepare_value() is called
+            # with the final value
+            return day_percent
+        if day_percent is None:
+            hours = 0
+            minutes = 0
+        else:
+            total_minutes = int(day_percent * settings.TIMESHEET_DAY_DURATION * 60)
+            hours = total_minutes / 60
+            minutes = total_minutes % 60
+        return '{}:{:02}'.format(hours, minutes)
+
+    def to_python(self, value):
+        if not value and not self.required:
+            return 0
+        try:
+            value_struct = time.strptime(value, '%H:%M')
+        except ValueError:
+            raise forms.ValidationError('Invalid time string {}'.format(value))
+        duration = value_struct[3] + value_struct[4] / 60.0
+        return duration / float(settings.TIMESHEET_DAY_DURATION)
 
 
 TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD = {
