@@ -192,6 +192,11 @@ $(document).ready(function(){
         }
     );
 
+    /* avoid popover to open more than on at the same time */
+    $('.pdc-tooltip').click(function(){
+        $('.pdc-tooltip').not(this).popover('hide'); //all but this
+    });
+
     $('#buttons-projection label').tooltip({
         "container": "body"
     });
