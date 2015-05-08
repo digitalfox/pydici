@@ -23,7 +23,7 @@ class LeadsTable(tables.Table):
     start_date = tables.TemplateColumn("""<span title="{{ record.start_date|date:"Ymd" }}">{{ record.start_date|date:"j F"|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
     creation_date = tables.TemplateColumn("""<span title="{{ record.creation_date|date:"YmdHis" }}">{{ record.creation_date|date:"j F" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
     proba = tables.TemplateColumn("""{% if record.getStateProba %}
-                                            <div class='proba' data-toggle='tooltip' data-content='{% for code, state, proba in record.getStateProba %}{{state }} : {{ proba }} %, {% endfor %}'>
+                                            <div class='proba' data-toggle='tooltip' data-content='{% for code, state, proba in record.getStateProba %}{{state }} : {{ proba }} %<br/> {% endfor %}'>
                                                 <div
                                                     {% ifequal record.getStateProba.0.0 "WON" %}class="glyphicon glyphicon-ok-circle"{% endifequal %}
                                                     {% ifequal record.getStateProba.0.0 "LOST" %}class="glyphicon glyphicon-remove-circle"{% endifequal %}
