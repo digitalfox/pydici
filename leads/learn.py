@@ -7,6 +7,7 @@ Module that handle predictive state of a lead
 """
 
 from datetime import datetime, date
+from random import sample
 
 HAVE_SCIKIT = True
 try:
@@ -82,6 +83,26 @@ def predict(model, features):
         result.append(proba)
     return result
 
+def test_model():
+    """Test model accuracy"""
+    leads = Lead.objects.filter(state__in=STATES.keys())
+    all_id = list(sum(leads.values_list("id"), ()))
+    if len(all_id)<2:
+        print "Too few samples"
+    test_id = sample(all_id, int(len(all_id)/20) or 1)
+    learn_id = all_id
+    for i in test_id:
+        learn_id.remove(i)
+    test_leads = leads.filter(id__in=test_id)
+    learn_leads = leads.filter(id__in=learn_id)
+    learn_features, learn_targets = extract_leads(learn_leads)
+    test_features, test_targets = extract_leads(test_leads)
+    vectorizer = DictVectorizer()
+    vectorizer.fit(learn_features+test_features)
+    model = learn(vectorizer.transform(learn_features), processTarget(learn_targets))
+    score = model.score(vectorizer.transform(test_features), processTarget(test_targets))
+    print "score : %s" % score
+    return score
 
 @transaction.commit_on_success
 def compute_leads_state(relearn=True, leads=None):

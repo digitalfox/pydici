@@ -19,6 +19,7 @@ from workflows.models import Transition
 # Pydici modules
 from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth, cumulateList
 from leads.models import Lead
+from leads import learn as leads_learn
 from people.models import Consultant, ConsultantProfile, RateObjective
 from crm.models import Client, Subsidiary, BusinessBroker, Supplier
 from staffing.models import Mission, Staffing, Timesheet, FinancialCondition
@@ -558,6 +559,25 @@ class WorkflowTest(TestCase):
         self.assertEqual(expensePayment.user(), tco)
         self.assertEqual(expensePayment.amount(), 123)
 
+
+class LeadLearnTestCase(TestCase):
+    """Test lead state proba learn"""
+    fixtures = ["auth.json", "people.json", "crm.json",
+                "leads.json", "staffing.json", "billing.json"]
+
+    def test_model(self):
+        r1 = Consultant.objects.get(id=1)
+        r2 = Consultant.objects.get(id=2)
+        for i in range(20):
+            a = create_lead()
+            if a.id%2:
+                a.state = "WON"
+                a.responsible = r1
+            else:
+                a.state = "LOST"
+                a.responsible = r2
+            a.save()
+        self.assertGreater(leads_learn.test_model(), 0.8, "Proba is too low")
 
 # ######
 def create_lead():
