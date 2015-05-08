@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, ContentType
 from django.utils.encoding import force_unicode
 
+from leads.learn import compute_leads_state
 from staffing.models import Mission
 from core.utils import send_lead_mail
 
@@ -53,6 +54,14 @@ def postSaveLead(request, lead, updated_fields):
         except Exception, e:
             messages.add_message(request, messages.ERROR, ugettext("Failed to send mail: %s") % e)
 
+    # Compute leads probability
+    from datetime import datetime
+    if lead.state in ("WON", "LOST", "SLEEPING", "FORGIVEN"):
+        compute_leads_state(relearn=True)
+    else:
+        compute_leads_state(relearn=False, leads=[lead,])
+
+
     # Create or update mission  if needed
     if lead.mission_set.count() == 0:
         if lead.state in ("OFFER_SENT", "NEGOTIATION", "WON"):
@@ -73,3 +82,4 @@ def postSaveLead(request, lead, updated_fields):
             mission.active = False
             mission.save()
             messages.add_message(request, messages.INFO, ugettext("According mission has been archived"))
+

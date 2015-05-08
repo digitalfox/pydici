@@ -22,11 +22,12 @@ class LeadsTable(tables.Table):
     due_date = tables.TemplateColumn("""<span title="{{ record.due_date|date:"Ymd" }}">{{ record.due_date|date:"j F"|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
     start_date = tables.TemplateColumn("""<span title="{{ record.start_date|date:"Ymd" }}">{{ record.start_date|date:"j F"|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
     creation_date = tables.TemplateColumn("""<span title="{{ record.creation_date|date:"YmdHis" }}">{{ record.creation_date|date:"j F" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
+    proba = tables.TemplateColumn("{{ record.getStateProba.0.0 }} : {{record.getStateProba.0.1 }} %", attrs=TABLES2_HIDE_COL_MD)
 
 
     class Meta:
         model = Lead
-        sequence = ("client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "creation_date", "due_date", "start_date")
+        sequence = ("client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba", "creation_date", "due_date", "start_date")
         fields = sequence
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed"}
 

@@ -119,6 +119,9 @@
                     <th>{% trans "Sales (k€)" %}</th><td>{{ lead.sales|default_if_none:_("Unknown amount") }}</td>
                 </tr>
                 <tr>
+                    <th>{% trans "Estimation" %}</th><td>{% for state, proba in lead.getStateProba %}{{state }} : {{ proba }} %, {% endfor %}</td>
+                </tr>
+                <tr>
                     <th>{% trans "Potential resource(s)" %}</th><td>{{ lead.staffing_list }}</td>
                 </tr>
                 <tr>

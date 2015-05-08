@@ -30,11 +30,11 @@ class Mission(models.Model):
             ('NONPROD', ugettext("Unproductive")),
             ('HOLIDAYS', ugettext("Holidays")))
     PROBABILITY = (
-            (0, ugettext("Null")),
-            (25, ugettext("Low")),
-            (50, ugettext("Normal")),
-            (75, ugettext("High")),
-            (100, ugettext("Certain")))
+            (0, ugettext("Null (0 %)")),
+            (25, ugettext("Low (25 %)")),
+            (50, ugettext("Normal (50 %)")),
+            (75, ugettext("High (75 %)")),
+            (100, ugettext("Certain (100 %)")))
     BILLING_MODES = (
             (('FIXED_PRICE'), ugettext("Fixed price")),
             (('TIME_SPENT'), ugettext("Time spent")))
@@ -45,6 +45,7 @@ class Mission(models.Model):
     billing_mode = models.CharField(_("Billing mode"), max_length=30, choices=BILLING_MODES, null=True)
     active = models.BooleanField(_("Active"), default=True)
     probability = models.IntegerField(_("Proba"), default=50, choices=PROBABILITY)
+    probability_auto = models.BooleanField(_("Automatic probability"), default=True)
     price = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     contacts = models.ManyToManyField(MissionContact, blank=True)

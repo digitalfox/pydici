@@ -235,6 +235,11 @@ class Lead(models.Model):
                 return False
         return True
 
+    def getStateProba(self):
+        """Display in readdable format lead state probability"""
+        states = dict(Lead.STATES)
+        return [(states[proba.state], proba.score) for proba in self.stateproba_set.all().order_by("-score")]
+
     def getDocURL(self):
         """@return: URL to reach this lead base directory"""
         (clientDir, leadDir, businessDir, inputDir, deliveryDir) = getLeadDirs(self)
@@ -247,6 +252,13 @@ class Lead(models.Model):
     class Meta:
         ordering = ["client__organisation__company__name", "name"]
         verbose_name = _("Lead")
+
+
+class StateProba(models.Model):
+    """Lead state probability"""
+    lead = models.ForeignKey(Lead)
+    state = models.CharField(_("State"), max_length=30, choices=Lead.STATES)
+    score = models.FloatField(_("Score"))
 
 
 # Signal handling to throw actionset and document tree creation
