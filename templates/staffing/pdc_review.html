@@ -99,7 +99,7 @@
             <td><a href="{% url 'people.views.consultant_home' consultant.id %}#tab-staffing">{{ consultant }}</a><span title="{{consultant.id}}"></span></td>
             {% autoescape off %}
             {% for charge in charges %}
-                <td class='pdc-tooltip' style="border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td class='charge pdc-tooltip'>" }}</td>
+                <td class='pdc-tooltip' style="cursor: help; border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td style='cursor: help' class='charge pdc-tooltip'>" }}</td>
             {% endfor %}
             {% endautoescape %}
         </tr>
@@ -107,7 +107,7 @@
     <tr>
         <th>{% trans "Totals" %}</th>
         {% for month_total in total %}
-            <th style="border-left:2px solid #C3C3C3;">{{ month_total|join:"</th><th>" }}</th>
+            <th style="cursor: help; border-left:2px solid #C3C3C3;">{{ month_total|join:"</th><th>" }}</th>
         {% endfor %}
     </tr>
     <tr>
@@ -187,8 +187,7 @@ $(document).ready(function(){
                   return '';
               }
           },
-           delay: { show : 500, hide:200 },
-           trigger: "hover",
+           trigger: "click",
            template: '<div class="popover" style="max-width:800px;" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
         }
     );
