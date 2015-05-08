@@ -22,7 +22,17 @@ class LeadsTable(tables.Table):
     due_date = tables.TemplateColumn("""<span title="{{ record.due_date|date:"Ymd" }}">{{ record.due_date|date:"j F"|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
     start_date = tables.TemplateColumn("""<span title="{{ record.start_date|date:"Ymd" }}">{{ record.start_date|date:"j F"|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
     creation_date = tables.TemplateColumn("""<span title="{{ record.creation_date|date:"YmdHis" }}">{{ record.creation_date|date:"j F" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
-    proba = tables.TemplateColumn("{{ record.getStateProba.0.0 }} : {{record.getStateProba.0.1 }} %", attrs=TABLES2_HIDE_COL_MD)
+    proba = tables.TemplateColumn("""{% if record.getStateProba %}
+                                            <div class='proba' data-toggle='tooltip' data-content='{% for code, state, proba in record.getStateProba %}{{state }} : {{ proba }} %, {% endfor %}'>
+                                                <div
+                                                    {% ifequal record.getStateProba.0.0 "WON" %}class="glyphicon glyphicon-ok-circle"{% endifequal %}
+                                                    {% ifequal record.getStateProba.0.0 "LOST" %}class="glyphicon glyphicon-remove-circle"{% endifequal %}
+                                                    {% ifequal record.getStateProba.0.0 "FORGIVEN" %}class="glyphicon glyphicon-ban-circle"{% endifequal %}
+                                                    {% ifequal record.getStateProba.0.0 "SLEEPING" %}class="glyphicon glyphicon-cloud"{% endifequal %}
+                                                    >
+                                                </div><small> {{record.getStateProba.0.2}}&nbsp;%</small>
+                                            </div>
+                                     {% endif %}""", attrs=TABLES2_HIDE_COL_MD)
 
 
     class Meta:

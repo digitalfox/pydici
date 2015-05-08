@@ -55,10 +55,13 @@ def postSaveLead(request, lead, updated_fields):
             messages.add_message(request, messages.ERROR, ugettext("Failed to send mail: %s") % e)
 
     # Compute leads probability
-    from datetime import datetime
     if lead.state in ("WON", "LOST", "SLEEPING", "FORGIVEN"):
+        # Remove leads proba, no more needed
+        lead.stateproba_set.all().delete()
+        # Learn again. This new lead will now be used to training
         compute_leads_state(relearn=True)
     else:
+        # Just update proba for this lead with its new features
         compute_leads_state(relearn=False, leads=[lead,])
 
 

@@ -236,9 +236,9 @@ class Lead(models.Model):
         return True
 
     def getStateProba(self):
-        """Display in readdable format lead state probability"""
+        """Returns a list of tuple (proba_code, proba label, proba score) for lead state probability"""
         states = dict(Lead.STATES)
-        return [(states[proba.state], proba.score) for proba in self.stateproba_set.all().order_by("-score")]
+        return [(proba.state, states[proba.state], proba.score) for proba in self.stateproba_set.all().order_by("-score")]
 
     def getDocURL(self):
         """@return: URL to reach this lead base directory"""
