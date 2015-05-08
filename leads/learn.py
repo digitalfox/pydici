@@ -24,7 +24,8 @@ from taggit_suggest.models import Tag
 
 
 STATES= { "WON": 1, "LOST": 2, "SLEEPING": 3, "FORGIVEN": 4}
-INV_STATES = {v: k for k, v in STATES.items()}
+INV_STATES = dict([(v, k) for k, v in STATES.items()])
+
 
 def get_lead_data(lead, tags):
     """Get features and target of given lead. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
