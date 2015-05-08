@@ -94,7 +94,7 @@
                         <th>{% trans "Billing mode" %}</th><td><div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></td>
                     </tr>
                     <tr>
-                        <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_probability_display }}</div></td>
+                        <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.probability }} %</div></td>
                     </tr>
                     <tr>
                         <th>{% trans "Lead of this mission" %}</th><td><a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></td>

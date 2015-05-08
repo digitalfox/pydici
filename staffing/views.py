@@ -959,6 +959,7 @@ def create_new_mission_from_lead(request, lead_id):
     mission.responsible = lead.responsible
     mission.nature = modelMission.nature
     mission.probability = modelMission.probability
+    mission.probability_auto = False
     mission.subsidiary = lead.subsidiary
     mission.save()
     mission.create_default_staffing()  # Initialize default staffing
@@ -1022,6 +1023,7 @@ def mission_update(request):
             value = int(value)
             if value in probability:
                 mission.probability = value
+                mission.probability_auto = False
                 mission.save()
                 return HttpResponse(probability[value])
     # Not GET or POST ? Or not explicit attribute ?
