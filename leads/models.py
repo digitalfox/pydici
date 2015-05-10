@@ -36,10 +36,10 @@ class LeadManager(models.Manager):
     def active(self):
         today = datetime.today()
         delay = timedelta(days=1)
-        return self.get_query_set().exclude(Q(state__in=self.PASSIVE_STATES) & Q(update_date__lt=today-delay))
+        return self.get_queryset().exclude(Q(state__in=self.PASSIVE_STATES) & Q(update_date__lt=today-delay))
 
     def passive(self):
-        return self.get_query_set().filter(state__in=self.PASSIVE_STATES)
+        return self.get_queryset().filter(state__in=self.PASSIVE_STATES)
 
 
 class Lead(models.Model):
@@ -69,7 +69,7 @@ class Lead(models.Model):
     state = models.CharField(_("State"), max_length=30, choices=STATES, default=STATES[0][0])
     state.db_index = True
     client = models.ForeignKey(Client, verbose_name=_("Client"))
-    creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
+    creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
     deal_id = models.CharField(_("Deal id"), max_length=100, blank=True)
     client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
     deal_id.db_index = True

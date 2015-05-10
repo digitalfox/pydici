@@ -62,7 +62,7 @@ class ActionState(models.Model):
     state = models.CharField(_("State"), max_length=50, choices=ACTION_STATES, default=ACTION_STATES[0][0])
     state.db_index = True
     user = models.ForeignKey(User)
-    creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
+    creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     target_type = models.ForeignKey(ContentType, verbose_name=_(u"Target content type"), blank=True, null=True)
     target_id = models.PositiveIntegerField(_(u"Content id"), blank=True, null=True)

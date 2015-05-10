@@ -226,12 +226,14 @@ class MissionForm(PydiciCrispyModelForm):
 
     class Meta:
         model = Mission
+        fields = "__all__"
 
 
 class FinancialConditionAdminForm(forms.ModelForm):
     """Form used to validate financial condition bought price field in admin"""
     class Meta:
         model = FinancialCondition
+        fields = "__all__"
 
     def clean_bought_daily_rate(self):
         """Ensure bought daily rate is defined only for subcontractor"""

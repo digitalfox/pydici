@@ -57,7 +57,7 @@ class AbstractBill(models.Model):
     """Abstract class that factorize ClientBill and SupplierBill fields and logic"""
     lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
     bill_id = models.CharField(_("Bill id"), max_length=200, unique=True)
-    creation_date = models.DateField(_("Creation date"), default=date.today())
+    creation_date = models.DateField(_("Creation date"), auto_now_add=True)
     due_date = models.DateField(_("Due date"), default=(date.today() + timedelta(30)))
     payment_date = models.DateField(_("Payment date"), blank=True, null=True)
     previous_year_bill = models.BooleanField(_("Previous year bill"), default=False)

@@ -23,6 +23,7 @@ class BillForm(models.ModelForm):
 class ClientBillForm(BillForm):
     class Meta:
         model = ClientBill
+        fields = "__all__"
 
 
 class SupplierBillForm(BillForm):
@@ -30,3 +31,4 @@ class SupplierBillForm(BillForm):
 
     class Meta:
         model = SupplierBill
+        fields = "__all__"

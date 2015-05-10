@@ -105,7 +105,7 @@ def test_model():
     print "score : %s" % score
     return score
 
-@transaction.commit_on_success
+@transaction.atomic
 def compute_leads_state(relearn=True, leads=None):
     """Learn from past leads and compute stats for current leads
     @:param learn; if true (default) learn again from leads, else, use previous computation if available
