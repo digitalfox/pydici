@@ -6,9 +6,11 @@ Database access layer for pydici expense module
 """
 
 from time import strftime
-from os.path import join
+from os.path import join, dirname, split
 
 from django.db import models
+from django.core.files.storage import FileSystemStorage
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 import workflows.utils as wf
@@ -18,12 +20,22 @@ from core.utils import sanitizeName
 import pydici.settings
 
 
+class ExpenseStorage(FileSystemStorage):
+    def url(self, name):
+        try:
+            expense_id = split(dirname(name))[1]
+            return reverse("expense.views.expense_receipt", kwargs={"expense_id": expense_id})
+        except Exception:
+            # Don't display URL if Expense does not exist or path is invalid
+            return ""
+
+
 # This utils function is here and not in utils module
 # to avoid circular import loop, as utils module import Expense models
 def expense_receipt_path(instance, filename):
     """Format full path of expense receipt"""
     return join(pydici.settings.PYDICI_ROOTDIR, "data", "expense",
-                strftime("%Y"), strftime("%m"), instance.user.username,
+                strftime("%Y"), strftime("%m"), instance.user.username, str(instance.id),
                 u"%s_%s" % (strftime("%d-%H%M%S"), sanitizeName(filename)))
 
 
@@ -69,7 +81,7 @@ class Expense(models.Model):
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     amount = models.DecimalField(_("Amount"), max_digits=7, decimal_places=2)
     category = models.ForeignKey(ExpenseCategory, verbose_name=_("Category"))
-    receipt = models.FileField(_("Receipt"), max_length=500, upload_to=expense_receipt_path, null=True, blank=True)
+    receipt = models.FileField(_("Receipt"), max_length=500, upload_to=expense_receipt_path, storage=ExpenseStorage(), null=True, blank=True)
     corporate_card = models.BooleanField(_("Paid with corporate card"), default=False)
     comment = models.TextField(_("Comments"), blank=True)
     workflow_in_progress = models.BooleanField(default=True)
@@ -91,6 +103,7 @@ class Expense(models.Model):
             return wf.get_allowed_transitions(self, user)
         else:
             return []
+
 
     class Meta:
         verbose_name = _("Expense")
