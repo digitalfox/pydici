@@ -7,7 +7,8 @@ Database access layer for pydici people module
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import F, Sum, get_model
+from django.db.models import F, Sum
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.core.urlresolvers import reverse
@@ -59,13 +60,13 @@ class Consultant(models.Model):
 
     def active_missions(self):
         """Returns consultant active missions based on forecast staffing"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         return Mission.objects.filter(active=True).filter(staffing__consultant=self).distinct()
 
     def forecasted_missions(self, month=None):
         """Returns consultant active missions on given month based on forecasted staffing
         If month is not defined, current month is used"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
 
         if month:
             month = month.replace(day=1)
@@ -81,7 +82,7 @@ class Consultant(models.Model):
     def timesheet_missions(self, month=None):
         """Returns consultant missions on given month based on timesheet
         If month is not defined, current month is used"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         if month:
             month = month.replace(day=1)
         else:
@@ -114,7 +115,7 @@ class Consultant(models.Model):
 
     def getProductionRate(self, startDate, endDate):
         """Get consultant production rate between startDate (included) and enDate (excluded)"""
-        Timesheet = get_model("staffing", "Timesheet")
+        Timesheet = apps.get_model("staffing", "Timesheet")
         timesheets = Timesheet.objects.filter(consultant=self,
                                               charge__gt=0,
                                               working_date__gte=startDate,

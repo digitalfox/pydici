@@ -21,7 +21,7 @@ from people.models import Consultant
 from crm.models import MissionContact, Subsidiary
 from actionset.utils import launchTrigger
 from actionset.models import ActionState
-from core.utils import disable_for_loaddata, cacheable, convertDictKeyToDateTime
+from core.utils import disable_for_loaddata, cacheable, convertDictKeyToDate
 
 
 class Mission(models.Model):
@@ -194,7 +194,7 @@ class Mission(models.Model):
         for consultant in self.consultants():
             result[consultant] = 0  # Initialize margin over rate objective for this consultant
             data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-            data = convertDictKeyToDateTime(data)
+            data = convertDictKeyToDate(data)
 
             for month in timesheetMonths:
                 n_days = data.get(month, 0)

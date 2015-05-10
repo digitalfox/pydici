@@ -35,7 +35,7 @@ from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-    to_int_or_round, COLORS, convertDictKeyToDateTime, cumulateList
+    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent
@@ -126,7 +126,7 @@ def consultant_staffing(request, consultant_id):
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
-                                          formset=ConsultantStaffingInlineFormset)
+                                          formset=ConsultantStaffingInlineFormset, fields="__all__")
 
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=consultant)
@@ -561,7 +561,7 @@ def mission_timesheet(request, mission_id):
         # Timesheet data
         timesheetData = []
         data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-        data = convertDictKeyToDateTime(data)
+        data = convertDictKeyToDate(data)
 
         for month in timesheetMonths:
             n_days = data.get(month, 0)
@@ -644,13 +644,12 @@ def mission_timesheet(request, mission_id):
     objectiveMargin = mission.objectiveMargin(endDate=nextMonth(current_month))
 
     # Prepare data for graph
-    graph_data = []
-    isoTimesheetDates = [t.date().isoformat() for t in timesheetMonths]
+    isoTimesheetDates = [t.isoformat() for t in timesheetMonths]
     if len(timesheetMonths) > 0:
-        minDate = previousMonth(timesheetMonths[0]).date().isoformat()
+        minDate = previousMonth(timesheetMonths[0]).isoformat()
     else:
         minDate = previousMonth(date.today()).isoformat()
-    isoStaffingDates = [t.date().isoformat() for t in staffingMonths]
+    isoStaffingDates = [t.isoformat() for t in staffingMonths]
     if len(isoStaffingDates) > 0 and len(isoTimesheetDates) > 0:
         if isoTimesheetDates[-1] == isoStaffingDates[0]:
             # We have an overlap
@@ -1097,19 +1096,19 @@ def graph_timesheet_rates_bar_jqp(request):
                                           working_date__lt=timesheetEndDate).select_related()
 
     timesheetMonths = timesheets.dates("working_date", "month")
-    isoTimesheetMonths = [d.date().isoformat() for d in timesheetMonths]
+    isoTimesheetMonths = [d.isoformat() for d in timesheetMonths]
 
     if not timesheetMonths:
         return HttpResponse('')
 
     nConsultant = dict(timesheets.extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Count("consultant__id", distinct=True)).order_by())
-    nConsultant = convertDictKeyToDateTime(nConsultant)
+    nConsultant = convertDictKeyToDate(nConsultant)
 
     for nature in natures:
         nature_data[nature] = []
         nature_data_days[nature] = []
         data = dict(timesheets.filter(mission__nature=nature).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-        data = convertDictKeyToDateTime(data)
+        data = convertDictKeyToDate(data)
         for month in timesheetMonths:
             nature_data[nature].append(100 * data.get(month, 0) / (working_days(month, holiday_days) * nConsultant.get(month, 1)))
             nature_data_days[nature].append(data.get(month, 0))

@@ -16,9 +16,7 @@ sys.path.append(abspath(join(dirname(__file__), pardir, pardir)))  # Add project
 # Ensure we are in the good current working directory (pydici home)
 os.chdir(abspath(join(dirname(__file__), pardir)))
 
-from django.core.management import setup_environ
 import pydici.settings
-setup_environ(pydici.settings)
 
 
 from django.contrib.contenttypes.models import ContentType

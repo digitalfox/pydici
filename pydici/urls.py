@@ -47,7 +47,7 @@ if pydici.settings.DEBUG:
 
 pydici_patterns += patterns('',
     # Direct to template and direct pages
-    url(r'^help', RedirectView.as_view(url=pydici.settings.LEADS_HELP_PAGE), name='help'),
+    url(r'^help', RedirectView.as_view(url=pydici.settings.LEADS_HELP_PAGE, permanent=True), name='help'),
 
     # Media
     (r'^media/(?P<path>.*)$', 'django.views.static.serve',

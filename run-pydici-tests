@@ -16,8 +16,7 @@ from django.core.management import execute_from_command_line
 
 
 def main():
-    modules = [x.split('.')[-1] for x in settings.PYDICI_APPS]
-    args = ['manage.py', 'test'] + modules + sys.argv[1:]
+    args = ['manage.py', 'test'] + settings.PYDICI_APPS + sys.argv[1:]
     execute_from_command_line(args)
 
 
