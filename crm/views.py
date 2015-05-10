@@ -21,8 +21,10 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
 
 
-from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact, BusinessBroker
-from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm, AdministrativeContactForm, BusinessBrokerForm
+from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact,\
+    BusinessBroker, Supplier
+from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm,\
+    AdministrativeContactForm, BusinessBrokerForm, SupplierForm
 from staffing.models import Timesheet
 from people.models import Consultant
 from leads.models import Lead
@@ -105,6 +107,18 @@ class BusinessBrokerUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateVi
     model = BusinessBroker
     template_name = "core/form.html"
     form_class = BusinessBrokerForm
+
+
+class SupplierCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
+    model = Supplier
+    template_name = "core/form.html"
+    form_class = SupplierForm
+
+
+class SupplierUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
+    model = Supplier
+    template_name = "core/form.html"
+    form_class = SupplierForm
 
 
 class AdministrativeContactCreate(PydiciNonPublicdMixin, CreateView):
