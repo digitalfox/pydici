@@ -1125,7 +1125,7 @@ def graph_timesheet_rates_bar_jqp(request):
 
     return render(request, "staffing/graph_timesheet_rates_bar_jqp.html",
                   {"graph_data": json.dumps(graph_data),
-                   "min_date": previousMonth(timesheetMonths[0]).date().isoformat(),
+                   "min_date": previousMonth(timesheetMonths[0]).isoformat(),
                    "natures_display": [i[1] for i in Mission.MISSION_NATURE],
                    "series_colors": COLORS,
                    "user": request.user})
@@ -1154,7 +1154,7 @@ def graph_profile_rates_jqp(request):
                                           working_date__lt=timesheetEndDate).select_related()
 
     timesheetMonths = timesheets.dates("working_date", "month")
-    isoTimesheetMonths = [d.date().isoformat() for d in timesheetMonths]
+    isoTimesheetMonths = [d.isoformat() for d in timesheetMonths]
     if not timesheetMonths:
         return HttpResponse('')
 
@@ -1177,7 +1177,6 @@ def graph_profile_rates_jqp(request):
     for profil in profils.keys():
         data = []
         for month in timesheetMonths:
-            month = month.date()
             if month in nDays[profil] and nDays[profil][month] > 0:
                 data.append(avgDailyRate[profil][month] / nDays[profil][month])
             else:
@@ -1186,7 +1185,7 @@ def graph_profile_rates_jqp(request):
 
     return render(request, "staffing/graph_profile_rates_jqp.html",
               {"graph_data": json.dumps(graph_data),
-               "min_date": previousMonth(timesheetMonths[0]).date().isoformat(),
+               "min_date": previousMonth(timesheetMonths[0]).isoformat(),
                "profils_display": profils.values(),
                "series_colors": COLORS,
                "user": request.user})
@@ -1216,13 +1215,13 @@ def graph_consultant_rates_jqp(request, consultant_id):
         prodRate = consultant.getProductionRate(refDate, next_month)
         if prodRate:
             prodRateData.append(100 * prodRate)
-            isoProdDates.append(refDate.date().isoformat())
+            isoProdDates.append(refDate.isoformat())
         fc = consultant.getFinancialConditions(refDate, next_month)
         if fc:
             dailyRateData.append(int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc])))
             minYData.append(int(min([rate for rate, days in fc])))
             maxYData.append(int(max([rate for rate, days in fc])))
-            isoRateDates.append(refDate.date().isoformat())
+            isoRateDates.append(refDate.isoformat())
         objectiveRate = consultant.getRateObjective(refDate)
         if objectiveRate:
             objectiveRates.append(objectiveRate.daily_rate)
@@ -1231,7 +1230,7 @@ def graph_consultant_rates_jqp(request, consultant_id):
 
     # Add data to graph
     graph_data.append(zip(isoRateDates, dailyRateData))
-    graph_data.append(zip([d.date().isoformat() for d in kdates], objectiveRates))
+    graph_data.append(zip([d.isoformat() for d in kdates], objectiveRates))
     graph_data.append(zip(isoRateDates, minYData))
     graph_data.append(zip(isoRateDates, maxYData))
     graph_data.append(zip(isoProdDates, prodRateData))
