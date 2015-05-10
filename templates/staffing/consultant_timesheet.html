@@ -36,8 +36,10 @@
 	               <td>{{ field.label|split:" "|last|floatformat:-2 }}</td>
 	               </tr><tr>
                 {% else %}
-	               <td style="text-align:left">{{ field.label }}{{ field.errors }}</td>
-	               <td>{{ field }}</td>
+                   <td style="text-align:left">{{ field.label }}</td>
+                   <td class="{% if field.errors %}timesheet-error{% endif %}">
+                      {{ field }}
+                   </td>
                 {% endif %}
             {% endfor %}
             </tr>

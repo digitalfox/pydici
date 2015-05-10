@@ -38,6 +38,10 @@ DOCUMENT_PROJECT_BUSINESS_DIR = u"commerce"
 DOCUMENT_PROJECT_DELIVERY_DIR = u"delivery"
 DOCUMENT_PROJECT_INPUT_DIR = u"input"
 
+# can be "cycle" or "keyboard"
+TIMESHEET_INPUT_METHOD = "cycle"
+TIMESHEET_DAY_DURATION = 7
+
 # INCWO_LOG_DIR must point to a dir where the `incwoimport` command can write.
 # It defaults to $PYDICI_PREFIX/incwo-log if not set.
 INCWO_LOG_DIR = os.path.join(PYDICI_ROOTDIR, 'incwo-log')

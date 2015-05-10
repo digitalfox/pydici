@@ -26,6 +26,7 @@ from django.utils import formats
 from django.views.decorators.cache import cache_page, cache_control
 from django.views.generic.edit import UpdateView
 from django.contrib import messages
+from django.conf import settings
 
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from people.models import Consultant
@@ -37,9 +38,15 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
     to_int_or_round, COLORS, convertDictKeyToDateTime, cumulateList
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
-    sortMissions, holidayDays, staffingDates
+    sortMissions, holidayDays, staffingDates, time_string_for_day_percent
 from staffing.tables import MissionTable
 from staffing.forms import MissionForm
+
+
+TIMESTRING_FORMATTER = {
+    'cycle': formats.number_format,
+    'keyboard': time_string_for_day_percent
+}
 
 
 @pydici_non_public
@@ -491,7 +498,6 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                    "is_current_month": month == date.today().replace(day=1),
                    "user": request.user})
 
-
 def consultant_csv_timesheet(request, consultant, days, month, missions):
     """@return: csv timesheet for a given consultant"""
     # This "view" is never called directly but only through consultant_timesheet view
@@ -507,6 +513,8 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
     writer.writerow([_("Mission").encode("ISO-8859-15", "replace"), _("Deal id").encode("ISO-8859-15", "replace")]
                      + [_(d.strftime("%a")) for d in days] + [_("total")])
 
+    timestring_formatter = TIMESTRING_FORMATTER[settings.TIMESHEET_INPUT_METHOD]
+
     for mission in missions:
         total = 0
         row = [i.encode("ISO-8859-15", "replace") for i in [unicode(mission), mission.mission_id()]]
@@ -514,7 +522,7 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
         for day in days:
             try:
                 timesheet = timesheets.get(working_date=day)
-                row.append(formats.number_format(timesheet.charge))
+                row.append(timestring_formatter(timesheet.charge))
                 total += timesheet.charge
             except Timesheet.DoesNotExist:
                 row.append("")

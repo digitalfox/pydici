@@ -4,11 +4,13 @@ Staffing form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+import types
 
 from datetime import timedelta, date
 from decimal import Decimal
 
 from django import forms
+from django.conf import settings
 from django.forms.models import BaseInlineFormSet
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy
@@ -28,7 +30,7 @@ from staffing.models import Mission, FinancialCondition
 from core.forms import PydiciSelect2Field, PydiciCrispyModelForm
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
-from staffing.utils import staffingDates
+from staffing.utils import staffingDates, time_string_for_day_percent, day_percent_for_time_string
 from leads.forms import LeadChoices
 
 
@@ -141,12 +143,11 @@ class TimesheetForm(forms.Form):
         showLunchTickets = kwargs.pop("showLunchTickets", True)
         super(TimesheetForm, self).__init__(*args, **kwargs)
 
+        TimesheetFieldClass = TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD[settings.TIMESHEET_INPUT_METHOD]
         for mission in missions:
             for day in days:
                 key = "charge_%s_%s" % (mission.id, day.day)
-                self.fields[key] = TimesheetField(required=False)
-                self.fields[key].widget.attrs.setdefault("size", 1)  # Reduce default size
-                self.fields[key].widget.attrs.setdefault("readonly", 1)  # Avoid direct input for mobile
+                self.fields[key] = TimesheetFieldClass(required=False)
                 # Order tabindex by day
                 if day.isoweekday() in (6, 7) or day in holiday_days:
                     tabIndex = 100000  # Skip week-end from tab path
@@ -257,7 +258,7 @@ class MissionContactsForm(forms.ModelForm):
         fields = ["contacts", ]
 
 
-class TimesheetField(forms.ChoiceField):
+class CycleTimesheetField(forms.ChoiceField):
     widget = forms.widgets.TextInput
     TS_VALUES = {u"0": None,
                  u"¼": "0.25",
@@ -272,9 +273,12 @@ class TimesheetField(forms.ChoiceField):
 
     def __init__(self, choices=(), required=True, widget=None, label=None,
                  initial=None, help_text=None, *args, **kwargs):
-        super(TimesheetField, self).__init__(required=required, widget=widget, label=label,
+        super(CycleTimesheetField, self).__init__(required=required, widget=widget, label=label,
                                              initial=initial, help_text=help_text, *args, **kwargs)
         self.choices = self.TS_VALUES.items()
+        self.widget.attrs.setdefault("size", 1)  # Reduce default size
+        self.widget.attrs.setdefault("readonly", 1)  # Avoid direct input for mobile
+        self.widget.attrs.setdefault("class", "timesheet-cycle")
 
     def prepare_value(self, value):
         return self.TS_VALUES_R.get(value, None)
@@ -293,3 +297,31 @@ class TimesheetField(forms.ChoiceField):
         except KeyError:
             raise forms.ValidationError("Please enter a valid input (%s)." %
                                         ", ".join(self.TS_VALUES.keys()))
+
+
+class KeyboardTimesheetField(forms.Field):
+    def __init__(self, *args, **kwargs):
+        kwargs['widget'] = forms.TextInput()
+        super(KeyboardTimesheetField, self).__init__(*args, **kwargs)
+        self.widget.attrs.setdefault("class", "timesheet-keyboard")
+
+    def prepare_value(self, day_percent):
+        if isinstance(day_percent, types.StringTypes):
+            # day_percent may already be a string if prepare_value() is called
+            # with the final value
+            return day_percent
+        return time_string_for_day_percent(day_percent)
+
+    def to_python(self, value):
+        if not value and not self.required:
+            return 0
+        try:
+            return day_percent_for_time_string(value)
+        except ValueError:
+            raise forms.ValidationError('Invalid time string {}'.format(value))
+
+
+TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD = {
+    'cycle': CycleTimesheetField,
+    'keyboard': KeyboardTimesheetField
+}
