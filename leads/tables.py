@@ -25,10 +25,10 @@ class LeadsTable(tables.Table):
     proba = tables.TemplateColumn("""{% if record.getStateProba %}
                                             <div class='proba' data-toggle='tooltip' data-content='<table style="margin-bottom:0" class="table table-striped table-condensed">{% for code, state, proba in record.getStateProba %}<tr><td>{{state }}</td><td>{{ proba }} %</td></tr>{% endfor %}</table>'>
                                                 <div
-                                                    {% ifequal record.getStateProba.0.0 "WON" %}class="glyphicon glyphicon-ok-circle"{% endifequal %}
-                                                    {% ifequal record.getStateProba.0.0 "LOST" %}class="glyphicon glyphicon-remove-circle"{% endifequal %}
-                                                    {% ifequal record.getStateProba.0.0 "FORGIVEN" %}class="glyphicon glyphicon-ban-circle"{% endifequal %}
-                                                    {% ifequal record.getStateProba.0.0 "SLEEPING" %}class="glyphicon glyphicon-cloud"{% endifequal %}
+                                                    {% ifequal record.getStateProba.0.0 "WON" %}style="color:green" class="glyphicon glyphicon-ok-circle"{% endifequal %}
+                                                    {% ifequal record.getStateProba.0.0 "LOST" %}style="color:red" class="glyphicon glyphicon-remove-circle"{% endifequal %}
+                                                    {% ifequal record.getStateProba.0.0 "FORGIVEN" %}style="color:orange" class="glyphicon glyphicon-ban-circle"{% endifequal %}
+                                                    {% ifequal record.getStateProba.0.0 "SLEEPING" %}style="color:"yellow" class="glyphicon glyphicon-cloud"{% endifequal %}
                                                     >
                                                 </div><small> {{record.getStateProba.0.2}}&nbsp;%</small>
                                             </div>
