@@ -6,11 +6,10 @@ django-taggit-templatetags
 django-ajax-selects
 django-permissions==1.0.3
 django-workflows==1.0.2
-django-extensions==1.1.1
+django-extensions==1.5.3
 django-debug-toolbar
 django-userswitch
 django-crispy-forms
 Django-Select2
-South==1.0.2
 requests==2.5.2
 lxml==3.4.2
