@@ -111,8 +111,8 @@ def extract_leads_tag(leads, include_leads=False):
 
 
 def learn_tag(features, targets):
-        model = Pipeline([("vect", CountVectorizer()), ("trf", TfidfTransformer()),
-                      ("clf", SGDClassifier(loss="log"))])
+        model = Pipeline([("vect", CountVectorizer(ngram_range=(1,2))), ("trf", TfidfTransformer(norm="l1", use_idf=False)),
+                      ("clf", SGDClassifier(loss="log", n_iter=10, penalty="elasticnet"))])
         model.fit(features, targets)
         return model
 
