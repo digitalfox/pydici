@@ -19,6 +19,7 @@ try:
     from sklearn.linear_model import SGDClassifier
     from sklearn.preprocessing import MultiLabelBinarizer
     from sklearn.multiclass import LabelBinarizer
+    from sklearn.cross_validation import cross_val_score
 except ImportError:
     HAVE_SCIKIT = False
 
@@ -136,23 +137,12 @@ def predict_tags(model, features):
 def test_state_model():
     """Test state model accuracy"""
     leads = Lead.objects.filter(state__in=STATES.keys())
-    all_id = list(sum(leads.values_list("id"), ()))
-    if len(all_id)<2:
-        print "Too few samples"
-    test_id = sample(all_id, int(len(all_id)/20) or 1)
-    learn_id = all_id
-    for i in test_id:
-        learn_id.remove(i)
-    test_leads = leads.filter(id__in=test_id)
-    learn_leads = leads.filter(id__in=learn_id)
-    learn_features, learn_targets = extract_leads_state(learn_leads)
-    test_features, test_targets = extract_leads_state(test_leads)
+    features, targets = extract_leads_state(leads)
     vectorizer = DictVectorizer()
-    vectorizer.fit(learn_features+test_features)
-    model = learn_state(vectorizer.transform(learn_features), processTarget(learn_targets))
-    score = model.score(vectorizer.transform(test_features), processTarget(test_targets))
-    print "score : %s" % score
-    return score
+    vectorizer.fit(features)
+    scores = cross_val_score(LogisticRegression(), vectorizer.transform(features), processTarget(targets))
+    print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+    return scores.mean()
 
 def test_tag_model():
     """Test tag model accuracy"""
