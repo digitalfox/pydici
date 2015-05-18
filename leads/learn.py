@@ -20,6 +20,7 @@ try:
     from sklearn.preprocessing import MultiLabelBinarizer
     from sklearn.multiclass import LabelBinarizer
     from sklearn.cross_validation import cross_val_score
+    import numpy as np
 except ImportError:
     HAVE_SCIKIT = False
 
@@ -112,7 +113,7 @@ def extract_leads_tag(leads, include_leads=False):
 
 def learn_tag(features, targets):
         model = Pipeline([("vect", CountVectorizer(ngram_range=(1,2))), ("trf", TfidfTransformer(norm="l1", use_idf=False)),
-                      ("clf", SGDClassifier(loss="log", n_iter=10, penalty="elasticnet"))])
+                     ("clf", SGDClassifier(loss="log", n_iter=10, penalty="elasticnet"))])
         model.fit(features, targets)
         return model
 
@@ -148,25 +149,28 @@ def test_tag_model():
     """Test tag model accuracy"""
     leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
     all_id = list(sum(leads.values_list("id"), ()))
-    if len(all_id)<2:
-        print "Too few samples"
-    test_id = sample(all_id, int(len(all_id)/20) or 1)
-    learn_id = all_id
-    for i in test_id:
-        learn_id.remove(i)
-    test_leads = leads.filter(id__in=test_id)
-    learn_leads = leads.filter(id__in=learn_id)
-    learn_features, learn_targets = extract_leads_tag(learn_leads)
-    used_test_leads, test_features, test_targets = extract_leads_tag(test_leads, include_leads=True)
-    model = learn_tag(learn_features, learn_targets)
-
-    ok = 0.0
-    for lead, predict in zip(used_test_leads, model.predict(test_features)):
-        if unicode(predict).lower() in [unicode(t).lower() for t in lead.tags.all()]:
-            ok += 1
-    score = 100 * ok / len(used_test_leads)
-    print "Per tag score : %s" % score
-    return score
+    scores = []
+    for i in range(10):
+        if len(all_id)<2:
+            print "Too few samples"
+        test_id = sample(all_id, int(len(all_id)/10) or 1)
+        learn_id = all_id
+        for i in test_id:
+            learn_id.remove(i)
+        test_leads = leads.filter(id__in=test_id)
+        learn_leads = leads.filter(id__in=learn_id)
+        learn_features, learn_targets = extract_leads_tag(learn_leads)
+        used_test_leads, test_features, test_targets = extract_leads_tag(test_leads, include_leads=True)
+        model = learn_tag(learn_features, learn_targets)
+        ok = 0.0
+        for lead, predict in zip(used_test_leads, model.predict(test_features)):
+            if unicode(predict).lower() in [unicode(t).lower() for t in lead.tags.all()]:
+                ok += 1
+        score = 100 * ok / len(used_test_leads)
+        scores.append(score)
+    scores = np.array(scores)
+    print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+    return scores.mean()
 
 
 @transaction.commit_on_success
