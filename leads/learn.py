@@ -104,7 +104,9 @@ def extract_leads_tag(leads, include_leads=False):
         for tag in lead.tags.all():
             used_leads.append(lead)
             targets.append(unicode(tag))
-            features.append(unicode(lead.client) + " " + lead.description)
+            features.append(" ".join([unicode(lead.client.organisation), unicode(lead.responsible),
+                                      unicode(lead.subsidiary), unicode(lead.name),
+                                      unicode(lead.staffing_list()), lead.description]))
     if include_leads:
         return (used_leads, features, targets)
     else:
@@ -112,8 +114,8 @@ def extract_leads_tag(leads, include_leads=False):
 
 
 def learn_tag(features, targets):
-        model = Pipeline([("vect", CountVectorizer(ngram_range=(1,2))), ("trf", TfidfTransformer(norm="l1", use_idf=False)),
-                     ("clf", SGDClassifier(loss="log", n_iter=10, penalty="elasticnet"))])
+        model = Pipeline([("vect", CountVectorizer()), ("trf", TfidfTransformer()),
+                     ("clf", SGDClassifier(loss="log"))])
         model.fit(features, targets)
         return model
 
@@ -150,7 +152,7 @@ def test_tag_model():
     leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
     all_id = list(sum(leads.values_list("id"), ()))
     scores = []
-    for i in range(10):
+    for i in range(5):
         if len(all_id)<2:
             print "Too few samples"
         test_id = sample(all_id, int(len(all_id)/10) or 1)
