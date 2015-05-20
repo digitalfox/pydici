@@ -21,6 +21,7 @@ from django.utils.translation import ugettext_lazy as _
 _FEATURES_CHOICES = (
     ("3rdparties", _("Access to the 'Third parties' menu")),
     ("leads", _("Access to the 'Leads' menu")),
+    ("leads_list_all", _("Access to the 'Leads > All leads' menu entry")),
     ("management", _("Access to the 'Management' menu")),
     ("reports", _("Access to the 'Reports' menu")),
     ("search", _("Allow searching")),
