@@ -566,6 +566,8 @@ class LeadLearnTestCase(TestCase):
                 "leads.json", "staffing.json", "billing.json"]
 
     def test_model(self):
+        if not leads_learn.HAVE_SCIKIT:
+            return
         r1 = Consultant.objects.get(id=1)
         r2 = Consultant.objects.get(id=2)
         for i in range(20):
