@@ -120,6 +120,9 @@ def compute_leads_state(relearn=True, leads=None):
     model_and_vectorizer = cache.get(MODEL_CACHE_KEY)
     if relearn or model_and_vectorizer is None:
         learn_leads = Lead.objects.filter(state__in=STATES.keys())
+        if learn_leads.count() < 5:
+            # Cannot learn anything with so few data
+            return
         learn_features, learn_targets = extract_leads(learn_leads)
         vectorizer = DictVectorizer()
         vectorizer.fit(learn_features)
