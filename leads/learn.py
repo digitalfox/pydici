@@ -29,12 +29,14 @@ from django.db.models import Count
 from django.core.cache import cache
 
 from leads.models import Lead, StateProba
-from taggit_suggest.models import Tag
+from taggit.models import Tag
 
 
 STATES= { "WON": 1, "LOST": 2, "SLEEPING": 3, "FORGIVEN": 4}
 INV_STATES = dict([(v, k) for k, v in STATES.items()])
 
+TAG_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_TAGS_MODEL"
+STATE_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_STATE_MODEL"
 
 def get_lead_state_data(lead, tags):
     """Get features and target of given lead. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
@@ -94,8 +96,15 @@ def predict_state(model, features):
     return result
 
 
+def get_lead_tag_data(lead):
+    """Extract lead data needed to predict tag"""
+    return " ".join([unicode(lead.client.organisation), unicode(lead.responsible),
+                                      unicode(lead.subsidiary), unicode(lead.name),
+                                      unicode(lead.staffing_list()), lead.description])
+
+
 def extract_leads_tag(leads, include_leads=False):
-    """Extract leads features and targets for state learning
+    """Extract leads features and targets for tag learning
     @:param include_leads : add leads return output for model testing purpose"""
     features = []
     targets = []
@@ -104,9 +113,7 @@ def extract_leads_tag(leads, include_leads=False):
         for tag in lead.tags.all():
             used_leads.append(lead)
             targets.append(unicode(tag))
-            features.append(" ".join([unicode(lead.client.organisation), unicode(lead.responsible),
-                                      unicode(lead.subsidiary), unicode(lead.name),
-                                      unicode(lead.staffing_list()), lead.description]))
+            features.append(get_lead_tag_data(lead))
     if include_leads:
         return (used_leads, features, targets)
     else:
@@ -120,21 +127,24 @@ def learn_tag(features, targets):
         return model
 
 
-def predict_tags(model, features):
-    result = []
-    for scores in model.predict_proba(features):
-        proba = []
-        for tag, score in zip(model.classes_, scores):
-            proba.append([tag ,round(100*score,1)])
-        proba.sort(key=lambda x: x[1])
-        best_proba = []
-        for i in range(3):
-            try:
-                best_proba.append(proba.pop())
-            except IndexError:
-                break
-        result.append(best_proba)
-    return result
+def predict_tags(lead):
+    model = compute_leads_tags()
+    if model is None:
+        # cannot compute model (ex. not enough data, no scikit...)
+        return []
+    features = get_lead_tag_data(lead)
+    scores = model.predict_proba(features)
+    proba = []
+    for tag, score in zip(model.classes_, scores[0]):
+        proba.append([Tag.objects.get(name=tag) ,round(100*score,1)])
+    proba.sort(key=lambda x: x[1])
+    best_proba = []
+    for i in range(3):
+        try:
+            best_proba.append(proba.pop())
+        except IndexError:
+            break
+    return [i[0] for i in best_proba]
 
 
 def test_state_model():
@@ -180,21 +190,20 @@ def compute_leads_state(relearn=True, leads=None):
     """Learn state from past leads and compute state probal for current leads
     @:param learn; if true (default) learn again from leads, else, use previous computation if available
     @:param leads: estimate those leads. All current leads if None"""
-    MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_STATE_MODEL"
     if not HAVE_SCIKIT:
         return
 
     current_leads = leads or Lead.objects.exclude(state__in=STATES.keys())
     current_features, current_targets = extract_leads_state(current_leads)
 
-    model_and_vectorizer = cache.get(MODEL_CACHE_KEY)
+    model_and_vectorizer = cache.get(STATE_MODEL_CACHE_KEY)
     if relearn or model_and_vectorizer is None:
         learn_leads = Lead.objects.filter(state__in=STATES.keys())
         learn_features, learn_targets = extract_leads_state(learn_leads)
         vectorizer = DictVectorizer()
         vectorizer.fit(learn_features)
         model = learn_state(vectorizer.transform(learn_features), processTarget(learn_targets))
-        cache.set(MODEL_CACHE_KEY, (model, vectorizer), 3600*24)
+        cache.set(STATE_MODEL_CACHE_KEY, (model, vectorizer), 3600*24)
     else:
         model, vectorizer = model_and_vectorizer
 
@@ -209,24 +218,23 @@ def compute_leads_state(relearn=True, leads=None):
                     mission.save()
 
 
-def compute_leads_tags(relearn=True, leads=None):
-    """Learn tags from past leads and compute tags for current leads
-    @:param learn; if true (default) learn again from leads, else, use previous computation if available
-    @:param leads: estimate those leads. All current leads if None"""
-    MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_TAGS_MODEL"
+def compute_leads_tags():
+    """Learn tags from past leads and cache model
+    @:param learn; if true (default) learn again from leads, else, use previous computation if available"""
+
     if not HAVE_SCIKIT:
         return
 
-    model = cache.get(MODEL_CACHE_KEY)
+    model = cache.get(TAG_MODEL_CACHE_KEY)
     if model is None:
-        pass
-    # Get leads with less than 3 tags
-    current_leads = leads or Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__lt=3)
-    # Learn from leads with at least 2 tags
-    learn_leads = leads or Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
+        # Learn from leads with at least 2 tags
+        learn_leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
+        if learn_leads.count() < 5:
+            # Cannot learn anything with so few data
+            return
+        features, targets = extract_leads_tag(learn_leads)
+        model = learn_tag(features, targets)
+        cache.set(TAG_MODEL_CACHE_KEY, model, 3600*24)
 
-    features = targets = extract_leads_tag(learn_leads)
-    model = learn_tag(features, targets)
-
-
+    return model
 

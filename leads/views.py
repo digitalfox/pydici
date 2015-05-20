@@ -24,7 +24,6 @@ from django.contrib.auth.decorators import permission_required
 from django.db.models.query import QuerySet
 
 from taggit.models import Tag
-from taggit_suggest.utils import suggest_tags
 from django_tables2 import RequestConfig
 
 from core.utils import send_lead_mail, sortedValues, COLORS
@@ -32,6 +31,7 @@ from leads.models import Lead
 from leads.tables import ActiveLeadsTable, RecentArchivedLeadsTable
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
+from leads.learn import predict_tags
 import pydici.settings
 from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text
 from core.decorator import pydici_non_public
@@ -81,9 +81,13 @@ def detail(request, lead_id):
             previous_lead = None
             active_count = None
 
-        # Find suggested tags for this lead
-        suggestedTags = set(suggest_tags(content=u"%s %s" % (lead.name, lead.description)))
-        suggestedTags -= set(lead.tags.all())
+        # Find suggested tags for this lead except if it has already at least two tags
+        tags = lead.tags.all()
+        if tags.count() < 3:
+            suggestedTags = set(predict_tags(lead))
+            suggestedTags -= set(tags)
+        else:
+            suggestedTags = []
 
     except Lead.DoesNotExist:
         raise Http404
