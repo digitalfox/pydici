@@ -133,7 +133,7 @@ def predict_tags(lead):
         # cannot compute model (ex. not enough data, no scikit...)
         return []
     features = get_lead_tag_data(lead)
-    scores = model.predict_proba(features)
+    scores = model.predict_proba([features,])
     proba = []
     for tag, score in zip(model.classes_, scores[0]):
         proba.append([Tag.objects.get(name=tag) ,round(100*score,1)])
@@ -219,8 +219,7 @@ def compute_leads_state(relearn=True, leads=None):
 
 
 def compute_leads_tags():
-    """Learn tags from past leads and cache model
-    @:param learn; if true (default) learn again from leads, else, use previous computation if available"""
+    """Learn tags from past leads and cache model"""
 
     if not HAVE_SCIKIT:
         return
