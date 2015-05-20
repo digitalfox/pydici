@@ -36,7 +36,7 @@ from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlin
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
     to_int_or_round, COLORS, convertDictKeyToDateTime, cumulateList
-from core.decorator import pydici_non_public, PydiciNonPublicdMixin
+from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent
 from staffing.tables import MissionTable
@@ -144,6 +144,7 @@ def consultant_staffing(request, consultant_id):
 
 
 @pydici_non_public
+@pydici_feature("staffing_mass")
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @permission_required("staffing.change_staffing")
 def mass_staffing(request):
@@ -188,6 +189,7 @@ def mass_staffing(request):
 
 
 @pydici_non_public
+@pydici_feature("staffing_mass")
 def pdc_review(request, year=None, month=None):
     """PDC overview
     @param year: start date year. None means current year
@@ -346,6 +348,7 @@ def pdc_review(request, year=None, month=None):
 
 
 @pydici_non_public
+@pydici_feature("staffing_mass")
 @cache_page(10)
 def pdc_detail(request, consultant_id, staffing_date):
     """Display detail of consultant staffing for this month"""
@@ -743,6 +746,7 @@ def mission_csv_timesheet(request, mission, consultants):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def all_timesheet(request, year=None, month=None):
     if year and month:
         month = date(int(year), int(month), 1)
@@ -828,6 +832,7 @@ def all_timesheet(request, year=None, month=None):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def all_csv_timesheet(request, charges, month):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
@@ -848,6 +853,7 @@ def all_csv_timesheet(request, charges, month):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def detailed_csv_timesheet(request, year=None, month=None):
     """Detailed timesheet with mission, consultant, and rates
     Intended for accounting third party system or spreadsheet analysis"""
@@ -905,6 +911,7 @@ def detailed_csv_timesheet(request, year=None, month=None):
 
 
 @pydici_non_public
+@pydici_feature("management")
 def holidays_planning(request, year=None, month=None):
     """Display forecasted holidays of all consultants"""
     # We use the first day to represent month
@@ -942,6 +949,7 @@ def holidays_planning(request, year=None, month=None):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 @permission_required("staffing.add_mission")
 def create_new_mission_from_lead(request, lead_id):
     """Create a new mission on the given lead. Mission are created with same nature
@@ -1071,6 +1079,7 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 @cache_page(60 * 10)
 def graph_timesheet_rates_bar_jqp(request):
     """Nice graph bar of timesheet prod/holidays/nonprod rates

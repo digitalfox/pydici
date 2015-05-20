@@ -15,7 +15,7 @@ from django.http import HttpResponse
 from django.utils import numberformat
 from django.utils.html import strip_tags
 
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, pydici_feature
 from leads.models import Lead
 from people.models import Consultant
 from crm.models import Company, Contact
@@ -44,6 +44,7 @@ def index(request):
 
 
 @pydici_non_public
+@pydici_feature("search")
 def search(request):
     """Very simple search function on all major pydici objects"""
 
@@ -125,6 +126,7 @@ def search(request):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def dashboard(request):
     """Tactical management dashboard. This views is in core module because it aggregates data
     accross different modules"""
@@ -133,6 +135,7 @@ def dashboard(request):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def financialControl(request, start_date=None, end_date=None):
     """Financial control extraction. This view is intented to be processed by
     a spreadsheet or a financial package software"""
