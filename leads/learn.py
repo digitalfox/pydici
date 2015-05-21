@@ -8,6 +8,8 @@ Module that handle predictive state of a lead
 
 from datetime import datetime, date
 import re
+import zlib
+import cPickle
 
 HAVE_SCIKIT = True
 try:
@@ -235,7 +237,9 @@ def compute_leads_tags():
             return
         features, targets = extract_leads_tag(learn_leads)
         model = learn_tag(features, targets)
-        cache.set(TAG_MODEL_CACHE_KEY, model, 3600*24)
+        cache.set(TAG_MODEL_CACHE_KEY, zlib.compress(cPickle.dumps(model)), 3600*24)
+    else:
+        model = cPickle.loads(zlib.decompress(model))
 
     return model
 
