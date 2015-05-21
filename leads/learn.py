@@ -136,7 +136,11 @@ def predict_tags(lead):
     scores = model.predict_proba([features,])
     proba = []
     for tag, score in zip(model.classes_, scores[0]):
-        proba.append([Tag.objects.get(name=tag) ,round(100*score,1)])
+        try:
+            proba.append([Tag.objects.get(name=unicode(tag)), round(100*score,1)])
+        except (Tag.DoesNotExist,Tag.MultipleObjectsReturned):
+            # Tag was removed or two tag with same name (bad data before data cleaning)
+            pass
     proba.sort(key=lambda x: x[1])
     best_proba = []
     for i in range(3):
