@@ -7,7 +7,7 @@ Module that handle predictive state of a lead
 """
 
 from datetime import datetime, date
-from random import sample
+import re
 
 HAVE_SCIKIT = True
 try:
@@ -100,12 +100,12 @@ def get_lead_tag_data(lead):
     """Extract lead data needed to predict tag"""
     return " ".join([unicode(lead.client.organisation), unicode(lead.responsible),
                                       unicode(lead.subsidiary), unicode(lead.name),
-                                      unicode(lead.staffing_list()), lead.description])
+                                      unicode(lead.staffing_list()), unicode(lead.description)])
 
 
 def extract_leads_tag(leads, include_leads=False):
     """Extract leads features and targets for tag learning
-    @:param include_leads : add leads return output for model testing purpose"""
+    @:param include_leads : add leads id at the begining of features for model testing purpose"""
     features = []
     targets = []
     used_leads = []
@@ -113,11 +113,11 @@ def extract_leads_tag(leads, include_leads=False):
         for tag in lead.tags.all():
             used_leads.append(lead)
             targets.append(unicode(tag))
-            features.append(get_lead_tag_data(lead))
-    if include_leads:
-        return (used_leads, features, targets)
-    else:
-        return (features, targets)
+            if include_leads:
+                features.append(u"%s %s" % (lead.id, get_lead_tag_data(lead)))
+            else:
+                features.append(get_lead_tag_data(lead))
+    return (features, targets)
 
 
 def learn_tag(features, targets):
@@ -160,29 +160,24 @@ def test_state_model():
 def test_tag_model():
     """Test tag model accuracy"""
     leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
-    all_id = list(sum(leads.values_list("id"), ()))
-    scores = []
-    for i in range(5):
-        if len(all_id)<2:
-            print "Too few samples"
-        test_id = sample(all_id, int(len(all_id)/10) or 1)
-        learn_id = all_id
-        for i in test_id:
-            learn_id.remove(i)
-        test_leads = leads.filter(id__in=test_id)
-        learn_leads = leads.filter(id__in=learn_id)
-        learn_features, learn_targets = extract_leads_tag(learn_leads)
-        used_test_leads, test_features, test_targets = extract_leads_tag(test_leads, include_leads=True)
-        model = learn_tag(learn_features, learn_targets)
-        ok = 0.0
-        for lead, predict in zip(used_test_leads, model.predict(test_features)):
-            if unicode(predict).lower() in [unicode(t).lower() for t in lead.tags.all()]:
-                ok += 1
-        score = 100 * ok / len(used_test_leads)
-        scores.append(score)
-    scores = np.array(scores)
+    test_features, test_targets = extract_leads_tag(leads, include_leads=True)
+    model = learn_tag(test_features, test_targets)
+    scores = cross_val_score(model, test_features, test_targets, scoring=score_tag_lead)
+
     print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
     return scores.mean()
+
+def score_tag_lead(model, X, y):
+    """Score function used to cross validated tag model"""
+    lead_id_match = re.compile("(\d+)\s.*")
+    ok = 0.0
+    for features, target in zip(X, y):
+        lead_id = lead_id_match.match(features).group(1)
+        lead = Lead.objects.get(id=lead_id)
+        predict = model.predict([features])[0]
+        if unicode(predict).lower() in [unicode(t).lower() for t in lead.tags.all()]:
+            ok +=1
+    return ok / len(X)
 
 
 @transaction.commit_on_success
