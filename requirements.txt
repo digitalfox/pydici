@@ -1,7 +1,6 @@
 django>=1.5,<1.6
 django_tables2
 django-taggit
--e git://github.com/frankwiles/django-taggit-suggest.git#egg=django-taggit-suggest
 django-taggit-templatetags
 django-ajax-selects
 django-permissions==1.0.3

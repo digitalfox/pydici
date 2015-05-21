@@ -7,27 +7,38 @@ Module that handle predictive state of a lead
 """
 
 from datetime import datetime, date
-from random import sample
+import re
 
 HAVE_SCIKIT = True
 try:
     from sklearn.feature_extraction import DictVectorizer
+    from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
     from sklearn.linear_model import LogisticRegression
+    from sklearn.pipeline import Pipeline
+    from sklearn.naive_bayes import MultinomialNB
+    from sklearn.linear_model import SGDClassifier
+    from sklearn.preprocessing import MultiLabelBinarizer
+    from sklearn.multiclass import LabelBinarizer
+    from sklearn.cross_validation import cross_val_score
+    import numpy as np
 except ImportError:
     HAVE_SCIKIT = False
 
 from django.db import transaction
+from django.db.models import Count
 from django.core.cache import cache
 
 from leads.models import Lead, StateProba
-from taggit_suggest.models import Tag
+from taggit.models import Tag
 
 
 STATES= { "WON": 1, "LOST": 2, "SLEEPING": 3, "FORGIVEN": 4}
 INV_STATES = dict([(v, k) for k, v in STATES.items()])
 
+TAG_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_TAGS_MODEL"
+STATE_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_STATE_MODEL"
 
-def get_lead_data(lead, tags):
+def get_lead_state_data(lead, tags):
     """Get features and target of given lead. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
     feature = {}
     feature["responsible"] = unicode(lead.responsible)
@@ -50,14 +61,14 @@ def get_lead_data(lead, tags):
     return feature, lead.state
 
 
-def extract_leads(leads):
-    """Extract leads features and targets"""
+def extract_leads_state(leads):
+    """Extract leads features and targets for state learning"""
     features = []
     targets = []
     tags = Tag.objects.all()
     for lead in leads:
         try:
-            feature, target = get_lead_data(lead, tags)
+            feature, target = get_lead_state_data(lead, tags)
             features.append(feature)
             targets.append(target)
         except Exception, e:
@@ -69,13 +80,13 @@ def processTarget(targets):
     return [STATES[i] for i in targets]
 
 
-def learn(features, targets):
+def learn_state(features, targets):
     m = LogisticRegression()
     m.fit(features, targets)
     return m
 
 
-def predict(model, features):
+def predict_state(model, features):
     result = []
     for scores in model.predict_proba(features):
         proba = {}
@@ -84,54 +95,117 @@ def predict(model, features):
         result.append(proba)
     return result
 
-def test_model():
-    """Test model accuracy"""
+
+def get_lead_tag_data(lead):
+    """Extract lead data needed to predict tag"""
+    return " ".join([unicode(lead.client.organisation), unicode(lead.responsible),
+                                      unicode(lead.subsidiary), unicode(lead.name),
+                                      unicode(lead.staffing_list()), unicode(lead.description)])
+
+
+def extract_leads_tag(leads, include_leads=False):
+    """Extract leads features and targets for tag learning
+    @:param include_leads : add leads id at the begining of features for model testing purpose"""
+    features = []
+    targets = []
+    used_leads = []
+    for lead in leads:
+        for tag in lead.tags.all():
+            used_leads.append(lead)
+            targets.append(unicode(tag))
+            if include_leads:
+                features.append(u"%s %s" % (lead.id, get_lead_tag_data(lead)))
+            else:
+                features.append(get_lead_tag_data(lead))
+    return (features, targets)
+
+
+def learn_tag(features, targets):
+        model = Pipeline([("vect", CountVectorizer()), ("trf", TfidfTransformer()),
+                     ("clf", SGDClassifier(loss="log"))])
+        model.fit(features, targets)
+        return model
+
+
+def predict_tags(lead):
+    model = compute_leads_tags()
+    if model is None:
+        # cannot compute model (ex. not enough data, no scikit...)
+        return []
+    features = get_lead_tag_data(lead)
+    scores = model.predict_proba([features,])
+    proba = []
+    for tag, score in zip(model.classes_, scores[0]):
+        proba.append([Tag.objects.get(name=tag) ,round(100*score,1)])
+    proba.sort(key=lambda x: x[1])
+    best_proba = []
+    for i in range(3):
+        try:
+            best_proba.append(proba.pop())
+        except IndexError:
+            break
+    return [i[0] for i in best_proba]
+
+
+def test_state_model():
+    """Test state model accuracy"""
     leads = Lead.objects.filter(state__in=STATES.keys())
-    all_id = list(sum(leads.values_list("id"), ()))
-    if len(all_id)<2:
-        print "Too few samples"
-    test_id = sample(all_id, int(len(all_id)/20) or 1)
-    learn_id = all_id
-    for i in test_id:
-        learn_id.remove(i)
-    test_leads = leads.filter(id__in=test_id)
-    learn_leads = leads.filter(id__in=learn_id)
-    learn_features, learn_targets = extract_leads(learn_leads)
-    test_features, test_targets = extract_leads(test_leads)
+    features, targets = extract_leads_state(leads)
     vectorizer = DictVectorizer()
-    vectorizer.fit(learn_features+test_features)
-    model = learn(vectorizer.transform(learn_features), processTarget(learn_targets))
-    score = model.score(vectorizer.transform(test_features), processTarget(test_targets))
-    print "score : %s" % score
-    return score
+    vectorizer.fit(features)
+    scores = cross_val_score(LogisticRegression(), vectorizer.transform(features), processTarget(targets))
+    print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+    return scores.mean()
+
+def test_tag_model():
+    """Test tag model accuracy"""
+    leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
+    test_features, test_targets = extract_leads_tag(leads, include_leads=True)
+    model = learn_tag(test_features, test_targets)
+    scores = cross_val_score(model, test_features, test_targets, scoring=score_tag_lead)
+
+    print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+    return scores.mean()
+
+def score_tag_lead(model, X, y):
+    """Score function used to cross validated tag model"""
+    lead_id_match = re.compile("(\d+)\s.*")
+    ok = 0.0
+    for features, target in zip(X, y):
+        lead_id = lead_id_match.match(features).group(1)
+        lead = Lead.objects.get(id=lead_id)
+        predict = model.predict([features])[0]
+        if unicode(predict).lower() in [unicode(t).lower() for t in lead.tags.all()]:
+            ok +=1
+    return ok / len(X)
+
 
 @transaction.commit_on_success
 def compute_leads_state(relearn=True, leads=None):
-    """Learn from past leads and compute stats for current leads
+    """Learn state from past leads and compute state probal for current leads
     @:param learn; if true (default) learn again from leads, else, use previous computation if available
     @:param leads: estimate those leads. All current leads if None"""
-    MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_MODEL"
     if not HAVE_SCIKIT:
         return
 
     current_leads = leads or Lead.objects.exclude(state__in=STATES.keys())
-    current_features, current_targets = extract_leads(current_leads)
+    current_features, current_targets = extract_leads_state(current_leads)
 
-    model_and_vectorizer = cache.get(MODEL_CACHE_KEY)
+    model_and_vectorizer = cache.get(STATE_MODEL_CACHE_KEY)
     if relearn or model_and_vectorizer is None:
         learn_leads = Lead.objects.filter(state__in=STATES.keys())
         if learn_leads.count() < 5:
             # Cannot learn anything with so few data
             return
-        learn_features, learn_targets = extract_leads(learn_leads)
+        learn_features, learn_targets = extract_leads_state(learn_leads)
         vectorizer = DictVectorizer()
         vectorizer.fit(learn_features)
-        model = learn(vectorizer.transform(learn_features), processTarget(learn_targets))
-        cache.set(MODEL_CACHE_KEY, (model, vectorizer), 3600*24)
+        model = learn_state(vectorizer.transform(learn_features), processTarget(learn_targets))
+        cache.set(STATE_MODEL_CACHE_KEY, (model, vectorizer), 3600*24)
     else:
         model, vectorizer = model_and_vectorizer
 
-    for lead, score in zip(current_leads, predict(model, vectorizer.transform(current_features))):
+    for lead, score in zip(current_leads, predict_state(model, vectorizer.transform(current_features))):
         for state, proba in score.items():
             s, created = StateProba.objects.get_or_create(lead=lead, state=state, defaults={"score":0})
             s.score = proba
@@ -142,4 +216,22 @@ def compute_leads_state(relearn=True, leads=None):
                     mission.save()
 
 
+def compute_leads_tags():
+    """Learn tags from past leads and cache model"""
+
+    if not HAVE_SCIKIT:
+        return
+
+    model = cache.get(TAG_MODEL_CACHE_KEY)
+    if model is None:
+        # Learn from leads with at least 2 tags
+        learn_leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
+        if learn_leads.count() < 5:
+            # Cannot learn anything with so few data
+            return
+        features, targets = extract_leads_tag(learn_leads)
+        model = learn_tag(features, targets)
+        cache.set(TAG_MODEL_CACHE_KEY, model, 3600*24)
+
+    return model
 

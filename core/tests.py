@@ -582,7 +582,7 @@ class LeadLearnTestCase(TestCase):
                 a.state = "LOST"
                 a.responsible = r2
             a.save()
-        self.assertGreater(leads_learn.test_model(), 0.8, "Proba is too low")
+        self.assertGreater(leads_learn.test_state_model(), 0.8, "Proba is too low")
 
 
     def test_too_few_lead(self):
