@@ -10,6 +10,8 @@ from django.test import TestCase
 from django.core import urlresolvers
 from django.contrib.auth.models import Group, User
 from django.db import IntegrityError
+from django.test import RequestFactory
+from django.contrib.messages.storage import default_storage
 
 # Third party modules
 import workflows.utils as wf
@@ -19,6 +21,7 @@ from workflows.models import Transition
 # Pydici modules
 from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth, cumulateList
 from core.models import GroupFeature, FEATURES
+from leads.utils import postSaveLead
 from leads.models import Lead
 from leads import learn as leads_learn
 from people.models import Consultant, ConsultantProfile, RateObjective
@@ -31,7 +34,7 @@ import pydici.settings
 
 # Python modules used by tests
 from urllib2 import urlparse
-from datetime import date
+from datetime import date, datetime
 import os
 from decimal import Decimal
 
@@ -584,17 +587,58 @@ class LeadLearnTestCase(TestCase):
                 a.state = "LOST"
                 a.responsible = r2
             a.save()
-        self.assertGreater(leads_learn.test_model(), 0.8, "Proba is too low")
+        self.assertGreater(leads_learn.test_state_model(), 0.8, "Proba is too low")
+
+
+    def test_too_few_lead(self):
+        lead = create_lead()
+        f = RequestFactory()
+        request = f.get("/")
+        request.user = User.objects.get(id=1)
+        request.session = {}
+        request._messages = default_storage(request)
+        lead = create_lead()
+        postSaveLead(request, lead, [])  # Learn model cannot exist, but it should not raise error
+
+
+    def test_mission_proba(self):
+        for i in range(5):
+            # Create enough data to allow learn model to exist
+            a = create_lead()
+            a.state="WON"
+            a.save()
+        lead = Lead.objects.get(id=1)
+        lead.state="LOST"  # Need more than one target classe to build a solver
+        lead.save()
+        f = RequestFactory()
+        request = f.get("/")
+        request.user = User.objects.get(id=1)
+        request.session = {}
+        request._messages = default_storage(request)
+        lead = create_lead()
+        lead.state = "OFFER_SENT"
+        lead.save()
+        postSaveLead(request, lead, [])
+        mission = lead.mission_set.all()[0]
+        if leads_learn.HAVE_SCIKIT:
+            self.assertEqual(mission.probability, lead.stateproba_set.get(state="WON").score)
+        else:
+            self.assertEqual(mission.probability, 50)
+        lead.state = "WON"
+        lead.save()
+        postSaveLead(request, lead, [])
+        mission = Mission.objects.get(id=mission.id)  # reload it
+        self.assertEqual(mission.probability, 100)
 
 # ######
 def create_lead():
     """Create test lead
     @return: lead object"""
     lead = Lead(name="laala",
-          due_date="2008-11-01",
-          update_date="2008-11-01 16:14:16",
-          creation_date="2008-11-01 15:43:43",
-          start_date="2008-11-01",
+          due_date=date(2008,11,01),
+          update_date=datetime(2008, 11, 1, 15,55,40),
+          creation_date=datetime(2008, 11, 1, 15,43,43),
+          start_date=date(2008, 11, 01),
           responsible=None,
           sales=None,
           external_staffing="JCF",
