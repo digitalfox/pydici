@@ -19,7 +19,7 @@ import permissions.utils as perm
 from workflows.models import Transition
 
 # Pydici modules
-from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth, cumulateList
+from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth, cumulateList, capitalize
 from leads.utils import postSaveLead
 from leads.models import Lead
 from leads import learn as leads_learn
@@ -222,6 +222,15 @@ class UtilsTest(TestCase):
         self.assertListEqual(cumulateList([1, 2, 3]), [1, 3, 6])
         self.assertListEqual(cumulateList([]), [])
         self.assertListEqual(cumulateList([8]), [8])
+
+    def test_capitalize(self):
+        data = ((u"coucou", u"Coucou"),
+                (u"état de l'art", u"État De L'Art"),
+                (u"fusion du si", u"Fusion Du Si"),
+                (u"cohérence du SI", u"Cohérence Du SI"),
+                (u"test-and-learn", u"Test-And-Learn"))
+        for word, capitalizeddWord in data:
+            self.assertEqual(capitalizeddWord, capitalize(word, keepUpper=True))
 
 class StaffingViewsTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
