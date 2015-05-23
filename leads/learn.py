@@ -17,12 +17,9 @@ try:
     from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
     from sklearn.linear_model import LogisticRegression
     from sklearn.pipeline import Pipeline
-    from sklearn.naive_bayes import MultinomialNB
     from sklearn.linear_model import SGDClassifier
-    from sklearn.preprocessing import MultiLabelBinarizer
-    from sklearn.multiclass import LabelBinarizer
     from sklearn.cross_validation import cross_val_score
-    import numpy as np
+    from sklearn.grid_search import GridSearchCV
 except ImportError:
     HAVE_SCIKIT = False
 
@@ -123,8 +120,8 @@ def extract_leads_tag(leads, include_leads=False):
 
 
 def learn_tag(features, targets):
-        model = Pipeline([("vect", CountVectorizer()), ("trf", TfidfTransformer()),
-                     ("clf", SGDClassifier(loss="log"))])
+        model = Pipeline([("vect", CountVectorizer()), ("trf", TfidfTransformer(sublinear_tf=True)),
+                           ("clf", SGDClassifier(loss="log", penalty="l1"))])
         model.fit(features, targets)
         return model
 
@@ -163,26 +160,55 @@ def test_state_model():
     print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
     return scores.mean()
 
+
 def test_tag_model():
     """Test tag model accuracy"""
     leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
     test_features, test_targets = extract_leads_tag(leads, include_leads=True)
     model = learn_tag(test_features, test_targets)
     scores = cross_val_score(model, test_features, test_targets, scoring=score_tag_lead)
-
+    m = cPickle.dumps(model)
+    print "size %s - compressed %s" % (len(m)/(1024*1024), len(zlib.compress(m))/(1024*1024))
     print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
     return scores.mean()
+
+
+def gridCV_tag_model():
+    """Perform a grid search cross validation to find best parameters"""
+    parameters=  {'clf__alpha': (0.1, 0.01, 0.001, 0.0001, 1e-05),
+     'clf__loss': ('log', 'modified_huber', 'squared_hinge'),
+     'clf__penalty': ('none', 'l2', 'l1', 'elasticnet'),
+     'trf__norm': ('l1', 'l2'),
+     'trf__sublinear_tf': (True, False),
+     'trf__use_idf': (True, False)}
+
+    learn_leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
+    features, targets = extract_leads_tag(learn_leads, include_leads=True)
+    model = learn_tag(features, targets)
+    g=GridSearchCV(model, parameters, verbose=2, n_jobs=4, scoring=score_tag_lead)
+    g.fit(features, targets)
+    return g
+
+
 
 def score_tag_lead(model, X, y):
     """Score function used to cross validated tag model"""
     lead_id_match = re.compile("(\d+)\s.*")
     ok = 0.0
+    leads = cache.get("ALL_LEADS")
+    if leads is None:
+        leads = dict([(i.id, i) for i in Lead.objects.all()])
+        cache.set("ALL_LEADS", leads, 1800)
     for features, target in zip(X, y):
-        lead_id = lead_id_match.match(features).group(1)
-        lead = Lead.objects.get(id=lead_id)
-        predict = model.predict([features])[0]
-        if unicode(predict).lower() in [unicode(t).lower() for t in lead.tags.all()]:
-            ok +=1
+        try:
+            lead_id = lead_id_match.match(features).group(1)
+            lead = leads[int(lead_id)]
+            predict = model.predict([features])[0]
+            if unicode(predict).lower() in [unicode(t).lower() for t in lead.tags.all()]:
+                ok +=1
+        except Exception, e:
+            print "Failed to score lead %s: %s" % (lead_id, e)
+
     return ok / len(X)
 
 
