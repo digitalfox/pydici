@@ -80,7 +80,7 @@ def processTarget(targets):
 
 
 def learn_state(features, targets):
-    model = Pipeline([("vect", DictVectorizer()), ("clf", LogisticRegression())])
+    model = Pipeline([("vect", DictVectorizer()), ("clf", LogisticRegression(penalty="l1", solver="liblinear", C=0.001))])
     model.fit(features, targets)
     return model
 
@@ -188,6 +188,20 @@ def gridCV_tag_model():
     g.fit(features, targets)
     return g
 
+
+def gridCV_state_model():
+    """Perform a grid search cross validation to find best parameters"""
+    parameters=  {'clf__penalty': ('l2', 'l1'),
+                  'clf__C': (0.0001, 0.001, 0.01, 0.1, 1, 10),
+                  'clf__solver' : ('newton-cg', 'lbfgs', 'liblinear'),
+    }
+
+    learn_leads = Lead.objects.filter(state__in=STATES.keys())
+    features, targets = extract_leads_state(learn_leads)
+    model = learn_state(features, processTarget(targets))
+    g=GridSearchCV(model, parameters, verbose=2, n_jobs=4)
+    g.fit(features, processTarget(targets))
+    return g
 
 
 def score_tag_lead(model, X, y):
