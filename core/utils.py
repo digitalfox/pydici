@@ -50,10 +50,10 @@ def send_lead_mail(lead, request, fromAddr=pydici.settings.LEADS_MAIL_FROM, from
     msg.send()
 
 
-def capitalize(sentence, keepUpper=False):
+def capitalize(sentence):
     """
     @param sentence: string or unicode
-    @param keepUpper: don't change words that are all uppercase
+    don't change words that are all uppercase
     @return:Capitalize each word or sub-word (separated by dash or quote) of the sentence
     """
     result = []

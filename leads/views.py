@@ -267,7 +267,7 @@ def add_tag(request):
     answer["tag_url"] = ""  # url on tag
     answer["tag_name"] = ""  # tag name
     if request.POST["tag"]:
-        tagName = capitalize(request.POST["tag"], keepUpper=True)
+        tagName = capitalize(request.POST["tag"])
         lead = Lead.objects.get(id=int(request.POST["lead_id"]))
         if tagName in lead.tags.all().values_list("name", flat=True):
             answer["tag_created"] = False

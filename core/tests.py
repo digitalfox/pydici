@@ -230,7 +230,7 @@ class UtilsTest(TestCase):
                 (u"cohérence du SI", u"Cohérence Du SI"),
                 (u"test-and-learn", u"Test-And-Learn"))
         for word, capitalizeddWord in data:
-            self.assertEqual(capitalizeddWord, capitalize(word, keepUpper=True))
+            self.assertEqual(capitalizeddWord, capitalize(word))
 
 class StaffingViewsTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
