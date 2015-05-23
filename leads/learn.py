@@ -80,9 +80,9 @@ def processTarget(targets):
 
 
 def learn_state(features, targets):
-    m = LogisticRegression()
-    m.fit(features, targets)
-    return m
+    model = Pipeline([("vect", DictVectorizer()), ("clf", LogisticRegression())])
+    model.fit(features, targets)
+    return model
 
 
 def predict_state(model, features):
@@ -154,9 +154,8 @@ def test_state_model():
     """Test state model accuracy"""
     leads = Lead.objects.filter(state__in=STATES.keys())
     features, targets = extract_leads_state(leads)
-    vectorizer = DictVectorizer()
-    vectorizer.fit(features)
-    scores = cross_val_score(LogisticRegression(), vectorizer.transform(features), processTarget(targets))
+    model = learn_state(features, processTarget(targets))
+    scores = cross_val_score(model, features, processTarget(targets))
     print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
     return scores.mean()
 
@@ -223,21 +222,17 @@ def compute_leads_state(relearn=True, leads=None):
     current_leads = leads or Lead.objects.exclude(state__in=STATES.keys())
     current_features, current_targets = extract_leads_state(current_leads)
 
-    model_and_vectorizer = cache.get(STATE_MODEL_CACHE_KEY)
-    if relearn or model_and_vectorizer is None:
+    model = cache.get(STATE_MODEL_CACHE_KEY)
+    if relearn or model is None:
         learn_leads = Lead.objects.filter(state__in=STATES.keys())
         if learn_leads.count() < 5:
             # Cannot learn anything with so few data
             return
         learn_features, learn_targets = extract_leads_state(learn_leads)
-        vectorizer = DictVectorizer()
-        vectorizer.fit(learn_features)
-        model = learn_state(vectorizer.transform(learn_features), processTarget(learn_targets))
-        cache.set(STATE_MODEL_CACHE_KEY, (model, vectorizer), 3600*24)
-    else:
-        model, vectorizer = model_and_vectorizer
+        model = learn_state(learn_features, processTarget(learn_targets))
+        cache.set(STATE_MODEL_CACHE_KEY, model, 3600*24)
 
-    for lead, score in zip(current_leads, predict_state(model, vectorizer.transform(current_features))):
+    for lead, score in zip(current_leads, predict_state(model, current_features)):
         for state, proba in score.items():
             s, created = StateProba.objects.get_or_create(lead=lead, state=state, defaults={"score":0})
             s.score = proba
