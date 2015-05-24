@@ -48,7 +48,7 @@ class ThirdPartyMixin(PydiciFeatureMixin):
 
 
 class FeatureContactsWriteMixin(PydiciFeatureMixin):
-    pydici_feature = { "3rdparties", "contacts_write" }
+    pydici_feature = set(["3rdparties", "contacts_write"])
 
 
 class ContactCreate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin, CreateView):
