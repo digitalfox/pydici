@@ -25,6 +25,9 @@ from django.core.cache import cache
 
 import pydici.settings
 
+from core.models import GroupFeature
+
+
 # Graph colors
 COLORS = ["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFE32C", "#AAFF86", "#D972FF", "#FF8D8F", "#6BE7FF", "#FF1616"]
 
@@ -373,3 +376,30 @@ class GEdges(list):
     """A list of CEdges that can be dumped in json"""
     def dump(self):
         return json.dumps([{"u": edge.source.id_, "v": edge.target.id_, "value": { "style": "stroke: %s;" % edge.color}} for edge in self])
+
+
+def _get_user_features(user):
+    """
+    Returns a set of strings representing the features accessible by the user.
+
+    Results are cached to reduce the number of SQL queries.
+    """
+    key = "core._get_user_features_" + user.username
+    res = cache.get(key)
+    if res is None:
+        features = [x.feature for x in GroupFeature.objects.filter(group__user=user)]
+        res = set(features)
+        cache.set(key, res, 3)
+    return res
+
+
+def user_has_feature(user, feature):
+    """
+    Returns True if `user` has access to `feature`.
+    """
+    return feature in _get_user_features(user)
+
+
+def user_has_features(user, features):
+    features = set(features)
+    return features.issubset(_get_user_features(user))

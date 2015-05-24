@@ -75,7 +75,7 @@
     <a class="btn btn-default" href="{% url 'staffing.views.mission_timesheet' mission_id=mission.id %}?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
     </div>
     <br/>
-    {% ifequal mission.nature "PROD" %}
+    {% if mission.nature == "PROD" and pydici_feature.leads_profitability %}
         
             <div class="col-sm-6 col-md-4">
                 <h2>{% trans "Profitability" %}</h2>
@@ -110,7 +110,7 @@
                 </table>
             </div>
         
-    {% endifequal %}
+    {% endif %}
 
 <script type="text/javascript">
 <!--

@@ -34,11 +34,12 @@ from leads.utils import postSaveLead
 from leads.learn import predict_tags
 import pydici.settings
 from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
 
 
 @pydici_non_public
+@pydici_feature("leads")
 def summary_mail(request, html=True):
     """Ready to copy/paste in mail summary leads activity"""
     today = datetime.today()
@@ -56,6 +57,7 @@ def summary_mail(request, html=True):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 def detail(request, lead_id):
     """Lead detailed description"""
     try:
@@ -105,6 +107,7 @@ def detail(request, lead_id):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 def lead(request, lead_id=None):
     """Lead creation or modification"""
     lead = None
@@ -158,6 +161,7 @@ def lead(request, lead_id=None):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 def lead_documents(request, lead_id):
     """Gather documents relative to this lead as a fragment page for an ajax call"""
     lead = Lead.objects.get(id=lead_id)
@@ -194,6 +198,7 @@ def lead_documents(request, lead_id):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 def csv_export(request, target):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("leads.csv")
@@ -217,6 +222,7 @@ def csv_export(request, target):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 def mail_lead(request, lead_id=0):
     try:
         lead = Lead.objects.get(id=lead_id)
@@ -231,6 +237,7 @@ def mail_lead(request, lead_id=0):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 def review(request):
     today = datetime.today()
     delay = timedelta(days=40)
@@ -250,6 +257,7 @@ def review(request):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 def tag(request, tag_id):
     """Displays leads for given tag"""
     return render(request, "leads/tag.html",
@@ -259,6 +267,7 @@ def tag(request, tag_id):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 @permission_required("leads.change_lead")
 def add_tag(request):
     """Add a tag to a lead. Create the tag if needed"""
@@ -281,6 +290,7 @@ def add_tag(request):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 @permission_required("leads.change_lead")
 def remove_tag(request, tag_id, lead_id):
     """Remove a tag to a lead"""
@@ -297,6 +307,7 @@ def remove_tag(request, tag_id, lead_id):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 def tags(request, lead_id):
     """@return: all tags that contains q parameter and are not already associated to this lead as a simple text list"""
     tags = Tag.objects.all().exclude(lead__id=lead_id)  # Exclude existing tags
@@ -306,6 +317,7 @@ def tags(request, lead_id):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 @cache_page(60 * 10)
 def graph_bar_jqp(request):
     """Nice graph bar of lead state during time using jqplot

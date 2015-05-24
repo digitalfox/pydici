@@ -15,41 +15,56 @@
 
         <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-        {% if user.is_staff %}
+        {% if user.is_staff and pydici_feature.menubar %}
+        {% if pydici_feature.leads %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Leads" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-                <li> <a href="{% url 'leads.views.review' %}">{% trans "Current leads review" %}</a></li>
+                <li><a href="{% url 'leads.views.review' %}">{% trans "Current leads review" %}</a></li>
+                {% if pydici_feature.leads_list_all %}
                 <li><a href="{% url 'admin:leads_lead_changelist' %}">{% trans "All leads" %}</a></li>
+                {% endif %}
                 <li><a href="{% url 'leads.views.lead' %}">{% trans 'New lead' %}</a></li>
             </ul>
         </li>
-        
+        {% endif %}
+
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Missions" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-                <li><a href="{% url 'pdcreview-index' %}">{% trans "Workload schedule" %}</a></li>
+                {% if pydici_feature.staffing_mass %}
+                    <li><a href="{% url 'pdcreview-index' %}">{% trans "Workload schedule" %}</a></li>
+                {% endif %}
                 <li><a href="{% url 'missions' %}">{% trans "Active missions" %}</a></li>
                 {% with user.username|link_to_timesheet as link %}
                     {% if link %}<li>{{ link }}</li>{% endif %}
                 {% endwith %}
-                {% with user.username|link_to_staffing as link %}
-                    {% if link %}<li>{{ link }}</li>{% endif %}
-                {% endwith %}
-                <li><a href="{% url 'staffing.views.mass_staffing' %}">{% trans "Mass staffing" %}</a></li>
+                {% if pydici_feature.staffing %}
+                    {% with user.username|link_to_staffing as link %}
+                        {% if link %}<li>{{ link }}</li>{% endif %}
+                    {% endwith %}
+                {% endif %}
+                {% if pydici_feature.staffing_mass %}
+                    <li><a href="{% url 'staffing.views.mass_staffing' %}">{% trans "Mass staffing" %}</a></li>
+                {% endif %}
             </ul>
         </li>
 
+        {% if pydici_feature.3rdparties %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Third parties" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'crm.views.company_list' %}">{% trans "All clients" %}</a></li>
                 <li><a href="{% url 'contact_list' %}">{% trans "Contact address directory" %}</a></li>
                 <li><a href="{% url 'crm.views.client' %}">{% trans "New client" %}</a></li>
+                {% if pydici_feature.contacts_write %}
                 <li><a href="{% url 'mission_contact_add' %}?return_to={{ request.get_full_path }}">{% trans "New mission contact" %}</a></li>
                 <li><a href="{% url 'businessbroker_add' %}?return_to={{ request.get_full_path }}">{% trans "New business broker" %}</a></li>
                 <li><a href="{% url 'administrative_contact_add' %}?return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></li>
                 <li><a href="{% url 'supplier_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier" %}</a></li>
+                {% endif %}
             </ul>
         </li>
-        
+        {% endif %}
+
+        {% if pydici_feature.management %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Management" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'staffing.views.holidays_planning' %}">{% trans "Holidays planning" %}</a></li>
@@ -75,7 +90,9 @@
                 {% endif %}
             </ul>
         </li>
-        
+        {% endif %}
+
+        {% if pydici_feature.reports %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Reports" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'dashboard' %}">{% trans "Management dashboard" %}</a></li>
@@ -97,29 +114,33 @@
                 <li><a href="{% url 'core.views.financialControl' %}">{% trans "Financial control" %}</a></li>
             </ul>
         </li>
-        
+        {% endif %}
+
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Help" %}<span class="caret"></span></a>
             <ul class="dropdown-menu keep-open" role="menu">
                 <li><a href="{% url 'admin:index' %}">{% trans "Admin console" %}</a></li>
                 <li><a href="{% url 'help' %}">{% trans "Help page" %}</a></li>
                 <li>{{ foo|get_admin_mail }}</li>
-                <li><form class="navbar-form keep-open hidden-xs hidden-md hidden-lg" role="search" action="{% url 'search' %}" method="GET">
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q"  value="{{ query|escape }}" >
-                    </div>
-                    </form>
-                </li>
+                {% if pydici_feature.search %}
+                    <li><form class="navbar-form keep-open hidden-xs hidden-md hidden-lg" role="search" action="{% url 'search' %}" method="GET">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q"  value="{{ query|escape }}" >
+                        </div>
+                        </form>
+                    </li>
+                {% endif %}
             </ul>
         </li>
         </ul>
-        
+
+        {% if pydici_feature.search %}
         <form class="navbar-form pull-right hidden-sm" role="search" action="{% url 'search' %}" method="GET">
             <div class="form-group">
               <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q"  value="{{ query|escape }}" >
             </div>
-          </form>
-          
-        {% endif %} {# End of menu for staff users only #}  
+        </form>
+        {% endif %}
+        {% endif %} {# /user.is_staff and pydici_feature.menubar #}
 
         </div><!--/.navbar-collapse -->
 

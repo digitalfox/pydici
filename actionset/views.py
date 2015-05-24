@@ -13,10 +13,12 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 
 from actionset.models import ActionSet, ActionState
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, pydici_feature
 from actionset.forms import LaunchActionSetForm
 
 
+@pydici_non_public
+@pydici_feature("management")
 def update_action_state(request, action_state_id, state):
     """Update action status.
     This view is designed to be called in ajax only
@@ -45,6 +47,7 @@ def update_action_state(request, action_state_id, state):
 
 
 @pydici_non_public
+@pydici_feature("management")
 def actionset_catalog(request):
     """Catalog of all action set"""
     if request.user.has_perm("actionset.change_action") and request.user.has_perm("actionset.change_actionset"):
@@ -61,6 +64,7 @@ def actionset_catalog(request):
 
 
 @pydici_non_public
+@pydici_feature("management")
 def launch_actionset(request, actionset_id):
     """Manually launch an actionset for given user (username GET parameter) with ajax query"""
     # TODO: add optional target object (content and id)

@@ -8,7 +8,7 @@ Test cases
 # Python/Django test modules
 from django.test import TestCase
 from django.core import urlresolvers
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django.db import IntegrityError
 from django.test import RequestFactory
 from django.contrib.messages.storage import default_storage
@@ -20,6 +20,7 @@ from workflows.models import Transition
 
 # Pydici modules
 from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth, cumulateList, capitalize
+from core.models import GroupFeature, FEATURES
 from leads.utils import postSaveLead
 from leads.models import Lead
 from leads import learn as leads_learn
@@ -121,6 +122,9 @@ PYDICI_PAGES = ("/",
 class SimpleTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
+
+    def setUp(self):
+        setup_test_user_features()
 
     def test_basic_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
@@ -345,6 +349,7 @@ class LeadModelTest(TestCase):
                 "leads.json", "staffing.json", "billing.json"]
 
     def setUp(self):
+        setup_test_user_features()
         if not os.path.exists(pydici.settings.DOCUMENT_PROJECT_PATH):
             os.makedirs(pydici.settings.DOCUMENT_PROJECT_PATH)
 
@@ -655,3 +660,15 @@ def create_lead():
 
     lead.save()
     return lead
+
+
+def setup_test_user_features():
+    admin_group = Group(name="admin")
+    admin_group.save()
+
+    for name in FEATURES:
+        GroupFeature(feature=name, group=admin_group).save()
+
+    test_user = User.objects.get(username=TEST_USERNAME)
+    test_user.groups.add(admin_group)
+    test_user.save()
