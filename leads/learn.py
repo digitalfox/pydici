@@ -18,8 +18,9 @@ try:
     from sklearn.linear_model import LogisticRegression
     from sklearn.pipeline import Pipeline
     from sklearn.linear_model import SGDClassifier
-    from sklearn.cross_validation import cross_val_score
+    from sklearn.cross_validation import cross_val_score, train_test_split
     from sklearn.grid_search import GridSearchCV
+    from sklearn.metrics import confusion_matrix, classification_report, f1_score
 except ImportError:
     HAVE_SCIKIT = False
 
@@ -160,6 +161,20 @@ def test_state_model():
     return scores.mean()
 
 
+def eval_state_model():
+    """Display confusion matrix and classif report state model"""
+    target_names = STATES.items()
+    target_names.sort(key=lambda x: x[1])
+    target_names = [i[0] for i in target_names]
+    leads = Lead.objects.filter(state__in=STATES.keys())
+    features, targets = extract_leads_state(leads)
+    X_train, X_test, y_train, y_test = train_test_split(features, processTarget(targets), test_size=0.3, random_state=42)
+    model = learn_state(X_train, y_train)
+    y_pred = model.predict(X_test)
+    print confusion_matrix(y_test, y_pred)
+    print classification_report(y_test, y_pred, target_names=target_names)
+
+
 def test_tag_model():
     """Test tag model accuracy"""
     leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
@@ -192,14 +207,14 @@ def gridCV_tag_model():
 def gridCV_state_model():
     """Perform a grid search cross validation to find best parameters"""
     parameters=  {'clf__penalty': ('l2', 'l1'),
-                  'clf__C': (0.0001, 0.001, 0.01, 0.1, 1, 10),
+                  'clf__C': (0.001, 0.01, 0.1, 0.5, 0.7, 1, 1.5, 2),
                   'clf__solver' : ('newton-cg', 'lbfgs', 'liblinear'),
     }
 
     learn_leads = Lead.objects.filter(state__in=STATES.keys())
     features, targets = extract_leads_state(learn_leads)
     model = learn_state(features, processTarget(targets))
-    g=GridSearchCV(model, parameters, verbose=2, n_jobs=4)
+    g=GridSearchCV(model, parameters, verbose=2, n_jobs=4, scoring="f1_weighted")
     g.fit(features, processTarget(targets))
     return g
 
