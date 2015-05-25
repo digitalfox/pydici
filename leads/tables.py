@@ -28,7 +28,6 @@ class LeadsTable(tables.Table):
                                                     {% ifequal record.getStateProba.0.0 "WON" %}style="color:green" class="glyphicon glyphicon-ok-circle"{% endifequal %}
                                                     {% ifequal record.getStateProba.0.0 "LOST" %}style="color:red" class="glyphicon glyphicon-remove-circle"{% endifequal %}
                                                     {% ifequal record.getStateProba.0.0 "FORGIVEN" %}style="color:orange" class="glyphicon glyphicon-ban-circle"{% endifequal %}
-                                                    {% ifequal record.getStateProba.0.0 "SLEEPING" %}style="color:"yellow" class="glyphicon glyphicon-cloud"{% endifequal %}
                                                     >
                                                 </div><small> {{record.getStateProba.0.2}}&nbsp;%</small>
                                             </div>

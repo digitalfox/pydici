@@ -587,15 +587,22 @@ class LeadLearnTestCase(TestCase):
             return
         r1 = Consultant.objects.get(id=1)
         r2 = Consultant.objects.get(id=2)
+        c1 = Client.objects.get(id=1)
+        c2 = Client.objects.get(id=1)
         for i in range(20):
             a = create_lead()
             if a.id%2:
                 a.state = "WON"
+                a.sales = a.id
+                a.client= c1
                 a.responsible = r1
             else:
-                a.state = "LOST"
+                a.state = "FORGIVEN"
+                a.sales = a.id
+                a.client = c2
                 a.responsible = r2
             a.save()
+        leads_learn.eval_state_model()
         self.assertGreater(leads_learn.test_state_model(), 0.8, "Proba is too low")
 
 
@@ -617,7 +624,7 @@ class LeadLearnTestCase(TestCase):
             a.state="WON"
             a.save()
         lead = Lead.objects.get(id=1)
-        lead.state="LOST"  # Need more than one target classe to build a solver
+        lead.state="LOST"  # Need more than one target class to build a solver
         lead.save()
         f = RequestFactory()
         request = f.get("/")

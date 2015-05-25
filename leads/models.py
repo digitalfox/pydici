@@ -258,7 +258,7 @@ class StateProba(models.Model):
     """Lead state probability"""
     lead = models.ForeignKey(Lead)
     state = models.CharField(_("State"), max_length=30, choices=Lead.STATES)
-    score = models.FloatField(_("Score"))
+    score = models.IntegerField(_("Score"))
 
 
 # Signal handling to throw actionset and document tree creation
