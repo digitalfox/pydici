@@ -55,9 +55,9 @@ def get_lead_state_data(lead, tags):
     lead_tags = lead.tags.all()
     for tag in tags:
         if tag in lead_tags:
-            feature["tag_%s" % tag.id] = "yes"
+            feature["tag_%s" % tag.slug] = "yes"
         else:
-            feature["tag_%s" % tag.id] = "no"
+            feature["tag_%s" % tag.slug] = "no"
     return feature, lead.state
 
 
@@ -181,9 +181,10 @@ def eval_state_model(model=None):
     feature_names = model.named_steps["vect"].get_feature_names()
     for i, class_label in enumerate(target_names):
         try:
-            top = np.argsort(model.named_steps["clf"].coef_[i])[-10:]
+            coef = model.named_steps["clf"].coef_
+            top = np.argsort(coef[i])[-10:][::-1]
             print("%s: \n- %s" % (class_label,
-                  "\n- ".join(feature_names[j] for j in top)))
+                  "\n- ".join("%s (%s)" % (feature_names[j], round(coef[i][j],2))  for j in top)))
         except IndexError:
             # Model has no coef for this class
             pass
