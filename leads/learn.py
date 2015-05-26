@@ -52,6 +52,7 @@ def get_lead_state_data(lead, tags):
     feature["sales"] = float(lead.sales or 0)
     feature["broker"] = unicode(lead.business_broker)
     feature["paying_authority"] = unicode(lead.paying_authority)
+    feature["lead_client_rank"] = list(lead.client.lead_set.all().order_by("creation_date")).index(lead)
     lead_tags = lead.tags.all()
     for tag in tags:
         if tag in lead_tags:
