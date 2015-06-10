@@ -197,7 +197,7 @@ def financialControl(request, start_date=None, end_date=None):
             if mission.lead.responsible:
                 missionRow.append(mission.lead.responsible.name)
                 missionRow.append(mission.lead.responsible.trigramme)
-                missionRow.append(mission.lead.responsible.manager.trigramme if mission.lead.responsible.manager else "")
+                missionRow.append(mission.lead.responsible.staffing_manager.trigramme if mission.lead.responsible.staffing_manager else "")
             else:
                 missionRow.extend(["", "", ""])
         else:
@@ -211,7 +211,7 @@ def financialControl(request, start_date=None, end_date=None):
 
     for mission in missions:
         missionRow = createMissionRow(mission, start_date, end_date)
-        for consultant in mission.consultants().select_related().prefetch_related("manager"):
+        for consultant in mission.consultants().select_related().prefetch_related("staffing_manager"):
             consultantRow = missionRow[:]  # copy
             daily_rate, bought_daily_rate = financialConditions.get("%s-%s" % (mission.id, consultant.id), [0, 0])
             rateObjective = consultant.getRateObjective(end_date)
@@ -222,7 +222,7 @@ def financialControl(request, start_date=None, end_date=None):
             doneDays = timesheets.filter(mission_id=mission.id, consultant=consultant.id).aggregate(Sum("charge")).values()[0] or 0
             forecastedDays = staffings.filter(mission_id=mission.id, consultant=consultant.id).aggregate(Sum("charge")).values()[0] or 0
             consultantRow.append(consultant.company)
-            consultantRow.append(consultant.manager.trigramme if consultant.manager else "")
+            consultantRow.append(consultant.staffing_manager.trigramme if consultant.staffing_manager else "")
             consultantRow.append(consultant.trigramme)
             consultantRow.append(consultant.name)
             consultantRow.append(consultant.subcontractor)
@@ -264,7 +264,7 @@ def financialControl(request, start_date=None, end_date=None):
         try:
             consultant = consultants[expense.user.username.lower()]
             row.append(consultant.company.name)
-            row.append(consultant.manager.trigramme)
+            row.append(consultant.staffing_manager.trigramme)
             row.append(consultant.trigramme)
             row.append(consultant.name)
             row.append(consultant.subcontractor)
