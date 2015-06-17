@@ -84,6 +84,16 @@ class LeadForm(PydiciCrispyModelForm):
             # We can't tolerate that sale amount is not known at this step of the process
             raise ValidationError(_("Sales amount must be defined at this step of the commercial process"))
 
+
+    def clean_start_date(self):
+        """Ensure start_date amount is defined at lead when commercial proposition has been sent"""
+        if self.cleaned_data["start_date"] or self.data["state"] in ('QUALIF', 'WRITE_OFFER', 'SLEEPING', 'LOST', 'FORGIVEN'):
+            # Start_date is defined or we are in early step, nothing to say
+            return self.cleaned_data["start_date"]
+        else:
+            # We can't tolerate that start_date is not known at this step of the process
+            raise ValidationError(_("Start date must be defined at this step of the commercial process"))
+
     def clean_deal_id(self):
         """Ensure deal id is unique.
         Cannot be done at database level because we tolerate null/blank value and all db engines are
