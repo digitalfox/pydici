@@ -9,7 +9,7 @@ import csv
 import datetime
 
 from django.shortcuts import render
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Min, Max
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils import numberformat
@@ -163,7 +163,8 @@ def financialControl(request, start_date=None, end_date=None):
               "Mission", "MissionId", "BillingMode", "MissionPrice",
               "TotalQuantityInDays", "TotalQuantityInEuros",
               "ConsultantSubsidiary", "ConsultantTeam", "Trigramme", "Consultant", "Subcontractor", "CrossBilling",
-              "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros"]
+              "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros",
+              "StartDate", "EndDate"]
 
     writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in header])
 
@@ -219,8 +220,8 @@ def financialControl(request, start_date=None, end_date=None):
                 rateObjective = rateObjective.daily_rate
             else:
                 rateObjective = 0
-            doneDays = timesheets.filter(mission_id=mission.id, consultant=consultant.id).aggregate(Sum("charge")).values()[0] or 0
-            forecastedDays = staffings.filter(mission_id=mission.id, consultant=consultant.id).aggregate(Sum("charge")).values()[0] or 0
+            doneDays = timesheets.filter(mission_id=mission.id, consultant=consultant.id).aggregate(charge=Sum("charge"), min_date=Min("working_date"), max_date=Max("working_date"))
+            forecastedDays = staffings.filter(mission_id=mission.id, consultant=consultant.id).aggregate(charge=Sum("charge"), min_date=Min("staffing_date"), max_date=Max("staffing_date"))
             consultantRow.append(consultant.company)
             consultantRow.append(consultant.staffing_manager.trigramme if consultant.staffing_manager else "")
             consultantRow.append(consultant.trigramme)
@@ -231,11 +232,14 @@ def financialControl(request, start_date=None, end_date=None):
             consultantRow.append(numberformat.format(daily_rate, ",") if daily_rate else 0)
             consultantRow.append(numberformat.format(bought_daily_rate, ",") if bought_daily_rate else 0)
             # Timesheet row
-            for budgetType, quantity in (("done", doneDays), ("forecast", forecastedDays)):
+            for budgetType, days in (("done", doneDays), ("forecast", forecastedDays)):
+                quantity = days["charge"] or 0
                 row = consultantRow[:]  # Copy
                 row.append(budgetType)
                 row.append(numberformat.format(quantity, ",") if quantity else 0)
                 row.append(numberformat.format(quantity * daily_rate, ",") if (quantity > 0 and daily_rate > 0) else 0)
+                row.append(days["min_date"] or "")
+                row.append(days["max_date"] or "")
                 writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
 
     archivedMissions = Mission.objects.filter(active=False, archived_date__gte=start_date, archived_date__lt=end_date)
