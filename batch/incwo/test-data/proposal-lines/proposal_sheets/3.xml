@@ -23,8 +23,8 @@
       <content_kind></content_kind>
       <description>Dev</description>
       <description_more>Dev Foobar</description_more>
-      <unit_price>500</unit_price>
-      <quantity>3</quantity>
+      <unit_price>500.0</unit_price>
+      <quantity>3.500000000</quantity>
       <unit>M/D</unit>
       <total_price>1500</total_price>
     </proposal_line>
@@ -35,8 +35,8 @@
       <vat_value_id>607</vat_value_id>
       <description>Dev</description>
       <description_more>Implement remote control</description_more>
-      <unit_price>450</unit_price>
-      <quantity>2</quantity>
+      <unit_price>450.0</unit_price>
+      <quantity>2.5</quantity>
       <unit>M/D</unit>
       <total_price>0</total_price>
     </proposal_line>

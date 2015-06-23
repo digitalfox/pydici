@@ -137,15 +137,15 @@ class ProposalSheetImportTest(TestCase):
         EXPECTED_DESCRIPTION = \
 u"""Echo Alpha Tango
 *Engineering*
-- Dev. Dev Foobar. 3 M/D × 500 € = 1500 €
+- Dev. Dev Foobar. 3.5 M/D × 500 € = 1750 €
 - Dev _[option]_. Implement remote control. 2 M/D × 450 € = 900 €
 Total: 2400 €
 """
 
-        self.assertEquals(lead.sales, Decimal('1.5'))
+        self.assertEquals(lead.sales, Decimal('1.75'))
 
         # There should be one associated mission
         missions = lead.mission_set.all()
         self.assertEquals(len(missions), 1)
         mission = missions[0]
-        self.assertEquals(mission.price, Decimal('1.5'))
+        self.assertEquals(mission.price, Decimal('1.75'))
