@@ -53,12 +53,16 @@ def bill_file_path(instance, filename):
                 instance.bill_id, sanitizeName(filename))
 
 
+def default_due_date(self):
+    return date.today() + timedelta(30)
+
+
 class AbstractBill(models.Model):
     """Abstract class that factorize ClientBill and SupplierBill fields and logic"""
     lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
     bill_id = models.CharField(_("Bill id"), max_length=200, unique=True)
     creation_date = models.DateField(_("Creation date"), auto_now_add=True)
-    due_date = models.DateField(_("Due date"), default=(date.today() + timedelta(30)))
+    due_date = models.DateField(_("Due date"), default=default_due_date)
     payment_date = models.DateField(_("Payment date"), blank=True, null=True)
     previous_year_bill = models.BooleanField(_("Previous year bill"), default=False)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
@@ -67,6 +71,8 @@ class AbstractBill(models.Model):
     vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2, default=Decimal(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
     expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True})
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
+
+
 
     def __unicode__(self):
         if self.bill_id:
