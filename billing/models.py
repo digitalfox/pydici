@@ -53,7 +53,7 @@ def bill_file_path(instance, filename):
                 instance.bill_id, sanitizeName(filename))
 
 
-def default_due_date(self):
+def default_due_date():
     return date.today() + timedelta(30)
 
 
