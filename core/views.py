@@ -9,13 +9,13 @@ import csv
 import datetime
 
 from django.shortcuts import render
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Min, Max
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils import numberformat
 from django.utils.html import strip_tags
 
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, pydici_feature
 from leads.models import Lead
 from people.models import Consultant
 from crm.models import Company, Contact
@@ -44,6 +44,7 @@ def index(request):
 
 
 @pydici_non_public
+@pydici_feature("search")
 def search(request):
     """Very simple search function on all major pydici objects"""
 
@@ -125,6 +126,7 @@ def search(request):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def dashboard(request):
     """Tactical management dashboard. This views is in core module because it aggregates data
     accross different modules"""
@@ -133,6 +135,7 @@ def dashboard(request):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def financialControl(request, start_date=None, end_date=None):
     """Financial control extraction. This view is intented to be processed by
     a spreadsheet or a financial package software"""
@@ -160,7 +163,8 @@ def financialControl(request, start_date=None, end_date=None):
               "Mission", "MissionId", "BillingMode", "MissionPrice",
               "TotalQuantityInDays", "TotalQuantityInEuros",
               "ConsultantSubsidiary", "ConsultantTeam", "Trigramme", "Consultant", "Subcontractor", "CrossBilling",
-              "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros"]
+              "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros",
+              "StartDate", "EndDate"]
 
     writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in header])
 
@@ -194,7 +198,7 @@ def financialControl(request, start_date=None, end_date=None):
             if mission.lead.responsible:
                 missionRow.append(mission.lead.responsible.name)
                 missionRow.append(mission.lead.responsible.trigramme)
-                missionRow.append(mission.lead.responsible.manager.trigramme if mission.lead.responsible.manager else "")
+                missionRow.append(mission.lead.responsible.staffing_manager.trigramme if mission.lead.responsible.staffing_manager else "")
             else:
                 missionRow.extend(["", "", ""])
         else:
@@ -203,12 +207,12 @@ def financialControl(request, start_date=None, end_date=None):
         missionRow.append(mission.mission_id())
         missionRow.append(mission.billing_mode or "")
         missionRow.append(numberformat.format(mission.price, ",") if mission.price else 0)
-        missionRow.extend(mission.done_work())
+        missionRow.extend([numberformat.format(i, ",") for i in mission.done_work()])
         return missionRow
 
     for mission in missions:
         missionRow = createMissionRow(mission, start_date, end_date)
-        for consultant in mission.consultants().select_related().prefetch_related("manager"):
+        for consultant in mission.consultants().select_related().prefetch_related("staffing_manager"):
             consultantRow = missionRow[:]  # copy
             daily_rate, bought_daily_rate = financialConditions.get("%s-%s" % (mission.id, consultant.id), [0, 0])
             rateObjective = consultant.getRateObjective(end_date)
@@ -216,10 +220,10 @@ def financialControl(request, start_date=None, end_date=None):
                 rateObjective = rateObjective.daily_rate
             else:
                 rateObjective = 0
-            doneDays = timesheets.filter(mission_id=mission.id, consultant=consultant.id).aggregate(Sum("charge")).values()[0] or 0
-            forecastedDays = staffings.filter(mission_id=mission.id, consultant=consultant.id).aggregate(Sum("charge")).values()[0] or 0
+            doneDays = timesheets.filter(mission_id=mission.id, consultant=consultant.id).aggregate(charge=Sum("charge"), min_date=Min("working_date"), max_date=Max("working_date"))
+            forecastedDays = staffings.filter(mission_id=mission.id, consultant=consultant.id).aggregate(charge=Sum("charge"), min_date=Min("staffing_date"), max_date=Max("staffing_date"))
             consultantRow.append(consultant.company)
-            consultantRow.append(consultant.manager.trigramme if consultant.manager else "")
+            consultantRow.append(consultant.staffing_manager.trigramme if consultant.staffing_manager else "")
             consultantRow.append(consultant.trigramme)
             consultantRow.append(consultant.name)
             consultantRow.append(consultant.subcontractor)
@@ -228,11 +232,14 @@ def financialControl(request, start_date=None, end_date=None):
             consultantRow.append(numberformat.format(daily_rate, ",") if daily_rate else 0)
             consultantRow.append(numberformat.format(bought_daily_rate, ",") if bought_daily_rate else 0)
             # Timesheet row
-            for budgetType, quantity in (("done", doneDays), ("forecast", forecastedDays)):
+            for budgetType, days in (("done", doneDays), ("forecast", forecastedDays)):
+                quantity = days["charge"] or 0
                 row = consultantRow[:]  # Copy
                 row.append(budgetType)
                 row.append(numberformat.format(quantity, ",") if quantity else 0)
                 row.append(numberformat.format(quantity * daily_rate, ",") if (quantity > 0 and daily_rate > 0) else 0)
+                row.append(days["min_date"] or "")
+                row.append(days["max_date"] or "")
                 writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
 
     archivedMissions = Mission.objects.filter(active=False, archived_date__gte=start_date, archived_date__lt=end_date)
@@ -261,7 +268,7 @@ def financialControl(request, start_date=None, end_date=None):
         try:
             consultant = consultants[expense.user.username.lower()]
             row.append(consultant.company.name)
-            row.append(consultant.manager.trigramme)
+            row.append(consultant.staffing_manager.trigramme)
             row.append(consultant.trigramme)
             row.append(consultant.name)
             row.append(consultant.subcontractor)

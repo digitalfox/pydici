@@ -28,7 +28,7 @@ from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactFo
 from staffing.models import Timesheet
 from people.models import Consultant
 from leads.models import Lead
-from core.decorator import pydici_non_public, PydiciNonPublicdMixin
+from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
 from core.utils import sortedValues, previousMonth, COLORS
 from billing.models import ClientBill
 
@@ -43,7 +43,15 @@ class ContactReturnToMixin(object):
         return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("contact_detail", args=[target, ])
 
 
-class ContactCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
+class ThirdPartyMixin(PydiciFeatureMixin):
+    pydici_feature = "3rdparties"
+
+
+class FeatureContactsWriteMixin(PydiciFeatureMixin):
+    pydici_feature = set(["3rdparties", "contacts_write"])
+
+
+class ContactCreate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin, CreateView):
     model = Contact
     template_name = "core/form.html"
     form_class = ContactForm
@@ -56,13 +64,13 @@ class ContactCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
             return {}
 
 
-class ContactUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
+class ContactUpdate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin, UpdateView):
     model = Contact
     template_name = "core/form.html"
     form_class = ContactForm
 
 
-class ContactDelete(PydiciNonPublicdMixin, DeleteView):
+class ContactDelete(PydiciNonPublicdMixin, FeatureContactsWriteMixin, DeleteView):
     model = Contact
     template_name = "core/delete.html"
     form_class = ContactForm
@@ -77,51 +85,51 @@ class ContactDelete(PydiciNonPublicdMixin, DeleteView):
         return super(ContactDelete, self).dispatch(*args, **kwargs)
 
 
-class ContactDetail(PydiciNonPublicdMixin, DetailView):
+class ContactDetail(PydiciNonPublicdMixin, ThirdPartyMixin, DetailView):
     model = Contact
 
 
-class ContactList(PydiciNonPublicdMixin, ListView):
+class ContactList(PydiciNonPublicdMixin, ThirdPartyMixin, ListView):
     model = Contact
 
 
-class MissionContactCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
+class MissionContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
     model = MissionContact
     template_name = "core/form.html"
     form_class = MissionContactForm
 
 
-class MissionContactUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
+class MissionContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, UpdateView):
     model = MissionContact
     template_name = "core/form.html"
     form_class = MissionContactForm
 
 
-class BusinessBrokerCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
+class BusinessBrokerCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
     model = BusinessBroker
     template_name = "core/form.html"
     form_class = BusinessBrokerForm
 
 
-class BusinessBrokerUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
+class BusinessBrokerUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, UpdateView):
     model = BusinessBroker
     template_name = "core/form.html"
     form_class = BusinessBrokerForm
 
 
-class SupplierCreate(PydiciNonPublicdMixin, ContactReturnToMixin, CreateView):
+class SupplierCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
     model = Supplier
     template_name = "core/form.html"
     form_class = SupplierForm
 
 
-class SupplierUpdate(PydiciNonPublicdMixin, ContactReturnToMixin, UpdateView):
+class SupplierUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, UpdateView):
     model = Supplier
     template_name = "core/form.html"
     form_class = SupplierForm
 
 
-class AdministrativeContactCreate(PydiciNonPublicdMixin, CreateView):
+class AdministrativeContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, CreateView):
     model = AdministrativeContact
     template_name = "core/form.html"
     form_class = AdministrativeContactForm
@@ -133,7 +141,7 @@ class AdministrativeContactCreate(PydiciNonPublicdMixin, CreateView):
         return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[self.object.company.id, ])
 
 
-class AdministrativeContactUpdate(PydiciNonPublicdMixin, UpdateView):
+class AdministrativeContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, UpdateView):
     model = AdministrativeContact
     template_name = "core/form.html"
     form_class = AdministrativeContactForm
@@ -143,6 +151,7 @@ class AdministrativeContactUpdate(PydiciNonPublicdMixin, UpdateView):
 
 
 @pydici_non_public
+@pydici_feature("3rdparties")
 def client(request, client_id=None):
     """Client creation or modification"""
     client = None
@@ -173,6 +182,7 @@ def client(request, client_id=None):
 
 
 @pydici_non_public
+@pydici_feature("3rdparties")
 def clientOrganisation(request, client_organisation_id=None):
     """Client creation or modification"""
     clientOrganisation = None
@@ -203,6 +213,7 @@ def clientOrganisation(request, client_organisation_id=None):
 
 
 @pydici_non_public
+@pydici_feature("3rdparties")
 def company(request, company_id=None):
     """Client creation or modification"""
     company = None
@@ -233,6 +244,7 @@ def company(request, company_id=None):
 
 
 @pydici_non_public
+@pydici_feature("3rdparties")
 def company_detail(request, company_id):
     """Home page of client company"""
 
@@ -260,6 +272,7 @@ def company_detail(request, company_id):
 
 
 @pydici_non_public
+@pydici_feature("3rdparties")
 def company_list(request):
     """Client company list"""
     companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
@@ -268,6 +281,7 @@ def company_list(request):
 
 
 @pydici_non_public
+@pydici_feature("3rdparties")
 @cache_page(60 * 60 * 24)
 def graph_company_sales_jqp(request, onlyLastYear=False):
     """Sales repartition per company"""
@@ -311,6 +325,7 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
 
 
 @pydici_non_public
+@pydici_feature("3rdparties")
 @cache_page(60 * 60)
 def graph_company_business_activity_jqp(request, company_id):
     """Business activity (leads and bills) for a company

@@ -13,6 +13,7 @@ from django.utils.encoding import force_unicode
 
 from leads.learn import compute_leads_state
 from staffing.models import Mission
+from leads.models import StateProba
 from core.utils import send_lead_mail
 
 
@@ -21,6 +22,11 @@ def create_default_mission(lead):
     mission.price = lead.sales  # Initialise with lead price
     mission.subsidiary = lead.subsidiary
     mission.responsible = lead.responsible
+    try:
+        mission.probability = lead.stateproba_set.get(state="WON").score
+    except StateProba.DoesNotExist:
+        # No state proba, leave mission proba default
+        pass
     mission.save()
     # Create default staffing
     mission.create_default_staffing()

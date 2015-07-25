@@ -29,7 +29,9 @@
         {% else %}
             <li><a href="#tab-timesheet" data-tab-url="{% url 'staffing.views.consultant_timesheet' consultant.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
         {% endif %}
-        <li><a data-toggle="tab" href="#tab-staffing"  data-tab-url="{% url 'staffing.views.consultant_staffing' consultant.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
+        {% if pydici_feature.staffing %}
+            <li><a data-toggle="tab" href="#tab-staffing"  data-tab-url="{% url 'staffing.views.consultant_staffing' consultant.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
+        {% endif %}
         <li><a data-toggle="tab" href="#tab-missions"><span class="glyphicon glyphicon-list"></span> {% trans "Missions" %}</a></li>
     </ul>
 </div>

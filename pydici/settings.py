@@ -19,6 +19,12 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+    }
+}
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -74,6 +80,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "django.core.context_processors.request",
+    "core.context_processors.feature",
     "core.context_processors.menu",
 )
 
@@ -122,7 +129,6 @@ INSTALLED_APPS = [
     'django_extensions',
     'django.contrib.staticfiles',  # Static files are served by web server in production mode, but this apps allow collectstatic
     'taggit',
-    'taggit_suggest',
     'taggit_templatetags',
     'permissions',
     'workflows',

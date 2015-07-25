@@ -74,3 +74,10 @@ There are two possible situations, depending on whether your installation alread
         ./manage.py migrate
 
     Once this is done, future updates will be handled as situation #1.
+
+## Notes about scikit learn
+Scikit learn is a machine learning framework for python. It is an optional Pydici deps that can predict leads tags and state.
+Some comments:
+- You need to install scikit-learn, numpy and scipy
+- You might need to add the following directive in your apache virual host file to avoid some nasty deadlock during init when using scikit learn : WSGIApplicationGroup %{GLOBAL}
+- For proper model caching, you might need to increase memcached object size (1m => 10m) as well as your python client memcache (hardcoded in lib for python-memcached...sic).

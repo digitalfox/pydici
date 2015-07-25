@@ -8,8 +8,10 @@ Test cases
 # Python/Django test modules
 from django.test import TestCase, TransactionTestCase
 from django.core import urlresolvers
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django.db import IntegrityError
+from django.test import RequestFactory
+from django.contrib.messages.storage import default_storage
 
 # Third party modules
 import workflows.utils as wf
@@ -17,7 +19,9 @@ import permissions.utils as perm
 from workflows.models import Transition
 
 # Pydici modules
-from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth, cumulateList
+from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth, cumulateList, capitalize
+from core.models import GroupFeature, FEATURES
+from leads.utils import postSaveLead
 from leads.models import Lead
 from leads import learn as leads_learn
 from people.models import Consultant, ConsultantProfile, RateObjective
@@ -30,7 +34,7 @@ import pydici.settings
 
 # Python modules used by tests
 from urllib2 import urlparse
-from datetime import date
+from datetime import date, datetime
 import os
 from decimal import Decimal
 
@@ -118,6 +122,9 @@ PYDICI_PAGES = ("/",
 class SimpleTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
+
+    def setUp(self):
+        setup_test_user_features()
 
     def test_basic_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
@@ -219,6 +226,15 @@ class UtilsTest(TestCase):
         self.assertListEqual(cumulateList([1, 2, 3]), [1, 3, 6])
         self.assertListEqual(cumulateList([]), [])
         self.assertListEqual(cumulateList([8]), [8])
+
+    def test_capitalize(self):
+        data = ((u"coucou", u"Coucou"),
+                (u"état de l'art", u"État De L'Art"),
+                (u"fusion du si", u"Fusion Du Si"),
+                (u"cohérence du SI", u"Cohérence Du SI"),
+                (u"test-and-learn", u"Test-And-Learn"))
+        for word, capitalizeddWord in data:
+            self.assertEqual(capitalizeddWord, capitalize(word))
 
 class StaffingViewsTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
@@ -333,6 +349,7 @@ class LeadModelTest(TestCase):
                 "leads.json", "staffing.json", "billing.json"]
 
     def setUp(self):
+        setup_test_user_features()
         if not os.path.exists(pydici.settings.DOCUMENT_PROJECT_PATH):
             os.makedirs(pydici.settings.DOCUMENT_PROJECT_PATH)
 
@@ -570,26 +587,74 @@ class LeadLearnTestCase(TestCase):
             return
         r1 = Consultant.objects.get(id=1)
         r2 = Consultant.objects.get(id=2)
+        c1 = Client.objects.get(id=1)
+        c2 = Client.objects.get(id=1)
         for i in range(20):
             a = create_lead()
             if a.id%2:
                 a.state = "WON"
+                a.sales = a.id
+                a.client= c1
                 a.responsible = r1
             else:
-                a.state = "LOST"
+                a.state = "FORGIVEN"
+                a.sales = a.id
+                a.client = c2
                 a.responsible = r2
             a.save()
-        self.assertGreater(leads_learn.test_model(), 0.8, "Proba is too low")
+        leads_learn.eval_state_model()
+        self.assertGreater(leads_learn.test_state_model(), 0.8, "Proba is too low")
+
+
+    def test_too_few_lead(self):
+        lead = create_lead()
+        f = RequestFactory()
+        request = f.get("/")
+        request.user = User.objects.get(id=1)
+        request.session = {}
+        request._messages = default_storage(request)
+        lead = create_lead()
+        postSaveLead(request, lead, [])  # Learn model cannot exist, but it should not raise error
+
+
+    def test_mission_proba(self):
+        for i in range(5):
+            # Create enough data to allow learn model to exist
+            a = create_lead()
+            a.state="WON"
+            a.save()
+        lead = Lead.objects.get(id=1)
+        lead.state="LOST"  # Need more than one target class to build a solver
+        lead.save()
+        f = RequestFactory()
+        request = f.get("/")
+        request.user = User.objects.get(id=1)
+        request.session = {}
+        request._messages = default_storage(request)
+        lead = create_lead()
+        lead.state = "OFFER_SENT"
+        lead.save()
+        postSaveLead(request, lead, [])
+        mission = lead.mission_set.all()[0]
+        if leads_learn.HAVE_SCIKIT:
+            self.assertEqual(mission.probability, lead.stateproba_set.get(state="WON").score)
+        else:
+            self.assertEqual(mission.probability, 50)
+        lead.state = "WON"
+        lead.save()
+        postSaveLead(request, lead, [])
+        mission = Mission.objects.get(id=mission.id)  # reload it
+        self.assertEqual(mission.probability, 100)
 
 # ######
 def create_lead():
     """Create test lead
     @return: lead object"""
     lead = Lead(name="laala",
-          due_date="2008-11-01",
-          update_date="2008-11-01 16:14:16",
-          creation_date="2008-11-01 15:43:43",
-          start_date="2008-11-01",
+          due_date=date(2008,11,01),
+          update_date=datetime(2008, 11, 1, 15,55,40),
+          creation_date=datetime(2008, 11, 1, 15,43,43),
+          start_date=date(2008, 11, 01),
           responsible=None,
           sales=None,
           external_staffing="JCF",
@@ -602,3 +667,15 @@ def create_lead():
 
     lead.save()
     return lead
+
+
+def setup_test_user_features():
+    admin_group = Group(name="admin")
+    admin_group.save()
+
+    for name in FEATURES:
+        GroupFeature(feature=name, group=admin_group).save()
+
+    test_user = User.objects.get(username=TEST_USERNAME)
+    test_user.groups.add(admin_group)
+    test_user.save()

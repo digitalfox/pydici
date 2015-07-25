@@ -25,11 +25,12 @@ from expense.models import Expense, ExpensePayment
 from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable, ExpensePaymentTable
 from people.models import Consultant
 from staffing.models import Mission
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, pydici_feature
 from core.views import tableToCSV
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def expenses(request, expense_id=None):
     """Display user expenses and expenses that he can validate"""
     if not request.user.groups.filter(name="expense_requester").exists():
@@ -118,6 +119,7 @@ def expenses(request, expense_id=None):
 
 
 @pydici_non_public
+@pydici_feature("management")
 def expense_receipt(request, expense_id):
     """Returns expense receipt if authorize to"""
     response = HttpResponse()
@@ -137,6 +139,7 @@ def expense_receipt(request, expense_id):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def expenses_history(request):
     """Display expense history.
     @param year: year of history. If None, display recent items and year index"""
@@ -178,6 +181,7 @@ def mission_expenses(request, mission_id):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def chargeable_expenses(request):
     """Display all chargeable expenses that are not yet charged in a bill"""
     expenses = Expense.objects.filter(chargeable=True).select_related().prefetch_related("clientbill_set")
@@ -188,6 +192,7 @@ def chargeable_expenses(request):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def update_expense_state(request, expense_id, transition_id):
     """Do workflow transition for that expense"""
     redirect = HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
@@ -213,6 +218,7 @@ def update_expense_state(request, expense_id, transition_id):
 
 
 @pydici_non_public
+@pydici_feature("management")
 def expense_payments(request, expense_payment_id=None):
     readOnly = False
     if not request.user.groups.filter(name="expense_paymaster").exists() and not request.user.is_superuser:
@@ -282,6 +288,7 @@ def expense_payments(request, expense_payment_id=None):
 
 
 @pydici_non_public
+@pydici_feature("management")
 def expense_payment_detail(request, expense_payment_id):
     """Display detail of this expense payment"""
     if not request.user.groups.filter(name="expense_requester").exists():

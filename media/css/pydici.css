@@ -70,6 +70,16 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 .pydici-mission-timesheet > thead > tr > th, .pydici-mission-timesheet > tbody > tr > th, .pydici-mission-timesheet > tfoot > tr > th, .pydici-mission-timesheet > thead > tr > td, .pydici-mission-timesheet > tbody > tr > td, .pydici-mission-timesheet > tfoot > tr > td  { border-right:1px solid #DDDDDD;}
 .pydici-mission-timesheet {  border-left:1px solid #DDDDDD;}
 
+.timesheet-nav-btn {
+    cursor: pointer;
+    color: #8F6749;
+}
+
+.timesheet-nav-btn-disabled {
+    cursor: default;
+    color: #ccc;
+}
+
 /* Small grid like timesheet */
 .tablesmall-form-row td { padding:0px; margin:0px; vertical-align: middle;}
 .tablesmall-form-row input {  background: #F9F9F9; margin: 1px -2px;}

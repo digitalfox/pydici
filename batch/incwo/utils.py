@@ -332,14 +332,14 @@ def import_proposal_line(line, context):
         if hasattr(line, 'unit_price') and hasattr(line, 'quantity'):
             # This is a product proposal line with an attached price
             unit_price = Decimal(unicode(line.unit_price))
-            unit_price = to_int_or_round(unit_price, 2)
+            #unit_price = to_int_or_round(unit_price, 2)
 
             unit = unicode(line.unit)
             if unit:
                 unit = ' ' + unit
 
             quantity = Decimal(unicode(line.quantity))
-            quantity = to_int_or_round(quantity, 2)
+            #quantity = to_int_or_round(quantity, 2)
 
             # Do not use line.total_price: it is set to 0 for options
             total_price = unit_price * quantity

@@ -25,10 +25,11 @@ from staffing.utils import gatherTimesheetData
 from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round, working_days
 from staffing.utils import holidayDays
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, pydici_feature
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def bill_review(request):
     """Review of bills: bills overdue, due soon, or to be created"""
     today = date.today()
@@ -72,6 +73,7 @@ def bill_review(request):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def bill_payment_delay(request):
     """Report on client bill payment delay"""
     # List of tuple (company, avg delay in days)
@@ -96,6 +98,7 @@ def bill_payment_delay(request):
 
 
 @pydici_non_public
+@pydici_feature("management")
 def mark_bill_paid(request, bill_id):
     """Mark the given bill as paid"""
     bill = ClientBill.objects.get(id=bill_id)
@@ -105,6 +108,7 @@ def mark_bill_paid(request, bill_id):
 
 
 @pydici_non_public
+@pydici_feature("management")
 def bill_file(request, bill_id=0, nature="client"):
     """Returns bill file"""
     response = HttpResponse()
@@ -124,6 +128,7 @@ def bill_file(request, bill_id=0, nature="client"):
 
 
 @pydici_non_public
+@pydici_feature("management")
 def pre_billing(request, year=None, month=None, mine=False):
     """Pre billing page: help to identify bills to send"""
     if year and month:
@@ -202,6 +207,7 @@ def pre_billing(request, year=None, month=None, mine=False):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 @cache_page(60 * 10)
 def graph_billing_jqp(request):
     """Nice graph bar of incomming cash from bills

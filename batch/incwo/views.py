@@ -10,6 +10,8 @@ import os
 
 from datetime import datetime
 
+from core.decorator import pydici_feature
+
 from django.conf import settings
 from django.shortcuts import render
 
@@ -37,6 +39,7 @@ class LogInfo(object):
             return f.read()
 
 
+@pydici_feature("management")
 def imports(request):
     if os.path.exists(settings.INCWO_LOG_DIR):
         log_dirs = os.listdir(settings.INCWO_LOG_DIR)
@@ -50,6 +53,7 @@ def imports(request):
     })
 
 
+@pydici_feature("management")
 def details(request, log_dir):
     log_info = LogInfo(log_dir)
     return render(request, "incwo/details.html", {

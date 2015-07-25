@@ -28,6 +28,7 @@ from django.views.generic.edit import UpdateView
 from django.contrib import messages
 from django.conf import settings
 
+from core.utils import user_has_feature
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from people.models import Consultant
 from leads.models import Lead
@@ -36,7 +37,7 @@ from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlin
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
     to_int_or_round, COLORS, convertDictKeyToDate, cumulateList
-from core.decorator import pydici_non_public, PydiciNonPublicdMixin
+from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent
 from staffing.tables import MissionTable
@@ -47,6 +48,55 @@ TIMESTRING_FORMATTER = {
     'cycle': formats.number_format,
     'keyboard': time_string_for_day_percent
 }
+
+
+TIMESHEET_ACCESS_NOT_ALLOWED = 'N'
+TIMESHEET_ACCESS_READ_ONLY = 'RO'
+TIMESHEET_ACCESS_READ_WRITE = 'RW'
+
+
+def check_user_timesheet_access(user, consultant, timesheet_month):
+    """
+    Check if the user is allowed to access the requested timesheet.
+    Returns one of the `TIMESHEET_ACCESS_*` constants.
+    """
+    current_month = date.today().replace(day=1)
+
+    if (user.has_perm("staffing.add_timesheet") and
+            user.has_perm("staffing.change_timesheet") and
+            user.has_perm("staffing.delete_timesheet")):
+        return TIMESHEET_ACCESS_READ_WRITE
+
+    try:
+        trigramme = user.username.upper()
+        user_consultant = Consultant.objects.get(trigramme=trigramme)
+    except Consultant.DoesNotExist:
+        return TIMESHEET_ACCESS_NOT_ALLOWED
+
+    if user_consultant.id == consultant.id:
+        # User is accessing his own timesheet
+
+        # A consultant can only edit his own timesheet on current month and 3 days after
+        timesheet_next_month = (timesheet_month + timedelta(days=40)).replace(day=1)
+        if current_month == timesheet_month or (date.today() - timesheet_next_month).days <= 3:
+            return TIMESHEET_ACCESS_READ_WRITE
+        else:
+            return TIMESHEET_ACCESS_READ_ONLY
+
+    # User is accessing the timesheet of another user
+    if user_consultant.subcontractor:
+        return TIMESHEET_ACCESS_NOT_ALLOWED
+
+    if user_has_feature(user, "timesheet_all"):
+        return TIMESHEET_ACCESS_READ_ONLY
+
+    if user_has_feature(user, "timesheet_current_month"):
+        if timesheet_month >= current_month:
+            return TIMESHEET_ACCESS_READ_ONLY
+        else:
+            return TIMESHEET_ACCESS_NOT_ALLOWED
+    else:
+        return TIMESHEET_ACCESS_NOT_ALLOWED
 
 
 @pydici_non_public
@@ -113,6 +163,7 @@ def mission_staffing(request, mission_id):
 
 
 @pydici_non_public
+@pydici_feature("staffing")
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
@@ -144,8 +195,8 @@ def consultant_staffing(request, consultant_id):
 
 
 @pydici_non_public
+@pydici_feature("staffing_mass")
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@permission_required("staffing.change_staffing")
 def mass_staffing(request):
     """Massive staffing form"""
     staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime")]
@@ -188,6 +239,7 @@ def mass_staffing(request):
 
 
 @pydici_non_public
+@pydici_feature("staffing_mass")
 def pdc_review(request, year=None, month=None):
     """PDC overview
     @param year: start date year. None means current year
@@ -346,6 +398,7 @@ def pdc_review(request, year=None, month=None):
 
 
 @pydici_non_public
+@pydici_feature("staffing_mass")
 @cache_page(10)
 def pdc_detail(request, consultant_id, staffing_date):
     """Display detail of consultant staffing for this month"""
@@ -406,28 +459,15 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         previous_week = 0
         next_week = 0
 
+    notAllowed = HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+
     consultant = Consultant.objects.get(id=consultant_id)
 
-    readOnly = False  # Wether timesheet is readonly or not
+    access = check_user_timesheet_access(request.user, consultant, month)
 
-    if not (request.user.has_perm("staffing.add_timesheet") and
-            request.user.has_perm("staffing.change_timesheet") and
-            request.user.has_perm("staffing.delete_timesheet")):
-        # Each one can edit its own timesheet
-        # And authorise in-house people to have a look (read only)
-        if request.user.username.upper() != consultant.trigramme:
-            try:
-                c = Consultant.objects.get(trigramme=request.user.username.upper())
-                if not c.subcontractor:
-                    readOnly = True
-                else:
-                    return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
-            except Consultant.DoesNotExist:
-                return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
-
-        # A consultant can only edit his own timesheet on current month and 3 days after
-        if (date.today() - next_date).days > 3:
-            readOnly = True
+    if access == TIMESHEET_ACCESS_NOT_ALLOWED:
+        return notAllowed
+    readOnly = access == TIMESHEET_ACCESS_READ_ONLY
 
     staffings = Staffing.objects.filter(consultant=consultant)
     staffings = staffings.filter(staffing_date=month)
@@ -480,6 +520,8 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
     if week:
         warning = warning[days[0].day - 1:days[-1].day]
 
+    previous_date_enabled = check_user_timesheet_access(request.user, consultant, previous_date.replace(day=1)) != TIMESHEET_ACCESS_NOT_ALLOWED
+
     return render(request, "staffing/consultant_timesheet.html",
                   {"consultant": consultant,
                    "form": form,
@@ -493,6 +535,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                    "warning": warning,
                    "next_date": next_date,
                    "previous_date": previous_date,
+                   "previous_date_enabled": previous_date_enabled,
                    "previous_week": previous_week,
                    "next_week": next_week,
                    "is_current_month": month == date.today().replace(day=1),
@@ -742,6 +785,7 @@ def mission_csv_timesheet(request, mission, consultants):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def all_timesheet(request, year=None, month=None):
     if year and month:
         month = date(int(year), int(month), 1)
@@ -827,6 +871,7 @@ def all_timesheet(request, year=None, month=None):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def all_csv_timesheet(request, charges, month):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
@@ -847,6 +892,7 @@ def all_csv_timesheet(request, charges, month):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 def detailed_csv_timesheet(request, year=None, month=None):
     """Detailed timesheet with mission, consultant, and rates
     Intended for accounting third party system or spreadsheet analysis"""
@@ -904,6 +950,7 @@ def detailed_csv_timesheet(request, year=None, month=None):
 
 
 @pydici_non_public
+@pydici_feature("management")
 def holidays_planning(request, year=None, month=None):
     """Display forecasted holidays of all consultants"""
     # We use the first day to represent month
@@ -941,6 +988,7 @@ def holidays_planning(request, year=None, month=None):
 
 
 @pydici_non_public
+@pydici_feature("leads")
 @permission_required("staffing.add_mission")
 def create_new_mission_from_lead(request, lead_id):
     """Create a new mission on the given lead. Mission are created with same nature
@@ -1070,6 +1118,7 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 
 
 @pydici_non_public
+@pydici_feature("reports")
 @cache_page(60 * 10)
 def graph_timesheet_rates_bar_jqp(request):
     """Nice graph bar of timesheet prod/holidays/nonprod rates

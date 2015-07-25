@@ -89,7 +89,7 @@
                         {% endif %}
                         </li>
                     {% endif %}
-                    <li class="list-group-item"><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
+                    <li class="list-group-item"><a href="{% url 'leads.views.detail' lead.id %}">{{ lead.name }} ({{ lead.deal_id }})</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
                 {% endfor %}
             </div>
         {% endfor %}
@@ -150,11 +150,17 @@
             <tbody>
             {% for admincontact in administrative_contacts %}
                 <tr>
-                {% if admincontact.contact %}
-                   <td><a rel=external href="{% url 'contact_update' admincontact.contact.id %}?return_to={{ request.get_full_path }}">{{ admincontact.contact.name }}</a></td>
-                {% else %}
-                    <td></td>
-                {% endif %}
+                    <td>
+                    {% if admincontact.contact %}
+                        {% if pydici_feature.contacts_write %}
+                            <a rel=external href="{% url 'contact_update' admincontact.contact.id %}?return_to={{ request.get_full_path }}">
+                            {{ admincontact.contact.name }}
+                            </a>
+                        {% else %}
+                            {{ admincontact.contact.name }}
+                        {% endif %}
+                    {% endif %}
+                    </td>
                    <td>{{ admincontact.company }}</td>
                    <td>{{ admincontact.function }}</td>
                    <td>{{ admincontact.email|urlize }}</td>
@@ -168,7 +174,9 @@
         {% with "admin_contacts_table" as table_id %}
              {% include "core/_datatables.html" %}
         {% endwith %}
-        <br/><a class="btn btn-default" href="{% url 'administrative_contact_add' %}?company={{ company.id  }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
+        {% if pydici_feature.contacts_write %}
+        <br/><a class="btn btn-default" href="{% url 'administrative_contact_add' %}?company={{ company.id|safe }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
+        {% endif %}
     </div>
 
     <div id="tab-rates" class="tab-pane fade">

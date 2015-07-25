@@ -26,6 +26,9 @@ from django.core.cache import cache
 
 import pydici.settings
 
+from core.models import GroupFeature
+
+
 # Graph colors
 COLORS = ["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFE32C", "#AAFF86", "#D972FF", "#FF8D8F", "#6BE7FF", "#FF1616"]
 
@@ -51,21 +54,18 @@ def send_lead_mail(lead, request, fromAddr=pydici.settings.LEADS_MAIL_FROM, from
     msg.send()
 
 
-def capitalize(sentence, keepUpper=False):
+def capitalize(sentence):
     """
     @param sentence: string or unicode
-    @param keepUpper: don't change sentence that are all uppercase
+    don't change words that are all uppercase
     @return:Capitalize each word or sub-word (separated by dash or quote) of the sentence
     """
-    if keepUpper and sentence == sentence.upper():
-        return sentence
-
-    sentence = sentence.lower()
     result = []
-    for sep in (" ", "'", "-"):
+    for sep in (u" ", u"'", u"-"):
         for word in sentence.split(sep):
             if word:
-                word = word[0].upper() + word[1:]
+                if word.upper() != word:
+                    word = word[0].upper() + word[1:]
                 result.append(word)
         sentence = sep.join(result)
         result = []
@@ -385,3 +385,30 @@ def has_role(user, role):
 
     roles = perm.get_roles(user)
     return role in roles
+
+
+def _get_user_features(user):
+    """
+    Returns a set of strings representing the features accessible by the user.
+
+    Results are cached to reduce the number of SQL queries.
+    """
+    key = "core._get_user_features_" + user.username
+    res = cache.get(key)
+    if res is None:
+        features = [x.feature for x in GroupFeature.objects.filter(group__user=user)]
+        res = set(features)
+        cache.set(key, res, 3)
+    return res
+
+
+def user_has_feature(user, feature):
+    """
+    Returns True if `user` has access to `feature`.
+    """
+    return feature in _get_user_features(user)
+
+
+def user_has_features(user, features):
+    features = set(features)
+    return features.issubset(_get_user_features(user))
