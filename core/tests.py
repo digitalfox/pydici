@@ -6,7 +6,7 @@ Test cases
 """
 
 # Python/Django test modules
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from django.core import urlresolvers
 from django.contrib.auth.models import Group, User
 from django.db import IntegrityError
@@ -466,7 +466,7 @@ class StaffingModelTest(TestCase):
         self.assertEqual(mission.staffing_set.count(), 0)
 
 
-class BillingModelTest(TestCase):
+class BillingModelTest(TransactionTestCase):
     """Test Billing application model"""
     fixtures = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
@@ -529,7 +529,7 @@ class WorkflowTest(TestCase):
         fla = User.objects.get(username="fla")
         category = ExpenseCategory.objects.create(name="repas")
         e = Expense.objects.create(user=tco, description="une grande bouffe",
-                                   category=category, amount=123,
+                                   category=category, amount=123, chargeable=False,
                                    creation_date=date.today(), expense_date=date.today())
         self.assertEqual(wf.get_state(e), None)
         wf.set_initial_state(e)

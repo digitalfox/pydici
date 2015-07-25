@@ -7,8 +7,8 @@ Pydici expense views. Http request are processed here.
 
 from datetime import date, timedelta
 import mimetypes
-import workflows.utils as wf
 import permissions.utils as perm
+import workflows.utils as wf
 from workflows.models import Transition
 from django_tables2 import RequestConfig
 
@@ -18,7 +18,7 @@ from django.core import urlresolvers
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.contrib import messages
-
+from core import utils
 
 from expense.forms import ExpenseForm, ExpensePaymentForm
 from expense.models import Expense, ExpensePayment
@@ -82,7 +82,7 @@ def expenses(request, expense_id=None):
         team_expenses = []
 
     # Paymaster manage all expenses
-    if perm.has_role(request.user, "expense paymaster"):
+    if utils.has_role(request.user, "expense paymaster"):
         managed_expenses = Expense.objects.filter(workflow_in_progress=True).exclude(user=request.user).select_related()
     else:
         managed_expenses = team_expenses
@@ -126,8 +126,8 @@ def expense_receipt(request, expense_id):
     try:
         expense = Expense.objects.get(id=expense_id)
         if expense.user == request.user or\
-           perm.has_role(request.user, "expense paymaster") or\
-           perm.has_role(request.user, "expense manager"):
+           utils.has_role(request.user, "expense paymaster") or\
+           utils.has_role(request.user, "expense manager"):
             if expense.receipt:
                 response['Content-Type'] = mimetypes.guess_type(expense.receipt.name)[0] or "application/stream"
                 for chunk in expense.receipt.chunks():
@@ -150,7 +150,7 @@ def expenses_history(request):
     except Consultant.DoesNotExist:
         user_team = []
 
-    if not perm.has_role(request.user, "expense paymaster"):
+    if not utils.has_role(request.user, "expense paymaster"):
         expenses = expenses.filter(Q(user=request.user) | Q(user__in=user_team))
 
     expenseTable = ExpenseTable(expenses, orderable=True)
@@ -198,7 +198,7 @@ def update_expense_state(request, expense_id, transition_id):
     redirect = HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
     try:
         expense = Expense.objects.get(id=expense_id)
-        if expense.user == request.user and not perm.has_role(request.user, "expense administrator"):
+        if expense.user == request.user and not utils.has_role(request.user, "expense administrator"):
             messages.add_message(request, messages.WARNING, _("You cannot manage your own expense !"))
             return redirect
     except Expense.DoesNotExist:
@@ -244,7 +244,7 @@ def expense_payments(request, expense_payment_id=None):
         user_team = []
 
     expensePayments = ExpensePayment.objects.all()
-    if not perm.has_role(request.user, "expense paymaster"):
+    if not utils.has_role(request.user, "expense paymaster"):
         expensePayments = expensePayments.filter(Q(expense__user=request.user) | Q(expense__user__in=user_team)).distinct()
 
     if request.method == "POST":
@@ -297,8 +297,8 @@ def expense_payment_detail(request, expense_payment_id):
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
         if not (expensePayment.user() == request.user or\
-           perm.has_role(request.user, "expense paymaster") or\
-           perm.has_role(request.user, "expense manager")):
+           utils.has_role(request.user, "expense paymaster") or\
+           utils.has_role(request.user, "expense manager")):
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
 
     except ExpensePayment.DoesNotExist:

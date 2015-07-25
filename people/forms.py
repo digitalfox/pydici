@@ -41,6 +41,7 @@ class SalesManChoices(PydiciSelect2Field, AutoModelSelect2Field):
 class ConsultantForm(models.ModelForm):
     class Meta:
         model = Consultant
+        fields = "__all__"
 
     def clean_subcontractor_company(self):
         """Ensure subcontractor flag is on if subcontractor company is defined"""

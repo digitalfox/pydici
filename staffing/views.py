@@ -36,7 +36,7 @@ from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-    to_int_or_round, COLORS, convertDictKeyToDateTime, cumulateList
+    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent
@@ -177,7 +177,7 @@ def consultant_staffing(request, consultant_id):
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
-                                          formset=ConsultantStaffingInlineFormset)
+                                          formset=ConsultantStaffingInlineFormset, fields="__all__")
 
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=consultant)
@@ -604,7 +604,7 @@ def mission_timesheet(request, mission_id):
         # Timesheet data
         timesheetData = []
         data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-        data = convertDictKeyToDateTime(data)
+        data = convertDictKeyToDate(data)
 
         for month in timesheetMonths:
             n_days = data.get(month, 0)
@@ -687,13 +687,12 @@ def mission_timesheet(request, mission_id):
     objectiveMargin = mission.objectiveMargin(endDate=nextMonth(current_month))
 
     # Prepare data for graph
-    graph_data = []
-    isoTimesheetDates = [t.date().isoformat() for t in timesheetMonths]
+    isoTimesheetDates = [t.isoformat() for t in timesheetMonths]
     if len(timesheetMonths) > 0:
-        minDate = previousMonth(timesheetMonths[0]).date().isoformat()
+        minDate = previousMonth(timesheetMonths[0]).isoformat()
     else:
         minDate = previousMonth(date.today()).isoformat()
-    isoStaffingDates = [t.date().isoformat() for t in staffingMonths]
+    isoStaffingDates = [t.isoformat() for t in staffingMonths]
     if len(isoStaffingDates) > 0 and len(isoTimesheetDates) > 0:
         if isoTimesheetDates[-1] == isoStaffingDates[0]:
             # We have an overlap
@@ -1146,19 +1145,19 @@ def graph_timesheet_rates_bar_jqp(request):
                                           working_date__lt=timesheetEndDate).select_related()
 
     timesheetMonths = timesheets.dates("working_date", "month")
-    isoTimesheetMonths = [d.date().isoformat() for d in timesheetMonths]
+    isoTimesheetMonths = [d.isoformat() for d in timesheetMonths]
 
     if not timesheetMonths:
         return HttpResponse('')
 
     nConsultant = dict(timesheets.extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Count("consultant__id", distinct=True)).order_by())
-    nConsultant = convertDictKeyToDateTime(nConsultant)
+    nConsultant = convertDictKeyToDate(nConsultant)
 
     for nature in natures:
         nature_data[nature] = []
         nature_data_days[nature] = []
         data = dict(timesheets.filter(mission__nature=nature).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-        data = convertDictKeyToDateTime(data)
+        data = convertDictKeyToDate(data)
         for month in timesheetMonths:
             nature_data[nature].append(100 * data.get(month, 0) / (working_days(month, holiday_days) * nConsultant.get(month, 1)))
             nature_data_days[nature].append(data.get(month, 0))
@@ -1175,7 +1174,7 @@ def graph_timesheet_rates_bar_jqp(request):
 
     return render(request, "staffing/graph_timesheet_rates_bar_jqp.html",
                   {"graph_data": json.dumps(graph_data),
-                   "min_date": previousMonth(timesheetMonths[0]).date().isoformat(),
+                   "min_date": previousMonth(timesheetMonths[0]).isoformat(),
                    "natures_display": [i[1] for i in Mission.MISSION_NATURE],
                    "series_colors": COLORS,
                    "user": request.user})
@@ -1204,7 +1203,7 @@ def graph_profile_rates_jqp(request):
                                           working_date__lt=timesheetEndDate).select_related()
 
     timesheetMonths = timesheets.dates("working_date", "month")
-    isoTimesheetMonths = [d.date().isoformat() for d in timesheetMonths]
+    isoTimesheetMonths = [d.isoformat() for d in timesheetMonths]
     if not timesheetMonths:
         return HttpResponse('')
 
@@ -1227,7 +1226,6 @@ def graph_profile_rates_jqp(request):
     for profil in profils.keys():
         data = []
         for month in timesheetMonths:
-            month = month.date()
             if month in nDays[profil] and nDays[profil][month] > 0:
                 data.append(avgDailyRate[profil][month] / nDays[profil][month])
             else:
@@ -1236,7 +1234,7 @@ def graph_profile_rates_jqp(request):
 
     return render(request, "staffing/graph_profile_rates_jqp.html",
               {"graph_data": json.dumps(graph_data),
-               "min_date": previousMonth(timesheetMonths[0]).date().isoformat(),
+               "min_date": previousMonth(timesheetMonths[0]).isoformat(),
                "profils_display": profils.values(),
                "series_colors": COLORS,
                "user": request.user})
@@ -1266,13 +1264,13 @@ def graph_consultant_rates_jqp(request, consultant_id):
         prodRate = consultant.getProductionRate(refDate, next_month)
         if prodRate:
             prodRateData.append(100 * prodRate)
-            isoProdDates.append(refDate.date().isoformat())
+            isoProdDates.append(refDate.isoformat())
         fc = consultant.getFinancialConditions(refDate, next_month)
         if fc:
             dailyRateData.append(int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc])))
             minYData.append(int(min([rate for rate, days in fc])))
             maxYData.append(int(max([rate for rate, days in fc])))
-            isoRateDates.append(refDate.date().isoformat())
+            isoRateDates.append(refDate.isoformat())
         objectiveRate = consultant.getRateObjective(refDate)
         if objectiveRate:
             objectiveRates.append(objectiveRate.daily_rate)
@@ -1281,7 +1279,7 @@ def graph_consultant_rates_jqp(request, consultant_id):
 
     # Add data to graph
     graph_data.append(zip(isoRateDates, dailyRateData))
-    graph_data.append(zip([d.date().isoformat() for d in kdates], objectiveRates))
+    graph_data.append(zip([d.isoformat() for d in kdates], objectiveRates))
     graph_data.append(zip(isoRateDates, minYData))
     graph_data.append(zip(isoRateDates, maxYData))
     graph_data.append(zip(isoProdDates, prodRateData))

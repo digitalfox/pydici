@@ -1,14 +1,15 @@
-django>=1.5,<1.6
-django_tables2
-django-taggit
+django>=1.8,<1.9
+-e git://github.com/frankwiles/django-taggit-suggest.git#egg=django-taggit-suggest
+django_tables2==1.0.4
+django-taggit==0.15.0
 django-taggit-templatetags
-django-permissions==1.0.3
-django-workflows==1.0.2
-django-extensions==1.1.1
-django-debug-toolbar
+django-ajax-selects
+-e git://github.com/bport/django-permissions.git@fix_get_roles#egg=django-permissions
+-e git://github.com/diefenbach/django-workflows.git#egg=django-workflows
+django-extensions==1.5.5
+django-debug-toolbar==1.3.2
 django-userswitch
-django-crispy-forms
-Django-Select2
-South==1.0.2
+django-crispy-forms==1.4.0
+Django-Select2==4.3.1
 requests==2.5.2
 lxml==3.4.2

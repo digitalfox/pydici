@@ -83,6 +83,7 @@ class CompanyChoices(PydiciSelect2Field, AutoModelSelect2Field):
 class ClientForm(PydiciCrispyModelForm):
     class Meta:
         model = Client
+        fields = "__all__"
 
     organisation = ClientOrganisationChoices()
     contact = ContactChoices(required=False)
@@ -101,6 +102,7 @@ class ClientForm(PydiciCrispyModelForm):
 class ClientOrganisationForm(PydiciCrispyModelForm):
     class Meta:
         model = ClientOrganisation
+        fields = "__all__"
 
     company = CompanyChoices(label=_("Company"))
 
@@ -147,6 +149,7 @@ class ContactForm(PydiciCrispyModelForm):
 class MissionContactForm(PydiciCrispyModelForm):
     class Meta:
         model = MissionContact
+        fields = "__all__"
 
     contact = ContactChoices()
     company = CompanyChoices(label=_("Company"))
@@ -164,6 +167,7 @@ class MissionContactForm(PydiciCrispyModelForm):
 class BusinessBrokerForm(PydiciCrispyModelForm):
     class Meta:
         model = BusinessBroker
+        fields = "__all__"
 
     contact = ContactChoices()
     company = CompanyChoices(label=_("Company"))
@@ -181,6 +185,7 @@ class BusinessBrokerForm(PydiciCrispyModelForm):
 class AdministrativeContactForm(PydiciCrispyModelForm):
     class Meta:
         model = AdministrativeContact
+        fields = "__all__"
 
     contact = ContactChoices(required=False)
     company = CompanyChoices(label=_("Company"))
@@ -199,6 +204,7 @@ class AdministrativeContactForm(PydiciCrispyModelForm):
 class SupplierForm(PydiciCrispyModelForm):
     class Meta:
         model = Supplier
+        fields = "__all__"
 
     contact = ContactChoices()
     company = CompanyChoices(label=_("Company"))

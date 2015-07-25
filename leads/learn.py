@@ -257,7 +257,7 @@ def score_tag_lead(model, X, y):
     return ok / len(X)
 
 
-@transaction.commit_on_success
+@transaction.atomic
 def compute_leads_state(relearn=True, leads=None):
     """Learn state from past leads and compute state probal for current leads
     @:param learn; if true (default) learn again from leads, else, use previous computation if available

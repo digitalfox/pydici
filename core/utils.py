@@ -15,6 +15,7 @@ from functools import wraps
 import json
 from decimal import Decimal
 
+import permissions.utils as perm
 
 from django.template.loader import get_template
 from django.template import RequestContext
@@ -317,12 +318,12 @@ def cacheable(cache_key, timeout=3600):
     return paramed_decorator
 
 
-def convertDictKeyToDateTime(data):
+def convertDictKeyToDate(data):
     """Convert dict key from unicode string with %Y-%m-%d %H:%M:%S format, to datetime.
     This is used to convert dict from queryset for sqlite3 that don't support properly date trunc functions
-    If data is empty or if key is already, datetime, return as is"""
+    If data is empty or if key is already, date, return as is"""
     if data and isinstance(data.keys()[0], unicode):
-        return dict((datetime.strptime(k, "%Y-%m-%d %H:%M:%S"), v) for k, v in data.items())
+        return dict((datetime.strptime(k, "%Y-%m-%d").date(), v) for k, v in data.items())
     else:
         return data
 
@@ -376,6 +377,14 @@ class GEdges(list):
     """A list of CEdges that can be dumped in json"""
     def dump(self):
         return json.dumps([{"u": edge.source.id_, "v": edge.target.id_, "value": { "style": "stroke: %s;" % edge.color}} for edge in self])
+
+
+def has_role(user, role):
+    if isinstance(role, str):
+        role = perm.Role.objects.get(name=role)
+
+    roles = perm.get_roles(user)
+    return role in roles
 
 
 def _get_user_features(user):

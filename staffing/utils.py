@@ -64,7 +64,7 @@ def gatherTimesheetData(consultant, missions, month):
     return (timesheetData, timesheetTotal, warning)
 
 
-@transaction.commit_on_success
+@transaction.atomic
 def saveTimesheetData(consultant, month, data, oldData):
     """Save user input timesheet in database"""
     previousMissionId = 0

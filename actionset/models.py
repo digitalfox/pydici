@@ -11,7 +11,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.auth.models import User
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 
@@ -62,11 +62,11 @@ class ActionState(models.Model):
     state = models.CharField(_("State"), max_length=50, choices=ACTION_STATES, default=ACTION_STATES[0][0])
     state.db_index = True
     user = models.ForeignKey(User)
-    creation_date = models.DateTimeField(_("Creation"), default=datetime.now())
+    creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     target_type = models.ForeignKey(ContentType, verbose_name=_(u"Target content type"), blank=True, null=True)
     target_id = models.PositiveIntegerField(_(u"Content id"), blank=True, null=True)
-    target = generic.GenericForeignKey(ct_field="target_type", fk_field="target_id")
+    target = GenericForeignKey(ct_field="target_type", fk_field="target_id")
 
     def __unicode__(self):
         if self.target:
