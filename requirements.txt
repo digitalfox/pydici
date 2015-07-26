@@ -3,7 +3,6 @@ django>=1.8,<1.9
 django_tables2==1.0.4
 django-taggit==0.16.2
 django-taggit-templatetags
-django-ajax-selects
 -e git://github.com/bport/django-permissions.git@fix_get_roles#egg=django-permissions
 -e git://github.com/diefenbach/django-workflows.git#egg=django-workflows
 django-extensions==1.5.5
