@@ -141,7 +141,8 @@ def mission_staffing(request, mission_id):
         return redirect(mission_home, mission_id)
 
     StaffingFormSet = inlineformset_factory(Mission, Staffing,
-                                            formset=MissionStaffingInlineFormset)
+                                            formset=MissionStaffingInlineFormset,
+                                            fields="__all__")
     mission = Mission.objects.get(id=mission_id)
     if request.method == "POST":
         if readOnly:
