@@ -42,7 +42,6 @@ Configure your database in pydici/settings.py. Look at django docs to understand
 
 Create tables with :
 
-    ./manage.py syncdb
     ./manage.py migrate
 
 Generate a new secret key with ./manage.py generate_secret_key and put it in pydici/settings.py
@@ -60,18 +59,38 @@ Setup your apache virtual env:
 
 After pulling the latest changes you need to update the database.
 
-There are two possible situations, depending on whether your installation already uses South. Your installation uses South if there is a `south_migrationhistory` table in your database.
+There are three possible situations, depending on whether your installation uses Django Migration. Or still use South or use no miration system at all
+Your installation uses South if there is a `south_migrationhistory`
 
-1. Your installation already uses South. Run these commands:
+1. Your installation already uses Django Migration. Run these commands:
+
+        ./manage.py migrate
+        ./manage.py createsuperuser
+
+2. Your installation uses South:
+
+    Firstly you need to checkout the last pydici version using South "pydici/master", then run these commands:
 
         ./manage.py syncdb
         ./manage.py migrate
 
-2. Your installation does not use South yet. Run these commands:
+    After that you can update to to a newer version of pydici by running:
+
+        ./manage.py migrate --fake
+
+    Once this is done, future updates will be handled as situation #1.
+
+3. Your installation does not use Django Migration or South yet.
+
+    Firstly you need to checkout the last pydici version using South "pydici/master", then run these commands:
 
         ./manage.py syncdb
         ./manage.py migrate --all 0001 --fake
         ./manage.py migrate
+
+    After that you can update to to a newer version of pydici by running:
+
+        ./manage.py migrate --fake
 
     Once this is done, future updates will be handled as situation #1.
 
