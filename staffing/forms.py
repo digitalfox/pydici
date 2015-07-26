@@ -184,6 +184,14 @@ class TimesheetForm(forms.Form):
             self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
 
 
+class MissionAdminForm(PydiciCrispyModelForm):
+    """ Form used only on admin"""
+    lead = LeadChoices(required=False)
+
+    class Meta:
+        model = Mission
+        fields = ('lead',)
+
 class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""
     contacts = MissionContactMChoices(required=False)
@@ -197,7 +205,6 @@ class MissionForm(PydiciCrispyModelForm):
                                         Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "subsidiary", "responsible", "contacts",
                                                css_class="col-md-6"),
                                         css_class="row"),
-                                    Field("lead", type="hidden"), Field("archived_date", type="hidden"),
                                     self.submit)
 
     def clean_price(self):
@@ -226,7 +233,7 @@ class MissionForm(PydiciCrispyModelForm):
 
     class Meta:
         model = Mission
-        fields = "__all__"
+        exclude = ['archived_date', 'lead']
 
 
 class FinancialConditionAdminForm(forms.ModelForm):
