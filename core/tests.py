@@ -12,6 +12,9 @@ from django.contrib.auth.models import Group, User
 from django.db import IntegrityError
 from django.test import RequestFactory
 from django.contrib.messages.storage import default_storage
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.conf import settings
+
 
 # Third party modules
 import workflows.utils as wf
@@ -36,7 +39,11 @@ import pydici.settings
 from urllib2 import urlparse
 from datetime import date, datetime
 import os
+import os.path
+import sys
 from decimal import Decimal
+from subprocess import Popen, PIPE
+
 
 TEST_USERNAME = "sre"
 TEST_PASSWORD = "sre"
@@ -646,7 +653,21 @@ class LeadLearnTestCase(TestCase):
         mission = Mission.objects.get(id=mission.id)  # reload it
         self.assertEqual(mission.probability, 100)
 
-# ######
+
+class JsTest(StaticLiveServerTestCase):
+    """Test page through fake browser (phantomjs) to check that javascript stuff is going well"""
+    fixtures = ["auth.json", "people.json", "crm.json",
+                "leads.json", "staffing.json", "billing.json"]
+    def test_missing_resource_and_js_errors(self):
+        # Add a check to skip if casperjs is not available
+        setup_test_user_features()
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        urls = ",".join([self.live_server_url + PREFIX + page for page in PYDICI_PAGES])
+        test_filename = os.path.join(os.path.dirname(__file__), 'tests.js')
+        self.assertTrue(run_casper(test_filename, self.client, verbose=False, urls = urls), "At least one Casper test failed. See above the detailed log.")
+
+
+# ###### Test utils
 def create_lead():
     """Create test lead
     @return: lead object"""
@@ -679,3 +700,27 @@ def setup_test_user_features():
     test_user = User.objects.get(username=TEST_USERNAME)
     test_user.groups.add(admin_group)
     test_user.save()
+
+
+def run_casper(test_filename, client, **kwargs):
+    """Casperjs launcher"""
+    env = os.environ.copy()
+    env["PATH"] += ":" + os.path.join(os.path.expanduser("~"), "node_modules/.bin/")
+    verbose = kwargs.pop("verbose", False)
+    cookie_name = settings.SESSION_COOKIE_NAME
+    if cookie_name in client.cookies:
+        kwargs["cookie-name"] = cookie_name
+        kwargs["cookie-value"] = client.cookies[cookie_name].value
+    if verbose:
+        kwargs["log-level"] = "debug"
+    else:
+        kwargs["log-level"] = "error"
+    cmd = ["casperjs", "test"]
+    cmd.extend([("--%s=%s" % i) for i in kwargs.iteritems()])
+    cmd.append(test_filename)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, env=env, cwd=os.path.dirname(test_filename))
+    out, err = p.communicate()
+    if verbose or p.returncode:
+        sys.stdout.write(out)
+        sys.stderr.write(err)
+    return p.returncode == 0
