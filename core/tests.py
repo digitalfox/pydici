@@ -57,7 +57,6 @@ PYDICI_PAGES = ("/",
                 "/admin/",
                 "/leads/csv/all",
                 "/leads/csv/active",
-                "/leads/graph/bar-jqp",
                 "/leads/sendmail/2/",
                 "/leads/mail/text",
                 "/leads/mail/html",
@@ -82,11 +81,6 @@ PYDICI_PAGES = ("/",
                 "/staffing/mission/3/",
                 "/staffing/mission/3/#tab-staffing",
                 "/staffing/mission/3/#tab-timesheet",
-                "/staffing/forecast/consultant/1/",
-                "/staffing/timesheet/consultant/1/",
-                "/staffing/timesheet/consultant/1/?csv",
-                "/staffing/timesheet/consultant/1/2010/10",
-                "/staffing/timesheet/consultant/1/2010/10/2",
                 "/staffing/timesheet/all",
                 "/staffing/timesheet/all/?csv",
                 "/staffing/timesheet/all/2010/11",
@@ -103,8 +97,6 @@ PYDICI_PAGES = ("/",
                 "/people/home/consultant/1/#tab-timesheet",
                 "/crm/company/1/detail",
                 "/crm/company/all",
-                "/crm/company/graph/sales",
-                "/crm/company/graph/sales/lastyear",
                 "/billing/graph/billing-jqp",
                 "/billing/bill_review",
                 "/billing/bill_delay",
@@ -125,6 +117,17 @@ PYDICI_PAGES = ("/",
                 "/admin/leads/lead/",
                 )
 
+PYDICI_AJAX_PAGES = (
+                "/staffing/forecast/consultant/1/",
+                "/staffing/timesheet/consultant/1/",
+                "/staffing/timesheet/consultant/1/?csv",
+                "/staffing/timesheet/consultant/1/2010/10",
+                "/staffing/timesheet/consultant/1/2010/10/2",
+                "/leads/graph/bar-jqp",
+                "/crm/company/graph/sales",
+                "/crm/company/graph/sales/lastyear",
+)
+
 
 class SimpleTest(TestCase):
     fixtures = ["auth.json", "people.json", "crm.json",
@@ -135,7 +138,7 @@ class SimpleTest(TestCase):
 
     def test_basic_page(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        for page in PYDICI_PAGES:
+        for page in PYDICI_PAGES + PYDICI_AJAX_PAGES:
             response = self.client.get(PREFIX + page)
             self.failUnlessEqual(response.status_code, 200,
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
@@ -693,7 +696,6 @@ def create_lead():
 def setup_test_user_features():
     admin_group = Group(name="admin")
     admin_group.save()
-
     for name in FEATURES:
         GroupFeature(feature=name, group=admin_group).save()
 
