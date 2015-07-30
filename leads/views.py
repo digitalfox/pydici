@@ -331,6 +331,9 @@ def graph_bar_jqp(request):
         kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
         data[kdate].append(lead)
 
+    if not data:
+        return HttpResponse('')
+
     kdates = data.keys()
     kdates.sort()
     isoKdates = [a.isoformat() for a in kdates]  # List of date as string in ISO format
