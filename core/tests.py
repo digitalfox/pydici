@@ -128,10 +128,11 @@ PYDICI_AJAX_PAGES = (
                 "/crm/company/graph/sales/lastyear",
 )
 
+PYDICI_FIXTURES = ["auth.json", "people.json", "crm.json",
+                "leads.json", "staffing.json", "billing.json"]
 
 class SimpleTest(TestCase):
-    fixtures = ["auth.json", "people.json", "crm.json",
-                "leads.json", "staffing.json", "billing.json"]
+    fixtures = PYDICI_FIXTURES
 
     def setUp(self):
         setup_test_user_features()
@@ -247,8 +248,7 @@ class UtilsTest(TestCase):
             self.assertEqual(capitalizeddWord, capitalize(word))
 
 class StaffingViewsTest(TestCase):
-    fixtures = ["auth.json", "people.json", "crm.json",
-                "leads.json", "staffing.json", "billing.json"]
+    fixtures = PYDICI_FIXTURES
 
     def test_mission_timesheet(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
@@ -313,8 +313,7 @@ class StaffingViewsTest(TestCase):
 
 
 class CrmModelTest(TestCase):
-    fixtures = ["auth.json", "people.json", "crm.json",
-                "leads.json", "staffing.json", "billing.json"]
+    fixtures = PYDICI_FIXTURES
 
     def test_people_consultant_save(self):
         c = Consultant()
@@ -355,8 +354,7 @@ class CrmModelTest(TestCase):
 
 
 class LeadModelTest(TestCase):
-    fixtures = ["auth.json", "people.json", "crm.json",
-                "leads.json", "staffing.json", "billing.json"]
+    fixtures = PYDICI_FIXTURES
 
     def setUp(self):
         setup_test_user_features()
@@ -439,8 +437,7 @@ class LeadModelTest(TestCase):
 
 
 class StaffingModelTest(TestCase):
-    fixtures = ["auth.json", "people.json", "crm.json",
-                "leads.json", "staffing.json", "billing.json"]
+    fixtures = PYDICI_FIXTURES
 
     def test_save_mission_and_active_client(self):
         mission = Mission.objects.get(id=1)
@@ -478,8 +475,7 @@ class StaffingModelTest(TestCase):
 
 class BillingModelTest(TransactionTestCase):
     """Test Billing application model"""
-    fixtures = ["auth.json", "people.json", "crm.json",
-                "leads.json", "staffing.json", "billing.json"]
+    fixtures = PYDICI_FIXTURES
 
     def test_save_supplier_bill(self):
         lead = Lead.objects.get(id=1)
@@ -525,8 +521,7 @@ class BillingModelTest(TransactionTestCase):
 
 class WorkflowTest(TestCase):
     """Test pydici workflows"""
-    fixtures = ["auth.json", "people.json", "crm.json",
-                "leads.json", "staffing.json", "billing.json"]
+    fixtures = PYDICI_FIXTURES
 
     def test_expense_wf(self):
         # Setup default workflow
@@ -589,8 +584,7 @@ class WorkflowTest(TestCase):
 
 class LeadLearnTestCase(TestCase):
     """Test lead state proba learn"""
-    fixtures = ["auth.json", "people.json", "crm.json",
-                "leads.json", "staffing.json", "billing.json"]
+    fixtures = PYDICI_FIXTURES
 
     def test_model(self):
         if not leads_learn.HAVE_SCIKIT:
@@ -659,8 +653,7 @@ class LeadLearnTestCase(TestCase):
 
 class JsTest(StaticLiveServerTestCase):
     """Test page through fake browser (phantomjs) to check that javascript stuff is going well"""
-    fixtures = ["auth.json", "people.json", "crm.json",
-                "leads.json", "staffing.json", "billing.json"]
+    fixtures = PYDICI_FIXTURES
     def test_missing_resource_and_js_errors(self):
         # Add a check to skip if casperjs is not available
         setup_test_user_features()
