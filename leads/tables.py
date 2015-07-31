@@ -22,16 +22,16 @@ class LeadsTable(tables.Table):
     due_date = tables.TemplateColumn("""<span title="{{ record.due_date|date:"Ymd" }}">{{ record.due_date|date:"j F"|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
     start_date = tables.TemplateColumn("""<span title="{{ record.start_date|date:"Ymd" }}">{{ record.start_date|date:"j F"|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
     creation_date = tables.TemplateColumn("""<span title="{{ record.creation_date|date:"YmdHis" }}">{{ record.creation_date|date:"j F" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
-    proba = tables.TemplateColumn("""{% if record.getStateProba %}
-                                            <div class='proba' data-toggle='tooltip' data-content='<table style="margin-bottom:0" class="table table-striped table-condensed">{% for code, state, proba in record.getStateProba %}<tr><td>{{state }}</td><td>{{ proba }} %</td></tr>{% endfor %}</table>'>
+    proba = tables.TemplateColumn("""{% with record.getStateProba as proba %}{% if proba %}
+                                            <div class='proba' data-toggle='tooltip' data-content='<table style="margin-bottom:0" class="table table-striped table-condensed">{% for code, state, score in proba %}<tr><td>{{state }}</td><td>{{ score }} %</td></tr>{% endfor %}</table>'>
                                                 <div
-                                                    {% ifequal record.getStateProba.0.0 "WON" %}style="color:green" class="glyphicon glyphicon-ok-circle"{% endifequal %}
-                                                    {% ifequal record.getStateProba.0.0 "LOST" %}style="color:red" class="glyphicon glyphicon-remove-circle"{% endifequal %}
-                                                    {% ifequal record.getStateProba.0.0 "FORGIVEN" %}style="color:orange" class="glyphicon glyphicon-ban-circle"{% endifequal %}
+                                                    {% ifequal proba.0.0 "WON" %}style="color:green" class="glyphicon glyphicon-ok-circle"{% endifequal %}
+                                                    {% ifequal proba.0.0 "LOST" %}style="color:red" class="glyphicon glyphicon-remove-circle"{% endifequal %}
+                                                    {% ifequal proba.0.0 "FORGIVEN" %}style="color:orange" class="glyphicon glyphicon-ban-circle"{% endifequal %}
                                                     >
-                                                </div><small> {{record.getStateProba.0.2}}&nbsp;%</small>
+                                                </div><small> {{proba.0.2}}&nbsp;%</small>
                                             </div>
-                                     {% endif %}""", attrs=TABLES2_HIDE_COL_MD)
+                                     {% endif %}{% endwith %}""", attrs=TABLES2_HIDE_COL_MD)
 
 
     class Meta:
