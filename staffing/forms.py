@@ -197,8 +197,8 @@ class MissionForm(PydiciCrispyModelForm):
                                         Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "subsidiary", "responsible", "contacts",
                                                css_class="col-md-6"),
                                         css_class="row"),
-                                    Field("lead", type="hidden"), Field("archived_date", type="hidden"),
                                     self.submit)
+
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
@@ -226,6 +226,7 @@ class MissionForm(PydiciCrispyModelForm):
 
     class Meta:
         model = Mission
+        exclude = ["archived_date", "lead"]
 
 
 class FinancialConditionAdminForm(forms.ModelForm):
