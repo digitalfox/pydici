@@ -40,7 +40,7 @@ class LeadChoices(PydiciSelect2Field, AutoModelSelect2Field):
 class LeadForm(PydiciCrispyModelForm):
     class Meta:
         model = Lead
-        exclude = ["external_id",]
+        exclude = ["external_id", "creation_date"]
 
     responsible = ConsultantChoices(required=False, label=_("Responsible"))
     salesman = SalesManChoices(required=False, label=_("Salesman"))
@@ -71,7 +71,6 @@ class LeadForm(PydiciCrispyModelForm):
                                                                      Field("external_staffing", placeholder=_("People outside company that could contribute...")),
                                                                      css_class="col-md-6"))),
                                     Fieldset("", "send_email"),
-                                    Field("creation_date", type="hidden"),
                                     Field("tags", css_class="hide"),  # Don't use type=hidden, it breaks tag parsing.
                                     self.submit)
 
