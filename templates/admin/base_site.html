@@ -1,5 +1,6 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
+{% load django_select2_tags %}
 
 {% block title %}{{ title }} | {% trans 'Django site admin' %}{% endblock %}
 
@@ -7,18 +8,23 @@
 {% block stylesheet %}{% endblock %}
 
 {% block extrastyle %}
-<link href="{{ MEDIA_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="{{ MEDIA_URL }}css/iconic.css" rel="stylesheet">
-<link href="{{ MEDIA_URL }}css/jquery-ui-1.10.4.custom.css" rel="stylesheet">
-<link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
-<link href="{{ MEDIA_URL }}css/pydici-admin-base.css" rel="stylesheet">
-
+    <link href="{{ MEDIA_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ MEDIA_URL }}css/iconic.css" rel="stylesheet">
+    <link href="{{ MEDIA_URL }}css/jquery-ui-1.10.4.custom.css" rel="stylesheet">
+    <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
+    <link href="{{ MEDIA_URL }}css/pydici-admin-base.css" rel="stylesheet">
+    {% import_django_select2_css %}
 {% endblock %}
 
 {% block extrahead %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.11.2.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.10.4.custom.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.10.4.custom.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+    {% import_django_select2_js %}
+    {% ifequal LANGUAGE_CODE "fr-fr" %}
+            <script type="text/javascript" src="{{ MEDIA_URL }}js/select2_locale_fr.js"></script>
+            <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.fr.js"></script>
+    {% endifequal %}
 {% endblock %}
 
 {% block branding %}
