@@ -167,7 +167,8 @@ def lead_documents(request, lead_id):
     lead = Lead.objects.get(id=lead_id)
     documents = []  # List of name/url docs grouped by type
     clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
-    leadDocURL = lead.getDocURL()
+    lead_url_dir = pydici.settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
+    lead_url_file = pydici.settings.DOCUMENT_PROJECT_URL_FILE + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
     for directory in (businessDir, inputDir, deliveryDir):
         # Create project tree if at least one directory is missing
         if not os.path.exists(directory):
@@ -184,16 +185,16 @@ def lead_documents(request, lead_id):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 fileName = fileName.decode("utf8", "ignore")
             if os.path.isdir(filePath):
-                dirs.append((fileName + u"/", leadDocURL + directoryName + u"/" + fileName + u"/"))
+                dirs.append((fileName + u"/", lead_url_dir + u"/" + directoryName + u"/" + fileName + u"/"))
             else:
-                files.append((fileName, leadDocURL + directoryName + u"/" + fileName))
+                files.append((fileName, lead_url_file  + u"/" + directoryName + u"/" + fileName))
         dirs.sort(key=lambda x: x[0])
         files.sort(key=lambda x: x[0])
         documents.append([directoryName, dirs + files])
 
     return render(request, "leads/lead_documents.html",
                   {"documents": documents,
-                   "lead_doc_url": leadDocURL,
+                   "lead_doc_url": lead_url_dir,
                    "user": request.user})
 
 

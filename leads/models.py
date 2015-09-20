@@ -243,7 +243,7 @@ class Lead(models.Model):
     def getDocURL(self):
         """@return: URL to reach this lead base directory"""
         (clientDir, leadDir, businessDir, inputDir, deliveryDir) = getLeadDirs(self)
-        url = pydici.settings.DOCUMENT_PROJECT_URL + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):] + "/"
+        url = pydici.settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
         return url
 
     def get_absolute_url(self):
