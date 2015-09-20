@@ -35,7 +35,7 @@ class ExpenseStorage(FileSystemStorage):
 def expense_receipt_path(instance, filename):
     """Format full path of expense receipt"""
     return join(pydici.settings.PYDICI_ROOTDIR, "data", "expense",
-                strftime("%Y"), strftime("%m"), instance.user.username, str(instance.id),
+                strftime("%Y"), strftime("%m"), instance.user.username,
                 u"%s_%s" % (strftime("%d-%H%M%S"), sanitizeName(filename)))
 
 
