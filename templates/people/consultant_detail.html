@@ -12,7 +12,7 @@
 
     <div class="col-md-4 col-sm-6">
         <div class="pydici-block">
-        <h3>{% trans "This month" %}</h3>
+        <h3 class="pydici-block-title">{% trans "This month" %}</h3>
         {% url 'people.views.consultant_home' consultant.id as consultant_url %}
             <ul>
                 <li>{% trans "My turnover this month: " %} <b>{{ month_turnover|floatformat:-2 }} €</b>
@@ -87,9 +87,9 @@ $(document).ready(function() {
 
     <div class="col-md-4 col-sm-6">
         <div class="pydici-block">
-            {% if consultant.manager %}{% ifnotequal consultant.manager consultant %}<h3>{% trans "Manager: " %} <a href="{% url 'people.views.consultant_home' consultant.manager.id %}">{{ consultant.manager.full_name }}</a></h3>{% endifnotequal %}{% endif %}
+            {% if consultant.manager %}{% ifnotequal consultant.manager consultant %}<h3 class="pydici-block-title">{% trans "Manager: " %} <a href="{% url 'people.views.consultant_home' consultant.manager.id %}">{{ consultant.manager.full_name }}</a></h3>{% endifnotequal %}{% endif %}
             {% if staff %}
-                <h3>{% trans "Staff" %}</h3>
+                <h3 class="pydici-block-title">{% trans "Staff" %}</h3>
                 <ul class="row">
                 {% for people in staff %}
                     <li class="col-sm-6"><a href="{% url 'people.views.consultant_home' people.id %}">{{ people.full_name }}</a></li>
@@ -101,7 +101,7 @@ $(document).ready(function() {
 
     <div class="col-md-4 col-sm-6">
         <div class="pydici-block">
-            <h3>{% trans "Pending actions" %}</h3>
+            <h3 class="pydici-block-title">{% trans "Pending actions" %}</h3>
             {% with consultant.pending_actions|slice:":20" as actions %}
                 {% include "actionset/_consultant_actions.html" %}
             {% endwith %}
@@ -112,7 +112,7 @@ $(document).ready(function() {
 
     <div class="col-md-4 col-sm-6">
         <div class="pydici-block">
-            <h3>{% trans "Business territory" %}</h3>
+            <h3 class="pydici-block-title">{% trans "Business territory" %}</h3>
             <ul class="row">
             {% for company in business_territory %}
                 <li class="col-sm-6"><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
@@ -125,7 +125,7 @@ $(document).ready(function() {
 
     <div class="col-md-4 col-sm-6">
         <div class="pydici-block">
-            <h3>{% trans "Clients" %}</h3>
+            <h3 class="pydici-block-title">{% trans "Clients" %}</h3>
             <ul class="row">
             {% for company in companies %}
                 <li class="col-sm-6"><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
@@ -136,7 +136,7 @@ $(document).ready(function() {
 
     <div class="col-md-4 col-sm-6">
         <div class="pydici-block">
-            <h3>{% trans "Current missions" %}</h3>
+            <h3 class="pydici-block-title">{% trans "Current missions" %}</h3>
             <ul class="row">
             {% for mission in missions %}
                 <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></li>
@@ -148,7 +148,7 @@ $(document).ready(function() {
     <div class="col-md-4 col-sm-6">
 	    <div class="pydici-block">
             {% if leads_as_responsible %}
-                <h3>{% trans "Current leads as responsible" %}</h3>
+                <h3 class="pydici-block-title">{% trans "Current leads as responsible" %}</h3>
                 <ul class="row">
                 {% for lead in leads_as_responsible %}
                     <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
@@ -162,7 +162,7 @@ $(document).ready(function() {
     <div class="col-md-4 col-sm-6">
         <div class="pydici-block">
             {% if leads_as_staffee %}
-                <h3>{% trans "Current leads as resource" %}</h3>
+                <h3 class="pydici-block-title">{% trans "Current leads as resource" %}</h3>
                 <ul>
                 {% for lead in leads_as_staffee %}
                     <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>

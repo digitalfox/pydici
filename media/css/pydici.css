@@ -50,6 +50,11 @@ form { margin:0; padding:0; }
     background-image:linear-gradient(#F8F8F8, white);
 }
 
+.pydici-block-title {
+    padding-top: 5px;
+    padding-left: 5px;
+}
+
 
 /* /* TEXT STYLES & MODIFIERS */ */
 .help, p.help { font-size:10px !important; color:#999; }
