@@ -5,7 +5,7 @@
 {% load i18n %}
 {% load l10n %}
 
-<ul class="more-items">
+<ul class="more-items icon-list checkmark">
 {% for action in actions %}
     <div id="action_{{ action.id|unlocalize }}">
         <li><a href="#" data-toggle="modal" data-target="#action_tooltip_{{ action.id|unlocalize }}">{{ action.action }}</a></li>
