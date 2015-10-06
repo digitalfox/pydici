@@ -7,6 +7,7 @@ Pydici core views. Http request are processed here.
 
 import csv
 import datetime
+import json
 
 from django.shortcuts import render
 from django.db.models import Q, Sum, Min, Max
@@ -284,6 +285,20 @@ def financialControl(request, start_date=None, end_date=None):
         writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
 
     return response
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def pivotable(request):
+    data = []
+    for lead in Lead.objects.filter(id__lt=20000):
+        data.append({"deal_id": lead.deal_id,
+                     "name": lead.name,
+                     "client_company": unicode(lead.client.organisation),
+                     "sales": float(lead.sales or 0),
+                     "creation_date": lead.creation_date.isoformat(),
+                     "subsidiary": unicode(lead.subsidiary)})
+    return render(request, "core/pivotable.html", { "data" : json.dumps(data)})
 
 
 def tableToCSV(table, filename="data.csv"):
