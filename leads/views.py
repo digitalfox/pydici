@@ -358,3 +358,25 @@ def graph_bar_jqp(request):
                    "series_colors": COLORS,
                    "min_date": min_date,
                    "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def pivotable(request):
+    data = []
+    for lead in Lead.objects.filter(state="WON").select_related():
+        derivedAttributes = """
+            {"sales B": $.pivotUtilities.derivers.bin('sales', 20),
+             "date B": $.pivotUtilities.derivers.dateFormat("date", "%y-%m"),}"""
+        data.append({"deal_id": lead.deal_id,
+                     "name": lead.name,
+                     "client_company": unicode(lead.client.organisation),
+                     "sales": int(lead.sales or 0),
+                     "date": lead.creation_date.isoformat(),
+                     "responsible": unicode(lead.responsible),
+                     "subsidiary": unicode(lead.subsidiary)})
+    return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
+                                                    "derivedAttributes": derivedAttributes,
+                                                    "rows": """["subsidiary"]""",
+                                                    "cols": """["date B"]""",
+                                                    "rendererName": "Stacked Bar Chart"})

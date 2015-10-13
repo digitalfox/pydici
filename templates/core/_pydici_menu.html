@@ -98,6 +98,9 @@
                 <li><a href="{% url 'dashboard' %}">{% trans "Management dashboard" %}</a></li>
                 <li><a href="{% url 'staffing.views.all_timesheet' %}">{% trans "All people timesheet" %}</a></li>
                 <li class="divider"></li>
+                <li class="dropdown-header">{% trans "Leads" %}</li>
+                <li><a href="{% url 'leads.views.pivotable' %}">{% trans "Leads pivot table" %}</a></li>
+                <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Expenses" %}</li>
                 <li><a href="{% url 'expense.views.chargeable_expenses' %}">{% trans "Chargeable expenses review" %}</a></li>
                 <li><a href="{% url 'expense.views.expenses_history' %}">{% trans "Expenses history" %}</a></li>

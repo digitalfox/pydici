@@ -287,28 +287,6 @@ def financialControl(request, start_date=None, end_date=None):
     return response
 
 
-@pydici_non_public
-@pydici_feature("reports")
-def pivotable(request):
-    data = []
-    for lead in Lead.objects.filter(id__lt=500, state="WON").select_related():
-        derivedAttributes = """
-            {"sales B": $.pivotUtilities.derivers.bin('sales', 20),
-             "date B": $.pivotUtilities.derivers.dateFormat("date", "%y-%m"),}"""
-        data.append({"deal_id": lead.deal_id,
-                     "name": lead.name,
-                     "client_company": unicode(lead.client.organisation),
-                     "sales": int(lead.sales or 0),
-                     "date": lead.creation_date.isoformat(),
-                     "responsible": unicode(lead.responsible),
-                     "subsidiary": unicode(lead.subsidiary)})
-    return render(request, "core/pivotable.html", { "data": json.dumps(data),
-                                                    "derivedAttributes": derivedAttributes,
-                                                    "rows": """["subsidiary"]""",
-                                                    "cols": """["date B"]""",
-                                                    "rendererName": "Stacked Bar Chart"})
-
-
 def tableToCSV(table, filename="data.csv"):
     """A view that convert a django_table2 object to a CSV in a http response object"""
     response = HttpResponse(content_type="text/csv")

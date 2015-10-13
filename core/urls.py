@@ -14,5 +14,4 @@ core_urls = patterns('core.views',
                      url(r'^financial-control//?$', 'financialControl'),
                      url(r'^financial-control/(?P<start_date>\d{6})/?$', 'financialControl'),
                      url(r'^financial-control/(?P<start_date>\d{6})/(?P<end_date>\d{6})/?$', 'financialControl'),
-                     url(r'^pivotable', 'pivotable')
                      )

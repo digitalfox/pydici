@@ -1,0 +1,19 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block extrajs %}
+    {% include "core/_c3.html" %}
+    {% include "core/_pivotable_header.html" %}
+{% endblock %}
+
+{% block title %}{% trans "Pivot table" %}{% endblock %}
+
+{% block content %}
+
+        {% with output as "pivotable-output" %}
+            {% include "core/_pivotable_body.html" %}
+        {% endwith %}
+        <div id="pivotable-output" style="margin: 10px;"></div>
+
+{% endblock %}

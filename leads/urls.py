@@ -22,4 +22,5 @@ leads_urls = patterns('leads.views',
                       url(r'^mail/text', 'summary_mail', {"html": False}, name="lead-mail-text"),
                       url(r'^mail/html', 'summary_mail', {"html": True}, name="lead-mail-html"),
                       (r'^graph/bar-jqp$', 'graph_bar_jqp'),
+                      url(r'^pivotable', 'pivotable')
                       )
