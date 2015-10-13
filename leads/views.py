@@ -362,9 +362,17 @@ def graph_bar_jqp(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-def pivotable(request):
+def pivotable(request, year=None):
     data = []
-    for lead in Lead.objects.filter(state="WON").select_related():
+    leads = Lead.objects.filter(state="WON")
+    if not leads:
+        return HttpResponse()
+    years = [y.year for y in leads.dates("creation_date", "year", order="ASC")]
+    if year is None and years:
+        year = years[-1]
+    if year != "all":
+        leads = leads.filter(creation_date__year=year)
+    for lead in leads.select_related():
         derivedAttributes = """
             {"sales B": $.pivotUtilities.derivers.bin('sales', 20),
              "date B": $.pivotUtilities.derivers.dateFormat("date", "%y-%m"),}"""
@@ -374,9 +382,11 @@ def pivotable(request):
                      "sales": int(lead.sales or 0),
                      "date": lead.creation_date.isoformat(),
                      "responsible": unicode(lead.responsible),
+                     "broker": unicode(lead.business_broker),
                      "subsidiary": unicode(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
                                                     "rows": """["subsidiary"]""",
                                                     "cols": """["date B"]""",
-                                                    "rendererName": "Stacked Bar Chart"})
+                                                    "rendererName": "Stacked Bar Chart",
+                                                    "years": years})
