@@ -1,0 +1,8 @@
+{% load i18n %}
+{% load pydici_filters %}
+
+        <h2>{% trans "Pivot table for lead " %} {{ lead }}</h2>
+        {% with output as "pivotable-output" %}
+            {% include "core/_pivotable_body.html" %}
+        {% endwith %}
+        <div id="pivotable-output" style="margin: 10px;"></div>

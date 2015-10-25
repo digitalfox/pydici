@@ -362,7 +362,36 @@ def graph_bar_jqp(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-def pivotable(request, year=None):
+def lead_pivotable(request, lead_id=None):
+    """Pivot table for a given lead with detail"""
+    data = []
+    try:
+        lead = Lead.objects.get(id=lead_id)
+    except Lead.DoesNotExist:
+        return Http404()
+    for mission in lead.mission_set.all():
+        data.append({"mission_deal_id": mission.deal_id,
+                     "mission_name": mission.short_name(),
+                     "mission_price": float(mission.price),
+                     "mission_done_days": mission.done_work()[0],
+                     "mission_done_keuros": mission.done_work_k()[1],
+                     "mission_margin": mission.margin(),
+                     "mission.subsidiary": unicode(mission.subsidiary)})
+
+    derivedAttributes = []
+
+    return render(request, "leads/lead_pivotable.html", { "data": json.dumps(data),
+                                                    "derivedAttributes": derivedAttributes,
+                                                    "rows": """["subsidiary"]""",
+                                                    "cols": """["date B"]""",
+                                                    "rendererName": "Stacked Bar Chart",
+                                                    "lead": lead})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def leads_pivotable(request, year=None):
+    """Pivot table for all leads of given year"""
     data = []
     leads = Lead.objects.filter(state="WON")
     if not leads:
