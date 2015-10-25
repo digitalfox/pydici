@@ -21,7 +21,7 @@ from people.models import Consultant
 from crm.models import MissionContact, Subsidiary
 from actionset.utils import launchTrigger
 from actionset.models import ActionState
-from core.utils import disable_for_loaddata, cacheable, convertDictKeyToDateTime
+from core.utils import disable_for_loaddata, cacheable, convertDictKeyToDateTime, nextMonth
 
 
 class Mission(models.Model):
@@ -226,6 +226,40 @@ class Mission(models.Model):
     def done_actions(self):
         """returns done actions for this mission and its lead"""
         return self.actions().exclude(state="TO_BE_DONE")
+
+    def pivotable_data(self):
+        """Compute raw data for pivot table on that mission"""
+        #TODO: factorize with staffing.views.mission_timesheet
+        data = []
+        mission_id = self.mission_id()
+        mission_name = self.short_name()
+        current_month = date.today().replace(day=1)  # Current month
+        dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
+
+        # Gather timesheet (Only consider timesheet up to current month)
+        timesheets = Timesheet.objects.filter(mission=self).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
+        timesheetMonths = list(timesheets.dates("working_date", "month"))
+
+        # Gather forecaster (after current month)
+        staffings = Staffing.objects.filter(mission=self).filter(staffing_date__gt=current_month).order_by("staffing_date")
+        staffingMonths = list(staffings.dates("staffing_date", "month"))
+
+        for consultant in self.consultants():
+            consultant_name = unicode(consultant)
+            timesheet_data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
+            timesheet_data = convertDictKeyToDateTime(timesheet_data)
+
+            for month in timesheetMonths:
+                data.append({"mission_id": mission_id,
+                             "mission_name": mission_name,
+                             "consultant": consultant_name,
+                             "date": month.isoformat(),
+                             "done_days": timesheet_data.get(month, 0)})
+
+            #TODO: add forecast
+
+        return data
+
 
     def get_absolute_url(self):
         return reverse('staffing.views.mission_home', args=[str(self.id)])

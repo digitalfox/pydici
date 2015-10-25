@@ -370,13 +370,7 @@ def lead_pivotable(request, lead_id=None):
     except Lead.DoesNotExist:
         return Http404()
     for mission in lead.mission_set.all():
-        data.append({"mission_deal_id": mission.deal_id,
-                     "mission_name": mission.short_name(),
-                     "mission_price": float(mission.price),
-                     "mission_done_days": mission.done_work()[0],
-                     "mission_done_keuros": mission.done_work_k()[1],
-                     "mission_margin": mission.margin(),
-                     "mission.subsidiary": unicode(mission.subsidiary)})
+        data.extend(mission.pivotable_data())
 
     derivedAttributes = []
 
