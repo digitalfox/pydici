@@ -234,6 +234,7 @@ class Mission(models.Model):
         mission_id = self.mission_id()
         mission_name = self.short_name()
         current_month = date.today().replace(day=1)  # Current month
+        subsidiary = unicode(self.subsidiary)
         dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
 
         # Gather timesheet (Only consider timesheet up to current month)
@@ -253,7 +254,8 @@ class Mission(models.Model):
                 data.append({"mission_id": mission_id,
                              "mission_name": mission_name,
                              "consultant": consultant_name,
-                             "date": month.isoformat(),
+                             "subsidiary": subsidiary,
+                             "date": month.strftime("%Y/%m"),
                              "done_days": timesheet_data.get(month, 0)})
 
             #TODO: add forecast

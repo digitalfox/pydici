@@ -376,9 +376,11 @@ def lead_pivotable(request, lead_id=None):
 
     return render(request, "leads/lead_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
-                                                    "rows": """["subsidiary"]""",
-                                                    "cols": """["date B"]""",
-                                                    "rendererName": "Stacked Bar Chart",
+                                                    "rows": """["subsidiary", "mission_name", "mission_id", "consultant"]""",
+                                                    "cols": """["date"]""",
+                                                    "rendererName": "Heatmap",
+                                                    "aggregatorName": "Integer Sum",
+                                                    "vals": """["done_days"]""",
                                                     "lead": lead})
 
 
