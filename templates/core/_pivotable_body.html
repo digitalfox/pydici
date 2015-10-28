@@ -17,8 +17,8 @@
                             cols: {{ cols|safe }},
                             renderers: renderers,
                             derivedAttributes: {{ derivedAttributes|safe }},
-                            aggregatorName: "{{ aggregatorName|safe }}",
-                            vals: {{ vals|safe }},
+                            {%if aggregatorName %}aggregatorName: "{{ aggregatorName|safe }}",{% endif %}
+                            {% if vals %}vals: {{ vals|safe }},{% endif %}
                             rendererName: "{{ rendererName }}",
 
                         }

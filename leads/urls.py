@@ -23,7 +23,7 @@ leads_urls = patterns('leads.views',
                       url(r'^mail/html', 'summary_mail', {"html": True}, name="lead-mail-html"),
                       (r'^graph/bar-jqp$', 'graph_bar_jqp'),
                       url(r'^pivotable/$', 'leads_pivotable', name="leads-pivotable"),
-                      url(r'^pivotable/all/(?P<year>\d+)/', 'leads_pivotable'),
+                      url(r'^pivotable/all/(?P<year>\d+)/', 'leads_pivotable', name="leads-pivotable-year"),
                       url(r'^pivotable/all', 'leads_pivotable', {"year": "all"}, name="leads-pivotable-all"),
                       url(r'^pivotable/lead/(?P<lead_id>\d+)$', 'lead_pivotable', name="lead-pivotable"),
                       )

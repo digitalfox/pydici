@@ -13,7 +13,7 @@
         <h2>{% trans "Leads pivot table" %}</h2>
         <div class="btn-group" role="group">
             {% for year in years %}
-                <a class="btn btn-default" href="{% url 'leads.views.pivotable' year %}">{{ year }}</a>
+                <a class="btn btn-default" href="{% url 'leads-pivotable-year' year %}">{{ year }}</a>
             {% endfor %}
                 <a class="btn btn-default" href="{% url 'leads-pivotable-all' %}">{% trans "All" %}</a>
         </div>
