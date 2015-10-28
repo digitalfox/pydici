@@ -236,6 +236,8 @@ class Mission(models.Model):
         current_month = date.today().replace(day=1)  # Current month
         subsidiary = unicode(self.subsidiary)
         dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
+        consultant_rates = self.consultant_rates()
+        billing_mode = self.get_billing_mode_display()
 
         # Gather timesheet (Only consider timesheet up to current month)
         timesheets = Timesheet.objects.filter(mission=self).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
@@ -255,8 +257,10 @@ class Mission(models.Model):
                              "mission_name": mission_name,
                              "consultant": consultant_name,
                              "subsidiary": subsidiary,
+                             "billing_mode": billing_mode,
                              "date": month.strftime("%Y/%m"),
-                             "done_days": timesheet_data.get(month, 0)})
+                             "done_days": timesheet_data.get(month, 0),
+                             "done_keur": timesheet_data.get(month, 0) * consultant_rates[consultant][0] / 1000})
 
             #TODO: add forecast
 
