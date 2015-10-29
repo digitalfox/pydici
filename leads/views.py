@@ -390,6 +390,7 @@ def leads_pivotable(request, year=None):
     """Pivot table for all leads of given year"""
     data = []
     leads = Lead.objects.filter(state="WON")
+    derivedAttributes = """{"sales B": $.pivotUtilities.derivers.bin('sales', 20),}"""
     if not leads:
         return HttpResponse()
     years = [y.year for y in leads.dates("creation_date", "year", order="ASC")]
@@ -398,20 +399,17 @@ def leads_pivotable(request, year=None):
     if year != "all":
         leads = leads.filter(creation_date__year=year)
     for lead in leads.select_related():
-        derivedAttributes = """
-            {"sales B": $.pivotUtilities.derivers.bin('sales', 20),
-             "date B": $.pivotUtilities.derivers.dateFormat("date", "%y-%m"),}"""
         data.append({"deal_id": lead.deal_id,
                      "name": lead.name,
                      "client_company": unicode(lead.client.organisation),
                      "sales": int(lead.sales or 0),
-                     "date": lead.creation_date.isoformat(),
+                     "date": lead.creation_date.strftime("%Y-%m"),
                      "responsible": unicode(lead.responsible),
                      "broker": unicode(lead.business_broker),
                      "subsidiary": unicode(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
                                                     "rows": """["subsidiary"]""",
-                                                    "cols": """["date B"]""",
+                                                    "cols": """["date"]""",
                                                     "rendererName": "Stacked Bar Chart",
                                                     "years": years})
