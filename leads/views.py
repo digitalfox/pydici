@@ -389,7 +389,7 @@ def lead_pivotable(request, lead_id=None):
 def leads_pivotable(request, year=None):
     """Pivot table for all leads of given year"""
     data = []
-    leads = Lead.objects.filter(state="WON")
+    leads = Lead.objects.passive()
     derivedAttributes = """{"sales B": $.pivotUtilities.derivers.bin('sales', 20),}"""
     if not leads:
         return HttpResponse()
@@ -406,6 +406,7 @@ def leads_pivotable(request, year=None):
                      "date": lead.creation_date.strftime("%Y-%m"),
                      "responsible": unicode(lead.responsible),
                      "broker": unicode(lead.business_broker),
+                     "state": lead.get_state_display(),
                      "subsidiary": unicode(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
