@@ -393,7 +393,7 @@ def leads_pivotable(request, year=None):
     derivedAttributes = """{"sales B": $.pivotUtilities.derivers.bin('sales', 20),}"""
     if not leads:
         return HttpResponse()
-    years = [y.year for y in leads.dates("creation_date", "year", order="ASC")]
+    years = [str(y.year) for y in leads.dates("creation_date", "year", order="ASC")]
     if year is None and years:
         year = years[-1]
     if year != "all":
@@ -413,4 +413,5 @@ def leads_pivotable(request, year=None):
                                                     "rows": """["subsidiary"]""",
                                                     "cols": """["date"]""",
                                                     "rendererName": "Stacked Bar Chart",
-                                                    "years": years})
+                                                    "years": years,
+                                                    "selected_year": year})
