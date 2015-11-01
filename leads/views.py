@@ -390,7 +390,7 @@ def leads_pivotable(request, year=None):
     """Pivot table for all leads of given year"""
     data = []
     leads = Lead.objects.passive()
-    derivedAttributes = """{"sales B": $.pivotUtilities.derivers.bin('sales', 20),}"""
+    derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _("sales"))
     if not leads:
         return HttpResponse()
     years = [str(y.year) for y in leads.dates("creation_date", "year", order="ASC")]
@@ -399,15 +399,15 @@ def leads_pivotable(request, year=None):
     if year != "all":
         leads = leads.filter(creation_date__year=year)
     for lead in leads.select_related():
-        data.append({"deal_id": lead.deal_id,
-                     "name": lead.name,
-                     "client_company": unicode(lead.client.organisation),
-                     "sales": int(lead.sales or 0),
-                     "date": lead.creation_date.strftime("%Y-%m"),
-                     "responsible": unicode(lead.responsible),
-                     "broker": unicode(lead.business_broker),
-                     "state": lead.get_state_display(),
-                     "subsidiary": unicode(lead.subsidiary)})
+        data.append({_("deal_id"): lead.deal_id,
+                     _("name"): lead.name,
+                     _("client_company"): unicode(lead.client.organisation),
+                     _("sales"): int(lead.sales or 0),
+                     _("date"): lead.creation_date.strftime("%Y-%m"),
+                     _("responsible"): unicode(lead.responsible),
+                     _("broker"): unicode(lead.business_broker),
+                     _("state"): lead.get_state_display(),
+                     _("subsidiary"): unicode(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
                                                     "rows": """["subsidiary"]""",

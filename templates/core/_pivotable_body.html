@@ -21,7 +21,9 @@
                             {% if vals %}vals: {{ vals|safe }},{% endif %}
                             rendererName: "{{ rendererName }}",
 
-                        }
+                        },
+                        false,
+                        {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %}
     );
              });
         </script>
