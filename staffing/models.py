@@ -243,27 +243,20 @@ class Mission(models.Model):
         timesheets = Timesheet.objects.filter(mission=self).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
         timesheetMonths = list(timesheets.dates("working_date", "month"))
 
-        # Gather forecaster (after current month)
-        staffings = Staffing.objects.filter(mission=self).filter(staffing_date__gt=current_month).order_by("staffing_date")
-        staffingMonths = list(staffings.dates("staffing_date", "month"))
-
         for consultant in self.consultants():
             consultant_name = unicode(consultant)
             timesheet_data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
             timesheet_data = convertDictKeyToDateTime(timesheet_data)
 
             for month in timesheetMonths:
-                data.append({"mission_id": mission_id,
-                             "mission_name": mission_name,
-                             "consultant": consultant_name,
-                             "subsidiary": subsidiary,
-                             "billing_mode": billing_mode,
-                             "date": month.strftime("%Y/%m"),
-                             "done_days": timesheet_data.get(month, 0),
-                             "done_keur": timesheet_data.get(month, 0) * consultant_rates[consultant][0] / 1000})
-
-            #TODO: add forecast
-
+                data.append({ugettext("mission id"): mission_id,
+                             ugettext("mission name"): mission_name,
+                             ugettext("consultant"): consultant_name,
+                             ugettext("subsidiary"): subsidiary,
+                             ugettext("billing mode"): billing_mode,
+                             ugettext("date"): month.strftime("%Y/%m"),
+                             ugettext("done (days)"): timesheet_data.get(month, 0),
+                             ugettext("done (keur)"): timesheet_data.get(month, 0) * consultant_rates[consultant][0] / 1000})
         return data
 
 

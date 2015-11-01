@@ -376,8 +376,6 @@ def lead_pivotable(request, lead_id=None):
 
     return render(request, "leads/lead_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
-                                                    "aggregatorName": _("Integer Sum"),
-                                                    "vals": """["%s"]""" % _("done_days"),
                                                     "lead": lead})
 
 
