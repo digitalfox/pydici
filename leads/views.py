@@ -376,11 +376,8 @@ def lead_pivotable(request, lead_id=None):
 
     return render(request, "leads/lead_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
-                                                    "rows": """["subsidiary", "mission_name", "mission_id", "consultant"]""",
-                                                    "cols": """["date"]""",
-                                                    "rendererName": "Heatmap",
-                                                    "aggregatorName": "Integer Sum",
-                                                    "vals": """["done_days"]""",
+                                                    "aggregatorName": _("Integer Sum"),
+                                                    "vals": """["%s"]""" % _("done_days"),
                                                     "lead": lead})
 
 
@@ -399,9 +396,9 @@ def leads_pivotable(request, year=None):
     if year != "all":
         leads = leads.filter(creation_date__year=year)
     for lead in leads.select_related():
-        data.append({_("deal_id"): lead.deal_id,
+        data.append({_("deal id"): lead.deal_id,
                      _("name"): lead.name,
-                     _("client_company"): unicode(lead.client.organisation),
+                     _("client company"): unicode(lead.client.organisation),
                      _("sales"): int(lead.sales or 0),
                      _("date"): lead.creation_date.strftime("%Y-%m"),
                      _("responsible"): unicode(lead.responsible),
@@ -410,8 +407,5 @@ def leads_pivotable(request, year=None):
                      _("subsidiary"): unicode(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
-                                                    "rows": """["%s"]""" % _("subsidiary"),
-                                                    "cols": """["%s"]""" % _("date"),
-                                                    "rendererName": "Stacked Bar Chart",
                                                     "years": years,
                                                     "selected_year": year})

@@ -1,29 +1,27 @@
 {# Default pydici pivotable function #}
 {# context: output #}
-{# context: data #}
-{# context: rows #}
-{# context: cols #}
 {# context: derivedAttributes #}
-{# context: renderName #}
 
    <script type="text/javascript">
-            $(function(){
-                        var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.c3_renderers);
+                var lang = {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %};
 
-                        $("#pivotable-output").pivotUI(
-                            {{ data|safe }},
+                function drawPivot(data, rows, cols, rendererName, aggregatorName, vals, inclusions) {
+                    var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.c3_renderers);
+                    $("#pivotable-output").pivotUI(
+                        data,
                         {
-                            rows: {{ rows|safe }},
-                            cols: {{ cols|safe }},
+                            rows: rows,
+                            cols: cols,
                             renderers: renderers,
                             derivedAttributes: {{ derivedAttributes|safe }},
-                            {%if aggregatorName %}aggregatorName: "{{ aggregatorName|safe }}",{% endif %}
-                            {% if vals %}vals: {{ vals|safe }},{% endif %}
-                            rendererName: "{{ rendererName }}",
-
+                            rendererName: rendererName,
+                            aggregatorName: aggregatorName,
+                            vals: vals,
+                            inclusions: inclusions
                         },
-                        false,
-                        {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %}
-    );
-             });
+                        true,
+                        lang
+                    );
+                }
+
         </script>

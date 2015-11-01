@@ -2,7 +2,46 @@
 {% load pydici_filters %}
 
         <h2>{% trans "Pivot table for lead " %} {{ lead }}</h2>
+
+        <div id="type-selector" class="btn-group" role="group">
+            <button class="btn btn-default active" onclick="mission_consultant_by_date();">{% trans "Mission per consultant per date" %}</button>
+            <button class="btn btn-default" onclick="consultant_per_mission();">{% trans "Consultant per mission" %}</button>
+        </div>
+
+        <div id="pivotable-output" style="margin: 10px;"></div>
+
         {% with output as "pivotable-output" %}
             {% include "core/_pivotable_body.html" %}
         {% endwith %}
-        <div id="pivotable-output" style="margin: 10px;"></div>
+
+        <script type="text/javascript">
+
+            // Active state switcher
+            $(document).ready(function() {
+                $('#type-selector button').click(function() {
+                    $(this).addClass('active').siblings().removeClass('active');
+                 });
+            });
+
+            // Share data for all pivot tables
+            var data = {{ data|safe }};
+
+            // Preset definition
+            function mission_consultant_by_date() {
+                var rows = ["{% trans 'subsidiary' %}", "{% trans 'mission_name' %}", "{% trans 'mission_id' %}", "{% trans 'consultant' %}"];
+                var cols = ["{% trans 'date' %}"];;
+                drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "done_days" %}']);
+            }
+
+            function consultant_per_mission() {
+                var rows = ["{% trans 'consultant' %}"];
+                var cols = ["{% trans 'mission_name' %}"];;
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ['{% trans "done_days" %}']);
+            }
+
+
+            // default
+            mission_consultant_by_date();
+        </script>
+
+
