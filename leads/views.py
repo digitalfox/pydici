@@ -410,8 +410,8 @@ def leads_pivotable(request, year=None):
                      _("subsidiary"): unicode(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
-                                                    "rows": """["subsidiary"]""",
-                                                    "cols": """["date"]""",
+                                                    "rows": """["%s"]""" % _("subsidiary"),
+                                                    "cols": """["%s"]""" % _("date"),
                                                     "rendererName": "Stacked Bar Chart",
                                                     "years": years,
                                                     "selected_year": year})
