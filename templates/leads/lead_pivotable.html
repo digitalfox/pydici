@@ -30,13 +30,13 @@
             function mission_by_date() {
                 var rows = ["{% trans 'subsidiary' %}", "{% trans 'mission name' %}", "{% trans 'mission id' %}", "{% trans 'consultant' %}"];
                 var cols = ["{% trans 'date' %}"];;
-                drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "done (days)" %}']);
+                drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ['{% trans "done (days)" %}']);
             }
 
             function mission_by_consultant() {
                 var rows = ["{% trans 'consultant' %}"];
                 var cols = ["{% trans 'mission name' %}"];;
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ['{% trans "done (days)" %}']);
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "done (days)" %}']);
             }
 
 
