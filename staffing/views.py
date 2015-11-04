@@ -816,7 +816,7 @@ def all_timesheet(request, year=None, month=None):
                                                                                    escape(unicode(consultant)))) for consultant in consultants]
     data = [[_("Mission"), _("Mission id")] + data]
     for timesheet in timesheets:
-        charges[(timesheet["mission"], timesheet["consultant"])] = timesheet["sum"]
+        charges[(timesheet["mission"], timesheet["consultant"])] = to_int_or_round(timesheet["sum"], 2)
     for mission in missions:
         missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]),
                                         escape(unicode(mission)))
