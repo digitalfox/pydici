@@ -246,7 +246,7 @@ class Mission(models.Model):
         for consultant in self.consultants():
             consultant_name = unicode(consultant)
             timesheet_data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-            timesheet_data = convertDictKeyToDateTime(timesheet_data)
+            timesheet_data = convertDictKeyToDate(timesheet_data)
 
             for month in timesheetMonths:
                 data.append({ugettext("mission id"): mission_id,

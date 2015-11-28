@@ -7,7 +7,7 @@ django-taggit-templatetags
 django-extensions==1.5.5
 django-debug-toolbar==1.3.2
 django-userswitch
--e git://github.com/bport/django-crispy-forms.git@dev#egg=django-crispy-forms
+django-crispy-forms==1.5.2
 Django-Select2==4.3.1
 requests==2.5.2
 lxml==3.4.2
