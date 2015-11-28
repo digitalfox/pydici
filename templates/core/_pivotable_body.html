@@ -1,0 +1,27 @@
+{# Default pydici pivotable function #}
+{# context: output #}
+{# context: derivedAttributes #}
+
+   <script type="text/javascript">
+                var lang = {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %};
+
+                function drawPivot(data, rows, cols, rendererName, aggregatorName, vals, inclusions) {
+                    var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.c3_renderers);
+                    $("#pivotable-output").pivotUI(
+                        data,
+                        {
+                            rows: rows,
+                            cols: cols,
+                            renderers: renderers,
+                            derivedAttributes: {{ derivedAttributes|safe }},
+                            rendererName: rendererName,
+                            aggregatorName: aggregatorName,
+                            vals: vals,
+                            inclusions: inclusions
+                        },
+                        true,
+                        lang
+                    );
+                }
+
+        </script>

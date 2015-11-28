@@ -167,7 +167,8 @@ def lead_documents(request, lead_id):
     lead = Lead.objects.get(id=lead_id)
     documents = []  # List of name/url docs grouped by type
     clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
-    leadDocURL = lead.getDocURL()
+    lead_url_dir = pydici.settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
+    lead_url_file = pydici.settings.DOCUMENT_PROJECT_URL_FILE + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
     for directory in (businessDir, inputDir, deliveryDir):
         # Create project tree if at least one directory is missing
         if not os.path.exists(directory):
@@ -184,16 +185,16 @@ def lead_documents(request, lead_id):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 fileName = fileName.decode("utf8", "ignore")
             if os.path.isdir(filePath):
-                dirs.append((fileName + u"/", leadDocURL + directoryName + u"/" + fileName + u"/"))
+                dirs.append((fileName + u"/", lead_url_dir + u"/" + directoryName + u"/" + fileName + u"/"))
             else:
-                files.append((fileName, leadDocURL + directoryName + u"/" + fileName))
+                files.append((fileName, lead_url_file  + u"/" + directoryName + u"/" + fileName))
         dirs.sort(key=lambda x: x[0])
         files.sort(key=lambda x: x[0])
         documents.append([directoryName, dirs + files])
 
     return render(request, "leads/lead_documents.html",
                   {"documents": documents,
-                   "lead_doc_url": leadDocURL,
+                   "lead_doc_url": lead_url_dir,
                    "user": request.user})
 
 
@@ -360,3 +361,52 @@ def graph_bar_jqp(request):
                    "series_colors": COLORS,
                    "min_date": min_date,
                    "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def lead_pivotable(request, lead_id=None):
+    """Pivot table for a given lead with detail"""
+    data = []
+    try:
+        lead = Lead.objects.get(id=lead_id)
+    except Lead.DoesNotExist:
+        return Http404()
+    for mission in lead.mission_set.all():
+        data.extend(mission.pivotable_data())
+
+    derivedAttributes = []
+
+    return render(request, "leads/lead_pivotable.html", { "data": json.dumps(data),
+                                                    "derivedAttributes": derivedAttributes,
+                                                    "lead": lead})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def leads_pivotable(request, year=None):
+    """Pivot table for all leads of given year"""
+    data = []
+    leads = Lead.objects.passive()
+    derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _("sales"))
+    if not leads:
+        return HttpResponse()
+    years = [str(y.year) for y in leads.dates("creation_date", "year", order="ASC")]
+    if year is None and years:
+        year = years[-1]
+    if year != "all":
+        leads = leads.filter(creation_date__year=year)
+    for lead in leads.select_related():
+        data.append({_("deal id"): lead.deal_id,
+                     _("name"): lead.name,
+                     _("client company"): unicode(lead.client.organisation),
+                     _("sales"): int(lead.sales or 0),
+                     _("date"): lead.creation_date.strftime("%Y-%m"),
+                     _("responsible"): unicode(lead.responsible),
+                     _("broker"): unicode(lead.business_broker),
+                     _("state"): lead.get_state_display(),
+                     _("subsidiary"): unicode(lead.subsidiary)})
+    return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
+                                                    "derivedAttributes": derivedAttributes,
+                                                    "years": years,
+                                                    "selected_year": year})

@@ -12,6 +12,36 @@ body {
     padding: 0px;
 }
 
+
+.icon-list li {
+  padding: 0 0 5px 20px;
+  display: block;
+  position: relative;
+}
+.icon-list li:before {
+  font-family: 'Glyphicons Halflings';
+  position: absolute;
+  left: 0px;
+  top:3px;
+  font-size:70%;
+  color: grey;
+}
+.chevron-right li:before {
+ content: '\e080';
+}
+
+.checkmark li:before {
+ content: '\e067';
+}
+
+.arrow-right li:before {
+ content: '\e092';
+}
+
+
+.pydici-more-less { cursor:pointer; color:grey }
+
+
 /* jquery ui customisation */
 .ui-widget-header { background:None; border:None}
 .ui-widget-content { border: None}
@@ -45,6 +75,15 @@ h4 { font-size:14px; }
 
 
 form { margin:0; padding:0; }
+
+.pydici-block {
+    background-image:linear-gradient(#F8F8F8, white);
+}
+
+.pydici-block-title {
+    padding-top: 5px;
+    padding-left: 5px;
+}
 
 
 /* /* TEXT STYLES & MODIFIERS */ */

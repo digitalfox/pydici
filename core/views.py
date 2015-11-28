@@ -7,6 +7,7 @@ Pydici core views. Http request are processed here.
 
 import csv
 import datetime
+import json
 
 from django.shortcuts import render
 from django.db.models import Q, Sum, Min, Max

@@ -1,0 +1,71 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block extrajs %}
+    {% include "core/_c3.html" %}
+    {% include "core/_pivotable_header.html" %}
+{% endblock %}
+
+{% block title %}{% trans "Leads pivot table" %}{% endblock %}
+
+{% block content %}
+        <h2>{% trans "Leads pivot table" %}</h2>
+        <div id="date-selector" class="btn-group" role="group">
+            {% for year in years %}
+                <a class="btn btn-default {% ifequal year selected_year %}active{% endifequal %}" href="{% url 'leads-pivotable-year' year %}">{{ year }}</a>
+            {% endfor %}
+                <a class="btn btn-default {% ifequal 'all' selected_year %}active{% endifequal %}" href="{% url 'leads-pivotable-all' %}">{% trans "All" %}</a>
+        </div>
+
+        <div id="type-selector" class="btn-group" role="group">
+            <button class="btn btn-default active" onclick="lead_per_state();">{% trans "Lead per state" %}</button>
+            <button class="btn btn-default" onclick="price_interval();">{% trans "Lead per price interval" %}</button>
+            <button class="btn btn-default" onclick="sales_per_client();">{% trans "Sales per client" %}</button>
+        </div>
+
+        <div id="pivotable-output" style="margin: 10px;"></div>
+
+        {% with output as "pivotable-output" %}
+            {% include "core/_pivotable_body.html" %}
+        {% endwith %}
+
+        <script type="text/javascript">
+
+            // Active state switcher
+            $(document).ready(function() {
+                $('#type-selector button').click(function() {
+                    $(this).addClass('active').siblings().removeClass('active');
+                 });
+            });
+
+            // Share data for all pivot tables
+            var data = {{ data|safe }};
+
+            // Preset definition
+            function lead_per_state() {
+                var rows = ["{% trans 'state' %}"];
+                var cols = ["{% trans 'date' %}"];;
+                drawPivot(data, rows, cols, "Stacked Bar Chart");
+            }
+
+            function price_interval() {
+                var rows = ["{% trans 'subsidiary' %}", "{% trans 'responsible' %}"];
+                var cols = ["{% trans 'sales (interval)'%}"];
+                drawPivot(data, rows, cols, "Heatmap");
+            }
+
+            function sales_per_client() {
+                var rows = ["{% trans 'client company' %}"];
+                var cols = ["{% trans 'subsidiary' %}", "{% trans 'responsible' %}"];
+                var inclusions = { {% trans "state" %}: ['{% trans "Won" %}'] };
+                drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "sales" %}'], inclusions);
+            }
+
+            // default
+            lead_per_state();
+        </script>
+
+
+
+{% endblock %}

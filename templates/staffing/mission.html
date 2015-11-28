@@ -7,6 +7,8 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jeditable.mini.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/admin/RelatedObjectLookups.js"></script>
 {% include "core/_c3.html" %}
+{% include "core/_pivotable_header.html" %}
+
 {% endblock %}
 
 {% block title %}{{ mission }}{% endblock %}
@@ -39,6 +41,7 @@
         <li role="presentation"><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense.views.mission_expenses' mission.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
         {% if mission.lead %}
             <li role="presentation"><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads.views.lead_documents' mission.lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
+            <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads.views.lead_pivotable' mission.lead.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
         {% endif %}
         <li role="presentation"><a data-toggle="tab" href="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
         {% if mission.lead %}<li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>{% endif %}
@@ -172,6 +175,8 @@
     <div id="tab-expenses" class="tab-pane fade"></div>
     
     <div id="tab-documents" class="tab-pane fade"></div>
+
+    <div id="tab-reporting" class="tab-pane fade"></div>
     
     <div id="tab-billing" class="tab-pane fade">
     <br/>
