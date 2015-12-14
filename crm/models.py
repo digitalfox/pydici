@@ -6,17 +6,16 @@ Database access layer for pydici CRM module
 """
 
 from datetime import date, timedelta
-from textwrap import fill
 
 from django.db import models
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, get_model
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core import urlresolvers
 from django.utils.safestring import mark_safe
 
 
-from core.utils import GEdge, GEdges, GNode, GNodes
+from core.utils import GEdge, GEdges, GNode, GNodes, cacheable
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -279,6 +278,34 @@ class Client(models.Model):
         # Sort by profil
         data.sort(key=lambda x: x[0].level)
         return data
+
+    @cacheable("Client__objectiveMargin__%(id)s", 60)
+    def objectiveMargin(self):
+        """Compute margin over budget objective across all mission of this client
+        @return: margin (in €), margin (in % of total turnover)"""
+        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        margin = 0
+        for mission in Mission.objects.filter(lead__client=self):
+            margin += sum(mission.objectiveMargin().values())
+        sales = self.sales()
+        if sales > 0:
+            margin_pc = 100 * margin / (1000 * sales)
+        else:
+            margin_pc = 0
+        return (margin, margin_pc)
+
+    def sales(self, onlyLastYear=False):
+        """Sales billed for this client in keuros"""
+        from billing.models import ClientBill
+        data = ClientBill.objects.filter(lead__client=self)
+        if onlyLastYear:
+            data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
+        if data.count():
+            return float(data.aggregate(Sum("amount")).values()[0]) / 1000
+        else:
+            return 0
+
+
 
     def getActiveLeads(self):
         """@return: list (qs) of active leads for this client"""

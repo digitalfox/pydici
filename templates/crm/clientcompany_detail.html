@@ -192,6 +192,15 @@
             </ul></li>
         {% endfor %}
         </ul>
+        <h2>{% trans "Extra margin done with this company" %}</h2>
+        <ul>
+        {% for clientorganisation in company.clientorganisation_set.all %}
+            {% for client in clientorganisation.client_set.all %}
+                <li>{{ client }} : {{ client.objectiveMargin.0|floatformat:0 }} € ({% blocktrans with client.objectiveMargin.1|floatformat:-2 as margin_pc %} {{ margin_pc }}% of sales){% endblocktrans %}</li>
+            {% endfor %}
+        {% endfor %}
+        </ul>
+
     </div>
 
     <div id="tab-billing" class="tab-pane fade">
