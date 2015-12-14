@@ -251,7 +251,7 @@ def company_detail(request, company_id):
     company = Company.objects.get(id=company_id)
 
     # Find leads of this company
-    leads = Lead.objects.filter(client__organisation__company=company).select_related().prefetch_related("clientbill_set")
+    leads = Lead.objects.filter(client__organisation__company=company).select_related().prefetch_related("clientbill_set", "supplierbill_set")
     leads = leads.order_by("client", "state", "start_date")
 
     # Find consultant that work (=declare timesheet) for this company
