@@ -1,0 +1,34 @@
+{# template fragment that display client company rates and margin #}
+{# designed to be loaded in ajax as a tab #}
+{# context : client #}
+
+{% load i18n %}
+
+<h2>{% trans "Billed sales: "%} {{ company.sales|floatformat:-1 }} k€</h2>
+<br/>
+<h2>{% trans "Rates and margin for this company" %}</h2>
+        <table class="table table-hover table-striped table-condensed">
+            <tr>
+                <th>{% trans "Client" %}</th>
+                <th>{% trans "Contact" %}</th>
+                <th>{% trans "Rates" %}</th>
+                <th>{% trans "Margin over objectives (in €)" %}</th>
+                <th>{% trans "Margin over objectives (in % of sales)" %}</th>
+            </tr>
+            {% for client in clients %}
+                <tr>
+                    <td>{{ client.organisation.name }}</td>
+                     <td>{% if client.contact %}{{ client.contact }}{% endif %}</td>
+                     <td><ul>{% for profil, rate in client.getFinancialConditions %}
+                            <li>{{ profil }} : {{ rate }} €</li>
+                            {% empty %}
+                                {% trans "No rate defined" %}
+                            {% endfor %}
+                         </ul>
+                     </td>
+                    <td>{{ client.objectiveMargin.0|floatformat:0 }} €</td>
+                    <td>{% blocktrans with client.objectiveMargin.1|floatformat:-2 as margin_pc %} {{ margin_pc }}% {% endblocktrans %}</td>
+                </tr>
+            {% endfor %}
+
+        </table>

@@ -270,6 +270,15 @@ def company_detail(request, company_id):
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
                    "companies": companies})
 
+@pydici_non_public
+@pydici_feature("3rdparties")
+def company_rates_margin(request, company_id):
+    """ajax fragment that display useful stats about margin and rates for this company"""
+    company = Company.objects.get(id=company_id)
+
+    return render(request, "crm/_clientcompany_rates_margin.html",
+        {"company": company,
+         "clients": Client.objects.filter(organisation__company=company).select_related() })
 
 @pydici_non_public
 @pydici_feature("3rdparties")
