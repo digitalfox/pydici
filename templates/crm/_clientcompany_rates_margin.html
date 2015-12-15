@@ -4,7 +4,7 @@
 
 {% load i18n %}
 
-<h2>{% trans "Billed sales: "%} {{ company.sales|floatformat:-1 }} k€</h2>
+<h2>{% trans "Billed turnover: "%} {{ company.sales|floatformat:-1 }} k€</h2>
 <br/>
 <h2>{% trans "Rates and margin for this company" %}</h2>
         <table class="table table-hover table-striped table-condensed">
@@ -13,7 +13,7 @@
                 <th>{% trans "Contact" %}</th>
                 <th>{% trans "Rates" %}</th>
                 <th>{% trans "Margin over objectives (in €)" %}</th>
-                <th>{% trans "Margin over objectives (in % of sales)" %}</th>
+                <th>{% trans "Margin over objectives (percent of sales)" %}</th>
             </tr>
             {% for client in clients %}
                 <tr>
@@ -27,7 +27,7 @@
                          </ul>
                      </td>
                     <td>{{ client.objectiveMargin.0|floatformat:0 }} €</td>
-                    <td>{% blocktrans with client.objectiveMargin.1|floatformat:-2 as margin_pc %} {{ margin_pc }}% {% endblocktrans %}</td>
+                    <td>{% blocktrans with client.objectiveMargin.1|floatformat:-2 as margin_pc %} {{ margin_pc }}%{% endblocktrans %}</td>
                 </tr>
             {% endfor %}
 
