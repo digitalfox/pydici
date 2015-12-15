@@ -262,22 +262,32 @@ class Client(models.Model):
     def getFinancialConditions(self):
         """Get financial condition for this client by profil
         @return: ((profil1, avgrate1), (profil2, avgrate2)...)"""
-        from staffing.models import FinancialCondition
+        FinancialCondition = get_model("staffing", "FinancialCondition")
+        ConsultantProfile = get_model("people", "ConsultantProfile")
         data = {}
+        rates = []
+
+        for profil in ConsultantProfile.objects.all():
+            data[profil] = []
+
+        #for profil in ConsultantProfile
         for fc in FinancialCondition.objects.filter(mission__lead__client=self,
                                                consultant__timesheet__charge__gt=0,  # exclude null charge
                                                consultant__timesheet=models.F("mission__timesheet")  # Join to avoid duplicate entries
                                                ).select_related():
-            profil = fc.consultant.profil
-            if not profil in data:
-                data[profil] = []
-            data[profil].append(fc.daily_rate)
+            data[fc.consultant.profil].append(fc.daily_rate)
 
         # compute average
-        data = [(profil, sum(rates) / len(rates)) for profil, rates in data.items()]
+        for profil, profilRates in data.items():
+            if len(profilRates) > 0:
+                avg = sum(profilRates) / len(profilRates)
+            else:
+                avg = None
+            rates.append((profil, avg))
+
         # Sort by profil
-        data.sort(key=lambda x: x[0].level)
-        return data
+        rates.sort(key=lambda x: x[0].level)
+        return rates
 
     @cacheable("Client__objectiveMargin__%(id)s", 60)
     def objectiveMargin(self):

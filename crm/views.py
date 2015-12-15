@@ -26,7 +26,7 @@ from crm.models import Company, Client, ClientOrganisation, Contact, Administrat
 from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm,\
     AdministrativeContactForm, BusinessBrokerForm, SupplierForm
 from staffing.models import Timesheet
-from people.models import Consultant
+from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
 from core.utils import sortedValues, previousMonth, COLORS
@@ -278,7 +278,8 @@ def company_rates_margin(request, company_id):
 
     return render(request, "crm/_clientcompany_rates_margin.html",
         {"company": company,
-         "clients": Client.objects.filter(organisation__company=company).select_related() })
+         "clients": Client.objects.filter(organisation__company=company).select_related(),
+         "profiles": ConsultantProfile.objects.all().order_by("level")})
 
 @pydici_non_public
 @pydici_feature("3rdparties")

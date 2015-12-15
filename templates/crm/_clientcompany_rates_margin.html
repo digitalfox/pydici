@@ -11,7 +11,9 @@
             <tr>
                 <th>{% trans "Client" %}</th>
                 <th>{% trans "Contact" %}</th>
-                <th>{% trans "Rates" %}</th>
+                {% for profil in profiles %}
+                    <th>{{ profil }} (€)</th>
+                {% endfor %}
                 <th>{% trans "Margin over objectives (in €)" %}</th>
                 <th>{% trans "Margin over objectives (percent of sales)" %}</th>
             </tr>
@@ -19,14 +21,10 @@
                 <tr>
                     <td>{{ client.organisation.name }}</td>
                      <td>{% if client.contact %}{{ client.contact }}{% endif %}</td>
-                     <td><ul>{% for profil, rate in client.getFinancialConditions %}
-                            <li>{{ profil }} : {{ rate }} €</li>
-                            {% empty %}
-                                {% trans "No rate defined" %}
-                            {% endfor %}
-                         </ul>
-                     </td>
-                    <td>{{ client.objectiveMargin.0|floatformat:0 }} €</td>
+                     {% for profil, rate in client.getFinancialConditions %}
+                            <td>{{ rate|default_if_none:'-' }}</td>
+                     {% endfor %}
+                    <td>{{ client.objectiveMargin.0|floatformat:0 }}</td>
                     <td>{% blocktrans with client.objectiveMargin.1|floatformat:-2 as margin_pc %} {{ margin_pc }}%{% endblocktrans %}</td>
                 </tr>
             {% endfor %}
