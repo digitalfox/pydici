@@ -292,17 +292,25 @@ class Client(models.Model):
     @cacheable("Client__objectiveMargin__%(id)s", 60)
     def objectiveMargin(self):
         """Compute margin over budget objective across all mission of this client
-        @return: margin (in €), margin (in % of total turnover)"""
+        @return: list of (margin in €, margin in % of total turnover) for internal consultant and subcontractor"""
         Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
-        margin = 0
+        consultantMargin = 0
+        subcontractorMargin = 0
+
         for mission in Mission.objects.filter(lead__client=self):
-            margin += sum(mission.objectiveMargin().values())
+            for consultant, margin in mission.objectiveMargin().items():
+                if consultant.subcontractor:
+                    subcontractorMargin += margin
+                else:
+                    consultantMargin += margin
         sales = self.sales()
         if sales > 0:
-            margin_pc = 100 * margin / (1000 * sales)
+            consultantMargin_pc = 100 * consultantMargin / (1000 * sales)
+            subcontractorMargin_pc = 100 * subcontractorMargin / (1000 * sales)
         else:
-            margin_pc = 0
-        return (margin, margin_pc)
+            consultantMargin_pc = 0
+            subcontractorMargin_pc = 0
+        return ((consultantMargin, consultantMargin_pc), (subcontractorMargin, subcontractorMargin_pc))
 
     def sales(self, onlyLastYear=False):
         """Sales billed for this client in keuros"""
@@ -314,8 +322,6 @@ class Client(models.Model):
             return float(data.aggregate(Sum("amount")).values()[0]) / 1000
         else:
             return 0
-
-
 
     def getActiveLeads(self):
         """@return: list (qs) of active leads for this client"""

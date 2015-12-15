@@ -14,8 +14,10 @@
                 {% for profil in profiles %}
                     <th>{{ profil }} (€)</th>
                 {% endfor %}
-                <th>{% trans "Margin over objectives (in €)" %}</th>
-                <th>{% trans "Margin over objectives (percent of sales)" %}</th>
+                <th>{% trans "Consultant margin over objectives (in €)" %}</th>
+                <th>{% trans "Consultant margin over objectives (percent of sales)" %}</th>
+                <th>{% trans "Subcontractor margin over objectives (in €)" %}</th>
+                <th>{% trans "Subcontractor margin over objectives (percent of sales)" %}</th>
             </tr>
             {% for client in clients %}
                 <tr>
@@ -24,8 +26,10 @@
                      {% for profil, rate in client.getFinancialConditions %}
                             <td>{{ rate|default_if_none:'-' }}</td>
                      {% endfor %}
-                    <td>{{ client.objectiveMargin.0|floatformat:0 }}</td>
-                    <td>{% blocktrans with client.objectiveMargin.1|floatformat:-2 as margin_pc %} {{ margin_pc }}%{% endblocktrans %}</td>
+                    <td>{{ client.objectiveMargin.0.0|floatformat:0 }}</td>
+                    <td>{% blocktrans with client.objectiveMargin.0.1|floatformat:-2 as margin_pc %} {{ margin_pc }}%{% endblocktrans %}</td>
+                    <td>{{ client.objectiveMargin.1.0|floatformat:0 }}</td>
+                    <td>{% blocktrans with client.objectiveMargin.1.1|floatformat:-2 as margin_pc %} {{ margin_pc }}%{% endblocktrans %}</td>
                 </tr>
             {% endfor %}
 
