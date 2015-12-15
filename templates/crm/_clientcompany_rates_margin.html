@@ -6,18 +6,14 @@
 
 <h2>{% trans "Billed turnover: "%} {{ company.sales|floatformat:-1 }} k€</h2>
 <br/>
-<h2>{% trans "Rates and margin for this company" %}</h2>
+<h2>{% trans "Average rates by profile (€)" %}</h2>
         <table class="table table-hover table-striped table-condensed">
             <tr>
                 <th>{% trans "Client" %}</th>
                 <th>{% trans "Contact" %}</th>
                 {% for profil in profiles %}
-                    <th>{{ profil }} (€)</th>
+                    <th>{{ profil }}</th>
                 {% endfor %}
-                <th>{% trans "Consultant margin over objectives (in €)" %}</th>
-                <th>{% trans "Consultant margin over objectives (percent of sales)" %}</th>
-                <th>{% trans "Subcontractor margin over objectives (in €)" %}</th>
-                <th>{% trans "Subcontractor margin over objectives (percent of sales)" %}</th>
             </tr>
             {% for client in clients %}
                 <tr>
@@ -26,6 +22,30 @@
                      {% for profil, rate in client.getFinancialConditions %}
                             <td>{{ rate|default_if_none:'-' }}</td>
                      {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+<h2>{% trans "Margin over rate objective" %}</h2>
+        <table class="table table-hover table-striped table-condensed">
+            <tr>
+                <th></th>
+                <th></th>
+                <th colspan=2>{% trans "Consultant margin over objectives" %}</th>
+                <th colspan=2>{% trans "Subcontractor margin over objectives" %}</th>
+            </tr>
+            <tr>
+                <th>{% trans "Client" %}</th>
+                <th>{% trans "Contact" %}</th>
+                <th>{% trans "€" %}</th>
+                <th>{% trans "% of sales" %}</th>
+                <th>{% trans "€" %}</th>
+                <th>{% trans "% of sales" %}</th>
+            </tr>
+            {% for client in clients %}
+                <tr>
+                    <td>{{ client.organisation.name }}</td>
+                     <td>{% if client.contact %}{{ client.contact }}{% endif %}</td>
                     <td>{{ client.objectiveMargin.0.0|floatformat:0 }}</td>
                     <td>{% blocktrans with client.objectiveMargin.0.1|floatformat:-2 as margin_pc %} {{ margin_pc }}%{% endblocktrans %}</td>
                     <td>{{ client.objectiveMargin.1.0|floatformat:0 }}</td>
