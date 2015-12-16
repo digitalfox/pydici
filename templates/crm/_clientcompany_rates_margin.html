@@ -32,7 +32,7 @@
                 <th></th>
                 <th></th>
                 <th colspan=2>{% trans "Consultant margin over objectives" %}</th>
-                <th colspan=2>{% trans "Subcontractor margin over objectives" %}</th>
+                <th colspan=2>{% trans "Subcontractor margin" %}</th>
             </tr>
             <tr>
                 <th>{% trans "Client" %}</th>
@@ -47,9 +47,9 @@
                     <td>{{ client.organisation.name }}</td>
                      <td>{% if client.contact %}{{ client.contact }}{% endif %}</td>
                     <td>{{ client.objectiveMargin.0.0|floatformat:0 }}</td>
-                    <td>{% blocktrans with client.objectiveMargin.0.1|floatformat:-2 as margin_pc %} {{ margin_pc }}%{% endblocktrans %}</td>
+                    <td>{{ client.objectiveMargin.0.1|floatformat:-2 }} %</td>
                     <td>{{ client.objectiveMargin.1.0|floatformat:0 }}</td>
-                    <td>{% blocktrans with client.objectiveMargin.1.1|floatformat:-2 as margin_pc %} {{ margin_pc }}%{% endblocktrans %}</td>
+                    <td>{{ client.objectiveMargin.1.1|floatformat:-2 }} %</td>
                 </tr>
             {% endfor %}
 
