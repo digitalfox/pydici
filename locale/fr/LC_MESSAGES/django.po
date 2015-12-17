@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-16 19:20+0100\n"
-"PO-Revision-Date: 2015-12-16 19:19+0100\n"
+"POT-Creation-Date: 2015-12-17 22:43+0100\n"
+"PO-Revision-Date: 2015-12-17 22:43+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -51,7 +51,7 @@ msgid "When a consultant is created"
 msgstr "Quand un consultant est créé"
 
 #: actionset/models.py:27 actionset/models.py:48 crm/models.py:25
-#: crm/models.py:82 crm/models.py:363 expense/models.py:44 leads/models.py:57
+#: crm/models.py:82 crm/models.py:373 expense/models.py:44 leads/models.py:57
 #: leads/tables.py:19 leads/views.py:207 people/models.py:25
 #: people/models.py:219 staffing/tables.py:26
 #: templates/crm/clientcompany_detail.html:141
@@ -445,7 +445,7 @@ msgstr "Téléphone mobile"
 msgid "Fax"
 msgstr "Fax"
 
-#: crm/models.py:87 crm/models.py:375
+#: crm/models.py:87 crm/models.py:385
 #: templates/crm/clientcompany_detail.html:143
 #: templates/staffing/mission_contacts.html:14
 msgid "Function"
@@ -466,9 +466,9 @@ msgstr "%s affaires"
 msgid "Broker company"
 msgstr "Société de l'apporteur"
 
-#: crm/models.py:200 crm/models.py:223 crm/models.py:251 crm/models.py:346
-#: crm/models.py:379 templates/crm/_clientcompany_rates_margin.html:13
-#: templates/crm/_clientcompany_rates_margin.html:39
+#: crm/models.py:200 crm/models.py:223 crm/models.py:251 crm/models.py:356
+#: crm/models.py:389 templates/crm/_clientcompany_rates_margin.html:13
+#: templates/crm/_clientcompany_rates_margin.html:40
 #: templates/leads/lead_detail.html:88
 #: templates/people/subcontractor_detail.html:9
 msgid "Contact"
@@ -518,7 +518,7 @@ msgstr "Perspectives"
 msgid "Strategic alignment"
 msgstr "Alignement stratégique"
 
-#: crm/models.py:339 leads/models.py:71 leads/tables.py:18 leads/views.py:207
+#: crm/models.py:349 leads/models.py:71 leads/tables.py:18 leads/views.py:207
 #: templates/billing/bill_review.html:19 templates/billing/bill_review.html:67
 #: templates/billing/bill_review.html:115
 #: templates/billing/bill_review.html:164
@@ -526,31 +526,31 @@ msgstr "Alignement stratégique"
 #: templates/core/index.html.py:37 templates/core/index.html:61
 #: templates/core/index.html.py:85
 #: templates/crm/_clientcompany_rates_margin.html:12
-#: templates/crm/_clientcompany_rates_margin.html:38
+#: templates/crm/_clientcompany_rates_margin.html:39
 msgid "Client"
 msgstr "Client"
 
-#: crm/models.py:345 crm/models.py:374 templates/crm/_contact_list.html:10
+#: crm/models.py:355 crm/models.py:384 templates/crm/_contact_list.html:10
 msgid "company"
 msgstr "société"
 
-#: crm/models.py:357
+#: crm/models.py:367
 msgid "Mission contact"
 msgstr "Contact mission"
 
-#: crm/models.py:376
+#: crm/models.py:386
 msgid "Phone Switchboard"
 msgstr "Standard téléphonique"
 
-#: crm/models.py:377
+#: crm/models.py:387
 msgid "Generic email"
 msgstr "Courriel générique"
 
-#: crm/models.py:378
+#: crm/models.py:388
 msgid "Generic fax"
 msgstr "Fax générique"
 
-#: crm/models.py:411
+#: crm/models.py:421
 msgid "Administrative contact"
 msgstr "Contact administratif"
 
@@ -2003,10 +2003,8 @@ msgid "Average rates by profile (€)"
 msgstr "Taux journalier moyen par profile (€)"
 
 #: templates/crm/_clientcompany_rates_margin.html:29
-#: templates/leads/lead_detail.html:149
-#: templates/staffing/mission_timesheet.html:98
-msgid "Margin over rate objective"
-msgstr "Marge sur objectifs de TJM"
+msgid "Margin over rate objective and fixed price mission margin"
+msgstr "Marge sur objectifs de TJM et sur forfaits"
 
 #: templates/crm/_clientcompany_rates_margin.html:34
 msgid "Consultant margin over objectives"
@@ -2016,16 +2014,20 @@ msgstr "Marge sur objectifs de TJM"
 msgid "Subcontractor margin"
 msgstr "Marge sous-traitant"
 
-#: templates/crm/_clientcompany_rates_margin.html:40
-#: templates/crm/_clientcompany_rates_margin.html:42
-msgid "€"
-msgstr "€"
+#: templates/crm/_clientcompany_rates_margin.html:36
+msgid "Fixed price margin"
+msgstr "Marge sur forfait"
 
 #: templates/crm/_clientcompany_rates_margin.html:41
 #: templates/crm/_clientcompany_rates_margin.html:43
-#, python-format
-msgid "%% of sales"
-msgstr "%% du CA"
+#: templates/crm/_clientcompany_rates_margin.html:45
+msgid "€"
+msgstr "€"
+
+#: templates/crm/_clientcompany_rates_margin.html:42
+#: templates/crm/_clientcompany_rates_margin.html:44
+msgid "&#37; of sales"
+msgstr "&#37; du CA"
 
 #: templates/crm/_contact_list.html:11 templates/crm/contact_detail.html:25
 msgid "function"
@@ -2350,6 +2352,11 @@ msgstr "Vendu"
 #: templates/leads/lead_detail.html:148
 msgid "Unused"
 msgstr "Non utilisé"
+
+#: templates/leads/lead_detail.html:149
+#: templates/staffing/mission_timesheet.html:98
+msgid "Margin over rate objective"
+msgstr "Marge sur objectifs de TJM"
 
 #: templates/leads/lead_detail.html:157
 msgid "Missions of this lead:"
@@ -2809,9 +2816,8 @@ msgid "Max daily rate (€)"
 msgstr "Taux journalier maxi (€)"
 
 #: templates/staffing/graph_consultant_rate_jqp.html:48
-#, python-format
-msgid "Production rate (%%)"
-msgstr "Taux de production (%%)"
+msgid "Production rate (&#37;)"
+msgstr "Taux de production (&#37;)"
 
 #: templates/staffing/graph_consultant_rate_jqp.html:79
 #: templates/staffing/graph_timesheet_rates_bar_jqp.html:29
