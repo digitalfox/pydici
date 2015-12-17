@@ -26,21 +26,23 @@
             {% endfor %}
         </table>
 
-<h2>{% trans "Margin over rate objective" %}</h2>
+<h2>{% trans "Margin over rate objective and fixed price mission margin" %}</h2>
         <table class="table table-hover table-striped table-condensed">
             <tr>
                 <th></th>
                 <th></th>
                 <th colspan=2>{% trans "Consultant margin over objectives" %}</th>
                 <th colspan=2>{% trans "Subcontractor margin" %}</th>
+                <th>{% trans "Fixed price margin" %}</th>
             </tr>
             <tr>
                 <th>{% trans "Client" %}</th>
                 <th>{% trans "Contact" %}</th>
                 <th>{% trans "€" %}</th>
-                <th>{% trans "% of sales" %}</th>
+                <th>{% trans "&#37; of sales" %}</th>
                 <th>{% trans "€" %}</th>
-                <th>{% trans "% of sales" %}</th>
+                <th>{% trans "&#37; of sales" %}</th>
+                <th>{% trans "€" %}</th>
             </tr>
             {% for client in clients %}
                 <tr>
@@ -50,6 +52,7 @@
                     <td>{{ client.objectiveMargin.0.1|floatformat:-2 }} %</td>
                     <td>{{ client.objectiveMargin.1.0|floatformat:0 }}</td>
                     <td>{{ client.objectiveMargin.1.1|floatformat:-2 }} %</td>
+                    <td>{{ client.fixedPriceMissionMargin|floatformat:0 }}</td>
                 </tr>
             {% endfor %}
 

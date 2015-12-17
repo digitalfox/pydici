@@ -312,6 +312,16 @@ class Client(models.Model):
             subcontractorMargin_pc = 0
         return ((consultantMargin, consultantMargin_pc), (subcontractorMargin, subcontractorMargin_pc))
 
+    def fixedPriceMissionMargin(self):
+        """Compute total fixed price margin in €  mission for this client. Only finished mission (ie archived) are
+        considered"""
+        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        margin = 0
+        missions = Mission.objects.filter(lead__client=self, active=False, billing_mode="FIXED_PRICE")
+        for mission in missions:
+            margin += mission.margin()
+        return margin * 1000
+
     def sales(self, onlyLastYear=False):
         """Sales billed for this client in keuros"""
         from billing.models import ClientBill
