@@ -317,7 +317,8 @@ class Client(models.Model):
         considered"""
         Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         margin = 0
-        missions = Mission.objects.filter(lead__client=self, active=False, billing_mode="FIXED_PRICE")
+        missions = Mission.objects.filter(lead__client=self, active=False,
+                                          lead__state = "WON", billing_mode="FIXED_PRICE")
         for mission in missions:
             margin += mission.margin()
         return margin * 1000
