@@ -13,7 +13,6 @@ from django.shortcuts import render
 from django.db.models import Q, Sum, Min, Max
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.utils import numberformat
 from django.utils.html import strip_tags
 
 from core.decorator import pydici_non_public, pydici_feature
@@ -195,7 +194,7 @@ def financialControl(request, start_date=None, end_date=None):
             missionRow.append(mission.lead.client.organisation.name)
             missionRow.append(mission.lead.name)
             missionRow.append(mission.lead.deal_id)
-            missionRow.append(numberformat.format(mission.lead.sales, ",") if mission.lead.sales else 0)
+            missionRow.append(mission.lead.sales or 0)
             if mission.lead.responsible:
                 missionRow.append(mission.lead.responsible.name)
                 missionRow.append(mission.lead.responsible.trigramme)
@@ -207,8 +206,8 @@ def financialControl(request, start_date=None, end_date=None):
         missionRow.append(mission.description or "")
         missionRow.append(mission.mission_id())
         missionRow.append(mission.billing_mode or "")
-        missionRow.append(numberformat.format(mission.price, ",") if mission.price else 0)
-        missionRow.extend([numberformat.format(i, ",") for i in mission.done_work()])
+        missionRow.append(mission.price or 0)
+        missionRow.extend(mission.done_work())
         return missionRow
 
     for mission in missions:
@@ -229,16 +228,16 @@ def financialControl(request, start_date=None, end_date=None):
             consultantRow.append(consultant.name)
             consultantRow.append(consultant.subcontractor)
             consultantRow.append(mission.subsidiary != consultant.company)
-            consultantRow.append(numberformat.format(rateObjective, ","))
-            consultantRow.append(numberformat.format(daily_rate, ",") if daily_rate else 0)
-            consultantRow.append(numberformat.format(bought_daily_rate, ",") if bought_daily_rate else 0)
+            consultantRow.append(rateObjective)
+            consultantRow.append(daily_rate or 0)
+            consultantRow.append(bought_daily_rate or 0)
             # Timesheet row
             for budgetType, days in (("done", doneDays), ("forecast", forecastedDays)):
                 quantity = days["charge"] or 0
                 row = consultantRow[:]  # Copy
                 row.append(budgetType)
-                row.append(numberformat.format(quantity, ",") if quantity else 0)
-                row.append(numberformat.format(quantity * daily_rate, ",") if (quantity > 0 and daily_rate > 0) else 0)
+                row.append(quantity or 0)
+                row.append((quantity * daily_rate) if (quantity > 0 and daily_rate > 0) else 0)
                 row.append(days["min_date"] or "")
                 row.append(days["max_date"] or "")
                 writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
