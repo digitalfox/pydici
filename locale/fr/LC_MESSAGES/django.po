@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-17 22:43+0100\n"
-"PO-Revision-Date: 2015-12-17 22:43+0100\n"
+"POT-Creation-Date: 2015-12-20 22:22+0100\n"
+"PO-Revision-Date: 2015-12-20 22:22+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -51,7 +51,7 @@ msgid "When a consultant is created"
 msgstr "Quand un consultant est créé"
 
 #: actionset/models.py:27 actionset/models.py:48 crm/models.py:25
-#: crm/models.py:82 crm/models.py:373 expense/models.py:44 leads/models.py:57
+#: crm/models.py:82 crm/models.py:374 expense/models.py:44 leads/models.py:57
 #: leads/tables.py:19 leads/views.py:207 people/models.py:25
 #: people/models.py:219 staffing/tables.py:26
 #: templates/crm/clientcompany_detail.html:141
@@ -445,7 +445,7 @@ msgstr "Téléphone mobile"
 msgid "Fax"
 msgstr "Fax"
 
-#: crm/models.py:87 crm/models.py:385
+#: crm/models.py:87 crm/models.py:386
 #: templates/crm/clientcompany_detail.html:143
 #: templates/staffing/mission_contacts.html:14
 msgid "Function"
@@ -466,8 +466,8 @@ msgstr "%s affaires"
 msgid "Broker company"
 msgstr "Société de l'apporteur"
 
-#: crm/models.py:200 crm/models.py:223 crm/models.py:251 crm/models.py:356
-#: crm/models.py:389 templates/crm/_clientcompany_rates_margin.html:13
+#: crm/models.py:200 crm/models.py:223 crm/models.py:251 crm/models.py:357
+#: crm/models.py:390 templates/crm/_clientcompany_rates_margin.html:13
 #: templates/crm/_clientcompany_rates_margin.html:40
 #: templates/leads/lead_detail.html:88
 #: templates/people/subcontractor_detail.html:9
@@ -518,7 +518,7 @@ msgstr "Perspectives"
 msgid "Strategic alignment"
 msgstr "Alignement stratégique"
 
-#: crm/models.py:349 leads/models.py:71 leads/tables.py:18 leads/views.py:207
+#: crm/models.py:350 leads/models.py:71 leads/tables.py:18 leads/views.py:207
 #: templates/billing/bill_review.html:19 templates/billing/bill_review.html:67
 #: templates/billing/bill_review.html:115
 #: templates/billing/bill_review.html:164
@@ -530,27 +530,27 @@ msgstr "Alignement stratégique"
 msgid "Client"
 msgstr "Client"
 
-#: crm/models.py:355 crm/models.py:384 templates/crm/_contact_list.html:10
+#: crm/models.py:356 crm/models.py:385 templates/crm/_contact_list.html:10
 msgid "company"
 msgstr "société"
 
-#: crm/models.py:367
+#: crm/models.py:368
 msgid "Mission contact"
 msgstr "Contact mission"
 
-#: crm/models.py:386
+#: crm/models.py:387
 msgid "Phone Switchboard"
 msgstr "Standard téléphonique"
 
-#: crm/models.py:387
+#: crm/models.py:388
 msgid "Generic email"
 msgstr "Courriel générique"
 
-#: crm/models.py:388
+#: crm/models.py:389
 msgid "Generic fax"
 msgstr "Fax générique"
 
-#: crm/models.py:421
+#: crm/models.py:422
 msgid "Administrative contact"
 msgstr "Contact administratif"
 
@@ -1229,7 +1229,7 @@ msgstr "Charge"
 
 #: staffing/models.py:319 templates/people/consultant.html:28
 #: templates/people/consultant.html:30
-#: templates/people/consultant_detail.html:37
+#: templates/people/consultant_detail.html:48
 #: templates/staffing/consultant_timesheet.html:16
 #: templates/staffing/consultant_timesheet.html:24
 #: templates/staffing/mission.html:37
@@ -2384,7 +2384,7 @@ msgstr ""
 "Une mission est créée une fois que la proposition commerciale est envoyée."
 
 #: templates/leads/lead_detail.html:205
-#: templates/people/consultant_detail.html:104
+#: templates/people/consultant_detail.html:78
 #: templates/people/subcontractor_detail.html:16
 #: templates/staffing/mission.html:193
 msgid "Pending actions"
@@ -2577,28 +2577,28 @@ msgstr "Probabilité"
 msgid "Change %(mission)s"
 msgstr "Modifier %(mission)s"
 
-#: templates/people/consultant_detail.html:8
+#: templates/people/consultant_detail.html:9
 #: templates/people/subcontractor_detail.html:4
 msgid "This consultant does not work anymore for the company"
 msgstr "Ce consultant ne travaille plus pour la société"
 
-#: templates/people/consultant_detail.html:15
+#: templates/people/consultant_detail.html:16
 msgid "This month"
 msgstr "Ce mois ci"
 
-#: templates/people/consultant_detail.html:18
+#: templates/people/consultant_detail.html:19
 msgid "My turnover this month: "
 msgstr "Mon chiffre d'affaire du mois : "
 
-#: templates/people/consultant_detail.html:19
+#: templates/people/consultant_detail.html:20
 msgid "Increase"
 msgstr "Croissance"
 
-#: templates/people/consultant_detail.html:20
+#: templates/people/consultant_detail.html:21
 msgid "Decrease"
 msgstr "Décroissance"
 
-#: templates/people/consultant_detail.html:23
+#: templates/people/consultant_detail.html:24
 #, python-format
 msgid ""
 " Incomplete <a href=\"%(consultant_url)s#tab-staffing\">forecasting</a> for "
@@ -2607,7 +2607,7 @@ msgstr ""
 " <a href=\"%(consultant_url)s#tab-staffing\">Prévisions</a> incomplètes pour "
 "ce mois (il manque <b>%(missing)s jour(s)</b>)"
 
-#: templates/people/consultant_detail.html:24
+#: templates/people/consultant_detail.html:25
 #, python-format
 msgid ""
 " Overhead <a href=\"%(consultant_url)s#tab-staffing\">forecasting</a> for "
@@ -2616,7 +2616,7 @@ msgstr ""
 " <a href=\"%(consultant_url)s#tab-staffing\">Prévisions</a> en surcharge "
 "pour ce mois (<b>%(overhead)s jour(s) en trop</b>) "
 
-#: templates/people/consultant_detail.html:26
+#: templates/people/consultant_detail.html:27
 #, python-format
 msgid ""
 "<a href=\"%(consultant_url)s#tab-timesheet\">Timesheet</a> is <b>%(days)s day"
@@ -2625,34 +2625,47 @@ msgstr ""
 "<a href=\"%(consultant_url)s#tab-timesheet\">Feuille de temps</a> en retard "
 "de <b>%(days)s jour(s)</b>"
 
-#: templates/people/consultant_detail.html:90
+#: templates/people/consultant_detail.html:41
+#: templates/staffing/mission_timesheet.html:170
+msgid "done"
+msgstr "réalisé"
+
+#: templates/people/consultant_detail.html:42
+msgid "late"
+msgstr "en retard"
+
+#: templates/people/consultant_detail.html:43
+msgid "to be done"
+msgstr "à faire"
+
+#: templates/people/consultant_detail.html:64
 msgid "Manager: "
 msgstr "Manager : "
 
-#: templates/people/consultant_detail.html:92
+#: templates/people/consultant_detail.html:66
 msgid "Staff"
 msgstr "Équipe"
 
-#: templates/people/consultant_detail.html:115
+#: templates/people/consultant_detail.html:89
 msgid "Business territory"
 msgstr "Territoire commercial"
 
-#: templates/people/consultant_detail.html:140
+#: templates/people/consultant_detail.html:114
 #: templates/people/subcontractor_detail.html:23
 #: templates/staffing/pdc_review.html:78
 msgid "Clients"
 msgstr "Clients"
 
-#: templates/people/consultant_detail.html:163
+#: templates/people/consultant_detail.html:137
 #: templates/people/subcontractor_detail.html:32
 msgid "Current missions"
 msgstr "Missions actuelles"
 
-#: templates/people/consultant_detail.html:175
+#: templates/people/consultant_detail.html:149
 msgid "Current leads as responsible"
 msgstr "Affaires en tant que responsable"
 
-#: templates/people/consultant_detail.html:189
+#: templates/people/consultant_detail.html:163
 #: templates/people/subcontractor_detail.html:42
 msgid "Current leads as resource"
 msgstr "Affaires en tant que ressource"
@@ -2949,10 +2962,6 @@ msgstr "Montant inutilisé en projection"
 #: templates/staffing/mission_timesheet.html:140
 msgid "Click to show past timesheet"
 msgstr "Cliquez pour afficher les feuilles de temps passées"
-
-#: templates/staffing/mission_timesheet.html:170
-msgid "done"
-msgstr "réalisé"
 
 #: templates/staffing/missions.html:14 templates/staffing/missions.html:24
 msgid "All missions"

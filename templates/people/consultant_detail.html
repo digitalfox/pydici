@@ -2,6 +2,7 @@
 
 {% block extrajs %}
     {% include "core/_jqplot.html" %}
+    {% include "core/_c3.html" %}
 {% endblock %}
 
 {% if not consultant.active %}
@@ -26,57 +27,35 @@
                 {% if late %}<li>{% blocktrans with late|floatformat:-2 as days %}<a href="{{ consultant_url }}#tab-timesheet">Timesheet</a> is <b>{{ days }} day(s)</b> late{% endblocktrans %}</li>{% endif %}
 
             </ul>
-            <div id="consultant_timesheet_status" style="height: 50px;"></div>
+            <div id="consultant_timesheet_status"></div>
+
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $.jqplot.config.enablePlugins = true;
-    var plot_consultant_timesheet_status = $.jqplot('consultant_timesheet_status',  [[{{ done_days|safe }},0], [{{ late|safe }},0] ,[{{ to_be_done|safe }},0]] , {
-         animate : false,
-         stackSeries: true,
-         title: '{% trans "Timesheet" %}',
-         captureRightClick: true,
-         seriesColors: ['green', 'red', 'grey'],
-         grid: {
-             drawBorder: false,
-             drawGridlines: false,
-             background: '#ffffff',
-             shadow:false
-         },
-         seriesDefaults:{
-             renderer:$.jqplot.BarRenderer,
-             pointLabels: {show: false},
-             rendererOptions: {
-                barDirection: 'horizontal',
-                barWidth: 50,
+
+    var chart = c3.generate({
+        bindto: '#consultant_timesheet_status',
+        data: {
+            columns: [
+                ["{% trans 'done' %}", {{ done_days|safe }}],
+                ["{% trans 'late' %}", {{ late|safe }}],
+                ["{% trans 'to be done' %}", {{ to_be_done|safe }}],
+            ],
+            type : 'donut',
+        },
+        tooltip: {
+            format: {
+                value: function (value, ratio, id, index) { return value; }
                 }
-         },
-         highlighter: {
-            show: true,
-            sizeAdjust: 0,
-            tooltipAxes: 'x',
-          },
-          axes: {
-              xaxis: {
-                show: false,
-                showTicks: false,
-                showTickMarks: false,
-                max: {{ month_days|safe }},
-                min: 0,
-                pad: 0,
-              },
-              yaxis: {
-                show: false,
-                showTicks: false,
-                showTickMarks: false,
-              },
-           },
-     });
-
-    {% with "plot_consultant_timesheet_status" as plot %}
-        {% include "core/_jqplot_resize.html" %}
-    {% endwith %}
-
+            },
+        donut: {
+            title: "{% trans "Timesheet" %}",
+            label: {
+                format: function (value) { return value; },
+                threshold: 0.001,
+                },
+            },
+    });
 });
 
 
