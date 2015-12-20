@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-20 22:22+0100\n"
-"PO-Revision-Date: 2015-12-20 22:22+0100\n"
+"POT-Creation-Date: 2015-12-20 22:57+0100\n"
+"PO-Revision-Date: 2015-12-20 22:57+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -1229,7 +1229,7 @@ msgstr "Charge"
 
 #: staffing/models.py:319 templates/people/consultant.html:28
 #: templates/people/consultant.html:30
-#: templates/people/consultant_detail.html:48
+#: templates/people/consultant_detail.html:53
 #: templates/staffing/consultant_timesheet.html:16
 #: templates/staffing/consultant_timesheet.html:24
 #: templates/staffing/mission.html:37
@@ -2384,7 +2384,7 @@ msgstr ""
 "Une mission est créée une fois que la proposition commerciale est envoyée."
 
 #: templates/leads/lead_detail.html:205
-#: templates/people/consultant_detail.html:78
+#: templates/people/consultant_detail.html:109
 #: templates/people/subcontractor_detail.html:16
 #: templates/staffing/mission.html:193
 msgid "Pending actions"
@@ -2638,34 +2638,50 @@ msgstr "en retard"
 msgid "to be done"
 msgstr "à faire"
 
-#: templates/people/consultant_detail.html:64
+#: templates/people/consultant_detail.html:66
+msgid "forecasted"
+msgstr "prévus"
+
+#: templates/people/consultant_detail.html:67
+msgid "overhead"
+msgstr "excès"
+
+#: templates/people/consultant_detail.html:68
+msgid "missing"
+msgstr "manquants"
+
+#: templates/people/consultant_detail.html:78
+msgid "Forecast"
+msgstr "Prévisions"
+
+#: templates/people/consultant_detail.html:95
 msgid "Manager: "
 msgstr "Manager : "
 
-#: templates/people/consultant_detail.html:66
+#: templates/people/consultant_detail.html:97
 msgid "Staff"
 msgstr "Équipe"
 
-#: templates/people/consultant_detail.html:89
+#: templates/people/consultant_detail.html:120
 msgid "Business territory"
 msgstr "Territoire commercial"
 
-#: templates/people/consultant_detail.html:114
+#: templates/people/consultant_detail.html:145
 #: templates/people/subcontractor_detail.html:23
 #: templates/staffing/pdc_review.html:78
 msgid "Clients"
 msgstr "Clients"
 
-#: templates/people/consultant_detail.html:137
+#: templates/people/consultant_detail.html:168
 #: templates/people/subcontractor_detail.html:32
 msgid "Current missions"
 msgstr "Missions actuelles"
 
-#: templates/people/consultant_detail.html:149
+#: templates/people/consultant_detail.html:180
 msgid "Current leads as responsible"
 msgstr "Affaires en tant que responsable"
 
-#: templates/people/consultant_detail.html:163
+#: templates/people/consultant_detail.html:194
 #: templates/people/subcontractor_detail.html:42
 msgid "Current leads as resource"
 msgstr "Affaires en tant que ressource"
@@ -3120,9 +3136,6 @@ msgstr "Totaux"
 
 #~ msgid "High"
 #~ msgstr "Haute"
-
-#~ msgid "forecast"
-#~ msgstr "prévu"
 
 #~ msgid "deal id: %s"
 #~ msgstr "N° affaire : %s"

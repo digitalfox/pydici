@@ -20,20 +20,15 @@
                 ({% if turnover_variation > 0 %}<img src="{{ MEDIA_URL }}pydici/increase.png" border=0 title="{% trans 'Increase' %}" />
                  {% else %}<img src="{{ MEDIA_URL }}pydici/decrease.png" border=0 title="{% trans 'Decrease' %}" />{% endif %}
                 {{ turnover_variation|floatformat:-2 }}%)</li>
-                {% with consultant.forecasted_days as forecasted_days %}
-                    {% if forecasting_balance > 0 %}<li>{% blocktrans with forecasting_balance|floatformat:-2 as missing %} Incomplete <a href="{{ consultant_url }}#tab-staffing">forecasting</a> for this month (missing <b>{{ missing }} day(s)</b>) {% endblocktrans %}</li>{% endif %}
-                    {% if forecasting_balance < 0 %}<li>{% blocktrans with forecasting_balance|floatformat:-2 as overhead %} Overhead <a href="{{ consultant_url }}#tab-staffing">forecasting</a> for this month (<b>{{ overhead }} day(s)</b> overhead) {% endblocktrans %}</li>{% endif %}
-                {% endwith %}
-                {% if late %}<li>{% blocktrans with late|floatformat:-2 as days %}<a href="{{ consultant_url }}#tab-timesheet">Timesheet</a> is <b>{{ days }} day(s)</b> late{% endblocktrans %}</li>{% endif %}
-
             </ul>
             <div id="consultant_timesheet_status"></div>
+            <div id="consultant_forecast_status"></div>
 
 
 <script type="text/javascript">
 $(document).ready(function() {
 
-    var chart = c3.generate({
+    var chart_timesheet = c3.generate({
         bindto: '#consultant_timesheet_status',
         data: {
             columns: [
@@ -50,6 +45,31 @@ $(document).ready(function() {
             },
         donut: {
             title: "{% trans "Timesheet" %}",
+            label: {
+                format: function (value) { return value; },
+                threshold: 0.001,
+                },
+            },
+    });
+
+
+    var chart_forecast = c3.generate({
+        bindto: '#consultant_forecast_status',
+        data: {
+            columns: [
+                ["{% trans 'forecasted' %}", {{ forecasted|safe }}],
+                ["{% trans 'overhead' %}", {{ overhead|safe }}],
+                ["{% trans 'missing' %}", {{ missing|safe }}],
+            ],
+            type : 'donut',
+        },
+        tooltip: {
+            format: {
+                value: function (value, ratio, id, index) { return value; }
+                }
+            },
+        donut: {
+            title: "{% trans "Forecast" %}",
             label: {
                 format: function (value) { return value; },
                 threshold: 0.001,
