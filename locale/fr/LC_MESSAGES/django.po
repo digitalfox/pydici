@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-20 22:57+0100\n"
-"PO-Revision-Date: 2015-12-20 22:57+0100\n"
+"POT-Creation-Date: 2015-12-21 23:43+0100\n"
+"PO-Revision-Date: 2015-12-21 23:43+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -1229,7 +1229,6 @@ msgstr "Charge"
 
 #: staffing/models.py:319 templates/people/consultant.html:28
 #: templates/people/consultant.html:30
-#: templates/people/consultant_detail.html:53
 #: templates/staffing/consultant_timesheet.html:16
 #: templates/staffing/consultant_timesheet.html:24
 #: templates/staffing/mission.html:37
@@ -2384,7 +2383,7 @@ msgstr ""
 "Une mission est créée une fois que la proposition commerciale est envoyée."
 
 #: templates/leads/lead_detail.html:205
-#: templates/people/consultant_detail.html:109
+#: templates/people/consultant_detail.html:107
 #: templates/people/subcontractor_detail.html:16
 #: templates/staffing/mission.html:193
 msgid "Pending actions"
@@ -2598,90 +2597,70 @@ msgstr "Croissance"
 msgid "Decrease"
 msgstr "Décroissance"
 
-#: templates/people/consultant_detail.html:24
-#, python-format
-msgid ""
-" Incomplete <a href=\"%(consultant_url)s#tab-staffing\">forecasting</a> for "
-"this month (missing <b>%(missing)s day(s)</b>) "
-msgstr ""
-" <a href=\"%(consultant_url)s#tab-staffing\">Prévisions</a> incomplètes pour "
-"ce mois (il manque <b>%(missing)s jour(s)</b>)"
-
-#: templates/people/consultant_detail.html:25
-#, python-format
-msgid ""
-" Overhead <a href=\"%(consultant_url)s#tab-staffing\">forecasting</a> for "
-"this month (<b>%(overhead)s day(s)</b> overhead) "
-msgstr ""
-" <a href=\"%(consultant_url)s#tab-staffing\">Prévisions</a> en surcharge "
-"pour ce mois (<b>%(overhead)s jour(s) en trop</b>) "
-
-#: templates/people/consultant_detail.html:27
-#, python-format
-msgid ""
-"<a href=\"%(consultant_url)s#tab-timesheet\">Timesheet</a> is <b>%(days)s day"
-"(s)</b> late"
-msgstr ""
-"<a href=\"%(consultant_url)s#tab-timesheet\">Feuille de temps</a> en retard "
-"de <b>%(days)s jour(s)</b>"
-
-#: templates/people/consultant_detail.html:41
-#: templates/staffing/mission_timesheet.html:170
+#: templates/people/consultant_detail.html:39
+msgctxt "days"
 msgid "done"
-msgstr "réalisé"
+msgstr "réalisés"
 
-#: templates/people/consultant_detail.html:42
+#: templates/people/consultant_detail.html:40
+msgctxt "days"
 msgid "late"
 msgstr "en retard"
 
-#: templates/people/consultant_detail.html:43
+#: templates/people/consultant_detail.html:41
+msgctxt "days"
 msgid "to be done"
 msgstr "à faire"
 
-#: templates/people/consultant_detail.html:66
+#: templates/people/consultant_detail.html:51
+msgctxt "short"
+msgid "Timesheet"
+msgstr "Suivi temps"
+
+#: templates/people/consultant_detail.html:64
 msgid "forecasted"
 msgstr "prévus"
 
-#: templates/people/consultant_detail.html:67
+#: templates/people/consultant_detail.html:65
 msgid "overhead"
 msgstr "excès"
 
-#: templates/people/consultant_detail.html:68
+#: templates/people/consultant_detail.html:66
 msgid "missing"
 msgstr "manquants"
 
-#: templates/people/consultant_detail.html:78
+#: templates/people/consultant_detail.html:76
 msgid "Forecast"
 msgstr "Prévisions"
 
-#: templates/people/consultant_detail.html:95
+#: templates/people/consultant_detail.html:93
 msgid "Manager: "
 msgstr "Manager : "
 
-#: templates/people/consultant_detail.html:97
+#: templates/people/consultant_detail.html:95
 msgid "Staff"
 msgstr "Équipe"
 
-#: templates/people/consultant_detail.html:120
+#: templates/people/consultant_detail.html:118
 msgid "Business territory"
 msgstr "Territoire commercial"
 
-#: templates/people/consultant_detail.html:145
+#: templates/people/consultant_detail.html:143
 #: templates/people/subcontractor_detail.html:23
 #: templates/staffing/pdc_review.html:78
 msgid "Clients"
 msgstr "Clients"
 
-#: templates/people/consultant_detail.html:168
+#: templates/people/consultant_detail.html:166
 #: templates/people/subcontractor_detail.html:32
 msgid "Current missions"
 msgstr "Missions actuelles"
 
-#: templates/people/consultant_detail.html:180
+#: templates/people/consultant_detail.html:178
 msgid "Current leads as responsible"
 msgstr "Affaires en tant que responsable"
 
-#: templates/people/consultant_detail.html:194
+#: templates/people/consultant_detail.html:192
 #: templates/people/subcontractor_detail.html:42
 msgid "Current leads as resource"
 msgstr "Affaires en tant que ressource"
@@ -2979,6 +2958,10 @@ msgstr "Montant inutilisé en projection"
 msgid "Click to show past timesheet"
 msgstr "Cliquez pour afficher les feuilles de temps passées"
 
+#: templates/staffing/mission_timesheet.html:170
+msgid "done"
+msgstr "réalisé"
+
 #: templates/staffing/missions.html:14 templates/staffing/missions.html:24
 msgid "All missions"
 msgstr "Toutes les missions"
@@ -3069,6 +3052,37 @@ msgstr "Équipe %(manager)s"
 #: templates/staffing/pdc_review.html:108
 msgid "Totals"
 msgstr "Totaux"
+
+#~ msgctxt "short space - html"
+#~ msgid "Timesheet"
+#~ msgstr "Feuille<br/>de temps"
+
+#~ msgctxt "short space"
+#~ msgid "Timesheet"
+#~ msgstr ""
+#~ "Feuille\n"
+#~ "de temps"
+
+#~ msgid ""
+#~ " Incomplete <a href=\"%(consultant_url)s#tab-staffing\">forecasting</a> "
+#~ "for this month (missing <b>%(missing)s day(s)</b>) "
+#~ msgstr ""
+#~ " <a href=\"%(consultant_url)s#tab-staffing\">Prévisions</a> incomplètes "
+#~ "pour ce mois (il manque <b>%(missing)s jour(s)</b>)"
+
+#~ msgid ""
+#~ " Overhead <a href=\"%(consultant_url)s#tab-staffing\">forecasting</a> for "
+#~ "this month (<b>%(overhead)s day(s)</b> overhead) "
+#~ msgstr ""
+#~ " <a href=\"%(consultant_url)s#tab-staffing\">Prévisions</a> en surcharge "
+#~ "pour ce mois (<b>%(overhead)s jour(s) en trop</b>) "
+
+#~ msgid ""
+#~ "<a href=\"%(consultant_url)s#tab-timesheet\">Timesheet</a> is <b>%(days)s "
+#~ "day(s)</b> late"
+#~ msgstr ""
+#~ "<a href=\"%(consultant_url)s#tab-timesheet\">Feuille de temps</a> en "
+#~ "retard de <b>%(days)s jour(s)</b>"
 
 #~ msgid "\\%% of sales"
 #~ msgstr "\\%% du CA"

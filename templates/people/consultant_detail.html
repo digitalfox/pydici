@@ -21,8 +21,12 @@
                  {% else %}<img src="{{ MEDIA_URL }}pydici/decrease.png" border=0 title="{% trans 'Decrease' %}" />{% endif %}
                 {{ turnover_variation|floatformat:-2 }}%)</li>
             </ul>
-            <div id="consultant_timesheet_status"></div>
-            <div id="consultant_forecast_status"></div>
+            <div class="col-lg-6">
+                <div id="consultant_timesheet_status"></div>
+            </div>
+            <div class="col-lg-6">
+                <div id="consultant_forecast_status"></div>
+            </div>
 
 
 <script type="text/javascript">
@@ -32,9 +36,9 @@ $(document).ready(function() {
         bindto: '#consultant_timesheet_status',
         data: {
             columns: [
-                ["{% trans 'done' %}", {{ done_days|safe }}],
-                ["{% trans 'late' %}", {{ late|safe }}],
-                ["{% trans 'to be done' %}", {{ to_be_done|safe }}],
+                ["{% trans 'done' context 'days' %}", {{ done_days|safe }}],
+                ["{% trans 'late' context 'days' %}", {{ late|safe }}],
+                ["{% trans 'to be done' context 'days' %}", {{ to_be_done|safe }}],
             ],
             type : 'donut',
         },
@@ -44,7 +48,7 @@ $(document).ready(function() {
                 }
             },
         donut: {
-            title: "{% trans "Timesheet" %}",
+            title: "{% trans 'Timesheet' context 'short' %}",
             label: {
                 format: function (value) { return value; },
                 threshold: 0.001,
