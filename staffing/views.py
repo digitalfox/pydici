@@ -350,7 +350,7 @@ def pdc_review(request, year=None, month=None):
             total[month]["available"] += available
             total[month]["total"] += available_month[month]
         # Add client synthesis to staffing dict
-        company = set([m.lead.client.organisation.company for m in list(missions)])
+        company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
         client_list = ", ".join(["<a href='%s'>%s</a>" %
                                 (urlresolvers.reverse("crm.views.company_detail", args=[c.id]), unicode(c)) for c in company])
         client_list = "<div class='hidden-xs hidden-sm'>%s</div>" % client_list
