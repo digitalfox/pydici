@@ -140,7 +140,7 @@ class Lead(models.Model):
         """Return object history action as an action List"""
         actionList = LogEntry.objects.filter(object_id=self.id,
                                               content_type__name="Lead")
-        actionList = actionList.select_related().order_by('action_time')
+        actionList = actionList.select_related().order_by('-action_time')
         return actionList
 
     def done_work(self):
