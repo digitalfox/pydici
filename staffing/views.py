@@ -351,7 +351,7 @@ def pdc_review(request, year=None, month=None):
             total[month]["available"] += available
             total[month]["total"] += available_month[month]
         # Add client synthesis to staffing dict
-        company = set([m.lead.client.organisation.company for m in list(missions)])
+        company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
         client_list = ", ".join(["<a href='%s'>%s</a>" %
                                 (urlresolvers.reverse("crm.views.company_detail", args=[c.id]), unicode(c)) for c in company])
         client_list = "<div class='hidden-xs hidden-sm'>%s</div>" % client_list
@@ -1015,7 +1015,7 @@ def create_new_mission_from_lead(request, lead_id):
     mission.responsible = lead.responsible
     mission.nature = modelMission.nature
     mission.probability = modelMission.probability
-    mission.probability_auto = False
+    mission.probability_auto = True
     mission.subsidiary = lead.subsidiary
     mission.save()
     mission.create_default_staffing()  # Initialize default staffing

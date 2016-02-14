@@ -125,8 +125,10 @@ def lead(request, lead_id=None):
     if request.method == "POST":
         if lead:
             form = LeadForm(request.POST, instance=lead)
+            created = False
         else:
             form = LeadForm(request.POST)
+            created = True
         if form.is_valid():
             changed_fields = form.changed_data
             for field_name, field in form.fields.items():
@@ -143,7 +145,7 @@ def lead(request, lead_id=None):
                     value = value if len(value)<=max_length else value[0:max_length-3]+'...'
                     updated_fields.append("%s: %s" % (force_text(field.label or field_name), value))
             lead = form.save()
-            postSaveLead(request, lead, updated_fields)
+            postSaveLead(request, lead, updated_fields, created=created)
             return HttpResponseRedirect(urlresolvers.reverse("leads.views.detail", args=[lead.id]))
     else:
         if lead:

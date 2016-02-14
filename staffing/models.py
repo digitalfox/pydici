@@ -44,7 +44,7 @@ class Mission(models.Model):
     nature = models.CharField(_("Type"), max_length=30, choices=MISSION_NATURE, default="PROD")
     billing_mode = models.CharField(_("Billing mode"), max_length=30, choices=BILLING_MODES, null=True)
     active = models.BooleanField(_("Active"), default=True)
-    probability = models.IntegerField(_("Proba"), default=50, choices=PROBABILITY)
+    probability = models.IntegerField(_("Proba"), default=50)
     probability_auto = models.BooleanField(_("Automatic probability"), default=True)
     price = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)

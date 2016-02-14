@@ -49,6 +49,7 @@ def gatherTimesheetData(consultant, missions, month):
     timesheetTotal["ticket"] = totalTicket
     # Compute warnings (overbooking and no data)
     for i in totalPerDay:
+        i = round(i, 4)  # We must round because using keyboard time input may lead to real numbers that are truncated
         if i > 1:  # Surbooking
             warning.append(1)
         elif i == 1:  # Ok

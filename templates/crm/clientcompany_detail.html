@@ -22,10 +22,10 @@
 <div>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="company-tabs">
-        <li class="active"><a data-toggle="tab" href="#tab-home"><span class="glyphicon glyphicon-home"> {% trans "Leads" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"> {% trans "Consultants" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-contacts"><span class="glyphicon glyphicon-envelope"> {% trans "Client contacts" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-rates"><span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Rates" %}</a></li>
+        <li class="active"><a data-toggle="tab" href="#tab-home"><span class="glyphicon glyphicon-home"> {% trans "Leads" %}</span></a></li>
+        <li><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"> {% trans "Consultants" %}</span></a></li>
+        <li><a data-toggle="tab" href="#tab-contacts"><span class="glyphicon glyphicon-envelope"> {% trans "Client contacts" %}</span></a></li>
+        <li><a data-toggle="tab" href="#tab-rates-margin" data-tab-url="{% url 'company_rates_margin' company.id %}"><span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Rates and margin" %}</a></li>
         <li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
         <li><a data-toggle="tab" href="#tab-all-companies"><span class="glyphicon glyphicon-list"></span> {% trans "All companies list" %}</a></li>
     </ul>
@@ -48,7 +48,7 @@
         });
         </script>
 
-        <h2>{% trans "Sales with this client: "%} {{ company.sales|floatformat:-1 }} k€</h2>
+        <h2>{% trans "Billed turnover: "%} {{ company.sales|floatformat:-1 }} k€</h2>
 
         <h2>{% trans "Current active missions" %}</h2>
         <div class="row">
@@ -179,20 +179,7 @@
         {% endif %}
     </div>
 
-    <div id="tab-rates" class="tab-pane fade">
-        <h2>{% trans "Used rates for this company" %}</h2>
-        <ul>
-        {% for client in clients %}
-        <li>{{ client.organisation.name }} {% if client.contact %}({{ client.contact }}){% endif %}<ul>
-            {% for profil, rate in client.getFinancialConditions %}
-                <li>{{ profil }} : {{ rate }} €</li>
-            {% empty %}
-            {% trans "No rate defined" %}
-            {% endfor %}
-            </ul></li>
-        {% endfor %}
-        </ul>
-    </div>
+    <div id="tab-rates-margin" class="tab-pane fade"></div>
 
     <div id="tab-billing" class="tab-pane fade">
         <ul>

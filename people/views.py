@@ -47,8 +47,15 @@ def consultant_detail(request, consultant_id):
         late = working_days(first_day, holidays, upToToday=True) - done_days
         if late < 0:
             late = 0  # Don't warn user if timesheet is ok !
+        forecasted = consultant.forecasted_days()
         to_be_done = month_days - late - done_days
-        forecasting_balance = month_days - consultant.forecasted_days()
+        forecasting_balance = month_days - forecasted
+        if forecasting_balance < 0:
+            overhead = -forecasting_balance
+            missing = 0
+        else:
+            overhead = 0
+            missing = forecasting_balance
         monthTurnover = consultant.getTurnover(month)
         lastMonthTurnover = None
         day = date.today().day
@@ -76,6 +83,9 @@ def consultant_detail(request, consultant_id):
                    "done_days": done_days,
                    "late": late,
                    "to_be_done": to_be_done,
+                   "forecasted": forecasted,
+                   "missing": missing,
+                   "overhead": overhead,
                    "month_days": month_days,
                    "forecasting_balance": forecasting_balance,
                    "month_turnover": monthTurnover,

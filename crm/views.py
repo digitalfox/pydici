@@ -26,7 +26,7 @@ from crm.models import Company, Client, ClientOrganisation, Contact, Administrat
 from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm,\
     AdministrativeContactForm, BusinessBrokerForm, SupplierForm
 from staffing.models import Timesheet
-from people.models import Consultant
+from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
 from core.utils import sortedValues, previousMonth, COLORS
@@ -251,7 +251,7 @@ def company_detail(request, company_id):
     company = Company.objects.get(id=company_id)
 
     # Find leads of this company
-    leads = Lead.objects.filter(client__organisation__company=company).select_related().prefetch_related("clientbill_set")
+    leads = Lead.objects.filter(client__organisation__company=company).select_related().prefetch_related("clientbill_set", "supplierbill_set")
     leads = leads.order_by("client", "state", "start_date")
 
     # Find consultant that work (=declare timesheet) for this company
@@ -270,6 +270,16 @@ def company_detail(request, company_id):
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
                    "companies": companies})
 
+@pydici_non_public
+@pydici_feature("3rdparties")
+def company_rates_margin(request, company_id):
+    """ajax fragment that display useful stats about margin and rates for this company"""
+    company = Company.objects.get(id=company_id)
+
+    return render(request, "crm/_clientcompany_rates_margin.html",
+        {"company": company,
+         "clients": Client.objects.filter(organisation__company=company).select_related(),
+         "profiles": ConsultantProfile.objects.all().order_by("level")})
 
 @pydici_non_public
 @pydici_feature("3rdparties")

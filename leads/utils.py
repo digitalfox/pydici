@@ -6,15 +6,21 @@ appropriate to live in Lead models or view
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+
 from django.utils.translation import ugettext
 from django.contrib import messages
-from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, ContentType
+from django.contrib.admin.models import LogEntry, ADDITION, ContentType
 from django.utils.encoding import force_unicode
+from django.core import urlresolvers
 
 from leads.learn import compute_leads_state
 from staffing.models import Mission
 from leads.models import StateProba
 from core.utils import send_lead_mail
+from pydici.pydici_settings import TELEGRAM_IS_ENABLED, TELEGRAM_CHAT, TELEGRAM_TOKEN, TELEGRAM_STICKERS, PYDICI_HOST
+
+if TELEGRAM_IS_ENABLED:
+    import telegram
 
 
 def create_default_mission(lead):
@@ -33,7 +39,7 @@ def create_default_mission(lead):
     return mission
 
 
-def postSaveLead(request, lead, updated_fields):
+def postSaveLead(request, lead, updated_fields, created=False):
     mail = False
     if lead.send_email:
         mail = True
@@ -59,6 +65,34 @@ def postSaveLead(request, lead, updated_fields):
             messages.add_message(request, messages.INFO, ugettext("Lead sent to business mailing list"))
         except Exception, e:
             messages.add_message(request, messages.ERROR, ugettext("Failed to send mail: %s") % e)
+
+    if TELEGRAM_IS_ENABLED:
+        try:
+            bot = telegram.bot.Bot(token=TELEGRAM_TOKEN)
+            sticker = None
+            url = PYDICI_HOST + urlresolvers.reverse("leads.views.detail", args=[lead.id, ])
+            if created:
+                msg = ugettext(u"New Lead !\n%s\n%s" % (lead, url))
+                sticker = TELEGRAM_STICKERS.get("happy")
+                chat_group = "new_leads"
+            else:
+                try:
+                    change = u"%s (%s)" % (lead.get_change_history()[0].change_message, lead.get_change_history()[0].user)
+                except:
+                    change = u""
+                msg = ugettext(u"Lead %s has been updated\n%s\n%s" % (lead, url, change))
+                if lead.state == "WON":
+                    sticker = TELEGRAM_STICKERS.get("happy")
+                elif lead.state in ("LOST", "FORGIVEN"):
+                    sticker = TELEGRAM_STICKERS.get("sad")
+                chat_group = "leads_update"
+
+            for chat_id in TELEGRAM_CHAT.get(chat_group, []):
+                bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
+                if sticker:
+                    bot.sendSticker(chat_id=chat_id, sticker=sticker)
+        except Exception, e:
+            messages.add_message(request, messages.ERROR, ugettext(u"Failed to send telegram notification: %s") % e)
 
     # Compute leads probability
     if lead.state in ("WON", "LOST", "SLEEPING", "FORGIVEN"):

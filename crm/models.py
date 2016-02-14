@@ -6,17 +6,16 @@ Database access layer for pydici CRM module
 """
 
 from datetime import date, timedelta
-from textwrap import fill
 
 from django.db import models
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, get_model
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core import urlresolvers
 from django.utils.safestring import mark_safe
 
 
-from core.utils import GEdge, GEdges, GNode, GNodes
+from core.utils import GEdge, GEdges, GNode, GNodes, cacheable
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -94,12 +93,12 @@ class Contact(models.Model):
 
     def companies(self, html=False):
         """Return companies for whom this contact currently works"""
-        companies = Company.objects.filter(Q(clientorganisation__client__contact__id=self.id) |
+        companies = list(Company.objects.filter(Q(clientorganisation__client__contact__id=self.id) |
                                            Q(businessbroker__contact__id=self.id) |
                                            Q(missioncontact__contact__id=self.id) |
                                            Q(administrativecontact__contact__id=self.id) |
-                                           Q(supplier__contact__id=self.id)).distinct()
-        companies_count = companies.count()
+                                           Q(supplier__contact__id=self.id)).distinct())
+        companies_count = len(companies)
         if companies_count == 0:
             return _("None")
         elif companies_count == 1:
@@ -263,22 +262,77 @@ class Client(models.Model):
     def getFinancialConditions(self):
         """Get financial condition for this client by profil
         @return: ((profil1, avgrate1), (profil2, avgrate2)...)"""
-        from staffing.models import FinancialCondition
+        FinancialCondition = get_model("staffing", "FinancialCondition")
+        ConsultantProfile = get_model("people", "ConsultantProfile")
         data = {}
+        rates = []
+
+        for profil in ConsultantProfile.objects.all():
+            data[profil] = []
+
+        #for profil in ConsultantProfile
         for fc in FinancialCondition.objects.filter(mission__lead__client=self,
                                                consultant__timesheet__charge__gt=0,  # exclude null charge
                                                consultant__timesheet=models.F("mission__timesheet")  # Join to avoid duplicate entries
                                                ).select_related():
-            profil = fc.consultant.profil
-            if not profil in data:
-                data[profil] = []
-            data[profil].append(fc.daily_rate)
+            data[fc.consultant.profil].append(fc.daily_rate)
 
         # compute average
-        data = [(profil, sum(rates) / len(rates)) for profil, rates in data.items()]
+        for profil, profilRates in data.items():
+            if len(profilRates) > 0:
+                avg = sum(profilRates) / len(profilRates)
+            else:
+                avg = None
+            rates.append((profil, avg))
+
         # Sort by profil
-        data.sort(key=lambda x: x[0].level)
-        return data
+        rates.sort(key=lambda x: x[0].level)
+        return rates
+
+    @cacheable("Client__objectiveMargin__%(id)s", 60)
+    def objectiveMargin(self):
+        """Compute margin over budget objective across all mission of this client
+        @return: list of (margin in €, margin in % of total turnover) for internal consultant and subcontractor"""
+        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        consultantMargin = 0
+        subcontractorMargin = 0
+
+        for mission in Mission.objects.filter(lead__client=self):
+            for consultant, margin in mission.objectiveMargin().items():
+                if consultant.subcontractor:
+                    subcontractorMargin += margin
+                else:
+                    consultantMargin += margin
+        sales = self.sales()
+        if sales > 0:
+            consultantMargin_pc = 100 * consultantMargin / (1000 * sales)
+            subcontractorMargin_pc = 100 * subcontractorMargin / (1000 * sales)
+        else:
+            consultantMargin_pc = 0
+            subcontractorMargin_pc = 0
+        return ((consultantMargin, consultantMargin_pc), (subcontractorMargin, subcontractorMargin_pc))
+
+    def fixedPriceMissionMargin(self):
+        """Compute total fixed price margin in €  mission for this client. Only finished mission (ie archived) are
+        considered"""
+        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        margin = 0
+        missions = Mission.objects.filter(lead__client=self, active=False,
+                                          lead__state = "WON", billing_mode="FIXED_PRICE")
+        for mission in missions:
+            margin += mission.margin()
+        return margin * 1000
+
+    def sales(self, onlyLastYear=False):
+        """Sales billed for this client in keuros"""
+        from billing.models import ClientBill
+        data = ClientBill.objects.filter(lead__client=self)
+        if onlyLastYear:
+            data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
+        if data.count():
+            return float(data.aggregate(Sum("amount")).values()[0]) / 1000
+        else:
+            return 0
 
     def getActiveLeads(self):
         """@return: list (qs) of active leads for this client"""

@@ -48,3 +48,15 @@ TIMESHEET_DAY_DURATION = 7
 # INCWO_LOG_DIR must point to a dir where the `incwoimport` command can write.
 # It defaults to $PYDICI_PREFIX/incwo-log if not set.
 INCWO_LOG_DIR = os.path.join(PYDICI_ROOTDIR, 'incwo-log')
+
+# Telegram integration
+TELEGRAM_IS_ENABLED = False  # Wether to enable or not Telegram notifications
+TELEGRAM_TOKEN = "123123:ABCABC"  # Your Bot Token.
+TELEGRAM_CHAT = {
+                    "new_leads" : [-71462389,], # List of chat_id to send new leads notif to
+                    "leads_update": [-71462389,], # List of chat_id to send leads udpate notif to
+                }
+TELEGRAM_STICKERS = {
+                        "happy": "BQADBAADQAADyIsGAAGMQCvHaYLU_AI",
+                        "sad": "BQADBAADFQADyIsGAAEO_vKI0MR5bAI",
+                    }

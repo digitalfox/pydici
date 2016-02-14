@@ -139,8 +139,8 @@ class Lead(models.Model):
     def get_change_history(self):
         """Return object history action as an action List"""
         actionList = LogEntry.objects.filter(object_id=self.id,
-                                              content_type__app_label="Lead")
-        actionList = actionList.select_related().order_by('action_time')
+                                              content_type__name="Lead")
+        actionList = actionList.select_related().order_by('-action_time')
         return actionList
 
     def done_work(self):

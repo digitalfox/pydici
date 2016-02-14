@@ -151,7 +151,8 @@ def pre_billing(request, year=None, month=None, mine=False):
     for consultant in Consultant.objects.filter(active=True, subcontractor=False):
         missions = consultant.timesheet_missions(month=month)
         timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
-        if sum(timesheetTotal.values()) == working_days(month, holidayDays(month=month)):
+        days = sum([v for (k,v) in timesheetTotal.items() if k!="ticket"])  # Compute timesheet days. Remove lunch ticket count
+        if days == working_days(month, holidayDays(month=month)):
             timesheet_ok[consultant.id] = True
         else:
             timesheet_ok[consultant.id] = False
