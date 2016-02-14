@@ -85,7 +85,7 @@ def get_state_model():
     model = Pipeline([("vect", DictVectorizer()), ("clf", LogisticRegression(penalty="l2",
                                                                              solver="liblinear",
                                                                              C=1,
-                                                                             class_weight="auto"))])
+                                                                             class_weight="balanced"))])
     return model
 
 
