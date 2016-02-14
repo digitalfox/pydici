@@ -319,11 +319,14 @@ def cacheable(cache_key, timeout=3600):
 
 
 def convertDictKeyToDate(data):
-    """Convert dict key from unicode string with %Y-%m-%d %H:%M:%S format, to datetime.
+    """Convert dict key from unicode string with %Y-%m-%d %H:%M:%S format, to date.
     This is used to convert dict from queryset for sqlite3 that don't support properly date trunc functions
+    and mysql that use datetime or date dependings on version...
     If data is empty or if key is already, date, return as is"""
     if data and isinstance(data.keys()[0], unicode):
         return dict((datetime.strptime(k, "%Y-%m-%d").date(), v) for k, v in data.items())
+    elif data and isinstance(data.keys()[0], datetime):
+        return dict((k.date(), v) for k, v in data.items())
     else:
         return data
 
