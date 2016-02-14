@@ -154,7 +154,7 @@ class Mission(models.Model):
         rates = dict([(i.id, j[0]) for i, j in self.consultant_rates().items()])  # switch to consultant id
         days = 0
         amount = 0
-        timesheets = Timesheet.objects.filter(mission=self)
+        timesheets = Timesheet.objects.filter(mission=self, working_date__lt=nextMonth(datetime.now().date()))
         timesheets = timesheets.values_list("consultant").annotate(Sum("charge")).order_by()
         for consultant_id, charge in timesheets:
             days += charge
