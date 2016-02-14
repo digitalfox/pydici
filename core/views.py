@@ -14,6 +14,7 @@ from django.db.models import Q, Sum, Min, Max
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils.html import strip_tags
+from django.utils.translation import ugettext
 
 from core.decorator import pydici_non_public, pydici_feature
 from leads.models import Lead
@@ -285,6 +286,38 @@ def financialControl(request, start_date=None, end_date=None):
 
     return response
 
+
+def riskReporting(request):
+    """Risk reporting synthesis"""
+    data = []
+    today = datetime.datetime.now()
+    # Overdue bills
+    for bill in ClientBill.objects.filter(state="1_SENT").filter(due_date__lte=today).select_related():
+        data.append({"type": "overdue bills",
+                     ugettext("subsidiary"): unicode(bill.lead.subsidiary),
+                     ugettext("deal_id"): bill.lead.deal_id,
+                     ugettext("deal"): bill.lead.name,
+                     ugettext("amount"): float(bill.amount),
+                     ugettext("company"): unicode(bill.lead.client.organisation.company),
+                     ugettext("client"): unicode(bill.lead.client),
+                     })
+
+    # Leads with done works and without significant billing
+
+    for lead in Lead.objects.filter(state="WON", mission__active=True).select_related():
+        done_d, done_a = lead.done_work()
+        billed = float(ClientBill.objects.filter(lead=lead).aggregate(amount=Sum("amount"))["amount"] or 0)
+        if billed < done_a:
+            data.append({"type": "work without bill",
+                         ugettext("subsidiary"): unicode(lead.subsidiary),
+                        ugettext("deal_id"): lead.deal_id,
+                        ugettext("deal"): lead.name,
+                        ugettext("amount"): done_a - billed,
+                        ugettext("company"): unicode(lead.client.organisation.company),
+                        ugettext("client"): unicode(lead.client),})
+
+    return render(request, "core/risks.html", { "data": json.dumps(data),
+                                                    "derivedAttributes": []})
 
 def tableToCSV(table, filename="data.csv"):
     """A view that convert a django_table2 object to a CSV in a http response object"""
