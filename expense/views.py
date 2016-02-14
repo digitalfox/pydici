@@ -274,7 +274,7 @@ def expense_payments(request, expense_payment_id=None):
     else:
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
-            form = ExpensePaymentForm({"expenses": list(Expense.objects.filter(expensePayment=expensePayment)), "payment_date": expensePayment.payment_date})  # A form that edit current expense payment
+            form = ExpensePaymentForm({"expenses": list(Expense.objects.filter(expensePayment=expensePayment).values_list("id", flat=True)), "payment_date": expensePayment.payment_date})  # A form that edit current expense payment
         else:
             form = ExpensePaymentForm(initial={"payment_date": date.today()})  # An unbound form
 
