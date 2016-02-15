@@ -74,9 +74,11 @@ Your installation uses South if there is a `south_migrationhistory`
         ./manage.py syncdb
         ./manage.py migrate
 
-    After that you can update to to a newer version of pydici by running:
+    After that you can update to to a newer version of pydici then :
 
-        ./manage.py migrate --fake
+        ./manage.py migrate auth
+        ./manage.py migrate contenttypes
+        ./manage.py migrate --fake  # for internal pydici apps
 
     Once this is done, future updates will be handled as situation #1.
 
