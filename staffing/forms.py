@@ -19,6 +19,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Min
 
 
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Field
 from crispy_forms.bootstrap import AppendedText
@@ -61,6 +62,10 @@ class StaffingDateChoices(Select2ChoiceField):
         kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=numberOfMonth, minDate=minDate)]
         kwargs["choices"].insert(0, ("", ""))  # Add the empty choice for extra empty choices
         super(StaffingDateChoices, self).__init__(*args, **kwargs)
+
+    def has_changed(self, initial, data):
+        initial = unicode(initial) if initial is not None else ''
+        return initial != data
 
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
