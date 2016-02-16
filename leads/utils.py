@@ -72,7 +72,7 @@ def postSaveLead(request, lead, updated_fields, created=False):
             sticker = None
             url = PYDICI_HOST + urlresolvers.reverse("leads.views.detail", args=[lead.id, ])
             if created:
-                msg = ugettext(u"New Lead !\n%s\n%s" % (lead, url))
+                msg = ugettext(u"New Lead !\n%(lead)s\n%(url)s" % (lead, url))
                 sticker = TELEGRAM_STICKERS.get("happy")
                 chat_group = "new_leads"
             else:
@@ -80,7 +80,7 @@ def postSaveLead(request, lead, updated_fields, created=False):
                     change = u"%s (%s)" % (lead.get_change_history()[0].change_message, lead.get_change_history()[0].user)
                 except:
                     change = u""
-                msg = ugettext(u"Lead %s has been updated\n%s\n%s" % (lead, url, change))
+                msg = ugettext(u"Lead %(lead)s has been updated\n%(url)s\n%(change)s" % (lead, url, change))
                 if lead.state == "WON":
                     sticker = TELEGRAM_STICKERS.get("happy")
                 elif lead.state in ("LOST", "FORGIVEN"):
