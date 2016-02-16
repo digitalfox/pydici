@@ -297,7 +297,7 @@ def riskReporting(request):
                      _("subsidiary"): unicode(bill.lead.subsidiary),
                      _("deal_id"): bill.lead.deal_id,
                      _("deal"): bill.lead.name,
-                     _("amount"): float(bill.amount),
+                     _("amount"): int(bill.amount),
                      _("company"): unicode(bill.lead.client.organisation.company),
                      _("client"): unicode(bill.lead.client),
                      })
@@ -312,7 +312,7 @@ def riskReporting(request):
                          _("subsidiary"): unicode(lead.subsidiary),
                          _("deal_id"): lead.deal_id,
                          _("deal"): lead.name,
-                         _("amount"): done_a - billed,
+                         _("amount"): int(done_a - billed),
                          _("company"): unicode(lead.client.organisation.company),
                          _("client"): unicode(lead.client),
                          })

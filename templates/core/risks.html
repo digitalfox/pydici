@@ -39,13 +39,13 @@
             function array() {
                 var cols = ["{% trans 'subsidiary' %}", "{% trans 'type' %}"];
                 var rows = ["{% trans 'company' %}"];;
-                drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ['{% trans "amount" %}']);
+                drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "amount" %}']);
             }
 
             function graph() {
                 var cols = ["{% trans 'subsidiary' %}",];
                 var rows = ["{% trans 'type' %}",];
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "amount" %}']);
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ['{% trans "amount" %}']);
             }
 
 
