@@ -287,6 +287,8 @@ def financialControl(request, start_date=None, end_date=None):
     return response
 
 
+@pydici_non_public
+@pydici_feature("reports")
 def riskReporting(request):
     """Risk reporting synthesis"""
     data = []
@@ -304,7 +306,7 @@ def riskReporting(request):
 
     # Leads with done works and without significant billing
 
-    for lead in Lead.objects.filter(state="WON", mission__active=True).select_related():
+    for lead in Lead.objects.filter(state="WON", mission__active=True).distinct().select_related():
         done_d, done_a = lead.done_work()
         billed = float(ClientBill.objects.filter(lead=lead).aggregate(amount=Sum("amount"))["amount"] or 0)
         if billed < done_a:
