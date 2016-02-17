@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
 
 from core.decorator import pydici_non_public, pydici_feature
 from leads.models import Lead
@@ -298,9 +299,9 @@ def riskReporting(request):
         data.append({_("type"): _("overdue bills"),
                      _("subsidiary"): unicode(bill.lead.subsidiary),
                      _("deal_id"): bill.lead.deal_id,
-                     _("deal"): bill.lead.name,
+                     _("deal"): u"<a href='%s'>%s</a>" % (reverse("leads.views.detail", args=[bill.lead.id,]), bill.lead.name),
                      _("amount"): int(bill.amount),
-                     _("company"): unicode(bill.lead.client.organisation.company),
+                     _("company"): u"<a href='%s'>%s</a>" % (reverse("company_detail", args=[bill.lead.client.organisation.company.id,]), unicode(bill.lead.client.organisation.company)),
                      _("client"): unicode(bill.lead.client),
                      })
 
@@ -313,9 +314,9 @@ def riskReporting(request):
             data.append({_("type"): _("work without bill"),
                          _("subsidiary"): unicode(lead.subsidiary),
                          _("deal_id"): lead.deal_id,
-                         _("deal"): lead.name,
+                         _("deal"): u"<a href='%s'>%s</a>" % (reverse("leads.views.detail", args=[lead.id,]), lead.name),
                          _("amount"): int(done_a - billed),
-                         _("company"): unicode(lead.client.organisation.company),
+                         _("company"): u"<a href='%s'>%s</a>" % (reverse("company_detail", args=[lead.client.organisation.company.id,]), unicode(lead.client.organisation.company)),
                          _("client"): unicode(lead.client),
                          })
 
