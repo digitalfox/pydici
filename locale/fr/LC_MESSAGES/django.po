@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-16 23:04+0100\n"
+"POT-Creation-Date: 2016-02-17 19:26+0100\n"
 "PO-Revision-Date: 2016-02-16 23:04+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
@@ -136,15 +136,15 @@ msgstr "L'utilisateur %s n'existe pas"
 msgid "Username parameter is missing"
 msgstr "Le paramètre Username est manquant"
 
-#: batch/timesheet_check.py:93
+#: batch/timesheet_check.py:97
 msgid "[pydici] Your timesheet is not correct"
 msgstr "[pydici] Votre pointage n'est pas correct"
 
-#: batch/timesheet_check.py:96
+#: batch/timesheet_check.py:100
 msgid "[pydici] User has no email"
 msgstr "[pydici] L'utilisateur n'a pas de d'adresse de courriel"
 
-#: batch/timesheet_check.py:97
+#: batch/timesheet_check.py:101
 #, python-format
 msgid ""
 "User %s has an incomplete timesheet but cannot be warned because he has no "
@@ -375,16 +375,16 @@ msgstr "Mon staffing"
 msgid "Mail to support"
 msgstr "Courriel au support"
 
-#: core/views.py:296 core/views.py:311 templates/core/risks.html:40
+#: core/views.py:299 core/views.py:314 templates/core/risks.html:40
 #: templates/core/risks.html.py:47
 msgid "type"
 msgstr "type"
 
-#: core/views.py:296
+#: core/views.py:299
 msgid "overdue bills"
 msgstr "factures en retard"
 
-#: core/views.py:297 core/views.py:312 leads/views.py:410
+#: core/views.py:300 core/views.py:315 leads/views.py:410
 #: staffing/models.py:255 templates/core/risks.html:40
 #: templates/core/risks.html.py:46 templates/leads/lead_pivotable.html:31
 #: templates/leads/leads_pivotable.html:53
@@ -392,29 +392,29 @@ msgstr "factures en retard"
 msgid "subsidiary"
 msgstr "filiale"
 
-#: core/views.py:298 core/views.py:313
+#: core/views.py:301 core/views.py:316
 msgid "deal_id"
 msgstr "n° d'affaire"
 
-#: core/views.py:299 core/views.py:314
+#: core/views.py:302 core/views.py:317
 msgid "deal"
 msgstr "affaire"
 
-#: core/views.py:300 core/views.py:315 templates/core/risks.html:42
+#: core/views.py:303 core/views.py:318 templates/core/risks.html:42
 #: templates/core/risks.html.py:48
 msgid "amount"
 msgstr "montant"
 
-#: core/views.py:301 core/views.py:316 crm/models.py:356 crm/models.py:385
+#: core/views.py:304 core/views.py:319 crm/models.py:356 crm/models.py:385
 #: templates/core/risks.html:41 templates/crm/_contact_list.html:10
 msgid "company"
 msgstr "société"
 
-#: core/views.py:302 core/views.py:317
+#: core/views.py:305 core/views.py:320
 msgid "client"
 msgstr "client"
 
-#: core/views.py:311
+#: core/views.py:314
 msgid "work without bill"
 msgstr "Temps passé sans facture"
 
@@ -1881,43 +1881,47 @@ msgstr "Revue des notes de frais refacturables"
 msgid "Expenses history"
 msgstr "Historique des notes de frais"
 
-#: templates/core/_pydici_menu.html:112
+#: templates/core/_pydici_menu.html:111 templates/core/risks.html:10
+msgid "Risks synthesis"
+msgstr "Synthèse des risques"
+
+#: templates/core/_pydici_menu.html:113
 msgid "Extractions"
 msgstr "Extractions"
 
-#: templates/core/_pydici_menu.html:113
+#: templates/core/_pydici_menu.html:114
 msgid "Active leads (csv)"
 msgstr "Affaires en cours (csv)"
 
-#: templates/core/_pydici_menu.html:114
+#: templates/core/_pydici_menu.html:115
 msgid "All leads (csv)"
 msgstr "Toutes les affaires (csv)"
 
-#: templates/core/_pydici_menu.html:115
+#: templates/core/_pydici_menu.html:116
 msgid "Week summary mail (html)"
 msgstr "Courriel de bilan hebdomadaire (html)"
 
-#: templates/core/_pydici_menu.html:116
+#: templates/core/_pydici_menu.html:117
 msgid "Week summary mail (text)"
 msgstr "Courriel de bilan hebdomadaire (texte)"
 
-#: templates/core/_pydici_menu.html:117
+#: templates/core/_pydici_menu.html:118
 msgid "Financial control"
 msgstr "Contrôle de gestion"
 
-#: templates/core/_pydici_menu.html:122
+#: templates/core/_pydici_menu.html:123
 msgid "Help"
 msgstr "Aide"
 
-#: templates/core/_pydici_menu.html:124
+#: templates/core/_pydici_menu.html:125
 msgid "Admin console"
 msgstr "Console d'administration"
 
-#: templates/core/_pydici_menu.html:125
+#: templates/core/_pydici_menu.html:126
 msgid "Help page"
 msgstr "Page d'aide"
 
-#: templates/core/_pydici_menu.html:130 templates/core/_pydici_menu.html:142
+#: templates/core/_pydici_menu.html:131 templates/core/_pydici_menu.html:143
 msgid "search"
 msgstr "chercher"
 
@@ -2012,10 +2016,6 @@ msgstr "Flux ATOM de mes dernières prévisions de staffing"
 msgid "ATOM feed of last archived Mission"
 msgstr "Flux ATOM des dernières missions archivées"
 
-#: templates/core/risks.html:10
-msgid "Risks synthesis"
-msgstr "Synthèse des risques"
-
 #: templates/core/risks.html:13
 msgid "Risks synthesis "
 msgstr "Synthèse des risques "
@@ -2029,10 +2029,9 @@ msgid "Risks per type (graph)"
 msgstr "Risques par type (graphique)"
 
 #: templates/core/risks.html:42 templates/core/risks.html.py:48
-#: templates/leads/lead_pivotable.html:33
-#: templates/leads/lead_pivotable.html:39
-msgid "Sum"
-msgstr "Somme"
+#: templates/leads/leads_pivotable.html:62
+msgid "Integer Sum"
+msgstr "Somme en entiers"
 
 #: templates/core/search.html:17
 #, python-format
@@ -2567,6 +2566,11 @@ msgstr "Mission par date"
 msgid "Mission by consultant"
 msgstr "Mission par consultant"
 
+#: templates/leads/lead_pivotable.html:33
+#: templates/leads/lead_pivotable.html:39
+msgid "Sum"
+msgstr "Somme"
+
 #: templates/leads/leads_pivotable.html:18
 msgid "All"
 msgstr "Tous"
@@ -2582,10 +2586,6 @@ msgstr "Affaires par interval de prix"
 #: templates/leads/leads_pivotable.html:24
 msgid "Sales per client"
 msgstr "Ventes par client"
-
-#: templates/leads/leads_pivotable.html:62
-msgid "Integer Sum"
-msgstr "Somme en entiers"
 
 #: templates/leads/mail.html:8 templates/leads/mail.txt:7
 msgid "Due date: "
