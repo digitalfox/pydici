@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-17 19:26+0100\n"
-"PO-Revision-Date: 2016-02-16 23:04+0100\n"
+"POT-Creation-Date: 2016-02-22 19:12+0100\n"
+"PO-Revision-Date: 2016-02-22 19:12+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -375,16 +375,16 @@ msgstr "Mon staffing"
 msgid "Mail to support"
 msgstr "Courriel au support"
 
-#: core/views.py:299 core/views.py:314 templates/core/risks.html:40
+#: core/views.py:299 core/views.py:313 templates/core/risks.html:40
 #: templates/core/risks.html.py:47
 msgid "type"
 msgstr "type"
 
 #: core/views.py:299
-msgid "overdue bills"
-msgstr "factures en retard"
+msgid "sent bills"
+msgstr "factures envoyées"
 
-#: core/views.py:300 core/views.py:315 leads/views.py:410
+#: core/views.py:300 core/views.py:314 leads/views.py:410
 #: staffing/models.py:255 templates/core/risks.html:40
 #: templates/core/risks.html.py:46 templates/leads/lead_pivotable.html:31
 #: templates/leads/leads_pivotable.html:53
@@ -392,29 +392,29 @@ msgstr "factures en retard"
 msgid "subsidiary"
 msgstr "filiale"
 
-#: core/views.py:301 core/views.py:316
+#: core/views.py:301 core/views.py:315
 msgid "deal_id"
 msgstr "n° d'affaire"
 
-#: core/views.py:302 core/views.py:317
+#: core/views.py:302 core/views.py:316
 msgid "deal"
 msgstr "affaire"
 
-#: core/views.py:303 core/views.py:318 templates/core/risks.html:42
+#: core/views.py:303 core/views.py:317 templates/core/risks.html:42
 #: templates/core/risks.html.py:48
 msgid "amount"
 msgstr "montant"
 
-#: core/views.py:304 core/views.py:319 crm/models.py:356 crm/models.py:385
+#: core/views.py:304 core/views.py:318 crm/models.py:356 crm/models.py:385
 #: templates/core/risks.html:41 templates/crm/_contact_list.html:10
 msgid "company"
 msgstr "société"
 
-#: core/views.py:305 core/views.py:320
+#: core/views.py:305 core/views.py:319
 msgid "client"
 msgstr "client"
 
-#: core/views.py:314
+#: core/views.py:313
 msgid "work without bill"
 msgstr "Temps passé sans facture"
 
@@ -3135,6 +3135,9 @@ msgstr "Équipe %(manager)s"
 #: templates/staffing/pdc_review.html:108
 msgid "Totals"
 msgstr "Totaux"
+
+#~ msgid "overdue bills"
+#~ msgstr "factures en retard"
 
 #~| msgid "Sales per client"
 #~ msgid "Array per client"
