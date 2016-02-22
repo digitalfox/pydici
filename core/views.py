@@ -294,9 +294,9 @@ def riskReporting(request):
     """Risk reporting synthesis"""
     data = []
     today = datetime.datetime.now()
-    # Overdue bills
-    for bill in ClientBill.objects.filter(state="1_SENT").filter(due_date__lte=today).select_related():
-        data.append({_("type"): _("overdue bills"),
+    # Sent bills (still not paid)
+    for bill in ClientBill.objects.filter(state="1_SENT").select_related():
+        data.append({_("type"): _("sent bills"),
                      _("subsidiary"): unicode(bill.lead.subsidiary),
                      _("deal_id"): bill.lead.deal_id,
                      _("deal"): u"<a href='%s'>%s</a>" % (reverse("leads.views.detail", args=[bill.lead.id,]), bill.lead.name),
@@ -305,11 +305,10 @@ def riskReporting(request):
                      _("client"): unicode(bill.lead.client),
                      })
 
-    # Leads with done works and without significant billing
-
+    # Leads with done works beyond sent or paid bills
     for lead in Lead.objects.filter(state="WON", mission__active=True).distinct().select_related():
         done_d, done_a = lead.done_work()
-        billed = float(ClientBill.objects.filter(lead=lead).aggregate(amount=Sum("amount"))["amount"] or 0)
+        billed = float(ClientBill.objects.filter(lead=lead).filter(Q(state="1_PAID") | Q(state="2_PAID")).aggregate(amount=Sum("amount"))["amount"] or 0)
         if billed < done_a:
             data.append({_("type"): _("work without bill"),
                          _("subsidiary"): unicode(lead.subsidiary),
