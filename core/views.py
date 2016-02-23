@@ -308,7 +308,7 @@ def riskReporting(request):
     # Leads with done works beyond sent or paid bills
     for lead in Lead.objects.filter(state="WON", mission__active=True).distinct().select_related():
         done_d, done_a = lead.done_work()
-        billed = float(ClientBill.objects.filter(lead=lead).filter(Q(state="1_PAID") | Q(state="2_PAID")).aggregate(amount=Sum("amount"))["amount"] or 0)
+        billed = float(ClientBill.objects.filter(lead=lead).filter(Q(state="1_SENT") | Q(state="2_PAID")).aggregate(amount=Sum("amount"))["amount"] or 0)
         if billed < done_a:
             data.append({_("type"): _("work without bill"),
                          _("subsidiary"): unicode(lead.subsidiary),
