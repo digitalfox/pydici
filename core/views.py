@@ -293,10 +293,14 @@ def financialControl(request, start_date=None, end_date=None):
 def riskReporting(request):
     """Risk reporting synthesis"""
     data = []
-    today = datetime.datetime.now()
+    today = datetime.date.today()
     # Sent bills (still not paid)
     for bill in ClientBill.objects.filter(state="1_SENT").select_related():
-        data.append({_("type"): _("sent bills"),
+        if bill.due_date < today:
+            data_type = _("overdue bills")
+        else:
+            data_type = _("sent bills")
+        data.append({_("type"): data_type,
                      _("subsidiary"): unicode(bill.lead.subsidiary),
                      _("deal_id"): bill.lead.deal_id,
                      _("deal"): u"<a href='%s'>%s</a>" % (reverse("leads.views.detail", args=[bill.lead.id,]), bill.lead.name),
