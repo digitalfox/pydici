@@ -324,7 +324,7 @@ class LunchTicket(models.Model):
     Days without ticket (ie when lunch is paid by company) are tracked"""
     consultant = models.ForeignKey(Consultant)
     lunch_date = models.DateField(_("Date"))
-    no_ticket = models.BooleanField(_("No lunch ticket"))
+    no_ticket = models.BooleanField(_("No lunch ticket"), default=True)
 
     class Meta:
         unique_together = (("consultant", "lunch_date"),)
