@@ -768,7 +768,7 @@ def mission_csv_timesheet(request, mission, consultants):
                 consultant_timesheets[timesheet.working_date] = timesheet.charge
             for day in days:
                 try:
-                    charge = consultant_timesheets.get(day.date())
+                    charge = consultant_timesheets.get(day)
                     if charge:
                         row.append(formats.number_format(charge))
                         total += charge

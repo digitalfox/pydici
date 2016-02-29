@@ -158,9 +158,9 @@ def previousMonth(month):
 
 def daysOfMonth(month, week=None):
     """List of days of a month
-    @param month: datetime object of any day in the month
+    @param month: date object of any day in the month
     @param week:week number of week to consider (1 is first etc.). All is none
-    @return: list of days (datetime object) for given month"""
+    @return: list of days (date object) for given month"""
     days = []
     day = timedelta(1)
     month = month.replace(day=1)
