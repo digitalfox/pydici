@@ -23,7 +23,7 @@ class MissionAdmin(ReturnToAppAdmin):
 
     actions = None
 
-    fields = ('lead',)
+    fields = ("lead", "description", "nature", "probability", "deal_id", "subsidiary", "active")
 
     form = MissionAdminForm
 
