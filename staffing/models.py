@@ -204,9 +204,9 @@ class Mission(models.Model):
                         result[consultant] += n_days * (consultant_rates[consultant][0] - consultant_rates[consultant][1])
                 else:
                     # Compute objective margin on rate objective for this period
-                    objectiveRate = consultant.getRateObjective(workingDate=month)
+                    objectiveRate = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE")
                     if objectiveRate:
-                        result[consultant] += n_days * (consultant_rates[consultant][0] - objectiveRate.daily_rate)
+                        result[consultant] += n_days * (consultant_rates[consultant][0] - objectiveRate.rate)
         return result
 
     def actions(self):

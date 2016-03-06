@@ -124,7 +124,7 @@
 	            <td><a href="{% url 'people.views.consultant_home' consultant.id %}", title='{{ consultant }}'>{{ consultant }}</a></td>
 	            <td align="right"><div id="sold-{{ mission.id }}-{{ consultant.id }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
 	            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>{% endif %}</td>
-                <td align="right">{{ consultant.getRateObjective.daily_rate }}</td>
+                <td align="right">{{ consultant.getRateObjective.rate }}</td>
 	        </tr>
 	    {% endfor %}
 	    </table>

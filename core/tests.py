@@ -279,8 +279,8 @@ class StaffingViewsTest(TestCase):
         Timesheet(mission=mission, working_date=current_month, consultant=c1, charge=11).save()
         Timesheet(mission=mission, working_date=current_month, consultant=c2, charge=9).save()
         # Define objective rates for consultants
-        RateObjective(consultant=c1, start_date=previous_month, daily_rate=700).save()
-        RateObjective(consultant=c2, start_date=previous_month, daily_rate=1050).save()
+        RateObjective(consultant=c1, start_date=previous_month, rate=700, rate_type="DAILY_RATE").save()
+        RateObjective(consultant=c2, start_date=previous_month, rate=1050, rate_type="DAILY_RATE").save()
         # Add financial conditions for this mission
         FinancialCondition(consultant=c1, mission=mission, daily_rate=800).save()
         FinancialCondition(consultant=c2, mission=mission, daily_rate=1100).save()

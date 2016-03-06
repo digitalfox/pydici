@@ -217,9 +217,9 @@ def financialControl(request, start_date=None, end_date=None):
         for consultant in mission.consultants().select_related().prefetch_related("staffing_manager"):
             consultantRow = missionRow[:]  # copy
             daily_rate, bought_daily_rate = financialConditions.get("%s-%s" % (mission.id, consultant.id), [0, 0])
-            rateObjective = consultant.getRateObjective(end_date)
+            rateObjective = consultant.getRateObjective(end_date, rate_type="DAILY_RATE")
             if rateObjective:
-                rateObjective = rateObjective.daily_rate
+                rateObjective = rateObjective.rate
             else:
                 rateObjective = 0
             doneDays = timesheets.filter(mission_id=mission.id, consultant=consultant.id).aggregate(charge=Sum("charge"), min_date=Min("working_date"), max_date=Max("working_date"))

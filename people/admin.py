@@ -42,8 +42,8 @@ class ConsultantProfileAdmin(ReturnToAppAdmin):
 
 class RateObjectiveAdmin(ReturnToAppAdmin):
     ordering = ("start_date",)
-    list_display = ("start_date", "consultant", "daily_rate")
-    list_filter = ("consultant",)
+    list_display = ("start_date", "consultant", "rate", "rate_type")
+    list_filter = ("rate_type", "consultant",)
     date_hierarchy = "start_date"
     actions = None
 

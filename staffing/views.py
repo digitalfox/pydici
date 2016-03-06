@@ -1274,7 +1274,7 @@ def graph_consultant_rates_jqp(request, consultant_id):
             isoRateDates.append(refDate.isoformat())
         objectiveRate = consultant.getRateObjective(refDate)
         if objectiveRate:
-            objectiveRates.append(objectiveRate.daily_rate)
+            objectiveRates.append(objectiveRate.rate)
         else:
             objectiveRates.append(None)
 

@@ -7,6 +7,7 @@ Database access layer for pydici people module
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
 from django.db.models import F, Sum
 from django.apps import apps
 from django.contrib.auth.models import User
@@ -106,10 +107,14 @@ class Consultant(models.Model):
         fc = fc.order_by("daily_rate")
         return fc
 
-    def getRateObjective(self, workingDate=None):
+    def getRateObjective(self, workingDate=None, rate_type="DAILY_RATE"):
+        """Get the consultant rate objective for given date. rate_type can be DAILY_RATE (default) or PROD_RATE"""
+        rate_types = dict(RateObjective.RATE_TYPE).keys()
+        if rate_type not in rate_types:
+            raise ValueError("rate_type must be one of %s" % ", ".join(rate_types))
         if not workingDate:
             workingDate = date.today()
-        rates = self.rateobjective_set.filter(start_date__lte=workingDate).order_by("-start_date")
+        rates = self.rateobjective_set.filter(start_date__lte=workingDate, rate_type=rate_type).order_by("-start_date")
         if rates:
             return rates[0]
 
@@ -209,10 +214,15 @@ class Consultant(models.Model):
 
 
 class RateObjective(models.Model):
-    """Consultant rate objective"""
+    """Consultant rates objective
+    DAILY_RATE is the rate in € for each sold days
+    PROD_RATE is the rate in % (int 0..100) on production days over all but holidays available days"""
+    RATE_TYPE= (("DAILY_RATE", ugettext("daily rate")),
+                ("PROD_RATE", ugettext("production rate")))
     consultant = models.ForeignKey(Consultant)
     start_date = models.DateField(_("Starting"))
-    daily_rate = models.IntegerField(_("Daily rate"))
+    rate = models.IntegerField(_("Rate"), null=True)
+    rate_type = models.CharField(_("Rate type"), max_length=30, choices=RATE_TYPE)
 
 
 class SalesMan(models.Model):
