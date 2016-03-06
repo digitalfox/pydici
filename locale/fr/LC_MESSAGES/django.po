@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-04 11:35+0100\n"
-"PO-Revision-Date: 2016-02-22 19:12+0100\n"
+"POT-Creation-Date: 2016-03-06 20:50+0100\n"
+"PO-Revision-Date: 2016-03-06 20:50+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -52,8 +52,8 @@ msgstr "Quand un consultant est créé"
 
 #: actionset/models.py:27 actionset/models.py:48 crm/models.py:25
 #: crm/models.py:82 crm/models.py:374 expense/models.py:44 leads/models.py:57
-#: leads/tables.py:19 leads/views.py:209 people/models.py:26
-#: people/models.py:220 staffing/tables.py:26
+#: leads/tables.py:19 leads/views.py:209 people/models.py:27
+#: people/models.py:230 staffing/tables.py:26
 #: templates/crm/clientcompany_detail.html:141
 #: templates/people/consultant.html:47
 #: templates/staffing/mission_contacts.html:12
@@ -72,8 +72,8 @@ msgstr "Description"
 msgid "Trigger"
 msgstr "Déclencheur"
 
-#: actionset/models.py:30 crm/models.py:254 people/models.py:43
-#: people/models.py:223 staffing/models.py:46
+#: actionset/models.py:30 crm/models.py:254 people/models.py:44
+#: people/models.py:233 staffing/models.py:46
 msgid "Active"
 msgstr "Active"
 
@@ -446,8 +446,8 @@ msgstr "Points de contact"
 msgid "Code"
 msgstr "Code"
 
-#: crm/models.py:39 leads/models.py:79 people/models.py:41
-#: people/models.py:222 staffing/models.py:52
+#: crm/models.py:39 leads/models.py:79 people/models.py:42
+#: people/models.py:232 staffing/models.py:52
 #: templates/leads/lead_detail.html:100 templates/staffing/mission.html:81
 msgid "Subsidiary"
 msgstr "Filiale"
@@ -476,7 +476,7 @@ msgstr "Client"
 msgid "Client organisation"
 msgstr "Département"
 
-#: crm/models.py:84 people/models.py:225
+#: crm/models.py:84 people/models.py:235
 #: templates/crm/clientcompany_detail.html:145
 #: templates/staffing/mission_contacts.html:16
 msgid "Phone"
@@ -670,7 +670,7 @@ msgstr "Payé avec la carte société"
 msgid "Expense"
 msgstr "Note de frais"
 
-#: expense/tables.py:22 expense/tables.py:74 people/models.py:208
+#: expense/tables.py:22 expense/tables.py:74 people/models.py:213
 #: staffing/forms.py:112 staffing/views.py:913
 #: templates/staffing/mission.html:117
 #: templates/staffing/mission_staffing.html:9
@@ -777,7 +777,7 @@ msgid "Responsible"
 msgstr "Responsable"
 
 #: leads/forms.py:46 leads/models.py:61 leads/views.py:210
-#: people/models.py:237 templates/core/index.html:15
+#: people/models.py:247 templates/core/index.html:15
 #: templates/core/index.html.py:40 templates/core/index.html:64
 #: templates/core/index.html.py:88 templates/leads/lead_detail.html:107
 msgid "Salesman"
@@ -898,7 +898,7 @@ msgstr "Montant (k€)"
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:67 leads/views.py:210 people/models.py:214
+#: leads/models.py:67 leads/views.py:210 people/models.py:223
 msgid "Starting"
 msgstr "Démarrage"
 
@@ -1042,33 +1042,44 @@ msgid "Subcontractor company can only be defined for subcontractors"
 msgstr ""
 "La société sous-traitante ne doit être définie que pour les sous-traitants"
 
-#: people/models.py:27
+#: people/models.py:28
 msgid "Level"
 msgstr "Niveau"
 
-#: people/models.py:34
+#: people/models.py:35
 msgid "Consultant profile"
 msgstr "Profile du consultant"
 
-#: people/models.py:42 staffing/models.py:29
+#: people/models.py:43 staffing/models.py:29
 msgid "Productive"
 msgstr "Productif"
 
-#: people/models.py:46
+#: people/models.py:47
 msgid "Profil"
 msgstr "Profile"
 
-#: people/models.py:47
+#: people/models.py:48
 msgid "Subcontractor"
 msgstr "Sous-traitant"
 
-#: people/models.py:215 staffing/models.py:338 staffing/views.py:913
-#: templates/staffing/graph_consultant_rate.html:102
-#: templates/staffing/graph_consultant_rate_jqp.html:71
-msgid "Daily rate"
-msgstr "Taux journalier"
+#: people/models.py:220 templates/people/consultant_detail.html:128
+#: templates/people/consultant_detail.html:134
+msgid "daily rate"
+msgstr "taux journalier"
 
-#: people/models.py:238
+#: people/models.py:221
+msgid "production rate"
+msgstr "taux de production"
+
+#: people/models.py:224
+msgid "Rate"
+msgstr "Taux"
+
+#: people/models.py:225
+msgid "Rate type"
+msgstr "Type de taux"
+
+#: people/models.py:248
 msgid "Salesmen"
 msgstr "Commerciaux"
 
@@ -1306,6 +1317,12 @@ msgstr "Pas de ticket restaurant"
 #: staffing/models.py:331
 msgid "Lunch ticket"
 msgstr "Ticket restaurant"
+
+#: staffing/models.py:338 staffing/views.py:913
+#: templates/staffing/graph_consultant_rate.html:102
+#: templates/staffing/graph_consultant_rate_jqp.html:71
+msgid "Daily rate"
+msgstr "Taux journalier"
 
 #: staffing/models.py:339 staffing/views.py:913
 msgid "Bought daily rate"
@@ -2468,7 +2485,7 @@ msgstr ""
 "Une mission est créée une fois que la proposition commerciale est envoyée."
 
 #: templates/leads/lead_detail.html:205
-#: templates/people/consultant_detail.html:107
+#: templates/people/consultant_detail.html:177
 #: templates/people/subcontractor_detail.html:16
 #: templates/staffing/mission.html:193
 msgid "Pending actions"
@@ -2678,70 +2695,103 @@ msgstr "Croissance"
 msgid "Decrease"
 msgstr "Décroissance"
 
-#: templates/people/consultant_detail.html:39
+#: templates/people/consultant_detail.html:25
+msgid "prod rate (&#37;)"
+msgstr "taux de prod. (&#37;)"
+
+#: templates/people/consultant_detail.html:29
+#: templates/people/consultant_detail.html:144
+msgid "daily rate (€)"
+msgstr "taux journalier (€)"
+
+#: templates/people/consultant_detail.html:47
 msgctxt "days"
 msgid "done"
 msgstr "réalisés"
 
-#: templates/people/consultant_detail.html:40
+#: templates/people/consultant_detail.html:48
 msgctxt "days"
 msgid "late"
 msgstr "en retard"
 
-#: templates/people/consultant_detail.html:41
+#: templates/people/consultant_detail.html:49
 msgctxt "days"
 msgid "to be done"
 msgstr "à faire"
 
-#: templates/people/consultant_detail.html:51
+#: templates/people/consultant_detail.html:59
 msgctxt "short"
 msgid "Timesheet"
 msgstr "Suivi temps"
 
-#: templates/people/consultant_detail.html:64
+#: templates/people/consultant_detail.html:72
 msgid "forecasted"
 msgstr "prévus"
 
-#: templates/people/consultant_detail.html:65
+#: templates/people/consultant_detail.html:73
 msgid "overhead"
 msgstr "excès"
 
-#: templates/people/consultant_detail.html:66
+#: templates/people/consultant_detail.html:74
 msgid "missing"
 msgstr "manquants"
 
-#: templates/people/consultant_detail.html:76
+#: templates/people/consultant_detail.html:84
 msgid "Forecast"
 msgstr "Prévisions"
 
-#: templates/people/consultant_detail.html:93
+#: templates/people/consultant_detail.html:96
+#: templates/people/consultant_detail.html:102
+msgid "prod. rate"
+msgstr "taux de prod."
+
+#: templates/people/consultant_detail.html:97
+#: templates/people/consultant_detail.html:102
+#: templates/people/consultant_detail.html:129
+#: templates/people/consultant_detail.html:134
+msgid "below obj."
+msgstr "sous l'obj."
+
+#: templates/people/consultant_detail.html:98
+#: templates/people/consultant_detail.html:102
+#: templates/people/consultant_detail.html:130
+#: templates/people/consultant_detail.html:134
+msgid "beyond obj."
+msgstr "au delà de l'obj."
+
+#: templates/people/consultant_detail.html:119
+#, python-format
+msgid "prod rate (%%)"
+msgstr "taux de prod. (%%)"
+
+#: templates/people/consultant_detail.html:163
 msgid "Manager: "
 msgstr "Manager : "
 
-#: templates/people/consultant_detail.html:95
+#: templates/people/consultant_detail.html:165
 msgid "Staff"
 msgstr "Équipe"
 
-#: templates/people/consultant_detail.html:118
+#: templates/people/consultant_detail.html:188
 msgid "Business territory"
 msgstr "Territoire commercial"
 
-#: templates/people/consultant_detail.html:143
+#: templates/people/consultant_detail.html:213
 #: templates/people/subcontractor_detail.html:23
 #: templates/staffing/pdc_review.html:78
 msgid "Clients"
 msgstr "Clients"
 
-#: templates/people/consultant_detail.html:166
+#: templates/people/consultant_detail.html:236
 #: templates/people/subcontractor_detail.html:32
 msgid "Current missions"
 msgstr "Missions actuelles"
 
-#: templates/people/consultant_detail.html:178
+#: templates/people/consultant_detail.html:248
 msgid "Current leads as responsible"
 msgstr "Affaires en tant que responsable"
 
-#: templates/people/consultant_detail.html:192
+#: templates/people/consultant_detail.html:262
 #: templates/people/subcontractor_detail.html:42
 msgid "Current leads as resource"
 msgstr "Affaires en tant que ressource"
@@ -3447,9 +3497,6 @@ msgstr "Totaux"
 
 #~ msgid "month"
 #~ msgstr "Mois"
-
-#~ msgid "Prod. rate"
-#~ msgstr "Taux de prod."
 
 #~ msgid "Missions administration"
 #~ msgstr "Administration des missions"
