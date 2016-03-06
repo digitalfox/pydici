@@ -12,9 +12,9 @@ from django.http import Http404
 
 from people.models import Consultant
 from crm.models import Company
-from staffing.models import Holiday
+from staffing.models import Holiday, Timesheet
 from core.decorator import pydici_non_public
-from core.utils import working_days, previousMonth
+from core.utils import working_days, previousMonth, nextMonth
 
 
 def consultant_home(request, consultant_id):
@@ -34,19 +34,21 @@ def consultant_detail(request, consultant_id):
         consultant = Consultant.objects.get(id=consultant_id)
         staff = consultant.team(onlyActive=True)
         month = date.today().replace(day=1)
-        # Compute user current mission based on forecast
+        # Compute consultant current mission based on forecast
         missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
+        # Consultant clients and missions
         companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
         business_territory = Company.objects.filter(businessOwner=consultant)
         leads_as_responsible = set(consultant.lead_responsible.active())
         leads_as_staffee = consultant.lead_set.active()
-        first_day = date.today().replace(day=1)
+        # Timesheet donut data
         holidays = [h.day for h in Holiday.objects.all()]
-        month_days = working_days(first_day, holidays, upToToday=False)
+        month_days = working_days(month, holidays, upToToday=False)
         done_days = consultant.done_days()
-        late = working_days(first_day, holidays, upToToday=True) - done_days
+        late = working_days(month, holidays, upToToday=True) - done_days
         if late < 0:
             late = 0  # Don't warn user if timesheet is ok !
+        # Forecast donut data
         forecasted = consultant.forecasted_days()
         to_be_done = month_days - late - done_days
         forecasting_balance = month_days - forecasted
@@ -56,6 +58,7 @@ def consultant_detail(request, consultant_id):
         else:
             overhead = 0
             missing = forecasting_balance
+        # Turnover
         monthTurnover = consultant.getTurnover(month)
         lastMonthTurnover = None
         day = date.today().day
@@ -70,6 +73,38 @@ def consultant_detail(request, consultant_id):
             turnoverVariation = 100 * (monthTurnover - lastMonthTurnover) / lastMonthTurnover
         else:
             turnoverVariation = 100
+        # Daily rate
+        fc = consultant.getFinancialConditions(month, nextMonth(month))
+        if fc:
+            daily_rate = int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc]))
+        else:
+            daily_rate = 0
+        daily_rate_objective = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE")
+        if daily_rate_objective:
+            daily_rate_objective = daily_rate_objective.rate
+        else:
+            daily_rate_objective = daily_rate
+        if daily_rate > daily_rate_objective:
+            daily_overhead = daily_rate - daily_rate_objective
+            daily_missing = 0
+            daily_rate -= daily_overhead
+        else:
+            daily_overhead = 0
+            daily_missing = daily_rate_objective - daily_rate
+        # Production rate
+        prod_rate = round(100 * consultant.getProductionRate(month, nextMonth(month)), 1)
+        prod_rate_objective = consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE")
+        if prod_rate_objective:
+            prod_rate_objective = prod_rate_objective.rate
+        else:
+            prod_rate_objective = prod_rate
+        if prod_rate > prod_rate_objective:
+            prod_overhead = prod_rate - prod_rate_objective
+            prod_missing = 0
+            prod_rate -= prod_overhead
+        else:
+            prod_overhead = 0
+            prod_missing = prod_rate_objective - prod_rate
     except Consultant.DoesNotExist:
         raise Http404
     return render(request, "people/consultant_detail.html",
@@ -86,6 +121,12 @@ def consultant_detail(request, consultant_id):
                    "forecasted": forecasted,
                    "missing": missing,
                    "overhead": overhead,
+                   "prod_rate": prod_rate,
+                   "prod_overhead": prod_overhead,
+                   "prod_missing": prod_missing,
+                   "daily_rate": daily_rate,
+                   "daily_overhead": daily_overhead,
+                   "daily_missing": daily_missing,
                    "month_days": month_days,
                    "forecasting_balance": forecasting_balance,
                    "month_turnover": monthTurnover,
