@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-06 20:50+0100\n"
-"PO-Revision-Date: 2016-03-06 20:50+0100\n"
+"POT-Creation-Date: 2016-03-08 00:00+0100\n"
+"PO-Revision-Date: 2016-03-08 00:00+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -1062,8 +1062,8 @@ msgstr "Profile"
 msgid "Subcontractor"
 msgstr "Sous-traitant"
 
-#: people/models.py:220 templates/people/consultant_detail.html:128
-#: templates/people/consultant_detail.html:134
+#: people/models.py:220 templates/people/consultant_detail.html:127
+#: templates/people/consultant_detail.html:133
 msgid "daily rate"
 msgstr "taux journalier"
 
@@ -1319,8 +1319,6 @@ msgid "Lunch ticket"
 msgstr "Ticket restaurant"
 
 #: staffing/models.py:338 staffing/views.py:913
-#: templates/staffing/graph_consultant_rate.html:102
-#: templates/staffing/graph_consultant_rate_jqp.html:71
 msgid "Daily rate"
 msgstr "Taux journalier"
 
@@ -2485,7 +2483,7 @@ msgstr ""
 "Une mission est créée une fois que la proposition commerciale est envoyée."
 
 #: templates/leads/lead_detail.html:205
-#: templates/people/consultant_detail.html:177
+#: templates/people/consultant_detail.html:176
 #: templates/people/subcontractor_detail.html:16
 #: templates/staffing/mission.html:193
 msgid "Pending actions"
@@ -2674,124 +2672,128 @@ msgstr "Probabilité"
 msgid "Change %(mission)s"
 msgstr "Modifier %(mission)s"
 
-#: templates/people/consultant_detail.html:9
+#: templates/people/consultant_detail.html:8
 #: templates/people/subcontractor_detail.html:4
 msgid "This consultant does not work anymore for the company"
 msgstr "Ce consultant ne travaille plus pour la société"
 
-#: templates/people/consultant_detail.html:16
+#: templates/people/consultant_detail.html:15
 msgid "This month"
 msgstr "Ce mois ci"
 
-#: templates/people/consultant_detail.html:19
+#: templates/people/consultant_detail.html:18
 msgid "My turnover this month: "
 msgstr "Mon chiffre d'affaire du mois : "
 
-#: templates/people/consultant_detail.html:20
+#: templates/people/consultant_detail.html:19
 msgid "Increase"
 msgstr "Croissance"
 
-#: templates/people/consultant_detail.html:21
+#: templates/people/consultant_detail.html:20
 msgid "Decrease"
 msgstr "Décroissance"
 
-#: templates/people/consultant_detail.html:25
+#: templates/people/consultant_detail.html:24
 msgid "prod rate (&#37;)"
 msgstr "taux de prod. (&#37;)"
 
-#: templates/people/consultant_detail.html:29
-#: templates/people/consultant_detail.html:144
+#: templates/people/consultant_detail.html:28
+#: templates/people/consultant_detail.html:143
+#: templates/staffing/graph_consultant_rate.html:25
+#: templates/staffing/graph_consultant_rate.html:61
 msgid "daily rate (€)"
 msgstr "taux journalier (€)"
 
-#: templates/people/consultant_detail.html:47
+#: templates/people/consultant_detail.html:46
 msgctxt "days"
 msgid "done"
 msgstr "réalisés"
 
-#: templates/people/consultant_detail.html:48
+#: templates/people/consultant_detail.html:47
 msgctxt "days"
 msgid "late"
 msgstr "en retard"
 
-#: templates/people/consultant_detail.html:49
+#: templates/people/consultant_detail.html:48
 msgctxt "days"
 msgid "to be done"
 msgstr "à faire"
 
-#: templates/people/consultant_detail.html:59
+#: templates/people/consultant_detail.html:58
 msgctxt "short"
 msgid "Timesheet"
 msgstr "Suivi temps"
 
-#: templates/people/consultant_detail.html:72
+#: templates/people/consultant_detail.html:71
 msgid "forecasted"
 msgstr "prévus"
 
-#: templates/people/consultant_detail.html:73
+#: templates/people/consultant_detail.html:72
 msgid "overhead"
 msgstr "excès"
 
-#: templates/people/consultant_detail.html:74
+#: templates/people/consultant_detail.html:73
 msgid "missing"
 msgstr "manquants"
 
-#: templates/people/consultant_detail.html:84
+#: templates/people/consultant_detail.html:83
 msgid "Forecast"
 msgstr "Prévisions"
 
-#: templates/people/consultant_detail.html:96
-#: templates/people/consultant_detail.html:102
+#: templates/people/consultant_detail.html:95
+#: templates/people/consultant_detail.html:101
 msgid "prod. rate"
 msgstr "taux de prod."
 
-#: templates/people/consultant_detail.html:97
-#: templates/people/consultant_detail.html:102
-#: templates/people/consultant_detail.html:129
-#: templates/people/consultant_detail.html:134
+#: templates/people/consultant_detail.html:96
+#: templates/people/consultant_detail.html:101
+#: templates/people/consultant_detail.html:128
+#: templates/people/consultant_detail.html:133
 msgid "below obj."
 msgstr "sous l'obj."
 
-#: templates/people/consultant_detail.html:98
-#: templates/people/consultant_detail.html:102
-#: templates/people/consultant_detail.html:130
-#: templates/people/consultant_detail.html:134
+#: templates/people/consultant_detail.html:97
+#: templates/people/consultant_detail.html:101
+#: templates/people/consultant_detail.html:129
+#: templates/people/consultant_detail.html:133
 msgid "beyond obj."
 msgstr "au delà de l'obj."
 
-#: templates/people/consultant_detail.html:119
+#: templates/people/consultant_detail.html:118
+#: templates/staffing/graph_consultant_rate.html:26
+#: templates/staffing/graph_consultant_rate.html:68
 #, python-format
 msgid "prod rate (%%)"
 msgstr "taux de prod. (%%)"
 
-#: templates/people/consultant_detail.html:163
+#: templates/people/consultant_detail.html:162
 msgid "Manager: "
 msgstr "Manager : "
 
-#: templates/people/consultant_detail.html:165
+#: templates/people/consultant_detail.html:164
 msgid "Staff"
 msgstr "Équipe"
 
-#: templates/people/consultant_detail.html:188
+#: templates/people/consultant_detail.html:187
 msgid "Business territory"
 msgstr "Territoire commercial"
 
-#: templates/people/consultant_detail.html:213
+#: templates/people/consultant_detail.html:212
 #: templates/people/subcontractor_detail.html:23
 #: templates/staffing/pdc_review.html:78
 msgid "Clients"
 msgstr "Clients"
 
-#: templates/people/consultant_detail.html:236
+#: templates/people/consultant_detail.html:235
 #: templates/people/subcontractor_detail.html:32
 msgid "Current missions"
 msgstr "Missions actuelles"
 
-#: templates/people/consultant_detail.html:248
+#: templates/people/consultant_detail.html:247
 msgid "Current leads as responsible"
 msgstr "Affaires en tant que responsable"
 
-#: templates/people/consultant_detail.html:262
+#: templates/people/consultant_detail.html:261
 #: templates/people/subcontractor_detail.html:42
 msgid "Current leads as resource"
 msgstr "Affaires en tant que ressource"
@@ -2937,34 +2939,15 @@ msgstr "Modifier le staffing de ce consultant"
 msgid "Change this mission staffing"
 msgstr "Modifier le staffing de cette mission"
 
-#: templates/staffing/graph_consultant_rate.html:52
-#: templates/staffing/graph_consultant_rate_jqp.html:21
-#: templates/staffing/mission_timesheet.html:54
-msgid "Average daily rate (€)"
-msgstr "Taux journalier moyen (€)"
+#: templates/staffing/graph_consultant_rate.html:27
+msgid "daily rate objective (€)"
+msgstr "objectif de taux journalier (€)"
 
-#: templates/staffing/graph_consultant_rate.html:57
-#: templates/staffing/graph_consultant_rate_jqp.html:26
-msgid "Daily rate objective (€)"
-msgstr "Objectif de taux journalier (€)"
+#: templates/staffing/graph_consultant_rate.html:28
+#, python-format
+msgid "prod rate objective (%%)"
+msgstr "objectif de taux de production (%%)"
 
-#: templates/staffing/graph_consultant_rate.html:63
-#: templates/staffing/graph_consultant_rate_jqp.html:32
-msgid "Min daily rate (€)"
-msgstr "Taux journalier mini (€)"
-
-#: templates/staffing/graph_consultant_rate.html:71
-#: templates/staffing/graph_consultant_rate_jqp.html:40
-msgid "Max daily rate (€)"
-msgstr "Taux journalier maxi (€)"
-
-#: templates/staffing/graph_consultant_rate.html:79
-#: templates/staffing/graph_consultant_rate_jqp.html:48
-msgid "Production rate (&#37;)"
-msgstr "Taux de production (&#37;)"
-
-#: templates/staffing/graph_consultant_rate.html:110
-#: templates/staffing/graph_consultant_rate_jqp.html:79
 #: templates/staffing/graph_timesheet_rates_bar_jqp.html:29
 msgid "Production rate"
 msgstr "Taux de production"
@@ -3070,6 +3053,10 @@ msgstr "Jours"
 #: templates/staffing/mission_timesheet.html:44
 msgid "Total (k€)"
 msgstr "Total (k€)"
+
+#: templates/staffing/mission_timesheet.html:54
+msgid "Average daily rate (€)"
+msgstr "Taux journalier moyen (€)"
 
 #: templates/staffing/mission_timesheet.html:84
 msgid "(maximum)"
@@ -3189,6 +3176,18 @@ msgstr "Équipe %(manager)s"
 #: templates/staffing/pdc_review.html:108
 msgid "Totals"
 msgstr "Totaux"
+
+#~ msgid "Daily rate objective (€)"
+#~ msgstr "Objectif de taux journalier (€)"
+
+#~ msgid "Min daily rate (€)"
+#~ msgstr "Taux journalier mini (€)"
+
+#~ msgid "Max daily rate (€)"
+#~ msgstr "Taux journalier maxi (€)"
+
+#~ msgid "Production rate (&#37;)"
+#~ msgstr "Taux de production (&#37;)"
 
 #~| msgid "Sales per client"
 #~ msgid "Array per client"
