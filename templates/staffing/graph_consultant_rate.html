@@ -1,0 +1,74 @@
+{# Fragment that display leads stat/bar graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_c3.html to load according js/css #} {% load i18n %}
+
+<div id="consultant_rate_graph"></div>
+
+
+<script type="text/javascript">
+    var chart = c3.generate({
+    bindto: '#consultant_rate_graph',
+    data: {
+         xs: {
+            'y_daily_rate': 'x_daily_rate',
+            'y_prod_rate': 'x_prod_rate',
+            'y_daily_rate_obj': 'x_daily_rate',
+            'y_prod_rate_obj': 'x_prod_rate',
+         },
+         columns: {{ graph_data | safe }},
+         axes: {
+            y_daily_rate: 'y',
+            y_prod_rate: 'y2',
+            y_daily_rate_obj: 'y',
+            y_prod_rate_obj: 'y2',
+         },
+         names: {
+            y_daily_rate: '{% trans "daily rate (€)" %}',
+            y_prod_rate: '{% trans "prod rate (%)" %}',
+            y_daily_rate_obj: '{% trans "daily rate objective (€)" %}',
+            y_prod_rate_obj: '{% trans "prod rate objective (%)" %}',
+         },
+         types : {
+            'y_daily_rate': 'spline',
+            'y_prod_rate': 'spline',
+            'y_daily_rate_obj': 'line',
+            'y_prod_rate_obj': 'line',
+         },
+         regions: {
+            'y_daily_rate_obj': [ {
+                'style': 'dashed',
+            } ],
+            'y_prod_rate_obj': [ {
+                'style': 'dashed',
+            } ],
+        },
+    },
+    color: {
+        pattern: ['#1f77b4', '#ff7f0e',]
+    },
+    point: {
+        show: false
+    },
+    axis: {
+        x: {
+            type: 'timeseries',
+            tick: {
+                format: '%Y-%m',
+                rotate: 45,
+            },
+        },
+        y: {
+            label : {
+                text: '{% trans "daily rate (€)" %}',
+                position: 'outer-middle',
+            },
+        },
+        y2: {
+            show: true,
+            label: {
+                text: '{% trans "prod rate (%)" %}',
+                position: 'outer-middle',
+            },
+        }
+    },
+  });
+</script>

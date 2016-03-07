@@ -35,5 +35,5 @@ staffing_urls = patterns('staffing.views',
                          (r'^pdc-detail/(?P<consultant_id>\d+)/(?P<staffing_date>\d+)/?$', 'pdc_detail'),
                          (r'^graph/timesheet-rates/?$', 'graph_timesheet_rates_bar_jqp'),
                          (r'^graph/profile-rates/?$', 'graph_profile_rates_jqp'),
-                         (r'^graph/rates/consultant/(?P<consultant_id>\d+)', 'graph_consultant_rates_jqp'),
+                         (r'^graph/rates/consultant/(?P<consultant_id>\d+)', 'graph_consultant_rates'),
                          )

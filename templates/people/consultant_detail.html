@@ -1,7 +1,6 @@
 {% load i18n %}
 
 {% block extrajs %}
-    {% include "core/_jqplot.html" %}
     {% include "core/_c3.html" %}
 {% endblock %}
 
@@ -272,9 +271,11 @@ $(document).ready(function() {
 </div>
 
 <div class="row">
-    <div id="consultant_rate_graph_jqp_content" class="col-lg-12"></div>
+    <div id="consultant_rate_graph_content" class="col-lg-12"></div>
     <script type="text/javascript">
-    $('#consultant_rate_graph_jqp_content').load("{% url 'staffing.views.graph_consultant_rates_jqp' consultant.id %}")
+    $(document).ready(function() {
+        $('#consultant_rate_graph_content').load("{% url 'staffing.views.graph_consultant_rates' consultant.id %}")
+     });
     </script>
 </div>
 

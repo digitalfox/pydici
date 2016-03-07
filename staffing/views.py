@@ -1243,13 +1243,12 @@ def graph_profile_rates_jqp(request):
 
 @pydici_non_public
 @cache_page(60 * 10)
-def graph_consultant_rates_jqp(request, consultant_id):
+def graph_consultant_rates(request, consultant_id):
     """Nice graph of consultant rates"""
     dailyRateData = []  # Consultant daily rate data
+    dailyRateObj = []  # daily rate objective for month
     prodRateData = []  # Consultant production rate data
-    minYData = []  # Min rate for month
-    maxYData = []  # Max rate for month
-    objectiveRates = []  # Rate objective for month
+    prodRateObj = []  # production rate objective for month
     isoRateDates = []  # List of date in iso format for daily rates data
     isoProdDates = []  # List of date in iso format for production rates data
     graph_data = []  # Data that will be returned to jqplot
@@ -1264,33 +1263,33 @@ def graph_consultant_rates_jqp(request, consultant_id):
         next_month = nextMonth(refDate)
         prodRate = consultant.getProductionRate(refDate, next_month)
         if prodRate:
-            prodRateData.append(100 * prodRate)
+            prodRateData.append(round(100 * prodRate, 1))
             isoProdDates.append(refDate.isoformat())
         fc = consultant.getFinancialConditions(refDate, next_month)
         if fc:
             dailyRateData.append(int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc])))
-            minYData.append(int(min([rate for rate, days in fc])))
-            maxYData.append(int(max([rate for rate, days in fc])))
             isoRateDates.append(refDate.isoformat())
-        objectiveRate = consultant.getRateObjective(refDate)
-        if objectiveRate:
-            objectiveRates.append(objectiveRate.rate)
+        rate = consultant.getRateObjective(refDate, rate_type="DAILY_RATE")
+        if rate:
+            dailyRateObj.append(rate.rate)
         else:
-            objectiveRates.append(None)
+            dailyRateObj.append(None)
+        rate = consultant.getRateObjective(refDate, rate_type="PROD_RATE")
+        if rate:
+            prodRateObj.append(rate.rate)
+        else:
+            prodRateObj.append(None)
 
-    # Add data to graph
-    graph_data.append(zip(isoRateDates, dailyRateData))
-    graph_data.append(zip([d.isoformat() for d in kdates], objectiveRates))
-    graph_data.append(zip(isoRateDates, minYData))
-    graph_data.append(zip(isoRateDates, maxYData))
-    graph_data.append(zip(isoProdDates, prodRateData))
-    if sum(graph_data, []):  # Test if list contains other things that empty lists
-        graph_data = json.dumps(graph_data)
-    else:
-        # If graph_data is only a bunch of emty list, set it to empty list to
-        # disable graph. Avoid jqplot infinite loop with some poor browsers
-        graph_data = None
-    return render(request, "staffing/graph_consultant_rate_jqp.html",
-                  {"graph_data": graph_data,
-                   "series_colors": COLORS,
+
+    graph_data = [
+        ["x_daily_rate"] + isoRateDates,
+        ["x_prod_rate"] + isoProdDates,
+        ["y_daily_rate"] + dailyRateData,
+        ["y_prod_rate"] + prodRateData,
+        ["y_daily_rate_obj"] + dailyRateObj,
+        ["y_prod_rate_obj"] + prodRateObj,
+    ]
+
+    return render(request, "staffing/graph_consultant_rate.html",
+                  {"graph_data": json.dumps(graph_data),
                    "user": request.user})
