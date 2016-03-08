@@ -258,14 +258,18 @@ def score_tag_lead(model, X, y):
 
 
 @transaction.atomic
-def compute_leads_state(relearn=True, leads=None):
-    """Learn state from past leads and compute state probal for current leads
+def compute_leads_state(relearn=True, leads_id=None):
+    """Learn state from past leads and compute state probal for current leads. This function is intended to be run async
+    as it could last few seconds.
     @:param learn; if true (default) learn again from leads, else, use previous computation if available
-    @:param leads: estimate those leads. All current leads if None"""
+    @:param leads_id: estimate those leads. All current leads if None. Parameter is a list of id to avoid passing ORM objects across threads"""
     if not HAVE_SCIKIT:
         return
+    if leads_id:
+        current_leads = Lead.objects.filter(id__in=leads_id)
+    else:
+        current_leads = Lead.objects.exclude(state__in=STATES.keys())
 
-    current_leads = leads or Lead.objects.exclude(state__in=STATES.keys())
     current_features, current_targets = extract_leads_state(current_leads)
 
     model = cache.get(STATE_MODEL_CACHE_KEY)
