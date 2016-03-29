@@ -18,38 +18,33 @@
     	<li class="pydici-tooltip" title="{% trans 'Next months' %}" ><a href="{% url 'pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
     </ul>
 	</h1>
-    
 
+
+<!-- buttons bar -->
 <div class="row">
-    <div class="btn-group col-lg-8" data-toggle="buttons" id="buttons-projection">
-        <label class="btn btn-default col-lg-4 {% ifequal projection "none" %}active{% endifequal %}" data-toggle="tooltip"
-        data-placement="bottom" title="{% trans 'Only consider won leads for staffing forecasting' %}">
-            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=none'"/>
-            {% trans "Only won leads" %}
-        </label>
-        <label class="btn btn-default col-lg-4 {% ifequal projection "balanced" %}active{% endifequal %}" data-toggle="tooltip"
-        data-placement="bottom" title="{% trans 'Add missions forcecast staffing even if still not won with a ponderation based on the mission won probability' %}">
-            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=balanced'"/>
-            {% trans "Balanced staffing projection" %}
-        </label>
-        <label class="btn btn-default col-lg-4 {% ifequal projection "full" %}active{% endifequal %}" data-toggle="tooltip"
-        data-placement="bottom" title="{% trans 'Add missions forcecast staffing even if still not won without any ponderation. All forecast is considered.' %}">
-            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection=full'"/>
-            {% trans "Full staffing projection" %}
-        </label>
-    </div>
-</div>
-<div class="row"><br/></div>
-<div class="row">
-    <div class="btn-group col-lg-8" data-toggle="buttons">
-        <label class="btn btn-default col-lg-6 {% ifequal groupby "manager" %}active{% endifequal %}">
-            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=manager;projection={{projection}}'" />
-            {% trans "Group by Manager" %}
-        </label>
-        <label class="btn btn-default col-lg-6 {% ifequal groupby "position" %}active{% endifequal %}">
-            <input type="radio" onchange="window.location='{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby=position;projection={{projection}}'"/>
-            {% trans "Group by Level" %}
-        </label>
+    <div class="col-lg-12">
+        <!-- Projection button -->
+        <div class="btn-group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ projection_label }} <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+              {% for projection_key, projection_data in projections.items %}
+                <li><a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection={{projection_key}}" title="{{projection_data|last}}">{{ projection_data|first }}</a></li>
+              {% endfor %}
+          </ul>
+        </div>
+        <!-- Group by button -->
+        <div class="btn-group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ groupby_label }} <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+              {% for group_key, group_label in groups.items %}
+                <li><a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{group_key}};projection={{projection}}">{{ group_label }}</a></li>
+              {% endfor %}
+          </ul>
+        </div>
     </div>
 </div>
 
@@ -89,7 +84,7 @@
     	        <tr><th>{% blocktrans with consultant.staffing_manager as manager %}{{manager}} staff{% endblocktrans %}</th></tr>
     	    {% endifchanged %}
     	{% endifequal %}
-        {% ifequal groupby "position" %}
+        {% ifequal groupby "level" %}
             {% ifchanged consultant.profil %}
                 <tr><th>{{consultant.profil}}</th></tr>
             {% endifchanged %}

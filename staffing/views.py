@@ -30,7 +30,7 @@ from django.conf import settings
 
 from core.utils import user_has_feature
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
-from people.models import Consultant
+from people.models import Consultant, Subsidiary
 from leads.models import Lead
 from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
@@ -244,11 +244,39 @@ def mass_staffing(request):
 def pdc_review(request, year=None, month=None):
     """PDC overview
     @param year: start date year. None means current year
-    @param year: start date year. None means current month"""
+    @param year: start date year. None means current month,
+    Request option parameters:
+    - team: only display this team (staffing manager id)
+    - subsidiary: only display this subsidiary (subsidiary id)
+    - n_month: number of month to display in forceast
+    - projection: projection mode (nonce, balanced, full) used to filter still-not-won leads"""
+
+    team = None
+    subsidiary = None
+
+    # Various projections modes. Value is ("short name", "description")
+    projections = {"none": (_(u"Only won leads"), _(u"Only consider won leads for staffing forecasting")),
+                   "balanced": (_(u"Balanced staffing projection"), _(u"Add missions forcecast staffing even if still not won with a ponderation based on the mission won probability")),
+                   "full": (_(u"Full staffing projection"), _(u"Add missions forcecast staffing even if still not won without any ponderation. All forecast is considered."))}
+
+    # Group by modes. Value is label
+    groups = {"manager": _(u"Group by Manager"),
+              "level": _(u"Group by Level")}
+
+    # Get team and subsidiary
+    if "team_id" in request.GET:
+        team = Consultant.objects.get(id=int(request.GET["team_id"]))
+    if "subsidiary_id" in request.GET:
+        subsidiary = Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
 
     # Don't display this page if no productive consultant are defined
-    people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False).count()
-    if people == 0:
+    people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False)
+    if team:
+        people = people.filter(staffing_manager=team)
+    if subsidiary:
+        people = people.filter(staffing_manager__company=subsidiary)
+    people_count = people.count()
+    if people_count == 0:
         # TODO: make this message nice
         return HttpResponse(_("No productive consultant defined !"))
 
@@ -269,7 +297,7 @@ def pdc_review(request, year=None, month=None):
 
     groupby = "manager"
     if "groupby" in request.GET:
-        if request.GET["groupby"] in ("manager", "position"):
+        if request.GET["groupby"] in ("manager", "level"):
             groupby = request.GET["groupby"]
 
     if year and month:
@@ -301,7 +329,12 @@ def pdc_review(request, year=None, month=None):
         available_month[month] = working_days(month, holidays_days)
 
     # Get consultants staffing
-    for consultant in Consultant.objects.select_related().filter(productive=True).filter(active=True).filter(subcontractor=False):
+    consultants = Consultant.objects.select_related().filter(productive=True).filter(active=True).filter(subcontractor=False)
+    if team:
+        consultants = consultants.filter(staffing_manager=team)
+    if subsidiary :
+        consultants = consultants.filter(company=subsidiary)
+    for consultant in consultants:
         staffing[consultant] = []
         missions = set()
         for month in months:
@@ -360,7 +393,7 @@ def pdc_review(request, year=None, month=None):
     # Compute indicator rates
     for month in months:
         rate = []
-        ndays = people * available_month[month]  # Total days for this month
+        ndays = people_count * available_month[month]  # Total days for this month
         for indicator in ("prod", "unprod", "holidays", "available"):
             if indicator == "holidays":
                 rate.append(100.0 * total[month][indicator] / ndays)
@@ -383,7 +416,7 @@ def pdc_review(request, year=None, month=None):
     if groupby == "manager":
         staffing.sort(cmp=lambda x, y: cmp(unicode(x[0].staffing_manager), unicode(y[0].staffing_manager)))  # Sort by staffing manager
     else:
-        staffing.sort(cmp=lambda x, y: cmp(x[0].profil.level, y[0].profil.level))  # Sort by position
+        staffing.sort(cmp=lambda x, y: cmp(x[0].profil.level, y[0].profil.level))  # Sort by level
 
     return render(request, "staffing/pdc_review.html",
                   {"staffing": staffing,
@@ -392,10 +425,14 @@ def pdc_review(request, year=None, month=None):
                    "rates": rates,
                    "user": request.user,
                    "projection": projection,
+                   "projection_label" : projections[projection][0],
+                   "projections": projections,
                    "previous_slice_date": previous_slice_date,
                    "next_slice_date": next_slice_date,
                    "start_date": start_date,
-                   "groupby": groupby})
+                   "groupby": groupby,
+                   "groupby_label": groups[groupby],
+                   "groups": groups,})
 
 
 @pydici_non_public
