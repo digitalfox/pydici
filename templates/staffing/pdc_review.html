@@ -30,7 +30,7 @@
           </button>
           <ul class="dropdown-menu">
               {% for projection_key, projection_data in projections.items %}
-                <li><a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection={{projection_key}}" title="{{projection_data|last}}">{{ projection_data|first }}</a></li>
+                <li><a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection={{projection_key}};{{scope_current_filter}}" title="{{projection_data|last}}">{{ projection_data|first }}</a></li>
               {% endfor %}
           </ul>
         </div>
@@ -41,7 +41,23 @@
           </button>
           <ul class="dropdown-menu">
               {% for group_key, group_label in groups.items %}
-                <li><a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{group_key}};projection={{projection}}">{{ group_label }}</a></li>
+                <li><a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{group_key}};projection={{projection}};{{scope_current_filter}}">{{ group_label }}</a></li>
+              {% endfor %}
+          </ul>
+        </div>
+        <!-- Scope  button -->
+        <div class="btn-group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ scope }} <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+              {% for scope_type, scope_filter, scope_label in scopes %}
+                {% ifchanged scope_type %}
+                    {% if not forloop.first %}
+                        <li role="separator" class="divider"></li>
+                    {% endif %}
+                {% endifchanged %}
+                <li><a href="{% url 'pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{group_key}};projection={{projection}};{{scope_filter}}">{{ scope_label }}</a></li>
               {% endfor %}
           </ul>
         </div>

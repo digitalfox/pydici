@@ -418,6 +418,19 @@ def pdc_review(request, year=None, month=None):
     else:
         staffing.sort(cmp=lambda x, y: cmp(x[0].profil.level, y[0].profil.level))  # Sort by level
 
+    # Define scopes than can be used to filter data. Either team, subsidiary or everybody (default). Format is (type, filter, label) where type is "team_id" or "subsidiary_id"
+    scopes = [(None, "", _(u"Everybody")),]
+    for s in Subsidiary.objects.all():
+        scopes.append(("subsidiary_id", "subsidiary_id=%s" % s.id, unicode(s)))
+    for manager_id, manager_name in Consultant.objects.filter(active=True, productive=True, subcontractor=False).values_list("staffing_manager", "staffing_manager__name").order_by().distinct():
+        scopes.append(("team_id", "team_id=%s" % manager_id, _(u"team %(manager_name)s") % {"manager_name": manager_name}))
+    if subsidiary:
+        scope_current_filter = "subsidiary_id=%s" % subsidiary.id
+    elif team:
+        scope_current_filter = "team_id=%s" % team.id
+    else:
+        scope_current_filter = ""
+
     return render(request, "staffing/pdc_review.html",
                   {"staffing": staffing,
                    "months": months,
@@ -432,7 +445,10 @@ def pdc_review(request, year=None, month=None):
                    "start_date": start_date,
                    "groupby": groupby,
                    "groupby_label": groups[groupby],
-                   "groups": groups,})
+                   "groups": groups,
+                   "scope": subsidiary or team or _(u"Everybody"),
+                   "scope_current_filter" : scope_current_filter,
+                   "scopes": scopes,})
 
 
 @pydici_non_public
