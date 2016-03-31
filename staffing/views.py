@@ -426,10 +426,13 @@ def pdc_review(request, year=None, month=None):
         scopes.append(("team_id", "team_id=%s" % manager_id, _(u"team %(manager_name)s") % {"manager_name": manager_name}))
     if subsidiary:
         scope_current_filter = "subsidiary_id=%s" % subsidiary.id
+        scope_current_url_filter = "subsidiary/%s" % subsidiary.id
     elif team:
         scope_current_filter = "team_id=%s" % team.id
+        scope_current_url_filter = "team/%s" % team.id
     else:
         scope_current_filter = ""
+        scope_current_url_filter = ""
 
     return render(request, "staffing/pdc_review.html",
                   {"staffing": staffing,
@@ -448,6 +451,7 @@ def pdc_review(request, year=None, month=None):
                    "groups": groups,
                    "scope": subsidiary or team or _(u"Everybody"),
                    "scope_current_filter" : scope_current_filter,
+                   "scope_current_url_filter": scope_current_url_filter,
                    "scopes": scopes,})
 
 
@@ -1174,8 +1178,10 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 10)
-def graph_timesheet_rates_bar_jqp(request):
+def graph_timesheet_rates_bar_jqp(request, subsidiary_id=None, team_id=None):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
+    @:param subsidiary_id: filter graph on the given subsidiary
+    @:param team_id: filter graph on the given team
     @todo: per year, with start-end date"""
     dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
     data = {}  # Graph data
@@ -1193,10 +1199,18 @@ def graph_timesheet_rates_bar_jqp(request):
     timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
     timesheetEndDate = nextMonth(date.today())  # First day of next month
 
-    timesheets = Timesheet.objects.filter(consultant__subcontractor=False,
-                                          consultant__productive=True,
-                                          working_date__gt=timesheetStartDate,
-                                          working_date__lt=timesheetEndDate).select_related()
+    # Filter on scope
+    if team_id:
+        timesheets = Timesheet.objects.filter(consultant__staffing_manager_id=team_id)
+    elif subsidiary_id:
+        timesheets = Timesheet.objects.filter(consultant__company_id=subsidiary_id)
+    else:
+        timesheets = Timesheet.objects.all()
+
+    timesheets = timesheets.filter(consultant__subcontractor=False,
+                                   consultant__productive=True,
+                                   working_date__gt=timesheetStartDate,
+                                   working_date__lt=timesheetEndDate).select_related()
 
     timesheetMonths = timesheets.dates("working_date", "month")
     isoTimesheetMonths = [d.isoformat() for d in timesheetMonths]
@@ -1236,8 +1250,10 @@ def graph_timesheet_rates_bar_jqp(request):
 
 @pydici_non_public
 @cache_page(60 * 10)
-def graph_profile_rates_jqp(request):
+def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
     """Sale rate per profil
+    @:param subsidiary_id: filter graph on the given subsidiary
+    @:param team_id: filter graph on the given team
     @todo: per year, with start-end date"""
     graph_data = []
     avgDailyRate = {}
@@ -1251,10 +1267,19 @@ def graph_profile_rates_jqp(request):
         avgDailyRate[profilId] = {}
         nDays[profilId] = {}
 
-    timesheets = Timesheet.objects.filter(consultant__subcontractor=False,
-                                          consultant__productive=True,
-                                          working_date__gt=timesheetStartDate,
-                                          working_date__lt=timesheetEndDate).select_related()
+    # Filter on scope
+    if team_id:
+        timesheets = Timesheet.objects.filter(consultant__staffing_manager_id=team_id)
+    elif subsidiary_id:
+        timesheets = Timesheet.objects.filter(consultant__company_id=subsidiary_id)
+        print "yeah"
+    else:
+        timesheets = Timesheet.objects.all()
+
+    timesheets = timesheets.filter(consultant__subcontractor=False,
+                                   consultant__productive=True,
+                                   working_date__gt=timesheetStartDate,
+                                   working_date__lt=timesheetEndDate).select_related()
 
     timesheetMonths = timesheets.dates("working_date", "month")
     isoTimesheetMonths = [d.isoformat() for d in timesheetMonths]

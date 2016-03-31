@@ -140,7 +140,7 @@
         
         <div id="graph_timesheet_rates_bar_jqp_content"></div>
         <script type="text/javascript">
-        $('#graph_timesheet_rates_bar_jqp_content').load('{% url 'staffing.views.graph_timesheet_rates_bar_jqp' %}')
+        $('#graph_timesheet_rates_bar_jqp_content').load('{% url 'staffing.views.graph_timesheet_rates_bar_jqp' %}/{{scope_current_url_filter}}')
         </script>
     </div>
 </div>
@@ -149,7 +149,7 @@
     <div class="col-lg-12">
         <div id="graph_profile_rates_bar_jqp_content"></div>
         <script type="text/javascript">
-        $('#graph_profile_rates_bar_jqp_content').load('{% url 'staffing.views.graph_profile_rates_jqp' %}')
+        $('#graph_profile_rates_bar_jqp_content').load('{% url 'staffing.views.graph_profile_rates_jqp' %}/{{scope_current_url_filter}}')
         </script>
     </div>
 </div>
