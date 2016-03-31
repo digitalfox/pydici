@@ -420,7 +420,7 @@ def pdc_review(request, year=None, month=None):
 
     # Define scopes than can be used to filter data. Either team, subsidiary or everybody (default). Format is (type, filter, label) where type is "team_id" or "subsidiary_id"
     scopes = [(None, "", _(u"Everybody")),]
-    for s in Subsidiary.objects.all():
+    for s in Subsidiary.objects.filter(consultant__active=True, consultant__subcontractor=False, consultant__productive=True).annotate(num=Count('consultant')).filter(num__gt=0):
         scopes.append(("subsidiary_id", "subsidiary_id=%s" % s.id, unicode(s)))
     for manager_id, manager_name in Consultant.objects.filter(active=True, productive=True, subcontractor=False).values_list("staffing_manager", "staffing_manager__name").order_by().distinct():
         scopes.append(("team_id", "team_id=%s" % manager_id, _(u"team %(manager_name)s") % {"manager_name": manager_name}))
