@@ -21,7 +21,7 @@
         <div id="type-selector" class="btn-group" role="group">
             <button class="btn btn-default active" onclick="lead_per_state();">{% trans "Lead per state" %}</button>
             <button class="btn btn-default" onclick="price_interval();">{% trans "Lead per price interval" %}</button>
-            <button class="btn btn-default" onclick="sales_per_client();">{% trans "Sales per client" %}</button>
+            <button class="btn btn-default" onclick="billing_per_client();">{% trans "Billing per client" %}</button>
         </div>
 
         <div id="pivotable-output" style="margin: 10px;"></div>
@@ -55,11 +55,11 @@
                 drawPivot(data, rows, cols, "Heatmap");
             }
 
-            function sales_per_client() {
+            function billing_per_client() {
                 var rows = ["{% trans 'client company' %}"];
                 var cols = ["{% trans 'subsidiary' %}", "{% trans 'responsible' %}"];
                 var inclusions = { {% trans "state" %}: ['{% trans "Won" %}'] };
-                drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "sales" %}'], inclusions);
+                drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "billed (€)" %}'], inclusions);
             }
 
             // default

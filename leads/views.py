@@ -18,7 +18,7 @@ from django.core import urlresolvers
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 from django.db.models.query import QuerySet
@@ -401,12 +401,14 @@ def leads_pivotable(request, year=None):
     for lead in leads.select_related():
         data.append({_("deal id"): lead.deal_id,
                      _("name"): lead.name,
-                     _("client company"): unicode(lead.client.organisation),
-                     _("sales"): int(lead.sales or 0),
+                     _("client organisation"): unicode(lead.client.organisation),
+                     _("client company"): unicode(lead.client.organisation.company),
+                     _(u"sales (k€)"): int(lead.sales or 0),
                      _("date"): lead.creation_date.strftime("%Y-%m"),
                      _("responsible"): unicode(lead.responsible),
                      _("broker"): unicode(lead.business_broker),
                      _("state"): lead.get_state_display(),
+                     _(u"billed (€)"): int(lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values()[0] or 0),
                      _("subsidiary"): unicode(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
