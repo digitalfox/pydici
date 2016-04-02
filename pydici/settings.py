@@ -15,7 +15,8 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'pydici.db'
+        'NAME': 'pydici.db',
+        'TEST_NAME': '/dev/shm/myproject-djangotestdb.sqlite',
     }
 }
 

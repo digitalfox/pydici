@@ -7,6 +7,8 @@ appropriate to live in Lead models or view
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+import threading
+
 from django.utils.translation import ugettext
 from django.contrib import messages
 from django.contrib.admin.models import LogEntry, ADDITION, ContentType
@@ -39,7 +41,7 @@ def create_default_mission(lead):
     return mission
 
 
-def postSaveLead(request, lead, updated_fields, created=False, state_changed=False):
+def postSaveLead(request, lead, updated_fields, created=False, state_changed=False, sync=False):
     mail = False
     if lead.send_email:
         mail = True
@@ -99,15 +101,22 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             messages.add_message(request, messages.ERROR, ugettext(u"Failed to send telegram notification: %s") % e)
 
     # Compute leads probability
+    # Use background Thread (celery would be an overkill for that).
     if lead.state in ("WON", "LOST", "SLEEPING", "FORGIVEN"):
         # Remove leads proba, no more needed
         lead.stateproba_set.all().delete()
         # Learn again. This new lead will now be used to training
-        compute_leads_state(relearn=True)
+        computeThread = threading.Thread(target=compute_leads_state, kwargs={"relearn": True})
     else:
         # Just update proba for this lead with its new features
-        compute_leads_state(relearn=False, leads=[lead,])
-
+        computeThread = threading.Thread(target=compute_leads_state, kwargs={"relearn": False, "leads_id":[lead.id, ]})
+    computeThread.setDaemon(True)
+    if sync:
+        # Run synchronously, this is used for unit test
+        computeThread.run()
+    else:
+        # Run Thread in background
+        computeThread.start()
 
     # Create or update mission  if needed
     if lead.mission_set.count() == 0:
