@@ -39,7 +39,7 @@ def create_default_mission(lead):
     return mission
 
 
-def postSaveLead(request, lead, updated_fields, created=False):
+def postSaveLead(request, lead, updated_fields, created=False, state_changed=False):
     mail = False
     if lead.send_email:
         mail = True
@@ -75,7 +75,8 @@ def postSaveLead(request, lead, updated_fields, created=False):
                 msg = ugettext(u"New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
                 sticker = TELEGRAM_STICKERS.get("happy")
                 chat_group = "new_leads"
-            else:
+            elif state_changed:
+                # Only notify when lead state changed to avoid useless spam
                 try:
                     change = u"%s (%s)" % (lead.get_change_history()[0].change_message, lead.get_change_history()[0].user)
                 except:
@@ -86,6 +87,9 @@ def postSaveLead(request, lead, updated_fields, created=False):
                 elif lead.state in ("LOST", "FORGIVEN"):
                     sticker = TELEGRAM_STICKERS.get("sad")
                 chat_group = "leads_update"
+            else:
+                # No notification
+                chat_group = ""
 
             for chat_id in TELEGRAM_CHAT.get(chat_group, []):
                 bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
