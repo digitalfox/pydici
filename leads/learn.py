@@ -25,7 +25,6 @@ try:
 except ImportError:
     HAVE_SCIKIT = False
 
-from django.db import transaction
 from django.db.models import Count
 from django.core.cache import cache
 
@@ -257,7 +256,6 @@ def score_tag_lead(model, X, y):
     return ok / len(X)
 
 
-@transaction.atomic
 def compute_leads_state(relearn=True, leads_id=None):
     """Learn state from past leads and compute state probal for current leads. This function is intended to be run async
     as it could last few seconds.

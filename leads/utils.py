@@ -41,7 +41,7 @@ def create_default_mission(lead):
     return mission
 
 
-def postSaveLead(request, lead, updated_fields, created=False):
+def postSaveLead(request, lead, updated_fields, created=False, sync=False):
     mail = False
     if lead.send_email:
         mail = True
@@ -107,7 +107,12 @@ def postSaveLead(request, lead, updated_fields, created=False):
         # Just update proba for this lead with its new features
         computeThread = threading.Thread(target=compute_leads_state, kwargs={"relearn": False, "leads_id":[lead.id, ]})
     computeThread.setDaemon(True)
-    computeThread.start()
+    if sync:
+        # Run synchronously, this is used for unit test
+        computeThread.run()
+    else:
+        # Run Thread in background
+        computeThread.start()
 
     # Create or update mission  if needed
     if lead.mission_set.count() == 0:

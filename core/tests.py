@@ -618,7 +618,7 @@ class LeadLearnTestCase(TestCase):
         request.session = {}
         request._messages = default_storage(request)
         lead = create_lead()
-        postSaveLead(request, lead, [])  # Learn model cannot exist, but it should not raise error
+        postSaveLead(request, lead, [], sync=True)  # Learn model cannot exist, but it should not raise error
 
 
     def test_mission_proba(self):
@@ -638,7 +638,7 @@ class LeadLearnTestCase(TestCase):
         lead = create_lead()
         lead.state = "OFFER_SENT"
         lead.save()
-        postSaveLead(request, lead, [])
+        postSaveLead(request, lead, [], sync=True)
         mission = lead.mission_set.all()[0]
         if leads_learn.HAVE_SCIKIT:
             self.assertEqual(mission.probability, lead.stateproba_set.get(state="WON").score)
@@ -646,7 +646,7 @@ class LeadLearnTestCase(TestCase):
             self.assertEqual(mission.probability, 50)
         lead.state = "WON"
         lead.save()
-        postSaveLead(request, lead, [])
+        postSaveLead(request, lead, [], sync=True)
         mission = Mission.objects.get(id=mission.id)  # reload it
         self.assertEqual(mission.probability, 100)
 
