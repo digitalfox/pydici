@@ -255,8 +255,7 @@ def company_detail(request, company_id):
     leads = leads.order_by("client", "state", "start_date")
 
     # Find consultant that work (=declare timesheet) for this company
-    consultants = [s.consultant for s in Timesheet.objects.filter(mission__lead__client__organisation__company=company).select_related("consultant")]
-    consultants = list(set(consultants))  # Distinct
+    consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct()
 
     companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
 
