@@ -104,9 +104,9 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
-        minDate = self.instance.staffing_set.all().aggregate(Min("staffing_date")).values()
-        if minDate and minDate[0]:
-            minDate = min(minDate[0], date.today())
+        minDate = self.instance.staffing_start_date()
+        if minDate:
+            minDate = min(minDate, date.today())
         else:
             minDate = None
         form.fields["consultant"] = ConsultantChoices(label=_("Consultant"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",

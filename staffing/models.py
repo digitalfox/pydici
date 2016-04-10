@@ -6,7 +6,7 @@ Database access layer for pydici staffing module
 """
 
 from django.db import models, connections
-from django.db.models import Sum
+from django.db.models import Sum, Min
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.db.models.signals import post_save
@@ -226,6 +226,15 @@ class Mission(models.Model):
     def done_actions(self):
         """returns done actions for this mission and its lead"""
         return self.actions().exclude(state="TO_BE_DONE")
+
+    @cacheable("Mission.staffing_start_date%(id)s", 10)
+    def staffing_start_date(self):
+        """Starting date (=oldiest) staffing date of this mission. None if no staffing"""
+        start_dates = self.staffing_set.all().aggregate(Min("staffing_date")).values()
+        if start_dates:
+            return start_dates[0]
+        else:
+            return None
 
     def pivotable_data(self):
         """Compute raw data for pivot table on that mission"""
