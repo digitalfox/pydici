@@ -1,5 +1,7 @@
 {% load i18n %}
+{% load cache %}
 {% load pydici_filters %}
+{% cache 3600 menu %}
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -150,3 +152,4 @@
 
         </div><!-- containter-->
       </div>
+{% endcache %}
