@@ -329,7 +329,7 @@ def pdc_review(request, year=None, month=None):
         available_month[month] = working_days(month, holidays_days)
 
     # Get consultants staffing
-    consultants = Consultant.objects.select_related().filter(productive=True).filter(active=True).filter(subcontractor=False)
+    consultants = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False).select_related("staffing_manager")
     if team:
         consultants = consultants.filter(staffing_manager=team)
     if subsidiary :
@@ -349,7 +349,7 @@ def pdc_review(request, year=None, month=None):
             prod = []
             unprod = []
             holidays = []
-            for current_staffing  in current_staffings.select_related():
+            for current_staffing  in current_staffings.select_related("mission__lead__client__organisation__company"):
                 nature = current_staffing.mission.nature
                 if nature == "PROD":
                     missions.add(current_staffing.mission)  # Store prod missions for this consultant
