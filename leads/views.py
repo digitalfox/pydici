@@ -241,7 +241,6 @@ def mail_lead(request, lead_id=0):
     except Exception, e:
         return HttpResponse(_("Failed to send mail: %s") % e)
 
-
 @pydici_non_public
 @pydici_feature("leads")
 def review(request):
@@ -249,11 +248,11 @@ def review(request):
     delay = timedelta(days=40)
     recentArchivedLeads = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
                                                       Q(state="SLEEPING"))
-    recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date").select_related()
+    recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date").select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
     recentArchivedLeadsTable = RecentArchivedLeadsTable(recentArchivedLeads)
     RequestConfig(request, paginate={"per_page": 50}).configure(recentArchivedLeadsTable)
 
-    activeLeadsTable = ActiveLeadsTable(Lead.objects.active().select_related())  # , order_by="creation_date")
+    activeLeadsTable = ActiveLeadsTable(Lead.objects.active().select_related("client__contact", "client__organisation__company", "responsible", "subsidiary"))
     RequestConfig(request, paginate={"per_page": 50}).configure(activeLeadsTable)
     return render(request, "leads/review.html",
                   {"recent_archived_leads": recentArchivedLeads,
