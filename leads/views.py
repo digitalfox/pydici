@@ -55,13 +55,12 @@ def summary_mail(request, html=True):
     else:
         return render(request, "leads/mail.txt", {"lead_group": leads}, content_type="text/plain; charset=utf-8")
 
-
 @pydici_non_public
 @pydici_feature("leads")
 def detail(request, lead_id):
     """Lead detailed description"""
     try:
-        lead = Lead.objects.get(id=lead_id)
+        lead = Lead.objects.select_related("client__contact", "client__organisation__company", "subsidiary").prefetch_related("mission_set").get(id=lead_id)
         # Lead rank in active list
         active_leads = Lead.objects.active().order_by("creation_date")
         try:
@@ -104,7 +103,6 @@ def detail(request, lead_id):
                    "completion_url": urlresolvers.reverse("leads.views.tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
                    "user": request.user})
-
 
 @pydici_non_public
 @pydici_feature("leads")
