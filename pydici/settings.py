@@ -4,7 +4,6 @@
 import os
 from pydici_settings import *
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
      ('Sébastien Renard', 'sebastien@digitalfox.org'),
@@ -75,18 +74,6 @@ ADMIN_MEDIA_PREFIX = '/media/'
 SECRET_KEY = '-)^_522$p_b6ckz_94&o_en4th6ug&gxpe$!@f^6fjim0j=_)p'
 
 
-# Template processors, used to add session access wihtin templates
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.contrib.messages.context_processors.messages",
-    "django.core.context_processors.request",
-    "core.context_processors.feature",
-    "core.context_processors.menu",
-)
-
 MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -99,12 +86,36 @@ if DEBUG:
 
 ROOT_URLCONF = 'pydici.urls'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PYDICI_ROOTDIR, 'templates'),
-)
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [os.path.join(PYDICI_ROOTDIR, 'templates')],
+    'OPTIONS': {
+        'loaders': [
+            ('django.template.loaders.cached.Loader', [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+                ]),
+        ],
+        'context_processors': ("django.contrib.auth.context_processors.auth",
+                               "django.template.context_processors.debug",
+                               "django.template.context_processors.i18n",
+                               "django.template.context_processors.media",
+                               "django.template.context_processors.static",
+                               "django.template.context_processors.tz",
+                               "django.contrib.messages.context_processors.messages",
+                               "django.core.context_processors.request",
+                               "core.context_processors.feature",
+                               "core.context_processors.menu",
+                               ),
+                },
+}]
+
+if DEBUG:
+    TEMPLATES[0]["OPTIONS"]["debug"] = True
+    TEMPLATES[0]["OPTIONS"]["loaders"] = [ # Remove template cache in debug mode
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',]
+
 
 PYDICI_APPS = [
     'core',
