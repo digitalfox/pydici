@@ -2,6 +2,10 @@
 
 {% load i18n %}
 
+{% block extrajs %}
+    {% include "core/_c3.html" %}
+{% endblock %}
+
 {% block title %}{% trans "Forecast/timesheet " %}{{ consultant }}{% endblock %}
 
 {% block content %}

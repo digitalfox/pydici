@@ -1,9 +1,5 @@
 {% load i18n %}
 
-{% block extrajs %}
-    {% include "core/_c3.html" %}
-{% endblock %}
-
 {% if not consultant.active %}
 <h3>{% trans "This consultant does not work anymore for the company" %}</h3>
 {% endif %}
