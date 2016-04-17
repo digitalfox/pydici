@@ -134,6 +134,7 @@ class Mission(models.Model):
         """@return: True if all rates are defined for consultants forecasted or that already consume time for this mission. Else False"""
         return not bool([i[0] for i in self.consultant_rates().values()].count(0))
 
+    @cacheable("Mission.mission_id%(id)s", 120)
     def mission_id(self):
         """Compute mission id :
             if mission has lead, it is based on lead deal_id if exists
