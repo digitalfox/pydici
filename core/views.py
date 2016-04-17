@@ -16,6 +16,7 @@ from django.http import HttpResponse
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
+from django.core.cache import cache
 
 from core.decorator import pydici_non_public, pydici_feature
 from leads.models import Lead
@@ -32,13 +33,17 @@ import pydici.settings
 
 @login_required
 def index(request):
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-    except Consultant.DoesNotExist:
-        consultant = None
+    key = "core.index." + request.user.username
+    consultant_id = cache.get(key)
+    if consultant_id is None:
+        try:
+            consultant_id = Consultant.objects.get(trigramme__iexact=request.user.username).id
+            cache.set(key, consultant_id)
+        except Consultant.DoesNotExist:
+            consultant_id = None
 
-    if consultant:
-        return consultant_home(request, consultant.id)
+    if consultant_id:
+        return consultant_home(request, consultant_id)
     else:
         # User is not a consultant. Go for default index page.
         return render(request, "core/pydici.html",
