@@ -3,19 +3,22 @@
 
 {% load i18n %}
 {% load taggit_extras %}
+{% load cache %}
 
-<br/>
-<h1>{% trans "All lead tags" %}</h1>
+{% cache 3600 tag_cloud %}
+    <br/>
+    <h1>{% trans "All lead tags" %}</h1>
 
-{% get_tagcloud as tags for 'leads.lead' %}
+    {% get_tagcloud as tags for 'leads.lead' %}
 
-<ul class="row list-unstyled">
-{% for tag in tags %}
-    <li class="col-xs-6 col-sm-3 col-md-2">
-        <font size={{tag.weight|floatformat:0}}>
-            <a href="{% url 'leads.views.tag' tag.id %}">{{ tag }} ({{tag.num_times}})</a>
-        </font>
-    </li>
-{% endfor %}
-</ul>
-<div style="clear:both;"></div>
+    <ul class="row list-unstyled">
+    {% for tag in tags %}
+        <li class="col-xs-6 col-sm-3 col-md-2">
+            <font size={{tag.weight|floatformat:0}}>
+                <a href="{% url 'leads.views.tag' tag.id %}">{{ tag }} ({{tag.num_times}})</a>
+            </font>
+        </li>
+    {% endfor %}
+    </ul>
+    <div style="clear:both;"></div>
+{% endcache %}
