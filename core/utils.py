@@ -401,7 +401,7 @@ def _get_user_features(user):
     if res is None:
         features = [x.feature for x in GroupFeature.objects.filter(group__user=user)]
         res = set(features)
-        cache.set(key, res, 3)
+        cache.set(key, res, 60)
     return res
 
 
