@@ -377,7 +377,7 @@ def import_proposal_sheet(obj_xml, context):
 
     state = STATE_FOR_PROGRESS_ID[sheet.progress_id]
     if state != 'WON':
-        logger.warning('Skipping proposal sheet %d: not won', obj_id)
+        logger.warning('Skipping proposal sheet %s: not won', obj_id)
         return
 
     firm_id = sheet.firm_id if hasattr(sheet, 'firm_id') else 0
