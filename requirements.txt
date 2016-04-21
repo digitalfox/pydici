@@ -5,7 +5,7 @@ django-taggit-templatetags
 -e git://github.com/bport/django-permissions.git@fix_get_roles#egg=django-permissions
 -e git://github.com/diefenbach/django-workflows.git#egg=django-workflows
 django-extensions==1.5.5
-django-debug-toolbar==1.3.2
+django-debug-toolbar==1.4
 django-userswitch
 django-crispy-forms==1.5.2
 Django-Select2==4.3.1
