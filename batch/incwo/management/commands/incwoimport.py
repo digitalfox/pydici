@@ -142,10 +142,10 @@ Options specific to the import step:
 
     def setup_logging(self, verbosity):
         loglevels = {
-            '0': logging.WARNING,
-            '1': logging.INFO,
-            '2': logging.DEBUG,
-            '3': logging.DEBUG
+            0: logging.WARNING,
+            1: logging.INFO,
+            2: logging.DEBUG,
+            3: logging.DEBUG
         }
         loglevel = loglevels[verbosity]
 
