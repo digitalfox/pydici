@@ -6,6 +6,7 @@ Pydici expense views. Http request are processed here.
 """
 
 from datetime import date, timedelta
+import json
 import mimetypes
 import permissions.utils as perm
 import workflows.utils as wf
@@ -194,27 +195,37 @@ def chargeable_expenses(request):
 @pydici_non_public
 @pydici_feature("reports")
 def update_expense_state(request, expense_id, transition_id):
-    """Do workflow transition for that expense"""
-    redirect = HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
+    """Do workflow transition for that expense."""
+    error = False
+    message = ""
+
     try:
         expense = Expense.objects.get(id=expense_id)
         if expense.user == request.user and not utils.has_role(request.user, "expense administrator"):
-            messages.add_message(request, messages.WARNING, _("You cannot manage your own expense !"))
-            return redirect
+            message =  _("You cannot manage your own expense !")
+            error = True
     except Expense.DoesNotExist:
-        messages.add_message(request, messages.WARNING, _("Expense %s does not exist" % expense_id))
-        return redirect
-    try:
-        transition = Transition.objects.get(id=transition_id)
-    except Transition.DoesNotExist:
-        messages.add_message(request, messages.ERROR, _("Transition %s does not exist" % transition_id))
-        return redirect
+        message =  _("Expense %s does not exist" % expense_id)
+        error = True
 
-    if wf.do_transition(expense, transition, request.user):
-        messages.add_message(request, messages.SUCCESS, _("Successfully update expense"))
-    else:
-        messages.add_message(request, messages.ERROR, _("You cannot do this transition"))
-    return redirect
+    if not error:
+        try:
+            transition = Transition.objects.get(id=transition_id)
+        except Transition.DoesNotExist:
+            message = ("Transition %s does not exist" % transition_id)
+            error = True
+
+        if wf.do_transition(expense, transition, request.user):
+            message = _("Successfully update expense")
+        else:
+            message = _("You cannot do this transition")
+            error = True
+
+    response = {"message": message,
+                "expense_id": expense_id,
+                "error": error}
+
+    return HttpResponse(json.dumps(response), content_type="application/json")
 
 
 @pydici_non_public

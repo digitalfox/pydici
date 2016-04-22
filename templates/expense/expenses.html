@@ -55,4 +55,18 @@
 
 {% include "core/_datepicker.html" %}
 
+<script type="text/JavaScript">
+<!--
+    // Function that process ajax callback
+    function process_expense_transition(data) {
+        if (data.error==true) {
+            alert(data.message);
+        }
+        else {
+            $("#expense_" + data.expense_id).closest("tr").hide("fast");
+        }
+    };
+-->
+</script>
+
 {% endblock %}

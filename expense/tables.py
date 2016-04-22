@@ -46,7 +46,13 @@ class ExpenseWorkflowTable(ExpenseTable):
     def render_transitions(self, record):
         result = []
         for transition in self.transitionsData[record.id]:
-            result.append("<a href='%s'>%s</a>" % (reverse("expense.views.update_expense_state", args=[record.id, transition.id]), transition))
+            result.append("""<div id=expense_%s></div>
+                            <a href="javascript:;"
+                                onClick="$.get('%s', process_expense_transition)">
+                                %s
+                            </a>
+                            """
+                          % (record.id, reverse("expense.views.update_expense_state", args=[record.id, transition.id]), transition))
         if self.expenseEditPerm[record.id]:
             result.append("<a href='%s'>%s</a>" % (reverse("expense.views.expenses", args=[record.id, ]), smart_bytes(_("Edit"))))
         return mark_safe(", ".join(result))
