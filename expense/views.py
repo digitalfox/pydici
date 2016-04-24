@@ -98,15 +98,8 @@ def expenses(request, expense_id=None):
     managedExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in managed_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 50}).configure(managedExpenseTable)
 
-    # Prune old expense in terminal state (no more transition) and without payment (ie paid ith corporate card)
-    # Expense that need to be paid are pruned during payment process.
-    for expense in Expense.objects.filter(workflow_in_progress=True, corporate_card=True, update_date__lt=(date.today() - timedelta(30))):
-        if wf.get_state(expense).transitions.count() == 0:
-            expense.workflow_in_progress = False
-            expense.save()
-
-    # And prune every expense not updated since 180 days. For instance, rejected expense.
-    for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(180))):
+    # Prune every expense not updated since 60 days. For instance, rejected expense.
+    for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(60))):
         if wf.get_state(expense).transitions.count() == 0:
             expense.workflow_in_progress = False
             expense.save()
@@ -217,6 +210,12 @@ def update_expense_state(request, expense_id, transition_id):
 
         if wf.do_transition(expense, transition, request.user):
             message = _("Successfully update expense")
+
+            # Prune expense in terminal state (no more transition) and without payment (ie paid ith corporate card)
+            # Expense that need to be paid are pruned during payment process.
+            if expense.corporate_card and wf.get_state(expense).transitions.count() == 0:
+                expense.workflow_in_progress = False
+                expense.save()
         else:
             message = _("You cannot do this transition")
             error = True
