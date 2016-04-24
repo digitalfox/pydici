@@ -21,12 +21,13 @@ from core.utils import TABLES2_HIDE_COL_MD
 class ExpenseTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"))
     lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads.views.detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
-    receipt = tables.TemplateColumn("""{% if record.receipt %}<a href="{% url 'expense.views.expense_receipt' record.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}""")
+    receipt = tables.TemplateColumn("""{% if record.receipt %}<a href="{% url 'expense.views.expense_receipt' record.id %}" data-remote="false" data-toggle="modal" data-target="#expenseModal"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}""")
     state = tables.TemplateColumn("""{% load i18n %}{% if record.expensePayment %}
                                                         <a href="{% url 'expense.views.expense_payment_detail' record.expensePayment.id %}">{% trans "Paid" %}</a>
                                                     {% else %}{{ record.state }}{% endif %}""", verbose_name=_("State"), orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
     update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title attr is just used to have an easy to parse hidden value for sorting
+    description = tables.TemplateColumn("""<span id="expense_{{record.id }}">{{ record.description }}</span>""")
 
     def render_user(self, value):
         return link_to_consultant(value)
@@ -46,13 +47,8 @@ class ExpenseWorkflowTable(ExpenseTable):
     def render_transitions(self, record):
         result = []
         for transition in self.transitionsData[record.id]:
-            result.append("""<div id=expense_%s></div>
-                            <a href="javascript:;"
-                                onClick="$.get('%s', process_expense_transition)">
-                                %s
-                            </a>
-                            """
-                          % (record.id, reverse("expense.views.update_expense_state", args=[record.id, transition.id]), transition))
+            result.append("""<a href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
+                          % (reverse("expense.views.update_expense_state", args=[record.id, transition.id]), transition))
         if self.expenseEditPerm[record.id]:
             result.append("<a href='%s'>%s</a>" % (reverse("expense.views.expenses", args=[record.id, ]), smart_bytes(_("Edit"))))
         return mark_safe(", ".join(result))

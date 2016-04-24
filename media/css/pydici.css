@@ -251,3 +251,9 @@ div.ui-tooltip {
 
 /* C3 graph specific style */
 #consultant_rate_graph .c3-line { stroke-width: 2px; }
+
+/* Expense image in modal */
+.expense-receipt img {
+    width: 100%;
+    height: 100%;
+}
