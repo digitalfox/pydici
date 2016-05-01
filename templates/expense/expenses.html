@@ -81,7 +81,8 @@
             alert(data.message);
         }
         else {
-            $("#expense_" + data.expense_id).closest("tr").hide("fast");
+            $("#expense_" + data.expense_id).closest("tr").addClass("hide-row-filter");
+            $('#managed_expense_workflow_table').DataTable().draw();
         }
     };
 
