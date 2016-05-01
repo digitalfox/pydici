@@ -253,7 +253,10 @@ div.ui-tooltip {
 #consultant_rate_graph .c3-line { stroke-width: 2px; }
 
 /* Expense image in modal */
+.expense-receipt object {
+    width: 100%;
+    height: 400px;
+}
 .expense-receipt img {
     width: 100%;
-    height: 100%;
 }
