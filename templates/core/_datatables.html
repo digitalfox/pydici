@@ -26,16 +26,6 @@ $(document).ready(function() {
                 "sSearch": "{% trans 'Search:' %}",
             }
         });
-        // use datatables filter to hide rows we don't want to show anymore
-        $.fn.dataTableExt.afnFiltering.push(
-            function( oSettings, aData, iDataIndex ) {
-                var nTr = $(oSettings.aoData[iDataIndex].nTr);
-                if ( nTr.hasClass('hide-row-filter')) {
-                    return false;
-                }
-                return true;
-            }
-        );
     } );
 -->
 </script>

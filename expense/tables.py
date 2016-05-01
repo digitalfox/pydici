@@ -27,7 +27,7 @@ class ExpenseTable(tables.Table):
                                                     {% else %}{{ record.state }}{% endif %}""", verbose_name=_("State"), orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
     update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title attr is just used to have an easy to parse hidden value for sorting
-    description = tables.TemplateColumn("""<span id="expense_{{record.id }}">{{ record.description }}</span>""")
+
 
     def render_user(self, value):
         return link_to_consultant(value)
@@ -66,6 +66,7 @@ class UserExpenseWorkflowTable(ExpenseWorkflowTable):
 
 
 class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
+    description = tables.TemplateColumn("""<span id="managed_expense_{{record.id }}">{{ record.description }}</span>""")
     class Meta:
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "managed_expense_workflow_table"}
         prefix = "managed_expense_workflow_table"
