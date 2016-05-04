@@ -260,3 +260,8 @@ div.ui-tooltip {
 .expense-receipt img {
     width: 100%;
 }
+
+/* logo brand css fix for boostrap 3.4 */
+.navbar-brand>img {
+    display: inline;
+}
