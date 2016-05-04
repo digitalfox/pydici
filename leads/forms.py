@@ -37,6 +37,11 @@ class LeadChoices(PydiciSelect2Field, AutoModelSelect2Field):
         return smart_unicode("%s (%s)" % (unicode(obj), obj.deal_id))
 
 
+class CurrentLeadChoices(LeadChoices):
+    """Limit Leads to those who have active (non archived) missions"""
+    queryset = Lead.objects.filter(mission__active=True).distinct()
+
+
 class LeadForm(PydiciCrispyModelForm):
     class Meta:
         model = Lead

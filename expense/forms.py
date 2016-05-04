@@ -18,7 +18,7 @@ from django_select2.views import NO_ERR_RESP
 import workflows.utils as wf
 
 from expense.models import Expense
-from leads.forms import LeadChoices
+from leads.forms import CurrentLeadChoices
 from core.forms import PydiciSelect2Field, PydiciCrispyForm
 
 
@@ -70,7 +70,7 @@ class ExpenseForm(forms.ModelForm):
         widgets = {"description": TextInput(attrs={"size": 40}),  # Increase default size
                    "comment": Textarea(attrs={'cols': 17, 'rows': 2})}  # Reduce height and increase width
 
-    lead = LeadChoices(required=False, label=_("Lead"))
+    lead = CurrentLeadChoices(required=False, label=_("Lead"))
 
     def __init__(self, *args, **kwargs):
         super(ExpenseForm, self).__init__(*args, **kwargs)
