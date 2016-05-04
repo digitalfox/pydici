@@ -99,7 +99,7 @@ def expenses(request, expense_id=None):
     managedExpenseTable = ManagedExpenseWorkflowTable(managed_expenses)
     managedExpenseTable.transitionsData = dict([(e.id, e.transitions(request.user)) for e in managed_expenses])  # Inject expense allowed transitions
     managedExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in managed_expenses])  # Inject expense edit permissions
-    RequestConfig(request, paginate={"per_page": 50}).configure(managedExpenseTable)
+    RequestConfig(request, paginate={"per_page": 100}).configure(managedExpenseTable)
 
     # Prune every expense not updated since 60 days. For instance, rejected expense.
     for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(60))):
