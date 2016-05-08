@@ -24,20 +24,10 @@ $(document).ready(function() {
        href = this.hash;
        displayBsTab($(this), href);
     });
+    
 
-    
-    // Change hash for page-reload
-    $('.nav-tabs a').on('shown.bs.tab', function (e) {
-        var hash = e.target.hash.replace("#", "#" + tabprefix)
-        if(history.pushState) {
-            history.pushState(null, null, hash); 
-        } else {
-            window.location.hash = hash;
-        }
-    });
-    
     // If url has a hash, switch to the target tab
-    $(function () {
+    function goToTabFromHash() {
         var url = document.location.toString();
         if (!url.match('#')) {
             // No hash, so we load first tab
@@ -49,7 +39,27 @@ $(document).ready(function() {
             var activeTab = $('[href=' + location.hash.replace(tabprefix,"") + ']');
             activeTab.click();
         }
-     });
+     };
+
+    // Change hash for page-reload
+    $('.nav-tabs a').on('shown.bs.tab', function (e) {
+        var hash = e.target.hash.replace("#", "#" + tabprefix)
+        var url = window.location.toString();
+        // Push tab hash in history else if we are already on it
+        if (!url.match(e.target.hash)) {
+            if(history.pushState) {
+                history.pushState(null, null, hash);
+            } else {
+                window.location.hash = hash;
+            }
+        }
+    });
+
+    // When user click to back/previous, switch to tab
+    window.onpopstate = goToTabFromHash
+
+    // When page is loaded, look at url hash to switch to tab
+    goToTabFromHash();
 
 });
 </script>
