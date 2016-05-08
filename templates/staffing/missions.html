@@ -3,12 +3,6 @@
 {% load i18n %}
 {% load render_table from django_tables2 %}
 
-{% block stylesheet %}{{ MEDIA_URL }}css/dashboard.css{% endblock %}
-
-{% block bodyclass %}dashboard{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
 {% block title %}
 	{% if all %}
 	    {% trans "All missions" %}
@@ -19,7 +13,6 @@
 
 {% block content %}
 
-<div class="content-large">
 {% if all %}
     <h1>{% trans "All missions" %}</h1>
     <br/><a class="btn btn-default" href='{% url 'missions' %}'>{% trans "Only display active missions" %}</a><br/><br/>
@@ -28,9 +21,7 @@
     <br/><a class="btn btn-default" href="{% url 'all-missions' %}">{% trans "Also display inactive missions" %}</a><br/><br/>
 {% endif %}
 
-  {% render_table missionTable %}
-
-</div>
+{% render_table missionTable %}
 
 <script type="text/JavaScript">
 <!--
