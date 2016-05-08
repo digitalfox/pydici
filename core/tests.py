@@ -713,8 +713,12 @@ def run_casper(test_filename, client, **kwargs):
     cmd = ["casperjs", "test"]
     cmd.extend([("--%s=%s" % i) for i in kwargs.iteritems()])
     cmd.append(test_filename)
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE, env=env, cwd=os.path.dirname(test_filename))
-    out, err = p.communicate()
+    try:
+        p = Popen(cmd, stdout=PIPE, stderr=PIPE, env=env, cwd=os.path.dirname(test_filename))
+        out, err = p.communicate()
+    except OSError:
+        print "WARNING: casperjs is not installed or properly setup. Skipping JS Tests..."
+        return True
     if verbose or p.returncode:
         sys.stdout.write(out)
         sys.stderr.write(err)
