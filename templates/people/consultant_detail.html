@@ -35,7 +35,11 @@
 
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
-            {% if consultant.manager %}{% ifnotequal consultant.manager consultant %}<h3 class="pydici-block-title">{% trans "Manager: " %} <a href="{% url 'people.views.consultant_home' consultant.manager.id %}">{{ consultant.manager.full_name }}</a></h3>{% endifnotequal %}{% endif %}
+            {% if consultant.manager %}
+                {% ifnotequal consultant.manager consultant %}
+                    <h3 class="pydici-block-title">{% trans "Manager: " %} <a href="{% url 'people.views.consultant_home' consultant.manager.id %}">{{ consultant.manager.full_name }}</a></h3>
+                {% endifnotequal %}
+            {% endif %}
             {% if staff %}
                 <h3 class="pydici-block-title">{% trans "Staff" %}</h3>
                 <ul class="row icon-list chevron-right">
@@ -47,14 +51,16 @@
         </div>
     </div>
 
-    <div class="col-md-4 col-sm-6 col-xs-12">
-        <div class="pydici-block">
-            <h3 class="pydici-block-title">{% trans "Pending actions" %}</h3>
-            {% with consultant.pending_actions|slice:":20" as actions %}
-                {% include "actionset/_consultant_actions.html" %}
-            {% endwith %}
-        </div>
-    </div>
+    {% with consultant.pending_actions|slice:":20" as actions %}
+        {% if actions %}
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="pydici-block">
+                    <h3 class="pydici-block-title">{% trans "Pending actions" %}</h3>
+                        {% include "actionset/_consultant_actions.html" %}
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
 
 {% if business_territory %}
 
@@ -117,33 +123,33 @@
         </div>
 	</div>
 
-    <div class="col-md-4 col-sm-6 col-xs-12">
-	    <div class="pydici-block">
-            {% if leads_as_responsible %}
-                <h3 class="pydici-block-title">{% trans "Current leads as responsible" %}</h3>
-                <ul class="row icon-list chevron-right">
-                {% for lead in leads_as_responsible %}
-                    <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-	    </div>
-    </div>
-
-    <div class="col-md-4 col-sm-6 col-xs-12">
-        <div class="pydici-block">
-            {% if leads_as_staffee %}
-                <h3 class="pydici-block-title">{% trans "Current leads as resource" %}</h3>
-                <ul class="icon-list chevron-right">
-                {% for lead in leads_as_staffee %}
-                    <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
-                {% endfor %}
-                </ul>
-            {% endif %}
+    {% if leads_as_responsible %}
+        <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="pydici-block">
+                    <h3 class="pydici-block-title">{% trans "Current leads as responsible" %}</h3>
+                    <ul class="row icon-list chevron-right">
+                    {% for lead in leads_as_responsible %}
+                        <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
+                    {% endfor %}
+                    </ul>
+            </div>
         </div>
-    </div>
+    {% endif %}
 
-</div>
+    {% if leads_as_staffee %}
+        <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="pydici-block">
+                    <h3 class="pydici-block-title">{% trans "Current leads as resource" %}</h3>
+                    <ul class="icon-list chevron-right">
+                    {% for lead in leads_as_staffee %}
+                        <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
+                    {% endfor %}
+                    </ul>
+            </div>
+        </div>
+    {% endif %}
+
+</div> <!-- end of row -->
 
 <div class="row">
     <div id="consultant_rate_graph_content" class="col-lg-12"></div>
