@@ -10,4 +10,5 @@ script:
   - python manage.py test core
 
 notifications:
-  email: false
+  email: 
+    - sebastien.renard@digitalfox.org
