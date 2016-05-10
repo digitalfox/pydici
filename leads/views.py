@@ -28,7 +28,7 @@ from django_tables2 import RequestConfig
 
 from core.utils import send_lead_mail, sortedValues, COLORS
 from leads.models import Lead
-from leads.tables import ActiveLeadsTable, RecentArchivedLeadsTable
+from leads.tables import ActiveLeadsTable, RecentArchivedLeadsTable, AllLeadsTable
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
 from leads.learn import predict_tags
@@ -256,6 +256,19 @@ def review(request):
                   {"recent_archived_leads": recentArchivedLeads,
                    "recent_archived_leads_table": recentArchivedLeadsTable,
                    "active_leads_table": activeLeadsTable,
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def leads(request):
+    """All leads page"""
+    leads = Lead.objects.all().select_related()
+    leadsTable = AllLeadsTable(leads)
+    RequestConfig(request, paginate={"per_page": 50}).configure(leadsTable)
+
+    return render(request, "leads/leads.html",
+                  {"leads_table": leadsTable,
                    "user": request.user})
 
 
