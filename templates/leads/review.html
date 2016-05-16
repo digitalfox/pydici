@@ -19,29 +19,78 @@
 
     <div class="row">
         <div class="col-lg-12">
-        {% if active_leads_table.data %}
-        <h2>{% trans "All active leads" %}</h2>
-            {% render_table active_leads_table %}
-            {% with "active_leads_table" as table_id %}{% with '"aaSorting" : [[9, "asc"]],' as datatable_options %}
-                {% include "core/_datatables-dj-tables.html" %}
-            {% endwith %}{% endwith %}
-        {% endif %}
+            <h2>{% trans "All active leads" %}</h2>
+            <table id="active_leads" class="table table-striped table-bordered table-condensed" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>{% trans "Client" %}</th>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Deal id" %}</th>
+                        <th>{% trans "Subsidiary" %}</th>
+                        <th>{% trans "Responsible" %}</th>
+                        <th>{% trans "Staffing" %}</th>
+                        <th>{% trans "Amount (k€)" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Proba" %}</th>
+                        <th>{% trans "Creation date" %}</th>
+                        <th>{% trans "Due date" %}</th>
+                        <th>{% trans "Start date" %}</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            {% with "active_leads" as table_id %}
+                {% with active_data_url as data_url %}
+                    {% with  '"columnDefs": [{ "orderable": false, "targets": [5,8] }, { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}], "pageLength": 25, order: [[9, "asc"]]' as datatable_options %}
+                        {% include "core/_datatables.html" %}
+                    {% endwith %}
+                {% endwith %}
+            {% endwith %}
         </div>
     </div>
-    
+
+    <br/><br/>
+
     <div class="row">
         <div class="col-lg-12">
-            {% if recent_archived_leads_table.data %}
             <h2>{% trans "Recent won, lost or forgiven leads" %}</h2>
-                {% render_table recent_archived_leads_table %}
-                {% with "recent_archived_leads_table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
-            {% endif %}
+            <table id="recent_archived_leads" class="table table-striped table-bordered table-condensed" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>{% trans "Client" %}</th>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Deal id" %}</th>
+                        <th>{% trans "Subsidiary" %}</th>
+                        <th>{% trans "Responsible" %}</th>
+                        <th>{% trans "Staffing" %}</th>
+                        <th>{% trans "Amount (k€)" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Proba" %}</th>
+                        <th>{% trans "Creation date" %}</th>
+                        <th>{% trans "Due date" %}</th>
+                        <th>{% trans "Start date" %}</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            {% with "recent_archived_leads" as table_id %}
+                {% with recent_archived_data_url as data_url %}
+                    {% with  '"columnDefs": [{ "orderable": false, "targets": [5,8] }, { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}], "pageLength": 25, order: [[9, "asc"]]' as datatable_options %}
+                        {% include "core/_datatables.html" %}
+                    {% endwith %}
+                {% endwith %}
+            {% endwith %}
         </div>
     </div>
 
 
     <script type="text/JavaScript">
-        $(".proba").popover({'trigger': 'hover', 'html': true});
+        $(document).ready(function() {
+            // display proba popover
+            $(".dataTable").on('draw.dt', function() {
+                    $(".proba").popover({'trigger': 'hover', 'html': true});
+                });
+        });
     </script>
 
 {% endblock %}

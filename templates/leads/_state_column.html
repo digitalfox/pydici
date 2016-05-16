@@ -1,0 +1,14 @@
+{# Lead proba display #}
+{# context: lead.getStateProbal #}
+
+
+{% if proba %}
+    <div class='proba' data-toggle='tooltip' data-content='<table style="margin-bottom:0" class="table table-striped table-condensed">{% for code, state, score in proba %}<tr><td>{{state }}</td><td>{{ score }} %</td></tr>{% endfor %}</table>'>
+        <div
+            {% ifequal proba.0.0 "WON" %}style="color:green" class="glyphicon glyphicon-ok-circle"{% endifequal %}
+            {% ifequal proba.0.0 "LOST" %}style="color:red" class="glyphicon glyphicon-remove-circle"{% endifequal %}
+            {% ifequal proba.0.0 "FORGIVEN" %}style="color:orange" class="glyphicon glyphicon-ban-circle"{% endifequal %}
+            >
+        </div><small> {{proba.0.2}}&nbsp;%</small>
+    </div>
+{% endif %}

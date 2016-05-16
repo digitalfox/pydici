@@ -18,17 +18,15 @@ from django.core import urlresolvers
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
-from django.db.models import Q, Sum
+from django.db.models import Sum
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 from django.db.models.query import QuerySet
 
 from taggit.models import Tag
-from django_tables2 import RequestConfig
 
 from core.utils import send_lead_mail, sortedValues, COLORS
 from leads.models import Lead
-from leads.tables import ActiveLeadsTable, RecentArchivedLeadsTable, AllLeadsTable
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
 from leads.learn import predict_tags
@@ -242,20 +240,9 @@ def mail_lead(request, lead_id=0):
 @pydici_non_public
 @pydici_feature("leads")
 def review(request):
-    today = datetime.today()
-    delay = timedelta(days=40)
-    recentArchivedLeads = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
-                                                      Q(state="SLEEPING"))
-    recentArchivedLeads = recentArchivedLeads.order_by("state", "-update_date").select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
-    recentArchivedLeadsTable = RecentArchivedLeadsTable(recentArchivedLeads)
-    RequestConfig(request, paginate={"per_page": 50}).configure(recentArchivedLeadsTable)
-
-    activeLeadsTable = ActiveLeadsTable(Lead.objects.active().select_related("client__contact", "client__organisation__company", "responsible", "subsidiary"))
-    RequestConfig(request, paginate={"per_page": 50}).configure(activeLeadsTable)
     return render(request, "leads/review.html",
-                  {"recent_archived_leads": recentArchivedLeads,
-                   "recent_archived_leads_table": recentArchivedLeadsTable,
-                   "active_leads_table": activeLeadsTable,
+                  {"active_data_url": urlresolvers.reverse('active_lead_table_DT'),
+                   "recent_archived_data_url": urlresolvers.reverse('recent_archived_lead_table_DT'),
                    "user": request.user})
 
 
@@ -263,12 +250,8 @@ def review(request):
 @pydici_feature("leads")
 def leads(request):
     """All leads page"""
-    leads = Lead.objects.all().select_related()
-    leadsTable = AllLeadsTable(leads)
-    RequestConfig(request, paginate={"per_page": 50}).configure(leadsTable)
-
     return render(request, "leads/leads.html",
-                  {"leads_table": leadsTable,
+                  {"data_url" : urlresolvers.reverse('lead_table_DT'),
                    "user": request.user})
 
 
@@ -276,6 +259,7 @@ def leads(request):
 @pydici_feature("leads")
 def tag(request, tag_id):
     """Displays leads for given tag"""
+
     return render(request, "leads/tag.html",
                   {"leads": Lead.objects.filter(tags=tag_id),
                    "tag": Tag.objects.get(id=tag_id),

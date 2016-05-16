@@ -1,6 +1,6 @@
 {# Standard pydici datatables definition #}
 {# context: table_id #}
-{# context: datatable_options #}
+{# context: table_id, data_url #}
 
 {% load i18n %}
 
@@ -9,9 +9,10 @@
         var oTable = $('#{{ table_id }}').dataTable({
             "processing": true,
             "serverSide": true,
-            "ajax": "{% url 'lead_table_DT' %}",
+            "ajax": "{{ data_url }}",
             buttons: ['excel', 'csv', 'print'],
             dom: "<'row'<'col-md-12'f>><'row'<'col-md-12'tr>><'row'<'col-md-3'l><'col-md-3'B><'col-md-6'p>>",
+            {% if datatable_options %}{{ datatable_options }}, {% endif %}
             "language": {
                 "decimal": ",",
                 "thousands": " ",

@@ -7,70 +7,14 @@ Pydici leads tables
 
 from django.utils.translation import ugettext as _
 from django.db.models import Q
+from django.template.loader import get_template
 
-import django_tables2 as tables
-from django_tables2.utils import A
 from django_datatables_view.base_datatable_view import BaseDatatableView
+
+from datetime import datetime, timedelta
 
 from leads.models import Lead
 from core.utils import TABLES2_HIDE_COL_MD
-
-class BaseLeadsTable(tables.Table):
-    client = tables.LinkColumn(verbose_name=_("Client"), viewname="crm.views.company_detail",
-                               args=[A("client.organisation.company.id")])
-    name = tables.LinkColumn(verbose_name=_("Name"), viewname="leads.views.detail", args=[A("pk")])
-    responsible = tables.LinkColumn(accessor="responsible", viewname="people.views.consultant_home",
-                                    args=[A("responsible.id")])
-    creation_date = tables.TemplateColumn("""<span title="{{ record.creation_date|date:"YmdHis" }}">{{ record.creation_date|date:"j F" }}</span>""",
-                                          attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
-
-
-    class Meta:
-        model = Lead
-        sequence = ("client", "name", "deal_id", "subsidiary", "responsible", "sales", "state", "creation_date")
-        fields = sequence
-
-
-class LeadsTable(BaseLeadsTable):
-    staffing_list = tables.Column(attrs=TABLES2_HIDE_COL_MD)
-    due_date = tables.TemplateColumn("""<span title="{{ record.due_date|date:"Ymd" }}">{{ record.due_date|date:"j F"|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
-    start_date = tables.TemplateColumn("""<span title="{{ record.start_date|date:"Ymd" }}">{{ record.start_date|date:"j F"|default_if_none:"-" }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title span is just used to have an easy to parse hidden value for sorting
-    proba = tables.TemplateColumn("""{% with record.getStateProba as proba %}{% if proba %}
-                                            <div class='proba' data-toggle='tooltip' data-content='<table style="margin-bottom:0" class="table table-striped table-condensed">{% for code, state, score in proba %}<tr><td>{{state }}</td><td>{{ score }} %</td></tr>{% endfor %}</table>'>
-                                                <div
-                                                    {% ifequal proba.0.0 "WON" %}style="color:green" class="glyphicon glyphicon-ok-circle"{% endifequal %}
-                                                    {% ifequal proba.0.0 "LOST" %}style="color:red" class="glyphicon glyphicon-remove-circle"{% endifequal %}
-                                                    {% ifequal proba.0.0 "FORGIVEN" %}style="color:orange" class="glyphicon glyphicon-ban-circle"{% endifequal %}
-                                                    >
-                                                </div><small> {{proba.0.2}}&nbsp;%</small>
-                                            </div>
-                                     {% endif %}{% endwith %}""", attrs=TABLES2_HIDE_COL_MD)
-
-
-    class Meta:
-        sequence = ("client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba", "creation_date", "due_date", "start_date")
-        fields = sequence
-        attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed"}
-
-
-class ActiveLeadsTable(LeadsTable):
-    class Meta:
-        orderable = False  # Sort is done by jquery.datatable on client side
-        attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "active_leads_table"}
-        prefix = "active_leads_table"
-        order_by = "creation_date"
-
-
-class RecentArchivedLeadsTable(LeadsTable):
-    class Meta:
-        orderable = False  # Sort is done by jquery.datatable on client side
-        attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "recent_archived_leads_table"}
-        prefix = "recent_archived_leads_table"
-
-class AllLeadsTable(BaseLeadsTable):
-    class Meta:
-        attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "all_leads_table"}
-
 
 
 class LeadTableDT(BaseDatatableView):
@@ -78,6 +22,7 @@ class LeadTableDT(BaseDatatableView):
     columns = ["client", "name", "deal_id", "subsidiary", "responsible", "sales", "state", "creation_date"]
     order_columns = columns
     max_display_length = 500
+    probaTemplate = get_template("leads/_state_column.html")
 
     def get_initial_queryset(self):
         return Lead.objects.all().select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
@@ -97,6 +42,10 @@ class LeadTableDT(BaseDatatableView):
                 return ""
         elif column == "creation_date":
             return row.creation_date.strftime("%d/%m/%y")
+        elif column == "staffing_list":
+            return row.staffing_list()
+        elif column == "proba":
+            return self.probaTemplate.render({"proba": row.getStateProba()})
         else:
             return super(LeadTableDT, self).render_column(row, column)
 
@@ -112,3 +61,29 @@ class LeadTableDT(BaseDatatableView):
                            Q(client__organisation__name__iexact=search) |
                            Q(deal_id__icontains=search))
         return qs
+
+
+class ActiveLeadTableDT(LeadTableDT):
+    columns = ["client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba", "creation_date", "due_date", "start_date"]
+    order_columns = columns
+    dateTemplate = get_template("leads/_date_column.html")
+
+    def get_initial_queryset(self):
+        return Lead.objects.active().select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+
+    def render_column(self, row, column):
+        if column in ("creation_date", "due_date", "start_date"):
+            return self.dateTemplate.render({"date": getattr(row, column)})
+        else:
+            return super(ActiveLeadTableDT, self).render_column(row, column)
+
+
+class RecentArchivedLeadTableDT(ActiveLeadTableDT):
+    def get_initial_queryset(self):
+        today = datetime.today()
+        delay = timedelta(days=40)
+        qs = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
+                                                            Q(state="SLEEPING"))
+        qs = qs.order_by("state", "-update_date").select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+        return qs
+
