@@ -1801,23 +1801,23 @@ msgstr ""
 "<p>Si vous pensez qu'il s'agit d'une anomalie, merci d'envoyer\n"
 "un mail à un administrateur pour mettre à jour vos droits :</p>\n"
 
-#: templates/core/_datatables.html:22 templates/leads/leads.html:41
+#: templates/core/_datatables-dj-tables.html:22 templates/leads/leads.html:41
 msgid "Nothing found"
 msgstr "Aucun résultat"
 
-#: templates/core/_datatables.html:23 templates/leads/leads.html:42
+#: templates/core/_datatables-dj-tables.html:23 templates/leads/leads.html:42
 msgid "Showing _START_ to _END_ of _TOTAL_ records"
 msgstr "Affichage de _START_ à _END_ sur _TOTAL_ enregistrements"
 
-#: templates/core/_datatables.html:24 templates/leads/leads.html:43
+#: templates/core/_datatables-dj-tables.html:24 templates/leads/leads.html:43
 msgid "Showing 0 to 0 of 0 records"
 msgstr "Affichage de 0 à 0 sur 0 enregistrement"
 
-#: templates/core/_datatables.html:25 templates/leads/leads.html:44
+#: templates/core/_datatables-dj-tables.html:25 templates/leads/leads.html:44
 msgid "(filtered from _MAX_ total records)"
 msgstr "(filtrés parmi _MAX_ enregistrements au total)"
 
-#: templates/core/_datatables.html:26 templates/leads/leads.html:45
+#: templates/core/_datatables-dj-tables.html:26 templates/leads/leads.html:45
 msgid "Search:"
 msgstr "Rechercher :"
 

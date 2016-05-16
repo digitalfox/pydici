@@ -55,7 +55,7 @@
         </tr>
         </tfoot>
         </table>
-    {% with "overdue_bills" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+    {% with "overdue_bills" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
     {% endif %}
     {% if soondue_bills %}
     <br/><br/>
@@ -103,7 +103,7 @@
         </tr>
         </tfoot>
         </table>
-        {% with "due_soon_bills" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+        {% with "due_soon_bills" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
     {% endif %}
     {% if litigious_bills %}
         <br/><br/>
@@ -151,7 +151,7 @@
         </tr>
         </tfoot>
         </table>
-    {% with "litigious_bills" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+    {% with "litigious_bills" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
     {% endif %}
     
     {% if recent_bills %}
@@ -189,7 +189,7 @@
         {% endfor %}
         </tbody>
         </table>
-        {% with "recent_bills" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+        {% with "recent_bills" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
     {% endif %}
     {% if leads_without_bill %}
         <br/><br/>
@@ -218,7 +218,7 @@
         {% endfor %}
         </tbody>
         </table>
-        {% with "recent_leads" as table_id %}{% include "core/_datatables.html" %}{% endwith %}
+        {% with "recent_leads" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
     </div>
     {% endif %}
     

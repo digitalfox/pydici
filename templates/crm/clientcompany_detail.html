@@ -120,7 +120,7 @@
         {% with business_contacts as contacts %}
         {% with "business_contacts_table" as table_id %}
              {% include "crm/_contact_list.html" %}
-             {% include "core/_datatables.html" %}
+             {% include "core/_datatables-dj-tables.html" %}
         {% endwith %}
         {% endwith %}
         <br/><br/>
@@ -128,7 +128,7 @@
         {% with mission_contacts as contacts %}
         {% with "mission_contacts_table" as table_id %}
              {% include "crm/_contact_list.html" %}
-             {% include "core/_datatables.html" %}
+             {% include "core/_datatables-dj-tables.html" %}
         {% endwith %}
         {% endwith %}
         
@@ -172,7 +172,7 @@
             </tbody>
         </table>
         {% with "admin_contacts_table" as table_id %}
-             {% include "core/_datatables.html" %}
+             {% include "core/_datatables-dj-tables.html" %}
         {% endwith %}
         {% if pydici_feature.contacts_write %}
         <br/><a class="btn btn-default" href="{% url 'administrative_contact_add' %}?company={{ company.id|safe }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
