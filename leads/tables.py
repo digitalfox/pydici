@@ -75,10 +75,12 @@ class AllLeadsTable(BaseLeadsTable):
 
 class LeadTableDT(BaseDatatableView):
     """Leads tables backend for datatables"""
-    model = Lead
     columns = ["client", "name", "deal_id", "subsidiary", "responsible", "sales", "state", "creation_date"]
     order_columns = columns
     max_display_length = 500
+
+    def get_initial_queryset(self):
+        return Lead.objects.all().select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
 
     def render_column(self, row, column):
         if column == "responsible":

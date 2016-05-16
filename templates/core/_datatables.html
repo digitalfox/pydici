@@ -1,0 +1,35 @@
+{# Standard pydici datatables definition #}
+{# context: table_id #}
+{# context: datatable_options #}
+
+{% load i18n %}
+
+<script type="text/JavaScript">
+    $(document).ready(function() {
+        var oTable = $('#{{ table_id }}').dataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": "{% url 'lead_table_DT' %}",
+            buttons: ['excel', 'csv', 'print'],
+            dom: "<'row'<'col-md-12'f>><'row'<'col-md-12'tr>><'row'<'col-md-3'l><'col-md-3'B><'col-md-6'p>>",
+            "language": {
+                "decimal": ",",
+                "thousands": " ",
+                "processing": "{% trans 'Processing...' %}",
+                "zeroRecords": "{% trans 'Nothing found' %}",
+                "info": "{% trans 'Showing _START_ to _END_ of _TOTAL_ records' %}",
+                "infoEmpty": "{% trans 'Showing 0 to 0 of 0 records' %}",
+                "infoFiltered": "{% trans '(filtered from _MAX_ total records)' %}",
+                "search": "{% trans 'Search:' %}",
+                "lengthMenu": "{% trans 'Show _MENU_ entries' %}",
+                paginate:{
+                    first:'<<',
+                    last: '>>',
+                    next: '>',
+                    previous: '<'
+                },
+            },
+        });
+    });
+
+</script>
