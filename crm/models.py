@@ -345,6 +345,9 @@ class Client(models.Model):
             missions.extend(lead.mission_set.filter(active=True))
         return missions
 
+    def get_absolute_url(self):
+        return urlresolvers.reverse("company_detail", args=[self.organisation.company.id, ])
+
     class Meta:
         ordering = ["organisation", "contact"]
         verbose_name = _("Client")

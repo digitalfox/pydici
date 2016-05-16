@@ -6,9 +6,11 @@ Pydici leads tables
 """
 
 from django.utils.translation import ugettext as _
+from django.db.models import Q
 
 import django_tables2 as tables
 from django_tables2.utils import A
+from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from leads.models import Lead
 from core.utils import TABLES2_HIDE_COL_MD
@@ -68,3 +70,43 @@ class RecentArchivedLeadsTable(LeadsTable):
 class AllLeadsTable(BaseLeadsTable):
     class Meta:
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "all_leads_table"}
+
+
+
+class LeadTableDT(BaseDatatableView):
+    """Leads tables backend for datatables"""
+    model = Lead
+    columns = ["client", "name", "deal_id", "subsidiary", "responsible", "sales", "state", "creation_date"]
+    order_columns = columns
+    max_display_length = 500
+
+    def render_column(self, row, column):
+        if column == "responsible":
+            if row.responsible:
+                return u"<a href='{0}'>{1}</a>".format(row.responsible.get_absolute_url(), row.responsible.name)
+            else:
+                return u"-"
+        elif column == "client":
+            return u"<a href='{0}'>{1}</a>".format(row.client.get_absolute_url(), row.client)
+        elif column == "sales":
+            if row.sales:
+                return round(float(row.sales),3)
+            else:
+                return ""
+        elif column == "creation_date":
+            return row.creation_date.strftime("%d/%m/%y")
+        else:
+            return super(LeadTableDT, self).render_column(row, column)
+
+    def filter_queryset(self, qs):
+        """ simple search on some attributes"""
+        search = self.request.GET.get(u'search[value]', None)
+        if search:
+            qs = qs.filter(Q(name__icontains=search) |
+                           Q(description__icontains=search) |
+                           Q(tags__name__iexact=search) |
+                           Q(client__contact__name__icontains=search) |
+                           Q(client__organisation__company__name__icontains=search) |
+                           Q(client__organisation__name__iexact=search) |
+                           Q(deal_id__icontains=search))
+        return qs

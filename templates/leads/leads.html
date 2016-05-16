@@ -1,0 +1,59 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+
+{% block title %}
+{% trans "Leads" %}
+{% endblock %}
+
+{% block content %}
+
+    <table id="lead_table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>{% trans "client" %}</th>
+                <th>{% trans "name" %}</th>
+                <th>{% trans "deal id" %}</th>
+                <th>{% trans "subsidiary" %}</th>
+                <th>{% trans "responsible" %}</th>
+                <th>{% trans "amount (k€)" %}</th>
+                <th>{% trans "status" %}</th>
+                <th>{% trans "creation date" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+<script type="text/JavaScript">
+    $(document).ready(function() {
+        var oTable = $('#lead_table').dataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": "{% url 'lead_table_DT' %}",
+            buttons: ['excel', 'csv', 'print'],
+            dom: "<'row'<'col-md-12'f>><'row'<'col-md-12'tr>><'row'<'col-md-3'l><'col-md-3'B><'col-md-6'p>>",
+            "language": {
+                "decimal": ",",
+                "thousands": " ",
+                "processing": "{% trans 'Processing...' %}",
+                "zeroRecords": "{% trans 'Nothing found' %}",
+                "info": "{% trans 'Showing _START_ to _END_ of _TOTAL_ records' %}",
+                "infoEmpty": "{% trans 'Showing 0 to 0 of 0 records' %}",
+                "infoFiltered": "{% trans '(filtered from _MAX_ total records)' %}",
+                "search": "{% trans 'Search:' %}",
+                "lengthMenu": "{% trans 'Show _MENU_ entries' %}",
+                paginate:{
+                    first:'<<',
+                    last: '>>',
+                    next: '>',
+                    previous: '<'
+                },
+            },
+        });
+    });
+
+</script>
+
+{% endblock %}

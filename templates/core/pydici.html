@@ -17,7 +17,9 @@
     <link href="{{ MEDIA_URL }}css/iconic.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/jquery-ui-1.10.4.custom.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}tables2/css/screen.css" rel="stylesheet">
-    <link href="{{ MEDIA_URL }}css/jquery.dataTables.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/t/bs/jszip-2.5.0,dt-1.10.11,b-1.1.2,b-html5-1.1.2,b-print-1.1.2,fh-3.1.1,r-2.0.2/datatables.min.css"/>
+
     {% import_django_select2_css %}
     <link href="{{ MEDIA_URL }}css/select2-bootstrap.css" rel="stylesheet">
     {% block extracss %}{% endblock %}
@@ -51,14 +53,13 @@
     <!-- JavaScript -->
     <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.10.4.custom.min.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/datatables_custom_sort.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.js"></script>
     {% import_django_select2_js %}
     {% ifequal LANGUAGE_CODE "fr-fr" %}
         <script type="text/javascript" src="{{ MEDIA_URL }}js/select2_locale_fr.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.fr.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/t/bs/jszip-2.5.0,dt-1.10.11,b-1.1.2,b-html5-1.1.2,b-print-1.1.2,fh-3.1.1,r-2.0.2/datatables.min.js"></script>
     {% endifequal %}
     
     {% block extrajs %}{% endblock %}
@@ -86,18 +87,17 @@
     });
     -->
     </script>
-    
 
    {% if debug %} 
-    <script type="text/javascript">
-    // Fix userswitch css to show it
-    <!--
-    $(document).ready(function() {
+        <script type="text/javascript">
+        // Fix userswitch css to show it
+        <!--
+        $(document).ready(function() {
 
-        $(".userswitch").css("top", "60px");
-    });
-    -->
-    </script>
+            $(".userswitch").css("top", "60px");
+        });
+        -->
+        </script>
     {% endif %}
 
 </body></html>
