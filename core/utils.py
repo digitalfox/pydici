@@ -396,6 +396,7 @@ def _get_user_features(user):
 
     Results are cached to reduce the number of SQL queries.
     """
+    #BUG: crash with anonymous user. Should check that user is authenticated first (and before)
     key = "core._get_user_features_" + user.username
     res = cache.get(key)
     if res is None:

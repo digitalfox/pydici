@@ -5,7 +5,6 @@
 """
 
 from django.conf.urls import patterns, url
-from django.contrib.auth.decorators import login_required
 from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT
 
 
@@ -29,7 +28,7 @@ leads_urls = patterns('leads.views',
                       url(r'^pivotable/all/(?P<year>\d+)/', 'leads_pivotable', name="leads-pivotable-year"),
                       url(r'^pivotable/all', 'leads_pivotable', {"year": "all"}, name="leads-pivotable-all"),
                       url(r'^pivotable/lead/(?P<lead_id>\d+)$', 'lead_pivotable', name="lead-pivotable"),
-                      url(r'^datatable/all-lead/data/$', login_required(LeadTableDT.as_view()), name='lead_table_DT'),
-                      url(r'^datatable/active-lead/data/$', login_required(ActiveLeadTableDT.as_view()), name='active_lead_table_DT'),
-                      url(r'^datatable/recent-archived-lead/data/$', login_required(RecentArchivedLeadTableDT.as_view()), name='recent_archived_lead_table_DT'),
+                      url(r'^datatable/all-lead/data/$', LeadTableDT.as_view(), name='lead_table_DT'),
+                      url(r'^datatable/active-lead/data/$', ActiveLeadTableDT.as_view(), name='active_lead_table_DT'),
+                      url(r'^datatable/recent-archived-lead/data/$', RecentArchivedLeadTableDT.as_view(), name='recent_archived_lead_table_DT'),
                       )

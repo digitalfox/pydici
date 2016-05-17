@@ -14,10 +14,15 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from datetime import datetime, timedelta
 
 from leads.models import Lead
-from core.utils import TABLES2_HIDE_COL_MD
+from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 
 
-class LeadTableDT(BaseDatatableView):
+class LeadsViewsReadMixin(PydiciNonPublicdMixin, PydiciFeatureMixin):
+    """Internal access to leads data for CB views"""
+    pydici_feature = set(["leads_list_all", "leads"])
+
+
+class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
     """Leads tables backend for datatables"""
     columns = ["client", "name", "deal_id", "subsidiary", "responsible", "sales", "state", "creation_date"]
     order_columns = columns
@@ -67,6 +72,7 @@ class ActiveLeadTableDT(LeadTableDT):
     columns = ["client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba", "creation_date", "due_date", "start_date"]
     order_columns = columns
     dateTemplate = get_template("leads/_date_column.html")
+    pydici_feature = "leads"
 
     def get_initial_queryset(self):
         return Lead.objects.active().select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
