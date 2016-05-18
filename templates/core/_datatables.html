@@ -9,6 +9,7 @@
         var oTable = $('#{{ table_id }}').dataTable({
             "processing": true,
             "serverSide": true,
+            "deferRender": true,
             "ajax": "{{ data_url }}",
             buttons: ['excel', 'csv', 'print'],
             dom: "<'row'<'col-md-12'f>><'row'<'col-md-12'tr>><'row'<'col-md-3'l><'col-md-3'B><'col-md-6'p>>",
