@@ -21,7 +21,28 @@
     <br/><a class="btn btn-default" href="{% url 'all-missions' %}">{% trans "Also display inactive missions" %}</a><br/><br/>
 {% endif %}
 
-{% render_table missionTable %}
+<table id="mission_table" class="table table-striped table-hover table-condensed table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>{% trans "name" %}</th>
+				<th>{% trans "subsidiary" %}</th>
+				<th>{% trans "responsible" %}</th>
+				<th>{% trans "nature" %}</th>
+                <th>{% trans "Mission id" %}</th>
+				<th>{% trans "amount (k€)" %}</th>
+                <th>{% trans "Forecast in future" %}</th>
+                <th>{% trans "Up to date forecast" %}</th>
+                <th>{% trans "Archiving" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+
+{% with "mission_table" as table_id %}
+    {% include "core/_datatables.html" %}
+{% endwith %}
 
 <script type="text/JavaScript">
 <!--
@@ -38,6 +59,5 @@
 -->
 </script>
 
-{% with "missions-table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
 
 {% endblock %}

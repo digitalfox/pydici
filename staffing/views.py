@@ -40,7 +40,6 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent
-from staffing.tables import MissionTable
 from staffing.forms import MissionForm
 
 
@@ -103,16 +102,12 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
 def missions(request, onlyActive=True):
     """List of missions"""
     if onlyActive:
-        missions = Mission.objects.filter(active=True)
-        allMissions = False
+        data_url = urlresolvers.reverse('active_mission_table_DT')
     else:
-        missions = Mission.objects.all()
-        allMissions = True
-    missionTable = MissionTable(missions)
-    RequestConfig(request, paginate={"per_page": 50}).configure(missionTable)
+        data_url = urlresolvers.reverse('all_mission_table_DT')
     return render(request, "staffing/missions.html",
-                  {"missionTable": missionTable,
-                   "all": allMissions,
+                  {"all": not onlyActive,
+                   "data_url": data_url,
                    "user": request.user})
 
 
@@ -1108,6 +1103,7 @@ def mission_consultant_rate(request):
 
 
 @pydici_non_public
+@pydici_feature("staffing")
 def mission_update(request):
     """Update mission attribute (probability and billing_mode).
     This is intended to be used through a jquery jeditable call"""

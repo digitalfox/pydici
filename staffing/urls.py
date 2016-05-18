@@ -6,6 +6,7 @@
 
 from django.conf.urls import patterns, url
 import staffing.views as v
+import staffing.tables as t
 
 staffing_urls = patterns('staffing.views',
                          url(r'^pdcreview/?$', 'pdc_review', name='pdcreview-index'),
@@ -33,6 +34,8 @@ staffing_urls = patterns('staffing.views',
                          (r'^contacts/mission/(?P<mission_id>\d+)/$', 'mission_contacts'),
                          (r'^rate/?$', 'mission_consultant_rate'),
                          (r'^pdc-detail/(?P<consultant_id>\d+)/(?P<staffing_date>\d+)/?$', 'pdc_detail'),
+                         url(r'^datatable/all-missions/data/$', t.MissionsTableDT.as_view(), name='all_mission_table_DT'),
+                         url(r'^datatable/active-missions/data/$', t.ActiveMissionsTableDT.as_view(), name='active_mission_table_DT'),
                          (r'^graph/timesheet-rates/?$', 'graph_timesheet_rates_bar_jqp'),
                          (r'^graph/timesheet-rates/subsidiary/(?P<subsidiary_id>\d+)$', 'graph_timesheet_rates_bar_jqp'),
                          (r'^graph/timesheet-rates/team/(?P<team_id>\d+)$', 'graph_timesheet_rates_bar_jqp'),
