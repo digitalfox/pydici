@@ -242,7 +242,14 @@ def mail_lead(request, lead_id=0):
 def review(request):
     return render(request, "leads/review.html",
                   {"active_data_url": urlresolvers.reverse('active_lead_table_DT'),
+                   "active_data_options": ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
+                                                             { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}],
+                                               "pageLength": 25,
+                                               "order": [[9, "asc"]] ''',
                    "recent_archived_data_url": urlresolvers.reverse('recent_archived_lead_table_DT'),
+                   "recent_archived_data_options" : ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
+                                                                       { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}],
+                                                         "order": [[9, "asc"]] ''',
                    "user": request.user})
 
 

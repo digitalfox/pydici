@@ -41,7 +41,7 @@
             </table>
             {% with "active_leads" as table_id %}
                 {% with active_data_url as data_url %}
-                    {% with  '"columnDefs": [{ "orderable": false, "targets": [5,8] }, { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}], "pageLength": 25, order: [[9, "asc"]]' as datatable_options %}
+                    {% with  active_data_options as datatable_options %}
                         {% include "core/_datatables.html" %}
                     {% endwith %}
                 {% endwith %}
@@ -75,7 +75,7 @@
             </table>
             {% with "recent_archived_leads" as table_id %}
                 {% with recent_archived_data_url as data_url %}
-                    {% with  '"columnDefs": [{ "orderable": false, "targets": [5,8] }, { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}], "pageLength": 25, order: [[9, "asc"]]' as datatable_options %}
+                    {% with  recent_archived_data_options as datatable_options %}
                         {% include "core/_datatables.html" %}
                     {% endwith %}
                 {% endwith %}
