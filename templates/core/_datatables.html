@@ -11,7 +11,7 @@
             "serverSide": true,
             "deferRender": true,
             "ajax": "{{ data_url }}",
-            buttons: ['excel', 'csv', 'print'],
+            buttons: ['excel', 'csv', { extend: 'print', text: '{% trans "Print" %}'}],
             dom: "<'row'<'col-md-12'f>><'row'<'col-md-12'tr>><'row'<'col-md-3'l><'col-md-3'B><'col-md-6'p>>",
             {% if datatable_options %}{{ datatable_options|safe }}, {% endif %}
             "language": {
