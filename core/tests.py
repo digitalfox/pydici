@@ -710,7 +710,7 @@ def run_casper(test_filename, client, **kwargs):
         kwargs["log-level"] = "debug"
     else:
         kwargs["log-level"] = "error"
-    cmd = ["casperjs", "test"]
+    cmd = ["casperjs", "--web-security=no", "test"]
     cmd.extend([("--%s=%s" % i) for i in kwargs.iteritems()])
     cmd.append(test_filename)
     try:
