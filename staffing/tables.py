@@ -40,14 +40,16 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
             qs = qs.filter(Q(deal_id__icontains=search) |
                            Q(description__icontains=search) |
                            Q(description__icontains=search) |
+                           Q(subsidiary__name__icontains=search) |
                            Q(lead__name__icontains=search) |
+                           Q(lead__responsible__name__icontains=search) |
                            Q(lead__description__icontains=search) |
                            Q(lead__tags__name__iexact=search) |
                            Q(lead__client__contact__name__icontains=search) |
                            Q(lead__client__organisation__company__name__icontains=search) |
                            Q(lead__client__organisation__name__iexact=search) |
                            Q(lead__deal_id__icontains=search)
-                           )
+                           ).distinct()
         return qs
 
     def render_column(self, row, column):
