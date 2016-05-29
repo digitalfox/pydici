@@ -18,11 +18,10 @@
     <link href="{{ MEDIA_URL }}css/jquery-ui-1.10.4.custom.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}tables2/css/screen.css" rel="stylesheet">
     {{ form.media.css }} {# select2 #}
+    <link href="{{ MEDIA_URL }}css/select2-bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/t/bs/jszip-2.5.0,dt-1.10.11,b-1.1.2,b-html5-1.1.2,b-print-1.1.2,fh-3.1.1,r-2.0.2/datatables.min.css"/>
 
-
-    <link href="{{ MEDIA_URL }}css/select2-bootstrap.min.css" rel="stylesheet">
     {% block extracss %}{% endblock %}
     
     <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
@@ -88,9 +87,7 @@
 
         // Load select2 stuff with bootstrap theme for forms
         {% if form %}
-            console.log("loading select2, hey");
             $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100%"});
-            //$('.django-select2').djangoSelect2();
         {% endif %}
     });
     -->

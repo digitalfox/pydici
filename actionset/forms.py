@@ -7,10 +7,7 @@ Actions form setup
 from django import forms
 from django.utils.translation import ugettext as _
 
-#from django_select2.widgets import AutoHeavySelect2Widget
-
-
-#from core.forms import UserChoices
+from core.forms import UserChoices
 
 
 class LaunchActionSetForm(forms.Form):

@@ -14,7 +14,7 @@ from django import forms
 
 from crispy_forms.layout import Layout, Div, Column, Fieldset, Field
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
-#from django_select2 import AutoModelSelect2Field
+from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
 
 
@@ -23,28 +23,32 @@ from people.models import Consultant, SalesMan
 from crm.models import Client, BusinessBroker
 from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
 from crm.forms import ClientChoices, BusinessBrokerChoices
-from core.forms import PydiciSelect2Field, PydiciCrispyModelForm
+from core.forms import PydiciCrispyModelForm
 
 
-# class LeadChoices(PydiciSelect2Field, AutoModelSelect2Field):
-#     queryset = Lead.objects.distinct()
-#     search_fields = ["name__icontains", "description__icontains", "action__icontains",
-#                      "responsible__name__icontains", "responsible__trigramme__icontains",
-#                      "salesman__name__icontains", "salesman__trigramme__icontains",
-#                      "client__contact__name__icontains", "client__organisation__company__name__icontains",
-#                      "client__organisation__name__icontains",
-#                      "staffing__trigramme__icontains", "staffing__name__icontains",
-#                      "deal_id__icontains", "client_deal_id__icontains"]
-#
-#     def label_from_instance(self, obj):
-#         return smart_unicode("%s (%s)" % (unicode(obj), obj.deal_id))
-#
-#
-# class CurrentLeadChoices(LeadChoices):
-#     """Limit Leads to those who have active (non archived) missions"""
-#     queryset = Lead.objects.filter(mission__active=True).distinct()
-#
-#
+class LeadChoices(ModelSelect2Widget):
+    model = Lead
+    search_fields = ["name__icontains", "description__icontains", "action__icontains",
+                     "responsible__name__icontains", "responsible__trigramme__icontains",
+                     "salesman__name__icontains", "salesman__trigramme__icontains",
+                     "client__contact__name__icontains", "client__organisation__company__name__icontains",
+                     "client__organisation__name__icontains",
+                     "staffing__trigramme__icontains", "staffing__name__icontains",
+                     "deal_id__icontains", "client_deal_id__icontains"]
+
+    def get_queryset(self):
+        return Lead.objects.distinct()
+
+    def label_from_instance(self, obj):
+        return smart_unicode("%s (%s)" % (unicode(obj), obj.deal_id))
+
+
+class CurrentLeadChoices(LeadChoices):
+    """Limit Leads to those who have active (non archived) missions"""
+    def get_queryset(self):
+        return Lead.objects.filter(mission__active=True).distinct()
+
+
 class LeadForm(PydiciCrispyModelForm):
     class Meta:
         model = Lead

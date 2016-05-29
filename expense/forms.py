@@ -13,26 +13,28 @@ from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Field
-#from django_select2.fields import AutoModelSelect2MultipleField
-#from django_select2.views import NO_ERR_RESP
 import workflows.utils as wf
+from django_select2.forms import ModelSelect2MultipleWidget
 
 from expense.models import Expense
-#from leads.forms import CurrentLeadChoices
-from core.forms import PydiciSelect2Field, PydiciCrispyForm
+from leads.forms import CurrentLeadChoices
+from core.forms import PydiciCrispyForm
 
 
-# class ExpenseMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
-#     queryset = Expense.objects
-#     search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains",
-#                      "lead__name__icontains", "lead__deal_id__icontains", "lead__client__organisation__name",
-#                      "lead__client__organisation__company__name__icontains", "lead__client__organisation__company__code__icontains"]
-#
+class ExpenseMChoices(ModelSelect2MultipleWidget):
+    model = Expense
+    search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains",
+                     "lead__name__icontains", "lead__deal_id__icontains", "lead__client__organisation__name",
+                     "lead__client__organisation__company__name__icontains", "lead__client__organisation__company__code__icontains"]
 
-# class ChargeableExpenseMChoices(ExpenseMChoices):
-#     queryset = Expense.objects.filter(chargeable=True)
-#
-#
+
+class ChargeableExpenseMChoices(ExpenseMChoices):
+    model = Expense
+
+    def get_queryset(self):
+        return Expense.objects.filter(chargeable=True)
+
+
 # class PayableExpenseMChoices(ExpenseMChoices):
 #     queryset = Expense.objects
 #
@@ -68,9 +70,9 @@ class ExpenseForm(forms.ModelForm):
         model = Expense
         fields = ("description", "lead", "chargeable", "amount", "category", "receipt", "expense_date", "corporate_card", "comment")
         widgets = {"description": TextInput(attrs={"size": 40}),  # Increase default size
-                   "comment": Textarea(attrs={'cols': 17, 'rows': 2})}  # Reduce height and increase width
+                   "comment": Textarea(attrs={'cols': 17, 'rows': 2}),  # Reduce height and increase width
+                   "lead": CurrentLeadChoices}
 
-   # lead = CurrentLeadChoices(required=False, label=_("Lead"))
 
     def __init__(self, *args, **kwargs):
         super(ExpenseForm, self).__init__(*args, **kwargs)

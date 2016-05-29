@@ -6,33 +6,24 @@ Core form setup
 """
 
 from django import forms
-from django.core.validators import EMPTY_VALUES
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-#from django_select2.fields import AutoModelSelect2Field
+from django_select2.forms import ModelSelect2Widget
 
 
 class SearchForm(forms.Form):
     search = forms.CharField(max_length=100)
 
 
-class PydiciSelect2Field():
-    empty_values = EMPTY_VALUES
+class UserChoices(ModelSelect2Widget):
+    model = User
+    search_fields = ["username__icontains", "first_name__icontains", "last_name__icontains"]
 
-    def security_check(self, request, *args, **kwargs):
-        """Restrict access to authenticated and active users only"""
-        return request.user.is_authenticated() and request.user.is_active
-
-
-# class UserChoices(PydiciSelect2Field, AutoModelSelect2Field):
-#     queryset = User.objects
-#     search_fields = ["username__icontains", "first_name__icontains", "last_name__icontains"]
-#
-#     def get_queryset(self):
-#         return User.objects.filter(is_active=True)
+    def get_queryset(self):
+        return User.objects.filter(is_active=True)
 
 
 class PydiciCrispyBaseForm(object):

@@ -15,9 +15,8 @@ from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from crispy_forms.layout import Layout, Div, Column
 from crispy_forms.bootstrap import AppendedText
 
-from core.forms import PydiciSelect2Field
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
-from people.forms import ConsultantChoices#, ConsultantMChoices
+from people.forms import ConsultantChoices, ConsultantMChoices
 from core.utils import capitalize
 from core.forms import PydiciCrispyModelForm
 
@@ -56,37 +55,37 @@ class MissionContactChoices(ThirdPartyChoices):
 class MissionContactMChoices(ModelSelect2MultipleWidget):
     model = MissionContact
     search_fields = ThirdPartyChoices.search_fields
-#
-#
-# class ContactChoices(PydiciSelect2Field, AutoModelSelect2Field):
-#     queryset = Contact.objects
-#     search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
-#                      "client__organisation__name__icontains"]
-#
-#
-# class ContactMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
-#     queryset = Contact.objects
-#     search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
-#                      "client__organisation__name__icontains"]
-#
-#
-# class ClientOrganisationChoices(PydiciSelect2Field, AutoModelSelect2Field):
-#     queryset = ClientOrganisation.objects
-#     search_fields = ["name__icontains", "company__name__icontains", "company__code__icontains"]
-#
-#
-# class CompanyChoices(PydiciSelect2Field, AutoModelSelect2Field):
-#     queryset = Company.objects
-#     search_fields = ["name__icontains", "code__icontains"]
+
+
+class ContactChoices(ModelSelect2Widget):
+    model = Contact
+    search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
+                     "client__organisation__name__icontains"]
+
+
+class ContactMChoices(ModelSelect2MultipleWidget):
+    model = Contact
+    search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
+                     "client__organisation__name__icontains"]
+
+
+class ClientOrganisationChoices(ModelSelect2Widget):
+    model = ClientOrganisation
+    search_fields = ["name__icontains", "company__name__icontains", "company__code__icontains"]
+
+
+class CompanyChoices(ModelSelect2Widget):
+    model = Company
+    search_fields = ["name__icontains", "code__icontains"]
 
 
 class ClientForm(PydiciCrispyModelForm):
     class Meta:
         model = Client
         fields = "__all__"
+        widgets = { "contact": ConsultantChoices,
+                    "organisation": ClientOrganisationChoices}
 
-    #organisation = ClientOrganisationChoices()
-    #contact = ContactChoices(required=False)
 
     def __init__(self, *args, **kwargs):
         super(ClientForm, self).__init__(*args, **kwargs)
@@ -133,8 +132,8 @@ class ContactForm(PydiciCrispyModelForm):
     class Meta:
         model = Contact
         exclude = ["external_id",]
+        widgets = {"contact_points": ConsultantMChoices}
 
-    #contact_points = ConsultantMChoices(label=_("Points of contact"))
     def __init__(self, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column("name", "email", "function", "contact_points", css_class="col-md-6"),
@@ -150,9 +149,9 @@ class MissionContactForm(PydiciCrispyModelForm):
     class Meta:
         model = MissionContact
         fields = "__all__"
+        widgets = {"contact": ContactChoices,
+                   "company": CompanyChoices}
 
-    #contact = ContactChoices()
-    #company = CompanyChoices(label=_("Company"))
 
     def __init__(self, *args, **kwargs):
         super(MissionContactForm, self).__init__(*args, **kwargs)
@@ -168,9 +167,9 @@ class BusinessBrokerForm(PydiciCrispyModelForm):
     class Meta:
         model = BusinessBroker
         fields = "__all__"
+        widgets = {"contact": ContactChoices,
+                   "company": CompanyChoices}
 
-    #contact = ContactChoices()
-    #company = CompanyChoices(label=_("Company"))
 
     def __init__(self, *args, **kwargs):
         super(BusinessBrokerForm, self).__init__(*args, **kwargs)
@@ -186,9 +185,8 @@ class AdministrativeContactForm(PydiciCrispyModelForm):
     class Meta:
         model = AdministrativeContact
         fields = "__all__"
-
-    #contact = ContactChoices(required=False)
-    #company = CompanyChoices(label=_("Company"))
+        widgets = {"contact": ContactChoices,
+                   "company": CompanyChoices}
 
     def __init__(self, *args, **kwargs):
         super(AdministrativeContactForm, self).__init__(*args, **kwargs)
@@ -205,9 +203,9 @@ class SupplierForm(PydiciCrispyModelForm):
     class Meta:
         model = Supplier
         fields = "__all__"
+        widgets = {"contact": ContactChoices,
+                   "company": CompanyChoices}
 
-    #contact = ContactChoices()
-    #company = CompanyChoices(label=_("Company"))
 
     def __init__(self, *args, **kwargs):
         super(SupplierForm, self).__init__(*args, **kwargs)

@@ -12,8 +12,8 @@
 <link href="{{ MEDIA_URL }}css/jquery-ui-1.10.4.custom.css" rel="stylesheet">
 <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
 <link href="{{ MEDIA_URL }}css/pydici-admin-base.css" rel="stylesheet">
-{% import_django_select2_css %}
-<link href="{{ MEDIA_URL }}css/select2-bootstrap.css" rel="stylesheet">
+{{ form.media.css }} {# select2 #}
+<link href="{{ MEDIA_URL }}css/select2-bootstrap.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block extrahead %}
@@ -21,9 +21,8 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.10.4.custom.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.js"></script>
-{% import_django_select2_js %}
 {% ifequal LANGUAGE_CODE "fr-fr" %}
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/select2_locale_fr.js"></script>
+    <!--<script type="text/javascript" src="{{ MEDIA_URL }}js/select2_locale_fr.js"></script>-->
     <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.fr.js"></script>
 {% endifequal %}
 {% endblock %}
@@ -41,10 +40,14 @@
 
 {% block footer %}
         <script type="text/javascript">
-            // Disable django admin tool-bar and breadcrumbs
             $(document).ready(function() {
+                // Disable django admin tool-bar and breadcrumbs
                 $('#user-tools').hide();
                 $('.breadcrumbs').hide();
+                // Load select2
+                {% if form %}
+                    $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100%"});
+                {% endif %}
                 });
         </script>
 {% endblock %}
