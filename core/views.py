@@ -18,7 +18,9 @@ from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
 
-from core.decorator import pydici_non_public, pydici_feature
+from django_select2.views import AutoResponseView
+
+from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from leads.models import Lead
 from people.models import Consultant
 from crm.models import Company, Contact
@@ -330,6 +332,12 @@ def riskReporting(request):
 
     return render(request, "core/risks.html", { "data": json.dumps(data),
                                                     "derivedAttributes": []})
+
+
+class PydiciSelect2View(PydiciNonPublicdMixin, AutoResponseView):
+    """Overload default select2 view that is used to get data through ajax calls to limit it to login users"""
+    pass
+
 
 def tableToCSV(table, filename="data.csv"):
     """A view that convert a django_table2 object to a CSV in a http response object"""

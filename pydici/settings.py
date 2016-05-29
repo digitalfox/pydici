@@ -175,4 +175,6 @@ if DEBUG:
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = not DEBUG
-AUTO_RENDER_SELECT2_STATICS = False
+SELECT2_JS = u'//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js'
+SELECT2_CSS = u'//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css'
+

@@ -6,6 +6,8 @@
 
 from django.conf.urls import patterns, url
 
+from core.views import PydiciSelect2View
+
 core_urls = patterns('core.views',
                      url(r'^$', 'index', name='index'),
                      url(r'^search$', 'search', name='search'),
@@ -15,4 +17,5 @@ core_urls = patterns('core.views',
                      url(r'^financial-control//?$', 'financialControl'),
                      url(r'^financial-control/(?P<start_date>\d{6})/?$', 'financialControl'),
                      url(r'^financial-control/(?P<start_date>\d{6})/(?P<end_date>\d{6})/?$', 'financialControl'),
+                     url(r"^select2/auto.json$", PydiciSelect2View.as_view(), name="django_select2-json"),
                      )

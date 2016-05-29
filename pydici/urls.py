@@ -35,11 +35,7 @@ from batch.incwo.urls import incwo_urls
 # Overide internal server error view
 handler500 = "core.views.internal_error"
 
-pydici_patterns = patterns('',
-                           (r'^admin/', include(admin.site.urls)),  # Admin
-                           url(r'^select2/', include('django_select2.urls')),  # Django_select2
-                           )
-
+pydici_patterns = patterns('', (r'^admin/', include(admin.site.urls)))
 
 if pydici.settings.DEBUG:
     import debug_toolbar

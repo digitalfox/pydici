@@ -13,53 +13,53 @@ from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Field
-from django_select2.fields import AutoModelSelect2MultipleField
-from django_select2.views import NO_ERR_RESP
+#from django_select2.fields import AutoModelSelect2MultipleField
+#from django_select2.views import NO_ERR_RESP
 import workflows.utils as wf
 
 from expense.models import Expense
-from leads.forms import CurrentLeadChoices
+#from leads.forms import CurrentLeadChoices
 from core.forms import PydiciSelect2Field, PydiciCrispyForm
 
 
-class ExpenseMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
-    queryset = Expense.objects
-    search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains",
-                     "lead__name__icontains", "lead__deal_id__icontains", "lead__client__organisation__name",
-                     "lead__client__organisation__company__name__icontains", "lead__client__organisation__company__code__icontains"]
+# class ExpenseMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
+#     queryset = Expense.objects
+#     search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains",
+#                      "lead__name__icontains", "lead__deal_id__icontains", "lead__client__organisation__name",
+#                      "lead__client__organisation__company__name__icontains", "lead__client__organisation__company__code__icontains"]
+#
 
-
-class ChargeableExpenseMChoices(ExpenseMChoices):
-    queryset = Expense.objects.filter(chargeable=True)
-
-
-class PayableExpenseMChoices(ExpenseMChoices):
-    queryset = Expense.objects
-
-    def get_queryset(self):
-        return Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
-
-    def get_results(self, request, term, page, context):
-        """ Override standard method to filter according to workflow state. Cannot be done in a simple query set..."""
-        qs = copy.deepcopy(self.get_queryset())
-        params = self.prepare_qs_params(request, term, self.search_fields)
-
-        if self.max_results:
-            min_ = (page - 1) * self.max_results
-            max_ = min_ + self.max_results + 1  # fetching one extra row to check if it has more rows.
-            res = list(qs.filter(*params['or'], **params['and'])[min_:max_])
-            has_more = len(res) == (max_ - min_)
-            if has_more:
-                res = res[:-1]
-        else:
-            res = list(qs.filter(*params['or'], **params['and']))
-            has_more = False
-
-        res = [expense for expense in res if wf.get_state(expense).transitions.count() == 0]
-
-        res = [(getattr(obj, self.to_field_name), self.label_from_instance(obj), self.extra_data_from_instance(obj))
-               for obj in res]
-        return (NO_ERR_RESP, has_more, res,)
+# class ChargeableExpenseMChoices(ExpenseMChoices):
+#     queryset = Expense.objects.filter(chargeable=True)
+#
+#
+# class PayableExpenseMChoices(ExpenseMChoices):
+#     queryset = Expense.objects
+#
+#     def get_queryset(self):
+#         return Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
+#
+#     def get_results(self, request, term, page, context):
+#         """ Override standard method to filter according to workflow state. Cannot be done in a simple query set..."""
+#         qs = copy.deepcopy(self.get_queryset())
+#         params = self.prepare_qs_params(request, term, self.search_fields)
+#
+#         if self.max_results:
+#             min_ = (page - 1) * self.max_results
+#             max_ = min_ + self.max_results + 1  # fetching one extra row to check if it has more rows.
+#             res = list(qs.filter(*params['or'], **params['and'])[min_:max_])
+#             has_more = len(res) == (max_ - min_)
+#             if has_more:
+#                 res = res[:-1]
+#         else:
+#             res = list(qs.filter(*params['or'], **params['and']))
+#             has_more = False
+#
+#         res = [expense for expense in res if wf.get_state(expense).transitions.count() == 0]
+#
+#         res = [(getattr(obj, self.to_field_name), self.label_from_instance(obj), self.extra_data_from_instance(obj))
+#                for obj in res]
+#         return (NO_ERR_RESP, has_more, res,)
 
 
 class ExpenseForm(forms.ModelForm):
@@ -70,7 +70,7 @@ class ExpenseForm(forms.ModelForm):
         widgets = {"description": TextInput(attrs={"size": 40}),  # Increase default size
                    "comment": Textarea(attrs={'cols': 17, 'rows': 2})}  # Reduce height and increase width
 
-    lead = CurrentLeadChoices(required=False, label=_("Lead"))
+   # lead = CurrentLeadChoices(required=False, label=_("Lead"))
 
     def __init__(self, *args, **kwargs):
         super(ExpenseForm, self).__init__(*args, **kwargs)
@@ -101,7 +101,7 @@ class ExpenseForm(forms.ModelForm):
 
 class ExpensePaymentForm(PydiciCrispyForm):
     """Expense payment form based on ExpensePayment model"""
-    expenses = PayableExpenseMChoices(label=_("Expenses"))
+    #expenses = PayableExpenseMChoices(label=_("Expenses"))
     payment_date = forms.fields.DateField(label=_("payment date"), widget=forms.widgets.DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
 
     def __init__(self, *args, **kwargs):

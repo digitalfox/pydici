@@ -9,34 +9,34 @@ from django.forms import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 
-from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField
+from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 
 from people.models import Consultant, SalesMan
-from core.forms import PydiciSelect2Field
 
 
-class ConsultantChoices(PydiciSelect2Field, AutoModelSelect2Field):
-    queryset = Consultant.objects
+class ConsultantChoices(ModelSelect2Widget):
+    model = Consultant
     search_fields = ['name__icontains', 'trigramme__icontains']
 
     def get_queryset(self):
         return Consultant.objects.filter(active=True)
 
 
-class ConsultantMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
-    queryset = Consultant.objects
+class ConsultantMChoices(ModelSelect2MultipleWidget):
+    model = Consultant
     search_fields = ConsultantChoices.search_fields
 
     def get_queryset(self):
         return Consultant.objects.filter(active=True)
 
 
-class SalesManChoices(PydiciSelect2Field, AutoModelSelect2Field):
-    queryset = SalesMan.objects
+class SalesManChoices(ModelSelect2Widget):
+    model = SalesMan
     search_fields = ['name__icontains', 'trigramme__icontains']
 
     def get_queryset(self):
         return SalesMan.objects.filter(active=True)
+
 
 class ConsultantForm(models.ModelForm):
     class Meta:

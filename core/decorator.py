@@ -12,6 +12,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
 
+
 from core.utils import user_has_features
 
 

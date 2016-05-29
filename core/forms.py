@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django_select2.fields import AutoModelSelect2Field
+#from django_select2.fields import AutoModelSelect2Field
 
 
 class SearchForm(forms.Form):
@@ -27,12 +27,12 @@ class PydiciSelect2Field():
         return request.user.is_authenticated() and request.user.is_active
 
 
-class UserChoices(PydiciSelect2Field, AutoModelSelect2Field):
-    queryset = User.objects
-    search_fields = ["username__icontains", "first_name__icontains", "last_name__icontains"]
-
-    def get_queryset(self):
-        return User.objects.filter(is_active=True)
+# class UserChoices(PydiciSelect2Field, AutoModelSelect2Field):
+#     queryset = User.objects
+#     search_fields = ["username__icontains", "first_name__icontains", "last_name__icontains"]
+#
+#     def get_queryset(self):
+#         return User.objects.filter(is_active=True)
 
 
 class PydiciCrispyBaseForm(object):

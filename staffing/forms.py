@@ -23,49 +23,49 @@ from django.db.models import Min
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Field
 from crispy_forms.bootstrap import AppendedText
-from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField, Select2ChoiceField, AutoHeavySelect2Widget, Select2Widget
+#from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField, Select2ChoiceField, AutoHeavySelect2Widget, Select2Widget
 from django.utils import formats
 
 
 from staffing.models import Mission, FinancialCondition
 from core.forms import PydiciSelect2Field, PydiciCrispyModelForm
-from people.forms import ConsultantChoices, ConsultantMChoices
-from crm.forms import MissionContactMChoices
+#from people.forms import ConsultantChoices, ConsultantMChoices
+#from crm.forms import MissionContactMChoices
 from staffing.utils import staffingDates, time_string_for_day_percent, day_percent_for_time_string
-from leads.forms import LeadChoices
+#from leads.forms import LeadChoices
 
 
-class MissionChoices(PydiciSelect2Field, AutoModelSelect2Field):
-    queryset = Mission.objects
-    search_fields = ["deal_id__icontains", "description__icontains", "lead__name__icontains", "lead__deal_id__icontains",
-                     "lead__client__organisation__name__icontains", "lead__client__organisation__company__name__icontains"]
-
-    def get_queryset(self):
-        return Mission.objects.filter(active=True)
-
-class MissionMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
-    queryset = Mission.objects
-    search_fields = MissionChoices.search_fields
-
-    def get_queryset(self):
-        return Mission.objects.filter(active=True)
-
-
-class StaffingDateChoices(Select2ChoiceField):
-    def __init__(self, *args, **kwargs):
-        minDate = kwargs.pop("minDate", None)
-        if minDate:
-            missionDuration = (date.today() - minDate).days / 30
-            numberOfMonth = 24 + missionDuration
-        else:
-            numberOfMonth = 24
-        kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=numberOfMonth, minDate=minDate)]
-        kwargs["choices"].insert(0, ("", ""))  # Add the empty choice for extra empty choices
-        super(StaffingDateChoices, self).__init__(*args, **kwargs)
-
-    def has_changed(self, initial, data):
-        initial = unicode(initial) if initial is not None else ''
-        return initial != data
+# class MissionChoices(PydiciSelect2Field, AutoModelSelect2Field):
+#     queryset = Mission.objects
+#     search_fields = ["deal_id__icontains", "description__icontains", "lead__name__icontains", "lead__deal_id__icontains",
+#                      "lead__client__organisation__name__icontains", "lead__client__organisation__company__name__icontains"]
+#
+#     def get_queryset(self):
+#         return Mission.objects.filter(active=True)
+#
+# class MissionMChoices(PydiciSelect2Field, AutoModelSelect2MultipleField):
+#     queryset = Mission.objects
+#     search_fields = MissionChoices.search_fields
+#
+#     def get_queryset(self):
+#         return Mission.objects.filter(active=True)
+#
+#
+# class StaffingDateChoices(Select2ChoiceField):
+#     def __init__(self, *args, **kwargs):
+#         minDate = kwargs.pop("minDate", None)
+#         if minDate:
+#             missionDuration = (date.today() - minDate).days / 30
+#             numberOfMonth = 24 + missionDuration
+#         else:
+#             numberOfMonth = 24
+#         kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=numberOfMonth, minDate=minDate)]
+#         kwargs["choices"].insert(0, ("", ""))  # Add the empty choice for extra empty choices
+#         super(StaffingDateChoices, self).__init__(*args, **kwargs)
+#
+#     def has_changed(self, initial, data):
+#         initial = unicode(initial) if initial is not None else ''
+#         return initial != data
 
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
@@ -88,32 +88,32 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
             self._queryset = qs
         return self._queryset
 
-    def add_fields(self, form, index):
-        """that adds the field in, overwriting the previous default field"""
-        super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["mission"] = MissionChoices(label=_("Mission"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
-                                                                                                                   "placeholder": _("Select a mission to add forecast...")}))
-        form.fields["mission"].widget.attrs.setdefault("size", 8)  # Reduce default size
-        form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}),
-                                                           minDate=self.lowerDayBound)
-        form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
+    # def add_fields(self, form, index):
+    #     """that adds the field in, overwriting the previous default field"""
+    #     super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
+    #     form.fields["mission"] = MissionChoices(label=_("Mission"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
+    #                                                                                                                "placeholder": _("Select a mission to add forecast...")}))
+    #     form.fields["mission"].widget.attrs.setdefault("size", 8)  # Reduce default size
+    #     form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}),
+    #                                                        minDate=self.lowerDayBound)
+    #     form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
 
 class MissionStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
-    def add_fields(self, form, index):
-        """that adds the field in, overwriting the previous default field"""
-        super(MissionStaffingInlineFormset, self).add_fields(form, index)
-        minDate = self.instance.staffing_start_date()
-        if minDate:
-            minDate = min(minDate, date.today())
-        else:
-            minDate = None
-        form.fields["consultant"] = ConsultantChoices(label=_("Consultant"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
-                                                                                                                            "placeholder": _("Select a consultant to add forecast...")}))
-        form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}),
-                                                           minDate=minDate)
-        form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
+    # def add_fields(self, form, index):
+    #     """that adds the field in, overwriting the previous default field"""
+    #     super(MissionStaffingInlineFormset, self).add_fields(form, index)
+    #     minDate = self.instance.staffing_start_date()
+    #     if minDate:
+    #         minDate = min(minDate, date.today())
+    #     else:
+    #         minDate = None
+    #     form.fields["consultant"] = ConsultantChoices(label=_("Consultant"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
+    #                                                                                                                         "placeholder": _("Select a consultant to add forecast...")}))
+    #     form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}),
+    #                                                        minDate=minDate)
+    #     form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
 
 class MassStaffingForm(forms.Form):
@@ -123,8 +123,8 @@ class MassStaffingForm(forms.Form):
         staffing_dates = kwargs.pop("staffing_dates", [])
         super(MassStaffingForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.fields["missions"] = MissionMChoices(label=_("Missions"))
-        self.fields["consultants"] = ConsultantMChoices(required=False, label=_("Consultants"))
+        #self.fields["missions"] = MissionMChoices(label=_("Missions"))
+        #self.fields["consultants"] = ConsultantMChoices(required=False, label=_("Consultants"))
         self.fields["charge"] = forms.fields.FloatField(label=_("Charge"), min_value=0.25, max_value=31)
         self.fields["comment"] = forms.fields.CharField(label=_("Comment"), max_length=100, required=False)
         self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
@@ -191,7 +191,7 @@ class TimesheetForm(forms.Form):
 
 class MissionAdminForm(PydiciCrispyModelForm):
     """ Form used only on admin"""
-    lead = LeadChoices(required=False)
+    #lead = LeadChoices(required=False)
 
     class Meta:
         model = Mission
@@ -199,9 +199,9 @@ class MissionAdminForm(PydiciCrispyModelForm):
 
 class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""
-    contacts = MissionContactMChoices(required=False)
-    lead = LeadChoices(required=False)
-    responsible = ConsultantChoices(required=False, label=_("Responsible"),)
+    #contacts = MissionContactMChoices(required=False)
+    #lead = LeadChoices(required=False)
+    #responsible = ConsultantChoices(required=False, label=_("Responsible"),)
 
     def __init__(self, *args, **kwargs):
         super(MissionForm, self).__init__(*args, **kwargs)
@@ -265,7 +265,7 @@ class FinancialConditionAdminForm(forms.ModelForm):
 
 
 class MissionContactsForm(forms.ModelForm):
-    contacts = MissionContactMChoices(required=False, label=_("Add existing contacts"))
+    #contacts = MissionContactMChoices(required=False, label=_("Add existing contacts"))
 
     class Meta:
         model = Mission
