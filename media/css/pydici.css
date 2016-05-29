@@ -265,3 +265,9 @@ div.ui-tooltip {
 .navbar-brand>img {
     display: inline;
 }
+
+/* Fix some select2 CSS issues */
+.select2-selection__clear {
+    margin-right: -15px !important;
+    margin-top: -4px !important;
+}

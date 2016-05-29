@@ -77,15 +77,6 @@
 
     <script type="text/javascript">
     <!--
-
-    // Load select2 stuff with bootstrap theme for forms
-        {% if form %}
-            //$('.django-select2').djangoSelect2({ "theme": "bootstrap"});
-            console.log("hey");
-            //$('.django-select2').djangoSelect2();
-        {% endif %}
-
-
     $(document).ready(function() {
         // Enable tooltip for all objects with pydici-tooltip class
         $(".pydici-tooltip").tooltip();
@@ -94,6 +85,13 @@
         $(document).on('click', '.dropdown-menu', function (e) {
             $(this).hasClass('keep-open') && e.stopPropagation();
         });
+
+        // Load select2 stuff with bootstrap theme for forms
+        {% if form %}
+            console.log("loading select2, hey");
+            $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100%"});
+            //$('.django-select2').djangoSelect2();
+        {% endif %}
     });
     -->
     </script>
