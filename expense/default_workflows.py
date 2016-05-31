@@ -11,10 +11,13 @@ import sys
 from os.path import abspath, dirname, join, pardir
 
 # # Setup django envt & django imports
-sys.path.append(abspath(join(dirname(__file__), pardir, pardir)))  # Add project path to python path
+PYDICI_DIR = abspath(join(dirname(__file__), pardir))
+os.environ['DJANGO_SETTINGS_MODULE'] = "pydici.settings"
+
+sys.path.append(PYDICI_DIR)  # Add project path to python path
 
 # Ensure we are in the good current working directory (pydici home)
-os.chdir(abspath(join(dirname(__file__), pardir)))
+os.chdir(PYDICI_DIR)
 
 import pydici.settings
 
