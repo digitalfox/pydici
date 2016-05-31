@@ -24,7 +24,12 @@ import pydici.settings
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group
+from django.core.wsgi import get_wsgi_application
 
+# Init and model loading
+application = get_wsgi_application()
+
+# Pydici imports
 from workflows.models import WorkflowModelRelation, WorkflowPermissionRelation, StatePermissionRelation, \
                              Workflow, State, Transition
 from permissions.models import Permission, Role, PrincipalRoleRelation
