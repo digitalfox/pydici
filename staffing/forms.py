@@ -30,6 +30,7 @@ from django.utils import formats
 
 
 from staffing.models import Mission, FinancialCondition
+from people.models import Consultant
 from core.forms import PydiciCrispyModelForm
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
@@ -127,12 +128,12 @@ class MassStaffingForm(forms.Form):
         staffing_dates = kwargs.pop("staffing_dates", [])
         super(MassStaffingForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        #self.fields["missions"] = MissionMChoices(label=_("Missions"))
-        #self.fields["consultants"] = ConsultantMChoices(required=False, label=_("Consultants"))
         self.fields["charge"] = forms.fields.FloatField(label=_("Charge"), min_value=0.25, max_value=31)
         self.fields["comment"] = forms.fields.CharField(label=_("Comment"), max_length=100, required=False)
         self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
         self.fields["staffing_dates"] = forms.fields.MultipleChoiceField(label=_("Staffing dates"), choices=staffing_dates)
+        self.fields["missions"] = forms.ModelMultipleChoiceField(widget=MissionMChoices, queryset=Mission.objects.all())
+        self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.all())
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-default"
         self.helper.layout = Layout(Div(Column("missions", "consultants", "all_consultants", css_class='col-md-6'),
