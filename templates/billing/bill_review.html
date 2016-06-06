@@ -12,7 +12,7 @@
     <br/>
     {% if overdue_bills %}
     <h1>{% trans "Overdue bills" %}</h1>
-        <table id="overdue_bills" class="pydici-tables2">
+        <table id="overdue_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
                 <th>{% trans "Bill id" %}</th>
@@ -60,7 +60,7 @@
     {% if soondue_bills %}
     <br/><br/>
     <h1>{% trans "Bills due soon" %}</h1>
-        <table id="due_soon_bills" class="pydici-tables2">
+        <table id="due_soon_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
                 <th>{% trans "Bill id" %}</th>
@@ -108,7 +108,7 @@
     {% if litigious_bills %}
         <br/><br/>
         <h1>{% trans "Litigious bills" %}</h1>
-        <table id="litigious_bills" class="pydici-tables2">
+        <table id="litigious_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
                 <th>{% trans "Bill id" %}</th>
@@ -157,7 +157,7 @@
     {% if recent_bills %}
         <br/><br/>
         <h1>{% trans "Recently paid bills" %}</h1>
-        <table id="recent_bills" class="pydici-tables2">
+        <table id="recent_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
                 <th>{% trans "Bill id" %}</th>
@@ -194,7 +194,7 @@
     {% if leads_without_bill %}
         <br/><br/>
         <h1>{% trans "Recent leads without bill" %}</h1>
-        <table id="recent_leads" class="pydici-tables2">
+        <table id="recent_leads" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
                 <th>{% trans "Lead" %}</th>
