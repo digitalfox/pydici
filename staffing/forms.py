@@ -12,7 +12,7 @@ from decimal import Decimal
 from django import forms
 from django.conf import settings
 from django.forms.models import BaseInlineFormSet
-from django.forms import ChoiceField
+from django.forms import ChoiceField, ModelChoiceField
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy
 from django.utils.safestring import mark_safe
@@ -24,7 +24,6 @@ from django.db.models import Min
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Field
 from crispy_forms.bootstrap import AppendedText
-#from django_select2 import AutoModelSelect2Field, AutoModelSelect2MultipleField, Select2ChoiceField, AutoHeavySelect2Widget, Select2Widget
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget, Select2Widget
 from django.utils import formats
 
@@ -106,19 +105,17 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
 
 class MissionStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
-    # def add_fields(self, form, index):
-    #     """that adds the field in, overwriting the previous default field"""
-    #     super(MissionStaffingInlineFormset, self).add_fields(form, index)
-    #     minDate = self.instance.staffing_start_date()
-    #     if minDate:
-    #         minDate = min(minDate, date.today())
-    #     else:
-    #         minDate = None
-    #     form.fields["consultant"] = ConsultantChoices(label=_("Consultant"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
-    #                                                                                                                         "placeholder": _("Select a consultant to add forecast...")}))
-    #     form.fields["staffing_date"] = StaffingDateChoices(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}),
-    #                                                        minDate=minDate)
-    #     form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
+    def add_fields(self, form, index):
+         """that adds the field in, overwriting the previous default field"""
+         super(MissionStaffingInlineFormset, self).add_fields(form, index)
+         minDate = self.instance.staffing_start_date()
+         if minDate:
+             minDate = min(minDate, date.today())
+         else:
+             minDate = None
+         form.fields["consultant"] = ModelChoiceField(widget = ConsultantChoices, queryset=Consultant.objects)
+         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=minDate)
+         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
 
 class MassStaffingForm(forms.Form):
