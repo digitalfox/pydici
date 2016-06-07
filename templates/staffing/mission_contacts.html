@@ -7,7 +7,7 @@
     {% ifchanged mission_contact.company %}
         {% if not loop.first %}</table>{% endif %}
         <h3><a href="{% url 'crm.views.company_detail' mission_contact.company.id %}">{{ mission_contact.company }}</a></h3>
-        <table class="pydici-tables2 table table-hover table-striped table-condensed">
+        <table class="table table-hover table-striped table-condensed">
          <tr>
             <th>{% trans "Name" %}</th>
             <th>{% trans "Company" %}</th>
