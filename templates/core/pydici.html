@@ -87,13 +87,15 @@
             $(this).hasClass('keep-open') && e.stopPropagation();
         });
 
-        // Load select2 stuff with bootstrap theme for forms
-        {% if form %}
-            $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100%"});
-        {% endif %}
     });
     -->
     </script>
+
+    // Load select2 stuff with bootstrap theme for forms
+    {% if form %}
+        {% include "core/_select2.html" %}
+    {% endif %}
+
 
 
    {% if debug %} 

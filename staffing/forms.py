@@ -94,12 +94,9 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
-        #form.fields["mission"] = MissionChoices(label=_("Mission"), widget=AutoHeavySelect2Widget(select2_options={"dropdownAutoWidth": "true",
-         #                                                                                                          "placeholder": _("Select a mission to add forecast...")}))
-        #form.fields["mission"].widget.attrs.setdefault("size", 8)  # Reduce default size
+        form.fields["mission"] = ModelChoiceField(widget=MissionChoices, queryset=Mission.objects)
         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=self.lowerDayBound)
-        #form.fields["staffing_date"] = StaffingDateChoicesField(widget=Select2Widget(select2_options={"placeholder": _("Select a month...")}),
-        #                                                        minDate=self.lowerDayBound)
+        form.fields["staffing_date"] = StaffingDateChoicesField(minDate=self.lowerDayBound)
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
 

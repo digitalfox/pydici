@@ -44,10 +44,8 @@
                 // Disable django admin tool-bar and breadcrumbs
                 $('#user-tools').hide();
                 $('.breadcrumbs').hide();
-                // Load select2
-                {% if form %}
-                    $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100%"});
-                {% endif %}
+                $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "80em"});
                 });
         </script>
+
 {% endblock %}

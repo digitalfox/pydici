@@ -64,9 +64,7 @@
     </form>
 </div>
 
-<script type="text/javascript">
-    $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100%"});
-</script>
+{% include "core/_select2.html" %}
 
 {% if not read_only %}
     {% with "pydici-ajax-form-mission-staffing" as formid %}
