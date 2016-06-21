@@ -12,7 +12,7 @@
 <link href="{{ MEDIA_URL }}css/jquery-ui-1.10.4.custom.css" rel="stylesheet">
 <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
 <link href="{{ MEDIA_URL }}css/pydici-admin-base.css" rel="stylesheet">
-{{ form.media.css }} {# select2 #}
+<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" type="text/css" media="screen" rel="stylesheet">
 <link href="{{ MEDIA_URL }}css/select2-bootstrap.min.css" rel="stylesheet">
 {% endblock %}
 
@@ -39,6 +39,8 @@
 
 
 {% block footer %}
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
                 // Disable django admin tool-bar and breadcrumbs

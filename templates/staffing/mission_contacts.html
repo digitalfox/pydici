@@ -46,10 +46,10 @@
     </div>
 {% endif %}
 
+{% include "core/_select2.html" %}
+
 <script type="text/javascript">
     $(document).ready(function() {
         $('#contact_edit').hide();
-        // As this page is loaded through ajax, we need to fire up again ajax-autocomplete init routine
-        $(window).trigger('init-autocomplete');
     });
 </script>

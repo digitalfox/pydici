@@ -14,11 +14,8 @@ from django.conf import settings
 from django.forms.models import BaseInlineFormSet
 from django.forms import ChoiceField, ModelChoiceField
 from django.utils.translation import ugettext as _
-from django.utils.translation import ugettext_lazy
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
-from django.db.models import Min
-
 
 
 from crispy_forms.helper import FormHelper
@@ -190,17 +187,14 @@ class TimesheetForm(forms.Form):
 
 class MissionAdminForm(PydiciCrispyModelForm):
     """ Form used only on admin"""
-    #lead = LeadChoices(required=False)
 
     class Meta:
         model = Mission
         fields = ('lead',)
+        widgets = { "lead" : LeadChoices }
 
 class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""
-    #contacts = MissionContactMChoices(required=False)
-    #lead = LeadChoices(required=False)
-    #responsible = ConsultantChoices(required=False, label=_("Responsible"),)
 
     def __init__(self, *args, **kwargs):
         super(MissionForm, self).__init__(*args, **kwargs)
@@ -238,6 +232,8 @@ class MissionForm(PydiciCrispyModelForm):
     class Meta:
         model = Mission
         exclude = ['archived_date', 'lead']
+        widgets = { "contacts": MissionContactMChoices,
+                    "responsible": ConsultantChoices}
 
 
 class FinancialConditionAdminForm(forms.ModelForm):
@@ -264,11 +260,12 @@ class FinancialConditionAdminForm(forms.ModelForm):
 
 
 class MissionContactsForm(forms.ModelForm):
-    #contacts = MissionContactMChoices(required=False, label=_("Add existing contacts"))
+    """Form used to edit Missions contacts (in Mission "Contacts" tabs) """
 
     class Meta:
         model = Mission
         fields = ["contacts", ]
+        widgets = { "contacts": MissionContactMChoices }
 
 
 class CycleTimesheetField(forms.ChoiceField):
