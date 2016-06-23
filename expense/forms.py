@@ -35,33 +35,15 @@ class ChargeableExpenseMChoices(ExpenseMChoices):
         return Expense.objects.filter(chargeable=True)
 
 
-# class PayableExpenseMChoices(ExpenseMChoices):
-#     queryset = Expense.objects
-#
-#     def get_queryset(self):
-#         return Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
-#
-#     def get_results(self, request, term, page, context):
-#         """ Override standard method to filter according to workflow state. Cannot be done in a simple query set..."""
-#         qs = copy.deepcopy(self.get_queryset())
-#         params = self.prepare_qs_params(request, term, self.search_fields)
-#
-#         if self.max_results:
-#             min_ = (page - 1) * self.max_results
-#             max_ = min_ + self.max_results + 1  # fetching one extra row to check if it has more rows.
-#             res = list(qs.filter(*params['or'], **params['and'])[min_:max_])
-#             has_more = len(res) == (max_ - min_)
-#             if has_more:
-#                 res = res[:-1]
-#         else:
-#             res = list(qs.filter(*params['or'], **params['and']))
-#             has_more = False
-#
-#         res = [expense for expense in res if wf.get_state(expense).transitions.count() == 0]
-#
-#         res = [(getattr(obj, self.to_field_name), self.label_from_instance(obj), self.extra_data_from_instance(obj))
-#                for obj in res]
-#         return (NO_ERR_RESP, has_more, res,)
+class PayableExpenseMChoices(ExpenseMChoices):
+    """Expenses that are payable to consultants"""
+    def get_queryset(self):
+        expenses = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
+        # Filter on expenses that really terminate their workflow.
+        expenses_id = [expense.id for expense in expenses if wf.get_state(expense).transitions.count() == 0]
+        # Recreate a queryset that match thoses expenses
+        expenses = Expense.objects.filter(id__in=expenses_id)
+        return expenses
 
 
 class ExpenseForm(forms.ModelForm):
@@ -103,7 +85,7 @@ class ExpenseForm(forms.ModelForm):
 
 class ExpensePaymentForm(PydiciCrispyForm):
     """Expense payment form based on ExpensePayment model"""
-    #expenses = PayableExpenseMChoices(label=_("Expenses"))
+    expenses = forms.ModelMultipleChoiceField(widget=PayableExpenseMChoices, queryset=Expense.objects)
     payment_date = forms.fields.DateField(label=_("payment date"), widget=forms.widgets.DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
 
     def __init__(self, *args, **kwargs):
@@ -125,4 +107,3 @@ class ExpensePaymentForm(PydiciCrispyForm):
                     if expense.user != user:
                         raise ValidationError(_("All expenses of a payment must belongs to same user"))
         return self.cleaned_data
-
