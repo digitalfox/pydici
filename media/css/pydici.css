@@ -271,3 +271,15 @@ div.ui-tooltip {
     margin-right: -15px !important;
     margin-top: -4px !important;
 }
+
+
+/* Fix solect2 issue in actionset popover */
+.force_child_span_inline {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.force_child_span_inline > span {
+    display: inline-block;
+    vertical-align: middle;
+}

@@ -30,7 +30,8 @@
                         {% endif %}{% endblock %}
                         {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
                         {% ifequal request.user action.user %}
-                        <p><button type="button" class="btn btn-default"
+                        <div>
+                            <button type="button" class="btn btn-default"
                               onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DONE' %}',
                                               process_update_action_state);">
                               {% trans "Mark as done" %}</button>
@@ -43,10 +44,9 @@
                            <button type="button" class="btn btn-default" 
                               onClick="call_deleguate_action('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DELEGUATE' %}', '{{ action.id|unlocalize }}');">
                               {% trans "Delegate to: " %}</button>
-                           {# <input name="deleguate_user_{{ action.id|unlocalize }}" type="text"/> #}
-                           {% for field in action.delegateForm %}{{ field }}{% endfor %}
+                           {% for field in action.delegateForm %}<div class="force_child_span_inline">{{ field }}</div>{% endfor %}
                            
-                         </p>
+                         <div/>
                          {% endifequal %}
                     </div>
                 </div>
@@ -61,46 +61,49 @@
 
 <script type="text/JavaScript">
 <!--
+// Function call URL for deleguate
+function call_deleguate_action(url, action_id) {
+    var username = "";
+    var selected = $("#deleguate_user_"+ action_id).children()
+    if (selected.length == 1) {
+        username = selected[0].text;
+    }
+    $.get(url + '?username=' + username, process_update_action_state);
+};
+
+// Function that process ajax callback
+function process_update_action_state(data) {
+    if (data.error==true) {
+        alert("{% trans 'You are not allowed to do that' %}");
+    }
+    else {
+        $("#action_" + data.id).hide("slow");
+        $("#action_tooltip_" + data.id).modal('hide');
+        $("#action_" + data.id).remove();
+        limit_action_list(); // Update to 5 first actions
+    }
+};
+// Script to limit action list to 5 first
+function limit_action_list() {
+  $("ul.more-items").each(function() {
+    $("li:lt(5)", this).show("slow");
+    $("li:gt(4)", this).hide();
+    $("#more-items-flag").remove() // Remove "..." entry to avoid duplicates
+    $("li:eq(5)", this).after("<li id='more-items-flag'>...</li>");
+  });
+};
+
 $(document).ready(function(){
 
-//     $("input[name^='deleguate_user_']").autocomplete(
-//                                           { source: ',
-//                                             minLength: 1,
-//                                           });
-
-});
-    // Function call URL for deleguate
-    function call_deleguate_action(url, action_id) {
-        var username = $("#deleguate_user_"+ action_id).attr("txt")
-        $.get(url + '?username=' + username, process_update_action_state);
-    };
-
-    // Function that process ajax callback
-    function process_update_action_state(data) {
-        if (data.error==true) {
-            alert("{% trans 'You are not allowed to do that' %}");
-        }
-        else {
-            $("#action_" + data.id).hide("slow");
-            $("#action_tooltip_" + data.id).modal('hide');
-            $("#action_" + data.id).remove();
-            limit_action_list(); // Update to 5 first actions
-        }
-    };
-    // Script to limit action list to 5 first
-    function limit_action_list() {
-      $("ul.more-items").each(function() {
-    	$("li:lt(5)", this).show("slow");
-        $("li:gt(4)", this).hide();
-        $("#more-items-flag").remove() // Remove "..." entry to avoid duplicates
-        $("li:eq(5)", this).after("<li id='more-items-flag'>...</li>");
-      });
-    };
     // Call it once. Then it is called after each action update
     limit_action_list();
     
     // Fix focus issue of select2 inside a bootstrap modal
-    $.fn.modal.Constructor.prototype.enforceFocus = function() {};
-    -->
+    //$.fn.modal.Constructor.prototype.enforceFocus = function() {};
 
+    // Call select2
+    $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100px"});
+
+});
+-->
 </script>
