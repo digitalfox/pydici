@@ -102,8 +102,8 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
     class Meta:
         model = ClientOrganisation
         fields = "__all__"
+        widgets = {"company": CompanyChoices}
 
-    #company = CompanyChoices(label=_("Company"))
 
     def __init__(self, *args, **kwargs):
         super(ClientOrganisationForm, self).__init__(*args, **kwargs)

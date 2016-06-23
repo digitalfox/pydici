@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from leads.models import Lead
 
-#from leads.forms import LeadForm
+from leads.forms import LeadForm
 from leads.utils import postSaveLead
 from core.admin import ReturnToAppAdmin
 
@@ -36,7 +36,7 @@ class LeadAdmin(ReturnToAppAdmin):
                      "client__organisation__name",
                      "staffing__trigramme", "staffing__name",
                      "deal_id", "client_deal_id"]
-#    form = LeadForm
+    form = LeadForm
 
     def save_model(self, request, obj, form, change):
         form.save_m2m()  # Save many to many relations
