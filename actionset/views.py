@@ -14,7 +14,6 @@ from django.contrib.auth.models import User
 
 from actionset.models import ActionSet, ActionState
 from core.decorator import pydici_non_public, pydici_feature
-from actionset.forms import LaunchActionSetForm
 
 
 @pydici_non_public
@@ -54,36 +53,6 @@ def actionset_catalog(request):
         can_change = True
     else:
         can_change = False
-    actionsets = []
-    for actionset in ActionSet.objects.all():
-        actionsets.append([actionset, LaunchActionSetForm(actionset.id, initial={"actionset": actionset})])
     return render(request, "actionset/actionset_catalog.html",
-                  {"actionsets": actionsets,
+                  {"actionsets": ActionSet.objects.all(),
                    "can_change": can_change})
-
-
-
-@pydici_non_public
-@pydici_feature("management")
-def launch_actionset(request, actionset_id):
-    """Manually launch an actionset for given user (username GET parameter) with ajax query"""
-    # TODO: add optional target object (content and id)
-    data = {"error": False, "id": actionset_id}
-    try:
-        actionset = ActionSet.objects.get(id=actionset_id)
-    except ActionSet.DoesNotExist:
-        data["error"] = True
-        data["errormsg"] = _("Action set %s does not exist" % actionset_id)
-    try:
-        user = User.objects.get(username=request.GET["username"])
-    except User.DoesNotExist:
-        data["error"] = True
-        data["errormsg"] = _("User %s does not exist" % request.GET["username"])
-    except KeyError:
-        data["error"] = True
-        data["errormsg"] = _("Username parameter is missing")
-
-    if not data["error"]:
-        actionset.start(user)
-
-    return HttpResponse(json.dumps(data), content_type="application/json")

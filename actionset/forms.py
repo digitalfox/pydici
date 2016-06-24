@@ -10,15 +10,6 @@ from django.utils.translation import ugettext as _
 from core.forms import UserChoices
 
 
-class LaunchActionSetForm(forms.Form):
-    """Form to manually launch an action set"""
-    actionset = forms.fields.HiddenInput()
-
-    def __init__(self, actionset_id, *args, **kwargs):
-        super(LaunchActionSetForm, self).__init__(*args, **kwargs)
- #       self.fields["user"] = UserChoices(label=_("user"), widget=AutoHeavySelect2Widget(attrs={"id": "actionset_target_user_%s" % actionset_id}))
-
-
 class DelegateActionForm(forms.Form):
     """Form to delegate an action to another user"""
     def __init__(self, actionstate_id, *args, **kwargs):

@@ -9,25 +9,10 @@
 
 {% block content %}
 
-{% for actionset, form in actionsets %}
+{% for actionset in actionsets %}
     <h1>{% if can_change %}<a href="{% url 'admin:actionset_actionset_change' actionset.id %}">{{ actionset }}</a>{% else %}{{ actionset }}{% endif %}</h1>
     {% if not actionset.active %}<p><strong>{% trans "This actionset is inactive" %}</strong></p>{% endif %}
     <p><em>{{ actionset.description }}</em></p>
-    <p><strong>{% trans "Trigger: " %}</strong> {{ actionset.get_trigger_display }}</p>
-    <div><form id='form_actionset_launch_{{ actionset.id }}'>
-       {% trans "Launch manually this actionset for user: " %}
-       {{ form }}
-       <input type="submit" value="{% trans 'Ok' %}"/>
-       <div id="launch_feedback_{{ actionset.id }}" style="display:inline;"></div>
-       </form>
-           <script><!--
-                $('#form_actionset_launch_{{ actionset.id }}').submit(function() {
-                    $.get('{% url 'actionset.views.launch_actionset' actionset.id %}?username='+$("#actionset_target_user_{{ actionset.id|unlocalize }}").attr("txt"),
-                           process_launch_actionset);
-                    return false; // prevent submiting form to browser (which would reload page...)
-                });
-            --></script>
-     </div>
     <ul>
     {% for action in actionset.action_set.all %}
         <li><strong>{% if can_change %}<a href="{% url 'admin:actionset_action_change' action.id|unlocalize %}">{{ action.name }}</a>{% else %}{{ action.name }}{% endif %}</strong> : <em>{{ action.description|urlize }}</em></li>
@@ -40,20 +25,5 @@
 {% if perms.actionset.change_actionstate %}
 <a href="{% url 'admin:actionset_actionstate_changelist' %}">{% trans "Pending action tracking" %}</a>
 {% endif %}
-
-<script type="text/JavaScript">
-<!--
-    // Functions that process ajax callback
-    function process_launch_actionset(data) {
-        if (data.error==true) {
-            $("#launch_feedback_" + data.id).html("<strong>"+data.errormsg+"</strong>").show();
-        }
-        else {
-            $("#launch_feedback_" + data.id).html("<strong>{% trans 'Action set launched' %}</strong>").show().fadeOut(3000);
-        }
-    };
-
--->
-</script>
 
 {% endblock %}
