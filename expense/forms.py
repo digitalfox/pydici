@@ -85,7 +85,7 @@ class ExpenseForm(forms.ModelForm):
 
 class ExpensePaymentForm(PydiciCrispyForm):
     """Expense payment form based on ExpensePayment model"""
-    expenses = forms.ModelMultipleChoiceField(widget=PayableExpenseMChoices, queryset=Expense.objects)
+    expenses = forms.ModelMultipleChoiceField(label=_("Expenses"), widget=PayableExpenseMChoices(attrs={'data-placeholder':_("Select expenses to pay...")}), queryset=Expense.objects)
     payment_date = forms.fields.DateField(label=_("payment date"), widget=forms.widgets.DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
 
     def __init__(self, *args, **kwargs):
