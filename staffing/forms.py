@@ -51,7 +51,7 @@ class MissionMChoices(ModelSelect2MultipleWidget):
 
 
 class StaffingDateChoicesField(ChoiceField):
-    widget = Select2Widget
+    widget = Select2Widget(attrs={'data-placeholder':_("Select a month...")})
     def __init__(self, *args, **kwargs):
         minDate = kwargs.pop("minDate", None)
         if minDate:
@@ -91,8 +91,7 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["mission"] = ModelChoiceField(widget=MissionChoices, queryset=Mission.objects)
-        form.fields["staffing_date"] = StaffingDateChoicesField(minDate=self.lowerDayBound)
+        form.fields["mission"] = ModelChoiceField(widget=MissionChoices(attrs={'data-placeholder':_("Select a mission to add forecast...")}), queryset=Mission.objects)
         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=self.lowerDayBound)
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
@@ -107,7 +106,7 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
              minDate = min(minDate, date.today())
          else:
              minDate = None
-         form.fields["consultant"] = ModelChoiceField(widget = ConsultantChoices, queryset=Consultant.objects)
+         form.fields["consultant"] = ModelChoiceField(widget = ConsultantChoices(attrs={'data-placeholder':_("Select a consultant to add forecast...")}), queryset=Consultant.objects)
          form.fields["staffing_date"] = StaffingDateChoicesField(minDate=minDate)
          form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
