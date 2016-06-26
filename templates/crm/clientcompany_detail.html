@@ -1,9 +1,11 @@
 {% extends "core/pydici.html" %}
 
 {% load i18n %}
+{% load l10n %}
 
 {% block extrajs %}
-{% include "core/_jqplot.html" %}
+    {% include "core/_jqplot.html" %}
+    {% include "core/_c3.html" %}
 {% endblock %}
 
 
@@ -22,18 +24,234 @@
 <div>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="company-tabs">
-        <li class="active"><a data-toggle="tab" href="#tab-home"><span class="glyphicon glyphicon-home"> {% trans "Leads" %}</span></a></li>
+        <li class="active"><a data-toggle="tab" href="#tab-dashboard"><span class="glyphicon glyphicon-home"> {% trans "Dashboard" %}</span></a></li>
+        <li><a data-toggle="tab" href="#tab-leads"><span class="glyphicon glyphicon-list"> {% trans "Leads" %}</span></a></li>
         <li><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"> {% trans "Consultants" %}</span></a></li>
         <li><a data-toggle="tab" href="#tab-contacts"><span class="glyphicon glyphicon-envelope"> {% trans "Client contacts" %}</span></a></li>
         <li><a data-toggle="tab" href="#tab-rates-margin" data-tab-url="{% url 'company_rates_margin' company.id %}"><span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Rates and margin" %}</a></li>
         <li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-all-companies"><span class="glyphicon glyphicon-list"></span> {% trans "All companies list" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-all-companies"><span class="glyphicon glyphicon-folder-open"></span> {% trans "All companies list" %}</a></li>
     </ul>
 </div>
 
 <div class="tab-content">
-    <div id="tab-home" class="tab-pane active fade in">
+    <div id="tab-dashboard" class="tab-pane active fade in">
+        <div class="row">
+            &nbsp;
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <span class="glyphicon glyphicon-list gi-4x"></span>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ lead_count }}</div>
+                                <div>{% trans "leads" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#tab-leads">
+                        <div class="panel-footer">
+                            <span class="pull-left">{% trans "View Details" %}</span>
+                            <span class="pull-right">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <span class="glyphicon glyphicon-user gi-4x"></span>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ consultants.count }}</div>
+                                <div>{% trans "consultants involved" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#tab-consultants">
+                        <div class="panel-footer">
+                            <span class="pull-left">{% trans "View Details" %}</span>
+                            <span class="pull-right">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <span class="glyphicon glyphicon-envelope gi-4x"></span>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ contacts_count }}</div>
+                                <div>{% trans "contacts" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#tab-contacts">
+                        <div class="panel-footer">
+                            <span class="pull-left">{% trans "View Details" %}</span>
+                            <span class="pull-right">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <span class="glyphicon glyphicon-euro gi-4x"></span>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ company.sales|floatformat:-1 }} k€</div>
+                                <div>{% trans "billed turnover" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#tab-billing">
+                        <div class="panel-footer">
+                            <span class="pull-left">{% trans "View Details" %}</span>
+                            <span class="pull-right">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div> <!-- end of dashboard panels -->
+
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div id="leads_stat"></div>
+                <script type="text/javascript">
+                $(document).ready(function() {
+                    // Display donnut of lead statistics
+                        var chart_leads_stat = c3.generate({
+                            bindto: '#leads_stat',
+                            data: {
+                                columns: {{ leads_stat | safe }},
+                                type : 'donut',
+                            },
+                            tooltip: {
+                                format: {
+                                    value: function (value, ratio, id, index) { return value; }
+                                    }
+                                },
+                            donut: {
+                                title: "{% trans 'Leads' context 'short' %}",
+                                label: {
+                                    format: function (value) { return value; },
+                                    threshold: 0.001,
+                                    },
+                                },
+                        });
+                });
+                </script>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div id="leads_won_rate"></div>
+                <p>&nbsp;</p>
+                <h3><div class="text-center">{% trans "Overall won lead rate: " %}{{ overall_won_rate }}&nbsp;%</div></h3>
+                <script type="text/javascript">
+                    $(document).ready(function() {
+                        // Display gauge of lead won rate
+                            var chart_leads_won_rate = c3.generate({
+                                bindto: '#leads_won_rate',
+                                data: {
+                                    columns: [["{% trans 'Won rate' context 'short' %}", {{ won_rate|unlocalize }}]],
+                                    type : 'gauge',
+                                },
+                                gauge: {
+                                    units: "%",
+                                    label: {
+                                        format: function (value) { return value; },
+                                        threshold: 0.001,
+                                        },
+                                    },
+                            });
+                    });
+                    </script>
+            </div>
+            {% if bills_stat_count %}
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div id="bills_stat"></div>
+                <script type="text/javascript">
+                $(document).ready(function() {
+                    // Display donnut of bills statistics
+                        var chart_leads_stat = c3.generate({
+                            bindto: '#bills_stat',
+                            data: {
+                                columns: {{ bills_stat | safe }},
+                                type : 'donut',
+                            },
+                            tooltip: {
+                                format: {
+                                    value: function (value, ratio, id, index) { return value; }
+                                    }
+                                },
+                            donut: {
+                                title: "{% trans 'Bills' context 'short' %}",
+                                label: {
+                                    format: function (value) { return value; },
+                                    threshold: 0.001,
+                                    },
+                                },
+                        });
+                });
+                </script>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div id="supplier_stat"></div>
+                <script type="text/javascript">
+                $(document).ready(function() {
+                    // Display donnut of supplier billing proportion
+                        var chart_supplier_stat = c3.generate({
+                            bindto: '#supplier_stat',
+                            data: {
+                                columns: [['{% trans "Direct billing and supplier margin" %}', {{ direct_sales|unlocalize|floatformat:-1 }}],
+                                          ['{% trans "Billed by suppliers" %}', {{ supplier_billing|unlocalize|floatformat:-1 }}]],
+                                type : 'donut',
+                            },
+                            tooltip: {
+                                format: {
+                                    value: function (value, ratio, id, index) { return value; }
+                                    }
+                                },
+                            donut: {
+                                title: "{% trans 'Suppliers proportion' context 'short' %}",
+                                label: {
+                                    format: function (value) { return value + " k€"; },
+                                    threshold: 0.001,
+                                    },
+                                },
+                        });
+                });
+                </script>
+            </div>
+            {% endif %}
+        </div> <!-- end of second dashabord row -->
+    </div> <!-- end of dashboard tab -->
+    <div id="tab-leads" class="tab-pane fade in">
         <div id="graph_company_business_activity_jqp_content"></div>
+
         <script type="text/javascript">
         $(document).ready(function() {
             // Bind show event to create graph only when tab is shown
@@ -48,7 +266,6 @@
         });
         </script>
 
-        <h2>{% trans "Billed turnover: "%} {{ company.sales|floatformat:-1 }} k€</h2>
 
         <h2>{% trans "Current active missions" %}</h2>
         <div class="row">

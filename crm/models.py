@@ -57,6 +57,17 @@ class Company(AbstractCompany):
         else:
             return 0
 
+    def supplier_billing(self, onlyLastYear=False):
+        """Supplier billing for this company in keuros"""
+        from billing.models import SupplierBill
+        data = SupplierBill.objects.filter(lead__client__organisation__company=self)
+        if onlyLastYear:
+            data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
+        if data.count():
+            return float(data.aggregate(Sum("amount")).values()[0]) / 1000
+        else:
+            return 0
+
     class Meta:
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")

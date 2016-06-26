@@ -9,7 +9,7 @@ import json
 from datetime import date, timedelta
 
 from django.shortcuts import render
-from django.db.models import Sum, Min
+from django.db.models import Sum, Min, Count
 from django.views.decorators.cache import cache_page
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
@@ -19,6 +19,7 @@ from django.http import HttpResponseRedirect
 from django.core import urlresolvers
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
+from django.utils.safestring import mark_safe
 
 
 from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact,\
@@ -30,7 +31,7 @@ from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
 from core.utils import sortedValues, previousMonth, COLORS
-from billing.models import ClientBill
+from billing.models import ClientBill, SupplierBill
 
 
 class ContactReturnToMixin(object):
@@ -251,21 +252,67 @@ def company_detail(request, company_id):
     company = Company.objects.get(id=company_id)
 
     # Find leads of this company
-    leads = Lead.objects.filter(client__organisation__company=company).select_related().prefetch_related("clientbill_set", "supplierbill_set")
+    leads = Lead.objects.filter(client__organisation__company=company)
     leads = leads.order_by("client", "state", "start_date")
+
+    # Statistics on won/lost etc.
+    states = states = dict(Lead.STATES)
+    leads_stat = [i.values() for i in leads.values("state").order_by("state").annotate(Count("state"))]
+    leads_stat = [[mark_safe(states[state]), count] for state, count in leads_stat]  # Use state label
 
     # Find consultant that work (=declare timesheet) for this company
     consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct()
 
+    # Gather contacts for this company
+    business_contacts = Contact.objects.filter(client__organisation__company=company).distinct()
+    mission_contacts = Contact.objects.filter(missioncontact__company=company).distinct()
+    administrative_contacts = AdministrativeContact.objects.filter(company=company)
+
+    # Won rate
+    try:
+        won_rate = 100 * leads.filter(state="WON").count() / leads.filter(state__in=("LOST", "FORGIVEN", "WON")).count()
+    except ZeroDivisionError:
+        won_rate = 0
+    try:
+        overall_won_rate = 100 * Lead.objects.filter(state="WON").count() / Lead.objects.filter(state__in=("LOST", "FORGIVEN", "WON")).count()
+    except ZeroDivisionError:
+        overall_won_rate = 0
+
+    # Billing stats
+    today = date.today()
+    company_bills = ClientBill.objects.filter(lead__client__organisation__company=company)
+    bills_stat = [
+        [_("overdue"), company_bills.filter(state="1_SENT").filter(due_date__lte=today).count()],
+        [_("soon due"), company_bills.filter(state="1_SENT").filter(due_date__gt=today).filter(due_date__lte=(today + timedelta(15))).count()],
+        [_("last 12 months"), company_bills.filter(state="2_PAID").filter(payment_date__gt=(today - timedelta(120 * 30))).count()]
+    ]
+    bills_stat_count = sum([i[1] for i in bills_stat])
+
+    # Sales stats
+    sales = company.sales()
+    supplier_billing = company.supplier_billing()
+    direct_sales = sales - supplier_billing
+
+    # Other companies
     companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
 
     return render(request, "crm/clientcompany_detail.html",
                   {"company": company,
-                   "leads": leads,
+                   "lead_count": leads.count(),
+                   "leads": leads.select_related().prefetch_related("clientbill_set", "supplierbill_set"),
+                   "leads_stat": json.dumps(leads_stat),
+                   "won_rate": won_rate,
+                   "overall_won_rate": overall_won_rate,
+                   "bills_stat": json.dumps(bills_stat),
+                   "bills_stat_count": bills_stat_count,
+                   "sales": sales,
+                   "supplier_billing" : supplier_billing,
+                   "direct_sales": direct_sales,
                    "consultants": consultants,
-                   "business_contacts": Contact.objects.filter(client__organisation__company=company).distinct(),
-                   "mission_contacts": Contact.objects.filter(missioncontact__company=company).distinct(),
-                   "administrative_contacts": AdministrativeContact.objects.filter(company=company),
+                   "business_contacts": business_contacts,
+                   "mission_contacts": mission_contacts,
+                   "administrative_contacts": administrative_contacts,
+                   "contacts_count" : business_contacts.count() + mission_contacts.count() + administrative_contacts.count(),
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
                    "companies": companies})
 
