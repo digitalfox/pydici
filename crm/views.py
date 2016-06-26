@@ -299,12 +299,12 @@ def company_detail(request, company_id):
     return render(request, "crm/clientcompany_detail.html",
                   {"company": company,
                    "lead_count": leads.count(),
-                   "leads": leads.select_related().prefetch_related("clientbill_set", "supplierbill_set"),
                    "leads_stat": json.dumps(leads_stat),
                    "won_rate": won_rate,
                    "overall_won_rate": overall_won_rate,
                    "bills_stat": json.dumps(bills_stat),
                    "bills_stat_count": bills_stat_count,
+                   "leads": leads,
                    "sales": sales,
                    "supplier_billing" : supplier_billing,
                    "direct_sales": direct_sales,
@@ -316,6 +316,7 @@ def company_detail(request, company_id):
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
                    "companies": companies})
 
+
 @pydici_non_public
 @pydici_feature("3rdparties")
 def company_rates_margin(request, company_id):
@@ -326,6 +327,20 @@ def company_rates_margin(request, company_id):
         {"company": company,
          "clients": Client.objects.filter(organisation__company=company).select_related(),
          "profiles": ConsultantProfile.objects.all().order_by("level")})
+
+
+@pydici_non_public
+@pydici_feature("3rdparties")
+def company_billing(request, company_id):
+    company = Company.objects.get(id=company_id)
+    # Find leads of this company
+    leads = Lead.objects.filter(client__organisation__company=company)
+    leads = leads.order_by("client", "state", "start_date")
+    leads = leads.select_related().prefetch_related("clientbill_set", "supplierbill_set")
+    return render(request, "crm/_clientcompany_billing.html",
+                            {"company": company,
+                            "leads": leads})
+
 
 @pydici_non_public
 @pydici_feature("3rdparties")

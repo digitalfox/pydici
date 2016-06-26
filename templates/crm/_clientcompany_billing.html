@@ -1,0 +1,13 @@
+{# template fragment that display client company billing #}
+{# designed to be loaded in ajax as a tab #}
+{# context : leads #}
+
+<ul>
+{% for lead in leads %}
+    {% ifequal lead.state "WON" %}
+        <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
+            {% include "billing/_lead_billing.html" %}
+            <br/>
+    {% endifequal %}
+{% endfor %}
+</ul>

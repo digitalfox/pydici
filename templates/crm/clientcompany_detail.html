@@ -29,7 +29,7 @@
         <li><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"> {% trans "Consultants" %}</span></a></li>
         <li><a data-toggle="tab" href="#tab-contacts"><span class="glyphicon glyphicon-envelope"> {% trans "Client contacts" %}</span></a></li>
         <li><a data-toggle="tab" href="#tab-rates-margin" data-tab-url="{% url 'company_rates_margin' company.id %}"><span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Rates and margin" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-billing" data-tab-url="{% url 'company_billing' company.id %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
         <li><a data-toggle="tab" href="#tab-all-companies"><span class="glyphicon glyphicon-folder-open"></span> {% trans "All companies list" %}</a></li>
     </ul>
 </div>
@@ -391,17 +391,7 @@
 
     <div id="tab-rates-margin" class="tab-pane fade"></div>
 
-    <div id="tab-billing" class="tab-pane fade">
-        <ul>
-        {% for lead in leads %}
-            {% ifequal lead.state "WON" %}
-                <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
-                    {% include "billing/_lead_billing.html" %}
-                    <br/>
-            {% endifequal %}
-        {% endfor %}
-        </ul>
-    </div>
+    <div id="tab-billing" class="tab-pane fade"></div>
 
     <div id="tab-all-companies" class="tab-pane fade">
         {% include "crm/_clientcompany_list.html" %}
