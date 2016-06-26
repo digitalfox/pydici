@@ -120,7 +120,7 @@
                                 <span class="glyphicon glyphicon-euro gi-4x"></span>
                             </div>
                             <div class="col-xs-9 text-right">
-                                <div class="huge">{{ company.sales|floatformat:-1 }} k€</div>
+                                <div class="huge">{{ sales }} k€</div>
                                 <div>{% trans "billed turnover" %}</div>
                             </div>
                         </div>
@@ -226,8 +226,8 @@
                         var chart_supplier_stat = c3.generate({
                             bindto: '#supplier_stat',
                             data: {
-                                columns: [['{% trans "Direct billing and supplier margin" %}', {{ direct_sales|unlocalize|floatformat:-1 }}],
-                                          ['{% trans "Billed by suppliers" %}', {{ supplier_billing|unlocalize|floatformat:-1 }}]],
+                                columns: [['{% trans "Direct billing and supplier margin" %}', {{ direct_sales|unlocalize }}],
+                                          ['{% trans "Billed by suppliers" %}', {{ supplier_billing|unlocalize }}]],
                                 type : 'donut',
                             },
                             tooltip: {
@@ -248,25 +248,18 @@
             </div>
             {% endif %}
         </div> <!-- end of second dashabord row -->
+        <div class="row">
+            <div class="col-md-12">
+                <div id="graph_company_business_activity_jqp_content"></div>
+                <script type="text/javascript">
+                $(document).ready(function() {
+                    $('#graph_company_business_activity_jqp_content').load('{% url 'graph_company_business_activity' company.id %}');
+                });
+                </script>
+            </div>
+        </div>
     </div> <!-- end of dashboard tab -->
     <div id="tab-leads" class="tab-pane fade in">
-        <div id="graph_company_business_activity_jqp_content"></div>
-
-        <script type="text/javascript">
-        $(document).ready(function() {
-            // Bind show event to create graph only when tab is shown
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                if (e.target.hash === "#tab-home") {
-                    if (!(e.target.jqplot_ok)) { // Only plot graph once
-                        $('#graph_company_business_activity_jqp_content').load('{% url 'graph_company_business_activity' company.id %}');
-                        e.target.jqplot_ok = true;
-                    }
-                }
-              })
-        });
-        </script>
-
-
         <h2>{% trans "Current active missions" %}</h2>
         <div class="row">
         <ul class="list-group">

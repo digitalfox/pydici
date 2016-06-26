@@ -289,8 +289,8 @@ def company_detail(request, company_id):
     bills_stat_count = sum([i[1] for i in bills_stat])
 
     # Sales stats
-    sales = company.sales()
-    supplier_billing = company.supplier_billing()
+    sales = int(company.sales())
+    supplier_billing = int(company.supplier_billing())
     direct_sales = sales - supplier_billing
 
     # Other companies
