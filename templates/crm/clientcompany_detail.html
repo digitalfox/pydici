@@ -249,11 +249,14 @@
             {% endif %}
         </div> <!-- end of second dashabord row -->
         <div class="row">
+            &nbsp;
+        </div>
+        <div class="row">
             <div class="col-md-12">
-                <div id="graph_company_business_activity_jqp_content"></div>
+                <div id="graph_company_business_activity_content"></div>
                 <script type="text/javascript">
                 $(document).ready(function() {
-                    $('#graph_company_business_activity_jqp_content').load('{% url 'graph_company_business_activity' company.id %}');
+                    $('#graph_company_business_activity_content').load('{% url 'graph_company_business_activity' company.id %}');
                 });
                 </script>
             </div>

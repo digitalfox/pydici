@@ -398,15 +398,12 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
 @pydici_non_public
 @pydici_feature("3rdparties")
 @cache_page(60 * 60)
-def graph_company_business_activity_jqp(request, company_id):
-    """Business activity (leads and bills) for a company
-    @todo: extend this graph to multiple companies"""
-    graph_data = []
+def graph_company_business_activity(request, company_id):
+    """Business activity (leads and bills) for a company"""
     billsData = dict()
     lostLeadsData = dict()
-    currentLeadsData = dict()
+    preSalesData = dict()
     wonLeadsData = dict()
-    minDate = date.today()
     company = Company.objects.get(id=company_id)
 
     for bill in ClientBill.objects.filter(lead__client__organisation__company=company):
@@ -418,30 +415,24 @@ def graph_company_business_activity_jqp(request, company_id):
 
     for lead in Lead.objects.filter(client__organisation__company=company):
         kdate = lead.creation_date.date().replace(day=1)
-        for data in (lostLeadsData, wonLeadsData, currentLeadsData, billsData):
+        for data in (lostLeadsData, wonLeadsData, preSalesData, billsData):
             data[kdate] = data.get(kdate, 0)  # Default to 0 to avoid stacking weirdness in graph
         if lead.state == "WON":
             wonLeadsData[kdate] += 1
         elif lead.state in ("LOST", "FORGIVEN"):
             lostLeadsData[kdate] += 1
         else:
-            currentLeadsData[kdate] += 1
+            preSalesData[kdate] += 1
 
-    for data in (billsData, lostLeadsData, wonLeadsData, currentLeadsData):
-        kdates = data.keys()
-        kdates.sort()
-        isoKdates = [a.isoformat() for a in kdates]  # List of date as string in ISO format
-        if len(kdates) > 0 and kdates[0] < minDate:
-            minDate = kdates[0]
-        data = zip(isoKdates, sortedValues(data))
-        if not data:
-            data = ((0, 0))
-        graph_data.append(data)
+    graph_data = [
+        ["x_billing"] + [d.isoformat() for d in billsData.keys()],
+        ["x_leads"] + [d.isoformat() for d in wonLeadsData.keys()],
+        ["y_billing"] + billsData.values(),
+        ["y_won_leads"] + wonLeadsData.values(),
+        ["y_lost_leads"] + lostLeadsData.values(),
+        ["y_presales_leads"] + preSalesData.values(),
+    ]
 
-    minDate = previousMonth(minDate)
-
-    return render(request, "crm/graph_company_business_activity_jqp.html",
+    return render(request, "crm/graph_company_business_activity.html",
                   {"graph_data": json.dumps(graph_data),
-                   "series_colors": COLORS,
-                   "min_date": minDate.isoformat(),
                    "user": request.user})
