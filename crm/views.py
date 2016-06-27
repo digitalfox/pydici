@@ -428,8 +428,8 @@ def graph_company_business_activity(request, company_id):
         ["x_billing"] + [d.isoformat() for d in billsData.keys()],
         ["x_leads"] + [d.isoformat() for d in wonLeadsData.keys()],
         ["y_billing"] + billsData.values(),
-        ["y_won_leads"] + wonLeadsData.values(),
         ["y_lost_leads"] + lostLeadsData.values(),
+        ["y_won_leads"] + wonLeadsData.values(),
         ["y_presales_leads"] + preSalesData.values(),
     ]
 
