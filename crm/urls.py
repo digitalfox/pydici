@@ -7,6 +7,7 @@
 from django.conf.urls import patterns, url
 
 from crm import views as v
+from crm import tables as t
 
 crm_urls = patterns('crm.views',
                     url(r'^contact/add/$', v.ContactCreate.as_view(), name='contact_add'),
@@ -21,7 +22,8 @@ crm_urls = patterns('crm.views',
                     url(r'^administrative/contact/(?P<pk>\d+)/update$', v.AdministrativeContactUpdate.as_view(), name='administrative_contact_update'),
                     url(r'contact/(?P<pk>\d+)/delete/$', v.ContactDelete.as_view(), name='contact_delete'),
                     url(r'contact/(?P<pk>\d+)/$', v.ContactDetail.as_view(), name='contact_detail'),
-                    url(r'contact/all/$', v.ContactList.as_view(), name='contact_list'),
+                    url(r'contact/all/$', "contact_list", name='contact_list'),
+                    url(r'contact/datatable/data/$', t.ContactTableDT.as_view(), name='all_contacts_table_DT'),
                     url(r'^company/(?P<company_id>\d+)/detail$', 'company_detail', name="company_detail"),
                     url(r'^company/(?P<company_id>\d+)/rates-margin$', 'company_rates_margin', name="company_rates_margin"),
                     url(r'^company/(?P<company_id>\d+)/billing$', 'company_billing', name="company_billing"),

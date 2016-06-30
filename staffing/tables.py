@@ -15,6 +15,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from staffing.models import Mission
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 
+
 class MissionsViewsMixin(PydiciNonPublicdMixin, PydiciFeatureMixin):
     """Internal access to mission data for CB views"""
     pydici_feature = "staffing"

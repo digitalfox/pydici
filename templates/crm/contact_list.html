@@ -6,8 +6,25 @@
 
 {% block content %}
 
-{% with contact_list as contacts %}
-    {% include "crm/_contact_list.html" %}
+<table id="contacts_table" class="table table-striped table-hover table-condensed table-bordered" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th>{% trans "name" %}</th>
+        <th>{% trans "company" %}</th>
+        <th>{% trans "function" %}</th>
+        <th>{% trans "email" %}</th>
+        <th>{% trans "phone" %}</th>
+        <th>{% trans "mobile phone" %}</th>
+        <th>{% trans "fax" %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+
+{% with "contacts_table" as table_id %}
+    {% include "core/_datatables.html" %}
 {% endwith %}
 
 {% endblock %}

@@ -94,6 +94,17 @@ class ContactList(PydiciNonPublicdMixin, ThirdPartyMixin, ListView):
     model = Contact
 
 
+@pydici_non_public
+@pydici_feature("3rdparties")
+def contact_list(request):
+    return render(request, "crm/contact_list.html",
+                  {"data_url": urlresolvers.reverse("all_contacts_table_DT"),
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [1] },
+                                                   { className: "hidden-xs hidden-sm hidden-md", "targets": [6]}],
+                                   "order": [[0, "asc"]] ''',
+                   "user": request.user})
+
+
 class MissionContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
     model = MissionContact
     template_name = "core/form.html"
