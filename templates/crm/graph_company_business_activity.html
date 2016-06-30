@@ -1,0 +1,72 @@
+{# Fragment that display leads stat/bar graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_c3.html to load according js/css #} {% load i18n %}
+
+<div id="company_business_activity_graph"></div>
+
+
+<script type="text/javascript">
+    var company_business_activity_graph = c3.generate({
+    bindto: '#company_business_activity_graph',
+    data: {
+         xs: {
+            'y_billing': 'x_billing',
+            'y_lost_leads': 'x_leads',
+            'y_won_leads': 'x_leads',
+            'y_presales_leads': 'x_leads',
+         },
+         columns: {{ graph_data | safe }},
+         groups : [
+            ['y_won_leads', 'y_lost_leads', 'y_presales_leads']
+         ],
+         axes: {
+            y_billing: 'y',
+            y_won_leads: 'y2',
+            y_lost_leads: 'y2',
+            y_presales_leads: 'y2',
+         },
+         names: {
+            y_billing: "{% trans 'billing (k€)' %}",
+            y_won_leads: "{% trans 'Won leads' %}",
+            y_lost_leads: "{% trans 'Lost of forgiven leads' %}",
+            y_presales_leads: "{% trans 'Pre-sales leads' %}",
+         },
+         types : {
+            'y_billing': 'line',
+            'y_won_leads': 'bar',
+            'y_lost_leads': 'bar',
+            'y_presales_leads': 'bar',
+         },
+    },
+    color: {
+//        pattern: ['#1f77b4', '#ff7f0e',]
+    },
+    bar: {
+        width: 15
+    },
+    point: {
+        show: false
+    },
+    axis: {
+        x: {
+            type: 'timeseries',
+            tick: {
+                format: '%Y-%m',
+                rotate: 45,
+            },
+        },
+        y: {
+            label : {
+                text: "{% trans 'billing (k€)' %}",
+                position: 'outer-middle',
+            },
+        },
+        y2: {
+            show: true,
+            label: {
+                text: "{% trans 'number of leads' %}",
+                position: 'outer-middle',
+            },
+        }
+    },
+  });
+</script>
