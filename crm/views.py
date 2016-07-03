@@ -272,7 +272,7 @@ def company_detail(request, company_id):
     leads_stat = [[mark_safe(states[state]), count] for state, count in leads_stat]  # Use state label
 
     # Find consultant that work (=declare timesheet) for this company
-    consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct()
+    consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct().order_by("company", "subcontractor")
 
     # Gather contacts for this company
     business_contacts = Contact.objects.filter(client__organisation__company=company).distinct()

@@ -319,11 +319,17 @@
                     {% endif %}</li>
             </ul>
         <h2>{% trans "Consultants that work for this company:" %}</h2>
-            <ul>
-            {% for consultant in consultants %}
-                <li><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant.full_name }}</a></li>
+
+            {% regroup consultants by company as subsidiary_list %}
+            {% for subsidiary in subsidiary_list %}
+                <h4>{{ subsidiary.grouper }}</h4>
+                <ul>
+                {% for consultant in subsidiary.list %}
+                    <li><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant.full_name }} {% if consultant.subcontractor %}({% trans "subcontractor" %}){% endif %}</a></li>
+                {% endfor %}
+                </ul>
             {% endfor %}
-            </ul>
+
     {% endif %}
     </div>
 
