@@ -9,7 +9,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.utils.encoding import smart_unicode
 from django.core.urlresolvers import reverse
-from django import forms
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from crispy_forms.layout import Layout, Div, Column
@@ -83,7 +82,7 @@ class ClientForm(PydiciCrispyModelForm):
     class Meta:
         model = Client
         fields = "__all__"
-        widgets = { "contact": ConsultantChoices,
+        widgets = { "contact": ContactChoices,
                     "organisation": ClientOrganisationChoices}
 
 
