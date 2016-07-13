@@ -76,9 +76,9 @@
             alert(data.message);
         }
         else {
-            var row = $("#managed_expense_" + data.expense_id).closest("tr"); //.addClass("hide-row-filter");
+            var row = $("#managed_expense_" + data.expense_id).closest("tr");
             var table = $('#managed_expense_workflow_table').DataTable();
-            table.row(row).remove();
+            row.fadeOut(200, function () { table.row(row).remove(); });
             table.draw();
         }
     };
