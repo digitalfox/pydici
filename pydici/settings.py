@@ -24,7 +24,13 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': '127.0.0.1:11211',
 
-    }
+    },
+    'select2': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+        'TIMEOUT': 60*15,
+    },
+
 }
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
@@ -177,4 +183,4 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = not DEBUG
 SELECT2_JS = u'//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js'
 SELECT2_CSS = u'//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css'
-
+SELECT2_CACHE_BACKEND = 'select2'
