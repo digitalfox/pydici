@@ -1,21 +1,21 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Sebastien Renard <Sebastien.Renard@digitalfox.org>, 2010, 2012, 2013.
+# Sebastien Renard <Sebastien.Renard@digitalfox.org>, 2010, 2012, 2013, 2016.
 # Sébastien Renard <renard@kde.org>, 2010, 2011, 2012, 2014, 2015, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-28 00:00+0200\n"
-"PO-Revision-Date: 2016-06-28 00:00+0200\n"
-"Last-Translator: Sebastien Renard <renard@kde.org>\n"
-"Language-Team: French <kde-francophone@kde.org>\n"
+"POT-Creation-Date: 2016-08-01 23:21+0200\n"
+"PO-Revision-Date: 2016-08-01 23:21+0100\n"
+"Last-Translator: Sebastien Renard <sebastien.renard@enioka.com>\n"
+"Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 2.0\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: actionset/admin.py:34
@@ -49,7 +49,7 @@ msgstr "Quand un consultant est créé"
 #: actionset/models.py:27 actionset/models.py:48 crm/models.py:25
 #: crm/models.py:93 crm/models.py:388 expense/models.py:44 leads/models.py:57
 #: leads/views.py:208 people/models.py:27 people/models.py:230
-#: templates/crm/clientcompany_detail.html:354 templates/leads/review.html:27
+#: templates/crm/clientcompany_detail.html:360 templates/leads/review.html:27
 #: templates/leads/review.html.py:61 templates/people/consultant.html:51
 #: templates/staffing/mission_contacts.html:12
 msgid "Name"
@@ -382,6 +382,7 @@ msgstr "montant"
 
 #: core/views.py:315 core/views.py:329 crm/models.py:370 crm/models.py:399
 #: templates/core/risks.html:41 templates/crm/_contact_list.html:10
+#: templates/crm/contact_list.html:13
 msgid "company"
 msgstr "société"
 
@@ -393,7 +394,7 @@ msgstr "client"
 msgid "work without bill"
 msgstr "Temps passé sans facture"
 
-#: crm/forms.py:35
+#: crm/forms.py:34
 #, python-format
 msgid "%s (inactive)"
 msgstr "%s (inactif)"
@@ -417,7 +418,7 @@ msgstr "Filiales"
 msgid "Business owner"
 msgstr "Responsable business"
 
-#: crm/models.py:72 templates/crm/clientcompany_detail.html:355
+#: crm/models.py:72 templates/crm/clientcompany_detail.html:361
 #: templates/staffing/mission_contacts.html:13
 msgid "Company"
 msgstr "Société"
@@ -439,23 +440,23 @@ msgid "Client organisation"
 msgstr "Département"
 
 #: crm/models.py:95 people/models.py:235
-#: templates/crm/clientcompany_detail.html:358
+#: templates/crm/clientcompany_detail.html:364
 #: templates/staffing/mission_contacts.html:16
 msgid "Phone"
 msgstr "Téléphone"
 
-#: crm/models.py:96 templates/crm/clientcompany_detail.html:359
+#: crm/models.py:96 templates/crm/clientcompany_detail.html:365
 #: templates/staffing/mission_contacts.html:17
 msgid "Mobile phone"
 msgstr "Téléphone mobile"
 
-#: crm/models.py:97 templates/crm/clientcompany_detail.html:360
+#: crm/models.py:97 templates/crm/clientcompany_detail.html:366
 #: templates/staffing/mission_contacts.html:18
 msgid "Fax"
 msgstr "Fax"
 
 #: crm/models.py:98 crm/models.py:400
-#: templates/crm/clientcompany_detail.html:356
+#: templates/crm/clientcompany_detail.html:362
 #: templates/staffing/mission_contacts.html:14
 msgid "Function"
 msgstr "Fonction"
@@ -568,19 +569,19 @@ msgstr "Contact administratif"
 msgid "Contact removed successfully"
 msgstr "Contact supprimé avec succès "
 
-#: crm/views.py:285
+#: crm/views.py:296
 msgid "overdue"
 msgstr "en retard"
 
-#: crm/views.py:286
+#: crm/views.py:297
 msgid "soon due"
 msgstr "bientôt en retard"
 
-#: crm/views.py:287
+#: crm/views.py:298
 msgid "last 12 months"
 msgstr "12 derniers mois"
 
-#: crm/views.py:378
+#: crm/views.py:389
 msgid "Others"
 msgstr "Autres"
 
@@ -990,8 +991,8 @@ msgid "deal id"
 msgstr "N° affaire"
 
 #: leads/views.py:407 templates/crm/_contact_list.html:9
-#: templates/crm/contact_detail.html:20 templates/leads/leads.html:15
-#: templates/staffing/missions.html:27
+#: templates/crm/contact_detail.html:20 templates/crm/contact_list.html:12
+#: templates/leads/leads.html:15 templates/staffing/missions.html:27
 msgid "name"
 msgstr "nom"
 
@@ -1842,7 +1843,7 @@ msgid "New business broker"
 msgstr "Nouvel apporteur d'affaires"
 
 #: templates/core/_pydici_menu.html:62
-#: templates/crm/clientcompany_detail.html:391
+#: templates/crm/clientcompany_detail.html:397
 msgid "New administrative contact"
 msgstr "Nouveau contact administratif"
 
@@ -2153,22 +2154,27 @@ msgid "&#37; of sales"
 msgstr "&#37; du CA"
 
 #: templates/crm/_contact_list.html:11 templates/crm/contact_detail.html:25
+#: templates/crm/contact_list.html:14
 msgid "function"
 msgstr "fonction"
 
 #: templates/crm/_contact_list.html:12 templates/crm/contact_detail.html:24
+#: templates/crm/contact_list.html:15
 msgid "email"
 msgstr "courriel"
 
 #: templates/crm/_contact_list.html:13 templates/crm/contact_detail.html:21
+#: templates/crm/contact_list.html:16
 msgid "phone"
 msgstr "téléphone"
 
 #: templates/crm/_contact_list.html:14 templates/crm/contact_detail.html:22
+#: templates/crm/contact_list.html:17
 msgid "mobile phone"
 msgstr "téléphone mobile"
 
 #: templates/crm/_contact_list.html:15 templates/crm/contact_detail.html:23
+#: templates/crm/contact_list.html:18
 msgid "fax"
 msgstr "fax"
 
@@ -2242,8 +2248,8 @@ msgstr "Taux de réussite"
 
 #: templates/crm/clientcompany_detail.html:211
 msgctxt "short"
-msgid "Bills"
-msgstr "Factures"
+msgid "Recent bills"
+msgstr "Factures récentes"
 
 #: templates/crm/clientcompany_detail.html:229
 msgid "Direct billing and supplier margin"
@@ -2270,19 +2276,24 @@ msgstr "Responsable business pour cette société : "
 msgid "Consultants that work for this company:"
 msgstr "Les consultants qui ont travaillé pour cette société :"
 
-#: templates/crm/clientcompany_detail.html:332
+#: templates/crm/clientcompany_detail.html:328
+#: templates/people/consultant.html:17
+msgid "subcontractor"
+msgstr "Sous-traitant"
+
+#: templates/crm/clientcompany_detail.html:338
 msgid "Business contacts"
 msgstr "Contacts business"
 
-#: templates/crm/clientcompany_detail.html:340
+#: templates/crm/clientcompany_detail.html:346
 msgid "Mission contacts"
 msgstr "Contacts mission"
 
-#: templates/crm/clientcompany_detail.html:349
+#: templates/crm/clientcompany_detail.html:355
 msgid "Administrative contacts"
 msgstr "Contacts administratifs"
 
-#: templates/crm/clientcompany_detail.html:357
+#: templates/crm/clientcompany_detail.html:363
 #: templates/staffing/mission_contacts.html:15
 msgid "Email"
 msgstr "Courriel"
@@ -2744,10 +2755,6 @@ msgstr "Affaires pour l'étiquette <em>%(tag)s</em>"
 #: templates/people/consultant.html:9
 msgid "Forecast/timesheet "
 msgstr "Prévisions/feuille de temps "
-
-#: templates/people/consultant.html:17
-msgid "subcontractor"
-msgstr "Sous-traitant"
 
 #: templates/people/consultant.html:19 templates/people/consultant.html:63
 msgid "Change"
@@ -3259,6 +3266,10 @@ msgstr "Équipe %(manager)s"
 #: templates/staffing/pdc_review.html:119
 msgid "Totals"
 msgstr "Totaux"
+
+#~ msgctxt "short"
+#~ msgid "Bills"
+#~ msgstr "Factures"
 
 #~ msgid "Lost leads"
 #~ msgstr "Affaires perdues"

@@ -295,7 +295,7 @@ def company_detail(request, company_id):
     bills_stat = [
         [_("overdue"), company_bills.filter(state="1_SENT").filter(due_date__lte=today).count()],
         [_("soon due"), company_bills.filter(state="1_SENT").filter(due_date__gt=today).filter(due_date__lte=(today + timedelta(15))).count()],
-        [_("last 12 months"), company_bills.filter(state="2_PAID").filter(payment_date__gt=(today - timedelta(120 * 30))).count()]
+        [_("last 12 months"), company_bills.filter(state="2_PAID").filter(payment_date__gt=(today - timedelta(12 * 30))).count()]
     ]
     bills_stat_count = sum([i[1] for i in bills_stat])
 
