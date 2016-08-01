@@ -108,3 +108,13 @@ If you want to run javascript tests, you need to install node, phantomjs and cas
 
         npm install phantomjs
         npm install casperjs
+
+## Migrate data from environment
+On source:
+
+    ./manage.py dumpdata -o dump.json -e contenttypes -e auth.Permission --natural-foreign
+
+On target:
+
+    create empty database and play migrations
+    ./manage.py loaddata dump.json
