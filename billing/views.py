@@ -253,8 +253,8 @@ def graph_billing_jqp(request):
         if kdate not in staffingData:
             staffingData[kdate] = 0  # Create key
             wStaffingData[kdate] = 0  # Create key
-        staffingData[kdate] += staffing.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
-        wStaffingData[kdate] += staffing.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) * staffing.mission.probability / 100 / 1000
+        staffingData[kdate] += staffing.charge * financialConditions.get(staffing.consultant_id, {}).get(staffing.mission_id, 0) / 1000
+        wStaffingData[kdate] += staffing.charge * financialConditions.get(staffing.consultant_id, {}).get(staffing.mission_id, 0) * staffing.mission.probability / 100 / 1000
 
     # Set bottom of each graph. Starts if [0, 0, 0, ...]
     billKdates = billsData.keys()
