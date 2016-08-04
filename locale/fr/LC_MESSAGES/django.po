@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-28 00:00+0200\n"
+"POT-Creation-Date: 2016-08-04 13:49+0200\n"
 "PO-Revision-Date: 2016-06-28 00:00+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
@@ -49,7 +49,7 @@ msgstr "Quand un consultant est créé"
 #: actionset/models.py:27 actionset/models.py:48 crm/models.py:25
 #: crm/models.py:93 crm/models.py:388 expense/models.py:44 leads/models.py:57
 #: leads/views.py:208 people/models.py:27 people/models.py:230
-#: templates/crm/clientcompany_detail.html:354 templates/leads/review.html:27
+#: templates/crm/clientcompany_detail.html:361 templates/leads/review.html:27
 #: templates/leads/review.html.py:61 templates/people/consultant.html:51
 #: templates/staffing/mission_contacts.html:12
 msgid "Name"
@@ -171,9 +171,8 @@ msgstr "Date de création"
 
 #: billing/models.py:65 leads/views.py:210
 #: templates/billing/_lead_billing.html:15
-#: templates/billing/_lead_billing.html:52
-#: templates/leads/lead_detail.html:121 templates/leads/review.html:36
-#: templates/leads/review.html.py:70
+#: templates/billing/_lead_billing.html:52 templates/leads/lead_detail.html:121
+#: templates/leads/review.html:36 templates/leads/review.html.py:70
 msgid "Due date"
 msgstr "Date d'échéance"
 
@@ -239,6 +238,7 @@ msgstr "Annulée"
 #: templates/billing/bill_review.html:23 templates/billing/bill_review.html:71
 #: templates/billing/bill_review.html:119
 #: templates/billing/bill_review.html:169
+#: venv/lib/python2.7/site-packages/django/db/models/fields/files.py:238
 msgid "File"
 msgstr "Fichier"
 
@@ -382,6 +382,7 @@ msgstr "montant"
 
 #: core/views.py:315 core/views.py:329 crm/models.py:370 crm/models.py:399
 #: templates/core/risks.html:41 templates/crm/_contact_list.html:10
+#: templates/crm/contact_list.html:13
 msgid "company"
 msgstr "société"
 
@@ -393,7 +394,7 @@ msgstr "client"
 msgid "work without bill"
 msgstr "Temps passé sans facture"
 
-#: crm/forms.py:35
+#: crm/forms.py:34
 #, python-format
 msgid "%s (inactive)"
 msgstr "%s (inactif)"
@@ -402,10 +403,10 @@ msgstr "%s (inactif)"
 msgid "Code"
 msgstr "Code"
 
-#: crm/models.py:39 leads/models.py:79 people/models.py:42
-#: people/models.py:232 staffing/models.py:52
-#: templates/leads/lead_detail.html:100 templates/leads/review.html:29
-#: templates/leads/review.html.py:63 templates/staffing/mission.html:81
+#: crm/models.py:39 leads/models.py:79 people/models.py:42 people/models.py:232
+#: staffing/models.py:52 templates/leads/lead_detail.html:100
+#: templates/leads/review.html:29 templates/leads/review.html.py:63
+#: templates/staffing/mission.html:81
 msgid "Subsidiary"
 msgstr "Filiale"
 
@@ -417,7 +418,7 @@ msgstr "Filiales"
 msgid "Business owner"
 msgstr "Responsable business"
 
-#: crm/models.py:72 templates/crm/clientcompany_detail.html:355
+#: crm/models.py:72 templates/crm/clientcompany_detail.html:362
 #: templates/staffing/mission_contacts.html:13
 msgid "Company"
 msgstr "Société"
@@ -439,23 +440,23 @@ msgid "Client organisation"
 msgstr "Département"
 
 #: crm/models.py:95 people/models.py:235
-#: templates/crm/clientcompany_detail.html:358
+#: templates/crm/clientcompany_detail.html:365
 #: templates/staffing/mission_contacts.html:16
 msgid "Phone"
 msgstr "Téléphone"
 
-#: crm/models.py:96 templates/crm/clientcompany_detail.html:359
+#: crm/models.py:96 templates/crm/clientcompany_detail.html:366
 #: templates/staffing/mission_contacts.html:17
 msgid "Mobile phone"
 msgstr "Téléphone mobile"
 
-#: crm/models.py:97 templates/crm/clientcompany_detail.html:360
+#: crm/models.py:97 templates/crm/clientcompany_detail.html:367
 #: templates/staffing/mission_contacts.html:18
 msgid "Fax"
 msgstr "Fax"
 
 #: crm/models.py:98 crm/models.py:400
-#: templates/crm/clientcompany_detail.html:356
+#: templates/crm/clientcompany_detail.html:363
 #: templates/staffing/mission_contacts.html:14
 msgid "Function"
 msgstr "Fonction"
@@ -568,19 +569,19 @@ msgstr "Contact administratif"
 msgid "Contact removed successfully"
 msgstr "Contact supprimé avec succès "
 
-#: crm/views.py:285
+#: crm/views.py:296
 msgid "overdue"
 msgstr "en retard"
 
-#: crm/views.py:286
+#: crm/views.py:297
 msgid "soon due"
 msgstr "bientôt en retard"
 
-#: crm/views.py:287
+#: crm/views.py:298
 msgid "last 12 months"
 msgstr "12 derniers mois"
 
-#: crm/views.py:378
+#: crm/views.py:392
 msgid "Others"
 msgstr "Autres"
 
@@ -761,15 +762,14 @@ msgstr ""
 msgid "Responsible"
 msgstr "Responsable"
 
-#: leads/forms.py:58 leads/models.py:61 leads/views.py:209
-#: people/models.py:247 templates/core/index.html:15
-#: templates/core/index.html.py:40 templates/core/index.html:64
-#: templates/core/index.html.py:88 templates/leads/lead_detail.html:107
+#: leads/forms.py:58 leads/models.py:61 leads/views.py:209 people/models.py:247
+#: templates/core/index.html:15 templates/core/index.html.py:40
+#: templates/core/index.html:64 templates/core/index.html.py:88
+#: templates/leads/lead_detail.html:107
 msgid "Salesman"
 msgstr "Commercial"
 
-#: leads/forms.py:60 leads/models.py:66
-#: templates/billing/payment_delay.html:29
+#: leads/forms.py:60 leads/models.py:66 templates/billing/payment_delay.html:29
 #: templates/leads/lead_detail.html:117
 msgid "Paying authority"
 msgstr "Organisme payeur"
@@ -990,8 +990,8 @@ msgid "deal id"
 msgstr "N° affaire"
 
 #: leads/views.py:407 templates/crm/_contact_list.html:9
-#: templates/crm/contact_detail.html:20 templates/leads/leads.html:15
-#: templates/staffing/missions.html:27
+#: templates/crm/contact_detail.html:20 templates/crm/contact_list.html:12
+#: templates/leads/leads.html:15 templates/staffing/missions.html:27
 msgid "name"
 msgstr "nom"
 
@@ -1223,7 +1223,7 @@ msgstr "Type"
 
 #: staffing/models.py:45 staffing/views.py:967
 #: templates/leads/lead_detail.html:166 templates/staffing/mission.html:97
-#: templates/staffing/mission.html:147
+#: templates/staffing/mission.html.py:147
 msgid "Billing mode"
 msgstr "Mode de facturation"
 
@@ -1607,8 +1607,7 @@ msgstr "Montant total : "
 msgid "Bills due soon"
 msgstr "Factures bientôt à échéance"
 
-#: templates/billing/bill_review.html:99
-#: templates/billing/bill_review.html:147
+#: templates/billing/bill_review.html:99 templates/billing/bill_review.html:147
 msgid "Total amount (€ exc. tax.): "
 msgstr "Montant total (€ HT) : "
 
@@ -1634,7 +1633,7 @@ msgstr "Montant réalisé (€)"
 
 #: templates/billing/bill_review.html:212 templates/core/index.html:25
 #: templates/core/index.html.py:50 templates/core/index.html:74
-#: templates/core/index.html.py:98 templates/crm/clientcompany_detail.html:318
+#: templates/core/index.html.py:98 templates/crm/clientcompany_detail.html:319
 #: templates/leads/lead_detail.html:103 templates/leads/lead_detail.html:146
 #: templates/leads/lead_mail.html:8 templates/leads/lead_mail.html.py:12
 #: templates/leads/lead_mail.txt:9 templates/leads/lead_mail.txt.py:13
@@ -1786,7 +1785,7 @@ msgstr "Afficher _MENU_ éléments"
 
 #: templates/core/_pydici_menu.html:22 templates/core/_pydici_menu.html:103
 #: templates/core/search.html:53 templates/crm/clientcompany_detail.html:28
-#: templates/crm/clientcompany_detail.html:286 templates/leads/leads.html:6
+#: templates/crm/clientcompany_detail.html:287 templates/leads/leads.html:6
 msgid "Leads"
 msgstr "Affaires"
 
@@ -1842,7 +1841,7 @@ msgid "New business broker"
 msgstr "Nouvel apporteur d'affaires"
 
 #: templates/core/_pydici_menu.html:62
-#: templates/crm/clientcompany_detail.html:391
+#: templates/crm/clientcompany_detail.html:398
 msgid "New administrative contact"
 msgstr "Nouveau contact administratif"
 
@@ -1906,8 +1905,7 @@ msgstr "Tableau de bord de gestion"
 msgid "All people timesheet"
 msgstr "Feuille de temps globale"
 
-#: templates/core/_pydici_menu.html:104
-#: templates/leads/leads_pivotable.html:10
+#: templates/core/_pydici_menu.html:104 templates/leads/leads_pivotable.html:10
 #: templates/leads/leads_pivotable.html:13
 msgid "Leads pivot table"
 msgstr "Tableau croisé des affaires"
@@ -2001,10 +1999,12 @@ msgstr ""
 "    "
 
 #: templates/core/delete.html:15
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:556
 msgid "Yes"
 msgstr "Oui"
 
 #: templates/core/delete.html:17 templates/expense/expense_list.html:42
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:557
 msgid "No"
 msgstr "Non"
 
@@ -2153,22 +2153,27 @@ msgid "&#37; of sales"
 msgstr "&#37; du CA"
 
 #: templates/crm/_contact_list.html:11 templates/crm/contact_detail.html:25
+#: templates/crm/contact_list.html:14
 msgid "function"
 msgstr "fonction"
 
 #: templates/crm/_contact_list.html:12 templates/crm/contact_detail.html:24
+#: templates/crm/contact_list.html:15
 msgid "email"
 msgstr "courriel"
 
 #: templates/crm/_contact_list.html:13 templates/crm/contact_detail.html:21
+#: templates/crm/contact_list.html:16
 msgid "phone"
 msgstr "téléphone"
 
 #: templates/crm/_contact_list.html:14 templates/crm/contact_detail.html:22
+#: templates/crm/contact_list.html:17
 msgid "mobile phone"
 msgstr "téléphone mobile"
 
 #: templates/crm/_contact_list.html:15 templates/crm/contact_detail.html:23
+#: templates/crm/contact_list.html:18
 msgid "fax"
 msgstr "fax"
 
@@ -2185,8 +2190,8 @@ msgid "Add or modify a company"
 msgstr "Ajouter ou modifier une société"
 
 #: templates/crm/clientcompany_detail.html:16
-#: templates/crm/clientcompany_detail.html:274
-#: templates/crm/clientcompany_detail.html:297
+#: templates/crm/clientcompany_detail.html:275
+#: templates/crm/clientcompany_detail.html:298
 #: templates/staffing/mission.html:217 templates/staffing/mission.html:229
 msgid "click to edit..."
 msgstr "Cliquez pour modifier..."
@@ -2210,7 +2215,7 @@ msgstr "affaires"
 #: templates/crm/clientcompany_detail.html:58
 #: templates/crm/clientcompany_detail.html:82
 #: templates/crm/clientcompany_detail.html:106
-#: templates/crm/clientcompany_detail.html:130
+#: templates/crm/clientcompany_detail.html:131
 msgid "View Details"
 msgstr "Voir les détails"
 
@@ -2226,63 +2231,76 @@ msgstr "contacts"
 msgid "billed turnover"
 msgstr "chiffre d'affaires facturé"
 
-#: templates/crm/clientcompany_detail.html:159
+#: templates/crm/clientcompany_detail.html:125
+msgid "including"
+msgstr "dont"
+
+#: templates/crm/clientcompany_detail.html:125
+msgid "during last 12 months"
+msgstr "sur les 12 derniers mois"
+
+#: templates/crm/clientcompany_detail.html:160
 msgctxt "short"
 msgid "Leads"
 msgstr "Affaires"
 
-#: templates/crm/clientcompany_detail.html:172
+#: templates/crm/clientcompany_detail.html:173
 msgid "Overall won lead rate: "
 msgstr "Taux de réussite affaire global : "
 
-#: templates/crm/clientcompany_detail.html:179
+#: templates/crm/clientcompany_detail.html:180
 msgctxt "short"
 msgid "Won rate"
 msgstr "Taux de réussite"
 
-#: templates/crm/clientcompany_detail.html:211
+#: templates/crm/clientcompany_detail.html:212
 msgctxt "short"
 msgid "Bills"
 msgstr "Factures"
 
-#: templates/crm/clientcompany_detail.html:229
+#: templates/crm/clientcompany_detail.html:230
 msgid "Direct billing and supplier margin"
 msgstr "Facturation directe et marge fournisseur"
 
-#: templates/crm/clientcompany_detail.html:230
+#: templates/crm/clientcompany_detail.html:231
 msgid "Billed by suppliers"
 msgstr "Facturé par les fournisseurs"
 
-#: templates/crm/clientcompany_detail.html:239
+#: templates/crm/clientcompany_detail.html:240
 msgctxt "short"
 msgid "Suppliers proportion"
 msgstr "Proportion fournisseur"
 
-#: templates/crm/clientcompany_detail.html:266
+#: templates/crm/clientcompany_detail.html:267
 msgid "Current active missions"
 msgstr "Missions en cours"
 
-#: templates/crm/clientcompany_detail.html:315
+#: templates/crm/clientcompany_detail.html:316
 msgid "Business owner for this company:"
 msgstr "Responsable business pour cette société : "
 
-#: templates/crm/clientcompany_detail.html:321
+#: templates/crm/clientcompany_detail.html:322
 msgid "Consultants that work for this company:"
 msgstr "Les consultants qui ont travaillé pour cette société :"
 
-#: templates/crm/clientcompany_detail.html:332
+#: templates/crm/clientcompany_detail.html:329
+#: templates/people/consultant.html:17
+msgid "subcontractor"
+msgstr "Sous-traitant"
+
+#: templates/crm/clientcompany_detail.html:339
 msgid "Business contacts"
 msgstr "Contacts business"
 
-#: templates/crm/clientcompany_detail.html:340
+#: templates/crm/clientcompany_detail.html:347
 msgid "Mission contacts"
 msgstr "Contacts mission"
 
-#: templates/crm/clientcompany_detail.html:349
+#: templates/crm/clientcompany_detail.html:356
 msgid "Administrative contacts"
 msgstr "Contacts administratifs"
 
-#: templates/crm/clientcompany_detail.html:357
+#: templates/crm/clientcompany_detail.html:364
 #: templates/staffing/mission_contacts.html:15
 msgid "Email"
 msgstr "Courriel"
@@ -2639,6 +2657,7 @@ msgstr "C.A. (k€) : "
 
 #: templates/leads/lead_mail.html:14 templates/leads/lead_mail.txt:15
 #: templates/leads/mail.html:8 templates/leads/mail.txt:8
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:555
 msgid "Unknown"
 msgstr "Inconnu"
 
@@ -2745,11 +2764,8 @@ msgstr "Affaires pour l'étiquette <em>%(tag)s</em>"
 msgid "Forecast/timesheet "
 msgstr "Prévisions/feuille de temps "
 
-#: templates/people/consultant.html:17
-msgid "subcontractor"
-msgstr "Sous-traitant"
-
 #: templates/people/consultant.html:19 templates/people/consultant.html:63
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:346
 msgid "Change"
 msgstr "Modifier"
 
@@ -3194,7 +3210,7 @@ msgstr "Cliquez pour afficher les feuilles de temps passées"
 msgid "done"
 msgstr "réalisé"
 
-#: templates/staffing/missions.html:8 templates/staffing/missions.html:17
+#: templates/staffing/missions.html:8 templates/staffing/missions.html.py:17
 msgid "All missions"
 msgstr "Toutes les missions"
 
@@ -3246,8 +3262,7 @@ msgstr "cngs"
 msgid "avai."
 msgstr "disp"
 
-#: templates/staffing/pdc_review.html:92
-#: templates/staffing/pdc_review.html:125
+#: templates/staffing/pdc_review.html:92 templates/staffing/pdc_review.html:125
 msgid "Rates"
 msgstr "Taux"
 
@@ -3260,20 +3275,1144 @@ msgstr "Équipe %(manager)s"
 msgid "Totals"
 msgstr "Totaux"
 
+#: venv/lib/python2.7/site-packages/crispy_forms/tests/test_form_helper.py:130
+#: venv/lib/python2.7/site-packages/crispy_forms/tests/test_form_helper.py:140
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:64
+msgid "This field is required."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/crispy_forms/tests/test_layout.py:368
+msgid "i18n text"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/crispy_forms/tests/test_layout.py:370
+msgid "i18n legend"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/crispy_forms/tests/test_layout_objects.py:129
+#: venv/lib/python2.7/site-packages/django/core/validators.py:20
+msgid "Enter a valid value."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/contrib/messages/apps.py:7
+msgid "Messages"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/contrib/sitemaps/apps.py:7
+msgid "Site Maps"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/contrib/staticfiles/apps.py:7
+msgid "Static Files"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/contrib/syndication/apps.py:7
+#, fuzzy
+#| msgid "Identification"
+msgid "Syndication"
+msgstr "Identification"
+
+#: venv/lib/python2.7/site-packages/django/contrib/webdesign/apps.py:7
+msgid "Web Design"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:94
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:712
+msgid "Enter a valid URL."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:137
+msgid "Enter a valid integer."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:148
+msgid "Enter a valid email address."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:222
+msgid ""
+"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:227
+#: venv/lib/python2.7/site-packages/django/core/validators.py:246
+msgid "Enter a valid IPv4 address."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:232
+#: venv/lib/python2.7/site-packages/django/core/validators.py:247
+msgid "Enter a valid IPv6 address."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:242
+#: venv/lib/python2.7/site-packages/django/core/validators.py:245
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:270
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1144
+msgid "Enter only digits separated by commas."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:279
+#, python-format
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:305
+#, python-format
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:312
+#, python-format
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:321
+#, python-format
+msgid ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/core/validators.py:332
+#, python-format
+msgid ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/base.py:1130
+#: venv/lib/python2.7/site-packages/django/forms/models.py:718
+msgid "and"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/base.py:1132
+#, python-format
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:107
+#, python-format
+msgid "Value %(value)r is not a valid choice."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:108
+msgid "This field cannot be null."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:109
+msgid "This field cannot be blank."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:110
+#, python-format
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr ""
+
+#. Translators: The 'lookup_type' is one of 'date', 'year' or 'month'.
+#. Eg: "Title must be unique for pub_date year"
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:114
+#, python-format
+msgid ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:132
+#, python-format
+msgid "Field of type: %(field_type)s"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:922
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1833
+#, fuzzy
+#| msgid "Integer Sum"
+msgid "Integer"
+msgstr "Somme en entiers"
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:926
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1831
+#, python-format
+msgid "'%(value)s' value must be an integer."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1001
+#, python-format
+msgid "'%(value)s' value must be either True or False."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1003
+msgid "Boolean (Either True or False)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1078
+#, python-format
+msgid "String (up to %(max_length)s)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1139
+msgid "Comma-separated integers"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1188
+#, python-format
+msgid ""
+"'%(value)s' value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1190
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1340
+#, python-format
+msgid ""
+"'%(value)s' value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1193
+#, fuzzy
+#| msgid "Days without lunch ticket"
+msgid "Date (without time)"
+msgstr "Jours sans ticket restaurant"
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1338
+#, python-format
+msgid ""
+"'%(value)s' value has an invalid format. It must be in YYYY-MM-DD HH:MM[:ss[."
+"uuuuuu]][TZ] format."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1342
+#, python-format
+msgid ""
+"'%(value)s' value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1346
+#, fuzzy
+#| msgid "Date/time"
+msgid "Date (with time)"
+msgstr "Date/heure"
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1498
+#, python-format
+msgid "'%(value)s' value must be a decimal number."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1500
+msgid "Decimal number"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1651
+#, python-format
+msgid ""
+"'%(value)s' value has an invalid format. It must be in [DD] [HH:[MM:]]ss[."
+"uuuuuu] format."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1654
+#, fuzzy
+#| msgid "Creation"
+msgid "Duration"
+msgstr "Création"
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1706
+msgid "Email address"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1730
+#, fuzzy
+#| msgid "File"
+msgid "File path"
+msgstr "Fichier"
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1797
+#, python-format
+msgid "'%(value)s' value must be a float."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1799
+msgid "Floating point number"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1900
+msgid "Big (8 byte) integer"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1915
+msgid "IPv4 address"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:1951
+msgid "IP address"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2030
+#, python-format
+msgid "'%(value)s' value must be either None, True or False."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2032
+msgid "Boolean (Either True, False or None)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2092
+msgid "Positive integer"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2104
+msgid "Positive small integer"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2117
+#, python-format
+msgid "Slug (up to %(max_length)s)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2146
+msgid "Small integer"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2153
+msgid "Text"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2176
+#, python-format
+msgid ""
+"'%(value)s' value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2178
+#, python-format
+msgid ""
+"'%(value)s' value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2181
+#, fuzzy
+#| msgid "Timesheet"
+msgid "Time"
+msgstr "Feuille de temps"
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2309
+msgid "URL"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2332
+msgid "Raw binary data"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/__init__.py:2376
+#, python-format
+msgid "'%(value)s' is not a valid UUID."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/files.py:388
+msgid "Image"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/related.py:1809
+#, python-format
+msgid "%(model)s instance with %(field)s %(value)r does not exist."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/related.py:1811
+msgid "Foreign Key (type determined by related field)"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/related.py:2041
+msgid "One-to-one relationship"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/db/models/fields/related.py:2131
+msgid "Many-to-many relationship"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:237
+msgid "Enter a whole number."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:280
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:317
+msgid "Enter a number."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:319
+#, python-format
+msgid "Ensure that there are no more than %(max)s digit in total."
+msgid_plural "Ensure that there are no more than %(max)s digits in total."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:323
+#, python-format
+msgid "Ensure that there are no more than %(max)s decimal place."
+msgid_plural "Ensure that there are no more than %(max)s decimal places."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:327
+#, python-format
+msgid ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:438
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:1193
+msgid "Enter a valid date."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:462
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:1194
+msgid "Enter a valid time."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:484
+msgid "Enter a valid date/time."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:525
+msgid "Enter a valid duration."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:591
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:592
+msgid "No file was submitted."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:593
+msgid "The submitted file is empty."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:595
+#, python-format
+msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgid_plural ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:598
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:660
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:827
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:921
+#: venv/lib/python2.7/site-packages/django/forms/models.py:1238
+#, python-format
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:922
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:1037
+#: venv/lib/python2.7/site-packages/django/forms/models.py:1237
+msgid "Enter a list of values."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:1038
+msgid "Enter a complete value."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/fields.py:1264
+msgid "Enter a valid UUID."
+msgstr ""
+
+#. Translators: This is the default suffix added to form field labels
+#: venv/lib/python2.7/site-packages/django/forms/forms.py:129
+msgid ":"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/forms.py:214
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr ""
+
+#. Translators: If found as last label character, these punctuation
+#. characters will prevent the default label_suffix to be appended to the label
+#: venv/lib/python2.7/site-packages/django/forms/forms.py:659
+msgid ":?.!"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:96
+msgid "ManagementForm data is missing or has been tampered with"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:333
+#, python-format
+msgid "Please submit %d or fewer forms."
+msgid_plural "Please submit %d or fewer forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:340
+#, python-format
+msgid "Please submit %d or more forms."
+msgid_plural "Please submit %d or more forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:368
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:370
+msgid "Order"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/formsets.py:372
+#, fuzzy
+#| msgid "delete"
+msgid "Delete"
+msgstr "supprimer"
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:712
+#, fuzzy, python-format
+#| msgid "Please correct the error below."
+#| msgid_plural "Please correct the errors below."
+msgid "Please correct the duplicate data for %(field)s."
+msgstr "Merci de corriger l'erreur ci-dessous"
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:716
+#, python-format
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:722
+#, python-format
+msgid ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:730
+#, fuzzy
+#| msgid "Please correct the error below."
+#| msgid_plural "Please correct the errors below."
+msgid "Please correct the duplicate values below."
+msgstr "Merci de corriger l'erreur ci-dessous"
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:1053
+msgid "The inline foreign key did not match the parent instance primary key."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:1123
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/models.py:1240
+#, python-format
+msgid "\"%(pk)s\" is not a valid value for a primary key."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/utils.py:165
+#, python-format
+msgid ""
+"%(datetime)s couldn't be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:345
+#, fuzzy
+#| msgid "Current leads"
+msgid "Currently"
+msgstr "Affaires en cours"
+
+#: venv/lib/python2.7/site-packages/django/forms/widgets.py:347
+msgid "Clear"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:865
+msgid "yes,no,maybe"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:894
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:906
+#, python-format
+msgid "%(size)d byte"
+msgid_plural "%(size)d bytes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:908
+#, python-format
+msgid "%s KB"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:910
+#, python-format
+msgid "%s MB"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:912
+#, python-format
+msgid "%s GB"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:914
+#, python-format
+msgid "%s TB"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/template/defaultfilters.py:916
+#, python-format
+msgid "%s PB"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:61
+msgid "p.m."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:62
+msgid "a.m."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:67
+msgid "PM"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:68
+msgid "AM"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:153
+msgid "midnight"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dateformat.py:155
+msgid "noon"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:6
+msgid "Monday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:6
+msgid "Tuesday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:6
+msgid "Wednesday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:6
+msgid "Thursday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:6
+#, fuzzy
+#| msgid "Holiday"
+msgid "Friday"
+msgstr "Congé"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:7
+msgid "Saturday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:7
+msgid "Sunday"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:10
+#, fuzzy
+#| msgid "Month"
+msgid "Mon"
+msgstr "Mois"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:10
+#, fuzzy
+#| msgid "Due"
+msgid "Tue"
+msgstr "Échéance"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:10
+msgid "Wed"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:10
+msgid "Thu"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:10
+msgid "Fri"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:11
+#, fuzzy
+#| msgid "State"
+msgid "Sat"
+msgstr "État"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:11
+#, fuzzy
+#| msgid "Sum"
+msgid "Sun"
+msgstr "Somme"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+msgid "January"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+msgid "February"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+#, fuzzy
+#| msgid "search"
+msgid "March"
+msgstr "chercher"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+msgid "April"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+msgid "May"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:18
+msgid "June"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:19
+msgid "July"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:19
+msgid "August"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:19
+msgid "September"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:19
+msgid "October"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:19
+msgid "November"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:20
+msgid "December"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "jan"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "feb"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "mar"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "apr"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+#, fuzzy
+#| msgid "company"
+msgid "may"
+msgstr "société"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:23
+msgid "jun"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "jul"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "aug"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "sep"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+#, fuzzy
+#| msgid "Contact"
+msgid "oct"
+msgstr "Contact"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "nov"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:24
+msgid "dec"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:31
+msgctxt "abbrev. month"
+msgid "Jan."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:32
+msgctxt "abbrev. month"
+msgid "Feb."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:33
+#, fuzzy
+#| msgid "search"
+msgctxt "abbrev. month"
+msgid "March"
+msgstr "chercher"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:34
+msgctxt "abbrev. month"
+msgid "April"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:35
+msgctxt "abbrev. month"
+msgid "May"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:36
+msgctxt "abbrev. month"
+msgid "June"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:37
+msgctxt "abbrev. month"
+msgid "July"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:38
+msgctxt "abbrev. month"
+msgid "Aug."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:39
+msgctxt "abbrev. month"
+msgid "Sept."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:40
+msgctxt "abbrev. month"
+msgid "Oct."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:41
+msgctxt "abbrev. month"
+msgid "Nov."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:42
+msgctxt "abbrev. month"
+msgid "Dec."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:45
+msgctxt "alt. month"
+msgid "January"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:46
+msgctxt "alt. month"
+msgid "February"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:47
+#, fuzzy
+#| msgid "search"
+msgctxt "alt. month"
+msgid "March"
+msgstr "chercher"
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:48
+msgctxt "alt. month"
+msgid "April"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:49
+msgctxt "alt. month"
+msgid "May"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:50
+msgctxt "alt. month"
+msgid "June"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:51
+msgctxt "alt. month"
+msgid "July"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:52
+msgctxt "alt. month"
+msgid "August"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:53
+msgctxt "alt. month"
+msgid "September"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:54
+msgctxt "alt. month"
+msgid "October"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:55
+msgctxt "alt. month"
+msgid "November"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/dates.py:56
+msgctxt "alt. month"
+msgid "December"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/ipv6.py:10
+msgid "This is not a valid IPv6 address."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/text.py:79
+#, python-format
+msgctxt "String to return when truncating text"
+msgid "%(truncated_text)s..."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/text.py:248
+msgid "or"
+msgstr ""
+
+#. Translators: This string is used as a separator between list elements
+#: venv/lib/python2.7/site-packages/django/utils/text.py:267
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:58
+msgid ", "
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:10
+#, python-format
+msgid "%d year"
+msgid_plural "%d years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:11
+#, fuzzy, python-format
+#| msgid "month"
+msgid "%d month"
+msgid_plural "%d months"
+msgstr[0] "Mois"
+msgstr[1] "Mois"
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:12
+#, fuzzy, python-format
+#| msgid "week "
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] "semaine "
+msgstr[1] "semaine "
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:13
+#, python-format
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:14
+#, python-format
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:15
+#, python-format
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python2.7/site-packages/django/utils/timesince.py:47
+msgid "0 minutes"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:107
+msgid "Forbidden"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:108
+msgid "CSRF verification failed. Request aborted."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:112
+msgid ""
+"You are seeing this message because this HTTPS site requires a 'Referer "
+"header' to be sent by your Web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:117
+msgid ""
+"If you have configured your browser to disable 'Referer' headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for 'same-"
+"origin' requests."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:122
+msgid ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:127
+msgid ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for 'same-origin' requests."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/csrf.py:132
+msgid "More information is available with DEBUG=True."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/debug.py:583
+msgid "Welcome to Django"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/debug.py:584
+msgid "It worked!"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/debug.py:585
+msgid "Congratulations on your first Django-powered page."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/debug.py:586
+msgid ""
+"Of course, you haven't actually done any work yet. Next, start your first "
+"app by running <code>python manage.py startapp [app_label]</code>."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/debug.py:588
+msgid ""
+"You're seeing this message because you have <code>DEBUG = True</code> in "
+"your Django settings file and you haven't configured any URLs. Get to work!"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:48
+msgid "No year specified"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:104
+msgid "No month specified"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:163
+msgid "No day specified"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:219
+msgid "No week specified"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:378
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:406
+#, python-format
+msgid "No %(verbose_name_plural)s available"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:660
+#, python-format
+msgid ""
+"Future %(verbose_name_plural)s not available because %(class_name)s."
+"allow_future is False."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/dates.py:694
+#, python-format
+msgid "Invalid date string '%(datestr)s' given format '%(format)s'"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/detail.py:55
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/list.py:76
+msgid "Page is not 'last', nor can it be converted to an int."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/list.py:81
+#, python-format
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/generic/list.py:172
+#, python-format
+msgid "Empty list and '%(class_name)s.allow_empty' is False."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/static.py:58
+msgid "Directory indexes are not allowed here."
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django/views/static.py:60
+#, fuzzy, python-format
+#| msgid "User %s does not exist"
+msgid "\"%(path)s\" does not exist"
+msgstr "L'utilisateur %s n'existe pas"
+
+#: venv/lib/python2.7/site-packages/django/views/static.py:100
+#, python-format
+msgid "Index of %(directory)s"
+msgstr ""
+
+#: venv/lib/python2.7/site-packages/django_datatables_view/mixins.py:71
+#, fuzzy
+#| msgid "Internal Company"
+msgid "Internal error"
+msgstr "Entreprise filiale"
+
+#~ msgid "including billed turnover last 12 months"
+#~ msgstr "dont sur les 12 derniers mois :"
+
 #~ msgid "Lost leads"
 #~ msgstr "Affaires perdues"
-
-#~ msgid "Current leads"
-#~ msgstr "Affaires en cours"
 
 #~ msgid "user"
 #~ msgstr "utilisateur"
 
 #~ msgid "Action set %s does not exist"
 #~ msgstr "Le train d'action %s n'existe pas"
-
-#~ msgid "User %s does not exist"
-#~ msgstr "L'utilisateur %s n'existe pas"
 
 #~ msgid "Username parameter is missing"
 #~ msgstr "Le paramètre Username est manquant"
@@ -3448,11 +4587,6 @@ msgstr "Totaux"
 #~ msgid "Add %(name)s"
 #~ msgstr "Ajouter %(name)s"
 
-#~ msgid "Please correct the error below."
-#~ msgid_plural "Please correct the errors below."
-#~ msgstr[0] "Merci de corriger l'erreur ci-dessous"
-#~ msgstr[1] "Merci de corriger les erreurs ci-dessous"
-
 #~ msgid "Filter"
 #~ msgstr "Filtre"
 
@@ -3624,9 +4758,6 @@ msgstr "Totaux"
 #, fuzzy
 #~ msgid "Objective rate"
 #~ msgstr "Taux budget (€)"
-
-#~ msgid "month"
-#~ msgstr "Mois"
 
 #~ msgid "Missions administration"
 #~ msgstr "Administration des missions"
@@ -3807,9 +4938,6 @@ msgstr "Totaux"
 #, fuzzy
 #~ msgid "Change {{ mission }}"
 #~ msgstr "Modifier %(mission)s"
-
-#~ msgid "Internal Company"
-#~ msgstr "Entreprise filiale"
 
 #~ msgid "Entreprise"
 #~ msgstr "Entreprise"
