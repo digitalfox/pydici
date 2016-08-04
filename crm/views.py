@@ -301,6 +301,7 @@ def company_detail(request, company_id):
 
     # Sales stats
     sales = int(company.sales())
+    sales_last_year = int(company.sales(onlyLastYear=True))
     supplier_billing = int(company.supplier_billing())
     direct_sales = sales - supplier_billing
 
@@ -325,7 +326,9 @@ def company_detail(request, company_id):
                    "administrative_contacts": administrative_contacts,
                    "contacts_count" : business_contacts.count() + mission_contacts.count() + administrative_contacts.count(),
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
-                   "companies": companies})
+                   "companies": companies,
+                   "sales_last_year": sales_last_year
+                  })
 
 
 @pydici_non_public
