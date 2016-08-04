@@ -120,9 +120,8 @@
                                 <span class="glyphicon glyphicon-euro gi-4x"></span>
                             </div>
                             <div class="col-xs-9 text-right">
-                                <div class="huge">{{ sales }} k€</div>
-                                <div>{% trans "billed turnover" %}</div>
-                                <div>{% trans "including" %} {{ sales_last_year }} k€ {% trans "during last 12 months" %}</div>
+                                <div class="huge" title="{% trans 'billed turnover'%}">{{ sales }} k€</div>
+                                <div>{{ sales_last_year }} k€ {% trans "during last 12 months" %}</div>
                             </div>
                         </div>
                     </div>
