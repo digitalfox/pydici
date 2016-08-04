@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-01 23:21+0200\n"
-"PO-Revision-Date: 2016-08-01 23:21+0100\n"
+"POT-Creation-Date: 2016-08-04 14:41+0200\n"
+"PO-Revision-Date: 2016-08-04 14:41+0100\n"
 "Last-Translator: Sebastien Renard <sebastien.renard@enioka.com>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -49,7 +49,7 @@ msgstr "Quand un consultant est créé"
 #: actionset/models.py:27 actionset/models.py:48 crm/models.py:25
 #: crm/models.py:93 crm/models.py:388 expense/models.py:44 leads/models.py:57
 #: leads/views.py:208 people/models.py:27 people/models.py:230
-#: templates/crm/clientcompany_detail.html:360 templates/leads/review.html:27
+#: templates/crm/clientcompany_detail.html:361 templates/leads/review.html:27
 #: templates/leads/review.html.py:61 templates/people/consultant.html:51
 #: templates/staffing/mission_contacts.html:12
 msgid "Name"
@@ -418,7 +418,7 @@ msgstr "Filiales"
 msgid "Business owner"
 msgstr "Responsable business"
 
-#: crm/models.py:72 templates/crm/clientcompany_detail.html:361
+#: crm/models.py:72 templates/crm/clientcompany_detail.html:362
 #: templates/staffing/mission_contacts.html:13
 msgid "Company"
 msgstr "Société"
@@ -440,23 +440,23 @@ msgid "Client organisation"
 msgstr "Département"
 
 #: crm/models.py:95 people/models.py:235
-#: templates/crm/clientcompany_detail.html:364
+#: templates/crm/clientcompany_detail.html:365
 #: templates/staffing/mission_contacts.html:16
 msgid "Phone"
 msgstr "Téléphone"
 
-#: crm/models.py:96 templates/crm/clientcompany_detail.html:365
+#: crm/models.py:96 templates/crm/clientcompany_detail.html:366
 #: templates/staffing/mission_contacts.html:17
 msgid "Mobile phone"
 msgstr "Téléphone mobile"
 
-#: crm/models.py:97 templates/crm/clientcompany_detail.html:366
+#: crm/models.py:97 templates/crm/clientcompany_detail.html:367
 #: templates/staffing/mission_contacts.html:18
 msgid "Fax"
 msgstr "Fax"
 
 #: crm/models.py:98 crm/models.py:400
-#: templates/crm/clientcompany_detail.html:362
+#: templates/crm/clientcompany_detail.html:363
 #: templates/staffing/mission_contacts.html:14
 msgid "Function"
 msgstr "Fonction"
@@ -581,7 +581,7 @@ msgstr "bientôt en retard"
 msgid "last 12 months"
 msgstr "12 derniers mois"
 
-#: crm/views.py:389
+#: crm/views.py:392
 msgid "Others"
 msgstr "Autres"
 
@@ -1635,7 +1635,7 @@ msgstr "Montant réalisé (€)"
 
 #: templates/billing/bill_review.html:212 templates/core/index.html:25
 #: templates/core/index.html.py:50 templates/core/index.html:74
-#: templates/core/index.html.py:98 templates/crm/clientcompany_detail.html:318
+#: templates/core/index.html.py:98 templates/crm/clientcompany_detail.html:319
 #: templates/leads/lead_detail.html:103 templates/leads/lead_detail.html:146
 #: templates/leads/lead_mail.html:8 templates/leads/lead_mail.html.py:12
 #: templates/leads/lead_mail.txt:9 templates/leads/lead_mail.txt.py:13
@@ -1787,7 +1787,7 @@ msgstr "Afficher _MENU_ éléments"
 
 #: templates/core/_pydici_menu.html:22 templates/core/_pydici_menu.html:103
 #: templates/core/search.html:53 templates/crm/clientcompany_detail.html:28
-#: templates/crm/clientcompany_detail.html:286 templates/leads/leads.html:6
+#: templates/crm/clientcompany_detail.html:287 templates/leads/leads.html:6
 msgid "Leads"
 msgstr "Affaires"
 
@@ -1843,7 +1843,7 @@ msgid "New business broker"
 msgstr "Nouvel apporteur d'affaires"
 
 #: templates/core/_pydici_menu.html:62
-#: templates/crm/clientcompany_detail.html:397
+#: templates/crm/clientcompany_detail.html:398
 msgid "New administrative contact"
 msgstr "Nouveau contact administratif"
 
@@ -2191,8 +2191,8 @@ msgid "Add or modify a company"
 msgstr "Ajouter ou modifier une société"
 
 #: templates/crm/clientcompany_detail.html:16
-#: templates/crm/clientcompany_detail.html:274
-#: templates/crm/clientcompany_detail.html:297
+#: templates/crm/clientcompany_detail.html:275
+#: templates/crm/clientcompany_detail.html:298
 #: templates/staffing/mission.html:217 templates/staffing/mission.html:229
 msgid "click to edit..."
 msgstr "Cliquez pour modifier..."
@@ -2216,7 +2216,7 @@ msgstr "affaires"
 #: templates/crm/clientcompany_detail.html:58
 #: templates/crm/clientcompany_detail.html:82
 #: templates/crm/clientcompany_detail.html:106
-#: templates/crm/clientcompany_detail.html:130
+#: templates/crm/clientcompany_detail.html:131
 msgid "View Details"
 msgstr "Voir les détails"
 
@@ -2232,68 +2232,76 @@ msgstr "contacts"
 msgid "billed turnover"
 msgstr "chiffre d'affaires facturé"
 
-#: templates/crm/clientcompany_detail.html:159
+#: templates/crm/clientcompany_detail.html:125
+msgid "including"
+msgstr "dont"
+
+#: templates/crm/clientcompany_detail.html:125
+msgid "during last 12 months"
+msgstr "sur les 12 derniers mois"
+
+#: templates/crm/clientcompany_detail.html:160
 msgctxt "short"
 msgid "Leads"
 msgstr "Affaires"
 
-#: templates/crm/clientcompany_detail.html:172
+#: templates/crm/clientcompany_detail.html:173
 msgid "Overall won lead rate: "
 msgstr "Taux de réussite affaire global : "
 
-#: templates/crm/clientcompany_detail.html:179
+#: templates/crm/clientcompany_detail.html:180
 msgctxt "short"
 msgid "Won rate"
 msgstr "Taux de réussite"
 
-#: templates/crm/clientcompany_detail.html:211
+#: templates/crm/clientcompany_detail.html:212
 msgctxt "short"
 msgid "Recent bills"
 msgstr "Factures récentes"
 
-#: templates/crm/clientcompany_detail.html:229
+#: templates/crm/clientcompany_detail.html:230
 msgid "Direct billing and supplier margin"
 msgstr "Facturation directe et marge fournisseur"
 
-#: templates/crm/clientcompany_detail.html:230
+#: templates/crm/clientcompany_detail.html:231
 msgid "Billed by suppliers"
 msgstr "Facturé par les fournisseurs"
 
-#: templates/crm/clientcompany_detail.html:239
+#: templates/crm/clientcompany_detail.html:240
 msgctxt "short"
 msgid "Suppliers proportion"
 msgstr "Proportion fournisseur"
 
-#: templates/crm/clientcompany_detail.html:266
+#: templates/crm/clientcompany_detail.html:267
 msgid "Current active missions"
 msgstr "Missions en cours"
 
-#: templates/crm/clientcompany_detail.html:315
+#: templates/crm/clientcompany_detail.html:316
 msgid "Business owner for this company:"
 msgstr "Responsable business pour cette société : "
 
-#: templates/crm/clientcompany_detail.html:321
+#: templates/crm/clientcompany_detail.html:322
 msgid "Consultants that work for this company:"
 msgstr "Les consultants qui ont travaillé pour cette société :"
 
-#: templates/crm/clientcompany_detail.html:328
+#: templates/crm/clientcompany_detail.html:329
 #: templates/people/consultant.html:17
 msgid "subcontractor"
 msgstr "Sous-traitant"
 
-#: templates/crm/clientcompany_detail.html:338
+#: templates/crm/clientcompany_detail.html:339
 msgid "Business contacts"
 msgstr "Contacts business"
 
-#: templates/crm/clientcompany_detail.html:346
+#: templates/crm/clientcompany_detail.html:347
 msgid "Mission contacts"
 msgstr "Contacts mission"
 
-#: templates/crm/clientcompany_detail.html:355
+#: templates/crm/clientcompany_detail.html:356
 msgid "Administrative contacts"
 msgstr "Contacts administratifs"
 
-#: templates/crm/clientcompany_detail.html:363
+#: templates/crm/clientcompany_detail.html:364
 #: templates/staffing/mission_contacts.html:15
 msgid "Email"
 msgstr "Courriel"
