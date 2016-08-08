@@ -1,0 +1,30 @@
+{# JS Fragment to submit a popup form with Ajax POST #}
+{# Form id must be {{ formid }} (use {% with... %}) #}
+{# Popover class must be {{ popup_class }} (use {% with... %}) #}
+{# Target field for data ass must be {{ target_id }} (use {% with... %}) #}
+ 
+<script type="text/javascript">
+/* attach a submit handler to the form */
+    $("#{{ formid }}").submit(function(event) {
+
+        /* stop form from submitting normally */
+        event.preventDefault(); 
+
+        /* get form data and target url */
+        var $form = $(this),
+        formData = $form.serialize(),
+        url = $form.attr('action');
+
+        /* Send the data using post and put the results in target field */
+        $.ajax({
+            url: url,
+            data: formData,
+            type: 'POST',
+            success: function(data) { console.log(data);  $("#{{target_id}}.django-select2").select2('trigger', 'select', data } ); }, // does not work yet. https://github.com/select2/select2/issues/4487
+            beforeSend: function () {  },
+        });
+
+        /* close popover */
+        $(".{{ popup_class }}").popover("hide");
+    });
+</script>

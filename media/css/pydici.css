@@ -294,3 +294,7 @@ div.ui-tooltip {
 .huge {
     font-size: 40px;
 }
+
+.popover {
+    z-index: 1010; /* Avoid to be above select2 search dropbox */
+}

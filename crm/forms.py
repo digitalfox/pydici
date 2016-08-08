@@ -87,7 +87,12 @@ class ClientForm(PydiciCrispyModelForm):
 
 
     def __init__(self, *args, **kwargs):
+        popup = kwargs.pop("popup", False)
         super(ClientForm, self).__init__(*args, **kwargs)
+        self.helper.form_id = "pydici-ajax-form-client"
+        self.helper.form_action = reverse("crm.views.client")
+        if popup:
+            self.helper.form_action += "?popup"
         self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation")),
                                                "expectations", css_class="col-md-6"),
                                         Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),

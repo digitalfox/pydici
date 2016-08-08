@@ -65,7 +65,7 @@ class LeadForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"), Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))),
-                                                  AppendedText("client", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.client")),
+                                                  AppendedText("client", "<a class='add-client' href='#'><span class='glyphicon glyphicon-plus'></span></a>"),
                                                   "subsidiary", "description", Field("action", placeholder=_("Next commercial action to be done"))),
                                               Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
                                                                                       Field("start_date", placeholder=_("Date of the operational start"), css_class="datepicker"),

@@ -15,7 +15,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.contrib import messages
 from django.utils.translation import ugettext as _
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core import urlresolvers
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
@@ -167,6 +167,12 @@ class AdministrativeContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMix
 def client(request, client_id=None):
     """Client creation or modification"""
     client = None
+
+    if "popup" in request.GET or "popup" in request.POST:
+        popup = True
+    else:
+        popup = False
+
     try:
         if client_id:
             client = Client.objects.get(id=client_id)
@@ -175,20 +181,28 @@ def client(request, client_id=None):
 
     if request.method == "POST":
         if client:
-            form = ClientForm(request.POST, instance=client)
+            form = ClientForm(request.POST, instance=client, popup=popup)
         else:
-            form = ClientForm(request.POST)
+            form = ClientForm(request.POST, popup=popup)
         if form.is_valid():
             client = form.save()
             client.save()
-            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[client.organisation.company.id]))
+            if popup:
+                return HttpResponse(client.id)
+            else:
+                return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[client.organisation.company.id]))
     else:
         if client:
-            form = ClientForm(instance=client)  # A form that edit current client
+            form = ClientForm(instance=client, popup=popup)  # A form that edit current client
         else:
-            form = ClientForm()  # An unbound form
+            form = ClientForm(popup=popup)  # An unbound form
 
-    return render(request, "crm/client.html", {"client": client,
+    if popup:
+        clientTemplate = "crm/client-popup.html"
+    else:
+        clientTemplate = "crm/client.html"
+
+    return render(request, clientTemplate, {"client": client,
                                                "form": form,
                                                "user": request.user})
 

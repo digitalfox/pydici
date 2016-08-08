@@ -9,6 +9,32 @@
 
 {% crispy form form.helper %}
 
+
+<script type="text/JavaScript">
+$(document).ready(function(){
+
+    $(".add-client").popover(
+        {
+          container: "body",
+          html: true,
+          content: function() {
+                  c = $.ajax({
+                      url: '{% url 'crm.views.client' %}?popup',
+                      dataType: 'html',
+                      async: false
+                      }).responseText;
+                   return c;
+          },
+          trigger: "click",
+          template: '<div class="popover" style="max-width:800px;" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+        }
+    );
+
+});
+</script>
+
+
+
 {% include "core/_datepicker.html" %}
 
 {% endblock %}

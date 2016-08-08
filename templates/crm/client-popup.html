@@ -1,0 +1,20 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Add or modify a Client" %}{% endblock %}
+
+{% block content %}
+
+{% crispy form form.helper %}
+
+{% include "core/_select2.html" %}
+
+{% with "pydici-ajax-form-client" as formid %}
+{% with "add-client" as popup_class %}
+{% with "id_client" as target_id %}
+    {% include "core/_ajax_popup_post.html" %}
+{% endwith %}
+{% endwith %}
+{% endwith %}
+
+{% endblock %}
