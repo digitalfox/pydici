@@ -64,6 +64,15 @@ class Consultant(models.Model):
         Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         return Mission.objects.filter(active=True).filter(staffing__consultant=self).distinct().select_related("lead__client__organisation__company")
 
+    def responsible_missions(self):
+        """Returns consultant active missions whose she is responsible of"""
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        return Mission.objects.filter(active=True).filter(responsible=self).distinct().select_related("lead__client__organisation__company")
+
+    def current_missions(self):
+        """Returns active and responsible missions"""
+        return self.active_missions() | self.responsible_missions()
+
     def forecasted_missions(self, month=None):
         """Returns consultant active missions on given month based on forecasted staffing
         If month is not defined, current month is used"""
