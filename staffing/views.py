@@ -1017,6 +1017,7 @@ def holidays_planning(request, year=None, month=None):
 
     holidays_days = Holiday.objects.all().values_list("day", flat=True)
     days = daysOfMonth(month)
+    today = datetime.today().day
     data = []
     # TODO: holidays (jours fériés
     # TODO: week end)
@@ -1038,6 +1039,7 @@ def holidays_planning(request, year=None, month=None):
                   {"days": days,
                    "data": data,
                    "month": month,
+                   "today": today,
                    "previous_month": previous_month,
                    "next_month": next_month,
                    "user": request.user, })

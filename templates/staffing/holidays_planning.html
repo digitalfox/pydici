@@ -16,16 +16,20 @@
 
 <div class="table-responsive">
 <table class="table table-hover table-pydici-extra-condensed">
+    <thead>
         <tr><td></td>
         {% for day in days %}
             <th>{{ day|date:"j" }}</th>
         {% endfor %}
         </tr>
-        <tr><td></td>
+        <tr>
+        <td></td>
         {% for day in days %}
             <td>{{ day|date:"D" }}</td>
         {% endfor %}
         </tr>
+    </thead>
+    <tbody>
         {% for line in data %}
         <tr>
             {% for item in line %}
@@ -34,6 +38,29 @@
             {% endfor %}
         </tr>
         {% endfor %}
+    </tbody>
 </table>
 </div>
+
+<script type="text/javascript">
+ // Add a border around today's column
+ var borderStyle = "2px solid #555";
+
+ // Header cell
+ $(".table-pydici-extra-condensed tr:first th:nth-child({{ today|add:'1' }})").css('border-top', borderStyle);
+ $(".table-pydici-extra-condensed tr:first th:nth-child({{ today|add:'1' }})").css('border-left', borderStyle);
+ $(".table-pydici-extra-condensed tr:first th:nth-child({{ today|add:'1' }})").css('border-right', borderStyle);
+
+ // Rows of each consultant
+ $(".table-pydici-extra-condensed tr td:nth-child({{ today|add:'1' }})").css('border-left', borderStyle);
+ $(".table-pydici-extra-condensed tr td:nth-child({{ today|add:'1' }})").css('border-right', borderStyle);
+
+ // Last row
+ $(".table-pydici-extra-condensed tr:last td:nth-child({{ today|add:'1' }})").css('border-bottom', borderStyle);
+
+ // Add a tooltip on headers
+ $(".table-pydici-extra-condensed thead tr *:nth-child({{ today|add:'1' }})").prop("title", "{% blocktrans %}Today{% endblocktrans %}");
+
+</script>
+
 {% endblock %}
