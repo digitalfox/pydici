@@ -20,11 +20,14 @@
             url: url,
             data: formData,
             type: 'POST',
-            success: function(data) { console.log(data);  $("#{{target_id}}.django-select2").select2('trigger', 'select', data } ); }, // does not work yet. https://github.com/select2/select2/issues/4487
+            success: function(result) { console.log(result);
+                                        //  $("#{{target_id}}.django-select2").select2('trigger', 'select', result ); }, // does not work yet. https://github.com/select2/select2/issues/4487
+                                        $('#{{ modal_id }}').modal('hide');
+                                      },
             beforeSend: function () {  },
         });
 
         /* close popover */
-        $(".{{ popup_class }}").popover("hide");
+        $(".{{ modal_id }}").modal("hide");
     });
 </script>

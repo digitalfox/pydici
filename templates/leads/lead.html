@@ -9,31 +9,35 @@
 
 {% crispy form form.helper %}
 
+<!-- Modal window to display client creation -->
+<div class="modal fade" id="clientModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <h4 class="modal-title" id="clientModalLabel">{% trans "Add client" %}</h4>
+      </div>
+      <div class="modal-body expense-receipt">
+        ...
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script type="text/JavaScript">
 $(document).ready(function(){
-
-    $(".add-client").popover(
-        {
-          container: "body",
-          html: true,
-          content: function() {
-                  c = $.ajax({
-                      url: '{% url 'crm.views.client' %}?popup',
-                      dataType: 'html',
-                      async: false
-                      }).responseText;
-                   return c;
-          },
-          trigger: "click",
-          template: '<div class="popover" style="max-width:800px;" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
-        }
-    );
-
+    // Fill modal with content from link href
+    $("#clientModal").on("show.bs.modal", function(e) {
+        var link = $(e.relatedTarget);
+        var desc = link.closest("tr").find(".description").html() + " - " + link.closest("tr").find(".amount").html();
+        $(this).find("#expenseModalLabel").html(desc);
+        var url = '{% url 'crm.views.client' %}?popup';
+        $(this).find(".modal-body").load(link.attr("href"));
+    });
 });
+
 </script>
-
-
 
 {% include "core/_datepicker.html" %}
 
