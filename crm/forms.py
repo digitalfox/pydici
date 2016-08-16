@@ -17,7 +17,7 @@ from crispy_forms.bootstrap import AppendedText
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
 from people.forms import ConsultantChoices, ConsultantMChoices
 from core.utils import capitalize
-from core.forms import PydiciCrispyModelForm
+from core.forms import PydiciCrispyModelForm, PydiciCrispyForm
 
 
 class ClientChoices(ModelSelect2Widget):
@@ -87,12 +87,9 @@ class ClientForm(PydiciCrispyModelForm):
 
 
     def __init__(self, *args, **kwargs):
-        popup = kwargs.pop("popup", False)
         super(ClientForm, self).__init__(*args, **kwargs)
         self.helper.form_id = "pydici-ajax-form-client"
         self.helper.form_action = reverse("crm.views.client")
-        if popup:
-            self.helper.form_action += "?popup"
         self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation")),
                                                "expectations", css_class="col-md-6"),
                                         Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
@@ -218,4 +215,24 @@ class SupplierForm(PydiciCrispyModelForm):
                                         Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
                                                css_class="col-md-6"),
                                         css_class="row"),
+                                    self.submit)
+
+class ClientOrganisationCompanyForm(PydiciCrispyForm):
+    """All in one form with client, organisation, company and contact"""
+    class Meta:
+        fields = "__all__"
+        widgets = { "contact": ContactChoices,
+                    "organisation": ClientOrganisationChoices}
+
+
+    def __init__(self, *args, **kwargs):
+        super(ClientOrganisationCompanyForm, self).__init__(*args, **kwargs)
+        self.helper.form_id = "pydici-ajax-form-client-organisation-company"
+        self.helper.form_action = reverse("crm.views.client_organisation_company_popup")
+        self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation")),
+                                               "expectations", css_class="col-md-6"),
+                                        Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
+                                               "alignment", css_class="col-md-6"),
+                                        css_class="row"),
+                                    "active",
                                     self.submit)

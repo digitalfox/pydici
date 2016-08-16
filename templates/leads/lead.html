@@ -26,14 +26,17 @@
 
 
 <script type="text/JavaScript">
+
 $(document).ready(function(){
     // Fill modal with content from link href
     $("#clientModal").on("show.bs.modal", function(e) {
         var link = $(e.relatedTarget);
-        var desc = link.closest("tr").find(".description").html() + " - " + link.closest("tr").find(".amount").html();
-        $(this).find("#expenseModalLabel").html(desc);
-        var url = '{% url 'crm.views.client' %}?popup';
-        $(this).find(".modal-body").load(link.attr("href"));
+
+        $.ajax({url: link.attr("href"),
+                     success: function(result){
+                                 $('#clientModal').find(".modal-body").html(result.form);
+                            },
+               });
     });
 });
 

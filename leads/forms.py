@@ -64,7 +64,7 @@ class LeadForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)
-        clientPopupUrl = reverse("crm.views.client") + "?popup"
+        clientPopupUrl = reverse("crm.views.client_organisation_company_popup")
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"), Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))),
                                                   AppendedText("client", "<a href='%s' data-remote='false' data-toggle='modal' data-target='#clientModal'><span class='glyphicon glyphicon-plus'></span></a>" % clientPopupUrl),
                                                   "subsidiary", "description", Field("action", placeholder=_("Next commercial action to be done"))),

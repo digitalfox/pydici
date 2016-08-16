@@ -18,8 +18,10 @@ from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core import urlresolvers
 from django.utils.decorators import method_decorator
+from django.utils.safestring import mark_for_escaping
 from django.contrib.auth.decorators import permission_required
 from django.utils.safestring import mark_safe
+from django.template.loader import get_template
 
 
 from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact,\
@@ -167,12 +169,6 @@ class AdministrativeContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMix
 def client(request, client_id=None):
     """Client creation or modification"""
     client = None
-
-    if "popup" in request.GET or "popup" in request.POST:
-        popup = True
-    else:
-        popup = False
-
     try:
         if client_id:
             client = Client.objects.get(id=client_id)
@@ -181,30 +177,42 @@ def client(request, client_id=None):
 
     if request.method == "POST":
         if client:
-            form = ClientForm(request.POST, instance=client, popup=popup)
+            form = ClientForm(request.POST, instance=client)
         else:
-            form = ClientForm(request.POST, popup=popup)
+            form = ClientForm(request.POST)
         if form.is_valid():
             client = form.save()
             client.save()
-            if popup:
-                return HttpResponse(client.id)
-            else:
-                return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[client.organisation.company.id]))
+            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[client.organisation.company.id]))
     else:
         if client:
-            form = ClientForm(instance=client, popup=popup)  # A form that edit current client
+            form = ClientForm(instance=client)  # A form that edit current client
         else:
-            form = ClientForm(popup=popup)  # An unbound form
+            form = ClientForm()  # An unbound form
 
-    if popup:
-        clientTemplate = "crm/client-popup.html"
-    else:
-        clientTemplate = "crm/client.html"
-
-    return render(request, clientTemplate, {"client": client,
+    return render(request, "crm/client.html", {"client": client,
                                                "form": form,
                                                "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("3rdparties")
+def client_organisation_company_popup(request):
+    """Client, organisation and company creation in one popup"""
+    template = get_template("crm/client-popup.html")
+    result = {}
+    if request.method == "POST":
+        form = ClientForm(request.POST)
+        if form.is_valid():
+            client = form.save()
+            client.save()
+            result["client_id"] = client.id
+            result["client_label"] = unicode(client)
+    else:
+        form = ClientForm()  # An unbound form
+        result["form"] = template.render({"form": form})
+
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 
 @pydici_non_public
