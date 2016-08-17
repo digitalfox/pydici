@@ -5,7 +5,7 @@
 <div id="timesheet_profile_rates_graph_jqp" style="height:300px;"></div>
 <script type="text/javascript">
 
-{% include "core/_jqplot_legend.html" %}
+ {% include "core/_jqplot_legend.html" %}
 
 $.jqplot.config.enablePlugins = true;
 var plot_timesheet_profile_rates_graph_jqp = $.jqplot('timesheet_profile_rates_graph_jqp',  {{ graph_data|safe }}, {

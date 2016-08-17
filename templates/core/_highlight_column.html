@@ -1,0 +1,24 @@
+{% load i18n %}
+
+<script type="text/javascript">
+ function highlight_today(col_number, borderStyle) {
+     // Header cell for both table that use and don't use thead
+     $(".table-pydici-extra-condensed tr:first td:nth-child(" + col_number + ")").css('border-top', borderStyle);
+     $(".table-pydici-extra-condensed tr:first th:nth-child(" + col_number + ")").css('border-top', borderStyle);
+     $(".table-pydici-extra-condensed tr:first th:nth-child(" + col_number + ")").css('border-left', borderStyle);
+     $(".table-pydici-extra-condensed tr:first th:nth-child(" + col_number + ")").css('border-right', borderStyle);
+
+     // Rows of each mission
+     $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('border-left', borderStyle);
+     $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('border-right', borderStyle);
+
+     // Last Row
+     $(".table-pydici-extra-condensed tr:last td:nth-child(" + col_number + ")").css('border-bottom', borderStyle);
+
+     // Add a tooltip on headers (for tables that use thead)
+     $(".table-pydici-extra-condensed thead tr *:nth-child(" + col_number + ")").prop("title", "{% blocktrans %}Today{% endblocktrans %}");
+     // Add a tooltip on headers (for tables that DON'T use thead)
+     $(".table-pydici-extra-condensed tr:first td:nth-child(" + col_number + ")").prop("title", "{% blocktrans %}Today{% endblocktrans %}");
+ }
+
+</script>
