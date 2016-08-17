@@ -43,24 +43,30 @@
 </div>
 
 <script type="text/javascript">
- // Add a border around today's column
- var borderStyle = "2px solid #555";
+ function highlight_today(col_number, borderStyle) {
+     // Header cell for both table that use and don't use thead
+     $(".table-pydici-extra-condensed tr:first td:nth-child(" + col_number + ")").css('border-top', borderStyle);
+     $(".table-pydici-extra-condensed tr:first th:nth-child(" + col_number + ")").css('border-top', borderStyle);
+     $(".table-pydici-extra-condensed tr:first th:nth-child(" + col_number + ")").css('border-left', borderStyle);
+     $(".table-pydici-extra-condensed tr:first th:nth-child(" + col_number + ")").css('border-right', borderStyle);
 
- // Header cell
- $(".table-pydici-extra-condensed tr:first th:nth-child({{ today|add:'1' }})").css('border-top', borderStyle);
- $(".table-pydici-extra-condensed tr:first th:nth-child({{ today|add:'1' }})").css('border-left', borderStyle);
- $(".table-pydici-extra-condensed tr:first th:nth-child({{ today|add:'1' }})").css('border-right', borderStyle);
+     // Rows of each mission
+     $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('border-left', borderStyle);
+     $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('border-right', borderStyle);
 
- // Rows of each consultant
- $(".table-pydici-extra-condensed tr td:nth-child({{ today|add:'1' }})").css('border-left', borderStyle);
- $(".table-pydici-extra-condensed tr td:nth-child({{ today|add:'1' }})").css('border-right', borderStyle);
+     // Last Row
+     $(".table-pydici-extra-condensed tr:last td:nth-child(" + col_number + ")").css('border-bottom', borderStyle);
 
- // Last row
- $(".table-pydici-extra-condensed tr:last td:nth-child({{ today|add:'1' }})").css('border-bottom', borderStyle);
+     // Add a tooltip on headers (for tables that use thead)
+     $(".table-pydici-extra-condensed thead tr *:nth-child(" + col_number + ")").prop("title", "{% blocktrans %}Today{% endblocktrans %}");
+     // Add a tooltip on headers (for tables that DON'T use thead)
+     $(".table-pydici-extra-condensed tr:first td:nth-child(" + col_number + ")").prop("title", "{% blocktrans %}Today{% endblocktrans %}");
+ }
 
- // Add a tooltip on headers
- $(".table-pydici-extra-condensed thead tr *:nth-child({{ today|add:'1' }})").prop("title", "{% blocktrans %}Today{% endblocktrans %}");
-
+ if (0 !== {{ today }}) {
+     // First column is consulant's name
+     highlight_today({{ today }} + 1, "2px solid #555");
+ }
 </script>
 
 {% endblock %}

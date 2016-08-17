@@ -500,6 +500,11 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
     if week:
         week = int(week)
 
+    if date.today().replace(day=1) == month:
+        today = datetime.today().day
+    else:
+        today = 0
+
     forecastTotal = {}  # forecast charge (value) per mission (key is mission.id)
     missions = set()  # Set of all consultant missions for this month
     days = daysOfMonth(month, week=week)  # List of days in month
@@ -594,6 +599,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                    "previous_date_enabled": previous_date_enabled,
                    "previous_week": previous_week,
                    "next_week": next_week,
+                   "today": today,
                    "is_current_month": month == date.today().replace(day=1),
                    "user": request.user})
 
@@ -1017,10 +1023,15 @@ def holidays_planning(request, year=None, month=None):
 
     holidays_days = Holiday.objects.all().values_list("day", flat=True)
     days = daysOfMonth(month)
-    today = datetime.today().day
     data = []
     # TODO: holidays (jours fériés
     # TODO: week end)
+
+    if date.today().replace(day=1) == month:
+        today = datetime.today().day
+    else:
+        today = 0
+
     next_month = nextMonth(month)
     previous_month = previousMonth(month)
     for consultant in Consultant.objects.filter(active=True, subcontractor=False):
