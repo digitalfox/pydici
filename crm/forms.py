@@ -9,10 +9,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.utils.encoding import smart_unicode
 from django.core.urlresolvers import reverse
+from django import forms
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from crispy_forms.layout import Layout, Div, Column
 from crispy_forms.bootstrap import AppendedText
+from crispy_forms.helper import FormHelper
 
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
 from people.forms import ConsultantChoices, ConsultantMChoices
@@ -97,6 +99,16 @@ class ClientForm(PydiciCrispyModelForm):
                                         css_class="row"),
                                     "active",
                                     self.submit)
+        self.inline_helper.layout = Layout(Div(Column("expectations",
+                                                      AppendedText("organisation",
+                                                            """<a href='#' onclick='$("#organisationForm").show("slow"); $("#div_id_organisation").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""),
+                                                      css_class="col-md-6"),
+                                        Column("alignment",
+                                                AppendedText("contact",
+                                                            """<a href='#' onclick='$("#contactForm").show("slow"); $("#div_id_contact").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""),
+                                                css_class="col-md-6"),
+                                        css_class="row"),
+                                    self.submit)
 
 
 class ClientOrganisationForm(PydiciCrispyModelForm):
@@ -112,7 +124,10 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
                                         Column(css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
-
+        self.inline_helper.layout = Layout(Div(Column("name", AppendedText("company", """<a href='#' onclick='$("#companyForm").show("slow"); $("#div_id_company").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""),
+                                                      css_class="col-md-6"),
+                                               Column(css_class="col-md-6"),
+                                               css_class="row collapse", css_id="organisationForm"))
 
 class CompanyForm(PydiciCrispyModelForm):
     class Meta:
@@ -127,6 +142,9 @@ class CompanyForm(PydiciCrispyModelForm):
                                         Column(css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
+        self.inline_helper.layout = Layout(Div(Column("name", "code", "businessOwner", "web", css_class="col-md-6"),
+                                               Column(css_class="col-md-6"),
+                                               css_class="row collapse", css_id="companyForm"))
 
 
 class ContactForm(PydiciCrispyModelForm):
@@ -141,6 +159,11 @@ class ContactForm(PydiciCrispyModelForm):
                                         Column("mobile_phone", "phone", "fax", css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
+        self.inline_helper = FormHelper()
+        self.inline_helper.layout = Layout(Div(Column("name", "email", "function", "contact_points", css_class="col-md-6"),
+                                        Column("mobile_phone", "phone", "fax", css_class="col-md-6"),
+                                        css_class="row collapse", css_id="contactForm"),
+                                    )
 
     def clean_name(self):
         return capitalize(self.cleaned_data["name"])
@@ -215,24 +238,4 @@ class SupplierForm(PydiciCrispyModelForm):
                                         Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
                                                css_class="col-md-6"),
                                         css_class="row"),
-                                    self.submit)
-
-class ClientOrganisationCompanyForm(PydiciCrispyForm):
-    """All in one form with client, organisation, company and contact"""
-    class Meta:
-        fields = "__all__"
-        widgets = { "contact": ContactChoices,
-                    "organisation": ClientOrganisationChoices}
-
-
-    def __init__(self, *args, **kwargs):
-        super(ClientOrganisationCompanyForm, self).__init__(*args, **kwargs)
-        self.helper.form_id = "pydici-ajax-form-client-organisation-company"
-        self.helper.form_action = reverse("crm.views.client_organisation_company_popup")
-        self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation")),
-                                               "expectations", css_class="col-md-6"),
-                                        Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
-                                               "alignment", css_class="col-md-6"),
-                                        css_class="row"),
-                                    "active",
                                     self.submit)

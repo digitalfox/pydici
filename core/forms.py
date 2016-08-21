@@ -30,7 +30,9 @@ class PydiciCrispyBaseForm(object):
     """A base form to be subclassed. Factorise common things of all pydici crispy forms"""
     def __init__(self, *args, **kwargs):
         super(PydiciCrispyBaseForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
+        self.helper = FormHelper()  # For standard form use
+        self.inline_helper = FormHelper()  # For inline (ie embeded in an other form)
+        self.inline_helper.form_tag = False
         self.submit = Submit("Submit", _("Save"))
         self.submit.field_classes = "btn btn-default"
 

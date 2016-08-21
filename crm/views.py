@@ -202,15 +202,23 @@ def client_organisation_company_popup(request):
     template = get_template("crm/client-popup.html")
     result = {}
     if request.method == "POST":
-        form = ClientForm(request.POST)
-        if form.is_valid():
-            client = form.save()
-            client.save()
-            result["client_id"] = client.id
-            result["client_label"] = unicode(client)
+        pass
+        #form = ClientOrganisationCompanyForm(request.POST)
+        #if form.is_valid():
+        #    client = form.save()
+        #    client.save()
+        #    result["client_id"] = client.id
+        #    result["client_label"] = unicode(client)
     else:
-        form = ClientForm()  # An unbound form
-        result["form"] = template.render({"form": form})
+        # Unbound forms
+        clientForm = ClientForm()
+        organisationForm = ClientOrganisationForm()
+        companyForm = CompanyForm()
+        contactForm = ContactForm()
+        result["form"] = template.render({ "clientForm": clientForm,
+                                           "organisationForm": organisationForm,
+                                           "companyForm": companyForm ,
+                                           "contactForm": contactForm})
 
     return HttpResponse(json.dumps(result), content_type="application/json")
 

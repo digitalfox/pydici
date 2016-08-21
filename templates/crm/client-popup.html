@@ -1,7 +1,14 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 
-{% crispy form form.helper %}
+
+<form method="post">
+    {% crispy clientForm clientForm.inline_helper %}
+    {% crispy contactForm contactForm.inline_helper %}
+    {% crispy organisationForm organisationForm.inline_helper %}
+    {% crispy companyForm companyForm.inline_helper %}
+</form>
+
 
 {% include "core/_select2.html" %}
 
