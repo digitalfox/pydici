@@ -12,14 +12,14 @@ from django.core.urlresolvers import reverse
 from django import forms
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
-from crispy_forms.layout import Layout, Div, Column
+from crispy_forms.layout import Layout, Div, Column, Fieldset
 from crispy_forms.bootstrap import AppendedText, FieldWithButtons, StrictButton
 from crispy_forms.helper import FormHelper
 
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
 from people.forms import ConsultantChoices, ConsultantMChoices
 from core.utils import capitalize
-from core.forms import PydiciCrispyModelForm, PydiciCrispyForm
+from core.forms import PydiciCrispyModelForm
 
 
 class ClientChoices(ModelSelect2Widget):
@@ -100,15 +100,15 @@ class ClientForm(PydiciCrispyModelForm):
                                     "active",
                                     self.submit)
         self.inline_helper.layout = Layout(Div(Column("expectations",
-                                                      FieldWithButtons("organisation",
-                                                            StrictButton("""<a href='#' onclick='$("#organisationForm").show("slow"); $("#organisation_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="organisation_input_group"),
-                                                      css_class="col-md-6"),
-                                        Column("alignment",
-                                                FieldWithButtons("contact",
-                                                            StrictButton("""<a href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="contact_input_group"),
-                                                css_class="col-md-6"),
-                                        css_class="row"),
-                                    self.submit)
+                                                    FieldWithButtons("organisation",
+                                                        StrictButton("""<a href='#' onclick='$("#organisationForm").show("slow"); $("#organisation_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="organisation_input_group"),
+                                                    css_class="col-md-6"),
+                                                Column("alignment",
+                                                    FieldWithButtons("contact",
+                                                        StrictButton("""<a href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="contact_input_group"),
+                                                    css_class="col-md-6"),
+                                                css_class="row"),
+                                    )
 
 
 class ClientOrganisationForm(PydiciCrispyModelForm):
@@ -124,11 +124,12 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
                                         Column(css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
-        self.inline_helper.layout = Layout(Div(Column("name",
-                                                      FieldWithButtons("company", StrictButton("""<a href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="company_input_group"),
-                                                      css_class="col-md-6"),
-                                               Column(css_class="col-md-6"),
-                                               css_class="row collapse", css_id="organisationForm"))
+        self.inline_helper.layout = Layout(Fieldset(_("Client organisation"),
+                                                    Column("name",
+                                                        FieldWithButtons("company", StrictButton("""<a href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="company_input_group"),
+                                                        css_class="col-md-6"),
+                                                    Column(css_class="col-md-6"),
+                                                    css_class="collapse", css_id="organisationForm"))
 
 class CompanyForm(PydiciCrispyModelForm):
     class Meta:
@@ -143,9 +144,10 @@ class CompanyForm(PydiciCrispyModelForm):
                                         Column(css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
-        self.inline_helper.layout = Layout(Div(Column("name", "code", "businessOwner", "web", css_class="col-md-6"),
-                                               Column(css_class="col-md-6"),
-                                               css_class="row collapse", css_id="companyForm"))
+        self.inline_helper.layout = Layout(Fieldset(_("Company"),
+                                                    Column("name", "code", "businessOwner", "web", css_class="col-md-6"),
+                                                    Column(css_class="col-md-6"),
+                                                    css_class="collapse", css_id="companyForm"))
 
 
 class ContactForm(PydiciCrispyModelForm):
@@ -161,9 +163,10 @@ class ContactForm(PydiciCrispyModelForm):
                                         css_class="row"),
                                     self.submit)
         self.inline_helper = FormHelper()
-        self.inline_helper.layout = Layout(Div(Column("name", "email", "function", "contact_points", css_class="col-md-6"),
-                                        Column("mobile_phone", "phone", "fax", css_class="col-md-6"),
-                                        css_class="row collapse", css_id="contactForm"),
+        self.inline_helper.layout = Layout(Fieldset(_("Contact"),
+                                                    Column("name", "email", "function", "contact_points", css_class="col-md-6"),
+                                                    Column("mobile_phone", "phone", "fax", css_class="col-md-6"),
+                                                    css_class="collapse", css_id="contactForm"),
                                     )
 
     def clean_name(self):
