@@ -13,7 +13,7 @@ from django import forms
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from crispy_forms.layout import Layout, Div, Column
-from crispy_forms.bootstrap import AppendedText
+from crispy_forms.bootstrap import AppendedText, FieldWithButtons, StrictButton
 from crispy_forms.helper import FormHelper
 
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
@@ -100,12 +100,12 @@ class ClientForm(PydiciCrispyModelForm):
                                     "active",
                                     self.submit)
         self.inline_helper.layout = Layout(Div(Column("expectations",
-                                                      AppendedText("organisation",
-                                                            """<a href='#' onclick='$("#organisationForm").show("slow"); $("#div_id_organisation").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""),
+                                                      FieldWithButtons("organisation",
+                                                            StrictButton("""<a href='#' onclick='$("#organisationForm").show("slow"); $("#organisation_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="organisation_input_group"),
                                                       css_class="col-md-6"),
                                         Column("alignment",
-                                                AppendedText("contact",
-                                                            """<a href='#' onclick='$("#contactForm").show("slow"); $("#div_id_contact").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""),
+                                                FieldWithButtons("contact",
+                                                            StrictButton("""<a href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="contact_input_group"),
                                                 css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
@@ -124,7 +124,8 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
                                         Column(css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
-        self.inline_helper.layout = Layout(Div(Column("name", AppendedText("company", """<a href='#' onclick='$("#companyForm").show("slow"); $("#div_id_company").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""),
+        self.inline_helper.layout = Layout(Div(Column("name",
+                                                      FieldWithButtons("company", StrictButton("""<a href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="company_input_group"),
                                                       css_class="col-md-6"),
                                                Column(css_class="col-md-6"),
                                                css_class="row collapse", css_id="organisationForm"))
