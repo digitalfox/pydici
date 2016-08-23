@@ -409,13 +409,46 @@ class CrmViewsTest(TestCase):
         data["contact-mail"] = "Joe@worldcompany.com"
         response = self.client.post(view, data=data, follow=True)
         # Yes it works. We cannot distinguish incomplete contact and no contact, so, incomplete contact is ignored
-        self.check_client_popup_response_is_ok(response)
+        client = self.check_client_popup_response_is_ok(response)
+        client.delete()
 
         # And now with a complete new contact
         data["contact-name"] = "Joe"
         response = self.client.post(view, data=data, follow=True)
         client = self.check_client_popup_response_is_ok(response)
         self.assertEquals(client.contact.name, "Joe")
+        client.delete()
+
+        # Time to create organisation with existing company
+        del data["client-organisation"]
+        data["organisation-name"] = "blabla"
+        data["organisation-company"] = 1
+        response = self.client.post(view, data=data, follow=True)
+        client = self.check_client_popup_response_is_ok(response)
+        self.assertEquals(client.organisation.name, "blabla")
+        self.assertEquals(client.organisation.company.id, 1)
+        client.delete()
+
+        # Incomplete new organisation should fail
+        del data["organisation-name"]
+        response = self.client.post(view, data=data, follow=True)
+        self.check_client_popup_response_is_ko(response)
+
+        # Incomplete new company should fail
+        del data["organisation-company"]
+        data["organisation-name"] = "youpala"
+        data["company-name"] = "The youpala company"
+        response = self.client.post(view, data=data, follow=True)
+        self.check_client_popup_response_is_ko(response)
+
+        # All-in. Create new organisation and a new company
+        data["company-code"] = "YOU"
+        data["company-businessOwner"] = 1
+        response = self.client.post(view, data=data, follow=True)
+        client = self.check_client_popup_response_is_ok(response)
+        self.assertEquals(client.organisation.name, "youpala")
+        self.assertEquals(client.organisation.company.code, "YOU")
+
 
     def check_client_popup_response_is_ok(self, response):
         """Ensure POST form is ok and return created client"""

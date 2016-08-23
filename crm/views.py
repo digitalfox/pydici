@@ -217,28 +217,43 @@ def client_organisation_company_popup(request):
         else:
             company = None
 
+        client = None
         if clientForm.is_valid():
             client = clientForm.save(commit=False)
             if contact:
                 client.contact = contact
+        else:
+            # clientForm may be invalid because client organisation is a new one
+            if organisationForm.is_valid():
+                organisation = organisationForm.save()
+                clientForm.data = clientForm.data.copy()
+                clientForm.data["client-organisation"] = organisation.id  # Inject organisation in client form
+                clientForm.full_clean()
+                if clientForm.is_valid():
+                    client = clientForm.save(commit=False)
+            elif company:
+                # organisationForm may be invalid because company is a new one
+                organisationForm.data = organisationForm.data.copy()
+                organisationForm.data["organisation-company"] = company.id  # Inject company in organisation form
+                organisationForm.full_clean()
+                if organisationForm.is_valid():
+                    organisation = organisationForm.save()
+                    clientForm.data = clientForm.data.copy()
+                    clientForm.data["client-organisation"] = organisation.id  # Inject organisation in client form
+                    clientForm.full_clean()
+                    if clientForm.is_valid():
+                        client = clientForm.save(commit=False)
+
+        # If everything is allright, save the client and create response
+        if client:
+            client.active = True
             client.save()
             result["success"] = True
             result["client_id"] = client.id
             result["client_name"] = unicode(client)
-        else:
-            # form may be invalid because client organisation is a new one
-            if organisationForm.is_valid():
-                organisation = organisationForm.save(commit=False)
-                if company:
-                    organisation.company = company
-                    organisation.save()
-            else:
-                # How to add company in this case ?
-                #BUG: this does not work
-                pass
 
     else:
-        # Unbound forms
+        # Unbound forms for GET requests
         clientForm = ClientForm(prefix="client")
         organisationForm = ClientOrganisationForm(prefix="organisation")
         companyForm = CompanyForm(prefix="company")
