@@ -14,7 +14,6 @@ from django import forms
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from crispy_forms.layout import Layout, Div, Column, Fieldset
 from crispy_forms.bootstrap import AppendedText, FieldWithButtons, StrictButton
-from crispy_forms.helper import FormHelper
 
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
 from people.forms import ConsultantChoices, ConsultantMChoices
@@ -90,7 +89,6 @@ class ClientForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ClientForm, self).__init__(*args, **kwargs)
-        self.helper.form_id = "pydici-ajax-form-client"
         self.helper.form_action = reverse("crm.views.client")
         self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation")),
                                                "expectations", css_class="col-md-6"),
@@ -162,7 +160,6 @@ class ContactForm(PydiciCrispyModelForm):
                                         Column("mobile_phone", "phone", "fax", css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
-        self.inline_helper = FormHelper()
         self.inline_helper.layout = Layout(Fieldset(_("Contact"),
                                                     Column("name", "email", "function", "contact_points", css_class="col-md-6"),
                                                     Column("mobile_phone", "phone", "fax", css_class="col-md-6"),

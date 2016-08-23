@@ -43,6 +43,7 @@ import os.path
 import sys
 from decimal import Decimal
 from subprocess import Popen, PIPE
+import json
 
 
 TEST_USERNAME = "sre"
@@ -250,6 +251,10 @@ class UtilsTest(TestCase):
 class StaffingViewsTest(TestCase):
     fixtures = PYDICI_FIXTURES
 
+    def setUp(self):
+        setup_test_user_features()
+
+
     def test_mission_timesheet(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
         current_month = date.today().replace(day=1)
@@ -351,6 +356,84 @@ class CrmModelTest(TestCase):
     def test_pending_action(self):
         c = Consultant.objects.get(trigramme="SRE")
         self.assertQuerysetEqual(c.pending_actions(), [])
+
+
+class CrmViewsTest(TestCase):
+    fixtures = PYDICI_FIXTURES
+
+    def setUp(self):
+        setup_test_user_features()
+
+    def test_client_all_in_one(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        view = urlresolvers.reverse("crm.views.client_organisation_company_popup")
+        error_tag = "form-group has-error"
+
+        # Initial data
+        data = { "client-expectations": "3_FLAT",
+                 "client-alignment": "2_STANDARD",
+                 "client-contact": "",
+                 "contact-name": "",
+                 "contact-email": "",
+                 "contact-function": "",
+                 "contact-mobile_phone": "",
+                 "contact-phone": "",
+                 "contact-fax": "",
+                 "organisation-name": "",
+                 "company-name": "",
+                 "company-code": "",
+                 "company-web": "" }
+
+        # Remove existing client that we will create
+        Client.objects.get(id=1).delete()
+
+        # Incomplete form with initial data
+        response = self.client.post(view, data=data, follow=True)
+        self.check_client_popup_response_is_ko(response)
+
+        # Simple form with existing organisation
+        data["client-organisation"] = 1
+        response = self.client.post(view, data=data, follow=True)
+        client = self.check_client_popup_response_is_ok(response)
+        client.delete()
+
+        # Same with existing contact
+        data["client-contact"] = 1
+        response = self.client.post(view, data=data, follow=True)
+        client = self.check_client_popup_response_is_ok(response)
+        self.assertEqual(client.contact.id, 1)
+        client.delete()
+
+        # Same with a new contact, but incomplete
+        del data["client-contact"]
+        data["contact-mail"] = "Joe@worldcompany.com"
+        response = self.client.post(view, data=data, follow=True)
+        # Yes it works. We cannot distinguish incomplete contact and no contact, so, incomplete contact is ignored
+        self.check_client_popup_response_is_ok(response)
+
+        # And now with a complete new contact
+        data["contact-name"] = "Joe"
+        response = self.client.post(view, data=data, follow=True)
+        client = self.check_client_popup_response_is_ok(response)
+        self.assertEquals(client.contact.name, "Joe")
+
+    def check_client_popup_response_is_ok(self, response):
+        """Ensure POST form is ok and return created client"""
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.content)
+        self.assertTrue(response_data["success"])
+        # self.assertNotIn(error_tag, response_data["form"])
+        self.assertIn("client_id", response_data)
+        self.assertIn("client_name", response_data)
+        return Client.objects.get(id=int(response_data["client_id"]))
+
+    def check_client_popup_response_is_ko(self, response):
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.content)
+        self.assertFalse(response_data["success"])
+        # self.assertIn(error_tag, response_data["form"])
+
+
 
 
 class LeadModelTest(TestCase):

@@ -2,13 +2,14 @@
 {% load crispy_forms_tags %}
 
 
-<form method="post">
+<form method="post" id="pydici-ajax-form-client" action="{% url 'crm.views.client_organisation_company_popup' %}">
     {% crispy clientForm clientForm.inline_helper %}
     {% crispy contactForm contactForm.inline_helper %}
     {% crispy organisationForm organisationForm.inline_helper %}
     {% crispy companyForm companyForm.inline_helper %}
 
-    <input type="submit" name="Submit" value="Enregistrer" class="btn btn-default" id="submit-id-submit">
+    <input type="submit" name="Submit" value="{% trans 'Save' %}" class="btn btn-default" id="submit-id-submit">
+
 </form>
 
 

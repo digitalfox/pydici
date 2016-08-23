@@ -200,25 +200,55 @@ def client(request, client_id=None):
 def client_organisation_company_popup(request):
     """Client, organisation and company creation in one popup"""
     template = get_template("crm/client-popup.html")
-    result = {}
+    result = {"success": False}
     if request.method == "POST":
-        pass
-        #form = ClientOrganisationCompanyForm(request.POST)
-        #if form.is_valid():
-        #    client = form.save()
-        #    client.save()
-        #    result["client_id"] = client.id
-        #    result["client_label"] = unicode(client)
+        clientForm = ClientForm(request.POST, prefix="client")
+        organisationForm = ClientOrganisationForm(request.POST, prefix="organisation")
+        companyForm = CompanyForm(request.POST, prefix="company")
+        contactForm = ContactForm(request.POST, prefix="contact")
+
+        if contactForm.is_valid():
+            contact = contactForm.save()
+        else:
+            contact = None
+
+        if companyForm.is_valid():
+            company = companyForm.save()
+        else:
+            company = None
+
+        if clientForm.is_valid():
+            client = clientForm.save(commit=False)
+            if contact:
+                client.contact = contact
+            client.save()
+            result["success"] = True
+            result["client_id"] = client.id
+            result["client_name"] = unicode(client)
+        else:
+            # form may be invalid because client organisation is a new one
+            if organisationForm.is_valid():
+                organisation = organisationForm.save(commit=False)
+                if company:
+                    organisation.company = company
+                    organisation.save()
+            else:
+                # How to add company in this case ?
+                #BUG: this does not work
+                pass
+
     else:
         # Unbound forms
-        clientForm = ClientForm()
-        organisationForm = ClientOrganisationForm()
-        companyForm = CompanyForm()
-        contactForm = ContactForm()
-        result["form"] = template.render({ "clientForm": clientForm,
-                                           "organisationForm": organisationForm,
-                                           "companyForm": companyForm ,
-                                           "contactForm": contactForm})
+        clientForm = ClientForm(prefix="client")
+        organisationForm = ClientOrganisationForm(prefix="organisation")
+        companyForm = CompanyForm(prefix="company")
+        contactForm = ContactForm(prefix="contact")
+
+    # Render form
+    result["form"] = template.render({ "clientForm": clientForm,
+                                       "organisationForm": organisationForm,
+                                       "companyForm": companyForm ,
+                                       "contactForm": contactForm})
 
     return HttpResponse(json.dumps(result), content_type="application/json")
 
