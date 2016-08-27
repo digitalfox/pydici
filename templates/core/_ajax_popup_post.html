@@ -20,12 +20,11 @@
             url: url,
             data: formData,
             type: 'POST',
-            success: function(result) { //console.log(result);
-                                        //  $("#{{target_id}}.django-select2").select2('trigger', 'select', result ); }, // does not work yet. https://github.com/select2/select2/issues/4487
+            success: function(result) {
                                         if (result.success) {
                                             $('#{{ modal_id }}').modal('hide');
+                                            $('#id_client').empty().append('<option value="' + result.client_id + '">' + result.client_name + '</option>').val(result.client_id).trigger('change');
                                         } else {
-                                            console.log("failure");
                                             $('#clientModal').find(".modal-body").html(result.form);
                                         }
                                       },
