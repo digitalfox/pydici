@@ -15,11 +15,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.contrib import messages
 from django.utils.translation import ugettext as _
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core import urlresolvers
 from django.utils.decorators import method_decorator
+from django.utils.safestring import mark_for_escaping
 from django.contrib.auth.decorators import permission_required
 from django.utils.safestring import mark_safe
+from django.template.loader import get_template
 
 
 from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact,\
@@ -191,6 +193,79 @@ def client(request, client_id=None):
     return render(request, "crm/client.html", {"client": client,
                                                "form": form,
                                                "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("3rdparties")
+def client_organisation_company_popup(request):
+    """Client, organisation and company creation in one popup"""
+    template = get_template("crm/client-popup.html")
+    result = {"success": False}
+    if request.method == "POST":
+        clientForm = ClientForm(request.POST, prefix="client")
+        organisationForm = ClientOrganisationForm(request.POST, prefix="organisation")
+        companyForm = CompanyForm(request.POST, prefix="company")
+        contactForm = ContactForm(request.POST, prefix="contact")
+
+        if contactForm.is_valid():
+            contact = contactForm.save()
+        else:
+            contact = None
+
+        if companyForm.is_valid():
+            company = companyForm.save()
+        else:
+            company = None
+
+        client = None
+        if clientForm.is_valid():
+            client = clientForm.save(commit=False)
+            if contact:
+                client.contact = contact
+        else:
+            # clientForm may be invalid because client organisation is a new one
+            if organisationForm.is_valid():
+                organisation = organisationForm.save()
+                clientForm.data = clientForm.data.copy()
+                clientForm.data["client-organisation"] = organisation.id  # Inject organisation in client form
+                clientForm.full_clean()
+                if clientForm.is_valid():
+                    client = clientForm.save(commit=False)
+            elif company:
+                # organisationForm may be invalid because company is a new one
+                organisationForm.data = organisationForm.data.copy()
+                organisationForm.data["organisation-company"] = company.id  # Inject company in organisation form
+                organisationForm.full_clean()
+                if organisationForm.is_valid():
+                    organisation = organisationForm.save()
+                    clientForm.data = clientForm.data.copy()
+                    clientForm.data["client-organisation"] = organisation.id  # Inject organisation in client form
+                    clientForm.full_clean()
+                    if clientForm.is_valid():
+                        client = clientForm.save(commit=False)
+
+        # If everything is allright, save the client and create response
+        if client:
+            client.active = True
+            client.save()
+            result["success"] = True
+            result["client_id"] = client.id
+            result["client_name"] = unicode(client)
+
+    else:
+        # Unbound forms for GET requests
+        clientForm = ClientForm(prefix="client")
+        organisationForm = ClientOrganisationForm(prefix="organisation")
+        companyForm = CompanyForm(prefix="company")
+        contactForm = ContactForm(prefix="contact")
+
+    # Render form
+    result["form"] = template.render({ "clientForm": clientForm,
+                                       "organisationForm": organisationForm,
+                                       "companyForm": companyForm ,
+                                       "contactForm": contactForm})
+
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 
 @pydici_non_public

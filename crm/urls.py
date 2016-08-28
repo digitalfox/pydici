@@ -37,4 +37,5 @@ crm_urls = patterns('crm.views',
                     url(r'^company/graph/sales$', 'graph_company_sales_jqp', name="graph_company_sales"),
                     url(r'^company/graph/sales/lastyear$', 'graph_company_sales_jqp', {"onlyLastYear": True}, name="graph_company_lastyear_sales"),
                     url(r'^company/(?P<company_id>\d+)/graph/business_activity$', 'graph_company_business_activity', name="graph_company_business_activity"),
+                    (r'^client-organisation-company-popup$', 'client_organisation_company_popup'),
                     )

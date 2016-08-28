@@ -13,7 +13,7 @@ from django.utils.encoding import smart_unicode
 from django import forms
 
 from crispy_forms.layout import Layout, Div, Column, Fieldset, Field
-from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
+from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, StrictButton, FieldWithButtons
 from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
 
@@ -56,16 +56,18 @@ class LeadForm(PydiciCrispyModelForm):
 
     responsible = forms.ModelChoiceField(required=False, label=_("Responsible"), widget=ConsultantChoices, queryset=Consultant.objects.all())
     salesman = forms.ModelChoiceField(required=False, label=_("Salesman"), widget=SalesManChoices, queryset=SalesMan.objects.all())
-    business_broker = forms.ModelChoiceField(required=False, label=_("Business broker"), widget=BusinessBrokerChoices, queryset=BusinessBroker.objects.all())
-    paying_authority = forms.ModelChoiceField(required=False, label=_("Paying authority"), widget=BusinessBrokerChoices, queryset=BusinessBroker.objects.all())
+    business_broker = forms.ModelChoiceField(required=False, label=_("Business broker"), widget=BusinessBrokerChoices(attrs={"data-placeholder": _("If the leads was brought by a third party")}), queryset=BusinessBroker.objects.all())
+    paying_authority = forms.ModelChoiceField(required=False, label=_("Paying authority"), widget=BusinessBrokerChoices(attrs={"data-placeholder": _("If payment is done by a third party")}), queryset=BusinessBroker.objects.all())
     client = forms.ModelChoiceField(widget=ClientChoices, queryset=Client.objects.all())
     staffing = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, required=False, queryset=Consultant.objects.all())
     tags = TagField(label="", required=False)
 
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)
+        clientPopupUrl = reverse("crm.views.client_organisation_company_popup")
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"), Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))),
-                                                  AppendedText("client", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.client")),
+                                                  FieldWithButtons("client", StrictButton(
+                                                      "<a href='%s' data-remote='false' data-toggle='modal' data-target='#clientModal'><span class='glyphicon glyphicon-plus'></span></a>" % clientPopupUrl)),
                                                   "subsidiary", "description", Field("action", placeholder=_("Next commercial action to be done"))),
                                               Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
                                                                                       Field("start_date", placeholder=_("Date of the operational start"), css_class="datepicker"),
@@ -73,12 +75,10 @@ class LeadForm(PydiciCrispyModelForm):
                                                                                Column(Field("deal_id", placeholder=_("Leave blank to auto generate")),
                                                                                       Field("client_deal_id", placeholder=_("Internal client reference")), "state", css_class='col-md-6'))),
                                               Tab(_("Commercial"), Div(Column(AppendedText("sales", "k€"), "salesman", css_class='col-md-6'),
-                                                                       Column(AppendedText("business_broker",
-                                                                                           "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("businessbroker_add"),
-                                                                                           placeholder=_("If the leads was brought by a third party")),
-                                                                              AppendedText("paying_authority",
-                                                                                           "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("businessbroker_add"),
-                                                                                           placeholder=_("If payment is done by a third party")), css_class='col-md-6'))),
+                                                                       Column(FieldWithButtons("business_broker",
+                                                                                           StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("businessbroker_add"))),
+                                                                              FieldWithButtons("paying_authority",
+                                                                                           StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("businessbroker_add"))), css_class='col-md-6'))),
                                               Tab(_("Staffing"), Div(Field("staffing", placeholder=_("People that could contribute...")),
                                                                      Field("external_staffing", placeholder=_("People outside company that could contribute...")),
                                                                      css_class="col-md-6"))),

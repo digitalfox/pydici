@@ -1,0 +1,34 @@
+{# JS Fragment to submit a popup form with Ajax POST #}
+{# Form id must be {{ formid }} (use {% with... %}) #}
+{# Popover class must be {{ popup_class }} (use {% with... %}) #}
+{# Target field for data ass must be {{ target_id }} (use {% with... %}) #}
+ 
+<script type="text/javascript">
+/* attach a submit handler to the form */
+    $("#{{ formid }}").submit(function(event) {
+
+        /* stop form from submitting normally */
+        event.preventDefault(); 
+
+        /* get form data and target url */
+        var $form = $(this),
+        formData = $form.serialize(),
+        url = $form.attr('action');
+
+        /* Send the data using post and put the results in target field */
+        $.ajax({
+            url: url,
+            data: formData,
+            type: 'POST',
+            success: function(result) {
+                                        if (result.success) {
+                                            $('#{{ modal_id }}').modal('hide');
+                                            $('#id_client').empty().append('<option value="' + result.client_id + '">' + result.client_name + '</option>').val(result.client_id).trigger('change');
+                                        } else {
+                                            $('#clientModal').find(".modal-body").html(result.form);
+                                        }
+                                      },
+            beforeSend: function () {  },
+        });
+    });
+</script>
