@@ -5,16 +5,20 @@ Bill form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+from datetime import date, timedelta
+
 from django.forms import models, ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
-from django.forms.models import BaseInlineFormSet, ModelChoiceField
+from django.forms.models import BaseInlineFormSet, ModelChoiceField, ChoiceField
 from django.forms.util import ValidationError
+from django.utils import formats
 
 
 from crispy_forms.layout import Layout, Div, Column
 from crispy_forms.bootstrap import TabHolder, Tab
 from crispy_forms.helper import FormHelper
+from django_select2.forms import Select2Widget
 
 from billing.models import ClientBill, SupplierBill, BillDetail
 from staffing.models import Mission
@@ -26,6 +30,27 @@ from crm.forms import SupplierChoices
 from staffing.forms import MissionChoices, LeadMissionChoices
 from people.forms import ConsultantChoices
 from core.forms import PydiciCrispyModelForm
+from core.utils import nextMonth
+
+
+class BillingDateChoicesField(ChoiceField):
+    widget = Select2Widget(attrs={'data-placeholder':_("Select a month...")})
+    def __init__(self, *args, **kwargs):
+        minDate = kwargs.pop("minDate", date.today() - timedelta(30*12))
+        nMonth = kwargs.pop("nMonth", 12)
+        months = []
+        month = minDate.replace(day=1)
+        for i in range(nMonth):
+            months.append(month)
+            month = nextMonth(month)
+
+        kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in months]
+        kwargs["choices"].insert(0, ("", ""))  # Add the empty choice for extra empty choices
+        super(BillingDateChoicesField, self).__init__(*args, **kwargs)
+
+    def has_changed(self, initial, data):
+        initial = unicode(initial) if initial is not None else ''
+        return initial != data
 
 
 class ClientBillForm(PydiciCrispyModelForm):
@@ -68,8 +93,9 @@ class SupplierBillForm(models.ModelForm):
 class BillDetailInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillDetailInlineFormset, self).add_fields(form, index)
-        form.fields["mission"] = ModelChoiceField(widget=LeadMissionChoices, queryset=Mission.objects.filter(lead=self.instance.lead))
+        form.fields["mission"] = ModelChoiceField(widget=LeadMissionChoices(lead=self.instance.lead), queryset=Mission.objects)
         form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices, queryset=Consultant.objects)
+        form.fields["month"] = BillingDateChoicesField()
 
     def clean(self):
         if any(self.errors):

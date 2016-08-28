@@ -54,6 +54,10 @@ class LeadMissionChoices(ModelSelect2Widget):
     model = Mission
     search_fields = MissionChoices.search_fields
 
+    def __init__(self, *args, **kwargs):
+        self.lead = kwargs.pop("lead", None)
+        super(LeadMissionChoices, self).__init__(*args, **kwargs)
+
     def label_from_instance(self, mission):
         if mission.description:
             return "%s (%s)" % (mission.mission_id(), mission.description)
@@ -61,7 +65,10 @@ class LeadMissionChoices(ModelSelect2Widget):
             return mission.mission_id()
 
     def get_queryset(self):
-        return Mission.objects.filter(active=True)
+        if self.lead:
+            return Mission.objects.filter(lead=self.lead)
+        else:
+            return Mission.objects.all()
 
 
 class StaffingDateChoicesField(ChoiceField):
