@@ -180,9 +180,9 @@ class MissionContactForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MissionContactForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
+        self.helper.layout = Layout(Div(Column(FieldWithButtons("contact", StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add"))),
                                                css_class="col-md-6"),
-                                        Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
+                                        Column(FieldWithButtons("company", StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company"))),
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
@@ -198,9 +198,9 @@ class BusinessBrokerForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(BusinessBrokerForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
+        self.helper.layout = Layout(Div(Column(FieldWithButtons("contact", StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add"))),
                                                css_class="col-md-6"),
-                                        Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
+                                        Column(FieldWithButtons("company", StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company"))),
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
@@ -217,9 +217,9 @@ class AdministrativeContactForm(PydiciCrispyModelForm):
         super(AdministrativeContactForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column("function", "default_phone", "default_mail",
                                                css_class="col-md-6"),
-                                        Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
+                                        Column(FieldWithButtons("company", StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company"))),
                                                "default_fax",
-                                               AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
+                                               FieldWithButtons("contact", StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add"))),
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
@@ -234,9 +234,9 @@ class SupplierForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SupplierForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
+        self.helper.layout = Layout(Div(Column(FieldWithButtons("contact", StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add"))),
                                                css_class="col-md-6"),
-                                        Column(AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")),
+                                        Column(FieldWithButtons("company", StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company"))),
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
