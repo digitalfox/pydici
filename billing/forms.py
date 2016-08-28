@@ -20,7 +20,7 @@ from billing.models import ClientBill, SupplierBill, BillDetail
 from staffing.models import Mission
 from expense.models import Expense
 from leads.forms import LeadChoices
-from expense.forms import ChargeableExpenseMChoices, LeadExpenseChoices
+from expense.forms import ChargeableExpenseMChoices, ExpenseChoices
 from crm.forms import SupplierChoices
 from staffing.forms import MissionChoices, LeadMissionChoices
 from people.forms import ConsultantChoices
@@ -33,10 +33,6 @@ class ClientBillForm(PydiciCrispyModelForm):
         fields = "__all__"
         widgets = { "lead": LeadChoices,
                     "expenses": ChargeableExpenseMChoices}
-
-
-    lead = LeadChoices(label=_("Lead"))
-    expenses = ChargeableExpenseMChoices(required=False, label=_("Expenses"))
 
 
     def __init__(self, *args, **kwargs):
@@ -60,10 +56,6 @@ class ClientBillForm(PydiciCrispyModelForm):
             raise ValidationError(_("Bill amount must be computed from bill detail or defined manually"))
 
 class SupplierBillForm(models.ModelForm):
-    lead = LeadChoices(label=_("Lead"))
-    expenses = ChargeableExpenseMChoices(required=False, label=_("Expenses"))
-    supplier = SupplierChoices(label=_("Supplier"))
-
     class Meta:
         model = SupplierBill
         fields = "__all__"
@@ -115,7 +107,8 @@ class BillDetailForm(ModelForm):
 class BillExpenseInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillExpenseInlineFormset, self).add_fields(form, index)
-        form.fields["expense"] = LeadExpenseChoices(queryset=Expense.objects.filter(lead=self.instance.lead), required=True)
+        #TODO: should use Chargeable expense only
+        form.fields["expense"] = ExpenseChoices(queryset=Expense.objects.filter(lead=self.instance.lead), required=True)
 
 
     def clean(self):

@@ -15,12 +15,20 @@ from django.core.exceptions import ValidationError
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Field
 import workflows.utils as wf
-from django_select2.forms import ModelSelect2MultipleWidget
+from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
 
 from expense.models import Expense
 from leads.forms import CurrentLeadChoices
 from core.forms import PydiciCrispyForm
 
+
+class ExpenseChoices(ModelSelect2Widget):
+    #TODO: factorize this
+    model = Expense
+    search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains",
+                     "lead__name__icontains", "lead__deal_id__icontains", "lead__client__organisation__name",
+                     "lead__client__organisation__company__name__icontains",
+                     "lead__client__organisation__company__code__icontains"]
 
 class ExpenseMChoices(ModelSelect2MultipleWidget):
     model = Expense

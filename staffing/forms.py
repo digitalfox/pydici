@@ -50,7 +50,7 @@ class MissionMChoices(ModelSelect2MultipleWidget):
         return Mission.objects.filter(active=True)
 
 
-class LeadMissionChoices(ModelSelect2Field):
+class LeadMissionChoices(ModelSelect2Widget):
     def label_from_instance(self, mission):
         if mission.description:
             return "%s (%s)" % (mission.mission_id(), mission.description)
