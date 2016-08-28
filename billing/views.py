@@ -169,8 +169,8 @@ def client_bill(request, bill_id=None):
             raise Http404
     else:
         bill = None
-    BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, formset=BillDetailInlineFormset, form=BillDetailForm)
-    BillExpenseFormSet = inlineformset_factory(ClientBill, BillExpense, formset=BillExpenseInlineFormset, form=BillExpenseForm)
+    BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, formset=BillDetailInlineFormset, form=BillDetailForm, fields="__all__")
+    BillExpenseFormSet = inlineformset_factory(ClientBill, BillExpense, formset=BillExpenseInlineFormset, form=BillExpenseForm, fields="__all__")
     if request.POST:
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
         if bill:

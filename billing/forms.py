@@ -8,7 +8,7 @@ Bill form setup
 from django.forms import models, ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
-from django.forms.models import BaseInlineFormSet
+from django.forms.models import BaseInlineFormSet, ModelChoiceField
 from django.forms.util import ValidationError
 
 
@@ -19,6 +19,7 @@ from crispy_forms.helper import FormHelper
 from billing.models import ClientBill, SupplierBill, BillDetail
 from staffing.models import Mission
 from expense.models import Expense
+from people.models import Consultant
 from leads.forms import LeadChoices
 from expense.forms import ChargeableExpenseMChoices, ExpenseChoices
 from crm.forms import SupplierChoices
@@ -67,8 +68,8 @@ class SupplierBillForm(models.ModelForm):
 class BillDetailInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillDetailInlineFormset, self).add_fields(form, index)
-        form.fields["mission"] = LeadMissionChoices(queryset=Mission.objects.filter(lead=self.instance.lead))
-        form.fields["consultant"] = ConsultantChoices(label=_("Consultant"), required=False)
+        form.fields["mission"] = ModelChoiceField(widget=LeadMissionChoices, queryset=Mission.objects.filter(lead=self.instance.lead))
+        form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices, queryset=Consultant.objects)
 
     def clean(self):
         if any(self.errors):
@@ -108,7 +109,7 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillExpenseInlineFormset, self).add_fields(form, index)
         #TODO: should use Chargeable expense only
-        form.fields["expense"] = ExpenseChoices(queryset=Expense.objects.filter(lead=self.instance.lead), required=True)
+        form.fields["expense"] = ModelChoiceField(widget=ExpenseChoices, queryset=Expense.objects.filter(lead=self.instance.lead), required=True)
 
 
     def clean(self):

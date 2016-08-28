@@ -51,11 +51,17 @@ class MissionMChoices(ModelSelect2MultipleWidget):
 
 
 class LeadMissionChoices(ModelSelect2Widget):
+    model = Mission
+    search_fields = MissionChoices.search_fields
+
     def label_from_instance(self, mission):
         if mission.description:
             return "%s (%s)" % (mission.mission_id(), mission.description)
         else:
             return mission.mission_id()
+
+    def get_queryset(self):
+        return Mission.objects.filter(active=True)
 
 
 class StaffingDateChoicesField(ChoiceField):
