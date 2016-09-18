@@ -65,6 +65,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
                            Q(client__organisation__company__name__icontains=search) |
                            Q(client__organisation__name__iexact=search) |
                            Q(deal_id__icontains=search))
+            qs = qs.distinct()
         return qs
 
 
