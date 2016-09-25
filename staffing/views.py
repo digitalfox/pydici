@@ -28,7 +28,6 @@ from django.views.generic.edit import UpdateView
 from django.contrib import messages
 from django.conf import settings
 
-from core.utils import user_has_feature
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from people.models import Consultant, Subsidiary
 from leads.models import Lead
@@ -36,12 +35,12 @@ from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList
+    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, working_days
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent
 from staffing.forms import MissionForm
-
+from people.utils import getScopes
 
 TIMESTRING_FORMATTER = {
     'cycle': formats.number_format,
@@ -310,6 +309,7 @@ def pdc_review(request, year=None, month=None):
     available_month = {}  # available working days per month
     months = []  # list of month to be displayed
 
+    #TODO: simplify this !! Use nextMonth
     for i in range(n_month):
         if start_date.month + i <= 12:
             months.append(start_date.replace(month=start_date.month + i))
@@ -416,21 +416,11 @@ def pdc_review(request, year=None, month=None):
     else:
         staffing.sort(cmp=lambda x, y: cmp(x[0].profil.level, y[0].profil.level))  # Sort by level
 
-    # Define scopes than can be used to filter data. Either team, subsidiary or everybody (default). Format is (type, filter, label) where type is "team_id" or "subsidiary_id"
-    scopes = [(None, "", _(u"Everybody")),]
-    for s in Subsidiary.objects.filter(consultant__active=True, consultant__subcontractor=False, consultant__productive=True).annotate(num=Count('consultant')).filter(num__gt=0):
-        scopes.append(("subsidiary_id", "subsidiary_id=%s" % s.id, unicode(s)))
-    for manager_id, manager_name in Consultant.objects.filter(active=True, productive=True, subcontractor=False).values_list("staffing_manager", "staffing_manager__name").order_by().distinct():
-        scopes.append(("team_id", "team_id=%s" % manager_id, _(u"team %(manager_name)s") % {"manager_name": manager_name}))
-    if subsidiary:
-        scope_current_filter = "subsidiary_id=%s" % subsidiary.id
-        scope_current_url_filter = "subsidiary/%s" % subsidiary.id
-    elif team:
-        scope_current_filter = "team_id=%s" % team.id
-        scope_current_url_filter = "team/%s" % team.id
+    scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
+    if team:
+        team_name = _(u"team %(manager_name)s") % {"manager_name": team}
     else:
-        scope_current_filter = ""
-        scope_current_url_filter = ""
+        team_name = None
 
     return render(request, "staffing/pdc_review.html",
                   {"staffing": staffing,
@@ -447,7 +437,7 @@ def pdc_review(request, year=None, month=None):
                    "groupby": groupby,
                    "groupby_label": groups[groupby],
                    "groups": groups,
-                   "scope": subsidiary or team or _(u"Everybody"),
+                   "scope": subsidiary or team_name or _(u"Everybody"),
                    "scope_current_filter" : scope_current_filter,
                    "scope_current_url_filter": scope_current_url_filter,
                    "scopes": scopes,})
@@ -472,6 +462,86 @@ def pdc_detail(request, consultant_id, staffing_date):
                   {"staffings": staffings,
                    "user": request.user})
 
+
+@pydici_non_public
+@pydici_feature("staffing_mass")
+def prod_report(request, year=None, month=None):
+    """Report production by each people and team for each month"""
+    #TODO: add sum by team and subsidiary
+    #TODO: extract that in CSV as well
+    #TODO: add tooltip for detail analysis (rates objectifs, avg, min/max etc.)
+
+    team = None
+    subsidiary = None
+    months = []
+    n_month = 5
+
+    # Get time frame
+    if year and month:
+        end_date = date(int(year), int(month), 1)
+    else:
+        end_date = date.today().replace(day=1)
+
+    start_date = (end_date - timedelta(30 * n_month)).replace(day=1)
+
+    current_date = start_date
+    while current_date < end_date:
+        current_date = nextMonth(current_date)
+        months.append(current_date)
+
+    previous_slice_date = end_date - timedelta(days=(28 * n_month))
+    next_slice_date = end_date + timedelta(days=(31 * n_month))
+
+    # Get team and subsidiary
+    if "team_id" in request.GET:
+        team = Consultant.objects.get(id=int(request.GET["team_id"]))
+    if "subsidiary_id" in request.GET:
+        subsidiary = Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
+
+    # Filter on scope
+    consultants = Consultant.objects.filter(productive=True).filter(active=True).filter(
+        subcontractor=False).select_related("staffing_manager")
+    if team:
+        consultants = consultants.filter(staffing_manager=team)
+    if subsidiary:
+        consultants = consultants.filter(company=subsidiary)
+
+    holidays = Holiday.objects.filter(day__gte=start_date, day__lte=end_date)
+    data = []
+    # TODO: precompute that please
+    for consultant in consultants:
+        consultantData = []
+        current_date = start_date
+        for month in months:
+            days = working_days(month, holidays=holidays, upToToday=True)
+            consultant_holidays =  Timesheet.objects.filter(consultant=consultant, mission__nature="HOLIDAYS", working_date__gte=month, working_date__lt=nextMonth(month)).count()
+            try:
+                daily_rate = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
+                prod_rate = float(consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE").rate) / 100
+                forecast = int(daily_rate * prod_rate * (days - consultant_holidays))
+            except AttributeError:
+                forecast = 0  # Rate objective is missing
+            turnover = int(consultant.getTurnover(month, nextMonth(month)))
+            consultantData.append([turnover > forecast, [turnover, forecast]]) # For each month : [status, [turnover, forceast ]]
+        data.append([consultant, consultantData])
+
+    scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
+    if team:
+        team_name = _(u"team %(manager_name)s") % {"manager_name": team}
+    else:
+        team_name = None
+
+    return render(request, "staffing/prod_report.html",
+                  {"data": data,
+                   "months": months,
+                   "end_date" : end_date,
+                   "previous_slice_date": previous_slice_date,
+                   "next_slice_date": next_slice_date,
+                   "scope": subsidiary or team_name or _(u"Everybody"),
+                   "scope_current_filter": scope_current_filter,
+                   "scope_current_url_filter": scope_current_url_filter,
+                   "scopes": scopes,
+                   })
 
 @pydici_non_public
 def deactivate_mission(request, mission_id):
@@ -1284,7 +1354,6 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
         timesheets = Timesheet.objects.filter(consultant__staffing_manager_id=team_id)
     elif subsidiary_id:
         timesheets = Timesheet.objects.filter(consultant__company_id=subsidiary_id)
-        print "yeah"
     else:
         timesheets = Timesheet.objects.all()
 

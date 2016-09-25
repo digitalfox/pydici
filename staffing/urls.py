@@ -11,6 +11,8 @@ import staffing.tables as t
 staffing_urls = patterns('staffing.views',
                          url(r'^pdcreview/?$', 'pdc_review', name='pdcreview-index'),
                          url(r'^pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', 'pdc_review', name='pdcreview'),
+                         url(r'^production-report/?$', 'prod_report', name='prodreport-index'),
+                         url(r'^production-report/(?P<year>\d+)/(?P<month>\d+)/?$', 'prod_report', name='prodreport'),
                          url(r'^mission/$', 'missions', name='missions'),
                          url(r'^mission/all', 'missions', {'onlyActive': False}, 'all-missions'),
                          (r'^mission/(?P<mission_id>\d+)/$', 'mission_home'),
