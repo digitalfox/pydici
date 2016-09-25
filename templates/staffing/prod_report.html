@@ -63,8 +63,12 @@
         {% endfor %}
     </tr>
     {% for consultant, charges in data %}
-        <tr class="align-right">
-            <td style="text-align:left"><a href="{% url 'people.views.consultant_home' consultant.id %}#tab-staffing">{{ consultant }}</a><span title="{{consultant.id}}"></span></td>
+        <tr class="align-right" {% if not consultant %}style="font-weight: bold"{% endif %}>
+            {% if consultant %}
+                <td style="text-align:left"><a href="{% url 'people.views.consultant_home' consultant.id %}#tab-staffing">{{ consultant }}</a><span title="{{consultant.id}}"></span></td>
+            {% else %}
+                <td style="text-align:left">{% trans "Total" %}</td>
+            {% endif %}
             {% for status, charge in charges %}
                 <td style="background-color:{% if status %}#ABFF91{% else %}#FF8284{% endif %}; border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td style='background-color:{% if status %}#ABFF91{% else %}#FF8284{% endif %}'>" }}</td>
             {% endfor %}

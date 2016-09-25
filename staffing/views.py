@@ -8,9 +8,7 @@ Pydici staffing views. Http request are processed here.
 from datetime import date, timedelta, datetime
 import csv
 import json
-
-from django_tables2 import RequestConfig
-
+from collections import OrderedDict
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
@@ -508,11 +506,16 @@ def prod_report(request, year=None, month=None):
 
     holidays = Holiday.objects.filter(day__gte=start_date, day__lte=end_date)
     data = []
-    # TODO: precompute that please
+    totalDone = OrderedDict()
+    totalForecasted = OrderedDict()
+
     for consultant in consultants:
         consultantData = []
-        current_date = start_date
         for month in months:
+            if month not in totalDone:
+                totalDone[month] = 0
+            if month not in totalForecasted:
+                totalForecasted[month] = 0
             days = working_days(month, holidays=holidays, upToToday=True)
             consultant_holidays =  Timesheet.objects.filter(consultant=consultant, mission__nature="HOLIDAYS", working_date__gte=month, working_date__lt=nextMonth(month)).count()
             try:
@@ -522,9 +525,20 @@ def prod_report(request, year=None, month=None):
             except AttributeError:
                 forecast = 0  # Rate objective is missing
             turnover = int(consultant.getTurnover(month, nextMonth(month)))
-            consultantData.append([turnover > forecast, [turnover, forecast]]) # For each month : [status, [turnover, forceast ]]
+            consultantData.append([turnover > forecast, [formats.number_format(turnover), formats.number_format(forecast)]]) # For each month : [status, [turnover, forceast ]]
+            totalDone[month] += turnover
+            totalForecasted[month] += forecast
         data.append([consultant, consultantData])
 
+    # Add total
+    totalData = []
+    for month in months:
+        forecast = totalForecasted[month]
+        turnover = totalDone[month]
+        totalData.append([turnover > forecast, [formats.number_format(turnover), formats.number_format(forecast)]])
+    data.append([None, totalData])
+
+    # Get scopes
     scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
     if team:
         team_name = _(u"team %(manager_name)s") % {"manager_name": team}
@@ -540,8 +554,7 @@ def prod_report(request, year=None, month=None):
                    "scope": subsidiary or team_name or _(u"Everybody"),
                    "scope_current_filter": scope_current_filter,
                    "scope_current_url_filter": scope_current_url_filter,
-                   "scopes": scopes,
-                   })
+                   "scopes": scopes })
 
 @pydici_non_public
 def deactivate_mission(request, mission_id):
