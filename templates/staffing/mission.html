@@ -94,10 +94,10 @@
                         </tr>
                     {% endif %}
                     <tr>
-                        <th>{% trans "Billing mode" %}</th><td><div  id="billing_mode-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></td>
+                        <th>{% trans "Billing mode" %}</th><td><div  id="billing_mode-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></td>
                     </tr>
                     <tr>
-                        <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id }}" style="display:inline" class='jeditable-mission-update'>{{ mission.probability }} %</div></td>
+                        <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.probability }} %</div></td>
                     </tr>
                     <tr>
                         <th>{% trans "Lead of this mission" %}</th><td><a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></td>
@@ -122,8 +122,8 @@
 	    {% for consultant, rate in mission.consultant_rates.items %}
 	        <tr>
 	            <td><a href="{% url 'people.views.consultant_home' consultant.id %}", title='{{ consultant }}'>{{ consultant }}</a></td>
-	            <td align="right"><div id="sold-{{ mission.id }}-{{ consultant.id }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
-	            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>{% endif %}</td>
+	            <td align="right"><div id="sold-{{ mission.id|unlocalize }}-{{ consultant.id|unlocalize }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
+	            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id|unlocalize }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>{% endif %}</td>
                 <td align="right">{{ consultant.getRateObjective.rate }}</td>
 	        </tr>
 	    {% endfor %}
