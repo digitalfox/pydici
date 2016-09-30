@@ -465,7 +465,6 @@ def pdc_detail(request, consultant_id, staffing_date):
 @pydici_feature("staffing_mass")
 def prod_report(request, year=None, month=None):
     """Report production by each people and team for each month"""
-    #TODO: add sum by team and subsidiary
     #TODO: extract that in CSV as well
     #TODO: add tooltip for detail analysis (rates objectifs, avg, min/max etc.)
 
@@ -477,6 +476,8 @@ def prod_report(request, year=None, month=None):
     # Get time frame
     if year and month:
         end_date = date(int(year), int(month), 1)
+        if end_date > date.today():
+            end_date = date.today().replace(day=1)
     else:
         end_date = date.today().replace(day=1)
 
