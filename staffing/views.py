@@ -473,6 +473,13 @@ def prod_report(request, year=None, month=None):
     months = []
     n_month = 5
 
+    all_status = {"ok": "#ABFF91",
+                  "ko": "#FF8284",
+                  "ok_but_daily_rate": "#88E4E7",
+                  "ok_but_prod_date": "#6699CC",
+                  "ko_but_daily_rate": "yellow",
+                  "ko_but_prod_date": "#FFCC00"}
+
     # Get time frame
     if year and month:
         end_date = date(int(year), int(month), 1)
@@ -517,16 +524,38 @@ def prod_report(request, year=None, month=None):
                 totalDone[month] = 0
             if month not in totalForecasted:
                 totalForecasted[month] = 0
-            days = working_days(month, holidays=holidays, upToToday=True)
-            consultant_holidays =  Timesheet.objects.filter(consultant=consultant, mission__nature="HOLIDAYS", working_date__gte=month, working_date__lt=nextMonth(month)).count()
+            consultant_holidays = Timesheet.objects.filter(consultant=consultant, mission__nature="HOLIDAYS",
+                                                           working_date__gte=month,
+                                                           working_date__lt=nextMonth(month)).count()
+            days = working_days(month, holidays=holidays, upToToday=True) - consultant_holidays
             try:
-                daily_rate = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
-                prod_rate = float(consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE").rate) / 100
-                forecast = int(daily_rate * prod_rate * (days - consultant_holidays))
+                daily_rate_obj = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
+                prod_rate_obj = float(consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE").rate) / 100
+
+                forecast = int(daily_rate_obj * prod_rate_obj * days)
             except AttributeError:
                 forecast = 0  # Rate objective is missing
             turnover = int(consultant.getTurnover(month, nextMonth(month)))
-            consultantData.append([turnover > forecast, [formats.number_format(turnover), formats.number_format(forecast)]]) # For each month : [status, [turnover, forceast ]]
+            prod_rate = consultant.getProductionRate(month, nextMonth(month))
+            try:
+                daily_rate = turnover / prod_rate / days
+            except ZeroDivisionError:
+                daily_rate = 0
+            if turnover > forecast:
+                if prod_rate < prod_rate_obj:
+                    status = all_status["ok_but_prod_date"]
+                elif daily_rate < daily_rate_obj:
+                    status = all_status["ok_but_daily_rate"]
+                else:
+                    status = all_status["ok"]
+            else:
+                if prod_rate > prod_rate_obj:
+                    status = all_status["ko_but_prod_date"]
+                elif daily_rate > daily_rate_obj:
+                    status = all_status["ko_but_daily_rate"]
+                else:
+                    status = all_status["ko"]
+            consultantData.append([status, [formats.number_format(turnover), formats.number_format(forecast)]]) # For each month : [status, [turnover, forceast ]]
             totalDone[month] += turnover
             totalForecasted[month] += forecast
         data.append([consultant, consultantData])

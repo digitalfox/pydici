@@ -70,7 +70,7 @@
                 <td style="text-align:left">{% trans "Total" %}</td>
             {% endif %}
             {% for status, charge in charges %}
-                <td style="background-color:{% if status %}#ABFF91{% else %}#FF8284{% endif %}; border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td style='background-color:{% if status %}#ABFF91{% else %}#FF8284{% endif %}'>" }}</td>
+                <td style="background-color:{{ status }}; border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td style='background-color:{% if status %}#ABFF91{% else %}#FF8284{% endif %}'>" }}</td>
             {% endfor %}
         </tr>
     {% endfor %}
