@@ -473,12 +473,12 @@ def prod_report(request, year=None, month=None):
     months = []
     n_month = 5
 
-    all_status = {"ok": "#ABFF91",
-                  "ko": "#FF8284",
-                  "ok_but_daily_rate": "#88E4E7",
-                  "ok_but_prod_date": "#6699CC",
-                  "ko_but_daily_rate": "yellow",
-                  "ko_but_prod_date": "#FFCC00"}
+    all_status = {"ok": "#43E707",
+                  "ko": "#E76F6F",
+                  "ok_but_daily_rate": "#CCE7B2",
+                  "ok_but_prod_date": "#BCE77A",
+                  "ko_but_daily_rate": "#E7E36D",
+                  "ko_but_prod_date": "#F99E9E"}
 
     # Get time frame
     if year and month:
