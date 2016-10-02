@@ -525,10 +525,10 @@ def prod_report(request, year=None, month=None):
                 totalDone[month] = 0
             if month not in totalForecasted:
                 totalForecasted[month] = 0
+            upperBound = min(date.today() + timedelta(1), nextMonth(month))
             consultant_holidays = Timesheet.objects.filter(consultant=consultant, mission__nature="HOLIDAYS",
                                                            working_date__gte=month,
-                                                           working_date__lt=nextMonth(month),
-                                                           working_date__lte=date.today()).count()
+                                                           working_date__lt=upperBound).count()
             days = working_days(month, holidays=holidays, upToToday=True) - consultant_holidays
             try:
                 daily_rate_obj = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
@@ -536,8 +536,8 @@ def prod_report(request, year=None, month=None):
                 forecast = int(daily_rate_obj * prod_rate_obj * days)
             except AttributeError:
                 forecast = 0  # Rate objective is missing
-            turnover = int(consultant.getTurnover(month, nextMonth(month)))
-            prod_rate = consultant.getProductionRate(month, nextMonth(month))
+            turnover = int(consultant.getTurnover(month, upperBound))
+            prod_rate = consultant.getProductionRate(month, upperBound)
             try:
                 daily_rate = turnover / prod_rate / days
             except ZeroDivisionError:
