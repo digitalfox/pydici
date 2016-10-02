@@ -25,6 +25,7 @@ from django.views.decorators.cache import cache_page, cache_control
 from django.views.generic.edit import UpdateView
 from django.contrib import messages
 from django.conf import settings
+from django.template.loader import get_template
 
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from people.models import Consultant, Subsidiary
@@ -466,17 +467,17 @@ def pdc_detail(request, consultant_id, staffing_date):
 def prod_report(request, year=None, month=None):
     """Report production by each people and team for each month"""
     #TODO: extract that in CSV as well
-    #TODO: add tooltip for detail analysis (rates objectifs, avg, min/max etc.)
 
     team = None
     subsidiary = None
     months = []
     n_month = 5
+    tooltip_template = get_template("staffing/_consultant_prod_tooltip.html")
 
     all_status = {"ok": "#43E707",
                   "ko": "#E76F6F",
                   "ok_but_daily_rate": "#CCE7B2",
-                  "ok_but_prod_date": "#BCE77A",
+                  "ok_but_prod_date": "#A2E774",
                   "ko_but_daily_rate": "#E7E36D",
                   "ko_but_prod_date": "#F99E9E"}
 
@@ -531,7 +532,6 @@ def prod_report(request, year=None, month=None):
             try:
                 daily_rate_obj = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
                 prod_rate_obj = float(consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE").rate) / 100
-
                 forecast = int(daily_rate_obj * prod_rate_obj * days)
             except AttributeError:
                 forecast = 0  # Rate objective is missing
@@ -555,7 +555,8 @@ def prod_report(request, year=None, month=None):
                     status = all_status["ko_but_daily_rate"]
                 else:
                     status = all_status["ko"]
-            consultantData.append([status, [formats.number_format(turnover), formats.number_format(forecast)]]) # For each month : [status, [turnover, forceast ]]
+            tooltip = tooltip_template.render({"daily_rate": daily_rate, "daily_rate_obj": daily_rate_obj, "prod_rate": prod_rate * 100, "prod_rate_obj": prod_rate_obj * 100})
+            consultantData.append([status, tooltip, [formats.number_format(turnover), formats.number_format(forecast)]]) # For each month : [status, [turnover, forceast ]]
             totalDone[month] += turnover
             totalForecasted[month] += forecast
         data.append([consultant, consultantData])
