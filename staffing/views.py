@@ -536,7 +536,7 @@ def prod_report(request, year=None, month=None):
                 prod_rate_obj = float(consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE").rate) / 100
                 forecast = int(daily_rate_obj * prod_rate_obj * days)
             except AttributeError:
-                forecast = 0  # Rate objective is missing
+                prod_rate_obj = daily_rate_obj = forecast = 0 # At least one rate objective is missing
             turnover = int(consultant.getTurnover(month, upperBound))
             prod_rate = consultant.getProductionRate(month, upperBound)
             try:
