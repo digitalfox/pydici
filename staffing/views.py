@@ -543,7 +543,7 @@ def prod_report(request, year=None, month=None):
                 daily_rate = turnover / prod_rate / days
             except ZeroDivisionError:
                 daily_rate = 0
-            if turnover > forecast:
+            if turnover >= forecast:
                 if prod_rate < prod_rate_obj:
                     status = all_status["ok_but_prod_date"]
                 elif daily_rate < daily_rate_obj:
@@ -551,9 +551,9 @@ def prod_report(request, year=None, month=None):
                 else:
                     status = all_status["ok"]
             else:
-                if prod_rate > prod_rate_obj:
+                if prod_rate >= prod_rate_obj:
                     status = all_status["ko_but_prod_date"]
-                elif daily_rate > daily_rate_obj:
+                elif daily_rate >= daily_rate_obj:
                     status = all_status["ko_but_daily_rate"]
                 else:
                     status = all_status["ko"]
