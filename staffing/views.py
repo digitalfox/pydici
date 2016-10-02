@@ -527,7 +527,8 @@ def prod_report(request, year=None, month=None):
                 totalForecasted[month] = 0
             consultant_holidays = Timesheet.objects.filter(consultant=consultant, mission__nature="HOLIDAYS",
                                                            working_date__gte=month,
-                                                           working_date__lt=nextMonth(month)).count()
+                                                           working_date__lt=nextMonth(month),
+                                                           working_date__lte=date.today()).count()
             days = working_days(month, holidays=holidays, upToToday=True) - consultant_holidays
             try:
                 daily_rate_obj = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
