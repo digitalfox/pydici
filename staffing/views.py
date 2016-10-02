@@ -566,7 +566,11 @@ def prod_report(request, year=None, month=None):
     for month in months:
         forecast = totalForecasted[month]
         turnover = totalDone[month]
-        totalData.append([turnover > forecast, [formats.number_format(turnover), formats.number_format(forecast)]])
+        if forecast > turnover:
+            status = all_status["ko"]
+        else:
+            status = all_status["ok"]
+        totalData.append([status, "", [formats.number_format(turnover), formats.number_format(forecast)]])
     data.append([None, totalData])
 
     # Get scopes
