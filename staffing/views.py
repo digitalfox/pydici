@@ -565,7 +565,6 @@ def prod_report(request, year=None, month=None):
             if month.month == date.today().month:
                 if Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=upperBound).count() < days:
                     warning = True
-                    print "coucou"
         data.append([consultant, warning, consultantData])
 
     # Add total
@@ -578,7 +577,7 @@ def prod_report(request, year=None, month=None):
         else:
             status = all_status["ok"]
         totalData.append([status, "", [formats.number_format(turnover), formats.number_format(forecast)]])
-    data.append([None, totalData])
+    data.append([None, None, totalData])
 
     # Get scopes
     scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
