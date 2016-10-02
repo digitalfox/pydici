@@ -62,15 +62,15 @@
             <th class="align-right">{% trans "forecasted" %}</th>
         {% endfor %}
     </tr>
-    {% for consultant, charges in data %}
+    {% for consultant, warning, charges in data %}
         <tr class="align-right" {% if not consultant %}style="font-weight: bold"{% endif %}>
             {% if consultant %}
-                <td style="text-align:left"><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant }}</a><span title="{{consultant.id}}"></span></td>
+                <td style="text-align:left"><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant }}</a>{% if warning %} <span title="{% trans 'Timesheet does not seem ok' %}" class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>{% endif %}<span title="{{consultant.id}}"></span></td>
             {% else %}
                 <td style="text-align:left">{% trans "Total" %}</td>
             {% endif %}
             {% for status, tooltip, charge in charges %}
-                <td style="background-color:{{ status }}; border-left:1px solid #C3C3C3;" title="{{ tooltip }}">{{ charge|join:"</td><td>" }}</td>
+                <td style="background-color:{{ status }}; border-left:1px solid #C3C3C3;"><span class="pydici-tooltip" title="{{ tooltip }}">{{ charge|join:"</span></td><td>" }}</td>
             {% endfor %}
         </tr>
     {% endfor %}

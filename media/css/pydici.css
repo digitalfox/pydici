@@ -204,6 +204,12 @@ div.ui-tooltip {
     white-space: nowrap;
 }
 
+/* prevent bootstrap tooltip to wrap text and make it respect new line */
+.tooltip-inner {
+    white-space:pre;
+    max-width:none;
+}
+
 /* Style jquery autocomplete */
 .ui-autocomplete {
   position: absolute;

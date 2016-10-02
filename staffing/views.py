@@ -520,6 +520,7 @@ def prod_report(request, year=None, month=None):
 
     for consultant in consultants:
         consultantData = []
+        warning = False
         for month in months:
             if month not in totalDone:
                 totalDone[month] = 0
@@ -560,7 +561,12 @@ def prod_report(request, year=None, month=None):
             consultantData.append([status, tooltip, [formats.number_format(turnover), formats.number_format(forecast)]]) # For each month : [status, [turnover, forceast ]]
             totalDone[month] += turnover
             totalForecasted[month] += forecast
-        data.append([consultant, consultantData])
+            # Check that current month timesheet if ok
+            if month.month == date.today().month:
+                if Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=upperBound).count() < days:
+                    warning = True
+                    print "coucou"
+        data.append([consultant, warning, consultantData])
 
     # Add total
     totalData = []

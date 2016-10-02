@@ -1,3 +1,2 @@
-{% load i18n %}
-{% trans "production rate" %}: {{ prod_rate|floatformat:-1 }} % ({% trans "objective" %} : {{ prod_rate_obj|floatformat:-1 }} %)
+{% load i18n %}{% trans "production rate" %}: {{ prod_rate|floatformat:-1 }} % ({% trans "objective" %} : {{ prod_rate_obj|floatformat:-1 }} %)
 {% trans "daily rate" %}: {{ daily_rate|floatformat:0 }} € ({% trans "objective" %} : {{ daily_rate_obj|floatformat:0 }} €)
