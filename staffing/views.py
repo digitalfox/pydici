@@ -8,7 +8,6 @@ Pydici staffing views. Http request are processed here.
 from datetime import date, timedelta, datetime
 import csv
 import json
-from collections import OrderedDict
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
@@ -515,8 +514,8 @@ def prod_report(request, year=None, month=None):
 
     holidays = Holiday.objects.filter(day__gte=start_date, day__lte=end_date)
     data = []
-    totalDone = OrderedDict()
-    totalForecasted = OrderedDict()
+    totalDone = {}
+    totalForecasted = {}
 
     for consultant in consultants:
         consultantData = []
