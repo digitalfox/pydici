@@ -512,7 +512,7 @@ def prod_report(request, year=None, month=None):
     if subsidiary:
         consultants = consultants.filter(company=subsidiary)
 
-    holidays = Holiday.objects.filter(day__gte=start_date, day__lte=end_date)
+    holidays_days = Holiday.objects.filter(day__gte=start_date, day__lte=end_date).values_list("day", flat=True)
     data = []
     totalDone = {}
     totalForecasted = {}
@@ -529,7 +529,7 @@ def prod_report(request, year=None, month=None):
             consultant_holidays = Timesheet.objects.filter(consultant=consultant, mission__nature="HOLIDAYS",
                                                            working_date__gte=month,
                                                            working_date__lt=upperBound).count()
-            days = working_days(month, holidays=holidays, upToToday=True) - consultant_holidays
+            days = working_days(month, holidays=holidays_days, upToToday=True) - consultant_holidays
             try:
                 daily_rate_obj = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
                 prod_rate_obj = float(consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE").rate) / 100
