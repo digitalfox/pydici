@@ -169,7 +169,7 @@ class Mission(models.Model):
         return days, amount / 1000
 
     def margin(self):
-        """Compute mission margin"""
+        """Compute mission margin in keuros"""
         if self.price:
             days, amount = self.done_work_k()
             return float(self.price) - amount

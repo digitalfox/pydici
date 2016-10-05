@@ -462,7 +462,7 @@ def pdc_detail(request, consultant_id, staffing_date):
 
 
 @pydici_non_public
-@pydici_feature("staffing_mass")
+@pydici_feature("reports")
 def prod_report(request, year=None, month=None):
     """Report production by each people and team for each month"""
     #TODO: extract that in CSV as well
@@ -595,6 +595,36 @@ def prod_report(request, year=None, month=None):
                    "scope_current_filter": scope_current_filter,
                    "scope_current_url_filter": scope_current_url_filter,
                    "scopes": scopes })
+
+@pydici_non_public
+@pydici_feature("reports")
+def fixed_price_missions_report(request):
+    """Report current fixed price mission margin"""
+    data = []
+
+    missions = Mission.objects.filter(active=True, nature="PROD", billing_mode="FIXED_PRICE")
+
+    # Get team and subsidiary
+    if "subsidiary_id" in request.GET:
+        subsidiary = Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
+        missions = missions.filter(subsidiary=subsidiary)
+    else:
+        subsidiary = None
+
+    for mission in missions.select_related():
+        margin = round(mission.margin() + sum(mission.objectiveMargin().values()) / 1000, 1)
+        data.append((mission, round(mission.done_work_k()[1],1), margin))
+
+    # Get scopes
+    scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, None, target="subsidiary")
+
+    return render(request, "staffing/fixed_price_report.html",
+                  {"data": data,
+                   "scope": subsidiary or _(u"Everybody"),
+                   "scope_current_filter": scope_current_filter,
+                   "scope_current_url_filter": scope_current_url_filter,
+                   "scopes": scopes })
+
 
 @pydici_non_public
 def deactivate_mission(request, mission_id):
