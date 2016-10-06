@@ -134,12 +134,9 @@ class Consultant(models.Model):
                                               charge__gt=0,
                                               working_date__gte=startDate,
                                               working_date__lt=endDate)
-        timesheets = timesheets.exclude(mission__nature="HOLIDAYS")
-        timesheets = timesheets.values("mission__nature").order_by("mission__nature").annotate(Sum("charge"))
-        prodDays = timesheets.filter(mission__nature="PROD")
-        nonProdDays = timesheets.filter(mission__nature="NONPROD")
-        prodDays = prodDays[0]["charge__sum"] if prodDays else 0
-        nonProdDays = nonProdDays[0]["charge__sum"] if nonProdDays else 0
+        days = dict(timesheets.values_list("mission__nature").order_by("mission__nature").annotate(Sum("charge")))
+        prodDays = days.get("PROD", 0)
+        nonProdDays = days.get("NONPROD", 0)
         if (prodDays + nonProdDays) > 0:
             return prodDays / (prodDays + nonProdDays)
         else:
