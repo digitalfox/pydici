@@ -526,21 +526,27 @@ def prod_report(request, year=None, month=None):
             if month not in totalForecasted:
                 totalForecasted[month] = 0
             upperBound = min(date.today() + timedelta(1), nextMonth(month))
-            consultant_holidays = Timesheet.objects.filter(consultant=consultant, mission__nature="HOLIDAYS",
-                                                           working_date__gte=month,
-                                                           working_date__lt=upperBound).count()
-            days = working_days(month, holidays=holidays_days, upToToday=True) - consultant_holidays
+            month_days = working_days(month, holidays=holidays_days, upToToday=True)
+            timesheets = Timesheet.objects.filter(consultant=consultant,
+                                                  charge__gt=0,
+                                                  working_date__gte=month,
+                                                  working_date__lt=upperBound)
+            consultant_days = dict(timesheets.values_list("mission__nature").order_by("mission__nature").annotate(Sum("charge")))
+
             try:
                 daily_rate_obj = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
                 prod_rate_obj = float(consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE").rate) / 100
-                forecast = int(daily_rate_obj * prod_rate_obj * days)
+                forecast = int(daily_rate_obj * prod_rate_obj * month_days)
             except AttributeError:
                 prod_rate_obj = daily_rate_obj = forecast = 0 # At least one rate objective is missing
             turnover = int(consultant.getTurnover(month, upperBound))
-            prod_rate = consultant.getProductionRate(month, upperBound)
             try:
-                daily_rate = turnover / prod_rate / days
+                prod_rate = consultant_days.get("PROD", 0) / (consultant_days.get("PROD", 0) + consultant_days.get("NONPROD", 0))
             except ZeroDivisionError:
+                prod_rate = 0
+            if consultant_days.get("PROD", 0) > 0:
+                daily_rate = turnover / consultant_days["PROD"]
+            else:
                 daily_rate = 0
             if turnover >= forecast:
                 if prod_rate < prod_rate_obj:
@@ -562,7 +568,7 @@ def prod_report(request, year=None, month=None):
             totalForecasted[month] += forecast
             # Check that current month timesheet if ok
             if month.month == date.today().month:
-                if Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=upperBound).count() < days:
+                if Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=upperBound).count() < month_days:
                     warning = True
         data.append([consultant, warning, consultantData])
 
