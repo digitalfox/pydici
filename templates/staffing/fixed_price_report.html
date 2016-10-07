@@ -34,13 +34,14 @@
     <div class="col-md-12">
     <div class="table-responsive">
 
-    <table class="table table-striped table-hover table-pydici-extra-condensed" id="mission_table">
+    <table class="table table-striped table-hover table-condensed" id="mission_table">
         <thead>
             <tr>
                 <th>{% trans "name" %}</th>
 				<th>{% trans "subsidiary" %}</th>
 				<th>{% trans "responsible" %}</th>
                 <th>{% trans "Mission id" %}</th>
+                <th>{% trans "Sold (k€)" %}</th>
                 <th>{% trans "Done works (k€)" %}</th>
                 <th>{% trans "Current margin (k€)" %}</th>
                 <th>{% trans "Target margin (k€)" %}</th>
@@ -53,6 +54,7 @@
                     <td>{{ mission.subsidiary }}</td>
                     <td>{{ mission.responsible }}</td>
                     <td>{{ mission.mission_id }}</td>
+                    <td style="text-align:right">{{ mission.price|floatformat:-1 }}</td>
                     <td style="text-align:right">{{ done }}</td>
                     <td style="text-align:right;{% if current_margin < 0 %}background-color:#E76F6F{% endif %}">{{ current_margin }}</td>
                     <td style="text-align:right;{% if target_margin < 0 %}background-color:#E76F6F{% endif %}">{{ target_margin }}</td>
