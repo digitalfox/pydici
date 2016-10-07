@@ -618,8 +618,10 @@ def fixed_price_missions_report(request):
         subsidiary = None
 
     for mission in missions.select_related():
-        margin = round(mission.margin() + sum(mission.objectiveMargin().values()) / 1000, 1)
-        data.append((mission, round(mission.done_work_k()[1],1), margin))
+        #TODO: we mess up with objective margin that is computed for current but not target margin. Same issue in mission_tiemsheet page
+        current_margin = round(mission.margin() + sum(mission.objectiveMargin().values()) / 1000, 1)
+        target_margin = mission.margin(mode="target")
+        data.append((mission, round(mission.done_work_k()[1],1), current_margin, target_margin))
 
     # Get scopes
     scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, None, target="subsidiary")

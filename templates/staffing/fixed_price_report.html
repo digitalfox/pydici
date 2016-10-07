@@ -43,17 +43,19 @@
                 <th>{% trans "Mission id" %}</th>
                 <th>{% trans "Done works (k€)" %}</th>
                 <th>{% trans "Current margin (k€)" %}</th>
+                <th>{% trans "Target margin (k€)" %}</th>
             </tr>
         </thead>
         <tbody>
-            {% for mission, done, margin in data %}
+            {% for mission, done, current_margin, target_margin in data %}
                 <tr>
                     <td><a href="{{ mission.get_absolute_url }}">{{ mission }}</a></td>
                     <td>{{ mission.subsidiary }}</td>
                     <td>{{ mission.responsible }}</td>
                     <td>{{ mission.mission_id }}</td>
                     <td style="text-align:right">{{ done }}</td>
-                    <td style="text-align:right;{% if margin < 0 %}background-color:#E76F6F{% endif %}">{{ margin }}</td>
+                    <td style="text-align:right;{% if current_margin < 0 %}background-color:#E76F6F{% endif %}">{{ current_margin }}</td>
+                    <td style="text-align:right;{% if target_margin < 0 %}background-color:#E76F6F{% endif %}">{{ target_margin }}</td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -155,7 +155,7 @@ class Mission(models.Model):
         rates = dict([(i.id, j[0]) for i, j in self.consultant_rates().items()])  # switch to consultant id
         days = 0
         amount = 0
-        timesheets = Timesheet.objects.filter(mission=self, working_date__lt=nextMonth(datetime.now().date()))
+        timesheets = Timesheet.objects.filter(mission=self, working_date__lt=nextMonth(date.today()))
         timesheets = timesheets.values_list("consultant").annotate(Sum("charge")).order_by()
         for consultant_id, charge in timesheets:
             days += charge
@@ -168,11 +168,43 @@ class Mission(models.Model):
         days, amount = self.done_work()
         return days, amount / 1000
 
-    def margin(self):
-        """Compute mission margin in keuros"""
+    @cacheable("Mission.forecasted_work%(id)s", 10)
+    def forecasted_work(self):
+        """Compute forecasted work according to staffing for this mission
+        Result is cached for few seconds
+        @return: (forecasted work in days, forecasted work in euros"""
+        rates = dict([(i.id, j[0]) for i, j in self.consultant_rates().items()])  # switch to consultant id
+        days = 0
+        amount = 0
+        current_month = date.today().replace(day=1)
+        staffings = Staffing.objects.filter(mission=self, staffing_date__gte=current_month)
+        staffings = staffings.values_list("consultant").annotate(Sum("charge")).order_by()
+        current_month_done = Timesheet.objects.filter(mission=self, working_date__gte=current_month, working_date__lt=nextMonth(date.today()))
+        current_month_done = dict(current_month_done.values_list("consultant").annotate(Sum("charge")).order_by())
+        for consultant_id, charge in staffings:
+            days += charge  # Add forecasted days
+            days -= current_month_done.get(consultant_id, 0) # Substract current month done works from forecastinng
+            if consultant_id in rates:
+                amount += charge * rates[consultant_id]
+                amount -= current_month_done.get(consultant_id, 0) * rates[consultant_id]
+
+        return (days, amount)
+
+    def forecasted_work_k(self):
+        """Same as forecasted_work, but with amount in keur"""
+        days, amount = self.forecasted_work()
+        return days, amount / 1000
+
+    def margin(self, mode="current"):
+        """Compute mission margin in keuros
+        @:parameter mode: can be current (default) to compute margin as of today or target to compute margin at mission end (with forecasted work"""
         if self.price:
-            days, amount = self.done_work_k()
-            return float(self.price) - amount
+            done_days, done_amount = self.done_work_k()
+            if mode=="current":
+                return float(self.price) - done_amount
+            else: # Target
+                forecasted_days, forecasted_amount = self.forecasted_work_k()
+                return float(self.price) - done_amount - forecasted_amount
         else:
             return 0
 
