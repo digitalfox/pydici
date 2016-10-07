@@ -119,6 +119,7 @@ class Mission(models.Model):
         else:
             return []
 
+    @cacheable("Mission.consultant_rates%(id)s", 5)
     def consultant_rates(self):
         """@return: dict with consultant as key and (daily rate, bought daily rate) as value or 0 if not defined."""
         rates = {}
