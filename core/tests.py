@@ -8,6 +8,7 @@ Test cases
 # Python/Django test modules
 from django.test import TestCase, TransactionTestCase
 from django.core import urlresolvers
+from django.core.cache import cache
 from django.contrib.auth.models import Group, User
 from django.db import IntegrityError
 from django.test import RequestFactory
@@ -268,6 +269,7 @@ class StaffingViewsTest(TestCase):
         c2 = Consultant.objects.get(id=2)
         mission = Mission(lead=lead, subsidiary_id=1, billing_mode="TIME_SPENT", nature="PROD", probability=100)
         mission.save()
+        cache.clear()  # avoid bad computation due to rates cache with previous values
         response = self.client.get(urlresolvers.reverse("staffing.views.mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["margin"], 0)
@@ -295,6 +297,7 @@ class StaffingViewsTest(TestCase):
         mission.price = 50
         mission.save()
         # Let's test if computation are rights
+        cache.clear()  # avoid bad computation due to rates cache with previous values
         response = self.client.get(urlresolvers.reverse("staffing.views.mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["margin"], 0)  # That's because we are in fixed price
@@ -317,7 +320,6 @@ class StaffingViewsTest(TestCase):
         self.assertListEqual(data[2], [None, [13, 20, 33, 30.6], [5, 14, 19, 17.3], [52, 47.9],
                                        [11.9, 18.7], [4.3, 13],
                                        [915.4, 935, 927.3], [860, 928.6, 910.5]])
-
 
 
 class CrmModelTest(TestCase):
