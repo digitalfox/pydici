@@ -35,7 +35,10 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
     def render_column(self, row, column):
         if column == "responsible":
             if row.responsible:
-                return u"<a href='{0}'>{1}</a>".format(row.responsible.get_absolute_url(), row.responsible.name)
+                data = u"<a href='{0}'>{1}</a>".format(row.responsible.get_absolute_url(), row.responsible.name)
+                if row.responsible.is_in_holidays():
+                    data += """ <span class="glyphicon glyphicon-sunglasses" title="{0}"></span>""".format(_('on holidays !'))
+                return data
             else:
                 return u"-"
         elif column == "client":

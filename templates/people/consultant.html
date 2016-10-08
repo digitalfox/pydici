@@ -15,9 +15,7 @@
 {% endwith %}
 
 <h1>{{ consultant.full_name }} {% if consultant.subcontractor %} - {% trans "subcontractor" %} {% endif %}
-{% if perms.people.change_consultant %}
-<a href="{% url 'admin:people_consultant_change' consultant.id %}?return_to={{ consultant.get_absolute_url }}"><img title='{% trans "Change" %}' src='{{ MEDIA_URL }}pydici/configure.png'/></a>
-{% endif %}
+{% if consultant.is_in_holidays %}<span class="glyphicon glyphicon-sunglasses gi-2x" title="{% trans 'on holidays !' %}"></span>{% endif %}
 </h1>
 
 <div>

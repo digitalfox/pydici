@@ -107,7 +107,9 @@
         {% endifequal %}
     
         <tr>
-            <td><a href="{% url 'people.views.consultant_home' consultant.id %}#tab-staffing">{{ consultant }}</a><span title="{{consultant.id}}"></span></td>
+            <td>
+                {% include "people/__consultant_name.html" %}
+            </td>
             {% autoescape off %}
             {% for charge in charges %}
                 <td class='pdc-tooltip' style="cursor: help; border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td style='cursor: help' class='charge pdc-tooltip'>" }}</td>

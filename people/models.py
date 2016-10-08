@@ -16,7 +16,7 @@ from django.core.urlresolvers import reverse
 
 from datetime import date, timedelta
 
-from core.utils import capitalize, disable_for_loaddata
+from core.utils import capitalize, disable_for_loaddata, cacheable
 from crm.models import Subsidiary
 from actionset.models import ActionState
 from actionset.utils import launchTrigger
@@ -210,6 +210,23 @@ class Consultant(models.Model):
                                        staffing_date__gte=today.replace(day=1),
                                        staffing_date__lte=today).aggregate(Sum("charge")).values()[0]
         return days or 0
+
+    @cacheable("Consultant.is_in_holidays%(id)s", 6*3600)
+    def is_in_holidays(self):
+        """True if consultant is in holiday today. Else False"""
+        Timesheet = apps.get_model("staffing", "Timesheet")
+        Holiday = apps.get_model("staffing", "Holiday")
+        working_date = date.today()
+        holidays = Holiday.objects.filter(day__gte=working_date)
+        day = timedelta(1)
+        while working_date.weekday() in (5,6) or working_date in holidays:
+            # Go to next open day
+            working_date += day
+
+        if Timesheet.objects.filter(consultant=self, mission__nature="HOLIDAYS", working_date=working_date).count() > 0:
+            return True
+        else:
+            return False
 
     def get_absolute_url(self):
         return reverse('people.views.consultant_home', args=[str(self.id)])

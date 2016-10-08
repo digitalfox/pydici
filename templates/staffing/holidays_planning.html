@@ -33,7 +33,10 @@
         {% for line in data %}
         <tr>
             {% for item in line %}
-                {% if forloop.first %}<td>{{ item }}</td>
+                {% if forloop.first %}
+                    <td>
+                        {% with consultant=item %}{% include "people/__consultant_name.html" %}{% endwith %}
+                    </td>
                 {% else %}<td style='background:{{ item }}'>  </td>{% endif %}
             {% endfor %}
         </tr>

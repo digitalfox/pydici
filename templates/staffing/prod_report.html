@@ -65,7 +65,8 @@
     {% for consultant, warning, charges in data %}
         <tr class="align-right" {% if not consultant %}style="font-weight: bold"{% endif %}>
             {% if consultant %}
-                <td style="text-align:left"><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant }}</a>{% if warning %} <span title="{% trans 'Timesheet does not seem ok' %}" class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>{% endif %}<span title="{{consultant.id}}"></span></td>
+                <td style="text-align:left">
+                    {% include "people/__consultant_name.html" %}{% if warning %} <span title="{% trans 'Timesheet does not seem ok' %}" class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>{% endif %}<span title="{{consultant.id}}"></span></td>
             {% else %}
                 <td style="text-align:left">{% trans "Total" %}</td>
             {% endif %}
