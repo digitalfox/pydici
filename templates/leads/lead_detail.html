@@ -100,7 +100,7 @@
                     <th>{% trans "Subsidiary" %}</th><td>{{ lead.subsidiary }}</td>
                 </tr>
                 <tr>
-                    <th>{% trans "Responsible" %}</th><td>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
+                    <th>{% trans "Responsible" %}</th><td>{% if lead.responsible %}{% with consultant=lead.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}{% else %}{% trans "To be defined" %}{% endif %}</td>
                 </tr>
                 {% if lead.salesman %}
                     <tr>

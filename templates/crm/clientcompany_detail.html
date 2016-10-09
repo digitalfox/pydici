@@ -314,7 +314,7 @@
     {% if consultants %}
         <h2>{% trans "Business owner for this company:" %}</h2>
             <ul>
-                <li>{% if company.businessOwner %}<a href="{% url 'people.views.consultant_home' company.businessOwner.id %}">{{ company.businessOwner.full_name }}</a>
+                <li>{% if company.businessOwner %}{% with consultant=company.businessOwner %}{% include "people/__consultant_name.html" %}{% endwith %}
                     {% else %} <a href="{% url 'crm.views.company' company.id %}">{% trans "To be defined" %}</a>
                     {% endif %}</li>
             </ul>
@@ -325,7 +325,7 @@
                 <h4>{{ subsidiary.grouper }}</h4>
                 <ul>
                 {% for consultant in subsidiary.list %}
-                    <li><a href="{% url 'people.views.consultant_home' consultant.id %}">{{ consultant.full_name }} {% if consultant.subcontractor %}({% trans "subcontractor" %}){% endif %}</a></li>
+                    <li>{% include "people/__consultant_name.html" %}{% if consultant.subcontractor %}({% trans "subcontractor" %}){% endif %}</li>
                 {% endfor %}
                 </ul>
             {% endfor %}

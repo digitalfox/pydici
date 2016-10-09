@@ -82,7 +82,7 @@
                     <th>{% trans "Subsidiary" %}</th><td>{{ mission.subsidiary }}</td>
                 </tr>
                 <tr>
-                    <th>{% trans "Responsible" %}</th><td>{% if mission.responsible %}<a href="{% url 'people.views.consultant_home' mission.responsible.id %}">{{ mission.responsible }}</a> {% endif %}</td>
+                    <th>{% trans "Responsible" %}</th><td>{% if mission.responsible %}{% with consultant=mission.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}{% endif %}</td>
                 </tr>
                 
                 <tr>
@@ -122,7 +122,7 @@
         </tr>
 	    {% for consultant, rate in mission.consultant_rates.items %}
 	        <tr>
-	            <td><a href="{% url 'people.views.consultant_home' consultant.id %}", title='{{ consultant }}'>{{ consultant }}</a></td>
+	            <td>{% include "people/__consultant_name.html" %}</td>
 	            <td align="right"><div id="sold-{{ mission.id|unlocalize }}-{{ consultant.id|unlocalize }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
 	            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id|unlocalize }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>{% endif %}</td>
                 <td align="right">{{ consultant.getRateObjective.rate }}</td>

@@ -46,7 +46,7 @@
                             <td><a href="{{ mission.get_absolute_url }}">{{ mission }}</a></td>
                             <td>{{ mission.mission_id }}</td>
                             <td>{{ mission.subsidiary }}</td>
-                            <td><a href="{% url 'people.views.consultant_home' mission.responsible.id %}">{{ mission.responsible }}</a></td>
+                            <td>{% with consultant=mission.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}</td>
                             <td style="text-align:right">{{ mission.price|floatformat:-1 }}</td>
                             <td style="text-align:right">{{ done }}</td>
                             <td style="text-align:right;{% if current_margin < 0 %}background-color:#E76F6F{% endif %}">{{ current_margin }}</td>

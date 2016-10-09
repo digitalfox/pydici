@@ -1,4 +1,5 @@
 {% load i18n %}
 {# context: consultant #}
-<a href="{% url 'people.views.consultant_home' consultant.id %}#tab-staffing">{{ consultant }}</a><span title="{{consultant.id}}"></span>
+{# tab: tab anchor name #}
+<a href="{% url 'people.views.consultant_home' consultant.id %}{{ tab }}">{{ consultant }}</a><span title="{{consultant.id}}"></span>
 {% if consultant.is_in_holidays %}<span class="glyphicon glyphicon-sunglasses" title="{% trans 'on holidays !' %}"></span>{% endif %}

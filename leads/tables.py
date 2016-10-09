@@ -28,6 +28,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
     order_columns = columns
     max_display_length = 500
     probaTemplate = get_template("leads/_state_column.html")
+    consultantTemplate = get_template("people/__consultant_name.html")
 
     def get_initial_queryset(self):
         return Lead.objects.all().select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
@@ -35,10 +36,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
     def render_column(self, row, column):
         if column == "responsible":
             if row.responsible:
-                data = u"<a href='{0}'>{1}</a>".format(row.responsible.get_absolute_url(), row.responsible.name)
-                if row.responsible.is_in_holidays():
-                    data += """ <span class="glyphicon glyphicon-sunglasses" title="{0}"></span>""".format(_('on holidays !'))
-                return data
+                return self.consultantTemplate.render({"consultant": row.responsible})
             else:
                 return u"-"
         elif column == "client":

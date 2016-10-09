@@ -108,7 +108,7 @@
     
         <tr>
             <td>
-                {% include "people/__consultant_name.html" %}
+                {% with tab="#tab-staffing" %}{% include "people/__consultant_name.html" %}{% endwith %}
             </td>
             {% autoescape off %}
             {% for charge in charges %}
