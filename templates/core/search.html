@@ -7,8 +7,9 @@
 <div class="row">
     <div class="col-lg-12">
         {% if query %}
-            {% if consultants or companies or leads or missions or contacts %}
+            {% if consultants or companies or leads or missions or contacts or bills %}
                 <h1>{% blocktrans with query|escape as value %}Search results for <em>{{ value }}</em>:{% endblocktrans %}</h1>
+                {% if more_record %}<em>{% trans "Only first results are shown." %}</em>{% endif %}
             {% else %}
                 <h1>{% blocktrans with query|escape as value %}No results for <em>{{ value }}</em>{% endblocktrans %}</h1>
             {% endif %}

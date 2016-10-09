@@ -60,6 +60,8 @@ def search(request):
     words = request.GET.get("q", "")
     words = words.split()
     consultants = companies = contacts = leads = missions = bills = None
+    max_record = 50
+    more_record = False # Wether we have more records
 
     if words:
         # Consultant
@@ -79,7 +81,9 @@ def search(request):
         contacts = Contact.objects.all()
         for word in words:
             contacts = contacts.filter(name__icontains=word)
-        contacts = contacts.distinct()
+        contacts = contacts.distinct()[:max_record]
+        if len(contacts) >= max_record:
+            more_record = True
 
         # Leads
         leads = Lead.objects.all()
@@ -91,14 +95,19 @@ def search(request):
                                  Q(client__organisation__company__name__icontains=word) |
                                  Q(client__organisation__name__iexact=word) |
                                  Q(deal_id__icontains=word[:-1]))  # Squash last letter that could be mission letter
-        leads = leads.distinct().select_related("client__organisation__company")
+        leads = leads.distinct().select_related("client__organisation__company")[:max_record]
+        if len(leads) >= max_record:
+            more_record = True
+
 
         # Missions
         missions = Mission.objects.all()
         for word in words:
             missions = missions.filter(Q(deal_id__icontains=word) |
                                        Q(description__icontains=word))
-        missions = missions.select_related("lead__client__organisation__company")
+        missions = missions.select_related("lead__client__organisation__company")[:max_record]
+        if len(missions) >= max_record:
+            more_record = True
 
         # Add missions from lead
         if leads:
@@ -113,7 +122,9 @@ def search(request):
         for word in words:
             bills = bills.filter(Q(bill_id__icontains=word) |
                                  Q(comment__icontains=word))
-        bills = bills.select_related("lead__client__organisation__company")
+        bills = bills.select_related("lead__client__organisation__company")[:max_record]
+        if len(bills) >= max_record:
+            more_record = True
 
         # Add bills from lead
         if leads:
@@ -133,6 +144,7 @@ def search(request):
                    "leads": leads,
                    "missions": missions,
                    "bills": bills,
+                   "more_record": more_record,
                    "user": request.user})
 
 
