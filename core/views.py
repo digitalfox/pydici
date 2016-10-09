@@ -103,7 +103,7 @@ def search(request):
         # Add missions from lead
         if leads:
             missions = set(missions)
-            for lead in leads:
+            for lead in leads.prefetch_related("mission_set"):
                 for mission in lead.mission_set.all():
                     missions.add(mission)
             missions = list(missions)
@@ -118,7 +118,7 @@ def search(request):
         # Add bills from lead
         if leads:
             bills = set(bills)
-            for lead in leads:
+            for lead in leads.prefetch_related("clientbill_set"):
                 for bill in lead.clientbill_set.all():
                     bills.add(bill)
         # Sort
