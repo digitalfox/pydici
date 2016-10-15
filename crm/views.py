@@ -220,8 +220,6 @@ def client_organisation_company_popup(request):
         client = None
         if clientForm.is_valid():
             client = clientForm.save(commit=False)
-            if contact:
-                client.contact = contact
         else:
             # clientForm may be invalid because client organisation is a new one
             if organisationForm.is_valid():
@@ -246,6 +244,9 @@ def client_organisation_company_popup(request):
 
         # If everything is allright, save the client and create response
         if client:
+            # Add contact if defined
+            if contact:
+                client.contact = contact
             client.active = True
             client.save()
             result["success"] = True

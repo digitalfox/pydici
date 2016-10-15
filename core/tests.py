@@ -446,13 +446,15 @@ class CrmViewsTest(TestCase):
         response = self.client.post(view, data=data, follow=True)
         self.check_client_popup_response_is_ko(response)
 
-        # All-in. Create new organisation and a new company
+        # All-in. Create new organisation and a new company with a new contact
         data["company-code"] = "YOU"
         data["company-businessOwner"] = 1
+        data["contact-name"] = "Superman"
         response = self.client.post(view, data=data, follow=True)
         client = self.check_client_popup_response_is_ok(response)
         self.assertEquals(client.organisation.name, "youpala")
         self.assertEquals(client.organisation.company.code, "YOU")
+        self.assertEquals(client.contact.name, "Superman")
 
 
     def check_client_popup_response_is_ok(self, response):
