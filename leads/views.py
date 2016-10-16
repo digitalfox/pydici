@@ -374,18 +374,33 @@ def graph_bar_jqp(request):
 def lead_pivotable(request, lead_id=None):
     """Pivot table for a given lead with detail"""
     data = []
+    dateFormat = "%Y%m%d"
+    startDate = endDate = None
+    try:
+        startDate = request.GET.get("start", None)
+        endDate = request.GET.get("end", None)
+        if startDate:
+            startDate = datetime.strptime(startDate, dateFormat)
+        if endDate:
+            endDate = datetime.strptime(endDate, dateFormat)
+    except ValueError:
+        pass
+
     try:
         lead = Lead.objects.get(id=lead_id)
     except Lead.DoesNotExist:
         return Http404()
     for mission in lead.mission_set.all():
-        data.extend(mission.pivotable_data())
+        data.extend(mission.pivotable_data(startDate=startDate, endDate=endDate))
 
     derivedAttributes = []
 
     return render(request, "leads/lead_pivotable.html", { "data": json.dumps(data),
-                                                    "derivedAttributes": derivedAttributes,
-                                                    "lead": lead})
+                                                          "derivedAttributes": derivedAttributes,
+                                                          "lead": lead,
+                                                          "startDate": startDate,
+                                                          "endDate": endDate
+                                                          })
 
 
 @pydici_non_public

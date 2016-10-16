@@ -270,7 +270,7 @@ class Mission(models.Model):
         else:
             return None
 
-    def pivotable_data(self):
+    def pivotable_data(self, startDate=None, endDate=None):
         """Compute raw data for pivot table on that mission"""
         #TODO: factorize with staffing.views.mission_timesheet
         data = []
@@ -284,6 +284,10 @@ class Mission(models.Model):
 
         # Gather timesheet (Only consider timesheet up to current month)
         timesheets = Timesheet.objects.filter(mission=self).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
+        if startDate:
+            timesheets = timesheets.filter(working_date__gte=startDate)
+        if endDate:
+            timesheets = timesheets.filter(working_date__lte=endDate)
         timesheetMonths = list(timesheets.dates("working_date", "month"))
 
         for consultant in self.consultants():
