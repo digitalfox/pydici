@@ -118,3 +118,6 @@ On target:
 
     create empty database and play migrations
     ./manage.py loaddata dump.json
+
+# Hosting, support, professional services, custom developpement
+See http://www.enioka.com/pydici-web/
