@@ -299,6 +299,24 @@ function hide_tag(data) {
     $("#tag_"+ data.id).hide("fast");
 };
 
+ // Add keyboard shortcut to go to next/previous lead
+function doc_keyUp(e) {
+    /* 39 : right
+     * 37 : left
+     * 78 : n
+     * 80 : p*/
+    {% if next_lead %}
+     if ((39 == e.keyCode) || (78 == e.keyCode)) {
+         window.location.href = "{% url 'leads.views.detail' next_lead.id %}";
+     }
+    {% endif %}
+    {% if previous_lead %}
+     if ((37 == e.keyCode) || (80 == e.keyCode)) {
+         window.location.href = "{% url 'leads.views.detail' previous_lead.id %}";
+     }
+    {% endif %}
+}
+document.addEventListener('keyup', doc_keyUp, false);
 -->
 </script>
 
