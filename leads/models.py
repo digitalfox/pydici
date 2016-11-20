@@ -111,7 +111,7 @@ class Lead(models.Model):
     def staffing_list(self):
         staffing = ""
         if self.staffing:
-            staffing += ", ".join(x["trigramme"] for x in self.staffing.values())
+            staffing += ", ".join([x["trigramme"] for x in self.staffing.values()])
         if self.external_staffing:
             staffing += ", (%s)" % self.external_staffing
         return staffing

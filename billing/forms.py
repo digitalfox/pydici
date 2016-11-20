@@ -6,7 +6,6 @@ Bill form setup
 """
 
 from django.forms import models
-from django.utils.translation import ugettext_lazy as _
 
 from billing.models import ClientBill, SupplierBill
 from leads.forms import LeadChoices

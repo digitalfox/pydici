@@ -5,7 +5,6 @@ Actions form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 from django import forms
-from django.utils.translation import ugettext as _
 
 from core.forms import UserChoices
 

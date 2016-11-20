@@ -16,7 +16,6 @@ from lxml import objectify
 
 from django.utils.formats import localize
 
-from core.utils import to_int_or_round
 from crm.models import Company, ClientOrganisation, Client, Contact
 from leads.models import Lead
 from leads.utils import create_default_mission

@@ -4,7 +4,7 @@
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns
 
 
 actionset_urls = patterns('actionset.views',
