@@ -301,6 +301,10 @@ function hide_tag(data) {
 
  // Add keyboard shortcut to go to next/previous lead
 function doc_keyUp(e) {
+    /// Do not change page if the user is editing a field
+    if ($("input").is(":focus")) {
+        return;
+    }
     /* 39 : right
      * 37 : left
      * 78 : n
