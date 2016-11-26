@@ -198,7 +198,7 @@ class Mission(models.Model):
 
     def margin(self, mode="current"):
         """Compute mission margin in keuros
-        @:parameter mode: can be current (default) to compute margin as of today or target to compute margin at mission end (with forecasted work"""
+        @:parameter mode: can be current (default) to compute margin as of today (ie. remaining budget) or target to compute margin at mission end (with forecasted work"""
         if self.price:
             done_days, done_amount = self.done_work_k()
             if mode=="current":

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-16 19:43+0200\n"
-"PO-Revision-Date: 2016-10-16 19:43+0100\n"
+"POT-Creation-Date: 2016-11-26 13:25+0100\n"
+"PO-Revision-Date: 2016-11-26 13:22+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -26,27 +26,27 @@ msgstr "État de l'action"
 msgid "Target object"
 msgstr "Objet cible"
 
-#: actionset/models.py:21
+#: actionset/models.py:19
 msgid "When a lead is created"
 msgstr "Quand une affaire est créée"
 
-#: actionset/models.py:22
+#: actionset/models.py:20
 msgid "When a lead is won"
 msgstr "Quand une affaire est gagnée"
 
-#: actionset/models.py:23
+#: actionset/models.py:21
 msgid "When a mission is created"
 msgstr "Quand une mission est créée"
 
-#: actionset/models.py:24
+#: actionset/models.py:22
 msgid "When mission is archived"
 msgstr "Quand une mission est archivée"
 
-#: actionset/models.py:25
+#: actionset/models.py:23
 msgid "When a consultant is created"
 msgstr "Quand un consultant est créé"
 
-#: actionset/models.py:27 actionset/models.py:48 crm/models.py:25
+#: actionset/models.py:25 actionset/models.py:46 crm/models.py:25
 #: crm/models.py:93 crm/models.py:388 expense/models.py:44 leads/models.py:57
 #: leads/views.py:208 people/models.py:27 people/models.py:253
 #: templates/crm/clientcompany_detail.html:360 templates/leads/review.html:27
@@ -56,7 +56,7 @@ msgstr "Quand un consultant est créé"
 msgid "Name"
 msgstr "Nom"
 
-#: actionset/models.py:28 actionset/models.py:49 billing/admin.py:29
+#: actionset/models.py:26 actionset/models.py:47 billing/admin.py:29
 #: billing/admin.py:43 expense/models.py:75 leads/models.py:129
 #: leads/views.py:208 staffing/models.py:43 staffing/models.py:321
 #: templates/expense/expense_list.html:14 templates/leads/lead_detail.html:40
@@ -64,28 +64,28 @@ msgstr "Nom"
 msgid "Description"
 msgstr "Description"
 
-#: actionset/models.py:29
+#: actionset/models.py:27
 msgid "Trigger"
 msgstr "Déclencheur"
 
-#: actionset/models.py:30 crm/models.py:265 people/models.py:44
+#: actionset/models.py:28 crm/models.py:265 people/models.py:44
 #: people/models.py:256 staffing/models.py:46
 msgid "Active"
 msgstr "Active"
 
-#: actionset/models.py:58 templates/staffing/mission_timesheet.html:169
+#: actionset/models.py:56 templates/staffing/mission_timesheet.html:169
 msgid "To be done"
 msgstr "À faire"
 
-#: actionset/models.py:59
+#: actionset/models.py:57
 msgid "Done"
 msgstr "Faite"
 
-#: actionset/models.py:60 templates/actionset/_base_actions.html:42
+#: actionset/models.py:58 templates/actionset/_base_actions.html:42
 msgid "N/A"
 msgstr "N/A"
 
-#: actionset/models.py:62 billing/admin.py:32 billing/admin.py:46
+#: actionset/models.py:60 billing/admin.py:32 billing/admin.py:46
 #: billing/models.py:115 billing/models.py:152 expense/tables.py:27
 #: leads/models.py:69 leads/models.py:260 leads/views.py:210
 #: templates/billing/_lead_billing.html:12
@@ -94,22 +94,22 @@ msgstr "N/A"
 msgid "State"
 msgstr "État"
 
-#: actionset/models.py:65 leads/models.py:72 leads/views.py:211
+#: actionset/models.py:63 leads/models.py:72 leads/views.py:211
 msgid "Creation"
 msgstr "Création"
 
-#: actionset/models.py:66 expense/models.py:81 leads/models.py:76
+#: actionset/models.py:64 expense/models.py:81 leads/models.py:76
 #: leads/models.py:121 leads/views.py:212 staffing/models.py:50
 #: templates/core/index.html:18 templates/core/index.html.py:43
 #: templates/core/index.html:67 templates/core/index.html.py:91
 msgid "Updated"
 msgstr "Mise à jour"
 
-#: actionset/models.py:67
+#: actionset/models.py:65
 msgid "Target content type"
 msgstr "Type de la cible"
 
-#: actionset/models.py:68
+#: actionset/models.py:66
 msgid "Content id"
 msgstr "Identifiant"
 
@@ -3118,8 +3118,8 @@ msgid "Done works (k€)"
 msgstr "Montant réalisé (k€)"
 
 #: templates/staffing/fixed_price_report.html:39
-msgid "Current margin (k€)"
-msgstr "Marge actuelle (k€)"
+msgid "Remaining (k€)"
+msgstr "Restant (k€)"
 
 #: templates/staffing/fixed_price_report.html:40
 msgid "Target margin (k€)"
@@ -3348,6 +3348,9 @@ msgstr "Totaux"
 #: templates/staffing/prod_report.html:9
 msgid "Production report"
 msgstr "Rapport de production"
+
+#~ msgid "Current margin (k€)"
+#~ msgstr "Marge actuelle (k€)"
 
 #, fuzzy
 #~| msgid "All clients"
