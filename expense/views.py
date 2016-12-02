@@ -120,6 +120,7 @@ def expenses(request, expense_id=None):
 def expense_receipt(request, expense_id):
     """Returns expense receipt if authorize to"""
     data = StringIO()
+    content_type = ""
 
     try:
         expense = Expense.objects.get(id=expense_id)
