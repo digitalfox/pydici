@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-26 13:25+0100\n"
-"PO-Revision-Date: 2016-11-26 13:22+0100\n"
+"POT-Creation-Date: 2016-12-02 17:54+0100\n"
+"PO-Revision-Date: 2016-12-02 17:54+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -591,6 +591,11 @@ msgstr "12 derniers mois"
 msgid "Others"
 msgstr "Autres"
 
+#: expense/forms.py:76
+#, python-format
+msgid "Use a valid extension (%s)"
+msgstr "Utilisez une extension valide (%s)"
+
 #: expense/forms.py:82
 msgid "You must define a lead if expense is chargeable"
 msgstr "Vous devez définir une affaire si les frais sont refacturables"
@@ -688,24 +693,24 @@ msgstr "modifier"
 msgid "You are not allowed to edit that expense"
 msgstr "Vous n'êtes pas autorisé à modifier cette note de frais"
 
-#: expense/views.py:57 expense/views.py:210
+#: expense/views.py:57 expense/views.py:211
 #, python-format
 msgid "Expense %s does not exist"
 msgstr "La note de frais %s n'existe pas"
 
-#: expense/views.py:207
+#: expense/views.py:208
 msgid "You cannot manage your own expense !"
 msgstr "Vous ne pouvez pas gérer vos propres notes de frais !"
 
-#: expense/views.py:221
+#: expense/views.py:222
 msgid "Successfully update expense"
 msgstr "Note de frais mise à jour avec succès"
 
-#: expense/views.py:229
+#: expense/views.py:230
 msgid "You cannot do this transition"
 msgstr "Vous n'êtes pas autorisé à faire cette transition"
 
-#: expense/views.py:249 expense/views.py:324
+#: expense/views.py:250 expense/views.py:325
 #, python-format
 msgid "Expense payment %s does not exist"
 msgstr "Le remboursement de frais %s n'existe pas"
