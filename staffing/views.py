@@ -516,6 +516,7 @@ def prod_report(request, year=None, month=None):
     data = []
     totalDone = {}
     totalForecasted = {}
+    totalForecastedEndOfMonth = 0
 
     for consultant in consultants:
         consultantData = []
@@ -537,6 +538,7 @@ def prod_report(request, year=None, month=None):
                 daily_rate_obj = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
                 prod_rate_obj = float(consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE").rate) / 100
                 forecast = int(daily_rate_obj * prod_rate_obj * (month_days - consultant_days.get("HOLIDAYS",0)))
+                forecastEndOfMonth = int(daily_rate_obj * prod_rate_obj * (working_days(month, holidays=holidays_days, upToToday=False) - consultant_days.get("HOLIDAYS",0)))
             except AttributeError:
                 prod_rate_obj = daily_rate_obj = forecast = 0 # At least one rate objective is missing
             turnover = int(consultant.getTurnover(month, upperBound))
@@ -563,9 +565,17 @@ def prod_report(request, year=None, month=None):
                 else:
                     status = all_status["ko"]
             tooltip = tooltip_template.render({"daily_rate": daily_rate, "daily_rate_obj": daily_rate_obj, "prod_rate": prod_rate * 100, "prod_rate_obj": prod_rate_obj * 100})
-            consultantData.append([status, tooltip, [formats.number_format(turnover), formats.number_format(forecast)]]) # For each month : [status, [turnover, forceast ]]
+
+            # For each month: [status, tooltip[turnover, forceast]]
+            # For current month: [status, tooltip[turnover, forceast, forecast end of month]]
+            if month.year == date.today().year and month.month == date.today().month:
+                consultantData.append([status, tooltip, [formats.number_format(turnover), formats.number_format(forecast), forecastEndOfMonth]])
+                totalForecastedEndOfMonth += forecastEndOfMonth
+            else:
+                consultantData.append([status, tooltip, [formats.number_format(turnover), formats.number_format(forecast)]]) # For each month : [status, [turnover, forceast ]]
             totalDone[month] += turnover
             totalForecasted[month] += forecast
+
             # Check that current month timesheet if ok
             if month.month == date.today().month:
                 if Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=upperBound).count() < month_days:
@@ -581,7 +591,10 @@ def prod_report(request, year=None, month=None):
             status = all_status["ko"]
         else:
             status = all_status["ok"]
-        totalData.append([status, "", [formats.number_format(turnover), formats.number_format(forecast)]])
+        if month.year == date.today().year and month.month == date.today().month:
+            totalData.append([status, "", [formats.number_format(turnover), formats.number_format(forecast), formats.number_format(totalForecastedEndOfMonth)]])
+        else:
+            totalData.append([status, "", [formats.number_format(turnover), formats.number_format(forecast)]])
     data.append([None, None, totalData])
 
     # Get scopes
@@ -594,6 +607,7 @@ def prod_report(request, year=None, month=None):
     return render(request, "staffing/prod_report.html",
                   {"data": data,
                    "months": months,
+                   "today": date.today(),
                    "end_date" : end_date,
                    "previous_slice_date": previous_slice_date,
                    "next_slice_date": next_slice_date,
