@@ -95,6 +95,10 @@ def generate_unique_company_code(name):
         code = base_code[:2] + str(idx)
         idx += 1
 
+@rate_limited(3)
+def rate_limited_request(url, params=None, **kwargs):
+    return requests.get(url, params, **kwargs)
+
 
 def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
     """
@@ -103,7 +107,7 @@ def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
     """
     url = '{}/{}.xml'.format(base_url, sub_dir)
     logger.info('Downloading %s page=%d', url, page)
-    res = requests.get(url, auth=auth, params={'page': page})
+    res = rate_limited_request(url, auth=auth, params={'page': page})
     if res.status_code != 200:
         raise IncwoImportError(res.content)
     root = objectify.fromstring(res.content)
@@ -117,7 +121,7 @@ def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
             continue
         url = '{}/{}/{}.xml'.format(base_url, sub_dir, obj_id)
         logger.info('Downloading %s', url)
-        res = requests.get(url, auth=auth)
+        res = rate_limited_request(url, auth)
         if res.status_code != 200:
             raise IncwoImportError(res.content)
         lst.append((obj_id, res.text))
