@@ -823,7 +823,8 @@ def setup_test_user_features():
 def run_casper(test_filename, client, **kwargs):
     """Casperjs launcher"""
     env = os.environ.copy()
-    env["PATH"] += ":" + os.path.join(os.path.expanduser("~"), "node_modules/.bin/")
+    for prefix in [os.path.abspath(os.path.curdir), os.path.expanduser("~")]:
+        env["PATH"] += ":" + os.path.join(prefix, "node_modules/.bin/")
     verbose = kwargs.pop("verbose", False)
     cookie_name = settings.SESSION_COOKIE_NAME
     if cookie_name in client.cookies:
@@ -839,8 +840,9 @@ def run_casper(test_filename, client, **kwargs):
     try:
         p = Popen(cmd, stdout=PIPE, stderr=PIPE, env=env, cwd=os.path.dirname(test_filename))
         out, err = p.communicate()
-    except OSError:
+    except OSError, e:
         print "WARNING: casperjs is not installed or properly setup. Skipping JS Tests..."
+        print e
         return True
     if verbose or p.returncode:
         sys.stdout.write(out)
