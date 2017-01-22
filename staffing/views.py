@@ -693,7 +693,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
 
     staffings = Staffing.objects.filter(consultant=consultant)
     staffings = staffings.filter(staffing_date=month)
-    for staffing in staffings:
+    for staffing in staffings.select_related("mission"):
         if staffing.mission.id in forecastTotal:
             forecastTotal[staffing.mission.id] += staffing.charge
         else:
