@@ -46,12 +46,9 @@ $(document).ready(function() {
         var hash = e.target.hash.replace("#", "#" + tabprefix)
         var url = window.location.toString();
         // Push tab hash in history else if we are already on it
-        if (!url.match(e.target.hash)) {
-            if(history.pushState) {
-                history.pushState(null, null, hash);
-            } else {
-                window.location.hash = hash;
-            }
+        if (url.match('#') && !url.match(e.target.hash)) {
+            console.log(hash);
+            history.pushState(null, null, hash);
         }
     });
 
