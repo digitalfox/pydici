@@ -5,7 +5,6 @@ Functions responsible for importing data from an Incwo server
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from __future__ import division
 import logging
 import os
 import re
@@ -35,6 +34,7 @@ DEFAULT_CLIENT_ORGANIZATION_NAME = 'Default'
 
 OPTIONAL_MISSION_SUFFIX = '_[option]_'
 
+INCWO_MAX_RATE = 240
 
 class IncwoImportError(Exception):
     pass
@@ -99,7 +99,7 @@ def generate_unique_company_code(name):
 
 
 def throttle(max_per_minute, method, *args, **kwargs):
-    max_execution_time = 60/max_per_minute
+    max_execution_time = 60.0/max_per_minute
     start = time.time()
     method(*args, **kwargs)
     total = time.time() - start
@@ -114,7 +114,7 @@ def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
     """
     url = '{}/{}.xml'.format(base_url, sub_dir)
     logger.info('Downloading %s page=%d', url, page)
-    res = throttle(240, requests.get, url, auth=auth, params={'page': page})
+    res = throttle(INCWO_MAX_RATE, requests.get, url, auth=auth, params={'page': page})
     if res.status_code != 200:
         raise IncwoImportError(res.content)
     root = objectify.fromstring(res.content)
@@ -128,7 +128,7 @@ def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
             continue
         url = '{}/{}/{}.xml'.format(base_url, sub_dir, obj_id)
         logger.info('Downloading %s', url)
-        res = throttle(240, requests.get, url, auth=auth)
+        res = throttle(INCWO_MAX_RATE, requests.get, url, auth=auth)
         if res.status_code != 200:
             raise IncwoImportError(res.content)
         lst.append((obj_id, res.text))
