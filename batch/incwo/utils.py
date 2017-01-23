@@ -10,6 +10,7 @@ import os
 import re
 from datetime import datetime
 from decimal import Decimal
+import time
 
 import requests
 from lxml import objectify
@@ -33,6 +34,7 @@ DEFAULT_CLIENT_ORGANIZATION_NAME = 'Default'
 
 OPTIONAL_MISSION_SUFFIX = '_[option]_'
 
+INCWO_MAX_RATE = 240
 
 class IncwoImportError(Exception):
     pass
@@ -96,6 +98,15 @@ def generate_unique_company_code(name):
         idx += 1
 
 
+def throttle(max_per_minute, method, *args, **kwargs):
+    max_execution_time = 60.0/max_per_minute
+    start = time.time()
+    method(*args, **kwargs)
+    total = time.time() - start
+    if (total < max_execution_time):
+        time.sleep(max_execution_time)
+
+
 def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
     """
     Download XML files for all objects
@@ -103,7 +114,7 @@ def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
     """
     url = '{}/{}.xml'.format(base_url, sub_dir)
     logger.info('Downloading %s page=%d', url, page)
-    res = requests.get(url, auth=auth, params={'page': page})
+    res = throttle(INCWO_MAX_RATE, requests.get, url, auth=auth, params={'page': page})
     if res.status_code != 200:
         raise IncwoImportError(res.content)
     root = objectify.fromstring(res.content)
@@ -117,7 +128,7 @@ def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
             continue
         url = '{}/{}/{}.xml'.format(base_url, sub_dir, obj_id)
         logger.info('Downloading %s', url)
-        res = requests.get(url, auth=auth)
+        res = throttle(INCWO_MAX_RATE, requests.get, url, auth=auth)
         if res.status_code != 200:
             raise IncwoImportError(res.content)
         lst.append((obj_id, res.text))
