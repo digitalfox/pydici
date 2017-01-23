@@ -101,11 +101,11 @@ def generate_unique_company_code(name):
 def throttle(max_per_minute, method, *args, **kwargs):
     max_execution_time = 60.0/max_per_minute
     start = time.time()
-    method(*args, **kwargs)
+    result = method(*args, **kwargs)
     total = time.time() - start
     if (total < max_execution_time):
         time.sleep(max_execution_time)
-
+    return result
 
 def download_objects(base_url, auth, sub_dir, allowed_ids, denied_ids, page=1):
     """
