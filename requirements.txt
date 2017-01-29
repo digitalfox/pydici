@@ -8,7 +8,7 @@ django-extensions==1.5.5
 django-debug-toolbar==1.5
 django-userswitch
 django-crispy-forms==1.5.2
-Django-Select2==5.8.5
+Django-Select2==5.8.10
 requests==2.5.2
 lxml==3.4.2
 python-memcached==1.54
