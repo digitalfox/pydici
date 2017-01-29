@@ -146,16 +146,6 @@ def pre_billing(request, year=None, month=None, mine=False):
         billing_consultant = None
         mine = False
 
-    # Check consultant timesheet to hint if billing could be done based on a clean state
-    timesheet_ok = {}
-    for consultant in Consultant.objects.filter(active=True, subcontractor=False):
-        missions = consultant.timesheet_missions(month=month)
-        timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
-        days = sum([v for (k,v) in timesheetTotal.items() if k!="ticket"])  # Compute timesheet days. Remove lunch ticket count
-        if days == working_days(month, holidayDays(month=month)):
-            timesheet_ok[consultant.id] = True
-        else:
-            timesheet_ok[consultant.id] = False
 
     fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
                                                 timesheet__working_date__gte=month,
@@ -192,7 +182,7 @@ def pre_billing(request, year=None, month=None, mine=False):
         total = charge * rates[mission][consultant][0]
         timeSpentBilling[lead][0] += total
         timeSpentBilling[lead][1][mission][0] += total
-        timeSpentBilling[lead][1][mission][1].append([consultant, to_int_or_round(charge, 2), rates[mission][consultant][0], total, timesheet_ok.get(consultant_id, True)])
+        timeSpentBilling[lead][1][mission][1].append([consultant, to_int_or_round(charge, 2), rates[mission][consultant][0], total])
 
     # Sort data
     timeSpentBilling = timeSpentBilling.items()

@@ -16,10 +16,13 @@ from django.core.urlresolvers import reverse
 
 from datetime import date, timedelta
 
-from core.utils import capitalize, disable_for_loaddata, cacheable
+from core.utils import capitalize, disable_for_loaddata, cacheable, previousMonth, working_days
 from crm.models import Subsidiary
 from actionset.models import ActionState
 from actionset.utils import launchTrigger
+
+CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY = "Consultant.is_in_holidays%(id)s"
+TIMESHEET_IS_UP_TO_DATE_CACHE_KEY = "Consultant.timesheet_is_up_to_date%(id)s"
 
 
 class ConsultantProfile(models.Model):
@@ -211,11 +214,11 @@ class Consultant(models.Model):
                                        staffing_date__lte=today).aggregate(Sum("charge")).values()[0]
         return days or 0
 
-    @cacheable("Consultant.is_in_holidays%(id)s", 6*3600)
+    @cacheable(CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY, 6*3600)
     def is_in_holidays(self):
         """True if consultant is in holiday today. Else False"""
-        Timesheet = apps.get_model("staffing", "Timesheet")
-        Holiday = apps.get_model("staffing", "Holiday")
+        Timesheet = apps.get_model("staffing", "Timesheet")  # Get Timesheet with get_model to avoid circular imports
+        Holiday = apps.get_model("staffing", "Holiday")  # Idem
         working_date = date.today()
         holidays = Holiday.objects.filter(day__gte=working_date)
         day = timedelta(1)
@@ -235,6 +238,18 @@ class Consultant(models.Model):
         ordering = ["name", ]
         verbose_name = _("Consultant")
 
+    @cacheable(TIMESHEET_IS_UP_TO_DATE_CACHE_KEY, 6 * 3600)
+    def timesheet_is_up_to_date(self):
+        """True if past month and current month (up to but excluding today) timesheet are ok, else False"""
+        Timesheet = apps.get_model("staffing", "Timesheet")  # Get Timesheet with get_model to avoid circular imports
+        from staffing.utils import holidayDays  # Idem
+        current_month = date.today().replace(day=1)
+        for month, up_to in ((previousMonth(current_month), current_month), (current_month, date.today())):
+            wd = working_days(month, holidayDays(month=month),upToToday=True)
+            td = Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values()[0]
+            if wd != td:
+                return False
+        return True
 
 class RateObjective(models.Model):
     """Consultant rates objective

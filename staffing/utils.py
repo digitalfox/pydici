@@ -13,9 +13,11 @@ from datetime import date, datetime
 from django.conf import settings
 from django.db import transaction
 from django.utils import formats
+from django.core.cache import cache
 
 from staffing.models import Timesheet, Mission, LunchTicket, Holiday
 from core.utils import month_days, nextMonth, daysOfMonth
+from people.models import TIMESHEET_IS_UP_TO_DATE_CACHE_KEY, CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY
 
 
 def gatherTimesheetData(consultant, missions, month):
@@ -70,6 +72,11 @@ def saveTimesheetData(consultant, month, data, oldData):
     """Save user input timesheet in database"""
     previousMissionId = 0
     mission = None
+
+    # Invalidate consultant cache stuff related to timesheet data
+    cache.delete(TIMESHEET_IS_UP_TO_DATE_CACHE_KEY % consultant.__dict__)
+    cache.delete(CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY % consultant.__dict__)
+
     for key, charge in data.items():
         if not charge and not key in oldData:
             # No charge in new and old data
