@@ -1027,7 +1027,7 @@ def all_timesheet(request, year=None, month=None):
         data = list(consultants)
     else:
         # drill down link
-        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (urlresolvers.reverse("people.views.consultant_home", args=[consultant.id]),
+        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (urlresolvers.reverse("people.views.consultant_home", args=[consultant.trigramme]),
                                                                                    month.year,
                                                                                    month.month,
                                                                                    escape(unicode(consultant)))) for consultant in consultants]

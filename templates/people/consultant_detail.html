@@ -9,7 +9,6 @@
     <div class="col-lg-8 col-md-12 col-sm-6 col-xs-12">
         <div class="pydici-block">
         <h3 class="pydici-block-title">{% trans "This month" %}</h3>
-        {% url 'people.views.consultant_home' consultant.id as consultant_url %}
             <ul class="icon-list arrow-right">
                 <li>{% trans "My turnover this month: " %} <b>{{ month_turnover|floatformat:-2 }} €</b>
                 ({% if turnover_variation > 0 %}<img src="{{ MEDIA_URL }}pydici/increase.png" border=0 title="{% trans 'Increase' %}" />

@@ -36,16 +36,16 @@ import pydici.settings
 @login_required
 def index(request):
     key = "core.index." + request.user.username
-    consultant_id = cache.get(key)
-    if consultant_id is None:
+    consultant_trigramme = cache.get(key)
+    if consultant_trigramme is None:
         try:
-            consultant_id = Consultant.objects.get(trigramme__iexact=request.user.username).id
-            cache.set(key, consultant_id)
+            consultant_trigramme = Consultant.objects.get(trigramme__iexact=request.user.username).trigramme
+            cache.set(key, consultant_trigramme)
         except Consultant.DoesNotExist:
-            consultant_id = None
+            consultant_trigramme = None
 
-    if consultant_id:
-        return consultant_home(request, consultant_id)
+    if consultant_trigramme:
+        return consultant_home(request, consultant_trigramme)
     else:
         # User is not a consultant. Go for default index page.
         return render(request, "core/pydici.html",

@@ -17,11 +17,21 @@ from core.decorator import pydici_non_public
 from core.utils import working_days, previousMonth, nextMonth
 
 
-def consultant_home(request, consultant_id):
-    """Home page of consultant - this page loads all others mission sub-pages"""
+def _consultant_home(request, consultant):
     return render(request, 'people/consultant.html',
-                  {"consultant": Consultant.objects.get(id=consultant_id),
+                  {"consultant": consultant,
                    "user": request.user})
+
+
+def consultant_home_by_id(request, consultant_id):
+    """Home page of consultant - this page loads all others mission sub-pages"""
+    return _consultant_home(request, Consultant.objects.get(id=consultant_id))
+
+
+def consultant_home(request, consultant_trigramme):
+    """Home page of consultant - this page loads all others mission sub-pages"""
+    print(consultant_trigramme)
+    return _consultant_home(request, Consultant.objects.get(trigramme__iexact=consultant_trigramme))
 
 
 @pydici_non_public
@@ -29,7 +39,7 @@ def consultant_detail(request, consultant_id):
     """Summary page of consultant activity"""
     if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # This view should only be accessed by ajax request. Redirect lost users
-        return redirect(consultant_home, consultant_id)
+        return redirect(consultant_home_by_id, consultant_id)
     try:
         consultant = Consultant.objects.get(id=consultant_id)
         staff = consultant.team(onlyActive=True)

@@ -1,10 +1,11 @@
 {% load i18n %}
 {# context: consultant #}
 {# tab: tab anchor name #}
-<a href="{% url 'people.views.consultant_home' consultant.id %}{{ tab }}">{{ consultant }}</a><span title="{{consultant.id}}"></span>
+<a href="{% url 'people.views.consultant_home' consultant.trigramme %}{{ tab }}">{{ consultant }}</a><span title="{{consultant.id}}"></span>
 {% if consultant.is_in_holidays %}<span class="pydici-tooltip glyphicon glyphicon-sunglasses" title="{% trans 'on holidays !' %}"></span>{% endif %}
 {% if not consultant.subcontractor %}
     {% if not consultant.timesheet_is_up_to_date %}
         <span title="{% trans 'Timesheet does not seem ok' %}" class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>
     {% endif %}
 {% endif %}
+

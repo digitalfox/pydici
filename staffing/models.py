@@ -342,7 +342,7 @@ class Staffing(models.Model):
         super(Staffing, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("people.views.consultant_home", args=[str(self.consultant.id)]) + "#tab-staffing"
+        return reverse("people.views.consultant_home", args=[str(self.consultant.trigramme)]) + "#tab-staffing"
 
     class Meta:
         unique_together = (("consultant", "mission", "staffing_date"),)

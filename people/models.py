@@ -232,7 +232,7 @@ class Consultant(models.Model):
             return False
 
     def get_absolute_url(self):
-        return reverse('people.views.consultant_home', args=[str(self.id)])
+        return reverse('people.views.consultant_home', args=[str(self.trigramme)])
 
     class Meta:
         ordering = ["name", ]

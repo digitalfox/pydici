@@ -210,7 +210,7 @@
         {% for lead in leads_without_bill %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
                 <td><a href="{% url 'leads.views.detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
-                <td>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.id %}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
+                <td>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.trigramme%}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.sales }}</td>
                 <td>{{ lead.done_work.0 }}</td>
