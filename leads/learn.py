@@ -56,9 +56,7 @@ def get_lead_state_data(lead, tags):
     lead_tags = lead.tags.all()
     for tag in tags:
         if tag in lead_tags:
-            feature["tag_%s" % tag.slug] = "yes"
-        else:
-            feature["tag_%s" % tag.slug] = "no"
+            feature["tag_%s" % tag.slug] = 1
     return feature, lead.state
 
 
