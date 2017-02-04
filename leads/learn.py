@@ -42,6 +42,7 @@ def get_lead_state_data(lead, tags):
     """Get features and target of given lead. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
     feature = {}
     feature["responsible"] = unicode(lead.responsible)
+    feature["subsidiary"] = unicode(lead.subsidiary)
     feature["client_orga"] = unicode(lead.client.organisation)
     feature["client_contact"] = unicode(lead.client.contact)
     if lead.state in STATES.keys() and lead.start_date:
@@ -222,9 +223,9 @@ def gridCV_tag_model():
 
 def gridCV_state_model():
     """Perform a grid search cross validation to find best parameters"""
-    parameters= {'clf__penalty': ('l2', 'l1'),
-                 'clf__C': (0.001, 0.003, 0.004, 0.005, 0.01, 0.1, 1),
-                 'clf__class_weight' : (None, "auto")
+    parameters= {#'clf__penalty': ('l2', 'l1'),
+                 'clf__C': (0.001, 0.003, 0.005, 0.01, 0.1, 1, 5),
+                # 'clf__class_weight' : (None, "balanced")
                 }
     learn_leads = Lead.objects.filter(state__in=STATES.keys())
     features, targets = extract_leads_state(learn_leads)
