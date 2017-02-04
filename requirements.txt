@@ -1,5 +1,5 @@
 django>=1.8.9,<1.9.0
-django_tables2==1.1.1
+django_tables2==1.2.9
 django-taggit==0.18.0
 django-taggit-templatetags
 -e git://github.com/bport/django-permissions.git@fix_get_roles#egg=django-permissions
