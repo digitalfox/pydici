@@ -39,7 +39,7 @@ INV_STATES = dict([(v, k) for k, v in STATES.items()])
 TAG_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_TAGS_MODEL"
 STATE_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_STATE_MODEL"
 
-def get_lead_state_data(lead, tags):
+def get_lead_state_data(lead):
     """Get features and target of given lead. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
     feature = {}
     feature["responsible"] = unicode(lead.responsible)
@@ -58,10 +58,8 @@ def get_lead_state_data(lead, tags):
     feature["broker"] = unicode(lead.business_broker)
     feature["paying_authority"] = unicode(lead.paying_authority)
     feature["lead_client_rank"] = list(lead.client.lead_set.all().order_by("creation_date")).index(lead)
-    lead_tags = lead.tags.all()
-    for tag in tags:
-        if tag in lead_tags:
-            feature["tag_%s" % tag.slug] = "yes"
+    for tag in lead.tags.all():
+        feature["tag_%s" % tag.slug] = "yes"
     return feature, lead.state
 
 
@@ -69,10 +67,9 @@ def extract_leads_state(leads):
     """Extract leads features and targets for state learning"""
     features = []
     targets = []
-    tags = Tag.objects.all()
     for lead in leads:
         try:
-            feature, target = get_lead_state_data(lead, tags)
+            feature, target = get_lead_state_data(lead)
             features.append(feature)
             targets.append(target)
         except Exception, e:
