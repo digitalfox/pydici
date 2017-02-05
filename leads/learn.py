@@ -16,6 +16,7 @@ try:
     from sklearn.feature_extraction import DictVectorizer
     from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
     from sklearn.linear_model import LogisticRegression
+    from sklearn.ensemble import RandomForestClassifier
     from sklearn.pipeline import Pipeline
     from sklearn.linear_model import SGDClassifier
     from sklearn.cross_validation import cross_val_score, train_test_split
@@ -80,10 +81,10 @@ def processTarget(targets):
 
 
 def get_state_model():
-    model = Pipeline([("vect", DictVectorizer()), ("clf", LogisticRegression(penalty="l2",
-                                                                             solver="liblinear",
-                                                                             C=1,
-                                                                             class_weight="balanced"))])
+    model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(class_weight="balanced_subsample",
+                                                                                 max_features='sqrt',
+                                                                                  min_samples_split=3,
+                                                                                  n_estimators= 100))])
     return model
 
 
@@ -170,7 +171,7 @@ def eval_state_model(model=None):
     target_names = [i[0] for i in target_names]
     leads = Lead.objects.filter(state__in=STATES.keys())
     features, targets = extract_leads_state(leads)
-    X_train, X_test, y_train, y_test = train_test_split(features, processTarget(targets), test_size=0.2, random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(features, processTarget(targets), test_size=0.4, random_state=0)
     if model is None:
         model = get_state_model()
     model.fit(X_train, y_train)
@@ -184,8 +185,9 @@ def eval_state_model(model=None):
             top = np.argsort(coef[i])[-10:][::-1]
             print("%s: \n- %s" % (class_label,
                   "\n- ".join("%s (%s)" % (feature_names[j], round(coef[i][j],2))  for j in top)))
-        except IndexError:
+        except (IndexError, AttributeError):
             # Model has no coef for this class
+            # Or this model has no coef
             pass
     return model
 
@@ -222,8 +224,14 @@ def gridCV_tag_model():
 def gridCV_state_model():
     """Perform a grid search cross validation to find best parameters"""
     parameters= {#'clf__penalty': ('l2', 'l1'),
-                 'clf__C': (0.001, 0.003, 0.005, 0.01, 0.1, 1, 5),
-                # 'clf__class_weight' : (None, "balanced")
+                 #'clf__C': (0.001, 0.003, 0.005, 0.01, 0.1, 1, 5),
+                 #'clf__C': ( 1),
+                 'clf__n_estimators': (10, 100, 150, 200),
+                 'clf__criterion': ("gini", "entropy"),
+                 'clf__min_samples_split': (1, 2, 3),
+                 'clf__max_features': (None, "sqrt", "log2" ),
+                 'clf__class_weight': ("balanced", "balanced_subsample", None)
+    #                 'clf__multi_class' : ('ovr', 'multinomial'),
                 }
     learn_leads = Lead.objects.filter(state__in=STATES.keys())
     features, targets = extract_leads_state(learn_leads)
