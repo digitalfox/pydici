@@ -58,6 +58,8 @@ def get_lead_state_data(lead):
     feature["broker"] = unicode(lead.business_broker)
     feature["paying_authority"] = unicode(lead.paying_authority)
     feature["lead_client_rank"] = list(lead.client.lead_set.all().order_by("creation_date")).index(lead)
+    for staf in lead.staffing.all():
+        feature["staffing_%s" % staf.trigramme] = "yes"
     for tag in lead.tags.all():
         feature["tag_%s" % tag.slug] = "yes"
     return feature, lead.state
@@ -83,8 +85,8 @@ def processTarget(targets):
 
 def get_state_model():
     model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(max_features="sqrt",
-                                                                                 min_samples_split=2,
-                                                                                 min_samples_leaf=3,
+                                                                                 min_samples_split=5,
+                                                                                 min_samples_leaf=2,
                                                                                  criterion='entropy',
                                                                                  n_estimators= 50,
                                                                                  class_weight="balanced"))])
@@ -226,14 +228,14 @@ def gridCV_state_model():
     parameters= {
                  'clf__n_estimators': (10, 20, 50),
                  'clf__criterion': ("gini", "entropy"),
-                 'clf__min_samples_split': (2, 3, 5),
-                 'clf__min_samples_leaf': (2, 3, 5),
+                 'clf__min_samples_split': (2, 3, 5, 8),
+                 'clf__min_samples_leaf': (2, 3, 5, 8),
                  'clf__class_weight': ("balanced", "balanced_subsample", None)
                 }
     learn_leads = Lead.objects.filter(state__in=STATES.keys())
     features, targets = extract_leads_state(learn_leads)
     model = get_state_model()
-    g=GridSearchCV(model, parameters, verbose=1, n_jobs=6, scoring="f1_weighted")
+    g=GridSearchCV(model, parameters, verbose=1, n_jobs=6)
     g.fit(features, processTarget(targets))
     eval_state_model(g.best_estimator_)
     return g
