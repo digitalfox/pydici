@@ -6,7 +6,7 @@ Module that handle predictive state of a lead
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import re
 import zlib
 import cPickle
@@ -15,7 +15,6 @@ HAVE_SCIKIT = True
 try:
     from sklearn.feature_extraction import DictVectorizer
     from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-    from sklearn.linear_model import LogisticRegression
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.pipeline import Pipeline
     from sklearn.linear_model import SGDClassifier
@@ -26,11 +25,12 @@ try:
 except ImportError:
     HAVE_SCIKIT = False
 
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.core.cache import cache
 
 from leads.models import Lead, StateProba
 from taggit.models import Tag
+from billing.models import ClientBill
 
 
 STATES= { "WON": 1, "LOST": 2, "FORGIVEN": 3}
@@ -45,10 +45,14 @@ def get_lead_state_data(lead, tags):
     feature["responsible"] = unicode(lead.responsible)
     feature["subsidiary"] = unicode(lead.subsidiary)
     feature["client_orga"] = unicode(lead.client.organisation)
+    feature["client_company"] = unicode(lead.client.organisation.company)
+    bills = ClientBill.objects.filter(lead__client__organisation__company=lead.client.organisation.company)
+    feature["client_company_last_year_sales"] = float(bills.filter(creation_date__gt=(lead.creation_date - timedelta(360))).aggregate(Sum("amount")).values()[0] or 0)
+    feature["client_company_last_three_year_sales"] = float(bills.filter(creation_date__gt=(lead.creation_date - timedelta(360*3))).aggregate(Sum("amount")).values()[0] or 0)
     feature["client_contact"] = unicode(lead.client.contact)
-    if lead.state in STATES.keys() and lead.start_date:
+    if lead.start_date:
         feature["lifetime"] = (lead.start_date - lead.creation_date.date()).days
-    else:
+    elif lead.state not in STATES.keys():
         feature["lifetime"] = (date.today() - lead.creation_date.date()).days
     feature["sales"] = float(lead.sales or 0)
     feature["broker"] = unicode(lead.business_broker)
@@ -57,7 +61,7 @@ def get_lead_state_data(lead, tags):
     lead_tags = lead.tags.all()
     for tag in tags:
         if tag in lead_tags:
-            feature["tag_%s" % tag.slug] = 1
+            feature["tag_%s" % tag.slug] = "yes"
     return feature, lead.state
 
 
@@ -81,10 +85,12 @@ def processTarget(targets):
 
 
 def get_state_model():
-    model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(class_weight="balanced_subsample",
-                                                                                 max_features='sqrt',
-                                                                                  min_samples_split=3,
-                                                                                  n_estimators= 100))])
+    model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(max_features="sqrt",
+                                                                                 min_samples_split=2,
+                                                                                 min_samples_leaf=3,
+                                                                                 criterion='entropy',
+                                                                                 n_estimators= 50,
+                                                                                 class_weight="balanced"))])
     return model
 
 
@@ -171,7 +177,7 @@ def eval_state_model(model=None):
     target_names = [i[0] for i in target_names]
     leads = Lead.objects.filter(state__in=STATES.keys())
     features, targets = extract_leads_state(leads)
-    X_train, X_test, y_train, y_test = train_test_split(features, processTarget(targets), test_size=0.4, random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(features, processTarget(targets), test_size=0.3, random_state=0)
     if model is None:
         model = get_state_model()
     model.fit(X_train, y_train)
@@ -179,16 +185,13 @@ def eval_state_model(model=None):
     print confusion_matrix(y_test, y_pred)
     print classification_report(y_test, y_pred, target_names=target_names)
     feature_names = model.named_steps["vect"].get_feature_names()
-    for i, class_label in enumerate(target_names):
-        try:
-            coef = model.named_steps["clf"].coef_
-            top = np.argsort(coef[i])[-10:][::-1]
-            print("%s: \n- %s" % (class_label,
-                  "\n- ".join("%s (%s)" % (feature_names[j], round(coef[i][j],2))  for j in top)))
-        except (IndexError, AttributeError):
-            # Model has no coef for this class
-            # Or this model has no coef
-            pass
+    coef = model.named_steps["clf"].feature_importances_
+    max_coef = max(coef)
+    coef = [round(i*100/max_coef) for i in coef]
+    top = zip(feature_names, coef)
+    top.sort(cmp=lambda x, y: cmp(x[1], y[1]), reverse=True)
+    for i, j in top[:30]:
+        print "%s\t\t=> %s" % (i, j)
     return model
 
 
@@ -223,24 +226,20 @@ def gridCV_tag_model():
 
 def gridCV_state_model():
     """Perform a grid search cross validation to find best parameters"""
-    parameters= {#'clf__penalty': ('l2', 'l1'),
-                 #'clf__C': (0.001, 0.003, 0.005, 0.01, 0.1, 1, 5),
-                 #'clf__C': ( 1),
-                 'clf__n_estimators': (10, 100, 150, 200),
+    parameters= {
+                 'clf__n_estimators': (10, 20, 50),
                  'clf__criterion': ("gini", "entropy"),
-                 'clf__min_samples_split': (1, 2, 3),
-                 'clf__max_features': (None, "sqrt", "log2" ),
+                 'clf__min_samples_split': (2, 3, 5),
+                 'clf__min_samples_leaf': (2, 3, 5),
                  'clf__class_weight': ("balanced", "balanced_subsample", None)
-    #                 'clf__multi_class' : ('ovr', 'multinomial'),
                 }
     learn_leads = Lead.objects.filter(state__in=STATES.keys())
     features, targets = extract_leads_state(learn_leads)
     model = get_state_model()
-    g=GridSearchCV(model, parameters, verbose=1, n_jobs=6)
+    g=GridSearchCV(model, parameters, verbose=1, n_jobs=6, scoring="f1_weighted")
     g.fit(features, processTarget(targets))
     eval_state_model(g.best_estimator_)
     return g
-
 
 def score_tag_lead(model, X, y):
     """Score function used to cross validated tag model"""
