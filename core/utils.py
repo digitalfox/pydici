@@ -111,7 +111,7 @@ def working_days(monthDate, holidays=None, upToToday=False):
     """Compute the number of working days of a month
     @param monthDate: first day of month datetime.date
     @param holidays: list of days (datetime.date) that are not worked
-    @param upToToday: only count days up to today. Only relevant for current month (default is false)
+    @param upToToday: only count days up to (but excluding) today. Only relevant for current month (default is false)
     @return: number of working days (int)"""
     day = timedelta(1)
     today = date.today()
@@ -124,7 +124,7 @@ def working_days(monthDate, holidays=None, upToToday=False):
         if monthDate.weekday() < 5 and monthDate not in holidays:  # Only count working days
             n += 1
         monthDate += day
-        if upToToday and monthDate > today:
+        if upToToday and monthDate >= today:
             break
     return n
 

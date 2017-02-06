@@ -524,7 +524,7 @@ def prod_report(request, year=None, month=None):
                 totalDone[month] = 0
             if month not in totalForecasted:
                 totalForecasted[month] = 0
-            upperBound = min(date.today() + timedelta(1), nextMonth(month))
+            upperBound = min(date.today(), nextMonth(month))
             month_days = working_days(month, holidays=holidays_days, upToToday=True)
             timesheets = Timesheet.objects.filter(consultant=consultant,
                                                   charge__gt=0,
