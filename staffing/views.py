@@ -577,7 +577,7 @@ def prod_report(request, year=None, month=None):
         else:
             status = all_status["ok"]
         totalData.append([status, "", [formats.number_format(turnover), formats.number_format(forecast)]])
-    data.append([None, None, totalData])
+    data.append([None, totalData])
 
     # Get scopes
     scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
