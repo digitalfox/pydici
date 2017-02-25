@@ -1,0 +1,16 @@
+@page {
+    size: A4;
+    margin: 15mm 20mm;
+}
+
+
+footer
+{
+    position        : fixed;
+    right           : 0;
+    bottom          : 0;
+    margin-bottom   : -10mm;
+    height          : 10mm;
+    text-align      : right;
+    font-size       : 10px;
+}

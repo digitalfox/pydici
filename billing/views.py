@@ -18,10 +18,12 @@ from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.views.generic.edit import CreateView, UpdateView
+from django.db.models import Sum, Q
+from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
 
-from wkhtmltopdf.views import PDFTemplateView
+from django_weasyprint import PDFTemplateView
 
 from billing.utils import get_billing_info
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense

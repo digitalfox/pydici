@@ -5,6 +5,10 @@
 {% block messages %}{% endblock %}
 {% block pydici_rss %}{% endblock %}
 
+{% block extracss %}
+    <link href="{{ MEDIA_URL }}css/pydici-pdf.css" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
 
 <div class="row">
@@ -77,6 +81,7 @@ IBAN FR76 30003 03392 00020301101 81</small></p>
 <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
 </div>
 
+{% if bill.billexpense_set.count %}
 <div style="page-break-after:always;"></div>
 <br/><br/><br/><br/>
 <h2>{% trans "Expenses details" %}</h2>
@@ -99,4 +104,9 @@ IBAN FR76 30003 03392 00020301101 81</small></p>
     </tr>
 
 </table>
+{% endif %}
+
+<footer style="position: fixed"> <!-- footer contents will be repeated and overlapped on each page until </table> is not reached -->
+    <small><em>{{ bill.lead.subsidiary.legal_description }}</em></small>
+</footer>
 {% endblock %}
