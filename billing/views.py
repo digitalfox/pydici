@@ -142,23 +142,21 @@ def bill_file(request, bill_id=0, nature="client"):
 
     return response
 
-
-class BillPdf(PydiciNonPublicdMixin, PDFTemplateView):
-    filename = 'my_pdf.pdf'
+class Bill(PydiciNonPublicdMixin, TemplateView):
     template_name = 'billing/bill.html'
-    footer_template = 'billing/bill_footer.html'
-    cmd_options = {
-        'margin-top': 3,
-    }
 
     def get_context_data(self, **kwargs):
-        context = super(BillPdf, self).get_context_data(**kwargs)
+        context = super(Bill, self).get_context_data(**kwargs)
         try:
             bill = ClientBill.objects.get(id=kwargs.get("bill_id"))
             context["bill"] = bill
         except ClientBill.DoesNotExist:
             bill = None
         return context
+
+
+class BillPdf(Bill, PDFTemplateView):
+    filename = 'my_pdf.pdf'
 
 
 def client_bill(request, bill_id=None):

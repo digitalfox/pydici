@@ -46,8 +46,11 @@
             <tr><td style="border-top:0px"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
             {% for item in mission_detail.list %}
                 <tr>
-                    <td>{% ifequal item.detail_type "TIME_SPENT_MISSION" %}{{ item.consultant|default_if_none:"" }}{% if item.label %} - {{ item.label }}{% endif %}
-                        {% else %}{% trans "Fixed price"%}{% if item.label %} - {{ item.label }}{% endif %}{% endifequal %}</td>
+                    <td>{% ifequal item.mission.billing_mode "TIME_SPENT" %}
+                            {{ item.consultant|default_if_none:"" }}{% if item.label %} - {{ item.label }}{% endif %}
+                        {% else %}
+                            {% trans "Fixed price"%}{% if item.label %} - {{ item.label }}{% endif %}
+                        {% endifequal %}</td>
                     <td class="text-center">{{ item.quantity }}</td><td class="text-right">{{ item.unit_price }}</td>
                     <td class="text-right">{{ item.amount }}</td><td class="text-right">{{ item.vat }}</td><td class="text-right">{{ item.amount_with_vat }}</td>
                 </tr>
