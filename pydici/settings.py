@@ -159,7 +159,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_select2',
     'background_task',
-    'wkhtmltopdf',
 ]
 
 if DEBUG:
