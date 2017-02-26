@@ -30,7 +30,6 @@ def consultant_home_by_id(request, consultant_id):
 
 def consultant_home(request, consultant_trigramme):
     """Home page of consultant - this page loads all others mission sub-pages"""
-    print(consultant_trigramme)
     return _consultant_home(request, Consultant.objects.get(trigramme__iexact=consultant_trigramme))
 
 
