@@ -631,7 +631,6 @@ class BillingModelTest(TransactionTestCase):
         self.assertRaises(IntegrityError, bill.save)  # No lead, no supplier and no amount
         bill.lead = lead
         bill.supplier = supplier
-        self.assertRaises(IntegrityError, bill.save)  # Still no amount
         bill.amount = 100
         self.assertIsNone(bill.amount_with_vat)
         bill.save()
@@ -647,19 +646,19 @@ class BillingModelTest(TransactionTestCase):
         lead = Lead.objects.get(id=1)
         client = Client.objects.get(id=1)
         bill = ClientBill()
-        self.assertEqual(bill.state, "1_SENT")
+        self.assertEqual(bill.state, "0_DRAFT")
         self.assertRaises(IntegrityError, bill.save)  # No lead, no client and no amount
         bill.lead = lead
         bill.client = client
-        self.assertRaises(IntegrityError, bill.save)  # Still no amount
         bill.amount = 100
         self.assertIsNone(bill.amount_with_vat)
         bill.save()
-        self.assertIsNotNone(bill.amount_with_vat)
-        self.assertEqual(bill.state, "1_SENT")
+        #TODO: add billDetail test
+        self.assertEqual(bill.state, "0_DRAFT")
         self.assertEqual(bill.payment_delay(), 0)
         self.assertEqual(bill.payment_wait(), -30)
         bill.payment_date = date.today()
+        bill.state = "1_SENT"
         bill.save()
         self.assertEqual(bill.state, "2_PAID")
 
