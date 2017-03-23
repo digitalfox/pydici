@@ -30,8 +30,8 @@ Drop source code in a directory readable by your apache user
    git clone https://github.com/digitalfox/pydici.git
 
 Create a virtual env in a directory readable by your apache user and activate it
-   virtual-env pydici-venv
-   . pydici-venv/bin/activate
+   virtual-env venv
+   . venv/bin/activate
 
 Install prerequisites :
    pip install -r <path to pydici source code>/requirements.txt
@@ -49,11 +49,21 @@ Generate a new secret key with ./manage.py generate_secret_key and put it in pyd
 Collect static files with ./manage.py collectstatic
 
 Setup your apache virtual env:
+
 - activate mod_wsgi.
 - activate ssl
 - active mod_expires
 - add Alias to /media and /static
 - define auth backend. By default, pydici is designed to work with an http front end authentication. Look at https://docs.djangoproject.com/en/dev/howto/auth-remote-user/
+
+Setup in cron (or your favorite scheduler) the followings tasks (adapt the schedule and options to your needs):
+
+    5 2  * * *      <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/manage.py clearsessions                    # Purge expired sessions in database
+    0 6 1 * *       <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/batch/timesheet_check.py                   # Warn for incomplete and surbooking timesheet for past month
+    0 6 2-31 * *    <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/batch/timesheet_check.py -w                # Warn for incomplete timesheet for past month
+    0 6 21-31 * *   <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/batch/timesheet_check.py -m current -d 20  # Warn for incomplete timesheet on current month for 20th first days
+    0 * * * *       <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/manage.py process_tasks -d 3600            # Process tasks for 1 hour
+
 
 ## Updating an existing installation
 
@@ -99,6 +109,7 @@ Your installation uses South if there is a `south_migrationhistory`
 ## Notes about scikit learn
 Scikit learn is a machine learning framework for python. It is an optional Pydici deps that can predict leads tags and state.
 Some comments:
+
 - You need to install scikit-learn, numpy and scipy
 - You might need to add the following directive in your apache virual host file to avoid some nasty deadlock during init when using scikit learn : WSGIApplicationGroup %{GLOBAL}
 - For proper model caching, you might need to increase memcached object size (1m => 10m) as well as your python client memcache (hardcoded in lib for python-memcached...sic).

@@ -158,6 +158,7 @@ INSTALLED_APPS = [
     'django_tables2',
     'crispy_forms',
     'django_select2',
+    'background_task',
 ]
 
 if DEBUG:
