@@ -29,6 +29,7 @@ from core.utils import send_lead_mail, sortedValues, COLORS
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
+from leads.learn import compute_leads_state
 from leads.learn import predict_tags
 import pydici.settings
 from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text
@@ -288,6 +289,7 @@ def add_tag(request):
         if tagName in lead.tags.all().values_list("name", flat=True):
             answer["tag_created"] = False
         lead.tags.add(tagName)
+        compute_leads_state(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
         answer["tag_url"] = urlresolvers.reverse("leads.views.tag", args=[tag.id, ])
         answer["tag_remove_url"] = urlresolvers.reverse("leads.views.remove_tag", args=[tag.id, lead.id])
@@ -308,6 +310,7 @@ def remove_tag(request, tag_id, lead_id):
         tag = Tag.objects.get(id=tag_id)
         lead = Lead.objects.get(id=lead_id)
         lead.tags.remove(tag)
+        compute_leads_state(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         answer["error"] = True
     return HttpResponse(json.dumps(answer), content_type="application/json")

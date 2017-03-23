@@ -268,7 +268,6 @@ def compute_leads_state(relearn=True, leads_id=None):
     as it could last few seconds.
     @:param learn; if true (default) learn again from leads, else, use previous computation if available
     @:param leads_id: estimate those leads. All current leads if None. Parameter is a list of id to ease serialisation"""
-    print "computing"
     if not HAVE_SCIKIT:
         return
     if leads_id:
