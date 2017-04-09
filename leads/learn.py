@@ -136,7 +136,7 @@ def learn_tag(features, targets):
 
 
 def predict_tags(lead):
-    model = compute_leads_tags()
+    model = compute_leads_tags.now()
     if model is None:
         # cannot compute model (ex. not enough data, no scikit...)
         return []
@@ -298,7 +298,7 @@ def compute_leads_state(relearn=True, leads_id=None):
                     mission.probability = proba
                     mission.save()
 
-
+@background
 def compute_leads_tags():
     """Learn tags from past leads and cache model"""
 
@@ -314,7 +314,7 @@ def compute_leads_tags():
             return
         features, targets = extract_leads_tag(learn_leads)
         model = learn_tag(features, targets)
-        cache.set(TAG_MODEL_CACHE_KEY, zlib.compress(cPickle.dumps(model)), 3600*24)
+        cache.set(TAG_MODEL_CACHE_KEY, zlib.compress(cPickle.dumps(model)), 3600*24*7)
     else:
         model = cPickle.loads(zlib.decompress(model))
 

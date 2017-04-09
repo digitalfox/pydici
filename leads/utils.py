@@ -13,7 +13,7 @@ from django.contrib.admin.models import LogEntry, ADDITION, ContentType
 from django.utils.encoding import force_unicode
 from django.core import urlresolvers
 
-from leads.learn import compute_leads_state
+from leads.learn import compute_leads_state, compute_leads_tags
 from staffing.models import Mission
 from leads.models import StateProba
 from core.utils import send_lead_mail
@@ -99,7 +99,6 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             messages.add_message(request, messages.ERROR, ugettext(u"Failed to send telegram notification: %s") % e)
 
     # Compute leads probability
-
     if sync:
         compute = compute_leads_state.now  # Select synchronous flavor of computation function
     else:
@@ -113,6 +112,9 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
     else:
         # Just update proba for this lead with its new features
         compute(relearn=False, leads_id=[lead.id,])
+
+    # Update lead tags
+    compute_leads_tags()
 
     # Create or update mission  if needed
     if lead.mission_set.count() == 0:
