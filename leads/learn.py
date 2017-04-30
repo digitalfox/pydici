@@ -14,7 +14,7 @@ import cPickle
 HAVE_SCIKIT = True
 try:
     from sklearn.feature_extraction import DictVectorizer
-    from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+    from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, HashingVectorizer
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.pipeline import Pipeline
     from sklearn.linear_model import SGDClassifier
@@ -25,7 +25,7 @@ try:
 except ImportError:
     HAVE_SCIKIT = False
 
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Min, Max
 from django.core.cache import cache
 
 from leads.models import Lead, StateProba
@@ -43,25 +43,41 @@ def get_lead_state_data(lead):
     """Get features and target of given lead. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
     feature = {}
     feature["responsible"] = unicode(lead.responsible)
+    if lead.responsible:
+        feature["responsible_subsidiary"] = unicode(lead.responsible.company)
+        feature["responsible_manager"] = unicode(lead.responsible.manager)
+        feature["responsible_profil"] = unicode(lead.responsible.profil)
     feature["subsidiary"] = unicode(lead.subsidiary)
     feature["client_orga"] = unicode(lead.client.organisation)
     feature["client_company"] = unicode(lead.client.organisation.company)
     bills = ClientBill.objects.filter(lead__client__organisation__company=lead.client.organisation.company)
-    feature["client_company_last_year_sales"] = float(bills.filter(creation_date__gt=(lead.creation_date - timedelta(360))).aggregate(Sum("amount")).values()[0] or 0)
-    feature["client_company_last_three_year_sales"] = float(bills.filter(creation_date__gt=(lead.creation_date - timedelta(360*3))).aggregate(Sum("amount")).values()[0] or 0)
+    feature["client_company_last_year_sales"] = float(bills.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360))).aggregate(Sum("amount")).values()[0] or 0)
+    feature["client_company_last_three_year_sales"] = float(bills.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360*3))).aggregate(Sum("amount")).values()[0] or 0)
     feature["client_contact"] = unicode(lead.client.contact)
+    feature["client_company_business_owner"] = unicode(lead.client.organisation.company.businessOwner)
     if lead.start_date:
         feature["lifetime"] = (lead.start_date - lead.creation_date.date()).days
-    elif lead.state not in STATES.keys():
-        feature["lifetime"] = (date.today() - lead.creation_date.date()).days
     feature["sales"] = float(lead.sales or 0)
-    feature["broker"] = unicode(lead.business_broker)
-    feature["paying_authority"] = unicode(lead.paying_authority)
-    feature["lead_client_rank"] = list(lead.client.lead_set.all().order_by("creation_date")).index(lead)
+    if lead.business_broker:
+        feature["broker"] = unicode(lead.business_broker)
+        feature["broker_company"] = unicode(lead.business_broker.company)
+    if lead.paying_authority:
+        feature["paying_authority"] = unicode(lead.paying_authority)
+        feature["paying_authority_company"] = unicode(lead.paying_authority.company)
+    client_leads = lead.client.lead_set.all().order_by("creation_date")
+    feature["lead_client_rank"] = list(client_leads).index(lead)
+    feature["leads_last_year"] = client_leads.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360))).count()
+    feature["leads_last_three_year"] = client_leads.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360*3))).count()
     for staf in lead.staffing.all():
         feature["staffing_%s" % staf.trigramme] = "yes"
     for tag in lead.tags.all():
         feature["tag_%s" % tag.slug] = "yes"
+    history = lead.get_change_history()
+    feature["history_changes"] = history.count()
+    if feature["history_changes"] > 1:
+        history_boundaries = history.aggregate(Min("action_time"), Max("action_time")).values()
+        feature["history_length"] = (history_boundaries[1] - history_boundaries[0]).days
+
     return feature, lead.state
 
 
@@ -176,7 +192,7 @@ def eval_state_model(model=None):
     target_names = [i[0] for i in target_names]
     leads = Lead.objects.filter(state__in=STATES.keys())
     features, targets = extract_leads_state(leads)
-    X_train, X_test, y_train, y_test = train_test_split(features, processTarget(targets), test_size=0.3, random_state=0)
+    X_train, X_test, y_train, y_test = train_test_split(features, processTarget(targets), test_size=0.3)
     if model is None:
         model = get_state_model()
     model.fit(X_train, y_train)
@@ -191,6 +207,8 @@ def eval_state_model(model=None):
     top.sort(cmp=lambda x, y: cmp(x[1], y[1]), reverse=True)
     for i, j in top[:30]:
         print "%s\t\t=> %s" % (i, j)
+    m = cPickle.dumps(model)
+    print "size %s - compressed %s" % (len(m) / (1024 * 1024), len(zlib.compress(m)) / (1024 * 1024))
     return model
 
 
@@ -226,7 +244,7 @@ def gridCV_tag_model():
 def gridCV_state_model():
     """Perform a grid search cross validation to find best parameters"""
     parameters= {
-                 'clf__n_estimators': (10, 20, 50),
+                 'clf__n_estimators': (20, 50, 80),
                  'clf__criterion': ("gini", "entropy"),
                  'clf__min_samples_split': (2, 3, 5, 8),
                  'clf__min_samples_leaf': (2, 3, 5, 8),
