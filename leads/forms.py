@@ -44,9 +44,9 @@ class LeadChoices(ModelSelect2Widget):
 
 
 class CurrentLeadChoices(LeadChoices):
-    """Limit Leads to those who have active (non archived) missions"""
+    """Limit Leads to those who have active (non archived) missions or in active state"""
     def get_queryset(self):
-        return Lead.objects.filter(mission__active=True).distinct()
+        return (Lead.objects.filter(mission__active=True) | Lead.objects.active()).distinct()
 
 
 class LeadForm(PydiciCrispyModelForm):
