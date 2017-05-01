@@ -13,4 +13,4 @@ requests==2.5.2
 lxml==3.4.2
 python-memcached==1.54
 django-datatables-view==1.13.2
-django-background-tasks==1.1.6
+django-background-tasks==1.1.9
