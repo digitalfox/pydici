@@ -14,7 +14,7 @@ import cPickle
 HAVE_SCIKIT = True
 try:
     from sklearn.feature_extraction import DictVectorizer
-    from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, HashingVectorizer
+    from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.pipeline import Pipeline
     from sklearn.linear_model import SGDClassifier
@@ -38,6 +38,14 @@ INV_STATES = dict([(v, k) for k, v in STATES.items()])
 
 TAG_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_TAGS_MODEL"
 STATE_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_STATE_MODEL"
+
+FR_STOP_WORDS = """alors au aucuns aussi autre avant avec avoir bon car ce cela ces ceux chaque ci comme comment
+ dans des du dedans dehors depuis devrait doit donc dos début elle elles en encore essai est et eu fait faites fois
+ font hors ici il ils je juste la le les leur là ma maintenant mais mes mine moins mon mot même ni nommés notre nous
+ ou où par parce pas peut peu plupart pour pourquoi quand que quel quelle quelles quels qui sa sans ses seulement
+ si sien son sont sous soyez sujet sur ta tandis tellement tels tes ton tous tout trop très tu voient vont votre vous
+ vu ça étaient état étions été être un une de ce cette ces ceux"""
+
 
 def get_lead_state_data(lead):
     """Get features and target of given lead. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
@@ -144,7 +152,7 @@ def extract_leads_tag(leads, include_leads=False):
 
 
 def learn_tag(features, targets):
-        model = Pipeline([("vect", CountVectorizer()), ("trf", TfidfTransformer(sublinear_tf=True)),
+        model = Pipeline([("vect", TfidfVectorizer(stop_words=FR_STOP_WORDS.split(), min_df=2, sublinear_tf=False)),
                            ("clf", SGDClassifier(loss="log", penalty="l1"))])
         model.fit(features, targets)
         return model
@@ -229,14 +237,15 @@ def gridCV_tag_model():
     parameters=  {'clf__alpha': (0.1, 0.01, 0.001, 0.0001, 1e-05),
      'clf__loss': ('log', 'modified_huber', 'squared_hinge'),
      'clf__penalty': ('none', 'l2', 'l1', 'elasticnet'),
-     'trf__norm': ('l1', 'l2'),
-     'trf__sublinear_tf': (True, False),
-     'trf__use_idf': (True, False)}
+     'vect__min_df': (1, 2, 3, 4, 5),
+     'vect__norm': ('l1', 'l2'),
+     'vect__sublinear_tf': (True, False),
+     }
 
-    learn_leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
+    learn_leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2).select_related()
     features, targets = extract_leads_tag(learn_leads, include_leads=True)
     model = learn_tag(features, targets)
-    g=GridSearchCV(model, parameters, verbose=2, n_jobs=4, scoring=score_tag_lead)
+    g=GridSearchCV(model, parameters, verbose=2, n_jobs=1, scoring=score_tag_lead)
     g.fit(features, targets)
     return g
 
