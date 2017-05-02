@@ -246,7 +246,7 @@ class Consultant(models.Model):
         current_month = date.today().replace(day=1)
         for month, up_to in ((previousMonth(current_month), current_month), (current_month, date.today())):
             wd = working_days(month, holidayDays(month=month),upToToday=True)
-            td = Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values()[0]
+            td = Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values()[0] or 0
             if wd != td:
                 return False
         return True
