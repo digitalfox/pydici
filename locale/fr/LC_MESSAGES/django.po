@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-16 22:33+0200\n"
-"PO-Revision-Date: 2017-05-16 22:33+0100\n"
+"POT-Creation-Date: 2017-05-16 22:57+0200\n"
+"PO-Revision-Date: 2017-05-16 22:56+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -2807,17 +2807,13 @@ msgstr "en vacances !"
 
 #: templates/people/__consultant_name.html:11
 #, python-format
-msgid " %(previous_month_late)s days missing in last month timesheet"
-msgstr ""
-" %(previous_month_late)s jour(s) manquant(s) dans la feuille de temps du "
-"mois dernier"
+msgid " %(days)s days missing in last month timesheet"
+msgstr " %(days)s jour(s) manquant(s) dans la feuille de temps du mois dernier"
 
-#: templates/people/__consultant_name.html:14
+#: templates/people/__consultant_name.html:16
 #, python-format
-msgid " %(current_month_late)s days missing in current month timesheet"
-msgstr ""
-" %(current_month_late)s jour(s) manquant(s) dans la feuille de temps de ce "
-"mois"
+msgid " %(days)s days missing in current month timesheet"
+msgstr " %(days)s jour(s) manquant(s) dans la feuille de temps de ce mois"
 
 #: templates/people/consultant.html:9
 msgid "Forecast/timesheet "
