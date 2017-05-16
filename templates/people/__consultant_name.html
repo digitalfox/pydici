@@ -6,10 +6,10 @@
 {% if not consultant.subcontractor %}
     {% with late_timesheet=consultant.timesheet_is_up_to_date %}
         {% with previous_month_late=late_timesheet|first current_month_late=late_timesheet|last %}
-            {% if previous_month_late %}
+            {% if previous_month_late > 0 %}
                 <span title="{% blocktrans %} {{ previous_month_late }} days missing in last month timesheet{% endblocktrans %}" style="color:red" class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>
             {% endif %}
-            {% if current_month_late %}
+            {% if current_month_late > 0 %}
                 <span title="{% blocktrans %} {{ current_month_late }} days missing in current month timesheet{% endblocktrans %}"
                     {% if current_month_late > 8 %}
                         style="color:red"
