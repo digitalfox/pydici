@@ -4,8 +4,21 @@
 <a href="{% url 'people.views.consultant_home' consultant.trigramme %}{{ tab }}">{{ consultant }}</a><span title="{{consultant.id}}"></span>
 {% if consultant.is_in_holidays %}<span class="pydici-tooltip glyphicon glyphicon-sunglasses" title="{% trans 'on holidays !' %}"></span>{% endif %}
 {% if not consultant.subcontractor %}
-    {% if not consultant.timesheet_is_up_to_date %}
-        <span title="{% trans 'Timesheet does not seem ok' %}" class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>
-    {% endif %}
+    {% with late_timesheet=consultant.timesheet_is_up_to_date %}
+        {% with previous_month_late=late_timesheet|first current_month_late=late_timesheet|last %}
+            {% if previous_month_late %}
+                <span title="{% blocktrans %} {{ previous_month_late }} days missing in last month timesheet{% endblocktrans %}" style="color:red" class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>
+            {% endif %}
+            {% if current_month_late %}
+                <span title="{% blocktrans %} {{ current_month_late }} days missing in current month timesheet{% endblocktrans %}"
+                    {% if current_month_late > 8 %}
+                        style="color:red"
+                    {% elif current_month_late > 4 %}
+                        style="color:orange"
+                    {% endif %}
+                      class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>
+            {% endif %}
+        {% endwith %}
+    {% endwith %}
 {% endif %}
 

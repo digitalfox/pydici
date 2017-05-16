@@ -240,16 +240,16 @@ class Consultant(models.Model):
 
     @cacheable(TIMESHEET_IS_UP_TO_DATE_CACHE_KEY, 6 * 3600)
     def timesheet_is_up_to_date(self):
-        """True if past month and current month (up to but excluding today) timesheet are ok, else False"""
+        """return tuple (previous month late days, current month late days). (0, 0) means everything is up to date. Current day is not included"""
         Timesheet = apps.get_model("staffing", "Timesheet")  # Get Timesheet with get_model to avoid circular imports
         from staffing.utils import holidayDays  # Idem
+        result = []
         current_month = date.today().replace(day=1)
         for month, up_to in ((previousMonth(current_month), current_month), (current_month, date.today())):
             wd = working_days(month, holidayDays(month=month),upToToday=True)
             td = Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values()[0] or 0
-            if wd != td:
-                return False
-        return True
+            result.append(wd - td)
+        return result
 
 class RateObjective(models.Model):
     """Consultant rates objective
