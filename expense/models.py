@@ -89,9 +89,9 @@ class Expense(models.Model):
 
     def __unicode__(self):
         if self.lead:
-            return u"%s (%s %s) - %s €" % (self.description, self.lead, self.lead.deal_id, self.amount)
+            return u"%s (%s %s %s) - %s €" % (self.description, self.lead, self.lead.deal_id, self.expense_date, self.amount)
         else:
-            return u"%s - %s €" % (self.description, self.amount)
+            return u"%s (%s) - %s €" % (self.description, self.expense_date, self.amount)
 
     def state(self):
         """expense state according to expense workflow"""
