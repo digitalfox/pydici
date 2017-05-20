@@ -39,6 +39,7 @@ INV_STATES = dict([(v, k) for k, v in STATES.items()])
 
 TAG_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_TAGS_MODEL"
 STATE_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_STATE_MODEL"
+SIMILARITY_MODEL_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_MODEL"
 
 FR_STOP_WORDS = """alors au aucuns aussi autre avant avec avoir bon car ce cela ces ceux chaque ci comme comment
  dans des du dedans dehors depuis devrait doit donc dos début elle elles en encore essai est et eu fait faites fois
@@ -47,6 +48,8 @@ FR_STOP_WORDS = """alors au aucuns aussi autre avant avec avoir bon car ce cela 
  si sien son sont sous soyez sujet sur ta tandis tellement tels tes ton tous tout trop très tu voient vont votre vous
  vu ça étaient état étions été être un une de ce cette ces ceux"""
 
+
+############# Features extraction ##########################
 
 def get_lead_state_data(lead):
     """Get features and target of given lead. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
@@ -108,26 +111,6 @@ def processTarget(targets):
     return [STATES[i] for i in targets]
 
 
-def get_state_model():
-    model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(max_features="sqrt",
-                                                                                 min_samples_split=5,
-                                                                                 min_samples_leaf=2,
-                                                                                 criterion='entropy',
-                                                                                 n_estimators= 50,
-                                                                                 class_weight="balanced"))])
-    return model
-
-
-def predict_state(model, features):
-    result = []
-    for scores in model.predict_proba(features):
-        proba = {}
-        for state, score in zip(model.classes_, scores):
-            proba[INV_STATES[state]] = int(round(100*score))
-        result.append(proba)
-    return result
-
-
 def get_lead_tag_data(lead):
     """Extract lead data needed to predict tag"""
     return " ".join([unicode(lead.client.organisation), unicode(lead.responsible),
@@ -151,12 +134,32 @@ def extract_leads_tag(leads, include_leads=False):
                 features.append(get_lead_tag_data(lead))
     return (features, targets)
 
+############# Model definition ##########################
+def get_state_model():
+    model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(max_features="sqrt",
+                                                                                 min_samples_split=5,
+                                                                                 min_samples_leaf=2,
+                                                                                 criterion='entropy',
+                                                                                 n_estimators= 50,
+                                                                                 class_weight="balanced"))])
+    return model
 
-def learn_tag(features, targets):
+
+def get_tag_model():
         model = Pipeline([("vect", TfidfVectorizer(stop_words=FR_STOP_WORDS.split(), min_df=2, sublinear_tf=False)),
                            ("clf", SGDClassifier(loss="log", penalty="l1"))])
-        model.fit(features, targets)
         return model
+
+
+############# prediction functions ##########################
+def predict_state(model, features):
+    result = []
+    for scores in model.predict_proba(features):
+        proba = {}
+        for state, score in zip(model.classes_, scores):
+            proba[INV_STATES[state]] = int(round(100*score))
+        result.append(proba)
+    return result
 
 
 def predict_tags(lead):
@@ -183,6 +186,7 @@ def predict_tags(lead):
     return [i[0] for i in best_proba]
 
 
+############# Model tests ##########################
 def test_state_model():
     """Test state model accuracy"""
     leads = Lead.objects.filter(state__in=STATES.keys())
@@ -225,7 +229,8 @@ def test_tag_model():
     """Test tag model accuracy"""
     leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
     test_features, test_targets = extract_leads_tag(leads, include_leads=True)
-    model = learn_tag(test_features, test_targets)
+    model = get_tag_model()
+    model.fit(test_features, test_targets)
     scores = cross_val_score(model, test_features, test_targets, scoring=score_tag_lead)
     m = cPickle.dumps(model)
     print "size %s - compressed %s" % (len(m)/(1024*1024), len(zlib.compress(m))/(1024*1024))
@@ -245,7 +250,8 @@ def gridCV_tag_model():
 
     learn_leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2).select_related()
     features, targets = extract_leads_tag(learn_leads, include_leads=True)
-    model = learn_tag(features, targets)
+    model = get_tag_model()
+    model.fit(features, targets)
     g=GridSearchCV(model, parameters, verbose=2, n_jobs=1, scoring=score_tag_lead)
     g.fit(features, targets)
     return g
@@ -289,6 +295,7 @@ def score_tag_lead(model, X, y):
     return ok / len(X)
 
 
+############# Entry points for computation ##########################
 @background
 def compute_leads_state(relearn=True, leads_id=None):
     """Learn state from past leads and compute state probal for current leads. This function is intended to be run async
@@ -340,7 +347,8 @@ def compute_leads_tags():
             # Cannot learn anything with so few data
             return
         features, targets = extract_leads_tag(learn_leads)
-        model = learn_tag(features, targets)
+        model = get_tag_model()
+        model.fit(features, targets)
         cache.set(TAG_MODEL_CACHE_KEY, zlib.compress(cPickle.dumps(model)), 3600*24*7)
     else:
         model = cPickle.loads(zlib.decompress(model))

@@ -709,7 +709,7 @@ class LeadLearnTestCase(TestCase):
     """Test lead state proba learn"""
     fixtures = PYDICI_FIXTURES
 
-    def test_model(self):
+    def test_state_model(self):
         if not leads_learn.HAVE_SCIKIT:
             return
         r1 = Consultant.objects.get(id=1)
@@ -731,6 +731,14 @@ class LeadLearnTestCase(TestCase):
             a.save()
         leads_learn.eval_state_model()
         self.assertGreater(leads_learn.test_state_model(), 0.8, "Proba is too low")
+
+    def test_tag_model(self):
+        if not leads_learn.HAVE_SCIKIT:
+            return
+        for lead in Lead.objects.all():
+            lead.tags.add("coucou")
+            lead.tags.add("camembert")
+        self.assertGreater(leads_learn.test_tag_model(), 0.8, "Probal is too low")
 
 
     def test_too_few_lead(self):
