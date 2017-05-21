@@ -13,7 +13,7 @@ from django.contrib.admin.models import LogEntry, ADDITION, ContentType
 from django.utils.encoding import force_unicode
 from django.core import urlresolvers
 
-from leads.learn import compute_leads_state, compute_leads_tags
+from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from staffing.models import Mission
 from leads.models import StateProba
 from core.utils import send_lead_mail
@@ -115,6 +115,9 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
 
     # Update lead tags
     compute_leads_tags()
+
+    # update lead similarity model
+    compute_lead_similarity()
 
     # Create or update mission  if needed
     if lead.mission_set.count() == 0:

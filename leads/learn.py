@@ -16,7 +16,9 @@ HAVE_SCIKIT = True
 try:
     from sklearn.feature_extraction import DictVectorizer
     from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.preprocessing import MinMaxScaler
     from sklearn.ensemble import RandomForestClassifier
+    from sklearn.neighbors import NearestNeighbors
     from sklearn.pipeline import Pipeline
     from sklearn.linear_model import SGDClassifier
     from sklearn.cross_validation import cross_val_score, train_test_split
@@ -28,6 +30,7 @@ except ImportError:
 
 from django.db.models import Count, Sum, Min, Max
 from django.core.cache import cache
+from django.db.models.query import QuerySet
 
 from leads.models import Lead, StateProba
 from taggit.models import Tag
@@ -40,6 +43,8 @@ INV_STATES = dict([(v, k) for k, v in STATES.items()])
 TAG_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_TAGS_MODEL"
 STATE_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_STATE_MODEL"
 SIMILARITY_MODEL_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_MODEL"
+SIMILARITY_LEADS_IDS_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_LEADS_IDS"
+SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_SALES_SCALER"
 
 FR_STOP_WORDS = """alors au aucuns aussi autre avant avec avoir bon car ce cela ces ceux chaque ci comme comment
  dans des du dedans dehors depuis devrait doit donc dos début elle elles en encore essai est et eu fait faites fois
@@ -97,6 +102,10 @@ def extract_leads_state(leads):
     """Extract leads features and targets for state learning"""
     features = []
     targets = []
+    if isinstance(leads, QuerySet):
+        leads = leads.select_related("subsidiary", "client", "client__organisation", "client__organisation__company", "responsible",
+                             "responsible__company", "responsible__manager", "business_broker", "paying_authority")
+        leads = leads.prefetch_related("tags")
     for lead in leads:
         try:
             feature, target = get_lead_state_data(lead)
@@ -105,6 +114,35 @@ def extract_leads_state(leads):
         except Exception, e:
             print "Cannot process lead %s (%s)" % (lead.id, e)
     return (features, targets)
+
+
+def get_lead_similarity_data(lead):
+    """Get features of given lead to compute its similarity with others. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
+    feature = {}
+    feature["subsidiary"] = unicode(lead.subsidiary)
+    feature["sales"] = float(lead.sales or 0)
+    for tag in lead.tags.all():
+        feature["tag_%s" % tag.slug] = "yes"
+    return feature
+
+
+def extract_leads_similarity(leads, normalizer):
+    """Extract leads features for similarity learning"""
+    features = []
+    sales = []
+    if isinstance(leads, QuerySet):
+        leads = leads.select_related("subsidiary").prefetch_related("tags")
+    for lead in leads:
+        d = get_lead_similarity_data(lead)
+        sales.append([d["sales"],])
+        features.append(d)
+
+    sales = normalizer.fit_transform(sales)
+
+    for feature, sale in zip(features, sales):
+        feature["sales"] = sale[0]
+
+    return features, normalizer
 
 
 def processTarget(targets):
@@ -124,6 +162,9 @@ def extract_leads_tag(leads, include_leads=False):
     features = []
     targets = []
     used_leads = []
+    if isinstance(leads, QuerySet):
+        leads = leads.prefetch_related("tags")
+        leads = leads.select_related("responsible", "client__organisation", "subsidiary")
     for lead in leads:
         for tag in lead.tags.all():
             used_leads.append(lead)
@@ -151,42 +192,12 @@ def get_tag_model():
         return model
 
 
-############# prediction functions ##########################
-def predict_state(model, features):
-    result = []
-    for scores in model.predict_proba(features):
-        proba = {}
-        for state, score in zip(model.classes_, scores):
-            proba[INV_STATES[state]] = int(round(100*score))
-        result.append(proba)
-    return result
+def get_similarity_model():
+    model = Pipeline([("vect", DictVectorizer()), ("neigh", NearestNeighbors(n_neighbors=6))])
+    return model
 
 
-def predict_tags(lead):
-    model = compute_leads_tags.now()
-    if model is None:
-        # cannot compute model (ex. not enough data, no scikit...)
-        return []
-    features = get_lead_tag_data(lead)
-    scores = model.predict_proba([features,])
-    proba = []
-    for tag, score in zip(model.classes_, scores[0]):
-        try:
-            proba.append([Tag.objects.get(name=unicode(tag)), round(100*score,1)])
-        except (Tag.DoesNotExist,Tag.MultipleObjectsReturned):
-            # Tag was removed or two tag with same name (bad data before data cleaning)
-            pass
-    proba.sort(key=lambda x: x[1])
-    best_proba = []
-    for i in range(3):
-        try:
-            best_proba.append(proba.pop())
-        except IndexError:
-            break
-    return [i[0] for i in best_proba]
-
-
-############# Model tests ##########################
+############# Model evaluation ##########################
 def test_state_model():
     """Test state model accuracy"""
     leads = Lead.objects.filter(state__in=STATES.keys())
@@ -295,6 +306,62 @@ def score_tag_lead(model, X, y):
     return ok / len(X)
 
 
+############# Entry points for prediction ##########################
+
+def predict_state(model, features):
+    result = []
+    for scores in model.predict_proba(features):
+        proba = {}
+        for state, score in zip(model.classes_, scores):
+            proba[INV_STATES[state]] = int(round(100*score))
+        result.append(proba)
+    return result
+
+
+def predict_tags(lead):
+    model = compute_leads_tags.now()
+    if model is None:
+        # cannot compute model (ex. not enough data, no scikit...)
+        return []
+    features = get_lead_tag_data(lead)
+    scores = model.predict_proba([features,])
+    proba = []
+    for tag, score in zip(model.classes_, scores[0]):
+        try:
+            proba.append([Tag.objects.get(name=unicode(tag)), round(100*score,1)])
+        except (Tag.DoesNotExist,Tag.MultipleObjectsReturned):
+            # Tag was removed or two tag with same name (bad data before data cleaning)
+            pass
+    proba.sort(key=lambda x: x[1])
+    best_proba = []
+    for i in range(3):
+        try:
+            best_proba.append(proba.pop())
+        except IndexError:
+            break
+    return [i[0] for i in best_proba]
+
+
+def predict_similar(lead):
+    model = compute_lead_similarity.now()
+    leads_ids = cache.get(SIMILARITY_LEADS_IDS_CACHE_KEY)
+    scaler = cache.get(SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY)
+    similar_leads = []
+    if model is None:
+        # cannot compute model (ex. not enough data, no scikit...)
+        return []
+    features, scaler = extract_leads_similarity([lead, ], scaler)
+    vect = model.named_steps["vect"]
+    neigh = model.named_steps["neigh"]
+    indices = neigh.kneighbors(vect.transform(features), return_distance=False)
+    if indices.any():
+        try:
+            similar_leads_ids = [leads_ids[indice] for indice in indices[0]]
+            similar_leads = Lead.objects.filter(pk__in=similar_leads_ids).exclude(pk=lead.id).select_related()
+        except IndexError:
+            print("While searching for lead similarity, some lead disapeared !")
+    return similar_leads
+
 ############# Entry points for computation ##########################
 @background
 def compute_leads_state(relearn=True, leads_id=None):
@@ -355,3 +422,30 @@ def compute_leads_tags():
 
     return model
 
+
+@background
+def compute_lead_similarity():
+    """Compute a model to find similar leads and cache it"""
+
+    if not HAVE_SCIKIT:
+        return
+
+    model = cache.get(SIMILARITY_MODEL_CACHE_KEY)
+    if model is None:
+        leads = Lead.objects.all()
+        if leads.count() < 5:
+            # Cannot learn anything with so few data
+            return
+        learn_features = []
+        scaler = MinMaxScaler()
+        learn_features, scaler = extract_leads_similarity(leads, scaler)
+        features, scaler = extract_leads_similarity(leads, scaler)
+        #for lead in leads:
+        #    learn_features.append(get_lead_similarity_data(lead))
+        model = get_similarity_model()
+        model.fit(learn_features)
+        cache.set(SIMILARITY_MODEL_CACHE_KEY, model, 3600 * 24 * 7)
+        cache.set(SIMILARITY_LEADS_IDS_CACHE_KEY,[i.id for i in leads] , 3600 * 24* 7)
+        cache.set(SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY, scaler, 3600 * 24 * 7)
+
+    return model

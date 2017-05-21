@@ -150,6 +150,14 @@
                 </table>
             </div>
             {% endif %}
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                <h2>{% trans "Similar leads" %}</h2>
+                <table class="table table-hover table-striped table-condensed">
+                    {% for similar_lead in similar_leads %}
+                        <tr><td><a href="{% url 'leads.views.detail' similar_lead.id %}", title='{{ similar_lead.description }}'>{{ similar_lead }}</a></td></tr>
+                    {% endfor %}
+                </table>
+            </div>
     </div> {# End of description tab #}
 
     <div id="tab-missions" class="tab-pane fade">

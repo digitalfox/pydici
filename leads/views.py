@@ -29,8 +29,8 @@ from core.utils import send_lead_mail, sortedValues, COLORS
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
-from leads.learn import compute_leads_state
-from leads.learn import predict_tags
+from leads.learn import compute_leads_state, compute_lead_similarity
+from leads.learn import predict_tags, predict_similar
 import pydici.settings
 from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text
 from core.decorator import pydici_non_public, pydici_feature
@@ -101,6 +101,7 @@ def detail(request, lead_id):
                    "action_list": lead.get_change_history(),
                    "completion_url": urlresolvers.reverse("leads.views.tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
+                   "similar_leads": predict_similar(lead),
                    "user": request.user})
 
 @pydici_non_public
@@ -291,6 +292,7 @@ def add_tag(request):
         lead.tags.add(tagName)
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
+        compute_lead_similarity()  # update lead similarity model in background
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
         answer["tag_url"] = urlresolvers.reverse("leads.views.tag", args=[tag.id, ])
         answer["tag_remove_url"] = urlresolvers.reverse("leads.views.remove_tag", args=[tag.id, lead.id])
@@ -313,6 +315,7 @@ def remove_tag(request, tag_id, lead_id):
         lead.tags.remove(tag)
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
+        compute_lead_similarity()  # update lead similarity model in background
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         answer["error"] = True
     return HttpResponse(json.dumps(answer), content_type="application/json")
