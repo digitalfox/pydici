@@ -44,7 +44,7 @@ def consultant_detail(request, consultant_id):
         staff = consultant.team(onlyActive=True)
         month = date.today().replace(day=1)
         # Compute consultant current mission based on forecast
-        missions = consultant.active_missions().filter(nature="PROD").filter(probability=100)
+        missions = consultant.active_missions().filter(nature="PROD").filter(lead__state="WON")
         # Consultant clients and missions
         companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
         business_territory = Company.objects.filter(businessOwner=consultant)
