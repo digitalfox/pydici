@@ -123,7 +123,7 @@ class MassStaffingForm(forms.Form):
         self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
         self.fields["staffing_dates"] = forms.fields.MultipleChoiceField(label=_("Staffing dates"), choices=staffing_dates)
         self.fields["missions"] = forms.ModelMultipleChoiceField(widget=MissionMChoices, queryset=Mission.objects.all())
-        self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.all())
+        self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.all(), required=False)
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-default"
         self.helper.layout = Layout(Div(Column("missions", "consultants", "all_consultants", css_class='col-md-6'),
