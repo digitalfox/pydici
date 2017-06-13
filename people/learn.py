@@ -13,6 +13,7 @@ try:
     from sklearn.feature_extraction import DictVectorizer
     from sklearn.neighbors import NearestNeighbors
     from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler, MinMaxScaler, Normalizer
 except ImportError:
     HAVE_SCIKIT = False
 
@@ -38,15 +39,16 @@ def consultant_cumulated_experience(consultant):
         for tag in Lead.objects.get(id=lead_id).tags.all():
             features[tag.name] = features.get(tag.name, 0) + charge
 
-    features["profil"] = consultant.profil.name
+    features["profil"] = consultant.profil.level * 100
     #TODO: add experience (missing in model)
-
     return features
 
 
 ############# Model definition ##########################
 def get_similarity_model():
-    model = Pipeline([("vect", DictVectorizer()), ("neigh", NearestNeighbors(n_neighbors=6))])
+    model = Pipeline([("vect", DictVectorizer()),
+                      ("norm", Normalizer()),
+                      ("neigh", NearestNeighbors(n_neighbors=6))])
     return model
 
 
@@ -61,14 +63,15 @@ def predict_similar(consultant):
     features = consultant_cumulated_experience(consultant)
     vect = model.named_steps["vect"]
     neigh = model.named_steps["neigh"]
-    indices = neigh.kneighbors(vect.transform(features), return_distance=False)
+    norm= model.named_steps["norm"]
+    indices = neigh.kneighbors(norm.transform(vect.transform(features)), return_distance=False)
     if indices.any():
         try:
             similar_consultants_ids = [consultants_ids[indice] for indice in indices[0]]
-            similar_leads = Consultant.objects.filter(pk__in=similar_consultants_ids).exclude(pk=consultant.id).select_related()
+            similar_consultants = Consultant.objects.filter(pk__in=similar_consultants_ids).exclude(pk=consultant.id).select_related()
         except IndexError:
             print("While searching for consultant similarity, some consultant disapeared !")
-    return similar_leads
+    return similar_consultants
 
 
 ############# Entry points for computation ##########################
@@ -90,6 +93,7 @@ def compute_consultant_similarity():
         for consultant in consultants:
             learn_features.append(consultant_cumulated_experience(consultant))
         model = get_similarity_model()
+
         model.fit(learn_features)
         cache.set(CONSULTANT_SIMILARITY_MODEL_CACHE_KEY, model, 3600 * 24 * 7)
         cache.set(SIMILARITY_CONSULTANT_IDS_CACHE_KEY, [i.id for i in consultants], 3600 * 24 * 7)
