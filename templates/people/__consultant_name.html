@@ -3,7 +3,7 @@
 {# tab: tab anchor name #}
 <a href="{% url 'people.views.consultant_home' consultant.trigramme %}{{ tab }}">{{ consultant }}</a><span title="{{consultant.id}}"></span>
 {% if consultant.is_in_holidays %}<span class="pydici-tooltip glyphicon glyphicon-sunglasses" title="{% trans 'on holidays !' %}"></span>{% endif %}
-{% if not consultant.subcontractor %}
+{% if not consultant.subcontractor and consultant.active %}
     {% with late_timesheet=consultant.timesheet_is_up_to_date %}
         {% with previous_month_late=late_timesheet|first current_month_late=late_timesheet|last %}
             {% if previous_month_late > 0 %}
