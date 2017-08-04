@@ -440,10 +440,12 @@ def company_pivotable(request, company_id=None):
     dateFormat = "%Y%m%d"
     startDate = endDate = None
     try:
-        startDate = request.GET.get("start", None)
+        startDate = request.GET.get("start")
         endDate = request.GET.get("end", None)
         if startDate:
             startDate = datetime.strptime(startDate, dateFormat)
+        else:
+            startDate = datetime.now() - timedelta(365)  # Default to 1 year. It is often enough.
         if endDate:
             endDate = datetime.strptime(endDate, dateFormat)
     except ValueError:
