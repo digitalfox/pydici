@@ -454,8 +454,12 @@ def company_pivotable(request, company_id=None):
     except Company.DoesNotExist:
         return Http404()
     for lead in Lead.objects.filter(client__organisation__company=company):
+        clientName = unicode(lead.client)
         for mission in lead.mission_set.all():
-            data.extend(mission.pivotable_data(startDate=startDate, endDate=endDate))
+            missionData = mission.pivotable_data(startDate=startDate, endDate=endDate)
+            for item in missionData:
+                item[_("client")] = clientName
+            data.extend(missionData)
 
     derivedAttributes = []
 
