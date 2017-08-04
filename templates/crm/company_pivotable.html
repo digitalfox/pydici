@@ -1,0 +1,87 @@
+{% load i18n %}
+{% load pydici_filters %}
+
+        <h2>{% trans "Pivot table for company " %} {{ company }}</h2>
+
+        <div id="type-selector" class="btn-group" role="group">
+            <button class="btn btn-default active" onclick="mission_by_date();">{% trans "Mission by date" %}</button>
+            <button class="btn btn-default" onclick="mission_by_consultant();">{% trans "Mission by consultant" %}</button>
+            &nbsp;
+            <input id="startDate" name="startDate" class="datepicker dateinput" placeholder="{% trans 'From' %}">
+            <input id="endDate" name="endDate" class="datepicker dateinput" placeholder="{% trans 'To' %}">
+
+
+        </div>
+
+        <div id="pivotable-output" style="margin: 10px;"></div>
+
+        {% with output as "pivotable-output" %}
+            {% include "core/_pivotable_body.html" %}
+        {% endwith %}
+
+
+        {% include "core/_datepicker.html" %}
+
+        <script type="text/javascript">
+            // This language is a shame...
+            function yyyymmdd(dateIn) {
+               var yyyy = dateIn.getFullYear();
+               var mm = dateIn.getMonth()+1; // getMonth() is zero-based
+               var dd  = dateIn.getDate();
+               return String(10000*yyyy + 100*mm + dd); // Leading zeros for mm and dd
+            }
+
+
+            // Active state switcher
+            $(document).ready(function() {
+                $('#type-selector button').click(function() {
+                    $(this).addClass('active').siblings().removeClass('active');
+                 });
+            });
+
+            // Share data for all pivot tables
+            var data = {{ data|safe }};
+
+            // Preset definition
+            function mission_by_date() {
+                var rows = ["{% trans 'subsidiary' %}", "{% trans 'mission name' %}", "{% trans 'mission id' %}", "{% trans 'consultant' %}"];
+                var cols = ["{% trans 'date' %}"];;
+                drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ['{% trans "done (days)" %}']);
+            }
+
+            function mission_by_consultant() {
+                var rows = ["{% trans 'consultant' %}"];
+                var cols = ["{% trans 'mission name' %}"];;
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "done (days)" %}']);
+            }
+
+            // set dates on widgets with template value
+            {% if startDate %}
+                $("#startDate").datepicker("setDate", new Date("{{ startDate|date:"Y-m-d" }}"));
+            {% endif %}
+            {% if endDate %}
+                $("#endDate").datepicker("setDate", new Date("{{ endDate|date:"Y-m-d" }}"));
+            {% endif %}
+
+            // reload data with choosen timeframe
+            $('.datepicker').datepicker().on("changeDate", function(e) {
+                    var param = "";
+                    var fromDate = $("#startDate").datepicker("getDate");
+                    var toDate   = $("#endDate").datepicker("getDate");
+                    if (!isNaN(fromDate.getTime())) {
+                        param += "start=" + yyyymmdd(fromDate);
+                    }
+                    if (!isNaN(toDate.getTime())) {
+                        param += "&end=" + yyyymmdd(toDate);
+                    }
+                    $('#tab-reporting').load("{% url 'crm.views.company_pivotable' company.id %}?"+param);
+            });
+
+
+
+            // default
+            mission_by_date();
+        </script>
+
+
+

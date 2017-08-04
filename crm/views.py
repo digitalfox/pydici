@@ -6,7 +6,7 @@ Pydici crm views. Http request are processed here.
 """
 
 import json
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from django.shortcuts import render
 from django.db.models import Sum, Min, Count
@@ -15,7 +15,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.contrib import messages
 from django.utils.translation import ugettext as _
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core import urlresolvers
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_for_escaping
@@ -430,6 +430,41 @@ def company_billing(request, company_id):
     return render(request, "crm/_clientcompany_billing.html",
                             {"company": company,
                             "leads": leads})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def company_pivotable(request, company_id=None):
+    """Pivot table for a given company with detail"""
+    data = []
+    dateFormat = "%Y%m%d"
+    startDate = endDate = None
+    try:
+        startDate = request.GET.get("start", None)
+        endDate = request.GET.get("end", None)
+        if startDate:
+            startDate = datetime.strptime(startDate, dateFormat)
+        if endDate:
+            endDate = datetime.strptime(endDate, dateFormat)
+    except ValueError:
+        pass
+
+    try:
+        company = Company.objects.get(id=company_id)
+    except Company.DoesNotExist:
+        return Http404()
+    for lead in Lead.objects.filter(client__organisation__company=company):
+        for mission in lead.mission_set.all():
+            data.extend(mission.pivotable_data(startDate=startDate, endDate=endDate))
+
+    derivedAttributes = []
+
+    return render(request, "crm/company_pivotable.html", { "data": json.dumps(data),
+                                                          "derivedAttributes": derivedAttributes,
+                                                          "company": company,
+                                                          "startDate": startDate,
+                                                          "endDate": endDate
+                                                          })
 
 
 @pydici_non_public
