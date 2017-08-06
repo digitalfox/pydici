@@ -6,6 +6,9 @@ Module that handle predictive thing about people
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+from datetime import datetime
+from math import sqrt
+
 from background_task import background
 
 HAVE_SCIKIT = True
@@ -26,20 +29,23 @@ from people.models import Consultant
 
 
 CONSULTANT_SIMILARITY_MODEL_CACHE_KEY = "PYDICI_CONSULTANT_SIMILARITY_MODEL"
-SIMILARITY_CONSULTANT_IDS_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_CONSULTANTS_IDS"
+SIMILARITY_CONSULTANT_IDS_CACHE_KEY = "PYDICI_CONSULTANT_SIMILARITY_CONSULTANTS_IDS"
 
 ############# Features extraction ##########################
 
 def consultant_cumulated_experience(consultant):
     features = dict()
     timesheets = Timesheet.objects.filter(consultant=consultant, mission__nature="PROD").order_by("mission__id")
-    timesheets = timesheets.values_list("mission__lead__id").annotate(Sum("charge"))
-
-    for lead_id, charge in timesheets:
+    timesheets = timesheets.values_list("mission__lead__id", "mission__lead__creation_date").annotate(Sum("charge"))
+    now = datetime.now()
+    for lead_id, creation_date, charge in timesheets:
+        weight = sqrt((now - creation_date).days or 1)
+        weighted_charge = charge / weight  # Knowledge decrease with time...
         for tag in Lead.objects.get(id=lead_id).tags.all():
-            features[tag.name] = features.get(tag.name, 0) + charge
+            features[tag.name] = features.get(tag.name, 0) + weighted_charge
 
-    features["profil"] = consultant.profil.level * 100
+    features["profil"] = consultant.profil.level * 10
+    features["subsidiary"] = consultant.company.name
     #TODO: add experience (missing in model)
     return features
 
