@@ -52,6 +52,17 @@
             </ul>
         </div>
     {% endif %}
+
+    {% if tags %}
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+            <h2>{% trans "Tags"%}</h2>
+            <ul>
+            {% for tag in tags %}
+                <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads.views.tag' tag.id %}">{{ tag }}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 </div>
 
 <div class="row">

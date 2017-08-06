@@ -19,6 +19,7 @@ from django.core.urlresolvers import reverse
 from django.core.cache import cache
 
 from django_select2.views import AutoResponseView
+from taggit.models import Tag
 
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from leads.models import Lead
@@ -59,7 +60,7 @@ def search(request):
 
     words = request.GET.get("q", "")
     words = words.split()
-    consultants = companies = contacts = leads = missions = bills = None
+    consultants = companies = contacts = leads = missions = bills = tags = None
     max_record = 50
     more_record = False # Wether we have more records
 
@@ -85,6 +86,11 @@ def search(request):
         if len(contacts) >= max_record:
             more_record = True
 
+        # Tags
+        tags = Tag.objects.all()
+        for word in words:
+            tags = tags.filter(name__icontains=word)
+
         # Leads
         leads = Lead.objects.all()
         for word in words:
@@ -98,7 +104,6 @@ def search(request):
         leads = leads.distinct().select_related("client__organisation__company")[:max_record]
         if len(leads) >= max_record:
             more_record = True
-
 
         # Missions
         missions = Mission.objects.all()
@@ -142,6 +147,7 @@ def search(request):
                    "companies": companies,
                    "contacts": contacts,
                    "leads": leads,
+                   "tags": tags,
                    "missions": missions,
                    "bills": bills,
                    "more_record": more_record,
