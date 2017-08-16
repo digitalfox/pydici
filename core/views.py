@@ -330,9 +330,9 @@ def riskReporting(request):
         data.append({_("type"): data_type,
                      _("subsidiary"): unicode(bill.lead.subsidiary),
                      _("deal_id"): bill.lead.deal_id,
-                     _("deal"): u"<a href='%s'>%s</a>" % (reverse("leads.views.detail", args=[bill.lead.id,]), bill.lead.name),
+                     _("deal"): bill.lead.name,
                      _("amount"): int(bill.amount),
-                     _("company"): u"<a href='%s'>%s</a>" % (reverse("company_detail", args=[bill.lead.client.organisation.company.id,]), unicode(bill.lead.client.organisation.company)),
+                     _("company"): unicode(bill.lead.client.organisation.company),
                      _("client"): unicode(bill.lead.client),
                      })
 
@@ -344,9 +344,9 @@ def riskReporting(request):
             data.append({_("type"): _("work without bill"),
                          _("subsidiary"): unicode(lead.subsidiary),
                          _("deal_id"): lead.deal_id,
-                         _("deal"): u"<a href='%s'>%s</a>" % (reverse("leads.views.detail", args=[lead.id,]), lead.name),
+                         _("deal"): lead.name,
                          _("amount"): int(done_a - billed),
-                         _("company"): u"<a href='%s'>%s</a>" % (reverse("company_detail", args=[lead.client.organisation.company.id,]), unicode(lead.client.organisation.company)),
+                         _("company"): unicode(lead.client.organisation.company),
                          _("client"): unicode(lead.client),
                          })
 
