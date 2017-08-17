@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-04 23:36+0200\n"
-"PO-Revision-Date: 2017-08-04 23:36+0100\n"
+"POT-Creation-Date: 2017-08-17 20:29+0200\n"
+"PO-Revision-Date: 2017-08-17 20:28+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -348,20 +348,20 @@ msgstr "Mon staffing"
 msgid "Mail to support"
 msgstr "Courriel au support"
 
-#: core/views.py:321
+#: core/views.py:327
 msgid "overdue bills"
 msgstr "factures en retard"
 
-#: core/views.py:323
+#: core/views.py:329
 msgid "sent bills"
 msgstr "factures envoyées"
 
-#: core/views.py:324 core/views.py:338 templates/core/risks.html:40
+#: core/views.py:330 core/views.py:348 templates/core/risks.html:40
 #: templates/core/risks.html.py:47
 msgid "type"
 msgstr "type"
 
-#: core/views.py:325 core/views.py:339 leads/views.py:439
+#: core/views.py:331 core/views.py:349 leads/views.py:439
 #: staffing/models.py:302 templates/core/risks.html:40
 #: templates/core/risks.html.py:46 templates/leads/lead_pivotable.html:47
 #: templates/leads/leads.html:17 templates/leads/leads_pivotable.html:53
@@ -369,31 +369,31 @@ msgstr "type"
 msgid "subsidiary"
 msgstr "filiale"
 
-#: core/views.py:326 core/views.py:340
+#: core/views.py:332 core/views.py:350
 msgid "deal_id"
 msgstr "n° d'affaire"
 
-#: core/views.py:327 core/views.py:341
+#: core/views.py:333 core/views.py:351
 msgid "deal"
 msgstr "affaire"
 
-#: core/views.py:328 core/views.py:342 templates/core/risks.html:42
+#: core/views.py:334 core/views.py:352 templates/core/risks.html:42
 #: templates/core/risks.html.py:48
 msgid "amount"
 msgstr "montant"
 
-#: core/views.py:329 core/views.py:343 crm/models.py:370 crm/models.py:399
+#: core/views.py:335 core/views.py:353 crm/models.py:370 crm/models.py:399
 #: templates/core/risks.html:41 templates/crm/_contact_list.html:10
 #: templates/crm/contact_list.html:13
 msgid "company"
 msgstr "société"
 
-#: core/views.py:330 core/views.py:344 crm/views.py:463
+#: core/views.py:336 core/views.py:354 crm/views.py:463
 #: templates/crm/company_pivotable.html:47 templates/leads/leads.html:14
 msgid "client"
 msgstr "client"
 
-#: core/views.py:338
+#: core/views.py:348
 msgid "work without bill"
 msgstr "Temps passé sans facture"
 
@@ -1808,7 +1808,7 @@ msgid "Today"
 msgstr "Aujourd'hui"
 
 #: templates/core/_pydici_menu.html:22 templates/core/_pydici_menu.html:106
-#: templates/core/search.html:59 templates/crm/clientcompany_detail.html:29
+#: templates/core/search.html:70 templates/crm/clientcompany_detail.html:29
 #: templates/crm/clientcompany_detail.html:288 templates/leads/leads.html:6
 msgid "Leads"
 msgstr "Affaires"
@@ -1821,7 +1821,7 @@ msgstr "Revue des affaires en cours"
 msgid "New lead"
 msgstr "Nouvelle affaire"
 
-#: templates/core/_pydici_menu.html:33 templates/core/search.html:70
+#: templates/core/_pydici_menu.html:33 templates/core/search.html:81
 #: templates/leads/lead_detail.html:41 templates/people/consultant.html:37
 msgid "Missions"
 msgstr "Missions"
@@ -2135,11 +2135,15 @@ msgstr "Saisissez au moins un mot pour rechercher quelque chose !"
 msgid "Contacts"
 msgstr "Contacts"
 
-#: templates/core/search.html:62
+#: templates/core/search.html:58
+msgid "Tags"
+msgstr "Étiquettes"
+
+#: templates/core/search.html:73
 msgid "no deal id"
 msgstr "pas de n° d'affaire"
 
-#: templates/core/search.html:80
+#: templates/core/search.html:91
 msgid "Client Bills"
 msgstr "Factures clients"
 
