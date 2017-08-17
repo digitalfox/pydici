@@ -23,8 +23,8 @@ import permissions.utils as perm
 from workflows.models import Transition
 
 # Pydici modules
-from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth, cumulateList, capitalize
-from core.models import GroupFeature, FEATURES
+from core.utils import monthWeekNumber, previousWeek, nextWeek, nextMonth, previousMonth, cumulateList, capitalize, get_parameter
+from core.models import GroupFeature, FEATURES, Parameter
 from leads.utils import postSaveLead
 from leads.models import Lead
 from leads import learn as leads_learn
@@ -251,6 +251,20 @@ class UtilsTest(TestCase):
                 (u"test-and-learn", u"Test-And-Learn"))
         for word, capitalizeddWord in data:
             self.assertEqual(capitalizeddWord, capitalize(word))
+
+
+    def test_parameter(self):
+        self.assertRaises(Exception, get_parameter, "foo")
+        p = Parameter(key="testT", value="valueT", type="TEXT", desc="test")
+        p.save()
+        self.assertEquals(get_parameter(p.key), p.value)
+        p = Parameter(key="testF", value=0.666, type="FLOAT", desc="test")
+        p.save()
+        self.assertEquals(get_parameter(p.key), p.value)
+        p.value=0.777
+        p.save()
+        self.assertEquals(get_parameter(p.key), p.value)
+
 
 class StaffingViewsTest(TestCase):
     fixtures = PYDICI_FIXTURES

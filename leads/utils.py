@@ -16,8 +16,8 @@ from django.core import urlresolvers
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from staffing.models import Mission
 from leads.models import StateProba
-from core.utils import send_lead_mail
-from pydici.pydici_settings import TELEGRAM_IS_ENABLED, TELEGRAM_CHAT, TELEGRAM_TOKEN, TELEGRAM_STICKERS, PYDICI_HOST
+from core.utils import send_lead_mail, get_parameter
+from pydici.pydici_settings import TELEGRAM_IS_ENABLED, TELEGRAM_CHAT, TELEGRAM_TOKEN, TELEGRAM_STICKERS
 
 if TELEGRAM_IS_ENABLED:
     import telegram
@@ -70,7 +70,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
         try:
             bot = telegram.bot.Bot(token=TELEGRAM_TOKEN)
             sticker = None
-            url = PYDICI_HOST + urlresolvers.reverse("leads.views.detail", args=[lead.id, ])
+            url = get_parameter("HOST") + urlresolvers.reverse("leads.views.detail", args=[lead.id, ])
             if created:
                 msg = ugettext(u"New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
                 sticker = TELEGRAM_STICKERS.get("happy")

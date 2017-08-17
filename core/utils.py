@@ -26,7 +26,7 @@ from django.core.cache import cache
 
 import pydici.settings
 
-from core.models import GroupFeature
+from core.models import GroupFeature, Parameter
 
 
 # Graph colors
@@ -36,20 +36,22 @@ COLORS = ["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFE32C", "#AAFF86", "#D9
 TABLES2_HIDE_COL_MD = {"td": {"class": "hidden-xs hidden-sm hidden-md"}, "th": {"class": "hidden-xs hidden-sm hidden-md"}}
 
 
-def send_lead_mail(lead, request, fromAddr=pydici.settings.LEADS_MAIL_FROM, fromName=""):
+def send_lead_mail(lead, request, fromAddr=None, fromName=""):
     """ Send a mail with lead detailed description.
     @param lead: the lead to send by mail
     @type lead: leads.lead instance
     @param request: http request of user - used to determine full URL
     @raise exception: if SMTP errors occurs. It is up to the caller to catch that.
     """
-    url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("leads.views.lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
+    if not fromAddr:
+        fromAddr = get_parameter("MAIL_FROM")
+    url = get_parameter("HOST") + urlresolvers.reverse("leads.views.lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
     subject = u"[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
     msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj": lead,
                                                                                   "lead_url": url}))
     msgHtml = get_template("leads/lead_mail.html").render(RequestContext(request, {"obj": lead,
                                                                                    "lead_url": url}))
-    msg = EmailMultiAlternatives(subject, msgText, fromAddr, [pydici.settings.LEADS_MAIL_TO, ])
+    msg = EmailMultiAlternatives(subject, msgText, fromAddr, [get_parameter("LEADS_MAIL_TO"), ])
     msg.attach_alternative(msgHtml, "text/html")
     msg.send()
 
@@ -416,3 +418,16 @@ def user_has_feature(user, feature):
 def user_has_features(user, features):
     features = set(features)
     return features.issubset(_get_user_features(user))
+
+
+def get_parameter(key):
+    """Get pydici parameter according to key"""
+    value = cache.get(Parameter.PARAMETER_CACHE_KEY % key)
+    if value is None:
+        parameter = Parameter.objects.get(key=key)
+        if parameter.type == "FLOAT":
+            value = float(parameter.value)
+        else:
+            value = parameter.value
+        cache.set(Parameter.PARAMETER_CACHE_KEY % key, value, 3600*24)
+    return value

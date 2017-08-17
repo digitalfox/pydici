@@ -8,7 +8,7 @@ Admin module for pydici core module
 from django.contrib import admin
 from django.utils.encoding import iri_to_uri
 
-from core.models import GroupFeature
+from core.models import GroupFeature, Parameter
 
 
 class ReturnToAppAdmin(admin.ModelAdmin):
@@ -36,4 +36,10 @@ class GroupFeatureAdmin(ReturnToAppAdmin):
     ordering = ("group", "feature")
 
 
+class ParameterAdmin(ReturnToAppAdmin):
+    """Admin model for pydici parameters"""
+    list_display =  ("key", "value", "type", "desc")
+    ordering = ("key",)
+
 admin.site.register(GroupFeature, GroupFeatureAdmin)
+admin.site.register(Parameter, ParameterAdmin)

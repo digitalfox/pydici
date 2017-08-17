@@ -37,6 +37,7 @@ from django.template import Context
 application = get_wsgi_application()
 
 # Pydici imports
+from core.utils import get_parameter
 from people.models import Consultant
 from staffing.utils import gatherTimesheetData
 
@@ -64,7 +65,7 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
             continue
         missions = consultant.timesheet_missions(month=currentMonth)
         timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, currentMonth)
-        url = pydici.settings.PYDICI_HOST + urlresolvers.reverse("people.views.consultant_home", args=[consultant.trigramme])
+        url = get_parameter("HOST") + urlresolvers.reverse("people.views.consultant_home", args=[consultant.trigramme])
         url += "?year=%s;month=%s" % (currentMonth.year, currentMonth.month)
         url += "#tab-timesheet"
 
@@ -95,11 +96,11 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
                                              "days": days,
                                              "url": url}))
                 mails.append(((_("[pydici] Your timesheet is not correct"), msgText,
-                          pydici.settings.LEADS_MAIL_FROM, recipients)))
+                          get_parameter("MAIL_FROM"), recipients)))
             else:
                 mails.append(((_("[pydici] User has no email"),
                                _("User %s has an incomplete timesheet but cannot be warned because he has no email." % consultant),
-                          pydici.settings.LEADS_MAIL_FROM, [pydici.settings.LEADS_MAIL_FROM, ])))
+                               get_parameter("MAIL_FROM"), [get_parameter("MAIL_FROM"), ])))
 
     # Send all emails in one time
     send_mass_mail(mails, fail_silently=False)

@@ -25,7 +25,7 @@ from django.db.models.query import QuerySet
 
 from taggit.models import Tag
 
-from core.utils import send_lead_mail, sortedValues, COLORS
+from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
@@ -235,7 +235,7 @@ def mail_lead(request, lead_id=0):
     try:
         send_lead_mail(lead)
         return HttpResponse(_("Lead %(id)s was sent to %(mail)s !") % {"id": lead_id,
-                                                                       "mail": pydici.settings.LEADS_MAIL_TO})
+                                                                       "mail": get_parameter("LEADS_MAIL_TO")})
     except Exception, e:
         return HttpResponse(_("Failed to send mail: %s") % e)
 

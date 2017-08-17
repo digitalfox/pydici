@@ -16,6 +16,7 @@ To check for access from a template, use `{% if pydici_feature.<feature_name> %}
 from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.cache import cache
 
 
 _FEATURES_CHOICES = (
@@ -49,3 +50,20 @@ class GroupFeature(models.Model):
 
     def __unicode__(self):
         return unicode(self.group) + '-' + unicode(self.feature)
+
+
+class Parameter(models.Model):
+    """Ultra simple parameter defined in database to allow easy editing through admin pages
+    This model is intended to be accessed through utils.py get_param to have type checking and cache"""
+    PARAMETER_CACHE_KEY = "PYDICI_PARAM_CACHE_%s"
+    PARAMETER_TYPES = (("TEXT", _("text")),
+                       ("FLOAT", _("float")))
+    key= models.CharField(_("Key"), max_length=255, unique=True)
+    value = models.CharField(_("Value"), max_length=255)
+    type = models.CharField(_("Type"), max_length=30, choices=PARAMETER_TYPES)
+    desc = models.CharField(_("Description"), max_length=255)
+
+    def save(self, *args, **kwargs):
+        """Invalidate cache for this param"""
+        cache.set(self.PARAMETER_CACHE_KEY % self.key, None)
+        super(Parameter, self).save(*args, **kwargs)
