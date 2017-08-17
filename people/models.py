@@ -255,8 +255,8 @@ class RateObjective(models.Model):
     """Consultant rates objective
     DAILY_RATE is the rate in € for each sold days
     PROD_RATE is the rate in % (int 0..100) on production days over all but holidays available days"""
-    RATE_TYPE= (("DAILY_RATE", ugettext("daily rate")),
-                ("PROD_RATE", ugettext("production rate")))
+    RATE_TYPE= (("DAILY_RATE", _("daily rate")),
+                ("PROD_RATE", _("production rate")))
     consultant = models.ForeignKey(Consultant)
     start_date = models.DateField(_("Starting"))
     rate = models.IntegerField(_("Rate"), null=True)
