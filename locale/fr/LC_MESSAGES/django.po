@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-04 23:36+0200\n"
-"PO-Revision-Date: 2017-08-04 23:36+0100\n"
+"POT-Creation-Date: 2017-08-20 19:53+0200\n"
+"PO-Revision-Date: 2017-08-20 19:53+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -57,10 +57,10 @@ msgid "Name"
 msgstr "Nom"
 
 #: actionset/models.py:26 actionset/models.py:47 billing/admin.py:29
-#: billing/admin.py:43 expense/models.py:75 leads/models.py:129
-#: leads/views.py:210 staffing/models.py:43 staffing/models.py:321
-#: templates/expense/expense_list.html:14 templates/leads/lead_detail.html:40
-#: templates/staffing/mission.html:34
+#: billing/admin.py:43 core/models.py:64 expense/models.py:75
+#: leads/models.py:129 leads/views.py:210 staffing/models.py:43
+#: staffing/models.py:321 templates/expense/expense_list.html:14
+#: templates/leads/lead_detail.html:40 templates/staffing/mission.html:34
 msgid "Description"
 msgstr "Description"
 
@@ -118,15 +118,15 @@ msgstr "Identifiant"
 msgid "Trigger %s is not defined"
 msgstr "Le déclencheur %s n'est pas défini"
 
-#: batch/timesheet_check.py:97
+#: batch/timesheet_check.py:98
 msgid "[pydici] Your timesheet is not correct"
 msgstr "[pydici] Votre pointage n'est pas correct"
 
-#: batch/timesheet_check.py:100
+#: batch/timesheet_check.py:101
 msgid "[pydici] User has no email"
 msgstr "[pydici] L'utilisateur n'a pas de d'adresse de courriel"
 
-#: batch/timesheet_check.py:101
+#: batch/timesheet_check.py:102
 #, python-format
 msgid ""
 "User %s has an incomplete timesheet but cannot be warned because he has no "
@@ -268,26 +268,26 @@ msgstr "Facture fournisseur"
 msgid "Save"
 msgstr "Enregistrer"
 
-#: core/models.py:22
+#: core/models.py:23
 msgid "3rd Parties: Access to the 'Third parties' menu"
 msgstr "Tierces parties : accès au menu « Tierces parties »"
 
-#: core/models.py:23
+#: core/models.py:24
 msgid "Contacts, write access: Allow adding, editing, removing contacts"
 msgstr ""
 "Modification des contacts : permet l'ajout, la modification et la "
 "suppression de contacts"
 
-#: core/models.py:24
+#: core/models.py:25
 msgid "Leads: Access to the 'Leads' menu"
 msgstr "Affaires : accès au menu « Affaires »"
 
-#: core/models.py:25
+#: core/models.py:26
 msgid "Leads, list all: Access to the 'Leads > All leads' menu entry"
 msgstr ""
 "Toutes les affaires : donne accès au menu Affaires => Toutes les affaires"
 
-#: core/models.py:26
+#: core/models.py:27
 msgid ""
 "Leads, profitability: Access to the 'Profitability' information in lead "
 "description"
@@ -295,46 +295,66 @@ msgstr ""
 "Rentabilité : affiche le panneau de rentabilité dans les feuilles de temps "
 "des missions"
 
-#: core/models.py:27
+#: core/models.py:28
 msgid "Management: Access to the 'Management' menu"
 msgstr "Management : accès au menu « Management »"
 
-#: core/models.py:28
+#: core/models.py:29
 msgid "Menubar: Show the menubar"
 msgstr "Barre de menu : affichage de la barre de menu"
 
-#: core/models.py:29
+#: core/models.py:30
 msgid "Reports: Access to the 'Reports' menu"
 msgstr "Rapports : accès au menu « Rapports »"
 
-#: core/models.py:30
+#: core/models.py:31
 msgid "Search: Allow searching"
 msgstr "Recherche : accès au champ de recherche global"
 
-#: core/models.py:31
+#: core/models.py:32
 msgid "Staffing: Access to staffing features"
 msgstr "Prévision : accès aux fonctionnalités de prévision de staffing"
 
-#: core/models.py:32
+#: core/models.py:33
 msgid "Staffing, mass edit: Access to mass staffing features"
 msgstr "Staffing en masse : accès à l'écran de staffing en masse"
 
-#: core/models.py:33
+#: core/models.py:34
 msgid "Timesheet, all: Access to all timesheets of all users"
 msgstr ""
 "Feuille de temps global : accès à la feuille de temps consolidé de tous les "
 "utilisateurs"
 
-#: core/models.py:34
+#: core/models.py:35
 msgid ""
 "Timesheet, current month: Access to current month timesheets of all users"
 msgstr ""
 "Feuille de temps du mois courant : accès à la feuille de temps du mois "
 "courant pour tous les utilisateurs"
 
-#: core/models.py:45
+#: core/models.py:46
 msgid "Feature"
 msgstr "Fonctionnalité"
+
+#: core/models.py:59
+msgid "text"
+msgstr "texte"
+
+#: core/models.py:60
+msgid "float"
+msgstr "flottant"
+
+#: core/models.py:61
+msgid "Key"
+msgstr "Clé"
+
+#: core/models.py:62
+msgid "Value"
+msgstr "Valeur"
+
+#: core/models.py:63 staffing/models.py:44 templates/staffing/mission.html:79
+msgid "Type"
+msgstr "Type"
 
 #: core/templatetags/pydici_filters.py:109
 msgid "My timesheet"
@@ -348,52 +368,54 @@ msgstr "Mon staffing"
 msgid "Mail to support"
 msgstr "Courriel au support"
 
-#: core/views.py:321
+#: core/views.py:327
 msgid "overdue bills"
 msgstr "factures en retard"
 
-#: core/views.py:323
+#: core/views.py:329
 msgid "sent bills"
 msgstr "factures envoyées"
 
-#: core/views.py:324 core/views.py:338 templates/core/risks.html:40
+#: core/views.py:330 core/views.py:348 templates/core/risks.html:40
 #: templates/core/risks.html.py:47
 msgid "type"
 msgstr "type"
 
-#: core/views.py:325 core/views.py:339 leads/views.py:439
-#: staffing/models.py:302 templates/core/risks.html:40
+#: core/views.py:331 core/views.py:349 leads/views.py:439
+#: staffing/models.py:302 staffing/views.py:1251 templates/core/risks.html:40
 #: templates/core/risks.html.py:46 templates/leads/lead_pivotable.html:47
 #: templates/leads/leads.html:17 templates/leads/leads_pivotable.html:53
-#: templates/leads/leads_pivotable.html:60 templates/staffing/missions.html:27
+#: templates/leads/leads_pivotable.html:60
+#: templates/staffing/holidays_report.html:47
+#: templates/staffing/missions.html:27
 msgid "subsidiary"
 msgstr "filiale"
 
-#: core/views.py:326 core/views.py:340
+#: core/views.py:332 core/views.py:350
 msgid "deal_id"
 msgstr "n° d'affaire"
 
-#: core/views.py:327 core/views.py:341
+#: core/views.py:333 core/views.py:351
 msgid "deal"
 msgstr "affaire"
 
-#: core/views.py:328 core/views.py:342 templates/core/risks.html:42
+#: core/views.py:334 core/views.py:352 templates/core/risks.html:42
 #: templates/core/risks.html.py:48
 msgid "amount"
 msgstr "montant"
 
-#: core/views.py:329 core/views.py:343 crm/models.py:370 crm/models.py:399
+#: core/views.py:335 core/views.py:353 crm/models.py:370 crm/models.py:399
 #: templates/core/risks.html:41 templates/crm/_contact_list.html:10
 #: templates/crm/contact_list.html:13
 msgid "company"
 msgstr "société"
 
-#: core/views.py:330 core/views.py:344 crm/views.py:463
+#: core/views.py:336 core/views.py:354 crm/views.py:463
 #: templates/crm/company_pivotable.html:47 templates/leads/leads.html:14
 msgid "client"
 msgstr "client"
 
-#: core/views.py:338
+#: core/views.py:348
 msgid "work without bill"
 msgstr "Temps passé sans facture"
 
@@ -1245,10 +1267,6 @@ msgstr "Temps passé"
 msgid "Mission id"
 msgstr "N° de mission"
 
-#: staffing/models.py:44 templates/staffing/mission.html:79
-msgid "Type"
-msgstr "Type"
-
 #: staffing/models.py:45 staffing/views.py:1129
 #: templates/leads/lead_detail.html:174 templates/staffing/mission.html:98
 #: templates/staffing/mission.html:148
@@ -1278,9 +1296,12 @@ msgstr "N° de mission"
 msgid "mission name"
 msgstr "Nom mission"
 
-#: staffing/models.py:301 templates/billing/pre_billing.html:31
+#: staffing/models.py:301 staffing/views.py:1250
+#: templates/billing/pre_billing.html:31
 #: templates/leads/lead_pivotable.html:47
 #: templates/leads/lead_pivotable.html:53
+#: templates/staffing/holidays_report.html:47
+#: templates/staffing/holidays_report.html:53
 msgid "consultant"
 msgstr "consultant"
 
@@ -1436,19 +1457,37 @@ msgstr "Jours réalisés"
 msgid "Days to be done"
 msgstr "Jours à faire"
 
-#: staffing/views.py:1231
+#: staffing/views.py:1248 templates/staffing/holidays_report.html:60
+msgid "month"
+msgstr "Mois"
+
+#: staffing/views.py:1249 templates/staffing/holidays_report.html:48
+#: templates/staffing/holidays_report.html:54
+#: templates/staffing/holidays_report.html:59
+msgid "holiday"
+msgstr "congés"
+
+#: staffing/views.py:1252 templates/billing/pre_billing.html:31
+#: templates/staffing/graph_timesheet_rates_bar_jqp.html:65
+#: templates/staffing/holidays_report.html:49
+#: templates/staffing/holidays_report.html:55
+#: templates/staffing/holidays_report.html:61
+msgid "days"
+msgstr "jours"
+
+#: staffing/views.py:1278
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
-#: staffing/views.py:1258 templates/actionset/_base_actions.html:77
+#: staffing/views.py:1305 templates/actionset/_base_actions.html:77
 msgid "You are not allowed to do that"
 msgstr "Vous n'êtes pas autorisé à faire cela"
 
-#: staffing/views.py:1272
+#: staffing/views.py:1319
 msgid "Mission or consultant does not exist"
 msgstr "La mission ou le consultant n'existe pas"
 
-#: staffing/views.py:1274
+#: staffing/views.py:1321
 msgid "Incorrect value"
 msgstr "Valeur incorrecte"
 
@@ -1717,11 +1756,6 @@ msgid "Pre billing for time spent missions"
 msgstr "Pré facturation pour les missions au temps passé"
 
 #: templates/billing/pre_billing.html:31
-#: templates/staffing/graph_timesheet_rates_bar_jqp.html:65
-msgid "days"
-msgstr "jours"
-
-#: templates/billing/pre_billing.html:31
 msgid "rate"
 msgstr "Taux"
 
@@ -1808,7 +1842,7 @@ msgid "Today"
 msgstr "Aujourd'hui"
 
 #: templates/core/_pydici_menu.html:22 templates/core/_pydici_menu.html:106
-#: templates/core/search.html:59 templates/crm/clientcompany_detail.html:29
+#: templates/core/search.html:70 templates/crm/clientcompany_detail.html:29
 #: templates/crm/clientcompany_detail.html:288 templates/leads/leads.html:6
 msgid "Leads"
 msgstr "Affaires"
@@ -1821,7 +1855,7 @@ msgstr "Revue des affaires en cours"
 msgid "New lead"
 msgstr "Nouvelle affaire"
 
-#: templates/core/_pydici_menu.html:33 templates/core/search.html:70
+#: templates/core/_pydici_menu.html:33 templates/core/search.html:81
 #: templates/leads/lead_detail.html:41 templates/people/consultant.html:37
 msgid "Missions"
 msgstr "Missions"
@@ -2135,11 +2169,15 @@ msgstr "Saisissez au moins un mot pour rechercher quelque chose !"
 msgid "Contacts"
 msgstr "Contacts"
 
-#: templates/core/search.html:62
+#: templates/core/search.html:58
+msgid "Tags"
+msgstr "Étiquettes"
+
+#: templates/core/search.html:73
 msgid "no deal id"
 msgstr "pas de n° d'affaire"
 
-#: templates/core/search.html:80
+#: templates/core/search.html:91
 msgid "Client Bills"
 msgstr "Factures clients"
 
@@ -2372,6 +2410,9 @@ msgstr "Jusqu'à "
 #: templates/crm/company_pivotable.html:55
 #: templates/leads/lead_pivotable.html:49
 #: templates/leads/lead_pivotable.html:55
+#: templates/staffing/holidays_report.html:49
+#: templates/staffing/holidays_report.html:55
+#: templates/staffing/holidays_report.html:61
 msgid "Sum"
 msgstr "Somme"
 
@@ -2774,6 +2815,7 @@ msgid "creation date"
 msgstr "date de création"
 
 #: templates/leads/leads_pivotable.html:18
+#: templates/staffing/holidays_report.html:18
 msgid "All"
 msgstr "Tous"
 
@@ -3177,6 +3219,26 @@ msgstr "Taux de production"
 #: templates/staffing/graph_timesheet_rates_bar_jqp.html:65
 msgid "that is"
 msgstr "soit"
+
+#: templates/staffing/holidays_report.html:10
+msgid "Holidays pivot table"
+msgstr "Tableau croisé des congés"
+
+#: templates/staffing/holidays_report.html:13
+msgid "Holiday pivot table"
+msgstr "Tableau croisé des congés"
+
+#: templates/staffing/holidays_report.html:22
+msgid "Holiday graph per consultant"
+msgstr "Graphique des congés par consultant"
+
+#: templates/staffing/holidays_report.html:23
+msgid "Holiday table per consultant"
+msgstr "Tableau des congés par consultant"
+
+#: templates/staffing/holidays_report.html:24
+msgid "Holiday graph per month"
+msgstr "Graphique des congés par mois"
 
 #: templates/staffing/mass_staffing.html:5
 msgid "Massive staffing"
@@ -3762,9 +3824,6 @@ msgstr "Rapport de production"
 
 #~ msgid "Archive %(mission)s"
 #~ msgstr "Archiver la mission %(mission)s"
-
-#~ msgid "month"
-#~ msgstr "Mois"
 
 #~ msgid "Missions administration"
 #~ msgstr "Administration des missions"
