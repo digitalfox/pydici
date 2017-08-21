@@ -1,0 +1,86 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block extrajs %}
+    {% include "core/_c3.html" %}
+    {% include "core/_pivotable_header.html" %}
+{% endblock %}
+
+{% block title %}
+    {% ifequal nature "HOLIDAYS" %}
+        {% trans "Holidays pivot table" %}
+    {% else %}
+        {% trans "Non productive missions pivot table" %}
+    {% endifequal %}
+{% endblock %}
+
+{% block content %}
+        {% ifequal nature "HOLIDAYS" %}
+            <h2>{% trans "Holiday pivot table" %}</h2>
+        {% else %}
+            <h2>{% trans "Non productive missions pivot table" %}</h2>
+        {% endifequal %}
+        <div id="date-selector" class="btn-group" role="group">
+            {% for year in years %}
+                <a class="btn btn-default {% ifequal year selected_year %}active{% endifequal %}"
+                   {% ifequal nature "HOLIDAYS" %}href="{% url 'holidays-pivotable-year' year %}"
+                   {% else %}                     href="{% url 'nonprod-pivotable-year' year %}"
+                   {% endifequal %}
+                    >{{ year }}</a>
+            {% endfor %}
+                <a class="btn btn-default {% ifequal 'all' selected_year %}active{% endifequal %}"
+                   {% ifequal nature "HOLIDAYS" %}href="{% url 'holidays-pivotable-all' %}"
+                   {% else %}                     href="{% url 'nonprod-pivotable-all' %}"
+                   {% endifequal %}
+            >{% trans "All" %}</a>
+        </div>
+
+        <div id="type-selector" class="btn-group" role="group">
+            <button class="btn btn-default active" onclick="graph_per_consultant();">{% trans "Graph per consultant" %}</button>
+            <button class="btn btn-default" onclick="table_per_consultant();">{% trans "Table per consultant" %}</button>
+            <button class="btn btn-default" onclick="graph_per_month();">{% trans "Graph per month" %}</button>
+        </div>
+
+        <div id="pivotable-output" style="margin: 10px;"></div>
+
+        {% with output as "pivotable-output" %}
+            {% include "core/_pivotable_body.html" %}
+        {% endwith %}
+
+        <script type="text/javascript">
+
+            // Active state switcher
+            $(document).ready(function() {
+                $('#type-selector button').click(function() {
+                    $(this).addClass('active').siblings().removeClass('active');
+                 });
+            });
+
+            // Share data for all pivot tables
+            var data = {{ data|safe }};
+
+            // Preset definition
+            function table_per_consultant() {
+                var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"];
+                var cols = ["{% trans 'type' %}"];;
+                drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ['{% trans "days" %}']);
+            }
+
+            function graph_per_consultant() {
+                var rows = ["{% trans 'consultant' %}"];
+                var cols = ["{% trans 'type' %}"];
+                drawPivot(data, rows, cols, "Horizontal Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "days" %}']);
+            }
+
+            function graph_per_month() {
+                var rows = ["{% trans 'type' %}"];
+                var cols = ["{% trans 'month' %}"];
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "days" %}']);
+            }
+
+            // default
+            graph_per_consultant();
+        </script>
+
+{% endblock %}

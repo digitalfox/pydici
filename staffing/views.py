@@ -1211,21 +1211,21 @@ def holidays_planning(request, year=None, month=None):
                    "next_month": next_month,
                    "user": request.user, })
 
+
 @pydici_non_public
 @pydici_feature("reports")
-def holidays_report(request, year=None):
-    """Reports about holidays"""
+def missions_report(request, year=None, nature="HOLIDAYS"):
+    """Reports about holidays or non-prod missions"""
     data = []
     dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
-    timesheets = Timesheet.objects.filter(mission__nature="HOLIDAYS")
+    timesheets = Timesheet.objects.filter(mission__nature=nature)
 
     years = get_fiscal_years(timesheets, "working_date")
 
     if not years:
         return HttpResponse()
-
 
     if year is None and years:
         year = years[-1]
@@ -1245,15 +1245,16 @@ def holidays_report(request, year=None):
     for timesheet in timesheets:
         data.append({
             _(u"month") : timesheet["month"],
-            _(u"holiday"): timesheet["mission__description"],
+            _(u"type"): timesheet["mission__description"],
             _(u"consultant"): timesheet["consultant__name"],
             _(u"subsidiary"): timesheet["consultant__company__name"],
             _(u"days"): timesheet["charge__sum"],
         })
 
-    return render(request, "staffing/holidays_report.html", {"data": json.dumps(data),
+    return render(request, "staffing/missions_report.html", {"data": json.dumps(data),
                                                              "years": years,
                                                              "selected_year": year,
+                                                             "nature": nature,
                                                              "derivedAttributes": [],})
 
 
