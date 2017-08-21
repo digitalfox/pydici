@@ -32,7 +32,7 @@ from leads.utils import postSaveLead
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
 import pydici.settings
-from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text
+from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years
 from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
 
@@ -418,13 +418,20 @@ def leads_pivotable(request, year=None):
     data = []
     leads = Lead.objects.passive()
     derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _("sales"))
+    month = int(get_parameter("FISCAL_YEAR_MONTH"))
+
     if not leads:
         return HttpResponse()
-    years = [str(y.year) for y in leads.dates("creation_date", "year", order="ASC")]
+
+    years = get_fiscal_years(leads, "creation_date")
+
     if year is None and years:
         year = years[-1]
     if year != "all":
-        leads = leads.filter(creation_date__year=year)
+        year = int(year)
+        start = date(year, month, 1)
+        end = date(year + 1, month, 1)
+        leads = leads.filter(creation_date__gte=start, creation_date__lt=end)
     for lead in leads.select_related():
         data.append({_("deal id"): lead.deal_id,
                      _("name"): lead.name,

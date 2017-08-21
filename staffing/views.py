@@ -33,7 +33,7 @@ from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter
+    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, get_fiscal_years
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent
@@ -1221,20 +1221,19 @@ def holidays_report(request, year=None):
 
     timesheets = Timesheet.objects.filter(mission__nature="HOLIDAYS")
 
-    years = [str(y.year) for y in timesheets.dates("working_date", "year", order="ASC")]
+    years = get_fiscal_years(timesheets, "working_date")
+
     if not years:
         return HttpResponse()
 
-    boundary = timesheets.aggregate(Max("working_date")).values()[0].month
-    if boundary < month:
-        years.pop()  # Still part of previous fiscal year, so we remove the fake last year
 
     if year is None and years:
         year = years[-1]
 
     if year != "all":
-        start = date(int(year), month, 1)
-        end = date(int(year)+1, month, 1)
+        year = int(year)
+        start = date(year, month, 1)
+        end = date(year+1, month, 1)
         timesheets = timesheets.filter(working_date__gte=start, working_date__lt=end)
 
     if not timesheets:

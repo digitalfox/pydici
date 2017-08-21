@@ -23,6 +23,7 @@ from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
 from django.core import urlresolvers
 from django.core.cache import cache
+from django.db.models import Max, Min
 
 import pydici.settings
 
@@ -431,3 +432,20 @@ def get_parameter(key):
             value = parameter.value
         cache.set(Parameter.PARAMETER_CACHE_KEY % key, value, 3600*24)
     return value
+
+def get_fiscal_years(queryset, date_field_name):
+    """Extract fiscal years of items in query set.
+    :return list of fiscal years as int"""
+    years = [y.year for y in queryset.dates(date_field_name, "year", order="ASC")]
+    if not years:
+        return []
+
+    max_boundary = queryset.aggregate(Max(date_field_name)).values()[0].month
+    min_boundary = queryset.aggregate(Min(date_field_name)).values()[0].month
+    month = get_parameter("FISCAL_YEAR_MONTH")
+    if min_boundary < month:
+        years.insert(0, years[0]-1)  # First date year is part of previous year. Let's add it
+    if max_boundary < month:
+        years.pop()  # Last date year is in fact part of previous fiscal year. Let's remove it
+
+    return [int(y) for y in years]
