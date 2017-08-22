@@ -440,12 +440,11 @@ def get_fiscal_years(queryset, date_field_name):
     if not years:
         return []
 
-    max_boundary = queryset.aggregate(Max(date_field_name)).values()[0].month
-    min_boundary = queryset.aggregate(Min(date_field_name)).values()[0].month
+    min_boundary, max_boundary = queryset.aggregate(Min(date_field_name), Max(date_field_name)).values()
     month = get_parameter("FISCAL_YEAR_MONTH")
-    if min_boundary < month:
+    if min_boundary.month < month:
         years.insert(0, years[0]-1)  # First date year is part of previous year. Let's add it
-    if max_boundary < month:
+    if max_boundary.month < month:
         years.pop()  # Last date year is in fact part of previous fiscal year. Let's remove it
 
     return [int(y) for y in years]

@@ -1236,9 +1236,6 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
         end = date(year+1, month, 1)
         timesheets = timesheets.filter(working_date__gte=start, working_date__lt=end)
 
-    if not timesheets:
-        return HttpResponse()
-
     timesheets =timesheets.extra(select={'month': dateTrunc("month", "working_date")})
     timesheets = timesheets.values("month", "mission__description", "consultant__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
 
