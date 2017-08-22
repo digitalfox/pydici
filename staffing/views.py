@@ -1220,7 +1220,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
     dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
-    timesheets = Timesheet.objects.filter(mission__nature=nature)
+    timesheets = Timesheet.objects.filter(mission__nature=nature, working_date__lte=date.today())
 
     years = get_fiscal_years(timesheets, "working_date")
 
