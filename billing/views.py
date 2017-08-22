@@ -16,6 +16,7 @@ from django.core import urlresolvers
 from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import Sum, Q
 from django.views.decorators.cache import cache_page
+from django.utils.translation import ugettext as _
 
 from billing.models import ClientBill, SupplierBill
 from leads.models import Lead
@@ -296,6 +297,7 @@ def graph_yearly_billing(request):
     data = {}
     graph_data = []
     labels = []
+    growth = []
     subsidiaries = Subsidiary.objects.all()
     for subsidiary in subsidiaries:
         data[subsidiary.name] = []
@@ -307,14 +309,27 @@ def graph_yearly_billing(request):
         for subsidiary in subsidiaries:
             data[subsidiary.name].append(turnover.get(subsidiary.name, 0))
 
-    graph_data.append(["x"] + years)
+    last_turnover = 0
+    for current_turnover in [sum(i) for i in zip(*data.values())]:  # Total per year
+        if last_turnover > 0:
+            growth.append(round(100 * (current_turnover - last_turnover) / last_turnover, 1))
+        else:
+            growth.append(0)
+        last_turnover = current_turnover
 
+    graph_data.append(["x"] + years)  # X (years) axis
+
+    # Add turnover per subsidiary
     for key, value in data.items():
         if sum(value) == 0:
             continue
         value.insert(0, key)
         graph_data.append(value)
         labels.append(key)
+
+    # Add growth
+    graph_data.append([_("growth")] + growth)
+    labels.append(_("growth"))
 
     return render(request, "billing/graph_yearly_billing.html",
                   {"graph_data": json.dumps(graph_data),

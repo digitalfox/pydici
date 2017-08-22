@@ -11,7 +11,9 @@
          x: 'x',
          columns: {{ graph_data | safe }},
          type: 'bar',
+         types : { '{% trans "growth" %}' : 'spline' },
          groups: [{{ subsidiaries | safe }}],
+         axes : { '{% trans "growth" %}': 'y2' },
          },
 
     axis: {
@@ -23,10 +25,17 @@
         },
         y: {
             label : {
-                text: '{% trans "turnover (€)" %}',
+                text: "{% trans "turnover (€)" %}",
                 position: 'outer-middle',
             },
         },
+        y2: {
+            show: true,
+            label : {
+                text: "{% trans "growth" %}",
+                position: 'outer-middle',
+             },
+         },
     },
   });
 </script>
