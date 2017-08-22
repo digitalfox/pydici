@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-22 08:54+0200\n"
-"PO-Revision-Date: 2017-08-22 08:53+0100\n"
+"POT-Creation-Date: 2017-08-22 23:09+0200\n"
+"PO-Revision-Date: 2017-08-22 23:09+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -376,7 +376,7 @@ msgstr "factures en retard"
 msgid "sent bills"
 msgstr "factures envoyées"
 
-#: core/views.py:330 core/views.py:348 staffing/views.py:1248
+#: core/views.py:330 core/views.py:348 staffing/views.py:1249
 #: templates/core/risks.html:40 templates/core/risks.html.py:47
 #: templates/staffing/missions_report.html:66
 #: templates/staffing/missions_report.html:72
@@ -384,8 +384,8 @@ msgstr "factures envoyées"
 msgid "type"
 msgstr "type"
 
-#: core/views.py:331 core/views.py:349 leads/views.py:446
-#: staffing/models.py:302 staffing/views.py:1250 templates/core/risks.html:40
+#: core/views.py:331 core/views.py:349 leads/views.py:448
+#: staffing/models.py:302 staffing/views.py:1251 templates/core/risks.html:40
 #: templates/core/risks.html.py:46 templates/leads/lead_pivotable.html:47
 #: templates/leads/leads.html:17 templates/leads/leads_pivotable.html:53
 #: templates/leads/leads_pivotable.html:60 templates/staffing/missions.html:27
@@ -1023,29 +1023,29 @@ msgstr "prix (interval)"
 msgid "sales"
 msgstr "Prix"
 
-#: leads/views.py:436 templates/leads/leads.html:16
+#: leads/views.py:438 templates/leads/leads.html:16
 msgid "deal id"
 msgstr "N° affaire"
 
-#: leads/views.py:437 templates/crm/_contact_list.html:9
+#: leads/views.py:439 templates/crm/_contact_list.html:9
 #: templates/crm/contact_detail.html:20 templates/crm/contact_list.html:12
 #: templates/leads/leads.html:15 templates/staffing/missions.html:26
 msgid "name"
 msgstr "nom"
 
-#: leads/views.py:438
+#: leads/views.py:440
 msgid "client organisation"
 msgstr "département"
 
-#: leads/views.py:439 templates/leads/leads_pivotable.html:59
+#: leads/views.py:441 templates/leads/leads_pivotable.html:59
 msgid "client company"
 msgstr "entreprise"
 
-#: leads/views.py:440
+#: leads/views.py:442
 msgid "sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/views.py:441 staffing/models.py:304
+#: leads/views.py:443 staffing/models.py:304
 #: templates/crm/company_pivotable.html:48
 #: templates/crm/company_pivotable.html:54
 #: templates/leads/lead_pivotable.html:48
@@ -1053,22 +1053,22 @@ msgstr "C.A. (k€)"
 msgid "date"
 msgstr "date"
 
-#: leads/views.py:442 templates/leads/leads.html:18
+#: leads/views.py:444 templates/leads/leads.html:18
 #: templates/leads/leads_pivotable.html:53
 #: templates/leads/leads_pivotable.html:60 templates/staffing/missions.html:28
 msgid "responsible"
 msgstr "responsable"
 
-#: leads/views.py:443
+#: leads/views.py:445
 msgid "broker"
 msgstr "apporteur"
 
-#: leads/views.py:444 templates/leads/leads_pivotable.html:47
+#: leads/views.py:446 templates/leads/leads_pivotable.html:47
 #: templates/leads/leads_pivotable.html:61
 msgid "state"
 msgstr "état"
 
-#: leads/views.py:445 templates/leads/leads_pivotable.html:62
+#: leads/views.py:447 templates/leads/leads_pivotable.html:62
 msgid "billed (€)"
 msgstr "facturé (€)"
 
@@ -1298,7 +1298,7 @@ msgstr "N° de mission"
 msgid "mission name"
 msgstr "Nom mission"
 
-#: staffing/models.py:301 staffing/views.py:1249
+#: staffing/models.py:301 staffing/views.py:1250
 #: templates/billing/pre_billing.html:31
 #: templates/leads/lead_pivotable.html:47
 #: templates/leads/lead_pivotable.html:53
@@ -1459,11 +1459,11 @@ msgstr "Jours réalisés"
 msgid "Days to be done"
 msgstr "Jours à faire"
 
-#: staffing/views.py:1247 templates/staffing/missions_report.html:78
+#: staffing/views.py:1248 templates/staffing/missions_report.html:78
 msgid "month"
 msgstr "Mois"
 
-#: staffing/views.py:1251 templates/billing/pre_billing.html:31
+#: staffing/views.py:1252 templates/billing/pre_billing.html:31
 #: templates/staffing/graph_timesheet_rates_bar_jqp.html:65
 #: templates/staffing/missions_report.html:67
 #: templates/staffing/missions_report.html:73
@@ -1471,19 +1471,19 @@ msgstr "Mois"
 msgid "days"
 msgstr "jours"
 
-#: staffing/views.py:1278
+#: staffing/views.py:1279
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
-#: staffing/views.py:1305 templates/actionset/_base_actions.html:77
+#: staffing/views.py:1306 templates/actionset/_base_actions.html:77
 msgid "You are not allowed to do that"
 msgstr "Vous n'êtes pas autorisé à faire cela"
 
-#: staffing/views.py:1319
+#: staffing/views.py:1320
 msgid "Mission or consultant does not exist"
 msgstr "La mission ou le consultant n'existe pas"
 
-#: staffing/views.py:1321
+#: staffing/views.py:1322
 msgid "Incorrect value"
 msgstr "Valeur incorrecte"
 
@@ -1716,6 +1716,10 @@ msgstr "Montant prévu"
 #: templates/billing/graph_billing_jqp.html:61
 msgid "Weighted forecasted work"
 msgstr "Montant prévu pondéré"
+
+#: templates/billing/graph_yearly_billing.html:26
+msgid "turnover (€)"
+msgstr "Chiffre d'affaire (€)"
 
 #: templates/billing/payment_delay.html:4 templates/core/_pydici_menu.html:117
 msgid "Payment delay review"
@@ -1955,7 +1959,7 @@ msgstr "Rapports"
 msgid "Operationnal reporting"
 msgstr "Rapports opérationnels"
 
-#: templates/core/_pydici_menu.html:101 templates/core/dashboard.html:9
+#: templates/core/_pydici_menu.html:101 templates/core/dashboard.html:10
 msgid "Management dashboard"
 msgstr "Tableau de bord de gestion"
 
@@ -2044,22 +2048,26 @@ msgstr "Page d'aide"
 msgid "search"
 msgstr "chercher"
 
-#: templates/core/dashboard.html:14
+#: templates/core/dashboard.html:15
 msgid "Commercial activity"
 msgstr "Activité commerciale"
 
-#: templates/core/dashboard.html:21 templates/staffing/pdc_review.html:141
+#: templates/core/dashboard.html:22 templates/staffing/pdc_review.html:141
 #: templates/staffing/prod_report.html:87
 msgid "Production rates and daily rates review"
 msgstr "Suivi du taux de production et des TJM"
 
-#: templates/core/dashboard.html:34
+#: templates/core/dashboard.html:35
 msgid "Billing review and done work"
 msgstr "Suivi de la facturation comparé au travail réalisé/engagé"
 
-#: templates/core/dashboard.html:42
+#: templates/core/dashboard.html:43
 msgid "Sales repartition per client"
 msgstr "Répartition du chiffre d'affaire facturé par client"
+
+#: templates/core/dashboard.html:54
+msgid "Billing per subsidiary per year"
+msgstr "Facturation par filiale et par an"
 
 #: templates/core/delete.html:6
 #, python-format
@@ -3950,10 +3958,6 @@ msgstr "Rapport de production"
 #, fuzzy
 #~ msgid "prod. Rate"
 #~ msgstr "Taux de prod."
-
-#, fuzzy
-#~ msgid "Done (€)"
-#~ msgstr "Montant réalisé (€)"
 
 #~ msgid "Total amount for soon due bills (€ exc. tax.): "
 #~ msgstr "Montant total pour les factures en retard (€ HT) : "
