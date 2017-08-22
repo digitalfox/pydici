@@ -1,0 +1,32 @@
+{# Fragment that display yearly turnover graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_c3.html to load according js/css #} {% load i18n %}
+
+<div id="yearly_billing_graph"></div>
+
+
+<script type="text/javascript">
+    var chart = c3.generate({
+    bindto: '#yearly_billing_graph',
+    data: {
+         x: 'x',
+         columns: {{ graph_data | safe }},
+         type: 'bar',
+         groups: [{{ subsidiaries | safe }}],
+         },
+
+    axis: {
+        x: {
+            tick: {
+                format: '%Y-%m',
+                rotate: 45,
+            },
+        },
+        y: {
+            label : {
+                text: '{% trans "turnover (€)" %}',
+                position: 'outer-middle',
+            },
+        },
+    },
+  });
+</script>

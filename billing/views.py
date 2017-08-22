@@ -21,10 +21,8 @@ from billing.models import ClientBill, SupplierBill
 from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
-from staffing.utils import gatherTimesheetData
-from crm.models import Company
-from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round, working_days
-from staffing.utils import holidayDays
+from crm.models import Company, Subsidiary
+from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round, get_fiscal_years, get_parameter
 from core.decorator import pydici_non_public, pydici_feature
 
 
@@ -284,4 +282,43 @@ def graph_billing_jqp(request):
                    "series_label": [i[1] for i in ClientBill.CLIENT_BILL_STATE],
                    "series_colors": COLORS,
                    # "min_date": min_date,
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+@cache_page(60 * 10)
+def graph_yearly_billing(request):
+    """Fiscal year billing per subsidiary"""
+    bills = ClientBill.objects.filter(state__in=("1_SENT", "2_PAID"))
+    years = get_fiscal_years(bills, "creation_date")
+    month = int(get_parameter("FISCAL_YEAR_MONTH"))
+    data = {}
+    graph_data = []
+    labels = []
+    subsidiaries = Subsidiary.objects.all()
+    for subsidiary in subsidiaries:
+        data[subsidiary.name] = []
+
+    for year in years:
+        turnover = {}
+        for subsidiary_name, amount in bills.filter(creation_date__gte=date(year, month, 1), creation_date__lt=date(year + 1, month, 1)).values_list("lead__subsidiary__name").annotate(Sum("amount")):
+            turnover[subsidiary_name] = float(amount)
+        for subsidiary in subsidiaries:
+            data[subsidiary.name].append(turnover.get(subsidiary.name, 0))
+
+    graph_data.append(["x"] + years)
+
+    for key, value in data.items():
+        if sum(value) == 0:
+            continue
+        value.insert(0, key)
+        graph_data.append(value)
+        labels.append(key)
+
+    return render(request, "billing/graph_yearly_billing.html",
+                  {"graph_data": json.dumps(graph_data),
+                   "years": years,
+                   "subsidiaries" : json.dumps(labels),
+                   "series_colors": COLORS,
                    "user": request.user})

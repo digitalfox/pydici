@@ -17,4 +17,5 @@ billing_urls = patterns('billing.views',
                         url(r'^pre_billing/(?P<year>\d+)/(?P<month>\d+)/$', 'pre_billing', {"mine": False, }),
                         url(r'^pre_billing/(?P<year>\d+)/(?P<month>\d+)/mine$', 'pre_billing', {"mine": True, }),
                         (r'^graph/billing-jqp$', 'graph_billing_jqp'),
+                        (r'^graph/yearly-billing$', 'graph_yearly_billing'),
                         )
