@@ -15,6 +15,7 @@ admin.autodiscover()
 
 # Pydici settings
 import pydici.settings
+from core.utils import get_parameter
 
 # Feeds definition
 from leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
@@ -43,7 +44,7 @@ if pydici.settings.DEBUG:
 
 pydici_patterns += patterns('',
     # Direct to template and direct pages
-    url(r'^help', RedirectView.as_view(url=pydici.settings.LEADS_HELP_PAGE, permanent=True), name='help'),
+    url(r'^help', RedirectView.as_view(url=get_parameter("HELP_PAGE"), permanent=True), name='help'),
 
     # Media
     (r'^media/(?P<path>.*)$', 'django.views.static.serve',

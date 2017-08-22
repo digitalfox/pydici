@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Count, Q, Max
 from django.db import connections
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
@@ -33,7 +33,7 @@ from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature
+    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, get_fiscal_years
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent
@@ -1210,6 +1210,53 @@ def holidays_planning(request, year=None, month=None):
                    "previous_month": previous_month,
                    "next_month": next_month,
                    "user": request.user, })
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def missions_report(request, year=None, nature="HOLIDAYS"):
+    """Reports about holidays or non-prod missions"""
+    data = []
+    dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
+    month = int(get_parameter("FISCAL_YEAR_MONTH"))
+
+    timesheets = Timesheet.objects.filter(mission__nature=nature)
+
+    years = get_fiscal_years(timesheets, "working_date")
+
+    if not years:
+        return HttpResponse()
+
+    if year is None and years:
+        year = years[-1]
+
+    if year != "all":
+        year = int(year)
+        start = date(year, month, 1)
+        end = date(year+1, month, 1)
+        timesheets = timesheets.filter(working_date__gte=start, working_date__lt=end)
+
+    if not timesheets:
+        return HttpResponse()
+
+    timesheets =timesheets.extra(select={'month': dateTrunc("month", "working_date")})
+    timesheets = timesheets.values("month", "mission__description", "consultant__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
+
+    for timesheet in timesheets:
+        data.append({
+            _(u"month") : timesheet["month"],
+            _(u"type"): timesheet["mission__description"],
+            _(u"consultant"): timesheet["consultant__name"],
+            _(u"subsidiary"): timesheet["consultant__company__name"],
+            _(u"days"): timesheet["charge__sum"],
+        })
+
+    return render(request, "staffing/missions_report.html", {"data": json.dumps(data),
+                                                             "years": years,
+                                                             "selected_year": year,
+                                                             "nature": nature,
+                                                             "derivedAttributes": [],})
+
 
 
 @pydici_non_public
