@@ -432,7 +432,9 @@ def leads_pivotable(request, year=None):
         start = date(year, month, 1)
         end = date(year + 1, month, 1)
         leads = leads.filter(creation_date__gte=start, creation_date__lt=end)
-    for lead in leads.select_related():
+    leads = leads.select_related("responsible", "client__contact", "client__organisation__company", "subsidiary",
+                         "business_broker__company", "business_broker__contact")
+    for lead in leads:
         data.append({_("deal id"): lead.deal_id,
                      _("name"): lead.name,
                      _("client organisation"): unicode(lead.client.organisation),
