@@ -1243,8 +1243,12 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
     timesheets = timesheets.values("month", "mission__description", "consultant__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
 
     for timesheet in timesheets:
+        # Thank you sqlite for those sad lines of code
+        month = timesheet["month"]
+        if month and isinstance(month, (datetime, date)):
+            month = month.strftime("%Y-%m")
         data.append({
-            _(u"month") : timesheet["month"],
+            _(u"month") : month,
             _(u"type"): timesheet["mission__description"],
             _(u"consultant"): timesheet["consultant__name"],
             _(u"subsidiary"): timesheet["consultant__company__name"],
