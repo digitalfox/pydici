@@ -314,8 +314,11 @@ def graph_yearly_billing(request):
         if last_turnover > 0:
             growth.append(round(100 * (current_turnover - last_turnover) / last_turnover, 1))
         else:
-            growth.append(0)
+            growth.append(None)
         last_turnover = current_turnover
+
+    if years[-1] == date.today().year:
+        growth.pop()  # Don't compute for on-going year.
 
     graph_data.append(["x"] + years)  # X (years) axis
 
