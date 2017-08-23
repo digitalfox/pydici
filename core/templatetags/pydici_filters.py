@@ -7,6 +7,9 @@ Pydici custom filters
 
 import re
 
+import markdown
+import bleach
+
 from django import template
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
@@ -135,16 +138,11 @@ def get_admin_mail(value, arg=None):
 
 @register.filter
 def pydici_simple_format(value, arg=None):
-    """Very simple markup formating.
-    Markdown and rst are too much complicated"""
+    """Very simple markup formating based on markdown and custom links"""
     dealIds = [i[0] for i in Lead.objects.exclude(deal_id="").values_list("deal_id")]
     trigrammes = [i[0] for i in Consultant.objects.values_list("trigramme")]
 
-    # format *word* and _word_ and look for deal ids
-    value = stared_text.sub(r"\g<before><strong>\g<content></strong>\g<after>", value)
-    value = underlined_text.sub(r"\g<before><em>\g<content></em>\g<after>", value)
     result = []
-    inList = False  # Flag to indicate we are in a list
     for line in value.split("\n"):
         newline = []
         for word in line.split():
@@ -153,18 +151,15 @@ def pydici_simple_format(value, arg=None):
             if word in trigrammes:
                 word = u"<a href='%s'>%s</a>" % (Consultant.objects.get(trigramme=word).get_absolute_url(), word)
             newline.append(word)
-        line = " ".join(newline)
+        result.append(" ".join(newline))
 
-        if bullet_point.match(line):
-            if not inList:
-                result.append(u"<ul>")
-            result.append(u"<li>%s</li>" % line.strip().lstrip("*").lstrip("-"))
-            inList = True
-        else:
-            if inList:
-                result.append(u"</ul>")
-            result.append(line + u"\n")
-            inList = False
-    value = "".join(result)
+    result = "\n".join(result)
 
-    return mark_safe(value)
+    # Authorized tags for markdown (thanks https://github.com/yourcelf/bleach-whitelist/blob/master/bleach_whitelist/bleach_whitelist.py)
+    markdown_tags = ["h1", "h2", "h3", "h4", "h5", "h6", "b", "i", "strong", "em", "tt", "p", "br",
+                     "span", "div", "blockquote", "code", "hr","ul", "ol", "li", "dd", "dt", "img","a"]
+    markdown_attrs = {"img": ["src", "alt", "title"],  "a": ["href", "alt", "title"] }
+
+    result = bleach.clean(markdown.markdown(result), tags=markdown_tags, attributes=markdown_attrs)
+
+    return mark_safe(result)

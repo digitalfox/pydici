@@ -14,3 +14,5 @@ lxml==3.4.2
 python-memcached==1.54
 django-datatables-view==1.13.2
 django-background-tasks==1.1.9
+bleach==2.0.0
+Markdown==2.6.9
