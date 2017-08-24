@@ -325,21 +325,21 @@ def predict_tags(lead):
         return []
     features = get_lead_tag_data(lead)
     scores = model.predict_proba([features,])
-    proba = []
-    for tag, score in zip(model.classes_, scores[0]):
-        try:
-            proba.append([Tag.objects.get(name=unicode(tag)), round(100*score,1)])
-        except (Tag.DoesNotExist,Tag.MultipleObjectsReturned):
-            # Tag was removed or two tag with same name (bad data before data cleaning)
-            pass
+    proba = zip(model.classes_, scores[0])
     proba.sort(key=lambda x: x[1])
     best_proba = []
     for i in range(3):
         try:
-            best_proba.append(proba.pop())
+            tag, score = proba.pop()
+            tag = Tag.objects.get(name=unicode(tag))
+            best_proba.append(tag)
         except IndexError:
-            break
-    return [i[0] for i in best_proba]
+            break  # No more tag for this lead
+        except (Tag.DoesNotExist,Tag.MultipleObjectsReturned):
+            # Tag was removed or two tag with same name (bad data before data cleaning)
+            pass
+
+    return best_proba
 
 
 def predict_similar(lead):
