@@ -235,7 +235,7 @@ def mail_lead(request, lead_id=0):
     try:
         send_lead_mail(lead)
         return HttpResponse(_("Lead %(id)s was sent to %(mail)s !") % {"id": lead_id,
-                                                                       "mail": get_parameter("LEADS_MAIL_TO")})
+                                                                       "mail": get_parameter("LEAD_MAIL_TO")})
     except Exception, e:
         return HttpResponse(_("Failed to send mail: %s") % e)
 

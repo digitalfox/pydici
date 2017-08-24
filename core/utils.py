@@ -52,7 +52,7 @@ def send_lead_mail(lead, request, fromAddr=None, fromName=""):
                                                                                   "lead_url": url}))
     msgHtml = get_template("leads/lead_mail.html").render(RequestContext(request, {"obj": lead,
                                                                                    "lead_url": url}))
-    msg = EmailMultiAlternatives(subject, msgText, fromAddr, [get_parameter("LEADS_MAIL_TO"), ])
+    msg = EmailMultiAlternatives(subject, msgText, fromAddr, [get_parameter("LEAD_MAIL_TO"), ])
     msg.attach_alternative(msgHtml, "text/html")
     msg.send()
 
