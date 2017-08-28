@@ -1,0 +1,17 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Find similar consultant" %}{% endblock %}
+
+{% block content %}
+
+{% crispy form form.helper %}
+
+<ul>
+{% for consultant in result %}
+    <li><a href="{{ consultant.get_absolute_url }}">{{ consultant }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}

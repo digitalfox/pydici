@@ -11,10 +11,12 @@ from django.shortcuts import render, redirect
 from django.http import Http404
 
 from people.models import Consultant
+from people.learn import predict_similar
 from crm.models import Company
 from staffing.models import Holiday, Timesheet
 from core.decorator import pydici_non_public
 from core.utils import working_days, previousMonth, nextMonth
+from people.forms import SimilarConsultantForm
 
 
 def _consultant_home(request, consultant):
@@ -159,4 +161,20 @@ def subcontractor_detail(request, consultant_id):
                    "missions": missions,
                    "companies": companies,
                    "leads_as_staffee": leads_as_staffee,
+                   "user": request.user})
+
+
+def similar_consultant(request):
+    """This page allows to find a consultant by its experience or similar to another"""
+    result = []
+    if request.method == "POST":
+        form = SimilarConsultantForm(request.POST)
+        if form.is_valid():
+            result = predict_similar(form.cleaned_data["consultant"])
+    else:
+        form = SimilarConsultantForm() # An unbound form
+
+    return render(request, "people/similar_consultant.html",
+                  {"form": form,
+                   "result": result,
                    "user": request.user})

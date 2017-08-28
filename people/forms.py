@@ -5,13 +5,18 @@ People form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.forms import models
+from django import forms
+from django.forms import ModelChoiceField
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Div, Column, Field
+
 
 from people.models import Consultant, SalesMan
+from core.forms import PydiciCrispyForm
 
 
 class ConsultantChoices(ModelSelect2Widget):
@@ -38,7 +43,7 @@ class SalesManChoices(ModelSelect2Widget):
         return SalesMan.objects.filter(active=True)
 
 
-class ConsultantForm(models.ModelForm):
+class ConsultantForm(forms.models.ModelForm):
     class Meta:
         model = Consultant
         fields = "__all__"
@@ -49,3 +54,12 @@ class ConsultantForm(models.ModelForm):
             raise ValidationError(_("Subcontractor company can only be defined for subcontractors"))
         else:
             return self.cleaned_data["subcontractor_company"]
+
+class SimilarConsultantForm(PydiciCrispyForm):
+    consultant = ModelChoiceField(widget = ConsultantChoices(attrs={'data-placeholder':_("Select a similar consultant...")}), queryset=Consultant.objects)
+
+    def __init__(self, *args, **kwargs):
+        super(SimilarConsultantForm, self).__init__(*args, **kwargs)
+        self.helper.layout = Layout(Div(Column("consultant", css_class="col-md-6"),
+                                        css_class="row"),
+                                    self.submit)

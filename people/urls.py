@@ -12,4 +12,5 @@ people_urls = patterns('people.views',
                        (r'^home/consultant/(?P<consultant_trigramme>[a-zA-Z]{3})/$', 'consultant_home'),
                        (r'^detail/consultant/(?P<consultant_id>\d+)/$', 'consultant_detail'),
                        (r'^detail/subcontractor/(?P<consultant_id>\d+)/$', 'subcontractor_detail'),
+                       (r'^similar_consultant/$', 'similar_consultant'),
                        )
