@@ -371,7 +371,7 @@ def tableToCSV(table, filename="data.csv"):
     header = [column.header for column in table.columns]
     writer.writerow([h.encode("iso8859-1") for h in header])
     for row in table.rows:
-        row = [strip_tags(cell) for column, cell in row.items()]
+        row = [strip_tags(unicode(cell)) for column, cell in row.items()]
         writer.writerow([item.encode("iso8859-1", "ignore") for item in row])
     return response
 
