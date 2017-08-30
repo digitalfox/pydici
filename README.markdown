@@ -110,7 +110,7 @@ Your installation uses South if there is a `south_migrationhistory`
 Scikit learn is a machine learning framework for python. It is an optional Pydici deps that can predict leads tags and state.
 Some comments:
 
-- You need to install scikit-learn, numpy and scipy
+- You need to install scikit-learn, numpy and scipy (pip install -r requirements-sklearn.txt)
 - You might need to add the following directive in your apache virual host file to avoid some nasty deadlock during init when using scikit learn : WSGIApplicationGroup %{GLOBAL}
 - For proper model caching, you might need to increase memcached object size (1m => 10m) as well as your python client memcache (hardcoded in lib for python-memcached...sic).
 
