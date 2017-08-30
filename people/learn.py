@@ -64,14 +64,20 @@ def get_similarity_model():
 
 
 ############# Entry points for prediction ##########################
-def predict_similar(consultant):
+def predict_similar_consultant(consultant):
+    features = consultant_cumulated_experience(consultant)
+    similar_consultant = predict_similar(features)
+    return similar_consultant.exclude(pk=consultant.id)
+
+
+def predict_similar(features):
     model = compute_consultant_similarity.now()
     consultants_ids = cache.get(SIMILARITY_CONSULTANT_IDS_CACHE_KEY)
     similar_consultants = []
     if model is None:
         # cannot compute model (ex. not enough data, no scikit...)
         return []
-    features = consultant_cumulated_experience(consultant)
+
     vect = model.named_steps["vect"]
     neigh = model.named_steps["neigh"]
     scaler = model.named_steps["scaler"]
@@ -80,7 +86,7 @@ def predict_similar(consultant):
     if indices.any():
         try:
             similar_consultants_ids = [consultants_ids[indice] for indice in indices[0]]
-            similar_consultants = Consultant.objects.filter(pk__in=similar_consultants_ids).exclude(pk=consultant.id).select_related()
+            similar_consultants = Consultant.objects.filter(pk__in=similar_consultants_ids).select_related()
         except IndexError:
             print("While searching for consultant similarity, some consultant disapeared !")
     return similar_consultants

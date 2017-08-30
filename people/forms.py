@@ -12,11 +12,13 @@ from django.core.exceptions import ValidationError
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Column, Field
+from crispy_forms.layout import Submit, Layout, Div, Column, Field, Fieldset
+from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, StrictButton, FieldWithButtons
+from taggit.models import Tag
 
 
 from people.models import Consultant, SalesMan
-from core.forms import PydiciCrispyForm
+from core.forms import PydiciCrispyForm, TagChoices
 
 
 class ConsultantChoices(ModelSelect2Widget):
@@ -56,10 +58,11 @@ class ConsultantForm(forms.models.ModelForm):
             return self.cleaned_data["subcontractor_company"]
 
 class SimilarConsultantForm(PydiciCrispyForm):
-    consultant = ModelChoiceField(widget = ConsultantChoices(attrs={'data-placeholder':_("Select a similar consultant...")}), queryset=Consultant.objects)
+    consultant = ModelChoiceField(widget=ConsultantChoices(attrs={'data-placeholder':_("Select a similar consultant...")}), queryset=Consultant.objects, required=False)
+    tag = ModelChoiceField(widget=TagChoices(attrs={'data-placeholder': _("Select a tag...")}), queryset=Tag.objects, required=False)
 
     def __init__(self, *args, **kwargs):
         super(SimilarConsultantForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column("consultant", css_class="col-md-6"),
-                                        css_class="row"),
+        self.helper.layout = Layout(Fieldset(_("Similar consultant"), Field("consultant", css_class="col-md-6")),
+                                    Fieldset(_("Robot portrail"), Field("tag", css_class="col-md-3")),
                                     self.submit)

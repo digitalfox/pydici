@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django_select2.forms import ModelSelect2Widget
+from taggit.models import Tag
 
 
 class SearchForm(forms.Form):
@@ -24,6 +25,14 @@ class UserChoices(ModelSelect2Widget):
 
     def get_queryset(self):
         return User.objects.filter(is_active=True)
+
+
+class TagChoices(ModelSelect2Widget):
+    model = Tag
+    search_fields = ["name__icontains"]
+
+    def get_queryset(self):
+        return Tag.objects.all()
 
 
 class PydiciCrispyBaseForm(object):

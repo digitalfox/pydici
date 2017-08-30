@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from django.http import Http404
 
 from people.models import Consultant
-from people.learn import predict_similar
+from people.learn import predict_similar, predict_similar_consultant
 from crm.models import Company
 from staffing.models import Holiday, Timesheet
 from core.decorator import pydici_non_public
@@ -170,7 +170,13 @@ def similar_consultant(request):
     if request.method == "POST":
         form = SimilarConsultantForm(request.POST)
         if form.is_valid():
-            result = predict_similar(form.cleaned_data["consultant"])
+            consultant = form.cleaned_data["consultant"]
+            tag = form.cleaned_data["tag"]
+            if consultant:
+                result = predict_similar_consultant(form.cleaned_data["consultant"])
+            if tag:
+                result = predict_similar({tag.name: 1})
+
     else:
         form = SimilarConsultantForm() # An unbound form
 
