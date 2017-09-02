@@ -19,8 +19,19 @@
     </div>
 </div>
 
+<br/>
 
-<h1>{% trans "Pre billing for time spent missions" %} - {{ month|date:"F Y" }}</h1>
+<div class="row">
+    <ul>
+        <li><h2><a href="#client-timespent">{% trans "Pre billing for time spent missions" %}</a></h2></li>
+        <li><h2><a href="#client-fixedprice">{% trans "Pre billing for fixed price missions" %}</a></h2></li>
+        <li><h2><a href="#internal">{% trans "Pre billing between subsidiaries" %}</a></h2></li>
+    </ul>
+</div>
+
+<div class="page-header">
+    <h1 id="client-timespent">{% trans "Pre billing for time spent missions" %} - {{ month|date:"F Y" }}</h1>
+</div>
 {% for lead, lead_data in time_spent_billing %}
     <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
     {% for mission, mission_data in lead_data.1.items %}
@@ -50,7 +61,9 @@
      <br/><br/><hr/>
 {% endfor %}
 
-<h1>{% trans "Pre billing for fixed price missions" %} - {{ month|date:"F Y" }}</h1>
+<div class="page-header">
+    <h1 id="client-fixedprice">{% trans "Pre billing for fixed price missions" %} - {{ month|date:"F Y" }}</h1>
+</div>
 <div><ul>
 {% for mission in fixed_price_missions %}
     {% ifchanged mission.lead %}
@@ -69,8 +82,11 @@
 </div>
 
 
+<div id="internal"></div>
 {% for subsidiaries, subsidiary_internal_billing in internal_billing.items %}
-    <h1>{% blocktrans with from=subsidiaries.0 to=subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} - {{ month|date:"F Y" }}</h1>
+    <div class="page-header">
+        <h1>{% blocktrans with from=subsidiaries.0 to=subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} - {{ month|date:"F Y" }}</h1>
+    </div>
     {% for lead, lead_data in subsidiary_internal_billing %}
         <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
         {% for mission, mission_data in lead_data.1.items %}
