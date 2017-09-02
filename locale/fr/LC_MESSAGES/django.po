@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-22 23:27+0200\n"
-"PO-Revision-Date: 2017-08-22 23:27+0100\n"
+"POT-Creation-Date: 2017-09-03 00:47+0200\n"
+"PO-Revision-Date: 2017-09-03 00:47+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -259,9 +259,10 @@ msgstr "N° de facture fournisseur"
 msgid "Supplier Bill"
 msgstr "Facture fournisseur"
 
-#: billing/views.py:331 billing/views.py:332
+#: billing/views.py:332 billing/views.py:333
 #: templates/billing/graph_yearly_billing.html:14
 #: templates/billing/graph_yearly_billing.html:16
+#: templates/billing/graph_yearly_billing.html:37
 msgid "growth"
 msgstr "croissance"
 
@@ -362,15 +363,15 @@ msgstr "Valeur"
 msgid "Type"
 msgstr "Type"
 
-#: core/templatetags/pydici_filters.py:109
+#: core/templatetags/pydici_filters.py:112
 msgid "My timesheet"
 msgstr "Ma feuille de temps"
 
-#: core/templatetags/pydici_filters.py:122
+#: core/templatetags/pydici_filters.py:125
 msgid "My staffing"
 msgstr "Mon staffing"
 
-#: core/templatetags/pydici_filters.py:133
+#: core/templatetags/pydici_filters.py:136
 msgid "Mail to support"
 msgstr "Courriel au support"
 
@@ -1305,7 +1306,7 @@ msgid "mission name"
 msgstr "Nom mission"
 
 #: staffing/models.py:301 staffing/views.py:1250
-#: templates/billing/pre_billing.html:31
+#: templates/billing/pre_billing.html:31 templates/billing/pre_billing.html:81
 #: templates/leads/lead_pivotable.html:47
 #: templates/leads/lead_pivotable.html:53
 #: templates/staffing/missions_report.html:65
@@ -1427,6 +1428,7 @@ msgstr "feuille-de-temps.csv"
 
 #: staffing/views.py:775 staffing/views.py:975
 #: templates/billing/pre_billing.html:31 templates/billing/pre_billing.html:39
+#: templates/billing/pre_billing.html:81 templates/billing/pre_billing.html:89
 msgid "total"
 msgstr "total"
 
@@ -1470,6 +1472,7 @@ msgid "month"
 msgstr "Mois"
 
 #: staffing/views.py:1252 templates/billing/pre_billing.html:31
+#: templates/billing/pre_billing.html:81
 #: templates/staffing/graph_timesheet_rates_bar_jqp.html:65
 #: templates/staffing/missions_report.html:67
 #: templates/staffing/missions_report.html:73
@@ -1727,11 +1730,6 @@ msgstr "Montant prévu pondéré"
 msgid "turnover (€)"
 msgstr "Chiffre d'affaire (€)"
 
-#: templates/billing/graph_yearly_billing.html:35
-#, python-format
-msgid "growth (%%)"
-msgstr "croissance (%%)"
-
 #: templates/billing/payment_delay.html:4 templates/core/_pydici_menu.html:117
 msgid "Payment delay review"
 msgstr "Délais de règlement"
@@ -1766,11 +1764,11 @@ msgstr "Toutes les affaires"
 msgid "Pre billing for time spent missions"
 msgstr "Pré facturation pour les missions au temps passé"
 
-#: templates/billing/pre_billing.html:31
+#: templates/billing/pre_billing.html:31 templates/billing/pre_billing.html:81
 msgid "rate"
 msgstr "Taux"
 
-#: templates/billing/pre_billing.html:47
+#: templates/billing/pre_billing.html:47 templates/billing/pre_billing.html:97
 msgid "Total:"
 msgstr "Total : "
 
@@ -1782,16 +1780,27 @@ msgstr "Pré facturation pour les missions au forfait"
 msgid "Fixed price mission(s)"
 msgstr "Mission(s) au forfait"
 
-#: templates/billing/pre_billing.html:65 templates/billing/pre_billing.html:81
+#: templates/billing/pre_billing.html:65
+#: templates/billing/pre_billing.html:116
 #, python-format
 msgid "%(done)s k€ done "
 msgstr "%(done)s k€ réalisés "
 
-#: templates/billing/pre_billing.html:65 templates/billing/pre_billing.html:81
+#: templates/billing/pre_billing.html:65
+#: templates/billing/pre_billing.html:116
 msgid "sold:"
 msgstr "Vendu :"
 
-#: templates/billing/pre_billing.html:72
+#: templates/billing/pre_billing.html:73
+#, python-format
+msgid "Internal billing from %(from)s to %(to)s"
+msgstr "Facturation interne  depuis %(from)s vers %(to)s"
+
+#: templates/billing/pre_billing.html:99
+msgid "Add an internal bill"
+msgstr "Ajouter une facture interne"
+
+#: templates/billing/pre_billing.html:107
 msgid "Missions without defined billing mode"
 msgstr "Missions sans mode de facturation défini"
 
@@ -2894,17 +2903,17 @@ msgstr "Affaires récemment gagnées, perdues ou abandonnées"
 msgid "Leads for tag <em>%(tag)s</em>"
 msgstr "Affaires pour l'étiquette <em>%(tag)s</em>"
 
-#: templates/people/__consultant_name.html:5
+#: templates/people/__consultant_name.html:7
 #: templates/people/consultant.html:18
 msgid "on holidays !"
 msgstr "en vacances !"
 
-#: templates/people/__consultant_name.html:11
+#: templates/people/__consultant_name.html:13
 #, python-format
 msgid " %(days)s days missing in last month timesheet"
 msgstr " %(days)s jour(s) manquant(s) dans la feuille de temps du mois dernier"
 
-#: templates/people/__consultant_name.html:16
+#: templates/people/__consultant_name.html:18
 #, python-format
 msgid " %(days)s days missing in current month timesheet"
 msgstr " %(days)s jour(s) manquant(s) dans la feuille de temps de ce mois"
@@ -3468,6 +3477,9 @@ msgstr "Totaux"
 #: templates/staffing/prod_report.html:9
 msgid "Production report"
 msgstr "Rapport de production"
+
+#~ msgid "growth (%%)"
+#~ msgstr "croissance (%%)"
 
 #~ msgid "holiday"
 #~ msgstr "congés"

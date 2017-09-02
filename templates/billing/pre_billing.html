@@ -70,7 +70,7 @@
 
 
 {% for subsidiaries, subsidiary_internal_billing in internal_billing.items %}
-    <h1>{{ blocktrans }}Internal billing from {{ subsidiaries.0 }} to {{ subsidiaries.1 }} - {{ month|date:"F Y" }}{{ enbblocktrans }}</h1>
+    <h1>{% blocktrans with from=subsidiaries.0 to=subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} - {{ month|date:"F Y" }}</h1>
     {% for lead, lead_data in subsidiary_internal_billing %}
         <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
         {% for mission, mission_data in lead_data.1.items %}
