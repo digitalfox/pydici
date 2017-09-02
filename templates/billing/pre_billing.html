@@ -67,6 +67,41 @@
 {% endfor %}
 
 </div>
+
+
+{% for subsidiaries, subsidiary_internal_billing in internal_billing.items %}
+    <h1>{{ blocktrans }}Internal billing from {{ subsidiaries.0 }} to {{ subsidiaries.1 }} - {{ month|date:"F Y" }}{{ enbblocktrans }}</h1>
+    {% for lead, lead_data in subsidiary_internal_billing %}
+        <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
+        {% for mission, mission_data in lead_data.1.items %}
+            <h5><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }})</a></h5>
+                <div class="row">
+                <div class="col-lg-4 col-md-6 col-sm-8">
+                <table class="table table-condensed table-striped table-hover">
+                <tr><th>{% trans "consultant" %}</th><th>{% trans "days" %}</th><th>{% trans "rate" %}</th><th>{% trans "total" %}</th></tr>
+                {% for consultant, charge, rate, total in mission_data.1 %}
+                    <tr><td>{% include "people/__consultant_name.html" %}</td>
+                        <td>{{ charge }} </td>
+                        <td>{{ rate|floatformat:"-2" }} €</td>
+                        <td>{{ total|floatformat:"-2" }} €</td>
+                    </tr>
+                {% endfor %}
+                <tr><th>{% trans "total" %}</th><td></td><td></td><th>{{ mission_data.0|floatformat:"-2" }} €</th></tr>
+                </table>
+                </div>
+                </div>
+        {% endfor %}
+         {% ifequal lead.mission_set.count 1 %}
+            <h4></h4>
+         {% else %}
+            <h4>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</h4>
+         {% endifequal %}
+         <a class="btn btn-default" href="">{% trans "Add an internal bill" %}</a>
+         <br/><br/><hr/>
+    {% endfor %}
+{% endfor %}
+
+
 {% if undefined_billing_mode_missions %}
 <br/><hr>
 <h1 class="alert alert-danger">{% trans "Missions without defined billing mode" %} - {{ month|date:"F Y" }}</h1>
