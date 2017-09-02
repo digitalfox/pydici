@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-03 00:47+0200\n"
-"PO-Revision-Date: 2017-09-03 00:47+0100\n"
+"POT-Creation-Date: 2017-09-03 01:08+0200\n"
+"PO-Revision-Date: 2017-09-03 01:08+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -1306,7 +1306,7 @@ msgid "mission name"
 msgstr "Nom mission"
 
 #: staffing/models.py:301 staffing/views.py:1250
-#: templates/billing/pre_billing.html:31 templates/billing/pre_billing.html:81
+#: templates/billing/pre_billing.html:42 templates/billing/pre_billing.html:97
 #: templates/leads/lead_pivotable.html:47
 #: templates/leads/lead_pivotable.html:53
 #: templates/staffing/missions_report.html:65
@@ -1427,8 +1427,9 @@ msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
 #: staffing/views.py:775 staffing/views.py:975
-#: templates/billing/pre_billing.html:31 templates/billing/pre_billing.html:39
-#: templates/billing/pre_billing.html:81 templates/billing/pre_billing.html:89
+#: templates/billing/pre_billing.html:42 templates/billing/pre_billing.html:50
+#: templates/billing/pre_billing.html:97
+#: templates/billing/pre_billing.html:105
 msgid "total"
 msgstr "total"
 
@@ -1471,8 +1472,8 @@ msgstr "Jours à faire"
 msgid "month"
 msgstr "Mois"
 
-#: staffing/views.py:1252 templates/billing/pre_billing.html:31
-#: templates/billing/pre_billing.html:81
+#: staffing/views.py:1252 templates/billing/pre_billing.html:42
+#: templates/billing/pre_billing.html:97
 #: templates/staffing/graph_timesheet_rates_bar_jqp.html:65
 #: templates/staffing/missions_report.html:67
 #: templates/staffing/missions_report.html:73
@@ -1629,7 +1630,7 @@ msgid "No bill yet"
 msgstr "Aucune facture"
 
 #: templates/billing/_lead_billing.html:37
-#: templates/billing/pre_billing.html:49
+#: templates/billing/pre_billing.html:60
 msgid "Add a client bill for this lead"
 msgstr "Ajouter une facture client pour cette affaire"
 
@@ -1760,47 +1761,52 @@ msgstr "Uniquement mes affaires"
 msgid "All leads"
 msgstr "Toutes les affaires"
 
-#: templates/billing/pre_billing.html:23
+#: templates/billing/pre_billing.html:26 templates/billing/pre_billing.html:33
 msgid "Pre billing for time spent missions"
 msgstr "Pré facturation pour les missions au temps passé"
 
-#: templates/billing/pre_billing.html:31 templates/billing/pre_billing.html:81
-msgid "rate"
-msgstr "Taux"
-
-#: templates/billing/pre_billing.html:47 templates/billing/pre_billing.html:97
-msgid "Total:"
-msgstr "Total : "
-
-#: templates/billing/pre_billing.html:53
+#: templates/billing/pre_billing.html:27 templates/billing/pre_billing.html:65
 msgid "Pre billing for fixed price missions"
 msgstr "Pré facturation pour les missions au forfait"
 
-#: templates/billing/pre_billing.html:61
+#: templates/billing/pre_billing.html:28
+msgid "Pre billing between subsidiaries"
+msgstr "Pré facturation interne entre filiales"
+
+#: templates/billing/pre_billing.html:42 templates/billing/pre_billing.html:97
+msgid "rate"
+msgstr "Taux"
+
+#: templates/billing/pre_billing.html:58
+#: templates/billing/pre_billing.html:113
+msgid "Total:"
+msgstr "Total : "
+
+#: templates/billing/pre_billing.html:74
 msgid "Fixed price mission(s)"
 msgstr "Mission(s) au forfait"
 
-#: templates/billing/pre_billing.html:65
-#: templates/billing/pre_billing.html:116
+#: templates/billing/pre_billing.html:78
+#: templates/billing/pre_billing.html:132
 #, python-format
 msgid "%(done)s k€ done "
 msgstr "%(done)s k€ réalisés "
 
-#: templates/billing/pre_billing.html:65
-#: templates/billing/pre_billing.html:116
+#: templates/billing/pre_billing.html:78
+#: templates/billing/pre_billing.html:132
 msgid "sold:"
 msgstr "Vendu :"
 
-#: templates/billing/pre_billing.html:73
+#: templates/billing/pre_billing.html:88
 #, python-format
 msgid "Internal billing from %(from)s to %(to)s"
 msgstr "Facturation interne  depuis %(from)s vers %(to)s"
 
-#: templates/billing/pre_billing.html:99
+#: templates/billing/pre_billing.html:115
 msgid "Add an internal bill"
 msgstr "Ajouter une facture interne"
 
-#: templates/billing/pre_billing.html:107
+#: templates/billing/pre_billing.html:123
 msgid "Missions without defined billing mode"
 msgstr "Missions sans mode de facturation défini"
 
