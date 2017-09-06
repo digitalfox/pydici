@@ -43,6 +43,7 @@
         <tr><td class="text-center" style="border-top:0px"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
         {% regroup detail.list by month as mission_detail_list %}
         {% for mission_detail in mission_detail_list %}
+            <tr><td>&nbsp;</td></tr>
             <tr><td style="border-top:0px"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
             {% for item in mission_detail.list %}
                 <tr>
@@ -51,8 +52,8 @@
                         {% else %}
                             {% trans "Fixed price"%}{% if item.label %} - {{ item.label }}{% endif %}
                         {% endifequal %}</td>
-                    <td class="text-center">{{ item.quantity }}</td><td class="text-right">{{ item.unit_price }}</td>
-                    <td class="text-right">{{ item.amount }}</td><td class="text-right">{{ item.vat }}</td><td class="text-right">{{ item.amount_with_vat }}</td>
+                    <td class="text-center">{{ item.quantity|floatformat:-2 }}</td><td class="text-right">{{ item.unit_price|floatformat:-2 }}</td>
+                    <td class="text-right">{{ item.amount|floatformat:-2 }}</td><td class="text-right">{{ item.vat|floatformat:-2 }}</td><td class="text-right">{{ item.amount_with_vat|floatformat:-2 }}</td>
                 </tr>
             {% endfor %}
         {% endfor %}
