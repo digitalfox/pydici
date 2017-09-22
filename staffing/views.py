@@ -1237,7 +1237,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
         timesheets = timesheets.filter(working_date__gte=start, working_date__lt=end)
 
     timesheets =timesheets.extra(select={'month': dateTrunc("month", "working_date")})
-    timesheets = timesheets.values("month", "mission__description", "consultant__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
+    timesheets = timesheets.values("month", "mission__description", "consultant__name", "consultant__profil__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
 
     for timesheet in timesheets:
         # Thank you sqlite for those sad lines of code
@@ -1249,6 +1249,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
             _(u"type"): timesheet["mission__description"],
             _(u"consultant"): timesheet["consultant__name"],
             _(u"subsidiary"): timesheet["consultant__company__name"],
+            _(u"profil"): timesheet["consultant__profil__name"],
             _(u"days"): timesheet["charge__sum"],
         })
 
