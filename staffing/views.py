@@ -275,7 +275,7 @@ def pdc_review(request, year=None, month=None):
         # TODO: make this message nice
         return HttpResponse(_("No productive consultant defined !"))
 
-    n_month = 3  # Default number of month to display
+    n_month = 4  # Default number of month to display
 
     if "n_month" in request.GET:
         try:
