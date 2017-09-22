@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-03 01:08+0200\n"
-"PO-Revision-Date: 2017-09-03 01:08+0100\n"
+"POT-Creation-Date: 2017-09-22 20:05+0200\n"
+"PO-Revision-Date: 2017-09-22 20:05+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -1094,7 +1094,7 @@ msgstr "Niveau"
 
 #: people/models.py:38
 msgid "Consultant profile"
-msgstr "Profile du consultant"
+msgstr "Profil du consultant"
 
 #: people/models.py:46 staffing/models.py:29
 msgid "Productive"
@@ -1102,7 +1102,7 @@ msgstr "Productif"
 
 #: people/models.py:50
 msgid "Profil"
-msgstr "Profile"
+msgstr "Profil"
 
 #: people/models.py:51
 msgid "Subcontractor"
@@ -1472,7 +1472,11 @@ msgstr "Jours à faire"
 msgid "month"
 msgstr "Mois"
 
-#: staffing/views.py:1252 templates/billing/pre_billing.html:42
+#: staffing/views.py:1252
+msgid "profil"
+msgstr "profil"
+
+#: staffing/views.py:1253 templates/billing/pre_billing.html:42
 #: templates/billing/pre_billing.html:97
 #: templates/staffing/graph_timesheet_rates_bar_jqp.html:65
 #: templates/staffing/missions_report.html:67
@@ -1481,19 +1485,19 @@ msgstr "Mois"
 msgid "days"
 msgstr "jours"
 
-#: staffing/views.py:1279
+#: staffing/views.py:1280
 msgid "This lead has no mission defined"
 msgstr "Cette affaire n'a aucune mission définie"
 
-#: staffing/views.py:1306 templates/actionset/_base_actions.html:77
+#: staffing/views.py:1307 templates/actionset/_base_actions.html:77
 msgid "You are not allowed to do that"
 msgstr "Vous n'êtes pas autorisé à faire cela"
 
-#: staffing/views.py:1320
+#: staffing/views.py:1321
 msgid "Mission or consultant does not exist"
 msgstr "La mission ou le consultant n'existe pas"
 
-#: staffing/views.py:1322
+#: staffing/views.py:1323
 msgid "Incorrect value"
 msgstr "Valeur incorrecte"
 
@@ -2242,7 +2246,7 @@ msgstr "Chiffre d'affaires facturé : "
 
 #: templates/crm/_clientcompany_rates_margin.html:9
 msgid "Average rates by profile (€)"
-msgstr "Taux journalier moyen par profile (€)"
+msgstr "Taux journalier moyen par profil (€)"
 
 #: templates/crm/_clientcompany_rates_margin.html:29
 msgid "Margin over rate objective and fixed price mission margin"
