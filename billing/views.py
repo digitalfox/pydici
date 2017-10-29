@@ -189,10 +189,12 @@ def client_bill(request, bill_id=None):
                 success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
             return HttpResponseRedirect(success_url)
     else:
-        form = ClientBillForm(instance=bill)
         if bill:
+            form = ClientBillForm(instance=bill)
             billDetailFormSet = BillDetailFormSet(instance=bill)
             billExpenseFormSet = BillExpenseFormSet(instance=bill)
+        else:
+            form = ClientBillForm(initial={"amount": request.GET.get("amount", 0), "lead": request.GET.get("lead", None)})
 
     return render(request, "billing/bill_form.html",
                   {"bill_form": form,
