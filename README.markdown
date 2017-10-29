@@ -22,9 +22,9 @@ Sébastien Renard (Sebastien.Renard@digitalfox.org).
 Pydici can be installed as any Django project. Just drop the code somewhere
 and setup Apache.
 
-To install all python prerequisites, just do that: pip install -r requirements.txt. It is strongly advised to use a virtual env.
+To install all python prerequisites, please do the following: pip install -r requirements.txt. It is strongly advised to use a virtual env.
 
-## Detailed installation
+## Detailed Installation
 
 Drop source code in a directory readable by your apache user
    git clone https://github.com/digitalfox/pydici.git
@@ -67,9 +67,9 @@ Setup in cron (or your favorite scheduler) the followings tasks (adapt the sched
 
 ## Updating an existing installation
 
-After pulling the latest changes you need to update the database.
+After pulling the latest changes, you need to update the database.
 
-There are three possible situations, depending on whether your installation uses Django Migration. Or still use South or use no miration system at all
+There are three possible situations, depending on whether your installation uses Django Migration, uses South or does not use a migration system at all. 
 Your installation uses South if there is a `south_migrationhistory`
 
 1. Your installation already uses Django Migration. Run these commands:
@@ -104,7 +104,7 @@ Your installation uses South if there is a `south_migrationhistory`
 
         ./manage.py migrate --fake
 
-    Once this is done, future updates will be handled as situation #1.
+    Once this is done, future updates will be handled just like situation #1.
 
 ## Notes about scikit learn
 Scikit learn is a machine learning framework for python. It is an optional Pydici deps that can predict leads tags and state.
