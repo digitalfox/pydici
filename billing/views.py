@@ -13,11 +13,9 @@ import json
 
 from django.shortcuts import render
 from django.core import urlresolvers
-from django.db.models import Sum, Q, F
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect, HttpResponse, Http404
-from django.views.generic.edit import CreateView, UpdateView
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, F
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
@@ -29,18 +27,13 @@ from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
-from crm.models import Company, Subsidiary
-from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round, get_fiscal_years, get_parameter
-from staffing.utils import gatherTimesheetData
+from crm.models import Subsidiary
+from core.utils import get_fiscal_years, get_parameter
 from crm.models import Company
-from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round, working_days
-from staffing.utils import holidayDays
+from core.utils import COLORS, sortedValues, nextMonth, previousMonth
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature
-from billing.forms import ClientBillForm, BillDetailFormSetHelper, BillDetailInlineFormset, BillDetailForm, \
-    BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
-from billing.utils import compute_bill
+from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
 from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper
-
 
 
 @pydici_non_public
