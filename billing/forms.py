@@ -81,6 +81,7 @@ class ClientBillForm(PydiciCrispyModelForm):
             # Amount must be defined
             raise ValidationError(_("Bill amount must be computed from bill detail or defined manually"))
 
+
 class SupplierBillForm(models.ModelForm):
     class Meta:
         model = SupplierBill
@@ -109,7 +110,6 @@ class BillDetailInlineFormset(BaseInlineFormSet):
             if staffing in staffings:
                 raise ValidationError(_("Cannot declare twice the same consultant for the same mission on a given month"))
             staffings.append(staffing)
-
 
 
 class BillDetailFormSetHelper(FormHelper):

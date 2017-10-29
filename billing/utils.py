@@ -60,10 +60,3 @@ def compute_bill(bill):
     if not bill.amount_with_vat:
         if bill.amount:
             bill.amount_with_vat = bill.amount * (1 + bill.vat / 100)
-            # TODO: remove this, expense should be defined on detail level
-            if bill.expenses.count():
-                for expense in bill.expenses.all():
-                    bill.amount_with_vat += expense.amount
-
-    # Save it
-    bill.save()

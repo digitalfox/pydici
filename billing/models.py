@@ -21,6 +21,7 @@ from staffing.models import Mission
 from people.models import Consultant
 from expense.models import Expense
 from crm.models import Supplier
+from billing.utils import compute_bill
 from core.utils import sanitizeName
 import pydici.settings
 
@@ -72,7 +73,7 @@ class AbstractBill(models.Model):
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
                                           null=True)
     vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2,
-                              default=pydici.settings.PYDICI_DEFAULT_VAT_RATE)
+                              default=float(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
     expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True})
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
 
@@ -140,6 +141,7 @@ class ClientBill(AbstractBill):
 
 
     def save(self, *args, **kwargs):
+        compute_bill(self)
         # Automatically set payment date for paid bills
         if self.state == "2_PAID" and not self.payment_date:
             self.payment_date = date.today()
@@ -200,8 +202,12 @@ class BillDetail(models.Model):
         if self.unit_price and self.quantity:
             self.amount = self.unit_price * Decimal(self.quantity)
 
-        # compute amount with VAT except if given and amount is not defined
-        self.amount_with_vat = self.amount * (1 + self.vat / 100)
+        # compute amount with VAT if amount is defined
+        if self.amount:
+            self.amount_with_vat = self.amount * (1 + self.vat / 100)
+        # compute amount if not defined and amount with VAT is defined
+        elif self.amount_with_vat:
+            self.amount = self.amount_with_vat / (1 + self.vat / 100)
         super(BillDetail, self).save(*args, **kwargs)  # Save it
 
     class Meta:

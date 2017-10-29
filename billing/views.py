@@ -14,7 +14,6 @@ import json
 from django.shortcuts import render
 from django.core import urlresolvers
 from django.db.models import Sum, Q, F
-from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.views.generic.edit import CreateView, UpdateView
@@ -183,7 +182,6 @@ def client_bill(request, bill_id=None):
             if billExpenseFormSet:
                 billExpenseFormSet.save()
             if bill.state == "0_DRAFT":
-                compute_bill(bill)  # Move this to model save() ?
                 success_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
             else:
                 success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
