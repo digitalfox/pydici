@@ -94,8 +94,8 @@ class BillDetailInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillDetailInlineFormset, self).add_fields(form, index)
         form.fields["mission"] = ModelChoiceField(widget=LeadMissionChoices(lead=self.instance.lead), queryset=Mission.objects)
-        form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices, queryset=Consultant.objects)
-        form.fields["month"] = BillingDateChoicesField()
+        form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices, queryset=Consultant.objects, required=False)
+        form.fields["month"] = BillingDateChoicesField(required=False)
 
     def clean(self):
         if any(self.errors):

@@ -183,7 +183,7 @@ def client_bill(request, bill_id=None):
             if billExpenseFormSet:
                 billExpenseFormSet.save()
             if bill.state == "0_DRAFT":
-                compute_bill(bill)
+                compute_bill(bill)  # Move this to model save() ?
                 success_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
             else:
                 success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"

@@ -185,10 +185,10 @@ class BillDetail(models.Model):
     """Lines of a client bill that describe what's actually billed for mission"""
     bill = models.ForeignKey(ClientBill)
     mission = models.ForeignKey(Mission)
-    month = models.DateField(blank=True, null=True)
-    consultant = models.ForeignKey(Consultant, null=True)
-    quantity = models.FloatField(_("Quantity"))
-    unit_price = models.DecimalField(_(u"Unit price (€)"), max_digits=10, decimal_places=2)
+    month = models.DateField(null=True)
+    consultant = models.ForeignKey(Consultant, null=True, blank=True)
+    quantity = models.FloatField(_("Quantity"), blank=True, null=True)
+    unit_price = models.DecimalField(_(u"Unit price (€)"), max_digits=10, decimal_places=2, blank=True, null=True)
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
                                           null=True)
@@ -197,7 +197,8 @@ class BillDetail(models.Model):
     label = models.CharField(_("Label"), max_length=200, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        self.amount = self.unit_price * Decimal(self.quantity)
+        if self.unit_price and self.quantity:
+            self.amount = self.unit_price * Decimal(self.quantity)
 
         # compute amount with VAT except if given and amount is not defined
         self.amount_with_vat = self.amount * (1 + self.vat / 100)
