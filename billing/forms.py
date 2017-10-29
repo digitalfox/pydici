@@ -11,7 +11,7 @@ from django.forms import models, ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.forms.models import BaseInlineFormSet, ModelChoiceField, ChoiceField
-from django.forms.util import ValidationError
+from django.forms.utils import ValidationError
 from django.utils import formats
 
 
