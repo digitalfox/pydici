@@ -217,10 +217,20 @@ class BillDetail(models.Model):
 class BillExpense(models.Model):
     """Lines of a client bill that describe what's actually billed for expenses and generic stuff"""
     bill = models.ForeignKey(ClientBill)
-    expense = models.ForeignKey(Expense)
-    expense_date = models.DateField()
-    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2)
-    label = models.CharField(_("Label"), max_length=200, blank=True, null=True)
+    expense = models.ForeignKey(Expense, verbose_name=_(u"Expense"))
+    expense_date = models.DateField(_(u"Expense date"), null=True)
+    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, null=True, blank=True)
+    label = models.CharField(_(u"Description"), max_length=200, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.expense_date:  # Use expense date if not provided
+            self.expense_date = self.expense.expense_date
+        if not self.amount_with_vat:  # Use expense amount if not provided
+            self.amount_with_vat = self.expense.amount
+        if not self.label: # Use expense description
+            self.label = self.expense.description
+
+        super(BillExpense, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ("expense_date",)

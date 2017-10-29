@@ -11,6 +11,8 @@ from django.forms import models, ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.forms.models import BaseInlineFormSet, ModelChoiceField, ChoiceField
+from django.forms.fields import DateField
+from django.forms.widgets import DateInput
 from django.forms.utils import ValidationError
 from django.utils import formats
 
@@ -135,7 +137,8 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillExpenseInlineFormset, self).add_fields(form, index)
         #TODO: should use Chargeable expense only
-        form.fields["expense"] = ModelChoiceField(widget=ExpenseChoices, queryset=Expense.objects.filter(lead=self.instance.lead), required=True)
+        form.fields["expense"] = ModelChoiceField(label=_(u"Expense"), widget=ExpenseChoices, queryset=Expense.objects.filter(lead=self.instance.lead), required=True)
+        form.fields["expense_date"] = DateField(label=_(u"Expense date"), required=False, widget=DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
 
 
     def clean(self):
