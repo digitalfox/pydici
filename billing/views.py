@@ -165,7 +165,7 @@ def client_bill(request, bill_id=None):
     BillExpenseFormSet = inlineformset_factory(ClientBill, BillExpense, formset=BillExpenseInlineFormset, form=BillExpenseForm, fields="__all__")
     if request.POST:
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
-        if bill:
+        if bill and bill.state == "0_DRAFT":
             billDetailFormSet = BillDetailFormSet(request.POST, instance=bill)
             billExpenseFormSet = BillExpenseFormSet(request.POST, instance=bill)
         if form.is_valid() and (billDetailFormSet is None or billDetailFormSet.is_valid()) and (billExpenseFormSet is None or billExpenseFormSet.is_valid()):
@@ -182,17 +182,18 @@ def client_bill(request, bill_id=None):
     else:
         if bill:
             form = ClientBillForm(instance=bill)
-            billDetailFormSet = BillDetailFormSet(instance=bill)
-            billExpenseFormSet = BillExpenseFormSet(instance=bill)
+            if bill.state == "0_DRAFT":
+                billDetailFormSet = BillDetailFormSet(instance=bill)
+                billExpenseFormSet = BillExpenseFormSet(instance=bill)
         else:
             form = ClientBillForm(initial={"amount": request.GET.get("amount", 0), "lead": request.GET.get("lead", None)})
-
     return render(request, "billing/bill_form.html",
                   {"bill_form": form,
                    "detail_formset": billDetailFormSet,
                    "detail_formset_helper": BillDetailFormSetHelper(),
                    "expense_formset": billExpenseFormSet,
                    "expense_formset_helper": BillExpenseFormSetHelper(),
+                   "bill_id": bill.id if bill else None,
                    "user": request.user})
 
 
