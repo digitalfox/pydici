@@ -14,7 +14,7 @@ from django.utils.translation import ugettext
 from django.contrib.admin.models import LogEntry, ContentType
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.core.urlresolvers import reverse
 
 from taggit.managers import TaggableManager
@@ -191,6 +191,21 @@ class Lead(models.Model):
         @return: int in k€
         @see: for per consultant, look at marginObjectives()"""
         return sum(self.objectiveMargin(startDate, endDate).values())
+
+    def billed(self):
+        """Total amount billed for this lead"""
+        return self.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values()[0] or 0
+
+    def still_to_be_billed(self):
+        """Amount that still need to be billed"""
+        to_bill = 0
+        for mission in self.mission_set.all():
+            if mission.billing_mode == "TIME_SPENT":
+                to_bill += float(mission.done_work()[1])
+            else:
+                to_bill += float(mission.price * 1000)
+        to_bill += float(self.expense_set.filter(chargeable=True).aggregate(Sum("amount")).values()[0] or 0)
+        return to_bill - float(self.billed())
 
     def actions(self):
         """Returns actions for this lead and its missions"""

@@ -30,6 +30,9 @@
                 </tr>
             {% endfor %}
     </table>
+    <p><strong>{% trans "Total" %}: {{ lead.billed|floatformat:-2 }} €</strong></p>
+    <p><strong>{% trans "Still to be billed" %}: {{ lead.still_to_be_billed|floatformat:-2 }} €</strong></p>
+
     {% else %}
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
