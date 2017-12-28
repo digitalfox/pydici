@@ -22,7 +22,7 @@ from django.forms.models import inlineformset_factory
 
 from django_weasyprint import PDFTemplateView
 
-from billing.utils import get_billing_info
+from billing.utils import get_billing_info, generate_bill_pdf
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
@@ -34,6 +34,7 @@ from core.utils import COLORS, sortedValues, nextMonth, previousMonth
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature
 from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
 from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper
+import pydici.settings
 
 
 @pydici_non_public
@@ -178,6 +179,8 @@ def client_bill(request, bill_id=None):
                 success_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
             else:
                 success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
+                if not bill.bill_file:
+                    generate_bill_pdf(bill, request.build_absolute_uri(pydici.settings.PYDICI_PREFIX))
             return HttpResponseRedirect(success_url)
     else:
         if bill:

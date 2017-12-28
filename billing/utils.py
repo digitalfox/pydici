@@ -7,6 +7,12 @@ appropriate to live in Billing models or view
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+from django.template.loader import get_template
+from django.template import Context
+from django.core.files.base import ContentFile
+
+import weasyprint
+
 from staffing.models import Mission
 from people.models import Consultant
 from core.utils import to_int_or_round
@@ -60,3 +66,13 @@ def compute_bill(bill):
     if not bill.amount_with_vat:
         if bill.amount:
             bill.amount_with_vat = bill.amount * (1 + bill.vat / 100)
+
+def generate_bill_pdf(bill, url):
+    """Create pdf and attached it to bill object"""
+    template = get_template("billing/bill.html")
+    context = Context({"bill_id": bill.id})
+    html = template.render(context)
+    pdf = weasyprint.HTML(string=html, base_url=url).write_pdf()
+    content = ContentFile(pdf)
+    bill.bill_file.save(u"generated pdf", content)
+    bill.save()
