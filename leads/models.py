@@ -203,7 +203,9 @@ class Lead(models.Model):
             if mission.billing_mode == "TIME_SPENT":
                 to_bill += float(mission.done_work()[1])
             else:
-                to_bill += float(mission.price * 1000)
+                # TODO: sum as well subcontractor bills for fixed priced mission
+                if mission.price:
+                    to_bill += float(mission.price * 1000)
         to_bill += float(self.expense_set.filter(chargeable=True).aggregate(Sum("amount")).values()[0] or 0)
         return to_bill - float(self.billed())
 
