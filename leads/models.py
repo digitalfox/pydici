@@ -192,10 +192,12 @@ class Lead(models.Model):
         @see: for per consultant, look at marginObjectives()"""
         return sum(self.objectiveMargin(startDate, endDate).values())
 
+    @cacheable("Lead.__billed__%(id)s", 3)
     def billed(self):
         """Total amount billed for this lead"""
         return self.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values()[0] or 0
 
+    @cacheable("Lead.__still_to_be_billed__%(id)s", 3)
     def still_to_be_billed(self):
         """Amount that still need to be billed"""
         to_bill = 0

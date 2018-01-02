@@ -55,8 +55,10 @@
             <br/>
             {% if mission.active %}
                    {% if mission.no_more_staffing_since %}
-                       <div id="mission_no_staffing_warning" class="alert alert-warning">{% trans "This mission has no staffing in future" %}. 
-                        <button onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}', process_mission_archive)"
+                       <div id="mission_no_staffing_warning" class="alert alert-warning">
+                           {% trans "This mission has no staffing in future" %}.
+                           {% if mission.lead %}<strong>{% trans "Still to be billed" %}: {{ mission.lead.still_to_be_billed|floatformat:-2 }} €. </strong>{% endif %}
+                            <button onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}', process_mission_archive)"
                                class="btn btn-default">{% trans "Archive this mission" %}</button>
                        </div>
                    {% else %}
