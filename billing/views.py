@@ -180,7 +180,7 @@ def client_bill(request, bill_id=None):
             else:
                 success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
                 if not bill.bill_file:
-                    generate_bill_pdf(bill, request.build_absolute_uri(pydici.settings.PYDICI_PREFIX))
+                    generate_bill_pdf(bill, pydici.settings.MEDIA_ROOT)
             return HttpResponseRedirect(success_url)
     else:
         if bill:

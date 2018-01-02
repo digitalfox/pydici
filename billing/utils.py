@@ -70,7 +70,7 @@ def compute_bill(bill):
 def generate_bill_pdf(bill, url):
     """Create pdf and attached it to bill object"""
     template = get_template("billing/bill.html")
-    context = Context({"bill_id": bill.id})
+    context = Context({"bill": bill})
     html = template.render(context)
     pdf = weasyprint.HTML(string=html, base_url=url).write_pdf()
     content = ContentFile(pdf)
