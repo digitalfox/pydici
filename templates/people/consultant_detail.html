@@ -50,6 +50,20 @@
         </div>
     </div>
 
+    {% if staled_missions %}
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="pydici-block">
+                <h3 class="pydici-block-title">{% trans "Staled missions (to be updated or archived)" %}</h3>
+                <ul class="row icon-list chevron-right">
+                {% for mission in staled_missions %}
+                    <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></li>
+                {% endfor %}
+                </ul>
+        </div>
+    </div>
+    {% endif %}
+
+
     {% with consultant.pending_actions|slice:":20" as actions %}
         {% if actions %}
             <div class="col-md-4 col-sm-6 col-xs-12">
