@@ -28,7 +28,7 @@ from expense.forms import ExpenseForm, ExpensePaymentForm
 from expense.models import Expense, ExpensePayment
 from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable, ExpensePaymentTable
 from people.models import Consultant
-from staffing.models import Mission
+from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature
 from core.views import tableToCSV
 
@@ -169,18 +169,20 @@ def expenses_history(request):
 
 
 @pydici_non_public
-def mission_expenses(request, mission_id):
-    """Page fragment that display expenses related to given mission"""
+def lead_expenses(request, lead_id):
+    """Page fragment or csv that display expenses related to given lead"""
     try:
-        mission = Mission.objects.get(id=mission_id)
-        if mission.lead:
-            expenses = Expense.objects.filter(lead=mission.lead).select_related().prefetch_related("clientbill_set")
-        else:
-            expenses = []
-    except Mission.DoesNotExist:
+        lead = Lead.objects.get(id=lead_id)
+        expenses = Expense.objects.filter(lead=lead).select_related().prefetch_related("clientbill_set")
+    except Lead.DoesNotExist:
         expenses = []
+    if "csv" in request.GET:
+        expenseTable = ExpenseTable(expenses, orderable=True)
+        RequestConfig(request, paginate={"per_page": 50}).configure(expenseTable)
+        return tableToCSV(expenseTable, filename="expenses.csv")
     return render(request, "expense/expense_list.html",
                   {"expenses": expenses,
+                   "lead": lead,
                    "user": request.user})
 
 

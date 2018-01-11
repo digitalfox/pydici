@@ -50,6 +50,7 @@
 {% endfor %}
 </tbody>
 </table>
+<a href="{% url 'expense.views.lead_expenses' lead.id %}?csv" class="btn btn-default">{% trans "Export expenses in a spreadsheet" %}</a>
 {% with "expenses-table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
 {% else %}
     {% trans "No expense" %}
