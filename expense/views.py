@@ -35,7 +35,7 @@ from core.views import tableToCSV
 
 @pydici_non_public
 @pydici_feature("reports")
-def expenses(request, expense_id=None):
+def expenses(request, expense_id=None, clone_from=None):
     """Display user expenses and expenses that he can validate"""
     if not request.user.groups.filter(name="expense_requester").exists():
         return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
@@ -69,11 +69,19 @@ def expenses(request, expense_id=None):
                 expense.user = request.user
             expense.creation_date = date.today()
             expense.save()
-            wf.set_initial_state(expense)
+            wf.set_initial_state(expense)  # Start a new workflow for this expense
             return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
     else:
         if expense_id:
             form = ExpenseForm(instance=expense)  # A form that edit current expense
+        elif clone_from:
+            try:
+                expense = Expense.objects.get(id=clone_from)
+                expense.pk = None  # Null pk so it will generate a new fresh object during form submit
+                expense.receipt = None  # Never duplicate the receipt, a new one need to be provided
+                form = ExpenseForm(instance=expense)  # A form with the new cloned expense (not saved)
+            except Expense.DoesNotExist:
+                form = ExpenseForm(initial={"expense_date": date.today()})  # An unbound form
         else:
             form = ExpenseForm(initial={"expense_date": date.today()})  # An unbound form
 
