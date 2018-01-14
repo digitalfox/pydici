@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-07 16:57+0100\n"
-"PO-Revision-Date: 2018-01-05 19:34+0100\n"
+"POT-Creation-Date: 2018-01-14 17:30+0100\n"
+"PO-Revision-Date: 2018-01-14 17:30+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -428,6 +428,15 @@ msgstr "client"
 msgid "work without bill"
 msgstr "Temps passé sans facture"
 
+#: core/views.py:375 templates/core/delete.html:17
+#: templates/expense/expense_list.html:42
+msgid "No"
+msgstr "Non"
+
+#: core/views.py:375 templates/core/delete.html:15
+msgid "Yes"
+msgstr "Oui"
+
 #: crm/forms.py:35
 #, python-format
 msgid "%s (inactive)"
@@ -682,7 +691,7 @@ msgstr "Date"
 msgid "Expense date"
 msgstr "Date de dépense"
 
-#: expense/models.py:82 expense/tables.py:78
+#: expense/models.py:82 expense/tables.py:79
 #: templates/expense/expense_list.html:16
 msgid "Amount"
 msgstr "Montant"
@@ -703,7 +712,7 @@ msgstr "Payé avec la carte société"
 msgid "Expense"
 msgstr "Note de frais"
 
-#: expense/tables.py:22 expense/tables.py:77 people/models.py:239
+#: expense/tables.py:22 expense/tables.py:78 people/models.py:239
 #: staffing/views.py:1130 templates/staffing/mission.html:120
 #: templates/staffing/mission_staffing.html:9
 msgid "Consultant"
@@ -713,11 +722,15 @@ msgstr "Consultant"
 msgid "Edit"
 msgstr "Modifier"
 
-#: expense/tables.py:80
+#: expense/tables.py:54
+msgid "Clone"
+msgstr "Cloner"
+
+#: expense/tables.py:81
 msgid "detail"
 msgstr "détail"
 
-#: expense/tables.py:81
+#: expense/tables.py:82
 msgid "change"
 msgstr "modifier"
 
@@ -725,24 +738,24 @@ msgstr "modifier"
 msgid "You are not allowed to edit that expense"
 msgstr "Vous n'êtes pas autorisé à modifier cette note de frais"
 
-#: expense/views.py:57 expense/views.py:211
+#: expense/views.py:57 expense/views.py:221
 #, python-format
 msgid "Expense %s does not exist"
 msgstr "La note de frais %s n'existe pas"
 
-#: expense/views.py:208
+#: expense/views.py:218
 msgid "You cannot manage your own expense !"
 msgstr "Vous ne pouvez pas gérer vos propres notes de frais !"
 
-#: expense/views.py:222
+#: expense/views.py:232
 msgid "Successfully update expense"
 msgstr "Note de frais mise à jour avec succès"
 
-#: expense/views.py:230
+#: expense/views.py:240
 msgid "You cannot do this transition"
 msgstr "Vous n'êtes pas autorisé à faire cette transition"
 
-#: expense/views.py:250 expense/views.py:325
+#: expense/views.py:260 expense/views.py:335
 #, python-format
 msgid "Expense payment %s does not exist"
 msgstr "Le remboursement de frais %s n'existe pas"
@@ -2120,14 +2133,6 @@ msgstr ""
 "    Voulez-vous vraiment supprimer  « %(object)s » ?\n"
 "    "
 
-#: templates/core/delete.html:15
-msgid "Yes"
-msgstr "Oui"
-
-#: templates/core/delete.html:17 templates/expense/expense_list.html:42
-msgid "No"
-msgstr "Non"
-
 #: templates/core/index.html:10
 msgid "My leads as responsible"
 msgstr "Les affaires dont je suis le responsable"
@@ -2521,6 +2526,7 @@ msgid "Expenses archive"
 msgstr "Historique des notes de frais"
 
 #: templates/expense/expense_archive.html:19
+#: templates/expense/expense_list.html:53
 msgid "Export expenses in a spreadsheet"
 msgstr "Exporter ces notes de frais dans un tableur"
 
@@ -2536,7 +2542,7 @@ msgstr "Date de mise à jour"
 msgid "Yes, but not charged yet"
 msgstr "Oui, mais non refacturé"
 
-#: templates/expense/expense_list.html:55
+#: templates/expense/expense_list.html:56
 msgid "No expense"
 msgstr "Aucune note de frais"
 
