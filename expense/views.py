@@ -19,7 +19,7 @@ from django_tables2 import RequestConfig
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from core import utils
@@ -198,8 +198,8 @@ def lead_expenses(request, lead_id):
 @pydici_feature("reports")
 def chargeable_expenses(request):
     """Display all chargeable expenses that are not yet charged in a bill"""
-    expenses = Expense.objects.filter(chargeable=True).select_related().prefetch_related("clientbill_set")
-    expenses = [e for e in expenses if e.clientbill_set.all().count() == 0]
+    expenses= Expense.objects.filter(chargeable=True).annotate(Count("clientbill")).filter(clientbill__count=0)
+    expenses = expenses.select_related("lead__client__organisation__company").prefetch_related("clientbill_set")
     return render(request, "expense/chargeable_expenses.html",
                   {"expenses": expenses,
                    "user": request.user})
