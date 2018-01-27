@@ -57,6 +57,8 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
     Returns one of the `TIMESHEET_ACCESS_*` constants.
     """
     current_month = date.today().replace(day=1)
+    timesheet_next_month = (timesheet_month + timedelta(days=40)).replace(day=1)
+    ontime_editing = (current_month == timesheet_month) or (date.today() - timesheet_next_month).days <= 3
 
     if (user.has_perm("staffing.add_timesheet") and
             user.has_perm("staffing.change_timesheet") and
@@ -69,12 +71,10 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
     except Consultant.DoesNotExist:
         return TIMESHEET_ACCESS_NOT_ALLOWED
 
-    if user_consultant.id == consultant.id:
-        # User is accessing his own timesheet
-
+    if user_consultant.id == consultant.id or consultant in user_consultant.team():
+        # User is accessing his own timesheet and timesheet of his team
         # A consultant can only edit his own timesheet on current month and 3 days after
-        timesheet_next_month = (timesheet_month + timedelta(days=40)).replace(day=1)
-        if current_month == timesheet_month or (date.today() - timesheet_next_month).days <= 3:
+        if ontime_editing :
             return TIMESHEET_ACCESS_READ_WRITE
         else:
             return TIMESHEET_ACCESS_READ_ONLY
