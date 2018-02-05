@@ -151,6 +151,49 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     color: red;
 }
 
+.tablesmall-form-row td.timesheet-day {
+    position: relative;
+    height: 25px;
+    width: 25px;
+    border: 1px solid #e6e6e6;
+    background: #F9F9F9;
+}
+
+.tablesmall-form-row td.timesheet-day > input[type="text"] {
+    position: absolute;
+    text-align: center;
+    top: 0;
+    left: 0;
+    height: 24px;
+    width: 24px;
+    margin: 0;
+    border: none;
+}
+
+.tablesmall-form-row td.timesheet-day-weekend > input[type="text"] {
+    position: absolute;
+    text-align: center;
+    top: 0;
+    left: 0;
+    height: 24px;
+    width: 24px;
+    margin: 0;
+    border: none;
+    background-color: LightGrey;
+}
+
+.tablesmall-form-row td.timesheet-mission-label {
+    text-align: left;
+}
+
+.timesheet-long-day {
+    font-size: 9px;
+}
+
+#pydici-consultant-timesheet-table {
+    border-collapse: collapse;
+}
+
 /* To be removed ? Need to be checked */
 ul.errorlist { margin:0 !important; padding:0 !important; }
 .errorlist li { font-size:12px !important; display:block; padding:4px 5px 4px 25px; margin:0 0 3px 0; border:1px solid red; color:white; background:red url(../img/icon_alert.gif) 5px .3em no-repeat; }

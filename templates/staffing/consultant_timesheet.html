@@ -39,7 +39,7 @@
             <tr>
             <td></td>
             {% for day in days %}
-                <td>{{ day|date:"D" }}</td>
+                <td class="timesheet-long-day">{{ day|date:"D" }}</td>
             {% endfor %}
             <td>{% trans "Tot." %}</td><td>{% trans "Forec." %}</td></tr>
             <tr>
@@ -50,7 +50,7 @@
 	               </tr><tr>
                 {% else %}
                     {% if field.label%}
-                    <td style="text-align:left">{{ field.label }}</td>
+                    <td class="timesheet-mission-label">{{ field.label }}</td>
                     {% endif %}
                     {% if field %}
                     <td class="{% if field.errors %}timesheet-error{% endif %} timesheet-day">
