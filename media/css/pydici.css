@@ -168,6 +168,8 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     width: 24px;
     margin: 0;
     border: none;
+    font-size: 20px;
+    padding-bottom: 2px;
 }
 
 .tablesmall-form-row td.timesheet-day-weekend > input[type="text"] {
