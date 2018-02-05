@@ -155,6 +155,8 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     position: relative;
     height: 25px;
     width: 25px;
+    min-width: 25px;
+    max-width: 25px;
     border: 1px solid #e6e6e6;
     background: #F9F9F9;
 }
@@ -186,6 +188,7 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 
 .tablesmall-form-row td.timesheet-mission-label {
     text-align: left;
+    min-width: 20rem;
 }
 
 .timesheet-long-day {
