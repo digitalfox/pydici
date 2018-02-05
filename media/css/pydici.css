@@ -164,7 +164,7 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     text-align: center;
     top: 0;
     left: 0;
-    height: 24px;
+    height: 100%;
     width: 24px;
     margin: 0;
     border: none;
