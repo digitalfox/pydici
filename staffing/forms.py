@@ -11,6 +11,7 @@ from decimal import Decimal
 
 from django import forms
 from django.conf import settings
+from django.core import urlresolvers
 from django.forms.models import BaseInlineFormSet
 from django.forms import ChoiceField, ModelChoiceField
 from django.utils.translation import ugettext as _
@@ -159,7 +160,7 @@ class TimesheetForm(forms.Form):
 
                 if day == days[0]:  # Only show label for first day
                     tooltip = _("mission id: %s") % mission.mission_id()
-                    self.fields[key].label = mark_safe("<span class='pydici-tooltip' title='%s'>%s</span>" % (tooltip, unicode(mission)))
+                    self.fields[key].label = mark_safe("<span class='pydici-tooltip' title='%s'><a href='%s'>%s</a></span>" % (tooltip, urlresolvers.reverse("staffing.views.mission_home", args=[mission.id,]), unicode(mission)))
                 else:
                     self.fields[key].label = ""
             # Add staffing total and forecast in hidden field
