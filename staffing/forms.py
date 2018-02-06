@@ -160,7 +160,10 @@ class TimesheetForm(forms.Form):
 
                 if day == days[0]:  # Only show label for first day
                     tooltip = _("mission id: %s") % mission.mission_id()
-                    self.fields[key].label = mark_safe("<span class='pydici-tooltip' title='%s'><a href='%s'>%s</a></span>" % (tooltip, urlresolvers.reverse("staffing.views.mission_home", args=[mission.id,]), unicode(mission)))
+                    mission_link = unicode(mission)
+                    if mission.lead_id:
+                        mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), unicode(mission))
+                    self.fields[key].label = mark_safe("<span class='pydici-tooltip' title='%s'>%s</span>" % (tooltip, mission_link))
                 else:
                     self.fields[key].label = ""
             # Add staffing total and forecast in hidden field
