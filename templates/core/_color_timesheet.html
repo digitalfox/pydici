@@ -59,8 +59,22 @@ $(document).ready(function()
         target.val(i);
         markModified(target);
     }
+
+    function cycleitemReverse(target) {
+        if (["○", ''].indexOf(target.val()) > -1) { i="●"; }
+        else if (target.val() == "●") { i="◕"; }
+        else if (target.val() == "◕") { i="◑"; }
+        else if (target.val() == "◑") { i="◔"; }
+        else if (target.val() == "◔") { i="○"; }
+        target.val(i);
+        markModified(target);
+    }
+
     $("input[class=timesheet-cycle]").click(function() {
-        cycleitem($(this));
+        if(!event.shiftKey)
+            cycleitem($(this));
+        else
+            cycleitemReverse($(this));
     });
 
     $("input[class=timesheet-cycle]").on('touchstart', function(ev) {
