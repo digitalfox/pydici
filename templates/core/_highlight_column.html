@@ -1,7 +1,9 @@
 {% load i18n %}
 
 <script type="text/javascript">
- function highlight_today(col_number, borderStyle) {
+ function highlight_today(col_number, borderStyle, timesheet) {
+       timesheet = typeof timesheet !== 'undefined' ? timesheet : false;
+
      // Header cell for both table that use and don't use thead
      $(".table-pydici-extra-condensed tr:first td:nth-child(" + col_number + ")").css('border-top', borderStyle);
      $(".table-pydici-extra-condensed tr:first th:nth-child(" + col_number + ")").css('border-top', borderStyle);
@@ -11,10 +13,14 @@
      // Rows of each mission
      $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('border-left', borderStyle);
      $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('border-right', borderStyle);
-     $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('width', "26px");
-     $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('min-width', "26px");
-     $(".table-pydici-extra-condensed tr td:nth-child(" + (col_number - 1) + ")").css('width', "26px");
-     $(".table-pydici-extra-condensed tr td:nth-child(" + (col_number - 1) + ")").css('min-width', "26px");
+
+     // specific for timesheet
+     if (timesheet) {
+         $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('width', "26px");
+         $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('min-width', "26px");
+         $(".table-pydici-extra-condensed tr td:nth-child(" + (col_number - 1) + ")").css('width', "26px");
+         $(".table-pydici-extra-condensed tr td:nth-child(" + (col_number - 1) + ")").css('min-width', "26px");
+     }
      // Last Row
      $(".table-pydici-extra-condensed tr:last td:nth-child(" + col_number + ")").css('border-bottom', borderStyle);
 

@@ -135,8 +135,7 @@ $(".pydici-tooltip").tooltip();
 $("#pydici-consultant-timesheet-table td:last-child").addClass("hidden-xs");
 
  if (0 !== {{ today }}) {
-     // Table uses 2 td per field
-     highlight_today({{ today }} * 2, "2px solid #555");
+     highlight_today({{ today }}, "2px solid #555", true);
  }
 </script>
 
