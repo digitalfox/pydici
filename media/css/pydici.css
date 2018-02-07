@@ -152,7 +152,6 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 }
 
 .tablesmall-form-row td.timesheet-day {
-    position: relative;
     height: 25px;
     width: 25px;
     min-width: 25px;
@@ -161,28 +160,29 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     background: #F9F9F9;
 }
 
-.tablesmall-form-row td.timesheet-day > input[type="text"] {
-    position: absolute;
+@font-face {
+    font-family: 'circlesmedium';
+    src: url('../fonts/circles/circles-webfont.eot');
+    src: url('../fonts/circles/circles-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/circles/circles-webfont.woff') format('woff'),
+         url('../fonts/circles/circles-webfont.ttf') format('truetype'),
+         url('../fonts/circles/circles-webfont.svg#circlesmedium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.tablesmall-form-row td.timesheet-day > input[type="text"], .tablesmall-form-row td.timesheet-day-weekend > input[type="text"] {
     text-align: center;
-    top: 0;
-    left: 0;
     height: 100%;
-    width: 24px;
+    width: 100%;
     margin: 0;
     border: none;
     font-size: 20px;
     padding-bottom: 2px;
+    font-family: circlesmedium, serif;
 }
 
 .tablesmall-form-row td.timesheet-day-weekend > input[type="text"] {
-    position: absolute;
-    text-align: center;
-    top: 0;
-    left: 0;
-    height: 24px;
-    width: 24px;
-    margin: 0;
-    border: none;
     background-color: LightGrey;
 }
 

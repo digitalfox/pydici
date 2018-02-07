@@ -273,7 +273,7 @@ class MissionContactsForm(forms.ModelForm):
 
 class CycleTimesheetField(forms.ChoiceField):
     widget = forms.widgets.TextInput
-    TS_VALUES = {u"○": None,
+    TS_VALUES = {u"◌": None,
                  u"◔": "0.25",
                  u"◑": "0.5",
                  u"◕": "0.75",
@@ -303,7 +303,7 @@ class CycleTimesheetField(forms.ChoiceField):
     def to_python(self, value):
         if not value and not self.required:
             return None
-        if value is None or value == u"○":
+        if value is None or value == u"◌":
             return None
         try:
             return Decimal(self.TS_VALUES.get(value))
