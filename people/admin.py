@@ -26,9 +26,10 @@ class ConsultantAdmin(ReturnToAppAdmin):
     search_fields = ("name", "trigramme")
     ordering = ("name",)
     list_filter = ["profil", "productive", "active", "subcontractor"]
+    date_hierarchy = "start_date"
     actions = None
     fieldsets = [
-        (None, {"fields": ["name", "trigramme", "active", "productive", "company", "profil", "manager", "staffing_manager"]}),
+        (None, {"fields": ["name", "trigramme", "active", "start_date", "end_date", "productive", "company", "profil", "manager", "staffing_manager"]}),
         (_("For subcontractors"), {"fields": ["subcontractor", "subcontractor_company"]}),
         ]
     form = ConsultantForm

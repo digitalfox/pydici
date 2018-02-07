@@ -50,6 +50,8 @@ class Consultant(models.Model):
     profil = models.ForeignKey(ConsultantProfile, verbose_name=_("Profil"))
     subcontractor = models.BooleanField(_("Subcontractor"), default=False)
     subcontractor_company = models.CharField(max_length=200, null=True, blank=True)
+    start_date = models.DateField(_("Arrival date"), default=date.today)
+    end_date = models.DateField(_("Leaving date"), null=True, blank=True)
 
     def __unicode__(self):
         return self.name

@@ -25,7 +25,8 @@
             "name": "Gr\u00e9goire", 
             "company": 1, 
             "profil": 1, 
-            "manager": 1
+            "manager": 1,
+            "start_date": "2010-01-01"
         }
     }, 
     {
@@ -37,7 +38,8 @@
             "name": "Jean-Christophe", 
             "company": 1, 
             "profil": 1, 
-            "manager": 2
+            "manager": 2,
+            "start_date": "2010-01-01"
         }
     }, 
     {
@@ -49,7 +51,8 @@
             "name": "S\u00e9bastien", 
             "company": 1, 
             "profil": 1, 
-            "manager": 1
+            "manager": 1,
+            "start_date": "2010-01-01"
         }
     },
     {
@@ -61,7 +64,8 @@
             "name": "Aurèle", 
             "company": 1, 
             "profil": 2, 
-            "manager": 1
+            "manager": 1,
+            "start_date": "2010-01-01"
         }
     },
     {
@@ -73,7 +77,8 @@
             "name": "Thomas", 
             "company": 1, 
             "profil": 2, 
-            "manager": 5
+            "manager": 5,
+            "start_date": "2010-01-01"
         }
     }
 ]
