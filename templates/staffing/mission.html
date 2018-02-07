@@ -71,11 +71,12 @@
              {% endif %}
         
          
-         {% if mission.lead %}{% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}{% endif %}
-         
-             {% if not mission.billing_mode %}<div class="alert alert-warning col-md-6">{% trans "Please defined billing mode below" %}</div>{% endif %}
-             {% if not mission.defined_rates %}<div class="alert alert-warning col-md-6">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
-         
+         {% if mission.lead %}
+            {% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
+            {% if not mission.billing_mode %}<div class="alert alert-warning col-md-6">{% trans "Please defined billing mode below" %}</div>{% endif %}
+            {% if not mission.defined_rates %}<div class="alert alert-warning col-md-6">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
+         {% endif %}
+        
             <table class="table table-hover table-striped table-condensed">
                 <tr>
                     <th>{% trans "Type" %}</th><td>{{ mission.get_nature_display }}</td>
