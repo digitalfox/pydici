@@ -66,7 +66,7 @@ def search(request):
 
     if words:
         # Consultant
-        consultants = Consultant.objects.filter(active=True)
+        consultants = Consultant.objects.all()
         for word in words:
             consultants = consultants.filter(Q(name__icontains=word) |
                                              Q(trigramme__icontains=word))
