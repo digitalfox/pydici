@@ -157,7 +157,7 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     min-width: 25px;
     max-width: 25px;
     border: 1px solid #e6e6e6;
-    background: #F9F9F9;
+    position: relative;
 }
 
 @font-face {
@@ -178,7 +178,7 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     margin: 0;
     border: none;
     font-size: 20px;
-    padding-bottom: 2px;
+    padding-bottom: 3px;
     font-family: circlesmedium, serif;
     cursor: pointer;
 
@@ -192,10 +192,17 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     /* remove blinking cursor */
     color: transparent;
     text-shadow: 0 0 0 black;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .tablesmall-form-row td.timesheet-day-weekend > input[type="text"] {
     background-color: LightGrey;
+}
+
+.tablesmall-form-row td.timesheet-day > input[type="text"] {
+    background: #F9F9F9;
 }
 
 .tablesmall-form-row td.timesheet-mission-label {
@@ -203,8 +210,9 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     min-width: 20rem;
 }
 
-.timesheet-long-day {
+.tablesmall-form-row td.timesheet-long-day {
     font-size: 9px;
+    vertical-align: middle;
 }
 
 #pydici-consultant-timesheet-table {
