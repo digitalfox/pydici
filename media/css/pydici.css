@@ -152,12 +152,19 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 }
 
 .tablesmall-form-row td.timesheet-day {
-    height: 25px;
-    width: 25px;
-    min-width: 25px;
-    max-width: 25px;
+    height: 26px;
+    width: 26px;
+    min-width: 26px;
+    max-width: 26px;
     border: 1px solid #e6e6e6;
     position: relative;
+    /* disable selection */
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
 }
 
 @font-face {
@@ -178,9 +185,9 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     margin: 0;
     border: none;
     font-size: 20px;
-    padding-bottom: 3px;
-    font-family: circlesmedium, serif;
+    font-family: "circlesmedium";
     cursor: pointer;
+    padding: 0px;
 
     /* disable selection */
     -webkit-touch-callout: none; /* iOS Safari */

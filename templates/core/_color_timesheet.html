@@ -51,21 +51,21 @@ $(document).ready(function()
 
 
     function cycleitem(target) {
-        if (["◌", ''].indexOf(target.val()) > -1) { i="◔"; }
-        else if (target.val() == "◔") { i="◑"; }
-        else if (target.val() == "◑") { i="◕"; }
-        else if (target.val() == "◕") { i="●"; }
-        else if (target.val() == "●") { i="◌"; }
+        if (["8", ''].indexOf(target.val()) > -1) { i="5"; }
+        else if (target.val() == "5") { i="2"; }
+        else if (target.val() == "2") { i="6"; }
+        else if (target.val() == "6") { i="0"; }
+        else if (target.val() == "0") { i="8"; }
         target.val(i);
         markModified(target);
     }
 
     function cycleitemReverse(target) {
-        if (["◌", ''].indexOf(target.val()) > -1) { i="●"; }
-        else if (target.val() == "●") { i="◕"; }
-        else if (target.val() == "◕") { i="◑"; }
-        else if (target.val() == "◑") { i="◔"; }
-        else if (target.val() == "◔") { i="◌"; }
+        if (["8", ''].indexOf(target.val()) > -1) { i="0"; }
+        else if (target.val() == "0") { i="6"; }
+        else if (target.val() == "6") { i="2"; }
+        else if (target.val() == "2") { i="5"; }
+        else if (target.val() == "5") { i="8"; }
         target.val(i);
         markModified(target);
     }
