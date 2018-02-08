@@ -142,7 +142,7 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 }
 
 .modified, .tablesmall-form-row input.modified {
-    background-color: #ffdba0;
+    background-color: #ffdba0 !important;
 }
 
 .tablesmall-form-row td.timesheet-error > input.timesheet-keyboard {
