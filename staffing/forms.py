@@ -273,6 +273,12 @@ class MissionContactsForm(forms.ModelForm):
 
 class CycleTimesheetField(forms.ChoiceField):
     widget = forms.widgets.TextInput
+    # The font used to display timesheet symbols map them to number
+    # ● -> 0
+    # ◕ -> 6
+    # ◑ -> 2
+    # ◔ -> 5
+    # ◌ -> 8
     TS_VALUES = {u"8": None,
                  u"5": "0.25",
                  u"2": "0.5",
