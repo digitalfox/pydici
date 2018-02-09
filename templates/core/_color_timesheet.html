@@ -51,16 +51,31 @@ $(document).ready(function()
 
 
     function cycleitem(target) {
-    if (target.val() == 0) { i="½"; }
-        else if (target.val() == "½") { i=1; }
-        else if (target.val() == 1)   { i="¼"; }
-        else if (target.val() == "¼")   { i="¾"; }
-        else if (target.val() == "¾")   { i=0; }
+        if (["8", ''].indexOf(target.val()) > -1) { i="5"; }
+        else if (target.val() == "5") { i="2"; }
+        else if (target.val() == "2") { i="6"; }
+        else if (target.val() == "6") { i="0"; }
+        else if (target.val() == "0") { i="8"; }
         target.val(i);
         markModified(target);
     }
-    $("input[class=timesheet-cycle]").click(function() {
-        cycleitem($(this));
+
+    function cycleitemReverse(target) {
+        if (["8", ''].indexOf(target.val()) > -1) { i="0"; }
+        else if (target.val() == "0") { i="6"; }
+        else if (target.val() == "6") { i="2"; }
+        else if (target.val() == "2") { i="5"; }
+        else if (target.val() == "5") { i="8"; }
+        target.val(i);
+        markModified(target);
+    }
+
+    $("input[class=timesheet-cycle]").click(function(ev) {
+        if(!ev.shiftKey) {
+            cycleitem($(this));
+        } else {
+            cycleitemReverse($(this));
+        }
     });
 
     $("input[class=timesheet-cycle]").on('touchstart', function(ev) {
