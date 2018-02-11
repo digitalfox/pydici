@@ -282,20 +282,26 @@ class Mission(models.Model):
         consultant_rates = self.consultant_rates()
         billing_mode = self.get_billing_mode_display()
 
-        # Gather timesheet (Only consider timesheet up to current month)
+        # Gather timesheet and staffing (Only consider data up to current month)
         timesheets = Timesheet.objects.filter(mission=self).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
+        staffings = Staffing.objects.filter(mission=self).filter(staffing_date__lt=nextMonth(current_month)).order_by("staffing_date")
         if startDate:
             timesheets = timesheets.filter(working_date__gte=startDate)
+            staffings = staffings.filter(staffing_date__gte=startDate)
         if endDate:
             timesheets = timesheets.filter(working_date__lte=endDate)
+            staffings = staffings.filter(staffing_date__lte=endDate)
         timesheetMonths = list(timesheets.dates("working_date", "month"))
+        staffingMonths = list(staffings.dates("staffing_date", "month"))
 
         for consultant in self.consultants():
             consultant_name = unicode(consultant)
             timesheet_data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
             timesheet_data = convertDictKeyToDate(timesheet_data)
+            staffing_data = dict(staffings.filter(consultant=consultant).values_list("staffing_date").annotate(Sum("charge")).order_by("staffing_date"))
+            staffing_data = convertDictKeyToDate(staffing_data)
 
-            for month in timesheetMonths:
+            for month in set(timesheetMonths + staffingMonths):
                 data.append({ugettext("mission id"): mission_id,
                              ugettext("mission name"): mission_name,
                              ugettext("consultant"): consultant_name,
@@ -303,7 +309,9 @@ class Mission(models.Model):
                              ugettext("billing mode"): billing_mode,
                              ugettext("date"): month.strftime("%Y/%m"),
                              ugettext("done (days)"): timesheet_data.get(month, 0),
-                             ugettext("done (keur)"): timesheet_data.get(month, 0) * consultant_rates[consultant][0] / 1000})
+                             ugettext("done (keur)"): timesheet_data.get(month, 0) * consultant_rates[consultant][0] / 1000,
+                             ugettext("forecast (days)"): staffing_data.get(month, 0),
+                             ugettext("forecast (keur)"): staffing_data.get(month, 0) * consultant_rates[consultant][0] / 1000})
         return data
 
 
