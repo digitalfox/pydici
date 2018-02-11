@@ -337,7 +337,7 @@ def riskReporting(request):
                      })
 
     # Leads with done works beyond sent or paid bills
-    for lead in Lead.objects.filter(state="WON", mission__active=True).distinct().select_related():
+    for lead in Lead.objects.filter(mission__active=True).distinct().select_related():
         if not "TIME_SPENT" in [m.billing_mode for m in lead.mission_set.all()]:
             # All missions of this lead are fixed price (no one is time spent). So done works beyond billing is not considered here
             # Fixed price mission tracking is done a separate report
