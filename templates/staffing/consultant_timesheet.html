@@ -29,7 +29,7 @@
     </ul>
     </h2>
     <form action="{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' week=week %}" method="POST" id="pydici-ajax-form-consultant-timesheet">
-    <table id="pydici-consultant-timesheet-table" class='table table-pydici-extra-condensed table-hover tablesmall-form-row' style="text-align:center">
+    <table id="pydici-consultant-timesheet-table" class='table table-pydici-extra-condensed table-hover tablesmall-form-row table-timesheet' style="text-align:center">
             <tr>
             <td></td>
             {% for day in days %}

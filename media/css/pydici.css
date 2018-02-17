@@ -151,7 +151,7 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     color: red;
 }
 
-.tablesmall-form-row td.timesheet-day {
+.tablesmall-form-row td.timesheet-day, .table-holidays td.timesheet-day {
     height: 26px;
     width: 26px;
     min-width: 26px;
@@ -212,17 +212,22 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     background: #F9F9F9;
 }
 
-.tablesmall-form-row td.timesheet-mission-label {
+.tablesmall-form-row td.timesheet-mission-label, .holidays-consultant-name {
     text-align: left;
     min-width: 20rem;
+    padding-right: 2px;
 }
 
-.tablesmall-form-row td.timesheet-long-day {
+.tablesmall-form-row td.timesheet-long-day, .table-holidays td.timesheet-long-day {
     font-size: 9px;
     vertical-align: middle;
 }
 
-#pydici-consultant-timesheet-table {
+.table-holidays, .table-timesheet {
+    width: unset;
+}
+
+.table-collapsed {
     border-collapse: collapse;
 }
 
