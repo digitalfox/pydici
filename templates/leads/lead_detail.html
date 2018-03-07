@@ -74,13 +74,44 @@
         	    {% endif %}
             </div>
         </div>
-        
-        {% with lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
-        
-        
-        {% if lead.description %}
-            <div class='well'>{{ lead.description|pydici_simple_format }}</div>
-        {% endif %}
+        <div class="row">
+        <div class="col-lg-8 col-md-8 col-sm-12">
+            {% with lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
+            {% if lead.description %}
+                <div class='well'>{{ lead.description|pydici_simple_format }}</div>
+            {% endif %}
+        </div>
+        {% if lead.stateproba_set.all.count > 0 %}
+                <div class="col-lg-4 col-md-4 hidden-sm hidden-xs">
+                        <div id="lead_proba"></div>
+                        <script type="text/javascript">
+                        $(document).ready(function() {
+                            // Display donnut of lead statistics
+                                var chart_leads_stat = c3.generate({
+                                    bindto: '#lead_proba',
+                                    data: {
+                                        columns: [{% for code, state, proba in lead.getStateProba %}['{{state }}', {{ proba }}], {% endfor %}],
+                                        type : 'donut',
+                                    },
+                                    tooltip: {
+                                        format: {
+                                            value: function (value, ratio, id, index) { return value; }
+                                            }
+                                        },
+                                    donut: {
+                                        title: "{% trans 'Estimation' context 'short' %} (%)",
+                                        label: {
+                                            format: function (value) { return value; },
+                                            threshold: 0.001,
+                                            },
+                                        },
+                                });
+                        });
+                        </script>
+                    </div>
+            {% endif %}
+        </div>
+        <div class="row">
         <div class="col-lg-6 col-md-8 col-sm-12">
             <h2>{% trans "Informations" %}</h2>
             <table class="table table-hover table-striped table-condensed">
@@ -130,7 +161,7 @@
                     <th>{% trans "Sales (k€)" %}</th><td>{{ lead.sales|default_if_none:_("Unknown amount") }}</td>
                 </tr>
                 {% if lead.stateproba_set.all.count > 0 %}
-                    <tr><th>{% trans "Estimation" %}</th><td>{% for code, state, proba in lead.getStateProba %}{{state }} : {{ proba }} %, {% endfor %}</td></tr>
+                    <tr class="hidden-md hidden-lg"><th>{% trans "Estimation" %}</th><td>{% for code, state, proba in lead.getStateProba %}{{state }} : {{ proba }} %, {% endfor %}</td></tr>
                 {% endif %}
                 <tr>
                     <th>{% trans "Potential resource(s)" %}</th><td>{{ lead.staffing_list }}</td>
@@ -153,6 +184,7 @@
                 </table>
             </div>
             {% endif %}
+
             <div class="col-lg-6 col-md-8 col-sm-12">
                 <h2>{% trans "Similar leads" %}</h2>
                 <table class="table table-hover table-striped table-condensed">
@@ -161,6 +193,7 @@
                     {% endfor %}
                 </table>
             </div>
+        </div>
     </div> {# End of description tab #}
 
     <div id="tab-missions" class="tab-pane fade">
