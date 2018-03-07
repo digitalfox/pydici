@@ -124,6 +124,9 @@
                     <th>{% trans "Start date" %}</th><td>{{ lead.start_date|default_if_none:_("Unknown date") }}</td>
                 </tr>
                 <tr>
+                    <th>{% trans "Update date" %}</th><td>{{ lead.update_date }}</td>
+                </tr>
+                <tr>
                     <th>{% trans "Sales (k€)" %}</th><td>{{ lead.sales|default_if_none:_("Unknown amount") }}</td>
                 </tr>
                 {% if lead.stateproba_set.all.count > 0 %}
