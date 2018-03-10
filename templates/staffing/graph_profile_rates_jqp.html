@@ -22,6 +22,7 @@ var plot_timesheet_rates_bar_graph_jqp = $.jqplot('timesheet_rates_bar_graph_jqp
                    {% for profil in profils_display %}
                     {label: "{{ profil }}"},
                    {% endfor %}
+                   {label: "{% trans 'Average' %}"},
                     ],
          axes: {
              xaxis: {

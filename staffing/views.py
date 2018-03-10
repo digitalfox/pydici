@@ -1518,6 +1518,7 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
             avgDailyRate[timesheet.consultant.profil.id][month] += timesheet.charge * daily_rate
             nDays[timesheet.consultant.profil.id][month] += timesheet.charge
 
+    # Compute per profil
     for profil in profils.keys():
         data = []
         for month in timesheetMonths:
@@ -1526,6 +1527,17 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
             else:
                 data.append(None)
         graph_data.append(zip(isoTimesheetMonths, data))
+
+    # Compute average for company
+    data = []
+    for month in timesheetMonths:
+        rates = sum([avgDailyRate[profil].get(month, 0) for profil in profils.keys()])
+        days = sum([nDays[profil].get(month, 0) for profil in profils.keys()])
+        if days > 0:
+            data.append(rates / days)
+        else:
+            data.append(None)
+    graph_data.append(zip(isoTimesheetMonths, data))
 
     return render(request, "staffing/graph_profile_rates_jqp.html",
               {"graph_data": json.dumps(graph_data),
