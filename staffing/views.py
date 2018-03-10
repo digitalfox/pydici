@@ -1478,6 +1478,7 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
     timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
     timesheetEndDate = nextMonth(date.today())  # First day of next month
     profils = dict(ConsultantProfile.objects.all().values_list("id", "name"))  # Consultant Profiles
+    financialConditions = {}
 
     # Create dict per consultant profile
     for profilId in profils.keys():
@@ -1501,8 +1502,8 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
     isoTimesheetMonths = [d.isoformat() for d in timesheetMonths]
     if not timesheetMonths:
         return HttpResponse('')
+    graph_data.append(["x"] + isoTimesheetMonths)
 
-    financialConditions = {}
     for fc in FinancialCondition.objects.all():
         financialConditions["%s-%s" % (fc.mission_id, fc.consultant_id)] = fc.daily_rate
 
@@ -1519,27 +1520,27 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
             nDays[timesheet.consultant.profil.id][month] += timesheet.charge
 
     # Compute per profil
-    for profil in profils.keys():
-        data = []
+    for profil, profilName in profils.items():
+        data = [profilName]
         for month in timesheetMonths:
             if month in nDays[profil] and nDays[profil][month] > 0:
-                data.append(avgDailyRate[profil][month] / nDays[profil][month])
+                data.append(int(avgDailyRate[profil][month] / nDays[profil][month]))
             else:
                 data.append(None)
-        graph_data.append(zip(isoTimesheetMonths, data))
+        graph_data.append(data)
 
     # Compute average for company
-    data = []
+    data = [_("Global")]
     for month in timesheetMonths:
         rates = sum([avgDailyRate[profil].get(month, 0) for profil in profils.keys()])
         days = sum([nDays[profil].get(month, 0) for profil in profils.keys()])
         if days > 0:
-            data.append(rates / days)
+            data.append(int(rates / days))
         else:
             data.append(None)
-    graph_data.append(zip(isoTimesheetMonths, data))
+    graph_data.append(data)
 
-    return render(request, "staffing/graph_profile_rates_jqp.html",
+    return render(request, "staffing/graph_profile_rates.html",
               {"graph_data": json.dumps(graph_data),
                "min_date": previousMonth(timesheetMonths[0]).isoformat(),
                "profils_display": profils.values(),
