@@ -485,7 +485,7 @@ def company_list(request):
 @pydici_non_public
 @pydici_feature("3rdparties")
 @cache_page(60 * 60 * 24)
-def graph_company_sales_jqp(request, onlyLastYear=False):
+def graph_company_sales(request, onlyLastYear=False):
     """Sales repartition per company"""
     graph_data = []
     labels = []
@@ -501,23 +501,19 @@ def graph_company_sales_jqp(request, onlyLastYear=False):
     small_clients = data[8:]
     data = data[0:8]
     for i in data:
-        graph_data.append([i["lead__client__organisation__company__name"], float(i["amount__sum"])])
+        graph_data.append([i["lead__client__organisation__company__name"], int(i["amount__sum"]/1000)])
     # If there are more than 8 clients, we aggregate all the "small clients" under "Others"
     if len(small_clients) > 0:
         for i in small_clients:
-            small_clients_amount += float(i["amount__sum"])
+            small_clients_amount += int(i["amount__sum"]/1000)
         graph_data.append([_("Others"), small_clients_amount])
-    total = sum([i[1] for i in graph_data])
-    for company, amount in graph_data:
-        labels.append(u"%d k€ (%d%%)" % (amount / 1000, 100 * amount / total))
 
     if sum(graph_data, []):  # Test if list contains other things that empty lists
-        graph_data = json.dumps([graph_data, ])
+        graph_data = json.dumps(graph_data)
     else:
-        # If graph_data is only a bunch of emty list, set it to empty list to
-        # disable graph. Avoid jqplot infinite loop with some poor browsers
-        graph_data = json.dumps([[None]])
-    return render(request, "crm/graph_company_sales_jqp.html",
+        # If graph_data is only a bunch of emty list, set it to empty list
+        graph_data = json.dumps([None])
+    return render(request, "crm/graph_company_sales.html",
                   {"graph_data": graph_data,
                    "series_colors": COLORS,
                    "only_last_year": onlyLastYear,

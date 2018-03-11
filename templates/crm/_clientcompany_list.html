@@ -19,13 +19,3 @@
     </li>
 {% endfor %}
 </ul>
-<div class="row">
-    <div style="float:left;" id="graph_company_sales_jqp"></div>
-    <div style="float:left;" id="graph_company_lastyear_sales_jqp"></div>
-</div>
-<script type="text/javascript">
-$(document).ready(function() {
-    $('#graph_company_sales_jqp').load('{% url 'graph_company_sales' %}');
-    $('#graph_company_lastyear_sales_jqp').load('{% url 'graph_company_lastyear_sales' %}');
-});
-</script>
