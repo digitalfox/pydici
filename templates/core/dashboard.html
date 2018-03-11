@@ -51,12 +51,14 @@ $('#graph_bar_jqp').load('{% url 'leads.views.graph_bar_jqp' %}')
     $('#graph_company_lastyear_sales').load('{% url 'graph_company_lastyear_sales' %}')
 </script>
 <div class="row">
-    {% for subsidiary in subsidiaries %}
-        <div id="graph_company_lastyear_sales_{{ subsidiary.id }}" class="col-md-4"></div>
-        <script type="text/javascript">
-            $('#graph_company_lastyear_sales_{{ subsidiary.id }}').load('{% url 'graph_company_lastyear_sales'  subsidiary_id=subsidiary.id %}')
-        </script>
-    {% endfor %}
+    {% if subsidiaries.count > 1 %}
+        {% for subsidiary in subsidiaries %}
+            <div id="graph_company_lastyear_sales_{{ subsidiary.id }}" class="col-md-4"></div>
+            <script type="text/javascript">
+                $('#graph_company_lastyear_sales_{{ subsidiary.id }}').load('{% url 'graph_company_lastyear_sales'  subsidiary_id=subsidiary.id %}')
+            </script>
+        {% endfor %}
+    {% endif %}
 </div>
 
 <div style="clear:both;"></div>
