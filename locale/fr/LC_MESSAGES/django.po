@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-10 11:38+0100\n"
-"PO-Revision-Date: 2018-03-10 11:38+0100\n"
+"POT-Creation-Date: 2018-03-11 18:17+0100\n"
+"PO-Revision-Date: 2018-03-11 18:17+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -374,15 +374,15 @@ msgstr "Mon staffing"
 msgid "Mail to support"
 msgstr "Courriel au support"
 
-#: core/views.py:327
+#: core/views.py:328
 msgid "overdue bills"
 msgstr "factures en retard"
 
-#: core/views.py:329
+#: core/views.py:330
 msgid "sent bills"
 msgstr "factures envoyées"
 
-#: core/views.py:330 core/views.py:348 staffing/views.py:1249
+#: core/views.py:331 core/views.py:349 staffing/views.py:1249
 #: templates/core/risks.html:40 templates/core/risks.html.py:47
 #: templates/staffing/missions_report.html:66
 #: templates/staffing/missions_report.html:72
@@ -390,7 +390,7 @@ msgstr "factures envoyées"
 msgid "type"
 msgstr "type"
 
-#: core/views.py:331 core/views.py:349 leads/views.py:448
+#: core/views.py:332 core/views.py:350 leads/views.py:448
 #: staffing/models.py:308 staffing/views.py:1251 templates/core/risks.html:40
 #: templates/core/risks.html.py:46 templates/leads/lead_pivotable.html:47
 #: templates/leads/leads.html:17 templates/leads/leads_pivotable.html:53
@@ -399,40 +399,40 @@ msgstr "type"
 msgid "subsidiary"
 msgstr "filiale"
 
-#: core/views.py:332 core/views.py:350
+#: core/views.py:333 core/views.py:351
 msgid "deal_id"
 msgstr "n° d'affaire"
 
-#: core/views.py:333 core/views.py:351
+#: core/views.py:334 core/views.py:352
 msgid "deal"
 msgstr "affaire"
 
-#: core/views.py:334 core/views.py:352 templates/core/risks.html:42
+#: core/views.py:335 core/views.py:353 templates/core/risks.html:42
 #: templates/core/risks.html.py:48
 msgid "amount"
 msgstr "montant"
 
-#: core/views.py:335 core/views.py:353 crm/models.py:370 crm/models.py:399
+#: core/views.py:336 core/views.py:354 crm/models.py:370 crm/models.py:399
 #: templates/core/risks.html:41 templates/crm/_contact_list.html:10
 #: templates/crm/contact_list.html:13
 msgid "company"
 msgstr "société"
 
-#: core/views.py:336 core/views.py:354 crm/views.py:463
+#: core/views.py:337 core/views.py:355 crm/views.py:463
 #: templates/crm/company_pivotable.html:47 templates/leads/leads.html:14
 msgid "client"
 msgstr "client"
 
-#: core/views.py:348
+#: core/views.py:349
 msgid "work without bill"
 msgstr "Temps passé sans facture"
 
-#: core/views.py:375 templates/core/delete.html:17
+#: core/views.py:376 templates/core/delete.html:17
 #: templates/expense/expense_list.html:42
 msgid "No"
 msgstr "Non"
 
-#: core/views.py:375 templates/core/delete.html:15
+#: core/views.py:376 templates/core/delete.html:15
 msgid "Yes"
 msgstr "Oui"
 
@@ -627,7 +627,7 @@ msgstr "bientôt en retard"
 msgid "last 12 months"
 msgstr "12 derniers mois"
 
-#: crm/views.py:509
+#: crm/views.py:515
 msgid "Others"
 msgstr "Autres"
 
@@ -1522,6 +1522,10 @@ msgstr "La mission ou le consultant n'existe pas"
 msgid "Incorrect value"
 msgstr "Valeur incorrecte"
 
+#: staffing/views.py:1534
+msgid "Global"
+msgstr ""
+
 #: templates/404.html:12
 #, python-format
 msgid ""
@@ -1915,7 +1919,7 @@ msgstr "Nouvelle affaire"
 msgid "Missions"
 msgstr "Missions"
 
-#: templates/core/_pydici_menu.html:36 templates/staffing/pdc_review.html:10
+#: templates/core/_pydici_menu.html:36 templates/staffing/pdc_review.html:11
 msgid "Workload schedule"
 msgstr "Plan de charge"
 
@@ -2107,7 +2111,7 @@ msgstr "chercher"
 msgid "Commercial activity"
 msgstr "Activité commerciale"
 
-#: templates/core/dashboard.html:22 templates/staffing/pdc_review.html:141
+#: templates/core/dashboard.html:22 templates/staffing/pdc_review.html:142
 #: templates/staffing/prod_report.html:87
 msgid "Production rates and daily rates review"
 msgstr "Suivi du taux de production et des TJM"
@@ -2116,11 +2120,11 @@ msgstr "Suivi du taux de production et des TJM"
 msgid "Billing review and done work"
 msgstr "Suivi de la facturation comparé au travail réalisé/engagé"
 
-#: templates/core/dashboard.html:43
+#: templates/core/dashboard.html:44
 msgid "Sales repartition per client"
 msgstr "Répartition du chiffre d'affaire facturé par client"
 
-#: templates/core/dashboard.html:54
+#: templates/core/dashboard.html:68
 msgid "Billing per subsidiary per year"
 msgstr "Facturation par filiale et par an"
 
@@ -2253,7 +2257,7 @@ msgstr "Alignement business : "
 
 #: templates/crm/_clientcompany_list.html:7
 #: templates/crm/clientcompany_detail.html:35
-#: templates/crm/clientcompany_list.html:13
+#: templates/crm/clientcompany_list.html:9
 msgid "All companies list"
 msgstr "Liste de toutes les sociétés clientes"
 
@@ -2515,11 +2519,16 @@ msgstr "Affaires en avant-vente"
 msgid "number of leads"
 msgstr "nombre d'affaires"
 
-#: templates/crm/graph_company_sales_jqp.html:16
+#: templates/crm/graph_company_sales.html:8
 msgid "Last year sales repartition"
 msgstr "Répartition du CA des 12 derniers mois"
 
-#: templates/crm/graph_company_sales_jqp.html:16
+#: templates/crm/graph_company_sales.html:10
+#, python-format
+msgid " for subsidiary %(subsidiary)s"
+msgstr " pour la filiale %(subsidiary)s"
+
+#: templates/crm/graph_company_sales.html:13
 #, python-format
 msgid " Client sales repartition since %(min_date)s"
 msgstr "Répartition du CA par client depuis le %(min_date)s"
@@ -3010,6 +3019,7 @@ msgstr "taux de prod. (&#37;)"
 #: templates/people/consultant_detail.html:280
 #: templates/staffing/graph_consultant_rate.html:25
 #: templates/staffing/graph_consultant_rate.html:61
+#: templates/staffing/graph_profile_rates.html:30
 msgid "daily rate (€)"
 msgstr "taux journalier (€)"
 
@@ -3031,7 +3041,7 @@ msgstr "Territoire commercial"
 
 #: templates/people/consultant_detail.html:107
 #: templates/people/subcontractor_detail.html:23
-#: templates/staffing/pdc_review.html:89
+#: templates/staffing/pdc_review.html:90
 msgid "Clients"
 msgstr "Clients"
 
@@ -3127,13 +3137,13 @@ msgid "All people timesheet for "
 msgstr "Feuille de temps globale pour "
 
 #: templates/staffing/all_timesheet.html:8
-#: templates/staffing/pdc_review.html:16
+#: templates/staffing/pdc_review.html:17
 #: templates/staffing/prod_report.html:15
 msgid "Previous months"
 msgstr "Mois précédents"
 
 #: templates/staffing/all_timesheet.html:10
-#: templates/staffing/pdc_review.html:18
+#: templates/staffing/pdc_review.html:19
 #: templates/staffing/prod_report.html:17
 msgid "Next months"
 msgstr "Mois suivants"
@@ -3284,10 +3294,6 @@ msgstr "objectif de taux journalier (€)"
 #, python-format
 msgid "prod rate objective (%%)"
 msgstr "objectif de taux de production (%%)"
-
-#: templates/staffing/graph_profile_rates_jqp.html:25
-msgid "Average"
-msgstr "Moyenne"
 
 #: templates/staffing/graph_timesheet_rates_bar_jqp.html:29
 msgid "Production rate"
@@ -3482,43 +3488,46 @@ msgstr "Graphique par mois"
 msgid "No staffing"
 msgstr "Aucune prévision"
 
-#: templates/staffing/pdc_review.html:17
+#: templates/staffing/pdc_review.html:18
 msgid "Workload shedule review"
 msgstr "Revue du plan de charge"
 
-#: templates/staffing/pdc_review.html:84
+#: templates/staffing/pdc_review.html:85
 msgid "prod"
 msgstr "prod"
 
-#: templates/staffing/pdc_review.html:85
+#: templates/staffing/pdc_review.html:86
 msgid "unprod"
 msgstr "imprd"
 
-#: templates/staffing/pdc_review.html:86
+#: templates/staffing/pdc_review.html:87
 msgid "hol."
 msgstr "cngs"
 
-#: templates/staffing/pdc_review.html:87
+#: templates/staffing/pdc_review.html:88
 msgid "avai."
 msgstr "disp"
 
-#: templates/staffing/pdc_review.html:92
-#: templates/staffing/pdc_review.html:127
+#: templates/staffing/pdc_review.html:93
+#: templates/staffing/pdc_review.html:128
 msgid "Rates"
 msgstr "Taux"
 
-#: templates/staffing/pdc_review.html:100
+#: templates/staffing/pdc_review.html:101
 #, python-format
 msgid "%(manager)s staff"
 msgstr "Équipe %(manager)s"
 
-#: templates/staffing/pdc_review.html:121
+#: templates/staffing/pdc_review.html:122
 msgid "Totals"
 msgstr "Totaux"
 
 #: templates/staffing/prod_report.html:9
 msgid "Production report"
 msgstr "Rapport de production"
+
+#~ msgid "Average"
+#~ msgstr "Moyenne"
 
 #~ msgid "growth (%%)"
 #~ msgstr "croissance (%%)"
