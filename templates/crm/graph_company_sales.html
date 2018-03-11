@@ -36,4 +36,8 @@
 
     }); // End of ready()
     </script>
+{% else %}
+    <script type="text/javascript">
+        $('#graph_company_lastyear_sales_{{ subsidiary.id }}').remove();
+    </script>
 {% endif %}
