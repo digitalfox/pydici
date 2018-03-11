@@ -4,6 +4,7 @@
 
 {% block extrajs %}
     {% include "core/_jqplot.html" %}
+    {% include "core/_c3.html" %}
 {% endblock %}
 
 {% block title %}{% trans "Production report" %}{% endblock %}
@@ -95,9 +96,9 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <div id="graph_profile_rates_bar_jqp_content"></div>
+        <div id="graph_profile_rates_content"></div>
         <script type="text/javascript">
-        $('#graph_profile_rates_bar_jqp_content').load('{% url 'staffing.views.graph_profile_rates_jqp' %}/{{scope_current_url_filter}}')
+        $('#graph_profile_rates_content').load('{% url 'staffing.views.graph_profile_rates' %}/{{scope_current_url_filter}}')
         </script>
     </div>
 </div>

@@ -1467,7 +1467,7 @@ def graph_timesheet_rates_bar_jqp(request, subsidiary_id=None, team_id=None):
 
 @pydici_non_public
 @cache_page(60 * 10)
-def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
+def graph_profile_rates(request, subsidiary_id=None, team_id=None):
     """Sale rate per profil
     @:param subsidiary_id: filter graph on the given subsidiary
     @:param team_id: filter graph on the given team
