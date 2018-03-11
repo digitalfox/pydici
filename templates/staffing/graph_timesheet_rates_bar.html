@@ -2,11 +2,11 @@
 {# One must include in its extrajs block core/_jqplot.html to load according js/css #} {% load i18n %}
 
 {% if graph_data %}
-<div id="timesheet_profile_rates_graph"></div>
+<div id="timesheet_rates_graph"></div>
 <script type="text/javascript">
 
     var chart = c3.generate({
-    bindto: '#timesheet_profile_rates_graph',
+    bindto: '#timesheet_rates_graph',
     data: {
          columns: {{ graph_data | safe }},
          x: 'x',
@@ -45,6 +45,9 @@
                 text: '{% trans "production rate (%)" %}',
                 position: 'outer-middle',
             },
+            max: 100,
+            min: 0,
+            padding: { top: 10, bottom: 0 },
         },
     },
   });
