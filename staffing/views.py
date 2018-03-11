@@ -1395,16 +1395,16 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 10)
-def graph_timesheet_rates_bar_jqp(request, subsidiary_id=None, team_id=None):
+def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
     @:param subsidiary_id: filter graph on the given subsidiary
     @:param team_id: filter graph on the given team
     @todo: per year, with start-end date"""
     dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
     data = {}  # Graph data
-    natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures
+    natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures id
+    natures_label = [i[1] for i in Mission.MISSION_NATURE]  # Mission natures label
     nature_data = {}
-    nature_data_days = {}
     holiday_days = [h.day for h in  Holiday.objects.all()]
     graph_data = []
 
@@ -1438,15 +1438,13 @@ def graph_timesheet_rates_bar_jqp(request, subsidiary_id=None, team_id=None):
     nConsultant = dict(timesheets.extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Count("consultant__id", distinct=True)).order_by())
     nConsultant = convertDictKeyToDate(nConsultant)
 
-    for nature in natures:
+    for nature, label in zip(natures, natures_label):
         nature_data[nature] = []
-        nature_data_days[nature] = []
         data = dict(timesheets.filter(mission__nature=nature).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
         data = convertDictKeyToDate(data)
         for month in timesheetMonths:
-            nature_data[nature].append(100 * data.get(month, 0) / (working_days(month, holiday_days) * nConsultant.get(month, 1)))
-            nature_data_days[nature].append(data.get(month, 0))
-        graph_data.append(zip(isoTimesheetMonths, nature_data[nature], nature_data_days[nature]))
+            nature_data[nature].append(round(100 * data.get(month, 0) / (working_days(month, holiday_days) * nConsultant.get(month, 1)), 1))
+        graph_data.append([label] + nature_data[nature])
 
     prodRate = []
     for prod, nonprod in zip(nature_data["PROD"], nature_data["NONPROD"]):
@@ -1455,12 +1453,12 @@ def graph_timesheet_rates_bar_jqp(request, subsidiary_id=None, team_id=None):
         else:
             prodRate.append("0")
 
-    graph_data.append(zip(isoTimesheetMonths, prodRate))
+    graph_data.append([_("production rate")] + prodRate)
+    graph_data.append(["x"] + isoTimesheetMonths)
 
-    return render(request, "staffing/graph_timesheet_rates_bar_jqp.html",
+    return render(request, "staffing/graph_timesheet_rates_bar.html",
                   {"graph_data": json.dumps(graph_data),
-                   "min_date": previousMonth(timesheetMonths[0]).isoformat(),
-                   "natures_display": [i[1] for i in Mission.MISSION_NATURE],
+                   "natures_display": natures_label,
                    "series_colors": COLORS,
                    "user": request.user})
 

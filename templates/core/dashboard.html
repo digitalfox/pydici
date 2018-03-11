@@ -20,9 +20,9 @@ $('#graph_bar_jqp').load('{% url 'leads.views.graph_bar_jqp' %}')
 <br/>
 
 <center><h1>{% trans "Production rates and daily rates review" %}</h1></center>
-    <div id="graph_timesheet_rates_bar_jqp_content"></div>
+    <div id="graph_timesheet_rates_bar_content"></div>
     <script type="text/javascript">
-    $('#graph_timesheet_rates_bar_jqp_content').load('{% url 'staffing.views.graph_timesheet_rates_bar_jqp' %}')
+    $('#graph_timesheet_rates_bar_content').load('{% url 'staffing.views.graph_timesheet_rates_bar' %}')
     </script>
     <br/>
     <div id="graph_profile_rates_content"></div>

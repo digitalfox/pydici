@@ -141,9 +141,9 @@
     <div class="col-lg-12">
         <h1>{% trans "Production rates and daily rates review" %}</h1>
         
-        <div id="graph_timesheet_rates_bar_jqp_content"></div>
+        <div id="graph_timesheet_rates_bar_content"></div>
         <script type="text/javascript">
-        $('#graph_timesheet_rates_bar_jqp_content').load('{% url 'staffing.views.graph_timesheet_rates_bar_jqp' %}/{{scope_current_url_filter}}')
+        $('#graph_timesheet_rates_bar_content').load('{% url 'staffing.views.graph_timesheet_rates_bar' %}/{{scope_current_url_filter}}')
         </script>
     </div>
 </div>
