@@ -171,11 +171,13 @@ def similar_consultant(request):
         form = SimilarConsultantForm(request.POST)
         if form.is_valid():
             consultant = form.cleaned_data["consultant"]
-            tag = form.cleaned_data["tag"]
+            tags = form.cleaned_data["tag"]
             if consultant:
                 result = predict_similar_consultant(form.cleaned_data["consultant"])
-            if tag:
-                result = predict_similar({tag.name: 1})
+            if tags:
+                result = predict_similar({tag.name: 1 for tag in tags})
+                # Clean form in case user submited both consultant and tags
+                form = SimilarConsultantForm(initial={"tag": tags})
 
     else:
         form = SimilarConsultantForm() # An unbound form

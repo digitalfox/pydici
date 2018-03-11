@@ -58,7 +58,7 @@ def consultant_cumulated_experience(consultant):
 def get_similarity_model():
     model = Pipeline([("vect", DictVectorizer(sparse=False)),
                       ("scaler", MinMaxScaler(feature_range=(0,1))),
-                      ("neigh", NearestNeighbors(n_neighbors=3, metric="cosine", algorithm="brute"))])
+                      ("neigh", NearestNeighbors(n_neighbors=5, metric="cosine", algorithm="brute"))])
 
     return model
 
@@ -81,7 +81,7 @@ def predict_similar(features):
     vect = model.named_steps["vect"]
     neigh = model.named_steps["neigh"]
     scaler = model.named_steps["scaler"]
-    indices = neigh.kneighbors(scaler.transform(vect.transform(features)), return_distance=False)
+    indices = neigh.kneighbors(vect.transform(features), return_distance=False)
 
     if indices.any():
         try:
@@ -103,7 +103,7 @@ def compute_consultant_similarity():
 
     model = cache.get(CONSULTANT_SIMILARITY_MODEL_CACHE_KEY)
     if model is None:
-        consultants = Consultant.objects.filter(active=True, productive=True)
+        consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
         if consultants.count() < 5:
             # Cannot learn anything with so few data
             return

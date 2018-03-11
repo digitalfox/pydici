@@ -6,19 +6,18 @@ People form setup
 """
 
 from django import forms
-from django.forms import ModelChoiceField
+from django.forms import ModelChoiceField, ModelMultipleChoiceField
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Column, Field, Fieldset
-from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, StrictButton, FieldWithButtons
+from crispy_forms.layout import Layout, Field, Fieldset
+
 from taggit.models import Tag
 
 
 from people.models import Consultant, SalesMan
-from core.forms import PydiciCrispyForm, TagChoices
+from core.forms import PydiciCrispyForm, TagMChoices
 
 
 class ConsultantChoices(ModelSelect2Widget):
@@ -28,6 +27,10 @@ class ConsultantChoices(ModelSelect2Widget):
     def get_queryset(self):
         return Consultant.objects.filter(active=True)
 
+
+class InternalConsultantChoices(ConsultantChoices):
+    def get_queryset(self):
+        return Consultant.objects.filter(active=True, subcontractor=False)
 
 class ConsultantMChoices(ModelSelect2MultipleWidget):
     model = Consultant
@@ -58,11 +61,11 @@ class ConsultantForm(forms.models.ModelForm):
             return self.cleaned_data["subcontractor_company"]
 
 class SimilarConsultantForm(PydiciCrispyForm):
-    consultant = ModelChoiceField(widget=ConsultantChoices(attrs={'data-placeholder':_("Select a similar consultant...")}), queryset=Consultant.objects, required=False)
-    tag = ModelChoiceField(widget=TagChoices(attrs={'data-placeholder': _("Select a tag...")}), queryset=Tag.objects, required=False)
+    consultant = ModelChoiceField(widget=InternalConsultantChoices(attrs={'data-placeholder':_("Select a similar consultant...")}), queryset=Consultant.objects, required=False)
+    tag = ModelMultipleChoiceField(widget=TagMChoices(attrs={'data-placeholder': _("Select a tag...")}), queryset=Tag.objects, required=False)
 
     def __init__(self, *args, **kwargs):
         super(SimilarConsultantForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Fieldset(_("Similar consultant"), Field("consultant", css_class="col-md-6")),
-                                    Fieldset(_("Robot portrail"), Field("tag", css_class="col-md-3")),
+        self.helper.layout = Layout(Fieldset(_("Similar consultant"), Field("consultant"), css_class="col-md-6"),
+                                    Fieldset(_("Robot portrait"), Field("tag"), css_class="col-md-6"),
                                     self.submit)
