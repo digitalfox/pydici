@@ -1527,7 +1527,8 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
                 data.append(int(avgDailyRate[profil][month] / nDays[profil][month]))
             else:
                 data.append(None)
-        graph_data.append(data)
+        if len(data[1:]) > data[1:].count(None): # Don't consider series only with None
+            graph_data.append(data)
 
     # Compute average for company
     data = [_("Global")]
@@ -1542,8 +1543,6 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
 
     return render(request, "staffing/graph_profile_rates.html",
               {"graph_data": json.dumps(graph_data),
-               "min_date": previousMonth(timesheetMonths[0]).isoformat(),
-               "profils_display": profils.values(),
                "series_colors": COLORS,
                "user": request.user})
 
