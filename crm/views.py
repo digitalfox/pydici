@@ -25,7 +25,7 @@ from django.template.loader import get_template
 
 
 from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact,\
-    BusinessBroker, Supplier
+    BusinessBroker, Supplier, Subsidiary
 from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm,\
     AdministrativeContactForm, BusinessBrokerForm, SupplierForm
 from staffing.models import Timesheet
@@ -485,19 +485,25 @@ def company_list(request):
 @pydici_non_public
 @pydici_feature("3rdparties")
 @cache_page(60 * 60 * 24)
-def graph_company_sales(request, onlyLastYear=False):
+def graph_company_sales(request, onlyLastYear=False, subsidiary_id=None):
     """Sales repartition per company"""
     graph_data = []
     labels = []
     small_clients_amount = 0
-    minDate = ClientBill.objects.aggregate(Min("creation_date")).values()[0]
-    if onlyLastYear:
-        data = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(365)))
+    if subsidiary_id:
+        subsidiary = Subsidiary.objects.get(id=subsidiary_id)
+        clientBills = ClientBill.objects.filter(lead__subsidiary=subsidiary)
     else:
-        data = ClientBill.objects.all()
-    data = data.values("lead__client__organisation__company__name")
-    data = data.order_by("lead__client__organisation__company").annotate(Sum("amount"))
-    data = data.order_by("amount__sum").reverse()
+        subsidiary = None
+        clientBills = ClientBill.objects.all()
+
+    minDate = clientBills.aggregate(Min("creation_date")).values()[0]
+    if onlyLastYear:
+        clientBills = clientBills.filter(creation_date__gt=(date.today() - timedelta(365)))
+
+    clientBills = clientBills.values("lead__client__organisation__company__name")
+    clientBills = clientBills.order_by("lead__client__organisation__company").annotate(Sum("amount"))
+    data = clientBills.order_by("amount__sum").reverse()
     small_clients = data[8:]
     data = data[0:8]
     for i in data:
@@ -511,13 +517,14 @@ def graph_company_sales(request, onlyLastYear=False):
     if sum(graph_data, []):  # Test if list contains other things that empty lists
         graph_data = json.dumps(graph_data)
     else:
-        # If graph_data is only a bunch of emty list, set it to empty list
-        graph_data = json.dumps([None])
+        # If graph_data is only a bunch of emty list, set it to None
+        graph_data = None
     return render(request, "crm/graph_company_sales.html",
                   {"graph_data": graph_data,
                    "series_colors": COLORS,
                    "only_last_year": onlyLastYear,
                    "min_date": minDate,
+                   "subsidiary": subsidiary,
                    "labels": json.dumps(labels),
                    "user": request.user})
 

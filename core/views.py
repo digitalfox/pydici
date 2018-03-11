@@ -24,7 +24,7 @@ from taggit.models import Tag
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from leads.models import Lead
 from people.models import Consultant
-from crm.models import Company, Contact
+from crm.models import Company, Contact, Subsidiary
 from staffing.models import Mission, FinancialCondition, Staffing, Timesheet
 from billing.models import ClientBill
 from expense.models import Expense
@@ -160,7 +160,8 @@ def dashboard(request):
     """Tactical management dashboard. This views is in core module because it aggregates data
     accross different modules"""
 
-    return render(request, "core/dashboard.html")
+    return render(request, "core/dashboard.html",
+                  {"subsidiaries": Subsidiary.objects.all()})
 
 
 @pydici_non_public
