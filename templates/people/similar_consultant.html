@@ -8,6 +8,7 @@
 
 {% crispy form form.helper %}
 
+<br/>
 <ul>
 {% for consultant in result %}
     <li><a href="{{ consultant.get_absolute_url }}">{{ consultant }}</a></li>

@@ -26,6 +26,7 @@
                 <li><a href="{% url 'leads.views.leads' %}">{% trans "All leads" %}</a></li>
                 {% endif %}
                 <li><a href="{% url 'leads.views.lead' %}">{% trans 'New lead' %}</a></li>
+                <li><a href="{% url 'people.views.similar_consultant' %}">{% trans 'Find similar consultants' %}</a></li>
             </ul>
         </li>
         {% endif %}
