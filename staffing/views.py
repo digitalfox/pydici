@@ -1459,7 +1459,7 @@ def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
     return render(request, "staffing/graph_timesheet_rates_bar.html",
                   {"graph_data": json.dumps(graph_data),
                    "natures_display": natures_label,
-                   "series_colors": COLORS,
+                   "series_colors": COLORS[:3] + ['#333'],  # Use grey for prod rate to ease readibility
                    "user": request.user})
 
 
