@@ -6,6 +6,7 @@
 .idea/
 .project
 .settings
+.ipynb_checkpoints/
 static/
 venv/
 data/*

@@ -50,7 +50,8 @@ class ExpenseWorkflowTable(ExpenseTable):
             result.append("""<a href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
                           % (reverse("expense.views.update_expense_state", args=[record.id, transition.id]), transition))
         if self.expenseEditPerm[record.id]:
-            result.append("<a href='%s'>%s</a>" % (reverse("expense.views.expenses", args=[record.id, ]), smart_bytes(_("Edit"))))
+            result.append("<a href='%s'>%s</a>" % (reverse("expense.views.expenses", kwargs={"expense_id": record.id}), smart_bytes(_("Edit"))))
+        result.append("<a href='%s'>%s</a>" % (reverse("expense.views.expenses", kwargs={"clone_from": record.id}), smart_bytes(_("Clone"))))
         return mark_safe(", ".join(result))
 
     class Meta:

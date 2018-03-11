@@ -19,7 +19,7 @@ from django_tables2 import RequestConfig
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from core import utils
@@ -28,14 +28,14 @@ from expense.forms import ExpenseForm, ExpensePaymentForm
 from expense.models import Expense, ExpensePayment
 from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable, ExpensePaymentTable
 from people.models import Consultant
-from staffing.models import Mission
+from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature
 from core.views import tableToCSV
 
 
 @pydici_non_public
 @pydici_feature("reports")
-def expenses(request, expense_id=None):
+def expenses(request, expense_id=None, clone_from=None):
     """Display user expenses and expenses that he can validate"""
     if not request.user.groups.filter(name="expense_requester").exists():
         return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
@@ -69,11 +69,19 @@ def expenses(request, expense_id=None):
                 expense.user = request.user
             expense.creation_date = date.today()
             expense.save()
-            wf.set_initial_state(expense)
+            wf.set_initial_state(expense)  # Start a new workflow for this expense
             return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
     else:
         if expense_id:
             form = ExpenseForm(instance=expense)  # A form that edit current expense
+        elif clone_from:
+            try:
+                expense = Expense.objects.get(id=clone_from)
+                expense.pk = None  # Null pk so it will generate a new fresh object during form submit
+                expense.receipt = None  # Never duplicate the receipt, a new one need to be provided
+                form = ExpenseForm(instance=expense)  # A form with the new cloned expense (not saved)
+            except Expense.DoesNotExist:
+                form = ExpenseForm(initial={"expense_date": date.today()})  # An unbound form
         else:
             form = ExpenseForm(initial={"expense_date": date.today()})  # An unbound form
 
@@ -169,18 +177,20 @@ def expenses_history(request):
 
 
 @pydici_non_public
-def mission_expenses(request, mission_id):
-    """Page fragment that display expenses related to given mission"""
+def lead_expenses(request, lead_id):
+    """Page fragment or csv that display expenses related to given lead"""
     try:
-        mission = Mission.objects.get(id=mission_id)
-        if mission.lead:
-            expenses = Expense.objects.filter(lead=mission.lead).select_related().prefetch_related("clientbill_set")
-        else:
-            expenses = []
-    except Mission.DoesNotExist:
+        lead = Lead.objects.get(id=lead_id)
+        expenses = Expense.objects.filter(lead=lead).select_related().prefetch_related("clientbill_set")
+    except Lead.DoesNotExist:
         expenses = []
+    if "csv" in request.GET:
+        expenseTable = ExpenseTable(expenses, orderable=True)
+        RequestConfig(request, paginate={"per_page": 50}).configure(expenseTable)
+        return tableToCSV(expenseTable, filename="expenses.csv")
     return render(request, "expense/expense_list.html",
                   {"expenses": expenses,
+                   "lead": lead,
                    "user": request.user})
 
 
@@ -188,8 +198,8 @@ def mission_expenses(request, mission_id):
 @pydici_feature("reports")
 def chargeable_expenses(request):
     """Display all chargeable expenses that are not yet charged in a bill"""
-    expenses = Expense.objects.filter(chargeable=True).select_related().prefetch_related("clientbill_set")
-    expenses = [e for e in expenses if e.clientbill_set.all().count() == 0]
+    expenses= Expense.objects.filter(chargeable=True).annotate(Count("clientbill")).filter(clientbill__count=0)
+    expenses = expenses.select_related("lead__client__organisation__company").prefetch_related("clientbill_set")
     return render(request, "expense/chargeable_expenses.html",
                   {"expenses": expenses,
                    "user": request.user})

@@ -21,8 +21,7 @@ try:
     from sklearn.neighbors import NearestNeighbors
     from sklearn.pipeline import Pipeline
     from sklearn.linear_model import SGDClassifier
-    from sklearn.cross_validation import cross_val_score, train_test_split
-    from sklearn.grid_search import GridSearchCV
+    from sklearn.model_selection import GridSearchCV, cross_val_score, train_test_split
     from sklearn.metrics import confusion_matrix, classification_report, f1_score
     import numpy as np
 except ImportError:

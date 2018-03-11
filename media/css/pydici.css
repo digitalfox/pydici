@@ -142,13 +142,93 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 }
 
 .modified, .tablesmall-form-row input.modified {
-    background-color: #ffdba0;
+    background-color: #ffdba0 !important;
 }
 
 .tablesmall-form-row td.timesheet-error > input.timesheet-keyboard {
     border: 1px solid red;
     background-color: #ffeeee;
     color: red;
+}
+
+.tablesmall-form-row td.timesheet-day, .table-holidays td.timesheet-day {
+    height: 26px;
+    width: 26px;
+    min-width: 26px;
+    max-width: 26px;
+    border: 1px solid #e6e6e6;
+    position: relative;
+    /* disable selection */
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+@font-face {
+    font-family: 'circlesmedium';
+    src: url('../fonts/circles/circles-webfont.eot');
+    src: url('../fonts/circles/circles-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/circles/circles-webfont.woff') format('woff'),
+         url('../fonts/circles/circles-webfont.ttf') format('truetype'),
+         url('../fonts/circles/circles-webfont.svg#circlesmedium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.tablesmall-form-row td.timesheet-day > input[type="text"], .tablesmall-form-row td.timesheet-day-weekend > input[type="text"] {
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    border: none;
+    font-size: 20px;
+    font-family: "circlesmedium";
+    cursor: pointer;
+    padding: 0px;
+
+    /* disable selection */
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+    /* remove blinking cursor */
+    color: transparent;
+    text-shadow: 0 0 0 black;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.tablesmall-form-row td.timesheet-day-weekend > input[type="text"] {
+    background-color: LightGrey;
+}
+
+.tablesmall-form-row td.timesheet-day > input[type="text"] {
+    background: #F9F9F9;
+}
+
+.tablesmall-form-row td.timesheet-mission-label, .holidays-consultant-name {
+    text-align: left;
+    min-width: 20rem;
+    padding-right: 2px;
+}
+
+.tablesmall-form-row td.timesheet-long-day, .table-holidays td.timesheet-long-day {
+    font-size: 9px;
+    vertical-align: middle;
+}
+
+.table-holidays, .table-timesheet {
+    width: unset;
+}
+
+.table-collapsed {
+    border-collapse: collapse;
 }
 
 /* To be removed ? Need to be checked */

@@ -57,6 +57,8 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
     Returns one of the `TIMESHEET_ACCESS_*` constants.
     """
     current_month = date.today().replace(day=1)
+    timesheet_next_month = (timesheet_month + timedelta(days=40)).replace(day=1)
+    ontime_editing = (current_month == timesheet_month) or (date.today() - timesheet_next_month).days <= 3
 
     if (user.has_perm("staffing.add_timesheet") and
             user.has_perm("staffing.change_timesheet") and
@@ -69,12 +71,10 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
     except Consultant.DoesNotExist:
         return TIMESHEET_ACCESS_NOT_ALLOWED
 
-    if user_consultant.id == consultant.id:
-        # User is accessing his own timesheet
-
+    if user_consultant.id == consultant.id or consultant in user_consultant.team():
+        # User is accessing his own timesheet and timesheet of his team
         # A consultant can only edit his own timesheet on current month and 3 days after
-        timesheet_next_month = (timesheet_month + timedelta(days=40)).replace(day=1)
-        if current_month == timesheet_month or (date.today() - timesheet_next_month).days <= 3:
+        if ontime_editing :
             return TIMESHEET_ACCESS_READ_WRITE
         else:
             return TIMESHEET_ACCESS_READ_ONLY
@@ -275,7 +275,7 @@ def pdc_review(request, year=None, month=None):
         # TODO: make this message nice
         return HttpResponse(_("No productive consultant defined !"))
 
-    n_month = 3  # Default number of month to display
+    n_month = 4  # Default number of month to display
 
     if "n_month" in request.GET:
         try:
@@ -1237,7 +1237,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
         timesheets = timesheets.filter(working_date__gte=start, working_date__lt=end)
 
     timesheets =timesheets.extra(select={'month': dateTrunc("month", "working_date")})
-    timesheets = timesheets.values("month", "mission__description", "consultant__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
+    timesheets = timesheets.values("month", "mission__description", "consultant__name", "consultant__profil__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
 
     for timesheet in timesheets:
         # Thank you sqlite for those sad lines of code
@@ -1249,6 +1249,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
             _(u"type"): timesheet["mission__description"],
             _(u"consultant"): timesheet["consultant__name"],
             _(u"subsidiary"): timesheet["consultant__company__name"],
+            _(u"profil"): timesheet["consultant__profil__name"],
             _(u"days"): timesheet["charge__sum"],
         })
 
@@ -1394,16 +1395,16 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 10)
-def graph_timesheet_rates_bar_jqp(request, subsidiary_id=None, team_id=None):
+def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
     @:param subsidiary_id: filter graph on the given subsidiary
     @:param team_id: filter graph on the given team
     @todo: per year, with start-end date"""
     dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
     data = {}  # Graph data
-    natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures
+    natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures id
+    natures_label = [i[1] for i in Mission.MISSION_NATURE]  # Mission natures label
     nature_data = {}
-    nature_data_days = {}
     holiday_days = [h.day for h in  Holiday.objects.all()]
     graph_data = []
 
@@ -1437,15 +1438,13 @@ def graph_timesheet_rates_bar_jqp(request, subsidiary_id=None, team_id=None):
     nConsultant = dict(timesheets.extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Count("consultant__id", distinct=True)).order_by())
     nConsultant = convertDictKeyToDate(nConsultant)
 
-    for nature in natures:
+    for nature, label in zip(natures, natures_label):
         nature_data[nature] = []
-        nature_data_days[nature] = []
         data = dict(timesheets.filter(mission__nature=nature).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
         data = convertDictKeyToDate(data)
         for month in timesheetMonths:
-            nature_data[nature].append(100 * data.get(month, 0) / (working_days(month, holiday_days) * nConsultant.get(month, 1)))
-            nature_data_days[nature].append(data.get(month, 0))
-        graph_data.append(zip(isoTimesheetMonths, nature_data[nature], nature_data_days[nature]))
+            nature_data[nature].append(round(100 * data.get(month, 0) / (working_days(month, holiday_days) * nConsultant.get(month, 1)), 1))
+        graph_data.append([label] + nature_data[nature])
 
     prodRate = []
     for prod, nonprod in zip(nature_data["PROD"], nature_data["NONPROD"]):
@@ -1454,19 +1453,19 @@ def graph_timesheet_rates_bar_jqp(request, subsidiary_id=None, team_id=None):
         else:
             prodRate.append("0")
 
-    graph_data.append(zip(isoTimesheetMonths, prodRate))
+    graph_data.append([_("production rate")] + prodRate)
+    graph_data.append(["x"] + isoTimesheetMonths)
 
-    return render(request, "staffing/graph_timesheet_rates_bar_jqp.html",
+    return render(request, "staffing/graph_timesheet_rates_bar.html",
                   {"graph_data": json.dumps(graph_data),
-                   "min_date": previousMonth(timesheetMonths[0]).isoformat(),
-                   "natures_display": [i[1] for i in Mission.MISSION_NATURE],
-                   "series_colors": COLORS,
+                   "natures_display": natures_label,
+                   "series_colors": COLORS[:3] + ['#333'],  # Use grey for prod rate to ease readibility
                    "user": request.user})
 
 
 @pydici_non_public
 @cache_page(60 * 10)
-def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
+def graph_profile_rates(request, subsidiary_id=None, team_id=None):
     """Sale rate per profil
     @:param subsidiary_id: filter graph on the given subsidiary
     @:param team_id: filter graph on the given team
@@ -1477,6 +1476,7 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
     timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
     timesheetEndDate = nextMonth(date.today())  # First day of next month
     profils = dict(ConsultantProfile.objects.all().values_list("id", "name"))  # Consultant Profiles
+    financialConditions = {}
 
     # Create dict per consultant profile
     for profilId in profils.keys():
@@ -1500,8 +1500,8 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
     isoTimesheetMonths = [d.isoformat() for d in timesheetMonths]
     if not timesheetMonths:
         return HttpResponse('')
+    graph_data.append(["x"] + isoTimesheetMonths)
 
-    financialConditions = {}
     for fc in FinancialCondition.objects.all():
         financialConditions["%s-%s" % (fc.mission_id, fc.consultant_id)] = fc.daily_rate
 
@@ -1517,19 +1517,30 @@ def graph_profile_rates_jqp(request, subsidiary_id=None, team_id=None):
             avgDailyRate[timesheet.consultant.profil.id][month] += timesheet.charge * daily_rate
             nDays[timesheet.consultant.profil.id][month] += timesheet.charge
 
-    for profil in profils.keys():
-        data = []
+    # Compute per profil
+    for profil, profilName in profils.items():
+        data = [profilName]
         for month in timesheetMonths:
             if month in nDays[profil] and nDays[profil][month] > 0:
-                data.append(avgDailyRate[profil][month] / nDays[profil][month])
+                data.append(int(avgDailyRate[profil][month] / nDays[profil][month]))
             else:
                 data.append(None)
-        graph_data.append(zip(isoTimesheetMonths, data))
+        if len(data[1:]) > data[1:].count(None): # Don't consider series only with None
+            graph_data.append(data)
 
-    return render(request, "staffing/graph_profile_rates_jqp.html",
+    # Compute average for company
+    data = [_("Global")]
+    for month in timesheetMonths:
+        rates = sum([avgDailyRate[profil].get(month, 0) for profil in profils.keys()])
+        days = sum([nDays[profil].get(month, 0) for profil in profils.keys()])
+        if days > 0:
+            data.append(int(rates / days))
+        else:
+            data.append(None)
+    graph_data.append(data)
+
+    return render(request, "staffing/graph_profile_rates.html",
               {"graph_data": json.dumps(graph_data),
-               "min_date": previousMonth(timesheetMonths[0]).isoformat(),
-               "profils_display": profils.values(),
                "series_colors": COLORS,
                "user": request.user})
 

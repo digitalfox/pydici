@@ -14,11 +14,12 @@ import json
 from django.shortcuts import render
 from django.core import urlresolvers
 from django.http import HttpResponseRedirect, HttpResponse
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, F
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext as _
 
 from billing.models import ClientBill, SupplierBill
+from billing.utils import get_billing_info
 from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
@@ -138,6 +139,7 @@ def pre_billing(request, year=None, month=None, mine=False):
     next_month = nextMonth(month)
     timeSpentBilling = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
     rates = {}  # Key is mission, value is Consultant rates dict
+    internalBilling = {}  # Same structure as timeSpentBilling but for billing between internal subsidiaries
 
     try:
         billing_consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
@@ -152,45 +154,41 @@ def pre_billing(request, year=None, month=None, mine=False):
     undefinedBillingModeMissions = Mission.objects.filter(nature="PROD", billing_mode=None,
                                                           timesheet__working_date__gte=month,
                                                           timesheet__working_date__lt=next_month)
-    if mine:
+
+    timespent_timesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
+                                                    mission__nature="PROD", mission__billing_mode="TIME_SPENT")
+
+    internalBillingTimesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
+                                                    mission__nature="PROD")
+    internalBillingTimesheets = internalBillingTimesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
+    #TODO: hanlde fixed price mission fully delegated to a subsidiary
+
+    if mine:  # Filter on consultant mission/lead as responsible
         fixedPriceMissions = fixedPriceMissions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
         undefinedBillingModeMissions = undefinedBillingModeMissions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
+        timespent_timesheets = timespent_timesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
+        internalBillingTimesheets = internalBillingTimesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
 
     fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
     undefinedBillingModeMissions = undefinedBillingModeMissions.order_by("lead").distinct()
 
-    timesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
-                                          mission__nature="PROD", mission__billing_mode="TIME_SPENT")
-    if mine:
-        timesheets = timesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
-    timesheet_data = timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
-    for mission_id, consultant_id, charge in timesheet_data:
-        mission = Mission.objects.select_related("lead").get(id=mission_id)
-        if mission.lead:
-            lead = mission.lead
-        else:
-            # Bad data, mission with nature prod without lead... This should not happened
-            continue
-        consultant = Consultant.objects.get(id=consultant_id)
-        if not mission in rates:
-            rates[mission] = mission.consultant_rates()
-        if not lead in timeSpentBilling:
-            timeSpentBilling[lead] = [0.0, {}]  # Lead Total and dict of mission
-        if not mission in timeSpentBilling[lead][1]:
-            timeSpentBilling[lead][1][mission] = [0.0, []]  # Mission Total and detail per consultant
-        total = charge * rates[mission][consultant][0]
-        timeSpentBilling[lead][0] += total
-        timeSpentBilling[lead][1][mission][0] += total
-        timeSpentBilling[lead][1][mission][1].append([consultant, to_int_or_round(charge, 2), rates[mission][consultant][0], total])
+    timesheet_data = timespent_timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
+    timeSpentBilling = get_billing_info(timesheet_data)
 
-    # Sort data
-    timeSpentBilling = timeSpentBilling.items()
-    timeSpentBilling.sort(key=lambda x: x[0].deal_id)
+    for subsidiary in Subsidiary.objects.all():
+        subsidiary_timesheet_data = internalBillingTimesheets.filter(consultant__company=subsidiary)
+        for target_subsidiary in Subsidiary.objects.exclude(pk=subsidiary.id):
+            timesheet_data = subsidiary_timesheet_data.filter(mission__lead__subsidiary=target_subsidiary)
+            timesheet_data = timesheet_data .order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
+            billing_info = get_billing_info(timesheet_data)
+            if billing_info:
+                internalBilling[(subsidiary,target_subsidiary)] = billing_info
 
     return render(request, "billing/pre_billing.html",
                   {"time_spent_billing": timeSpentBilling,
                    "fixed_price_missions": fixedPriceMissions,
                    "undefined_billing_mode_missions": undefinedBillingModeMissions,
+                   "internal_billing": internalBilling,
                    "month": month,
                    "mine": mine,
                    "user": request.user})

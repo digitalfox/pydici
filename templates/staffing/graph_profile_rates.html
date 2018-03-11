@@ -1,0 +1,34 @@
+{# Fragment that display timesheet and rates graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_jqplot.html to load according js/css #} {% load i18n %}
+
+{% if graph_data %}
+<div id="profile_rates_graph"></div>
+    <script type="text/javascript">
+        var chart = c3.generate({
+        bindto: '#profile_rates_graph',
+        data: {
+             x: "x",
+             columns: {{ graph_data | safe }},
+             type: 'spline',
+        },
+        point: {
+            show: false
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    format: '%Y-%m',
+                    rotate: 45,
+                },
+            },
+            y: {
+                label : {
+                    text: '{% trans "daily rate (€)" %}',
+                    position: 'outer-middle',
+                },
+            },
+        },
+      });
+    </script>
+{% endif %}

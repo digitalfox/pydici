@@ -39,8 +39,8 @@
         {% if mission.active %}
             <li role="presentation"><a data-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'staffing.views.mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
         {% endif %}
-        <li role="presentation"><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense.views.mission_expenses' mission.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
         {% if mission.lead %}
+            <li role="presentation"><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense.views.lead_expenses' mission.lead.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
             <li role="presentation"><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads.views.lead_documents' mission.lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
             <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads.views.lead_pivotable' mission.lead.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
         {% endif %}
@@ -55,8 +55,10 @@
             <br/>
             {% if mission.active %}
                    {% if mission.no_more_staffing_since %}
-                       <div id="mission_no_staffing_warning" class="alert alert-warning">{% trans "This mission has no staffing in future" %}. 
-                        <button onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}', process_mission_archive)"
+                       <div id="mission_no_staffing_warning" class="alert alert-warning">
+                           {% trans "This mission has no staffing in future" %}.
+                           {% if mission.lead %}<strong>{% trans "Still to be billed" %}: {{ mission.lead.still_to_be_billed|floatformat:-2 }} €. </strong>{% endif %}
+                            <button onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}', process_mission_archive)"
                                class="btn btn-default">{% trans "Archive this mission" %}</button>
                        </div>
                    {% else %}
@@ -69,11 +71,12 @@
              {% endif %}
         
          
-         {% if mission.lead %}{% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}{% endif %}
-         
-             {% if not mission.billing_mode %}<div class="alert alert-warning col-md-6">{% trans "Please defined billing mode below" %}</div>{% endif %}
-             {% if not mission.defined_rates %}<div class="alert alert-warning col-md-6">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
-         
+         {% if mission.lead %}
+            {% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
+            {% if not mission.billing_mode %}<div class="alert alert-warning col-md-6">{% trans "Please defined billing mode below" %}</div>{% endif %}
+            {% if not mission.defined_rates %}<div class="alert alert-warning col-md-6">{% trans "Consultants rates are not fully defined. Set its on consultant tabs" %}</div>{% endif %}
+         {% endif %}
+        
             <table class="table table-hover table-striped table-condensed">
                 <tr>
                     <th>{% trans "Type" %}</th><td>{{ mission.get_nature_display }}</td>

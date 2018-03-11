@@ -15,7 +15,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'pydici.db',
-        'TEST_NAME': '/dev/shm/myproject-djangotestdb.sqlite',
+        'TEST': {'NAME': '/dev/shm/myproject-djangotestdb.sqlite' },
     }
 }
 
