@@ -31,6 +31,7 @@ from people.models import Consultant
 
 CONSULTANT_SIMILARITY_MODEL_CACHE_KEY = "PYDICI_CONSULTANT_SIMILARITY_MODEL"
 SIMILARITY_CONSULTANT_IDS_CACHE_KEY = "PYDICI_CONSULTANT_SIMILARITY_CONSULTANTS_IDS"
+SIMILARITY_THRESHOLD = 0.05 # below that, result are filtered
 
 ############# Features extraction ##########################
 
@@ -76,7 +77,7 @@ def get_similarity_model():
 def predict_similar_consultant(consultant):
     features = consultant_cumulated_experience(consultant)
     similar_consultant = predict_similar(features, scale=True)
-    return similar_consultant.exclude(pk=consultant.id)
+    return [(c, d) for c, d in similar_consultant if c.id != consultant.id and d > SIMILARITY_THRESHOLD]
 
 
 def predict_similar(features, scale=False):
@@ -94,15 +95,23 @@ def predict_similar(features, scale=False):
     X = vect.transform(features)
     if scale:
         X = scaler.transform(X)
-    indices = neigh.kneighbors(X, return_distance=False)
+    indices = neigh.kneighbors(X, return_distance=True)
 
-    if indices.any():
-        try:
-            similar_consultants_ids = [consultants_ids[indice] for indice in indices[0]]
-            similar_consultants = Consultant.objects.filter(pk__in=similar_consultants_ids).select_related()
-        except IndexError:
-            print("While searching for consultant similarity, some consultant disapeared !")
-    return similar_consultants
+    similar_consultants = []
+    try:
+
+        similar_consultants_ids = [consultants_ids[indice] for indice in indices[1][0]]
+
+        for distance, consultant_rank in zip(indices[0][0], similar_consultants_ids):
+            consultant = Consultant.objects.get(id=consultant_rank)
+            similar_consultants.append((consultant, 100 * (1 - distance)))
+
+        similar_consultants.sort(key=lambda x: x[1], reverse=True)
+
+    except IndexError:
+        print("While searching for consultant similarity, some consultant disapeared !")
+
+    return [(c, d) for c, d in similar_consultants if d > SIMILARITY_THRESHOLD]
 
 
 ############# Entry points for computation ##########################

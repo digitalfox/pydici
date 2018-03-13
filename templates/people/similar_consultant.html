@@ -10,8 +10,8 @@
 
 <br/>
 <ul>
-{% for consultant in result %}
-    <li><a href="{{ consultant.get_absolute_url }}">{{ consultant }}</a></li>
+{% for consultant, score in result %}
+    <li><a href="{{ consultant.get_absolute_url }}">{{ consultant }}</a> ({{ score|floatformat:-1 }} %)</li>
 {% endfor %}
 </ul>
 
