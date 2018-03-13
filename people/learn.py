@@ -20,7 +20,7 @@ try:
 except ImportError:
     HAVE_SCIKIT = False
 
-from django.db.models import Sum, Max
+from django.db.models import Sum, Max, Min
 from django.core.cache import cache
 
 
@@ -37,20 +37,29 @@ SIMILARITY_CONSULTANT_IDS_CACHE_KEY = "PYDICI_CONSULTANT_SIMILARITY_CONSULTANTS_
 def consultant_cumulated_experience(consultant):
     features = dict()
     timesheets = Timesheet.objects.filter(consultant=consultant, mission__nature="PROD").order_by("mission__id")
-    timesheets = timesheets.values_list("mission__lead__id").annotate(Sum("charge"),Max("working_date"))
+    timesheets = timesheets.values_list("mission__lead").annotate(Sum("charge"), Max("working_date"))
     today = date.today()
     for lead_id, charge, end_date in timesheets:
+        lead = Lead.objects.get(id=lead_id)
         weight = (today - end_date).days/30
         if weight < 1:
             weight = 1
         weight = sqrt(weight)
         weighted_charge = float(charge / weight)  # Knowledge decrease with time...
-        for tag in Lead.objects.get(id=lead_id).tags.all():
+        if consultant == lead.responsible or (consultant.id,) in lead.mission_set.all().values_list("responsible"):
+            weighted_charge *= 2  # It count twice when you managed the lead or mission
+        for tag in lead.tags.all():
             features[tag.name] = features.get(tag.name, 0) + weighted_charge
 
     features[u"Profil"] = float(consultant.profil.level)
     features[consultant.company.name] = 1.0
-    #TODO: add experience (missing in model)
+    features[consultant.manager.trigramme] = 1.0
+    experience = Timesheet.objects.filter(consultant=consultant, mission__nature="PROD").aggregate(Min("working_date"),
+                                                                                      Max("working_date"))
+    if experience["working_date__max"] and experience["working_date__min"]:
+        features[u"experience"] = (experience["working_date__max"] - experience["working_date__min"]).days
+    else:
+        features[u"experience"] = 0
     return features
 
 
@@ -66,11 +75,11 @@ def get_similarity_model():
 ############# Entry points for prediction ##########################
 def predict_similar_consultant(consultant):
     features = consultant_cumulated_experience(consultant)
-    similar_consultant = predict_similar(features)
+    similar_consultant = predict_similar(features, scale=True)
     return similar_consultant.exclude(pk=consultant.id)
 
 
-def predict_similar(features):
+def predict_similar(features, scale=False):
     model = compute_consultant_similarity.now()
     consultants_ids = cache.get(SIMILARITY_CONSULTANT_IDS_CACHE_KEY)
     similar_consultants = []
@@ -81,7 +90,11 @@ def predict_similar(features):
     vect = model.named_steps["vect"]
     neigh = model.named_steps["neigh"]
     scaler = model.named_steps["scaler"]
-    indices = neigh.kneighbors(vect.transform(features), return_distance=False)
+
+    X = vect.transform(features)
+    if scale:
+        X = scaler.transform(X)
+    indices = neigh.kneighbors(X, return_distance=False)
 
     if indices.any():
         try:
