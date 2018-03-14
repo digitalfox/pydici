@@ -6,7 +6,7 @@ Module that handle predictive thing about people
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date
+from datetime import date, timedelta
 from math import sqrt
 
 from background_task import background
@@ -61,6 +61,13 @@ def consultant_cumulated_experience(consultant):
         features[u"experience"] = (experience["working_date__max"] - experience["working_date__min"]).days
     else:
         features[u"experience"] = 0
+
+    fc = consultant.getFinancialConditions(today - timedelta(365), today)
+    days = sum(d for r, d in fc)
+    if days:
+        features["avg_daily_rate"] = sum([r * d for r, d in fc]) / days / 1000
+    else:
+        features["avg_daily_rate"] = 0
     return features
 
 
@@ -93,18 +100,16 @@ def predict_similar(features, scale=False):
     scaler = model.named_steps["scaler"]
 
     X = vect.transform(features)
-    if scale:
+    if scale:  # Relevant when features are extracted from a real consultant and not already scaled
         X = scaler.transform(X)
     indices = neigh.kneighbors(X, return_distance=True)
 
     similar_consultants = []
     try:
-
         similar_consultants_ids = [consultants_ids[indice] for indice in indices[1][0]]
-
         for distance, consultant_rank in zip(indices[0][0], similar_consultants_ids):
             consultant = Consultant.objects.get(id=consultant_rank)
-            similar_consultants.append((consultant, 100 * (1 - distance)))
+            similar_consultants.append((consultant, 100 * (1 - distance)))  # Compute score from distance
 
         similar_consultants.sort(key=lambda x: x[1], reverse=True)
 
