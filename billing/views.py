@@ -196,6 +196,7 @@ def client_bill(request, bill_id=None):
                 bill = create_client_bill_from_timesheet(lead, month)
                 form = ClientBillForm(instance=bill)
                 billDetailFormSet = BillDetailFormSet(instance=bill)
+                billExpenseFormSet = BillExpenseFormSet(instance=bill)
             else:
                 form = ClientBillForm()
     return render(request, "billing/bill_form.html",
