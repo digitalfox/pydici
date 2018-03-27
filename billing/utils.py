@@ -80,17 +80,18 @@ def generate_bill_pdf(bill, url):
     bill.bill_file.save(u"generated pdf", content)
     bill.save()
 
-def create_or_updateclient_bill_from_timesheet(mission, month, bill=None):
-    """Create (and return) or update if given a bill and bill detail for given mission and month"""
+def create_client_bill_from_timesheet(lead, month):
+    """Create (and return) a bill and bill detail for all mission of given mission for given month"""
     ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
-    if not bill:
-        bill = ClientBill(lead=mission.lead, bill_id=datetime.now().isoformat())
-        bill.save()
-    timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
-    timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
-    for i in timesheet_data:
-        consultant = Consultant.objects.get(id=i["consultant"])
-        billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=1000)
-        billDetail.save()
+    bill = ClientBill(lead=lead, bill_id=datetime.now().isoformat())
+    bill.save()
+    for mission in lead.mission_set.all():
+        rates = mission.consultant_rates()
+        timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
+        timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
+        for i in timesheet_data:
+            consultant = Consultant.objects.get(id=i["consultant"])
+            billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
+            billDetail.save()
     return bill

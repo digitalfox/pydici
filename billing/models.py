@@ -78,7 +78,6 @@ class AbstractBill(models.Model):
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
 
 
-
     def __unicode__(self):
         if self.bill_id:
             return u"%s (%s)" % (self.bill_id, self.id)

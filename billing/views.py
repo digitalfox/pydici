@@ -22,7 +22,7 @@ from django.forms.models import inlineformset_factory
 
 from django_weasyprint import PDFTemplateView
 
-from billing.utils import get_billing_info, generate_bill_pdf, create_or_updateclient_bill_from_timesheet
+from billing.utils import get_billing_info, generate_bill_pdf, create_client_bill_from_timesheet
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
@@ -193,8 +193,7 @@ def client_bill(request, bill_id=None):
             if request.GET.get("lead") and request.GET.get("month") and request.GET.get("year"):
                 month = date(int(request.GET.get("year")), int(request.GET.get("month")), 1)
                 lead = Lead.objects.get(id=request.GET.get("lead"))
-                mission = lead.mission_set.first() #TODO: iter on all lead mission
-                bill = create_or_updateclient_bill_from_timesheet(mission=mission, month=month)
+                bill = create_client_bill_from_timesheet(lead, month)
                 form = ClientBillForm(instance=bill)
                 billDetailFormSet = BillDetailFormSet(instance=bill)
             else:
