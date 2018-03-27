@@ -6,7 +6,7 @@ People form setup
 """
 
 from django import forms
-from django.forms import ModelChoiceField, ModelMultipleChoiceField
+from django.forms import ModelChoiceField, ModelMultipleChoiceField, ChoiceField
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 
@@ -62,10 +62,14 @@ class ConsultantForm(forms.models.ModelForm):
 
 class SimilarConsultantForm(PydiciCrispyForm):
     consultant = ModelChoiceField(widget=InternalConsultantChoices(attrs={'data-placeholder':_("Select a similar consultant...")}), queryset=Consultant.objects, required=False)
-    tag = ModelMultipleChoiceField(widget=TagMChoices(attrs={'data-placeholder': _("Select a tag...")}), queryset=Tag.objects, required=False)
+    tags = ModelMultipleChoiceField(widget=TagMChoices(attrs={'data-placeholder': _("Select a tag...")}), queryset=Tag.objects, required=False)
+    daily_rate = ChoiceField(choices=[(0, "low"), (0.2, "average"), (1, "high")], initial=0.2)
 
     def __init__(self, *args, **kwargs):
         super(SimilarConsultantForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Fieldset(_("Similar consultant"), Field("consultant"), css_class="col-md-6"),
-                                    Fieldset(_("Robot portrait"), Field("tag"), css_class="col-md-6"),
+                                    Fieldset(_("Robot portrait"),
+                                             Field("tags"),
+                                             Field("daily_rate"),
+                                             css_class="col-md-6"),
                                     self.submit)

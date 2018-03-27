@@ -167,6 +167,7 @@ def subcontractor_detail(request, consultant_id):
                    "user": request.user})
 
 
+@pydici_non_public
 def similar_consultant(request):
     """This page allows to find a consultant by its experience or similar to another"""
     result = []
@@ -174,13 +175,16 @@ def similar_consultant(request):
         form = SimilarConsultantForm(request.POST)
         if form.is_valid():
             consultant = form.cleaned_data["consultant"]
-            tags = form.cleaned_data["tag"]
+            tags = form.cleaned_data["tags"]
+            daily_rate = form.cleaned_data["daily_rate"]
             if consultant:
                 result = predict_similar_consultant(form.cleaned_data["consultant"])
             if tags:
-                result = predict_similar({tag.name: 1 for tag in tags})
+                features = {tag.name: 1 for tag in tags}
+                features["avg_daily_rate"] = daily_rate
+                result = predict_similar(features)
                 # Clean form in case user submited both consultant and tags
-                form = SimilarConsultantForm(initial={"tag": tags})
+                form = SimilarConsultantForm(initial={"tags": tags, "daily_rate": daily_rate})
 
     else:
         form = SimilarConsultantForm() # An unbound form
