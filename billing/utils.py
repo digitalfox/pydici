@@ -10,12 +10,15 @@ appropriate to live in Billing models or view
 from django.template.loader import get_template
 from django.template import Context
 from django.core.files.base import ContentFile
+from django.apps import apps
+from django.db.models import Sum
 
 import weasyprint
+from datetime import datetime
 
 from staffing.models import Mission
 from people.models import Consultant
-from core.utils import to_int_or_round
+from core.utils import to_int_or_round, nextMonth
 
 
 def get_billing_info(timesheet_data):
@@ -76,3 +79,18 @@ def generate_bill_pdf(bill, url):
     content = ContentFile(pdf)
     bill.bill_file.save(u"generated pdf", content)
     bill.save()
+
+def create_or_updateclient_bill_from_timesheet(mission, month, bill=None):
+    """Create (and return) or update if given a bill and bill detail for given mission and month"""
+    ClientBill = apps.get_model("billing", "clientbill")
+    BillDetail = apps.get_model("billing", "billdetail")
+    if not bill:
+        bill = ClientBill(lead=mission.lead, bill_id=datetime.now().isoformat())
+        bill.save()
+    timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
+    timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
+    for i in timesheet_data:
+        consultant = Consultant.objects.get(id=i["consultant"])
+        billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=1000)
+        billDetail.save()
+    return bill

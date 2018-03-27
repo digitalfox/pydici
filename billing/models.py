@@ -195,12 +195,12 @@ class BillDetail(models.Model):
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
                                           null=True)
     vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2,
-                              default=float(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
+                              default=Decimal(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
     label = models.CharField(_("Label"), max_length=200, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.unit_price and self.quantity:
-            self.amount = self.unit_price * Decimal(self.quantity)
+            self.amount = Decimal(self.unit_price * self.quantity)
 
         # compute amount with VAT if amount is defined
         if self.amount:
