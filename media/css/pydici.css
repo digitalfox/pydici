@@ -19,6 +19,10 @@ body {
     text-align: center
 }
 
+.noborder {
+    border: none !important;
+}
+
 .icon-list li {
   padding: 0 0 5px 20px;
   display: block;

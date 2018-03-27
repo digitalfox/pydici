@@ -17,8 +17,8 @@
         {{ bill.lead.subsidiary }}<br/>
         {{ bill.lead.subsidiary.billing_address|linebreaksbr }}
         <br/>
-        {% if bill.lead.client_deal_id %}{% trans "Client ref.: " %}{{ bill.lead.client_deal_id }}{% endif %}
-        {% trans "Lead ref.: " %}{{ bill.lead.deal_id }}<br/>
+        {% if bill.lead.client_deal_id %}{% trans "Client ref.: " %}{{ bill.lead.client_deal_id }}<br/>{% endif %}
+        {% trans "Our ref.: " %}{{ bill.lead.deal_id }}<br/>
     </div>
     <div class="col-xs-offset-1 col-xs-6">
         <div class="well"><div class="lead text-uppercase"><strong>{% trans "Bill" %}</strong></div><strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
@@ -28,7 +28,7 @@
     </div>
 </div>
 <br/><br/>
-<table class="table table-pydici-extra-condensed">
+<table class="table">
 <thead>
     <tr><th><small>{% trans "Description" %}</small></th><th class="text-center"><small>{% trans "Quantity" %}</small></th>
         <th class="text-right"><small>{% trans "Unit Price €" %}</small></th><th class="text-right"><small>{% trans "Amount €" %}</small></th>
@@ -40,11 +40,11 @@
 {% regroup bill.billdetail_set.all by mission as detail_list %}
 
 {% for detail in detail_list %}
-        <tr><td class="text-center" style="border-top:0px"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
+        <tr><td class="noborder"></td></tr>
+        <tr><td class="text-center noborder"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
         {% regroup detail.list by month as mission_detail_list %}
         {% for mission_detail in mission_detail_list %}
-            <tr><td>&nbsp;</td></tr>
-            <tr><td style="border-top:0px"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
+            <tr><td class="noborder"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
             {% for item in mission_detail.list %}
                 <tr>
                     <td>{% ifequal item.mission.billing_mode "TIME_SPENT" %}
