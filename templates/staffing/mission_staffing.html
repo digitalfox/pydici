@@ -1,9 +1,11 @@
 {% load i18n %}
 {# Fragment of page to be included in a mission_home tab #}
 <div id="pydici-ajax-form-content-mission-staffing">
-
+    <br/>
+    {% include "staffing/_check_mission_billing_mode.html" %}
+    {% include "staffing/_check_mission_rates.html" %}
     {% if margin > 0 and mission.nature == "PROD" and mission.defined_rates %}
-        <br/>
+
         <form action="{% url 'automatic_mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-automatic-staffing">
             <div class="alert alert-info">
                 {% blocktrans %}This mission has {{ margin }} k€ to be forecasted.{% endblocktrans %}
