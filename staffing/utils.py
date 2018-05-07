@@ -207,8 +207,9 @@ def day_percent_for_time_string(time_string, day_duration=settings.TIMESHEET_DAY
 
 
 @transaction.atomic
-def compute_automatic_staffing(mission, mode, duration):
+def compute_automatic_staffing(mission, mode, duration, user=None):
     """Compute staffing for a given mission. Mode can be after (current staffing) for replace (erase and create)"""
+    now = datetime.now().replace(microsecond=0)  # Remove useless microsecond
     current_month = date.today().replace(day=1)
     start_date = current_month
     total = 0
@@ -222,7 +223,7 @@ def compute_automatic_staffing(mission, mode, duration):
     else:
         max_staffing = Staffing.objects.filter(mission=mission).aggregate(Max("staffing_date")).values()[0]
         if max_staffing:
-            start_date = nextMonth(max_staffing)
+            start_date = max(current_month, nextMonth(max_staffing))
 
     margin = mission.margin(mode="target")
     rates = mission.consultant_rates()
@@ -235,7 +236,9 @@ def compute_automatic_staffing(mission, mode, duration):
         for i in range(duration):
             if total > margin*1000:
                 break
-            s = Staffing(mission=mission, consultant=consultant, charge=days, staffing_date=month)
+            s = Staffing(mission=mission, consultant=consultant, charge=days, staffing_date=month, update_date = now)
+            if user:
+                s.last_user = unicode(user)
             s.save()
             total += days * rates[consultant][0]
 
