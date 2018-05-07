@@ -9,6 +9,7 @@ from datetime import date, timedelta, datetime
 import csv
 import json
 
+from django.core.cache import cache
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
@@ -36,8 +37,8 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
     to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, get_fiscal_years
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
-    sortMissions, holidayDays, staffingDates, time_string_for_day_percent
-from staffing.forms import MissionForm
+    sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing
+from staffing.forms import MissionForm, MissionAutomaticStaffingForm
 from people.utils import getScopes
 
 TIMESTRING_FORMATTER = {
@@ -122,8 +123,8 @@ def mission_home(request, mission_id):
 
 @pydici_non_public
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def mission_staffing(request, mission_id):
-    """Edit mission staffing"""
+def mission_staffing(request, mission_id, form_mode="manual"):
+    """Edit mission staffing. form_mode determine if staffing is done manually (manual) or automatically (automatic)"""
     if (request.user.has_perm("staffing.add_staffing") and
         request.user.has_perm("staffing.change_staffing") and
         request.user.has_perm("staffing.delete_staffing")):
@@ -143,16 +144,26 @@ def mission_staffing(request, mission_id):
         if readOnly:
             # Readonly users should never go here !
             return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
-        formset = StaffingFormSet(request.POST, instance=mission)
-        if formset.is_valid():
-            saveFormsetAndLog(formset, request)
-            formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
-    else:
-        formset = StaffingFormSet(instance=mission)  # An unbound form
+        if form_mode=="manual":
+            formset = StaffingFormSet(request.POST, instance=mission)
+            if formset.is_valid():
+                saveFormsetAndLog(formset, request)
+        else:
+            form = MissionAutomaticStaffingForm(request.POST)
+            if form.is_valid():
+                compute_automatic_staffing(mission, form.cleaned_data["mode"], int(form.cleaned_data["duration"]))
+
+    formset = StaffingFormSet(instance=mission)  # An unbound form
+
+    # flush mission cache
+    cache.delete("Mission.forecasted_work%s" % mission.id )
+    cache.delete("Mission.done_work%s" % mission.id)
 
     return render(request, 'staffing/mission_staffing.html',
                   {"formset": formset,
                    "mission": mission,
+                   "margin": mission.margin(mode="target"),
+                   "automatic_staffing_form": MissionAutomaticStaffingForm(),
                    "read_only": readOnly,
                    "staffing_dates": staffingDates(),
                    "user": request.user})

@@ -1,7 +1,21 @@
 {% load i18n %}
 {# Fragment of page to be included in a mission_home tab #}
 <div id="pydici-ajax-form-content-mission-staffing">
-    <form action="{% url 'staffing.views.mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-staffing">
+
+    {% if margin > 0 and mission.nature == "PROD" and mission.defined_rates %}
+        <br/>
+        <form action="{% url 'automatic_mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-automatic-staffing">
+            <div class="alert alert-info">
+                {% blocktrans %}This mission has {{ margin }} k€ to be forecasted.{% endblocktrans %}
+                {% trans "Do automatic forecast" %} {{ automatic_staffing_form.mode }} {% trans "in" %} {{ automatic_staffing_form.duration }} {% trans "months" %}.
+
+                <button type='submit' class="btn btn-default"><span class="glyphicon glyphicon-cog"></span> {% trans 'Compute automatic forecast' %}</button>
+            </div>
+        </form>
+    {% endif %}
+
+
+    <form action="{% url 'manual_mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-staffing">
         {{ formset.management_form }}
         <div class="form-row">
         <table class="table table-striped table-hover table-condensed">
@@ -72,4 +86,10 @@
         {% include "core/_ajax_post.html" %}
     {% endwith %}
     {% endwith %}
+    {% with "pydici-ajax-form-mission-automatic-staffing" as formid %}
+    {% with "pydici-ajax-form-content-mission-staffing" as formcontent %}
+        {% include "core/_ajax_post.html" %}
+    {% endwith %}
+    {% endwith %}
+
 {% endif %}

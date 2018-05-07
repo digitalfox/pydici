@@ -7,15 +7,16 @@ appropriate to live in Staffing models or view
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 import time
-
 from datetime import date, datetime
+from math import floor
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Max
 from django.utils import formats
 from django.core.cache import cache
 
-from staffing.models import Timesheet, Mission, LunchTicket, Holiday
+from staffing.models import Timesheet, Staffing, Mission, LunchTicket, Holiday
 from core.utils import month_days, nextMonth, daysOfMonth
 from people.models import TIMESHEET_IS_UP_TO_DATE_CACHE_KEY, CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY
 
@@ -203,3 +204,39 @@ def day_percent_for_time_string(time_string, day_duration=settings.TIMESHEET_DAY
     value_struct = time.strptime(time_string, '%H:%M')
     duration = value_struct[3] + value_struct[4] / 60.0
     return duration / day_duration
+
+
+@transaction.atomic
+def compute_automatic_staffing(mission, mode, duration):
+    """Compute staffing for a given mission. Mode can be after (current staffing) for replace (erase and create)"""
+    current_month = date.today().replace(day=1)
+    start_date = current_month
+    total = 0
+
+    if mode=="replace":
+        mission.staffing_set.all().delete()
+        cache.delete("Mission.forecasted_work%s" % mission.id)
+        cache.delete("Mission.done_work%s" % mission.id)
+        if mission.lead:
+            start_date = max(current_month, mission.lead.start_date.replace(day=1))
+    else:
+        max_staffing = Staffing.objects.filter(mission=mission).aggregate(Max("staffing_date")).values()[0]
+        if max_staffing:
+            start_date = nextMonth(max_staffing)
+
+    margin = mission.margin(mode="target")
+    rates = mission.consultant_rates()
+    rates_sum = sum([i[0] for i in rates.values()])
+    days = margin*1000 / rates_sum / duration
+    days = max(floor(days * 4) / 4, 0.25)
+
+    for consultant in rates.keys():
+        month = start_date
+        for i in range(duration):
+            if total > margin*1000:
+                break
+            s = Staffing(mission=mission, consultant=consultant, charge=days, staffing_date=month)
+            s.save()
+            total += days * rates[consultant][0]
+
+            month = nextMonth(month)

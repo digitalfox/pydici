@@ -271,6 +271,12 @@ class MissionContactsForm(forms.ModelForm):
         widgets = { "contacts": MissionContactMChoices }
 
 
+class MissionAutomaticStaffingForm(forms.Form):
+    """Form to create automatically staffing for given mission"""
+    duration = forms.ChoiceField(choices=zip(range(1, 13), range(1, 13)))
+    mode = forms.ChoiceField(choices=(("after", _("after current staffing")), ("replace", _("replace current staffing"))))
+
+
 class CycleTimesheetField(forms.ChoiceField):
     widget = forms.widgets.TextInput
     # The font used to display timesheet symbols map them to number
@@ -303,7 +309,6 @@ class CycleTimesheetField(forms.ChoiceField):
         return self.TS_VALUES_R.get(value, None)
 
     def validate(self, value):
-        print(value)
         if value in self.TS_VALUES.keys():
             return True
 
