@@ -173,6 +173,8 @@ def expenses_history(request):
 
     return render(request, "expense/expense_archive.html",
                   {"expense_table": expenseTable,
+                   "data_url": urlresolvers.reverse('expense_table_DT'),
+                   "data_options": ''' "pageLength": 25 ''',
                    "user": request.user})
 
 

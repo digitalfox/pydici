@@ -7,8 +7,12 @@ Pydici leads tables
 
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_bytes
+from django.template import Template, RequestContext
+from django.template.loader import get_template
+from django_datatables_view.base_datatable_view import BaseDatatableView
 
 import django_tables2 as tables
 from django_tables2.utils import A
@@ -16,6 +20,61 @@ from django_tables2.utils import A
 from expense.models import Expense, ExpensePayment
 from core.templatetags.pydici_filters import link_to_consultant
 from core.utils import TABLES2_HIDE_COL_MD
+from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
+
+
+class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
+    """Expense table backend for datatable"""
+    pydici_feature = set(["reports"])
+    columns = ["user", "category", "description", "lead", "amount", "receipt", "chargeable", "corporate_card", "creation_date", "expense_date", "update_date", "comment"]
+    order_columns = columns
+    max_display_length = 500
+    date_template = get_template("core/_date_column.html")
+    receipt_template = get_template("expense/_receipt_column.html")
+
+    def get_initial_queryset(self):
+        return Expense.objects.all().select_related("lead__client__contact", "lead__client__organisation__company")
+
+    def filter_queryset(self, qs):
+        """ simple search on some attributes"""
+        search = self.request.GET.get(u'search[value]', None)
+        if search:
+            qs = qs.filter(Q(comment__icontains=search) |
+                           Q(description__icontains=search) |
+                           #Q(consultant__trigramme__iexact=search) |
+                           #Q(consultant__name__icontains=search) |
+                           Q(lead__client__organisation__company__name__icontains=search) |
+                           Q(lead__client__organisation__name__iexact=search) |
+                           Q(lead__description__icontains=search) |
+                           Q(lead__deal_id__icontains=search))
+            qs = qs.distinct()
+        return qs
+
+    def render_column(self, row, column):
+        if column == "user":
+            return link_to_consultant(row.user)
+        elif column == "category":
+            return unicode(row.category)
+        elif column == "receipt":
+            return self.receipt_template.render(RequestContext(self.request, {"record": row}))
+        elif column == "lead":
+            if row.lead:
+                return u"<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
+            else:
+                return u"-"
+        elif column in ("creation_date", "expense_date"):
+            return self.date_template.render({"date": getattr(row, column)})
+        elif column == "update_date":
+            return row.update_date.strftime("%x %X")
+        elif column in ("chargeable", "corporate_card"):
+            value = getattr(row, column)
+            if value:
+                return _("yes")
+            else:
+                return _("no")
+        else:
+            return super(ExpenseTableDT, self).render_column(row, column)
+
 
 
 class ExpenseTable(tables.Table):

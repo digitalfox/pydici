@@ -75,7 +75,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
 class ActiveLeadTableDT(LeadTableDT):
     columns = ["client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba", "creation_date", "due_date", "start_date", "update_date"]
     order_columns = columns
-    dateTemplate = get_template("leads/_date_column.html")
+    dateTemplate = get_template("core/_date_column.html")
     pydici_feature = "leads"
 
     def get_initial_queryset(self):
