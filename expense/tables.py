@@ -26,11 +26,12 @@ from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
     """Expense table backend for datatable"""
     pydici_feature = set(["reports"])
-    columns = ["user", "category", "description", "lead", "amount", "receipt", "chargeable", "corporate_card", "creation_date", "expense_date", "update_date", "comment"]
+    columns = ["user", "category", "description", "lead", "amount", "receipt", "chargeable", "corporate_card", "state", "creation_date", "expense_date", "update_date", "comment"]
     order_columns = columns
     max_display_length = 500
     date_template = get_template("core/_date_column.html")
     receipt_template = get_template("expense/_receipt_column.html")
+    state_template = get_template("expense/_expense_state_column.html")
 
     def get_initial_queryset(self):
         return Expense.objects.all().select_related("lead__client__contact", "lead__client__organisation__company")
@@ -72,6 +73,8 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
                 return _("yes")
             else:
                 return _("no")
+        elif column == "state":
+            return self.state_template.render(RequestContext(self.request, {"record": row}))
         else:
             return super(ExpenseTableDT, self).render_column(row, column)
 
@@ -80,10 +83,8 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
 class ExpenseTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"))
     lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads.views.detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
-    receipt = tables.TemplateColumn("""{% if record.receipt %}<a href="{% url 'expense.views.expense_receipt' record.id %}" data-remote="false" data-toggle="modal" data-target="#expenseModal"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}""")
-    state = tables.TemplateColumn("""{% load i18n %}{% if record.expensePayment %}
-                                                        <a href="{% url 'expense.views.expense_payment_detail' record.expensePayment.id %}">{% trans "Paid" %}</a>
-                                                    {% else %}{{ record.state }}{% endif %}""", verbose_name=_("State"), orderable=False)
+    receipt = tables.TemplateColumn(template_name="expense/_receipt_column.html")
+    state = tables.TemplateColumn(template_name="expense/_expense_state_column.html", orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
     update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title attr is just used to have an easy to parse hidden value for sorting
 
