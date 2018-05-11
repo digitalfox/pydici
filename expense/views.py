@@ -258,16 +258,6 @@ def expense_payments(request, expense_payment_id=None):
         expensesToPay = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
         expensesToPay = [expense for expense in expensesToPay if wf.get_state(expense).transitions.count() == 0]
 
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-        user_team = consultant.userTeam()
-    except Consultant.DoesNotExist:
-        user_team = []
-
-    expensePayments = ExpensePayment.objects.all()
-    if not utils.has_role(request.user, "expense paymaster"):
-        expensePayments = expensePayments.filter(Q(expense__user=request.user) | Q(expense__user__in=user_team)).distinct()
-
     if request.method == "POST":
         if readOnly:
             # A bad user is playing with urls...
@@ -301,7 +291,6 @@ def expense_payments(request, expense_payment_id=None):
 
     return render(request, "expense/expense_payments.html",
                   {"modify_expense_payment": bool(expense_payment_id),
-                   "expense_payment_table": ExpensePaymentTable(expensePayments),
                    "data_url": urlresolvers.reverse('expense_payment_table_DT'),
                    "data_options": ''' "pageLength": 25,
                         "order": [[0, "desc"]],

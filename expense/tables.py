@@ -175,7 +175,17 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
     modification_template = Template("""<a href="{% url 'expense.views.expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/>""")
 
     def get_initial_queryset(self):
-        return ExpensePayment.objects.all()
+        try:
+            consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
+            user_team = consultant.userTeam()
+        except Consultant.DoesNotExist:
+            user_team = []
+
+        expensePayments = ExpensePayment.objects.all()
+        if not has_role(self.request.user, "expense paymaster"):
+            expensePayments = expensePayments.filter(
+                Q(expense__user=self.request.user) | Q(expense__user__in=user_team)).distinct()
+        return expensePayments
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
