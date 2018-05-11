@@ -5,7 +5,7 @@
 """
 
 from django.conf.urls import patterns, url
-from expense.tables import ExpenseTableDT
+from expense.tables import ExpenseTableDT, ExpensePaymentTableDT
 
 
 expense_urls = patterns('expense.views',
@@ -21,4 +21,5 @@ expense_urls = patterns('expense.views',
                         (r'^payment/(?P<expense_payment_id>\d+)/?$', 'expense_payments'),
                         (r'^payment/(?P<expense_payment_id>\d+)/detail$', 'expense_payment_detail'),
                         url(r'^datatable/all-expense/data/$', ExpenseTableDT.as_view(), name='expense_table_DT'),
+                        url(r'^datatable/all-expense-payment/data/$', ExpensePaymentTableDT.as_view(), name='expense_payment_table_DT'),
                         )

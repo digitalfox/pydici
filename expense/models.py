@@ -65,6 +65,10 @@ class ExpensePayment(models.Model):
             amount += expense.amount
         return amount
 
+    def get_absolute_url(self):
+        return reverse('expense.views.expense_payment_detail', args=[str(self.id)])
+
+
     class Meta:
         verbose_name = _("Expenses payment")
         verbose_name_plural = _("Expenses payments")

@@ -36,7 +36,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
     ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"></span>""")
 
     def get_initial_queryset(self):
-        return Expense.objects.all().select_related("lead__client__contact", "lead__client__organisation__company")
+        return Expense.objects.all().select_related("lead__client__contact", "lead__client__organisation__company", "user")
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
@@ -44,6 +44,9 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         if search:
             qs = qs.filter(Q(comment__icontains=search) |
                            Q(description__icontains=search) |
+                           Q(user__first_name__icontains=search) |
+                           Q(user__last_name__icontains=search) |
+                           Q(user__username=search) |
                            Q(lead__client__organisation__company__name__icontains=search) |
                            Q(lead__client__organisation__name__iexact=search) |
                            Q(lead__description__icontains=search) |
@@ -151,3 +154,44 @@ class ExpensePaymentTable(tables.Table):
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "expense_payment_table"}
         order_by = "-id"
         orderable = False
+
+class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
+    """Expense payment table backend for datatable"""
+    pydici_feature = set(["reports"])
+    columns = ["pk", "user",  "amount", "payment_date", "modification"]
+    order_columns = columns
+    max_display_length = 500
+    date_template = get_template("core/_date_column.html")
+    modification_template = Template("""<a href="{% url 'expense.views.expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/>""")
+
+    def get_initial_queryset(self):
+        return ExpensePayment.objects.all()
+
+    def filter_queryset(self, qs):
+        """ simple search on some attributes"""
+        search = self.request.GET.get(u'search[value]', None)
+        if search:
+            qs = qs.filter(Q(expense__comment__icontains=search) |
+                           Q(expense__description__icontains=search) |
+                           Q(expense__user__first_name__icontains=search) |
+                           Q(expense__user__last_name__icontains=search) |
+                           Q(expense__user__username=search) |
+                           Q(expense__lead__client__organisation__company__name__icontains=search) |
+                           Q(expense__lead__client__organisation__name__iexact=search) |
+                           Q(expense__lead__description__icontains=search) |
+                           Q(expense__lead__deal_id__icontains=search))
+            qs = qs.distinct()
+        return qs
+
+    def render_column(self, row, column):
+        if column == "user":
+            return link_to_consultant(row.user())
+        elif column == "payment_date":
+            return self.date_template.render({"date": row.payment_date})
+        elif column == "amount":
+            return to_int_or_round(row.amount(), 2)
+        elif column == "modification":
+            return self.modification_template.render(RequestContext(self.request, {"record": row}))
+        else:
+            return super(ExpensePaymentTableDT, self).render_column(row, column)
+
