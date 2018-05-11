@@ -18,8 +18,9 @@ import django_tables2 as tables
 from django_tables2.utils import A
 
 from expense.models import Expense, ExpensePayment
+from people.models import Consultant
 from core.templatetags.pydici_filters import link_to_consultant
-from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round
+from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round, has_role
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 
 
@@ -36,7 +37,16 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
     ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"></span>""")
 
     def get_initial_queryset(self):
-        return Expense.objects.all().select_related("lead__client__contact", "lead__client__organisation__company", "user")
+        try:
+            consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
+            user_team = consultant.userTeam()
+        except Consultant.DoesNotExist:
+            user_team = []
+
+        expenses = Expense.objects.all()
+        if not has_role(self.request.user, "expense paymaster"):
+            expenses = expenses.filter(Q(user=self.request.user) | Q(user__in=user_team))
+        return expenses.select_related("lead__client__contact", "lead__client__organisation__company", "user")
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""

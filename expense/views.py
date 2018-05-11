@@ -22,7 +22,6 @@ from django.core import urlresolvers
 from django.db.models import Q, Count
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from core import utils
 
 from expense.forms import ExpenseForm, ExpensePaymentForm
 from expense.models import Expense, ExpensePayment
@@ -31,6 +30,7 @@ from people.models import Consultant
 from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature
 from core.views import tableToCSV
+from core import utils
 
 
 @pydici_non_public
@@ -155,25 +155,9 @@ def expense_receipt(request, expense_id):
 def expenses_history(request):
     """Display expense history.
     @param year: year of history. If None, display recent items and year index"""
-    expenses = Expense.objects.all().select_related().prefetch_related("clientbill_set", "user", "lead")
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-        user_team = consultant.userTeam()
-    except Consultant.DoesNotExist:
-        user_team = []
-
-    if not utils.has_role(request.user, "expense paymaster"):
-        expenses = expenses.filter(Q(user=request.user) | Q(user__in=user_team))
-
-    expenseTable = ExpenseTable(expenses, orderable=True)
-    RequestConfig(request, paginate={"per_page": 50}).configure(expenseTable)
-
-    if "csv" in request.GET:
-        return tableToCSV(expenseTable, filename="expenses.csv")
 
     return render(request, "expense/expense_archive.html",
-                  {"expense_table": expenseTable,
-                   "data_url": urlresolvers.reverse('expense_table_DT'),
+                  {"data_url": urlresolvers.reverse('expense_table_DT'),
                    "data_options": ''' "pageLength": 25,
                                        "order": [[0, "desc"]],
                                        "columnDefs": [{ "orderable": false, "targets": [6, 9] },
