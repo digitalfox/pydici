@@ -95,7 +95,12 @@ class Expense(models.Model):
 
     def state(self):
         """expense state according to expense workflow"""
-        return wf.get_state(self).name
+        state = wf.get_state(self)
+        if state:
+            return state.name
+        else:
+            return _("unknown")
+
 
     def transitions(self, user):
         """expense allowed transitions in workflows for given user"""
@@ -104,6 +109,8 @@ class Expense(models.Model):
         else:
             return []
 
+    def get_absolute_url(self):
+        return reverse('expense', args=[str(self.id)])
 
     class Meta:
         verbose_name = _("Expense")

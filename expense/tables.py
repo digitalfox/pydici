@@ -19,19 +19,21 @@ from django_tables2.utils import A
 
 from expense.models import Expense, ExpensePayment
 from core.templatetags.pydici_filters import link_to_consultant
-from core.utils import TABLES2_HIDE_COL_MD
+from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 
 
 class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
     """Expense table backend for datatable"""
     pydici_feature = set(["reports"])
-    columns = ["user", "category", "description", "lead", "amount", "receipt", "chargeable", "corporate_card", "state", "creation_date", "expense_date", "update_date", "comment"]
+    columns = ["pk", "user", "category", "description", "lead", "amount", "receipt", "chargeable", "corporate_card", "state", "creation_date", "expense_date", "update_date", "comment"]
     order_columns = columns
     max_display_length = 500
     date_template = get_template("core/_date_column.html")
     receipt_template = get_template("expense/_receipt_column.html")
     state_template = get_template("expense/_expense_state_column.html")
+    ko_sign = mark_safe("""<span class="glyphicon glyphicon-remove" style="color:red"></span>""")
+    ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"></span>""")
 
     def get_initial_queryset(self):
         return Expense.objects.all().select_related("lead__client__contact", "lead__client__organisation__company")
@@ -42,8 +44,6 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         if search:
             qs = qs.filter(Q(comment__icontains=search) |
                            Q(description__icontains=search) |
-                           #Q(consultant__trigramme__iexact=search) |
-                           #Q(consultant__name__icontains=search) |
                            Q(lead__client__organisation__company__name__icontains=search) |
                            Q(lead__client__organisation__name__iexact=search) |
                            Q(lead__description__icontains=search) |
@@ -54,8 +54,6 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
     def render_column(self, row, column):
         if column == "user":
             return link_to_consultant(row.user)
-        elif column == "category":
-            return unicode(row.category)
         elif column == "receipt":
             return self.receipt_template.render(RequestContext(self.request, {"record": row}))
         elif column == "lead":
@@ -68,13 +66,14 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         elif column == "update_date":
             return row.update_date.strftime("%x %X")
         elif column in ("chargeable", "corporate_card"):
-            value = getattr(row, column)
-            if value:
-                return _("yes")
+            if getattr(row, column):
+                return self.ok_sign
             else:
-                return _("no")
+                return self.ko_sign
         elif column == "state":
             return self.state_template.render(RequestContext(self.request, {"record": row}))
+        elif column == "amount":
+            return to_int_or_round(row.amount, 2)
         else:
             return super(ExpenseTableDT, self).render_column(row, column)
 

@@ -174,7 +174,12 @@ def expenses_history(request):
     return render(request, "expense/expense_archive.html",
                   {"expense_table": expenseTable,
                    "data_url": urlresolvers.reverse('expense_table_DT'),
-                   "data_options": ''' "pageLength": 25 ''',
+                   "data_options": ''' "pageLength": 25,
+                                       "order": [[0, "desc"]],
+                                       "columnDefs": [{ "orderable": false, "targets": [6, 9] },
+                                                      { className: "hidden-xs hidden-sm hidden-md", "targets": [2, 10, 12, 13]},
+                                                      { className: "description", "targets": [3]},
+                                                      { className: "amount", "targets": [5]}]''',
                    "user": request.user})
 
 

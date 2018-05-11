@@ -10,10 +10,10 @@ from expense.tables import ExpenseTableDT
 
 expense_urls = patterns('expense.views',
                         (r'^$', 'expenses'),
-                        (r'^(?P<expense_id>\d+)$', 'expenses'),
+                        url(r'^(?P<expense_id>\d+)$', 'expenses', name="expense"),
                         (r'^(?P<expense_id>\d+)/receipt$', 'expense_receipt'),
                         (r'^(?P<expense_id>\d+)/(?P<transition_id>\w+)', 'update_expense_state'),
-                        (r'^clone/(?P<clone_from>\d+)$', 'expenses'),
+                        url(r'^clone/(?P<clone_from>\d+)$', 'expenses', name="clone_expense"),
                         (r'^mission/(?P<lead_id>\d+)$', 'lead_expenses'),
                         (r'^history/?$', 'expenses_history'),
                         (r'^chargeable/?$', 'chargeable_expenses'),
