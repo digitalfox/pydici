@@ -34,7 +34,7 @@
 
             // Active state switcher
             $(document).ready(function() {
-                $('#type-selector button').click(function() {
+                $('#type-selector button').on("click", function() {
                     $(this).addClass('active').siblings().removeClass('active');
                  });
             });

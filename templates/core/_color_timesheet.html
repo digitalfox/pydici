@@ -70,7 +70,7 @@ $(document).ready(function()
         markModified(target);
     }
 
-    $("input[class=timesheet-cycle]").click(function(ev) {
+    $("input[class=timesheet-cycle]").on("click", function(ev) {
         if(!ev.shiftKey) {
             cycleitem($(this));
         } else {
@@ -93,10 +93,10 @@ $(document).ready(function()
         coerceTime($(this));
         markModified($(this));
     });
-    $("input[class=timesheet-keyboard]").click(function() {
+    $("input[class=timesheet-keyboard]").on("click", function() {
         $(this).select();
     });
-    $("input[name^='lunch_ticket_']").click(function() {
+    $("input[name^='lunch_ticket_']").on("click", function() {
         markModified($(this));
 	});
 })

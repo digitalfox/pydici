@@ -95,11 +95,11 @@
 /* Bind time nav bar to ajax calls */
 {% if week %}
     {% if previous_date_enabled %}
-        $('#previous-week').click(function () {
+        $('#previous-week').on("click", function () {
             $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' week=previous_week%}');
         });
     {% endif %}
-    $('#next-week').click(function () {
+    $('#next-week').on("click", function () {
         $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' week=next_week %}');
     });
     {% if next_week < week %}
@@ -110,20 +110,20 @@
     {% endifequal %}
 {% else %}
     {% if previous_date_enabled %}
-        $('#previous-month').click(function () {
+        $('#previous-month').on("click", function () {
             $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=previous_date|date:'Y' month=previous_date|date:'m' %}');
         });
     {% endif %}
-    $('#next-month').click(function () {
+    $('#next-month').on("click", function () {
         $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=next_date|date:'Y' month=next_date|date:'m' %}');
     });
 {% endif %}
 
-$('#switch-week').click(function () {
+$('#switch-week').on("click", function () {
     $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' week=1 %}');
 });
 
-$('#switch-month').click(function () {
+$('#switch-month').on("click", function () {
     $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing.views.consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' %}');
 });
 

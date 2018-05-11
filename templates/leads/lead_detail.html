@@ -324,7 +324,7 @@ $(document).ready(function() {
     });
 
     // Connect suggested tag to ajax request
-    $("#suggested a").click(function(e){
+    $("#suggested a").on("click", function(e){
         e.preventDefault();
         // send requests
         $.post("{% url 'leads.views.add_tag' %}",

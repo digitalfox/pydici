@@ -142,7 +142,7 @@ $(document).ready(function() {
         var newFirstMonth = $('.pydici-mission-timesheet tr:eq(1) td:eq('+n+')');
         newFirstMonth.html("<span id='show-more-timesheet', title='{% trans 'Click to show past timesheet' %}'>...</span> " + newFirstMonth.html());
         $('#show-more-timesheet').tooltip({"container": "body"});
-        newFirstMonth.bind("click", function() {
+        newFirstMonth.on("click", function() {
             toggleFirstMonths(n);
             doneDaysTitle.attr('colspan', parseInt(doneDaysTitle.attr('colspan')) + n -1); // reset colspan of done days title (th) to normal size
             $('#show-more-timesheet').hide();
