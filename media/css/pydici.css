@@ -353,6 +353,11 @@ div.ui-tooltip {
     width: 100%;
 }
 
+.modal-xxl {
+        width:80%;
+        margin-left: 10%;
+   }
+
 /* logo brand css fix for boostrap 3.4 */
 .navbar-brand>img {
     display: inline;
