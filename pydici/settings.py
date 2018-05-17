@@ -170,7 +170,7 @@ ALLOWED_HOSTS = ("localhost",)
 
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_CONFIG = {"DISABLE_PANELS": "debug_toolbar.panels.redirects.RedirectsPanel",
-                        "JQUERY_URL": "/%s/media/js/jquery-2.2.4.min.js" % PYDICI_PREFIX
+                        "JQUERY_URL": "https://code.jquery.com/jquery-3.3.1.min.js"
                         }
 
 if PYDICI_PREFIX:
