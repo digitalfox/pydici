@@ -152,6 +152,40 @@ def expense_receipt(request, expense_id):
 
 @pydici_non_public
 @pydici_feature("reports")
+def expense_delete(request, expense_id):
+    """Delete given expense if authorized to"""
+    expense = None
+    if not request.user.groups.filter(name="expense_requester").exists():
+        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+    try:
+        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+        user_team = consultant.userTeam(excludeSelf=False)
+    except Consultant.DoesNotExist:
+        user_team = []
+
+    #TODO: factorize this code with expense views above
+    try:
+        if expense_id:
+            expense = Expense.objects.get(id=expense_id)
+            if not (perm.has_permission(expense, request.user, "expense_edit")
+                    and (expense.user == request.user or expense.user in user_team)):
+                messages.add_message(request, messages.WARNING, _("You are not allowed to edit that expense"))
+                expense_id = None
+                expense = None
+    except Expense.DoesNotExist:
+        messages.add_message(request, messages.ERROR, _("Expense %s does not exist" % expense_id))
+        expense_id = None
+
+    if expense:
+        expense.delete()
+        messages.add_message(request, messages.INFO, _("Expense %s has been deleted" % expense_id))
+
+    # Redirect user to expense main page
+    return redirect(expenses)
+
+
+@pydici_non_public
+@pydici_feature("reports")
 def expenses_history(request):
     """Display expense history.
     @param year: year of history. If None, display recent items and year index"""
