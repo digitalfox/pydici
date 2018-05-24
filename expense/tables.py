@@ -119,13 +119,25 @@ class ExpenseWorkflowTable(ExpenseTable):
     def render_transitions(self, record):
         result = []
         for transition in self.transitionsData[record.id]:
-            result.append("""<a href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
-                          % (reverse("expense.views.update_expense_state", args=[record.id, transition.id]), transition))
+            result.append("""<a role='button' title='%s' class='btn btn-default btn-xs' href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
+                          % (unicode(transition), reverse("expense.views.update_expense_state", args=[record.id, transition.id]), unicode(transition)[0:2]))
         if self.expenseEditPerm[record.id]:
-            result.append("<a href='%s'>%s</a>" % (reverse("expense.views.expenses", kwargs={"expense_id": record.id}), smart_bytes(_("Edit"))))
-            result.append("<a href='%s'>%s</a>" % (reverse("expense.views.expense_delete", kwargs={"expense_id": record.id}), smart_bytes(_("Delete"))))
-        result.append("<a href='%s'>%s</a>" % (reverse("expense.views.expenses", kwargs={"clone_from": record.id}), smart_bytes(_("Clone"))))
-        return mark_safe(", ".join(result))
+            result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>"
+                          % (smart_bytes(_("Edit")),
+                             reverse("expense.views.expenses", kwargs={"expense_id": record.id}),
+                             # Translators: Ed is the short term for Edit
+                             smart_bytes(_("Ed"))))
+            result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
+                          (smart_bytes(_("Delete")),
+                           reverse("expense.views.expense_delete",kwargs={"expense_id": record.id}),
+                           # Translators: De is the short term for Delete
+                           smart_bytes(_("De"))))
+        result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
+                      (smart_bytes(_("Clone")),
+                      reverse("expense.views.expenses", kwargs={"clone_from": record.id}),
+                       # Translators: Cl is the short term for Clone
+                      smart_bytes(_("Cl"))))
+        return mark_safe(" ".join(result))
 
     class Meta:
         sequence = ("user", "description", "lead", "amount", "chargeable", "corporate_card", "receipt", "state", "transitions", "expense_date", "update_date", "comment")

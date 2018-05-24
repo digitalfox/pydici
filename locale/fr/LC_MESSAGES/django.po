@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-24 22:08+0200\n"
-"PO-Revision-Date: 2018-05-24 22:07+0100\n"
+"POT-Creation-Date: 2018-05-24 23:15+0200\n"
+"PO-Revision-Date: 2018-05-24 23:14+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -698,7 +698,7 @@ msgstr "Date"
 msgid "Expense date"
 msgstr "Date de dépense"
 
-#: expense/models.py:86 expense/tables.py:152
+#: expense/models.py:86 expense/tables.py:164
 #: templates/expense/expense_archive.html:20
 #: templates/expense/expense_list.html:16
 #: templates/expense/expense_payments.html:44
@@ -726,7 +726,7 @@ msgstr "inconnu"
 msgid "Expense"
 msgstr "Note de frais"
 
-#: expense/tables.py:96 expense/tables.py:151 people/models.py:239
+#: expense/tables.py:96 expense/tables.py:163 people/models.py:239
 #: staffing/views.py:1141 templates/expense/expense_archive.html:16
 #: templates/expense/expense_payments.html:43
 #: templates/staffing/mission.html:121
@@ -734,23 +734,38 @@ msgstr "Note de frais"
 msgid "Consultant"
 msgstr "Consultant"
 
-#: expense/tables.py:125
+#: expense/tables.py:126
 msgid "Edit"
 msgstr "Modifier"
 
-#: expense/tables.py:126
+#. Translators: Ed is the short term for Edit
+#: expense/tables.py:129
+msgid "Ed"
+msgstr "Mo"
+
+#: expense/tables.py:131
 msgid "Delete"
 msgstr "Supprimer"
 
-#: expense/tables.py:127
+#. Translators: De is the short term for Delete
+#: expense/tables.py:134
+msgid "De"
+msgstr "Su"
+
+#: expense/tables.py:136
 msgid "Clone"
 msgstr "Cloner"
 
-#: expense/tables.py:154
+#. Translators: Cl is the short term for Clone
+#: expense/tables.py:139
+msgid "Cl"
+msgstr "Cl"
+
+#: expense/tables.py:166
 msgid "detail"
 msgstr "détail"
 
-#: expense/tables.py:155
+#: expense/tables.py:167
 msgid "change"
 msgstr "modifier"
 
@@ -3589,6 +3604,9 @@ msgstr "Totaux"
 #: templates/staffing/prod_report.html:10
 msgid "Production report"
 msgstr "Rapport de production"
+
+#~ msgid "D"
+#~ msgstr "S"
 
 #~ msgid "Production rate"
 #~ msgstr "Taux de production"
