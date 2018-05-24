@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-07 20:00+0200\n"
-"PO-Revision-Date: 2018-05-07 20:00+0100\n"
+"POT-Creation-Date: 2018-05-24 22:08+0200\n"
+"PO-Revision-Date: 2018-05-24 22:07+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -57,10 +57,11 @@ msgid "Name"
 msgstr "Nom"
 
 #: actionset/models.py:26 actionset/models.py:47 billing/admin.py:29
-#: billing/admin.py:43 core/models.py:64 expense/models.py:75
+#: billing/admin.py:43 core/models.py:64 expense/models.py:79
 #: leads/models.py:129 leads/views.py:210 staffing/models.py:43
-#: staffing/models.py:329 templates/expense/expense_list.html:14
-#: templates/leads/lead_detail.html:40 templates/staffing/mission.html:34
+#: staffing/models.py:329 templates/expense/expense_archive.html:18
+#: templates/expense/expense_list.html:14 templates/leads/lead_detail.html:40
+#: templates/staffing/mission.html:34
 msgid "Description"
 msgstr "Description"
 
@@ -86,10 +87,11 @@ msgid "N/A"
 msgstr "N/A"
 
 #: actionset/models.py:60 billing/admin.py:32 billing/admin.py:46
-#: billing/models.py:115 billing/models.py:152 expense/tables.py:27
-#: leads/models.py:69 leads/models.py:279 leads/views.py:212
+#: billing/models.py:115 billing/models.py:152 leads/models.py:69
+#: leads/models.py:279 leads/views.py:212
 #: templates/billing/_lead_billing.html:12
 #: templates/billing/_lead_billing.html:52
+#: templates/expense/expense_archive.html:24
 #: templates/expense/expense_list.html:19
 msgid "State"
 msgstr "État"
@@ -98,7 +100,7 @@ msgstr "État"
 msgid "Creation"
 msgstr "Création"
 
-#: actionset/models.py:64 expense/models.py:81 leads/models.py:76
+#: actionset/models.py:64 expense/models.py:85 leads/models.py:76
 #: leads/models.py:121 leads/views.py:214 staffing/models.py:50
 #: templates/core/index.html:18 templates/core/index.html.py:43
 #: templates/core/index.html:67 templates/core/index.html.py:91
@@ -147,11 +149,12 @@ msgstr "Dates"
 msgid "Link with expenses"
 msgstr "Lien avec les notes de frais"
 
-#: billing/models.py:62 expense/models.py:77 leads/models.py:273
+#: billing/models.py:62 expense/models.py:81 leads/models.py:273
 #: staffing/models.py:41 staffing/views.py:1140
 #: templates/billing/bill_review.html:201 templates/core/index.html:13
 #: templates/core/index.html.py:38 templates/core/index.html:62
-#: templates/core/index.html.py:86 templates/expense/expense_list.html:15
+#: templates/core/index.html.py:86 templates/expense/expense_archive.html:19
+#: templates/expense/expense_list.html:15
 msgid "Lead"
 msgstr "Affaire"
 
@@ -165,7 +168,8 @@ msgstr "N° facture"
 
 #: billing/models.py:64 templates/billing/_lead_billing.html:14
 #: templates/billing/_lead_billing.html:54
-#: templates/billing/bill_review.html:168 templates/leads/review.html:34
+#: templates/billing/bill_review.html:168
+#: templates/expense/expense_archive.html:25 templates/leads/review.html:34
 #: templates/leads/review.html.py:69
 msgid "Creation date"
 msgstr "Date de création"
@@ -180,6 +184,7 @@ msgstr "Date d'échéance"
 #: billing/models.py:66 expense/models.py:56
 #: templates/billing/_lead_billing.html:16
 #: templates/billing/_lead_billing.html:56
+#: templates/expense/expense_payments.html:45
 msgid "Payment date"
 msgstr "Date de paiement"
 
@@ -187,7 +192,7 @@ msgstr "Date de paiement"
 msgid "Previous year bill"
 msgstr "Facture de l'année N-1"
 
-#: billing/models.py:68 expense/models.py:86 staffing/models.py:341
+#: billing/models.py:68 expense/models.py:90 staffing/models.py:341
 #: templates/billing/bill_review.html:25 templates/billing/bill_review.html:73
 #: templates/billing/bill_review.html:121
 #: templates/billing/bill_review.html:171
@@ -222,6 +227,7 @@ msgid "Sent"
 msgstr "Envoyée"
 
 #: billing/models.py:112 billing/models.py:149
+#: templates/expense/_expense_state_column.html:5
 msgid "Paid"
 msgstr "Payée"
 
@@ -640,7 +646,7 @@ msgstr "Utilisez une extension valide (%s)"
 msgid "You must define a lead if expense is chargeable"
 msgstr "Vous devez définir une affaire si les frais sont refacturables"
 
-#: expense/forms.py:89 expense/models.py:110
+#: expense/forms.py:89 expense/models.py:121
 #: templates/core/_pydici_menu.html:78 templates/core/_pydici_menu.html:79
 #: templates/core/_pydici_menu.html:111 templates/staffing/mission.html:43
 msgid "Expenses"
@@ -668,93 +674,113 @@ msgstr "Catégorie de dépenses"
 msgid "Expense categories"
 msgstr "Catégories de dépenses"
 
-#: expense/models.py:69 templates/core/_pydici_menu.html:80
+#: expense/models.py:73 templates/core/_pydici_menu.html:80
 msgid "Expenses payment"
 msgstr "Remboursement de frais"
 
-#: expense/models.py:70 templates/expense/expense_payments.html:9
-#: templates/expense/expense_payments.html:41
+#: expense/models.py:74 templates/expense/expense_payments.html:9
+#: templates/expense/expense_payments.html:38
 msgid "Expenses payments"
 msgstr "Remboursements de frais"
 
-#: expense/models.py:78 templates/expense/expense_list.html:17
+#: expense/models.py:82 templates/expense/expense_archive.html:22
+#: templates/expense/expense_list.html:17
 msgid "Chargeable"
 msgstr "Refacturable"
 
-#: expense/models.py:79 staffing/models.py:328 staffing/models.py:339
+#: expense/models.py:83 staffing/models.py:328 staffing/models.py:339
 #: staffing/models.py:365 staffing/models.py:381
 msgid "Date"
 msgstr "Date"
 
-#: expense/models.py:80 templates/expense/expense_list.html:20
+#: expense/models.py:84 templates/expense/expense_archive.html:26
+#: templates/expense/expense_list.html:20
 msgid "Expense date"
 msgstr "Date de dépense"
 
-#: expense/models.py:82 expense/tables.py:79
+#: expense/models.py:86 expense/tables.py:152
+#: templates/expense/expense_archive.html:20
 #: templates/expense/expense_list.html:16
+#: templates/expense/expense_payments.html:44
 msgid "Amount"
 msgstr "Montant"
 
-#: expense/models.py:83
+#: expense/models.py:87 templates/expense/expense_archive.html:17
 msgid "Category"
 msgstr "Catégorie"
 
-#: expense/models.py:84 templates/expense/expense_list.html:18
+#: expense/models.py:88 templates/expense/expense_archive.html:21
+#: templates/expense/expense_list.html:18
 msgid "Receipt"
 msgstr "Justificatif"
 
-#: expense/models.py:85
+#: expense/models.py:89
 msgid "Paid with corporate card"
 msgstr "Payé avec la carte société"
 
-#: expense/models.py:109 templates/expense/expenses.html:9
+#: expense/models.py:106
+msgid "unknown"
+msgstr "inconnu"
+
+#: expense/models.py:120 templates/expense/expenses.html:9
 msgid "Expense"
 msgstr "Note de frais"
 
-#: expense/tables.py:22 expense/tables.py:78 people/models.py:239
-#: staffing/views.py:1141 templates/staffing/mission.html:121
+#: expense/tables.py:96 expense/tables.py:151 people/models.py:239
+#: staffing/views.py:1141 templates/expense/expense_archive.html:16
+#: templates/expense/expense_payments.html:43
+#: templates/staffing/mission.html:121
 #: templates/staffing/mission_staffing.html:25
 msgid "Consultant"
 msgstr "Consultant"
 
-#: expense/tables.py:53
+#: expense/tables.py:125
 msgid "Edit"
 msgstr "Modifier"
 
-#: expense/tables.py:54
+#: expense/tables.py:126
+msgid "Delete"
+msgstr "Supprimer"
+
+#: expense/tables.py:127
 msgid "Clone"
 msgstr "Cloner"
 
-#: expense/tables.py:81
+#: expense/tables.py:154
 msgid "detail"
 msgstr "détail"
 
-#: expense/tables.py:82
+#: expense/tables.py:155
 msgid "change"
 msgstr "modifier"
 
-#: expense/views.py:53
+#: expense/views.py:53 expense/views.py:172
 msgid "You are not allowed to edit that expense"
 msgstr "Vous n'êtes pas autorisé à modifier cette note de frais"
 
-#: expense/views.py:57 expense/views.py:221
+#: expense/views.py:57 expense/views.py:176 expense/views.py:246
 #, python-format
 msgid "Expense %s does not exist"
 msgstr "La note de frais %s n'existe pas"
 
-#: expense/views.py:218
+#: expense/views.py:181
+#, python-format
+msgid "Expense %s has been deleted"
+msgstr "La note de frais %s a été supprimée"
+
+#: expense/views.py:243
 msgid "You cannot manage your own expense !"
 msgstr "Vous ne pouvez pas gérer vos propres notes de frais !"
 
-#: expense/views.py:232
+#: expense/views.py:257
 msgid "Successfully update expense"
 msgstr "Note de frais mise à jour avec succès"
 
-#: expense/views.py:240
+#: expense/views.py:265
 msgid "You cannot do this transition"
 msgstr "Vous n'êtes pas autorisé à faire cette transition"
 
-#: expense/views.py:260 expense/views.py:335
+#: expense/views.py:285 expense/views.py:353
 #, python-format
 msgid "Expense payment %s does not exist"
 msgstr "Le remboursement de frais %s n'existe pas"
@@ -1191,6 +1217,7 @@ msgstr "Charge"
 
 #: staffing/forms.py:123 templates/billing/_lead_billing.html:17
 #: templates/billing/_lead_billing.html:57
+#: templates/expense/expense_archive.html:28
 msgid "Comment"
 msgstr "Remarques"
 
@@ -2067,8 +2094,8 @@ msgid "Chargeable expenses review"
 msgstr "Revue des notes de frais refacturables"
 
 #: templates/core/_pydici_menu.html:113
-#: templates/expense/expense_archive.html:6
-#: templates/expense/expense_payments.html:48
+#: templates/expense/expense_archive.html:5
+#: templates/expense/expense_payments.html:63
 #: templates/expense/expenses.html:54
 msgid "Expenses history"
 msgstr "Historique des notes de frais"
@@ -2547,27 +2574,36 @@ msgstr "Répartition du CA par client depuis le %(min_date)s"
 msgid "Non billed chargeable expenses"
 msgstr "Notes de frais refactuables non refacturées"
 
-#: templates/expense/expense_archive.html:10
+#: templates/expense/expense_archive.html:11
 msgid "Expenses archive"
 msgstr "Historique des notes de frais"
 
-#: templates/expense/expense_archive.html:19
-#: templates/expense/expense_list.html:54
-msgid "Export expenses in a spreadsheet"
-msgstr "Exporter ces notes de frais dans un tableur"
+#: templates/expense/expense_archive.html:15
+#: templates/expense/expense_payments.html:42
+msgid "#"
+msgstr "#"
 
-#: templates/expense/expense_list.html:13
-msgid "People"
-msgstr "Personne"
+#: templates/expense/expense_archive.html:23
+msgid "Corporate card"
+msgstr "Carte société"
 
+#: templates/expense/expense_archive.html:27
 #: templates/expense/expense_list.html:21 templates/leads/lead_detail.html:158
 #: templates/leads/review.html:37 templates/leads/review.html.py:71
 msgid "Update date"
 msgstr "Date de mise à jour"
 
+#: templates/expense/expense_list.html:13
+msgid "People"
+msgstr "Personne"
+
 #: templates/expense/expense_list.html:39
 msgid "Yes, but not charged yet"
 msgstr "Oui, mais non refacturé"
+
+#: templates/expense/expense_list.html:54
+msgid "Export expenses in a spreadsheet"
+msgstr "Exporter ces notes de frais dans un tableur"
 
 #: templates/expense/expense_list.html:58
 msgid "No expense"
@@ -2585,21 +2621,25 @@ msgstr "Notes de frais du remboursement n°"
 msgid "Total: "
 msgstr "Total : "
 
-#: templates/expense/expense_payments.html:19
+#: templates/expense/expense_payments.html:14
 msgid "Expenses to pay"
 msgstr "Notes de frais à rembourser"
 
-#: templates/expense/expense_payments.html:24
+#: templates/expense/expense_payments.html:19
 msgid "No expense to pay"
 msgstr "Aucune note de frais à rembourser"
 
-#: templates/expense/expense_payments.html:30
+#: templates/expense/expense_payments.html:25
 msgid "Modify the expense payment"
 msgstr "Modifier le remboursement de frais"
 
-#: templates/expense/expense_payments.html:32
+#: templates/expense/expense_payments.html:27
 msgid "Add an expense payment"
 msgstr "Ajouter un remboursement de frais"
+
+#: templates/expense/expense_payments.html:46
+msgid "Modification"
+msgstr "Modification"
 
 #: templates/expense/expenses.html:19
 msgid "Modify the expense"
