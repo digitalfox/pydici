@@ -140,3 +140,11 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             mission.save()
             messages.add_message(request, messages.INFO, ugettext("According mission has been archived"))
 
+
+def tag_leads_files(leads):
+    """Tag all files of given leads.
+    Can be called from tag views (when adding/removing tags) or tag batch (for new files or initial sync"""
+    pass
+    #TODO: make this a background task
+    #TODO: create connexion to nextcloud data
+    #TODO: for lead in leads. Find files, clean tags except black list and tag
