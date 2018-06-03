@@ -8,10 +8,13 @@ Pydici leads tables
 from django.utils.translation import ugettext as _
 from django.db.models import Q
 from django.template.loader import get_template
+from django.core.urlresolvers import reverse
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from taggit.models import Tag
 
 from datetime import datetime, timedelta
+
 
 from leads.models import Lead
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
@@ -99,3 +102,21 @@ class RecentArchivedLeadTableDT(ActiveLeadTableDT):
         qs = qs.order_by("state", "-update_date").select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
         return qs
 
+
+class TagTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
+    """Tag tables backend for datatables"""
+    pydici_feature = set(["leads_list_all", "leads"])
+    columns = ["name",]
+    order_columns = columns
+
+    def render_column(self, row, column):
+        if column == "name":
+            return u"<a href='{0}'>{1}</a>".format(reverse("leads.views.tag", args=[row.id,]), unicode(row.name))
+    def get_initial_queryset(self):
+        return Tag.objects.all()
+
+    def filter_queryset(self, qs):
+        search = self.request.GET.get(u'search[value]', None)
+        if search:
+            qs = qs.filter(name__icontains=search)
+        return qs

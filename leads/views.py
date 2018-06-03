@@ -325,6 +325,16 @@ def remove_tag(request, tag_id, lead_id):
 
 @pydici_non_public
 @pydici_feature("leads")
+@permission_required("leads.change_lead")
+def manage_tags(request):
+    """Manage (rename, merge, remove) tags"""
+    return render(request, "leads/manage_tags.html",
+                  {"data_url": urlresolvers.reverse('tag_table_DT'),
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("leads")
 def tags(request, lead_id):
     """@return: all tags that contains q parameter and are not already associated to this lead as a simple text list"""
     tags = Tag.objects.all().exclude(lead__id=lead_id)  # Exclude existing tags

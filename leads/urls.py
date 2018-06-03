@@ -5,7 +5,7 @@
 """
 
 from django.conf.urls import patterns, url
-from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT
+from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT, TagTableDT
 
 
 leads_urls = patterns('leads.views',
@@ -15,6 +15,7 @@ leads_urls = patterns('leads.views',
                       (r'^tags/(?P<lead_id>\d+)$', 'tags'),
                       (r'^tag/add$', 'add_tag'),
                       (r'^tag/remove/(?P<tag_id>\d+)/(?P<lead_id>\d+)$', 'remove_tag'),
+                      (r'^tag/manage$', 'manage_tags'),
                       (r'^(?P<lead_id>\d+)/$', 'detail'),
                       (r'^leads$', 'leads'),
                       (r'^lead$', 'lead'),
@@ -31,4 +32,5 @@ leads_urls = patterns('leads.views',
                       url(r'^datatable/all-lead/data/$', LeadTableDT.as_view(), name='lead_table_DT'),
                       url(r'^datatable/active-lead/data/$', ActiveLeadTableDT.as_view(), name='active_lead_table_DT'),
                       url(r'^datatable/recent-archived-lead/data/$', RecentArchivedLeadTableDT.as_view(), name='recent_archived_lead_table_DT'),
+                      url(r'^datatable/all-tags/data/$', TagTableDT.as_view(), name='tag_table_DT'),
                       )
