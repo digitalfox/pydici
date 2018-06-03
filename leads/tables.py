@@ -106,12 +106,15 @@ class RecentArchivedLeadTableDT(ActiveLeadTableDT):
 class TagTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
     """Tag tables backend for datatables"""
     pydici_feature = set(["leads_list_all", "leads"])
-    columns = ["name",]
+    columns = ["select", "name",]
     order_columns = columns
 
     def render_column(self, row, column):
         if column == "name":
             return u"<a href='{0}'>{1}</a>".format(reverse("leads.views.tag", args=[row.id,]), unicode(row.name))
+        elif column == "select":
+            return u"<input id='tag-%s' type='checkbox'onclick='gather_tags_to_merge()' />" % row.id
+
     def get_initial_queryset(self):
         return Tag.objects.all()
 

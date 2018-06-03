@@ -23,7 +23,7 @@ from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 from django.db.models.query import QuerySet
 
-from taggit.models import Tag
+from taggit.models import Tag, TaggedItem
 
 from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter
 from leads.models import Lead
@@ -328,8 +328,21 @@ def remove_tag(request, tag_id, lead_id):
 @permission_required("leads.change_lead")
 def manage_tags(request):
     """Manage (rename, merge, remove) tags"""
+    tags_to_merge = request.GET.get("tags_to_merge", None)
+    if tags_to_merge:
+        tags = []
+        for tag_id in tags_to_merge.split(","):
+            tags.append(Tag.objects.get(id=tag_id.split("-")[1]))
+        if tags and len(tags)>1 :
+            target_tag = tags[0]
+            for tag in tags[1:]:
+                TaggedItem.objects.filter(tag=tag).update(tag=target_tag)
+                tag.delete()
+
     return render(request, "leads/manage_tags.html",
                   {"data_url": urlresolvers.reverse('tag_table_DT'),
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
+                                                             "order": [[1, "asc"]] ''',
                    "user": request.user})
 
 
