@@ -143,8 +143,23 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
 
 def tag_leads_files(leads):
     """Tag all files of given leads.
-    Can be called from tag views (when adding/removing tags) or tag batch (for new files or initial sync"""
-    pass
+    Can be called from tag views (when adding tags) or tag batch (for new files or initial sync"""
     #TODO: make this a background task
-    #TODO: create connexion to nextcloud data
-    #TODO: for lead in leads. Find files, clean tags except black list and tag
+    connect = connect_to_nextcloud_db()
+    #TODO: check if tags exist in catalog, else create it
+    #TODO: for lead in leads. Find files, create tag / file link if it does not already exist
+
+def remove_lead_tag(lead, tag):
+    """ Remove tag on given lead"""
+    pass
+
+def merge_lead_tag(old_tag, target_tag):
+    """Propagate a tag merge on nextcloud tag system"""
+    #TODO: update tag link table old_tag=>target_tag except if file already has link to target_tag
+    pass
+
+def connect_to_nextcloud_db():
+    """Create a connexion to nextcloud database"""
+    #TODO: get parameters on pydici settings
+    #TODO: create database connexion, handle connection errors, return connection object
+    pass
