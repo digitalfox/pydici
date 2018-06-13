@@ -120,6 +120,13 @@ class TagTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
 
     def filter_queryset(self, qs):
         search = self.request.GET.get(u'search[value]', None)
-        if search:
-            qs = qs.filter(name__icontains=search)
+        filters = None
+        for word in search.split():
+            filter = Q(name__icontains=word)
+            if not filters:
+                filters = filter
+            else:
+                filters |= filter
+        if filters:
+            qs = qs.filter(filters)
         return qs
