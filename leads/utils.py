@@ -149,14 +149,17 @@ def tag_leads_files(leads):
     #TODO: check if tags exist in catalog, else create it
     #TODO: for lead in leads. Find files, create tag / file link if it does not already exist
 
+
 def remove_lead_tag(lead, tag):
     """ Remove tag on given lead"""
     pass
+
 
 def merge_lead_tag(old_tag, target_tag):
     """Propagate a tag merge on nextcloud tag system"""
     #TODO: update tag link table old_tag=>target_tag except if file already has link to target_tag
     pass
+
 
 def connect_to_nextcloud_db():
     """Create a connexion to nextcloud database"""
