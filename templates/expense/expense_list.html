@@ -10,8 +10,10 @@
 <table id="expenses-table" class="pydici-tables2 table table-hover table-striped table-condensed">
 <thead>
 <tr>
+    <th>#</th>
     <th>{% trans "People" %}</th>
     <th>{% trans "Description" %}</th>
+    <th>{% trans "deal id" %}</th>
     <th>{% trans "Lead" %}</th>
     <th>{% trans "Amount" %}</th>
     <th>{% trans "Chargeable" %}</th>
@@ -25,8 +27,10 @@
 <tbody>
 {% for expense in expenses %}
     <tr>
+    <td>{{ expense.id }}</td>
     <td>{{ expense.user.username|link_to_consultant }}</td>
     <td>{{ expense.description }}</td>
+    <td>{% if expense.lead %}<a href="{% url 'leads.views.detail' expense.lead.id %}">{{ expense.lead.deal_id }}</a>{% endif %}</td>
     <td>{% if expense.lead %}<a href="{% url 'leads.views.detail' expense.lead.id %}">{{ expense.lead }}</a>{% endif %}</td>
     <td>{{ expense.amount }}</td>
     <td>{% if expense.chargeable %}
