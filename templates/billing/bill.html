@@ -112,7 +112,7 @@ IBAN FR76 30003 03392 00020301101 81</small></p>
 </table>
 {% endif %}
 
-<footer style="position: fixed"> <!-- footer contents will be repeated and overlapped on each page until </table> is not reached -->
-    <small><em>{{ bill.lead.subsidiary.legal_description }}</em></small>
+<footer> <!-- footer contents will be repeated and overlapped on each page until </table> is not reached -->
+    <small><em>{{ bill.lead.subsidiary.legal_description|linebreaksbr }}</em></small>
 </footer>
 {% endblock %}

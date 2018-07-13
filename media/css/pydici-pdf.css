@@ -5,10 +5,10 @@ body
 footer
 {
     position        : fixed;
-    right           : 0;
+    width           : 100%;
     bottom          : 0;
     margin-bottom   : -10mm;
     height          : 10mm;
-    text-align      : right;
+    text-align      : center;
     font-size       : 10px;
 }
