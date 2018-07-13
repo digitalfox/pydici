@@ -146,7 +146,7 @@ class ClientBill(AbstractBill):
 
     def totalWithTaxesAndExpenses(self):
         """Returns total of this bill with all taxes and expenses"""
-        return self.amount_with_vat + self.expensesTotal()
+        return (self.amount_with_vat or 0) + self.expensesTotal()
 
     def save(self, *args, **kwargs):
         compute_bill(self)
