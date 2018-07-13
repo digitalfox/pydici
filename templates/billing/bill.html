@@ -14,7 +14,7 @@
 <div class="row">
     <div class="col-xs-5">
         <img alt="" src="{{ MEDIA_URL }}pydici/company_logo.png" height=40/><br/>
-        {{ bill.lead.subsidiary }}<br/>
+        {{ bill.lead.subsidiary.commercial_name }}<br/>
         {{ bill.lead.subsidiary.billing_address|linebreaksbr }}
         <br/>
         {% if bill.lead.client_deal_id %}{% trans "Client ref.: " %}{{ bill.lead.client_deal_id }}<br/>{% endif %}

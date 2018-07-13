@@ -66,7 +66,8 @@ class AbstractCompany(AbstractAddress):
 
 class Subsidiary(AbstractCompany):
     """Internal company / organisation unit"""
-    payment_description = models.TextField("Payment condition description", blank=True, null=True)
+    payment_description = models.TextField(_("Payment condition description"), blank=True, null=True)
+    commercial_name = models.CharField(_("Commercial name"), max_length=200)
     class Meta:
         verbose_name = _("Subsidiary")
         verbose_name_plural = _("Subsidiaries")
