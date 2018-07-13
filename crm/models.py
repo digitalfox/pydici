@@ -20,11 +20,7 @@ from core.utils import GEdge, GEdges, GNode, GNodes, cacheable
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
 
-class AbstractCompany(models.Model):
-    """Abstract Company base class for subsidiary, client/supplier/broker/.. company"""
-    name = models.CharField(_("Name"), max_length=200, unique=True)
-    code = models.CharField(_("Code"), max_length=3, unique=True)
-    web = models.URLField(blank=True, null=True)
+class AbstractAddress(models.Model):
     street = models.TextField(_("Street"), blank=True, null=True)
     city = models.CharField(_("City"), max_length=200, blank=True, null=True)
     zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
@@ -33,17 +29,27 @@ class AbstractCompany(models.Model):
     billing_city = models.CharField(_("City"), max_length=200, blank=True, null=True)
     billing_zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
     billing_country = models.CharField(_("Country"), max_length=50, blank=True, null=True)
-    legal_description = models.TextField("Legal description", blank=True, null=True)
-
-
-    def __unicode__(self):
-        return unicode(self.name)
 
     def main_address(self):
         return "%s\n%s %s\n%s" % (self.street, self.zipcode, self.city, self.country)
 
     def billing_address(self):
         return "%s\n%s %s\n%s" % (self.billing_street, self.billing_zipcode, self.billing_city, self.billing_country)
+
+    class Meta:
+        abstract = True
+
+class AbstractCompany(AbstractAddress):
+    """Abstract Company base class for subsidiary, client/supplier/broker/.. company"""
+    name = models.CharField(_("Name"), max_length=200, unique=True)
+    code = models.CharField(_("Code"), max_length=3, unique=True)
+    web = models.URLField(blank=True, null=True)
+    legal_description = models.TextField("Legal description", blank=True, null=True)
+
+
+    def __unicode__(self):
+        return unicode(self.name)
+
 
     def save(self, *args, **kwargs):
         # If billing addresse is not defined, use main address
@@ -100,13 +106,26 @@ class Company(AbstractCompany):
         ordering = ["name", ]
 
 
-class ClientOrganisation(models.Model):
+class ClientOrganisation(AbstractAddress):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
     company = models.ForeignKey(Company, verbose_name=_("Client company"))
 
     def __unicode__(self):
         return u"%s : %s " % (self.company, self.name)
+
+    def main_address(self):
+        if self.city:
+            return super(ClientOrganisation, self).main_address()
+        else:
+            return self.company.main_address()
+
+    def billing_address(self):
+        if self.city:
+            return super(ClientOrganisation, self).billing_address()
+        else:
+            return self.company.billing_address()
+
 
     class Meta:
         ordering = ["company", "name"]
@@ -271,7 +290,7 @@ class Supplier(models.Model):
         unique_together = (("company", "contact",))
 
 
-class Client(models.Model):
+class Client(AbstractAddress):
     """A client is defined by a contact and the organisation where he works at the moment"""
     EXPECTATIONS = (
             ('1_NONE', ugettext("None")),
@@ -381,6 +400,18 @@ class Client(models.Model):
         for lead in self.getActiveLeads():
             missions.extend(lead.mission_set.filter(active=True))
         return missions
+
+    def main_address(self):
+        if self.city:
+            return super(Client, self).main_address()
+        else:
+            return self.organisation.main_address()
+
+    def billing_address(self):
+        if self.city:
+            return super(Client, self).billing_address()
+        else:
+            return self.organisation.billing_address()
 
     def get_absolute_url(self):
         return urlresolvers.reverse("company_detail", args=[self.organisation.company.id, ])
