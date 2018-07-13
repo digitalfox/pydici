@@ -22,7 +22,7 @@ from django.forms.models import inlineformset_factory
 
 from django_weasyprint import PDFTemplateView
 
-from billing.utils import get_billing_info, generate_bill_pdf, create_client_bill_from_timesheet
+from billing.utils import get_billing_info, generate_bill_pdf, create_client_bill_from_timesheet, create_client_bill_from_proportion
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
@@ -189,11 +189,19 @@ def client_bill(request, bill_id=None):
                 billDetailFormSet = BillDetailFormSet(instance=bill)
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
         else:
-            # Still no bill, let's create it with its detail if lead and date have been provided
-            if request.GET.get("lead") and request.GET.get("month") and request.GET.get("year"):
-                month = date(int(request.GET.get("year")), int(request.GET.get("month")), 1)
-                lead = Lead.objects.get(id=request.GET.get("lead"))
-                bill = create_client_bill_from_timesheet(lead, month)
+            # Still no bill, let's create it with its detail if at least mission has been provided
+            if request.GET.get("mission"):
+                mission = Mission.objects.get(id=request.GET.get("mission"))
+                if mission.billing_mode == "TIME_SPENT":
+                    if request.GET.get("month") and request.GET.get("year"):
+                        month = date(int(request.GET.get("year")), int(request.GET.get("month")), 1)
+                    else:
+                        month = date.today().replace(day=1)
+                    bill = create_client_bill_from_timesheet(mission, month)
+                else: # FIXED_PRICE mission
+                    proportion = request.GET.get("proportion", 0.30)
+                    bill = create_client_bill_from_proportion(mission, proportion=proportion)
+
                 form = ClientBillForm(instance=bill)
                 billDetailFormSet = BillDetailFormSet(instance=bill)
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)

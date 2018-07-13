@@ -70,6 +70,7 @@ def compute_bill(bill):
         if bill.amount:
             bill.amount_with_vat = bill.amount * (1 + bill.vat / 100)
 
+
 def generate_bill_pdf(bill, url):
     """Create pdf and attached it to bill object"""
     template = get_template("billing/bill.html")
@@ -80,18 +81,28 @@ def generate_bill_pdf(bill, url):
     bill.bill_file.save(u"generated pdf", content)
     bill.save()
 
-def create_client_bill_from_timesheet(lead, month):
-    """Create (and return) a bill and bill detail for all mission of given mission for given month"""
+
+def create_client_bill_from_timesheet(mission, month):
+    """Create (and return) a bill and bill detail for given mission for given month"""
     ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
-    bill = ClientBill(lead=lead, bill_id=datetime.now().isoformat())
+    bill = ClientBill(lead=mission.lead)
     bill.save()
-    for mission in lead.mission_set.all():
-        rates = mission.consultant_rates()
-        timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
-        timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
-        for i in timesheet_data:
-            consultant = Consultant.objects.get(id=i["consultant"])
-            billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
-            billDetail.save()
+    rates = mission.consultant_rates()
+    timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
+    timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
+    for i in timesheet_data:
+        consultant = Consultant.objects.get(id=i["consultant"])
+        billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
+        billDetail.save()
+    return bill
+
+
+def create_client_bill_from_proportion(mission, proportion):
+    ClientBill = apps.get_model("billing", "clientbill")
+    BillDetail = apps.get_model("billing", "billdetail")
+    bill = ClientBill(lead=mission.lead)
+    bill.save()
+    billDetail = BillDetail(bill=bill, mission=mission, quantity=proportion, unit_price=mission.price*1000)
+    billDetail.save()
     return bill

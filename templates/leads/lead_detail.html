@@ -177,7 +177,7 @@
                 <table class="table table-hover table-striped table-condensed">
                     <tr><th>{% trans "Sold" %}</th>
                     <td>{% if lead.sales %}{{ lead.sales }} k€
-                        {% else %} <a href="{% url 'leads.views.lead' lead.id %}">{% trans "To be defined" %}</a>
+                        {% else %} <a href="{% url 'leads.views.lead' lead.id|unlocalize %}">{% trans "To be defined" %}</a>
                         {% endif %}</td></tr>
                     <tr><th>{% trans "Unused" %}</th><td>{{ lead.unused }} k€</td></tr>
                     <tr><th>{% trans "Margin over rate objective" %}</th><td>{{ lead.totalObjectiveMargin }} €</td></tr>
@@ -232,7 +232,7 @@
         </table>
         </div>
         {% if perms.staffing.add_mission %}
-            <a class="btn btn-default" href="{% url 'staffing.views.create_new_mission_from_lead' lead.id %}">{% trans "Create a new mission for this lead" %}</a>
+            <a class="btn btn-default" href="{% url 'staffing.views.create_new_mission_from_lead' lead.id|unlocalize %}">{% trans "Create a new mission for this lead" %}</a>
         {% endif %}
     {% else %}
         <br/>
@@ -243,6 +243,12 @@
 
     <div id="tab-billing" class="tab-pane fade">
         {% include "billing/_lead_billing.html" %}
+        {% if perms.billing.add_clientbill %}
+            <a class="btn btn-default" href="{% url 'client_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
+        {% endif %}
+        {% if perms.billing.add_supplierbill %}
+            <a class="btn btn-default" href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
+        {% endif %}
     </div>
 
     <div id="tab-actions" class="tab-pane fade">

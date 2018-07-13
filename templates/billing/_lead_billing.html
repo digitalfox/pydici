@@ -36,9 +36,6 @@
     {% else %}
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
-    {% if perms.billing.add_clientbill %}
-        <a class="btn btn-default" href="{% url 'client_bill' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
-    {% endif %}
     {% endwith %}
 
     <h3>{% trans "Suppliers bills" %}</h3>
@@ -74,8 +71,5 @@
     </table>
     {% else %}
             <p>{% trans "No bill yet" %}</p>
-    {% endif %}
-    {% if perms.billing.add_supplierbill %}
-        <a class="btn btn-default" href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
     {% endif %}
     {% endwith %}

@@ -4,7 +4,7 @@ Database access layer for pydici billing module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from time import strftime
 from os.path import join, dirname
 import os.path
@@ -60,10 +60,13 @@ def default_due_date():
     return date.today() + timedelta(30)
 
 
+def default_bill_id():
+    return datetime.now().isoformat()
+
 class AbstractBill(models.Model):
     """Abstract class that factorize ClientBill and SupplierBill fields and logic"""
     lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
-    bill_id = models.CharField(_("Bill id"), max_length=200, unique=True)
+    bill_id = models.CharField(_("Bill id"), max_length=200, unique=True, default=default_bill_id)
     creation_date = models.DateField(_("Creation date"), default=date.today)
     due_date = models.DateField(_("Due date"), default=default_due_date)
     payment_date = models.DateField(_("Payment date"), blank=True, null=True)

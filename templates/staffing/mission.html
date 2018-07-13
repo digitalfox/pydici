@@ -187,6 +187,12 @@
 	    {% if mission.lead %}
 	        {% with mission.lead as lead %}
 	        {% include "billing/_lead_billing.html" %}
+            {% if perms.billing.add_clientbill %}
+                <a class="btn btn-default" href="{% url 'client_bill' %}?mission={{ mission.id|unlocalize}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
+            {% endif %}
+            {% if perms.billing.add_supplierbill %}
+                <a class="btn btn-default" href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
+            {% endif %}
 	        {% endwith %}
 	    {% endif %}
     </div>

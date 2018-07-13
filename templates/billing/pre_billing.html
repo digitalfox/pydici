@@ -51,6 +51,7 @@
             <tr><th>{% trans "total" %}</th><td></td><td></td><th>{{ mission_data.0|floatformat:"-2" }} €</th></tr>
             </table>
             </div>
+                <a class="btn btn-default" href="{% url 'client_bill' %}?mission={{ mission.id|unlocalize }};month={{month.month}};year={{month.year|unlocalize}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
             </div>
     {% endfor %}
      {% ifequal lead.mission_set.count 1 %}
@@ -58,7 +59,6 @@
      {% else %}
         <h4>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</h4>
      {% endifequal %}
-     <a class="btn btn-default" href="{% url 'client_bill' %}?lead={{ lead.id }};month={{month.month}};year={{month.year|unlocalize}}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
      <br/><br/><hr/>
 {% endfor %}
 
@@ -76,7 +76,10 @@
         <ul>
     {% endifchanged %}
     <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }}) : </a>
-    {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
+        {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
+        <a class="btn btn-default" href="{% url 'client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.3" target="_blank">{% trans "Bill 30% for this mission" %}</a>
+        <a class="btn btn-default" href="{% url 'client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.7" target="_blank">{% trans "Bill 70% for this mission" %}</a>
+    </li>
 
 {% endfor %}
 
