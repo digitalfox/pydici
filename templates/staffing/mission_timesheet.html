@@ -1,8 +1,11 @@
 {% load i18n %}
 {# Fragment of page to be included in a mission_home tab #}
 
+    <br/>
+    {% include "staffing/_check_mission_billing_mode.html" %}
+    {% include "staffing/_check_mission_rates.html" %}
+    <div style="clear:both;"></div>
 
-    <h2>{% trans "Mission timesheet and forecast" %}</h2>
     <div class="table-responsive">
     <table class="table table-hover table-striped table-pydici-extra-condensed pydici-mission-timesheet">
     <tr>
@@ -139,7 +142,7 @@ $(document).ready(function() {
         var newFirstMonth = $('.pydici-mission-timesheet tr:eq(1) td:eq('+n+')');
         newFirstMonth.html("<span id='show-more-timesheet', title='{% trans 'Click to show past timesheet' %}'>...</span> " + newFirstMonth.html());
         $('#show-more-timesheet').tooltip({"container": "body"});
-        newFirstMonth.bind("click", function() {
+        newFirstMonth.on("click", function() {
             toggleFirstMonths(n);
             doneDaysTitle.attr('colspan', parseInt(doneDaysTitle.attr('colspan')) + n -1); // reset colspan of done days title (th) to normal size
             $('#show-more-timesheet').hide();

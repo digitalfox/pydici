@@ -31,7 +31,7 @@ from core.models import GroupFeature, Parameter
 
 
 # Graph colors
-COLORS = ["#05467A", "#FF9900", "#A7111B", "#DAEBFF", "#FFE32C", "#AAFF86", "#D972FF", "#FF8D8F", "#6BE7FF", "#FF1616"]
+COLORS = ["#1f77b4", "#ff7f0e", "#d62728", "#DAEBFF", "#FFE32C", "#AAFF86", "#D972FF", "#FF8D8F", "#6BE7FF", "#FF1616"]
 
 # Tables 2 css to hide columns on small devices
 TABLES2_HIDE_COL_MD = {"td": {"class": "hidden-xs hidden-sm hidden-md"}, "th": {"class": "hidden-xs hidden-sm hidden-md"}}
@@ -79,7 +79,7 @@ def compact_text(text):
     """Compact text by removing extra space and extra lines. BTW, it also squash carriage returns.
     @param text: text to compact
     @return: compacted text"""
-    EXTRA_SPACE = re.compile("[ ]+")
+    EXTRA_SPACE = re.compile("[ ]+(?!\*)")
     EXTRA_NLINE = re.compile("\n\s*\n+")
     text = text.replace("\r", "")
     text = EXTRA_SPACE.sub(" ", text)

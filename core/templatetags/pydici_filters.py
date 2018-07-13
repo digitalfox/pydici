@@ -8,6 +8,7 @@ Pydici custom filters
 import re
 
 import markdown
+from markdown.extensions.sane_lists import SaneListExtension
 import bleach
 
 from django import template
@@ -142,24 +143,17 @@ def pydici_simple_format(value, arg=None):
     dealIds = [i[0] for i in Lead.objects.exclude(deal_id="").values_list("deal_id")]
     trigrammes = [i[0] for i in Consultant.objects.values_list("trigramme")]
 
-    result = []
-    for line in value.split("\n"):
-        newline = []
-        for word in line.split():
-            if word in dealIds:
-                word = u"<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=word).get_absolute_url(), word)
-            if word in trigrammes:
-                word = u"<a href='%s'>%s</a>" % (Consultant.objects.get(trigramme=word).get_absolute_url(), word)
-            newline.append(word)
-        result.append(" ".join(newline))
+    #TODO: this may not scale with thousands of leads. It may be splitted in shunk on day.
+    for dealId in re.findall(r"%s" % "|".join(dealIds), value):
+        value = value.replace(dealId, u"<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=dealId).get_absolute_url(), dealId))
 
-    result = "\n".join(result)
+    for trigramme in re.findall(r"%s" % "|".join(trigrammes), value):
+        value = value.replace(trigramme, u"<a href='%s'>%s</a>" % (Consultant.objects.get(trigramme=trigramme).get_absolute_url(), trigramme))
 
     # Authorized tags for markdown (thanks https://github.com/yourcelf/bleach-whitelist/blob/master/bleach_whitelist/bleach_whitelist.py)
     markdown_tags = ["h1", "h2", "h3", "h4", "h5", "h6", "b", "i", "strong", "em", "tt", "p", "br",
                      "span", "div", "blockquote", "code", "hr","ul", "ol", "li", "dd", "dt", "img","a"]
     markdown_attrs = {"img": ["src", "alt", "title"],  "a": ["href", "alt", "title"] }
+    value = bleach.clean(markdown.markdown(value, tab_length=2, extensions=[SaneListExtension(),]), tags=markdown_tags, attributes=markdown_attrs)
 
-    result = bleach.clean(markdown.markdown(result), tags=markdown_tags, attributes=markdown_attrs)
-
-    return mark_safe(result)
+    return mark_safe(value)

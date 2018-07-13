@@ -1,0 +1,56 @@
+{# Fragment that display timesheet and rates graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_jqplot.html to load according js/css #} {% load i18n %}
+
+{% if graph_data %}
+<div id="timesheet_rates_graph"></div>
+<script type="text/javascript">
+
+    var chart = c3.generate({
+    bindto: '#timesheet_rates_graph',
+    data: {
+         columns: {{ graph_data | safe }},
+         x: 'x',
+         labels: {
+            format: {
+                '{% trans "production rate" %}': function (v, id, i, j) { return v },
+                {% for nature in natures_display %}
+                    '{{ nature }}': function (v, id, i, j) { return '' },
+                {% endfor %}
+                },
+         },
+         types : {
+             {% for nature in natures_display %}
+                '{{ nature }}': 'bar',
+             {% endfor %}
+            '{% trans "production rate" %}': 'spline',
+         },
+         groups: [[{% for nature in natures_display %}'{{ nature }}',{% endfor %}]],
+    },
+    point: {
+        show: true,
+    },
+    color: {
+        pattern: {{ series_colors|safe }},
+    },
+    axis: {
+        x: {
+            type: 'timeseries',
+            tick: {
+                format: '%Y-%m',
+                rotate: 45,
+            },
+        },
+        y: {
+            label : {
+                text: '{% trans "production rate (%)" %}',
+                position: 'outer-middle',
+            },
+            max: 100,
+            min: 0,
+            padding: { top: 10, bottom: 0 },
+        },
+    },
+  });
+
+</script>
+{% endif %}

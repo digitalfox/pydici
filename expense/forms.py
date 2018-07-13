@@ -99,7 +99,7 @@ class ExpensePaymentForm(PydiciCrispyForm):
 
     def __init__(self, *args, **kwargs):
         super(ExpensePaymentForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column("expenses", css_class="col-md-3"),
+        self.helper.layout = Layout(Div(Column("expenses", css_class="col-md-9"),
                                         Column(Field("payment_date", css_class="datepicker"), css_class="col-md-3"),
                                         css_class="row"),
                                     self.submit)

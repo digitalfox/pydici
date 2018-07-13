@@ -22,3 +22,14 @@
 {% endwith %}
 {% endwith %}
 {% endwith %}
+
+<script type="text/javascript">
+{% if organisationForm.errors %}
+    $("#organisationForm").show();
+    $("#organisation_input_group").hide();
+{% endif %}
+{% if companyForm.errors %}
+    $("#companyForm").show();
+    $("#company_input_group").hide();
+{% endif %}
+</script>

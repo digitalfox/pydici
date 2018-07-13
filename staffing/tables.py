@@ -7,6 +7,7 @@ Pydici staffing tables
 
 from django.utils.translation import ugettext as _
 from django.template.loader import get_template
+from django.template import Context
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 
@@ -31,8 +32,7 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
     ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"></span>""")
 
     def get_initial_queryset(self):
-        #TODO: declare explicit join with select_related()
-        return Mission.objects.all()
+        return Mission.objects.all().select_related("lead__client__organisation__company", "subsidiary")
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
@@ -67,7 +67,7 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
             else:
                 return self.ok_sign
         elif column == "archive":
-            return self.archiving_template.render({"row": row})
+            return self.archiving_template.render(Context({"row": row}))
         elif column == "mission_id":
             return row.mission_id()
         else:
@@ -76,5 +76,4 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
 class ActiveMissionsTableDT(MissionsTableDT):
     """Active missions table backend for datatables"""
     def get_initial_queryset(self):
-        # TODO: declare explicit join with select_related()
-        return Mission.objects.filter(active=True)
+        return Mission.objects.filter(active=True).select_related("lead__client__organisation__company", "subsidiary")

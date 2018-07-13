@@ -24,7 +24,7 @@ from taggit.models import Tag
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from leads.models import Lead
 from people.models import Consultant
-from crm.models import Company, Contact
+from crm.models import Company, Contact, Subsidiary
 from staffing.models import Mission, FinancialCondition, Staffing, Timesheet
 from billing.models import ClientBill
 from expense.models import Expense
@@ -66,7 +66,7 @@ def search(request):
 
     if words:
         # Consultant
-        consultants = Consultant.objects.filter(active=True)
+        consultants = Consultant.objects.all()
         for word in words:
             consultants = consultants.filter(Q(name__icontains=word) |
                                              Q(trigramme__icontains=word))
@@ -160,7 +160,8 @@ def dashboard(request):
     """Tactical management dashboard. This views is in core module because it aggregates data
     accross different modules"""
 
-    return render(request, "core/dashboard.html")
+    return render(request, "core/dashboard.html",
+                  {"subsidiaries": Subsidiary.objects.all()})
 
 
 @pydici_non_public
@@ -337,7 +338,7 @@ def riskReporting(request):
                      })
 
     # Leads with done works beyond sent or paid bills
-    for lead in Lead.objects.filter(state="WON", mission__active=True).distinct().select_related():
+    for lead in Lead.objects.filter(mission__active=True).distinct().select_related():
         if not "TIME_SPENT" in [m.billing_mode for m in lead.mission_set.all()]:
             # All missions of this lead are fixed price (no one is time spent). So done works beyond billing is not considered here
             # Fixed price mission tracking is done a separate report
@@ -372,6 +373,7 @@ def tableToCSV(table, filename="data.csv"):
     writer.writerow([h.encode("iso8859-1") for h in header])
     for row in table.rows:
         row = [strip_tags(unicode(cell)) for column, cell in row.items()]
+        row = [i.replace(u"\u2714", _("No")).replace(u"\u2718", _("Yes")) for i in row]
         writer.writerow([item.encode("iso8859-1", "ignore") for item in row])
     return response
 

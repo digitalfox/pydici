@@ -1,0 +1,31 @@
+{# Modal popover to display expense receipt #}
+
+<!-- Modal for receipt image or pdf -->
+<div class="modal fade" id="expenseModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-xxl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <h4 class="modal-title" id="expenseModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body expense-receipt">
+        ...
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script type="text/JavaScript">
+$(document).ready(function(){
+    // Fill modal with content from link href
+    $("#expenseModal").on("show.bs.modal", function(e) {
+        var link = $(e.relatedTarget);
+        var desc = link.closest("tr").find(".description").html() + " - " + link.closest("tr").find(".amount").html();
+        $(this).find("#expenseModalLabel").html(desc);
+        $(this).find(".modal-body").load(link.attr("href"));
+    });
+});
+
+</script>

@@ -5,17 +5,22 @@
 """
 
 from django.conf.urls import patterns, url
+from expense.tables import ExpenseTableDT, ExpensePaymentTableDT
 
 
 expense_urls = patterns('expense.views',
                         (r'^$', 'expenses'),
-                        (r'^(?P<expense_id>\d+)$', 'expenses'),
+                        url(r'^(?P<expense_id>\d+)$', 'expenses', name="expense"),
                         (r'^(?P<expense_id>\d+)/receipt$', 'expense_receipt'),
+                        (r'^(?P<expense_id>\d+)/delete$', 'expense_delete'),
                         (r'^(?P<expense_id>\d+)/(?P<transition_id>\w+)', 'update_expense_state'),
-                        (r'^mission/(?P<mission_id>\d+)$', 'mission_expenses'),
+                        url(r'^clone/(?P<clone_from>\d+)$', 'expenses', name="clone_expense"),
+                        (r'^mission/(?P<lead_id>\d+)$', 'lead_expenses'),
                         (r'^history/?$', 'expenses_history'),
                         (r'^chargeable/?$', 'chargeable_expenses'),
                         (r'^payment/?$', 'expense_payments'),
                         (r'^payment/(?P<expense_payment_id>\d+)/?$', 'expense_payments'),
                         (r'^payment/(?P<expense_payment_id>\d+)/detail$', 'expense_payment_detail'),
+                        url(r'^datatable/all-expense/data/$', ExpenseTableDT.as_view(), name='expense_table_DT'),
+                        url(r'^datatable/all-expense-payment/data/$', ExpensePaymentTableDT.as_view(), name='expense_payment_table_DT'),
                         )

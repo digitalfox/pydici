@@ -15,9 +15,9 @@
     <link href="{{ MEDIA_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/datepicker.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/iconic.css" rel="stylesheet">
-    <link href="{{ MEDIA_URL }}css/jquery-ui-1.10.4.custom.css" rel="stylesheet">
+    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}tables2/css/screen.css" rel="stylesheet">
-    <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" type="text/css" media="screen" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" type="text/css" media="screen" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/select2-bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/t/bs/jszip-2.5.0,dt-1.10.11,b-1.1.2,b-html5-1.1.2,b-print-1.1.2,fh-3.1.1,r-2.0.2/datatables.min.css"/>
@@ -53,8 +53,10 @@
     {% endblock %}
 
     <!-- JavaScript -->
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-2.2.4.min.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.10.4.custom.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.js"></script>
     {% ifequal LANGUAGE_CODE "fr-fr" %}
@@ -77,7 +79,7 @@
         </div> <!-- /container -->
     {% endblock %}
 
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
     <script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
     <script type="text/javascript">
     <!--

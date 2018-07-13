@@ -65,6 +65,10 @@ class ExpensePayment(models.Model):
             amount += expense.amount
         return amount
 
+    def get_absolute_url(self):
+        return reverse('expense.views.expense_payment_detail', args=[str(self.id)])
+
+
     class Meta:
         verbose_name = _("Expenses payment")
         verbose_name_plural = _("Expenses payments")
@@ -89,13 +93,18 @@ class Expense(models.Model):
 
     def __unicode__(self):
         if self.lead:
-            return u"%s (%s %s %s) - %s €" % (self.description, self.lead, self.lead.deal_id, self.expense_date, self.amount)
+            return u"%s (%s %s %s) - %s € - %s" % (self.description, self.lead, self.lead.deal_id, self.expense_date, self.amount, self.state())
         else:
-            return u"%s (%s) - %s €" % (self.description, self.expense_date, self.amount)
+            return u"%s (%s) - %s € - %s" % (self.description, self.expense_date, self.amount, self.state())
 
     def state(self):
         """expense state according to expense workflow"""
-        return wf.get_state(self).name
+        state = wf.get_state(self)
+        if state:
+            return state.name
+        else:
+            return _("unknown")
+
 
     def transitions(self, user):
         """expense allowed transitions in workflows for given user"""
@@ -104,6 +113,8 @@ class Expense(models.Model):
         else:
             return []
 
+    def get_absolute_url(self):
+        return reverse('expense', args=[str(self.id)])
 
     class Meta:
         verbose_name = _("Expense")

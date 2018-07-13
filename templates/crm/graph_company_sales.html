@@ -1,0 +1,43 @@
+{# Fragment that display company sales to be included with a jquery load #}
+{# One must include in its extrajs block core/_c3.htm to load according js/css #}
+{% load i18n %}
+
+
+{% if graph_data %}
+    <center><h3>{% if only_last_year %}
+                    {% trans "Last year sales repartition" %}
+                    {% if subsidiary %}
+                        {% blocktrans %} for subsidiary {{ subsidiary }}{% endblocktrans %}
+                    {% endif %}
+                {% else %}
+                    {% blocktrans %} Client sales repartition since {{ min_date }}{% endblocktrans %}
+                {% endif %}
+    </h3></center>
+
+    <div id="company_sales_{{ subsidiary.id }}_{{ only_last_year|safe }}"></div>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+
+        chart_company_sales_{{ only_last_year|safe }} = c3.generate({
+            bindto: '#company_sales_{{ subsidiary.id }}_{{ only_last_year|safe }}',
+            data: {
+                columns:  {{ graph_data|safe }},
+                type : 'pie'
+            },
+            pie: {
+                label: {
+                    format: function (value, ratio, id) {
+                        return d3.format('.0')(value)+ ' k€';
+                }
+            }
+        }
+        });
+
+    }); // End of ready()
+    </script>
+{% else %}
+    <script type="text/javascript">
+        $('#graph_company_lastyear_sales_{{ subsidiary.id }}').remove();
+    </script>
+{% endif %}

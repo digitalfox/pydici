@@ -73,22 +73,24 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
 
 
 class ActiveLeadTableDT(LeadTableDT):
-    columns = ["client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba", "creation_date", "due_date", "start_date"]
+    columns = ["client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba", "creation_date", "due_date", "start_date", "update_date"]
     order_columns = columns
-    dateTemplate = get_template("leads/_date_column.html")
+    dateTemplate = get_template("core/_date_column.html")
     pydici_feature = "leads"
 
     def get_initial_queryset(self):
         return Lead.objects.active().select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
 
     def render_column(self, row, column):
-        if column in ("creation_date", "due_date", "start_date"):
+        if column in ("creation_date", "due_date", "start_date", "update_date"):
             return self.dateTemplate.render({"date": getattr(row, column)})
         else:
             return super(ActiveLeadTableDT, self).render_column(row, column)
 
 
 class RecentArchivedLeadTableDT(ActiveLeadTableDT):
+    columns = ["client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba",
+               "creation_date", "start_date", "update_date"]
     def get_initial_queryset(self):
         today = datetime.today()
         delay = timedelta(days=40)

@@ -45,6 +45,8 @@ def consultant_detail(request, consultant_id):
         month = date.today().replace(day=1)
         # Compute consultant current mission based on forecast
         missions = consultant.active_missions().filter(nature="PROD").filter(lead__state="WON")
+        # Identify staled missions that may need new staffing or archiving
+        staled_missions = [m for m in missions if m.no_more_staffing_since()]
         # Consultant clients and missions
         companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
         business_territory = Company.objects.filter(businessOwner=consultant)
@@ -120,6 +122,7 @@ def consultant_detail(request, consultant_id):
                   {"consultant": consultant,
                    "staff": staff,
                    "missions": missions,
+                   "staled_missions": staled_missions,
                    "companies": companies,
                    "business_territory": business_territory,
                    "leads_as_responsible": leads_as_responsible,

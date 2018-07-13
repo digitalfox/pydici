@@ -8,11 +8,6 @@
 
 {% block title %}{% trans "Expenses payments" %}{% endblock %}
 
-{% block extrajs %}
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/datatables_custom_sort.js"></script>
-{% endblock %}
-
-
 {% block content %}
 
 {% if not read_only %}
@@ -37,11 +32,31 @@
     <br/><hr/><br/>
 {% endif %}
 
-{% if expense_payment_table.data and not modify_expense_payment %}
-<h1>{% trans "Expenses payments" %}</h1>
-    {% render_table expense_payment_table %}
-    {% with "expense_payment_table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
-<br/><hr/><br/>
+{% if not modify_expense_payment %}
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>{% trans "Expenses payments" %}</h1>
+            <table id="expense_payment_archive" class="table table-striped table-bordered table-condensed" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>{% trans "#" %}</th>
+                        <th>{% trans "Consultant" %}</th>
+                        <th>{% trans "Amount" %}</th>
+                        <th>{% trans "Payment date" %}</th>
+                        <th>{% trans "Modification" %}</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            {% with "expense_payment_archive" as table_id %}
+                {% with data_url as data_url %}
+                    {% with  data_options as datatable_options %}
+                        {% include "core/_datatables.html" %}
+                    {% endwith %}
+                {% endwith %}
+            {% endwith %}
+        </div>
+    </div>
 {% endif %}
 
 <br/><hr/><br/>
