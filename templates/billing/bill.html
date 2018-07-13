@@ -32,7 +32,7 @@
 <thead>
     <tr><th><small>{% trans "Description" %}</small></th><th class="text-center"><small>{% trans "Quantity" %}</small></th>
         <th class="text-right"><small>{% trans "Unit Price €" %}</small></th><th class="text-right"><small>{% trans "Amount €" %}</small></th>
-        <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount w/ taxes €" %}</small></th>
+        <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount inc. taxes €" %}</small></th>
     </tr>
 </thead>
 <tbody>
@@ -59,13 +59,15 @@
         {% endfor %}
 {% endfor %}
 
-
+<tr><td colspan=6 class="noborder">&nbsp;</td></tr>
 <tr>
-    <td colspan=5 class="text-right"><b>{% trans "Sub Total" %}</b></td><td class="text-right"><b>24 000</b></td>
+    <td colspan=5 class="text-right noborder"><b>{% trans "Sub Total without taxes" %}</b></td><td class="text-right"><b>{{ bill.amount|floatformat:-2 }}</b></td>
 </tr>
+{% for vat, amount in bill.taxes %}
 <tr>
-    <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "VAT 20%" %}</b></td><td class="text-right"><b>4800</b></td>
+    <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right"><b>{{ amount|floatformat:-2 }}</b></td>
 </tr>
+{% endfor %}
 {% with bill.expensesTotal as expensesTotal %}
     {% if expensesTotal %}
         <tr>
@@ -74,7 +76,7 @@
     {% endif %}
 {% endwith %}
 <tr>
-    <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "Total" %}</b></td><td class="text-right"><b>28 800</b></td>
+    <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "Total" %}</b></td><td class="text-right"><b>{{ bill.totalWithTaxesAndExpenses|floatformat:-2 }}</b></td>
 </tr>
 
 </tbody>

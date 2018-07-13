@@ -108,6 +108,9 @@ class AbstractBill(models.Model):
         except ValueError:
             return "#"
 
+    def vat_amount(self):
+        return self.amount_with_vat - self.amount
+
     class Meta:
         abstract = True
         ordering = ["lead__client__organisation__company", "creation_date"]
@@ -141,6 +144,9 @@ class ClientBill(AbstractBill):
         """Returns the total sum (with taxes) of all expenses of this bill"""
         return sum([b.amount_with_vat for b in self.billexpense_set.all()])
 
+    def totalWithTaxesAndExpenses(self):
+        """Returns total of this bill with all taxes and expenses"""
+        return self.amount_with_vat + self.expensesTotal()
 
     def save(self, *args, **kwargs):
         compute_bill(self)

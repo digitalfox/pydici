@@ -83,7 +83,7 @@ def generate_bill_pdf(bill, url):
 
 
 def create_client_bill_from_timesheet(mission, month):
-    """Create (and return) a bill and bill detail for given mission for given month"""
+    """Create (and return) a bill and bill detail for given mission from timesheet of given month"""
     ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
     bill = ClientBill(lead=mission.lead)
@@ -95,14 +95,17 @@ def create_client_bill_from_timesheet(mission, month):
         consultant = Consultant.objects.get(id=i["consultant"])
         billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
         billDetail.save()
+    compute_bill(bill)  # update bill amount according to its details
     return bill
 
 
 def create_client_bill_from_proportion(mission, proportion):
+    """Create (and return) a bill and bill detail for given mission from proportion of mission total price"""
     ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
     bill = ClientBill(lead=mission.lead)
     bill.save()
     billDetail = BillDetail(bill=bill, mission=mission, quantity=proportion, unit_price=mission.price*1000)
     billDetail.save()
+    compute_bill(bill)  # update bill amount according to its details
     return bill
