@@ -281,7 +281,7 @@ def clientOrganisation(request, client_organisation_id=None):
         pass
 
     if request.method == "POST":
-        if client:
+        if clientOrganisation:
             form = ClientOrganisationForm(request.POST, instance=clientOrganisation)
         else:
             form = ClientOrganisationForm(request.POST)
