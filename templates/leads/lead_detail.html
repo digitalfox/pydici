@@ -1,6 +1,7 @@
 {% extends "core/pydici.html" %}
 
 {% load i18n %}
+{% load l10n %}
 {% load pydici_filters %}
 
 {% block title %}{{ lead }}{% endblock %}
@@ -177,7 +178,7 @@
                 <table class="table table-hover table-striped table-condensed">
                     <tr><th>{% trans "Sold" %}</th>
                     <td>{% if lead.sales %}{{ lead.sales }} k€
-                        {% else %} <a href="{% url 'leads.views.lead' lead.id|unlocalize %}">{% trans "To be defined" %}</a>
+                        {% else %} <a href="{% url 'leads.views.lead' lead.id %}">{% trans "To be defined" %}</a>
                         {% endif %}</td></tr>
                     <tr><th>{% trans "Unused" %}</th><td>{{ lead.unused }} k€</td></tr>
                     <tr><th>{% trans "Margin over rate objective" %}</th><td>{{ lead.totalObjectiveMargin }} €</td></tr>
@@ -232,7 +233,7 @@
         </table>
         </div>
         {% if perms.staffing.add_mission %}
-            <a class="btn btn-default" href="{% url 'staffing.views.create_new_mission_from_lead' lead.id|unlocalize %}">{% trans "Create a new mission for this lead" %}</a>
+            <a class="btn btn-default" href="{% url 'staffing.views.create_new_mission_from_lead' lead.id %}">{% trans "Create a new mission for this lead" %}</a>
         {% endif %}
     {% else %}
         <br/>
