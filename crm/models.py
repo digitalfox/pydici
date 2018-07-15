@@ -122,7 +122,7 @@ class ClientOrganisation(AbstractAddress):
             return self.company.main_address()
 
     def billing_address(self):
-        if self.city:
+        if self.billing_city:
             return super(ClientOrganisation, self).billing_address()
         else:
             return self.company.billing_address()
@@ -409,7 +409,7 @@ class Client(AbstractAddress):
             return self.organisation.main_address()
 
     def billing_address(self):
-        if self.city:
+        if self.billing_city:
             return super(Client, self).billing_address()
         else:
             return self.organisation.billing_address()

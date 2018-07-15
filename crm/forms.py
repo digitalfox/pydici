@@ -13,13 +13,29 @@ from django.core.urlresolvers import reverse
 from django.forms.widgets import Textarea
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
-from crispy_forms.layout import Layout, Div, Column, Fieldset
+from crispy_forms.layout import Layout, Div, Column, Fieldset, HTML
 from crispy_forms.bootstrap import AppendedText, FieldWithButtons, StrictButton, Tab, TabHolder
 
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
 from people.forms import ConsultantChoices, ConsultantMChoices
 from core.utils import capitalize
 from core.forms import PydiciCrispyModelForm
+
+
+def getAddressColumn(showBanner=True):
+    if showBanner:
+        banner = HTML(_("<em>Leave address blank to use company or organisation address</em>"))
+    else:
+        banner = None
+    col = Column(banner,
+                 TabHolder(Tab(_("Main address"), "street",
+                               Div(Column("city", css_class="col-md-6"), Column("zipcode", css_class="col-md-6"), css_class="row"),
+                               "country"),
+                           Tab(_("Billing address"), "billing_street",
+                               Div(Column("billing_city", css_class="col-md-6"), Column("billing_zipcode", css_class="col-md-6"), css_class="row"),
+                               "billing_country"),),
+                               css_class="col-md-6")
+    return col
 
 
 class ClientChoices(ModelSelect2Widget):
@@ -92,9 +108,9 @@ class ClientForm(PydiciCrispyModelForm):
         super(ClientForm, self).__init__(*args, **kwargs)
         self.helper.form_action = reverse("crm.views.client")
         self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation")),
-                                               "expectations", css_class="col-md-6"),
-                                        Column(AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
+                                               "expectations", AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
                                                "alignment", css_class="col-md-6"),
+                                        getAddressColumn(),
                                         css_class="row"),
                                     "active",
                                     self.submit)
@@ -120,7 +136,7 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(ClientOrganisationForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column("name", AppendedText("company", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.company")), css_class="col-md-6"),
-                                        Column(css_class="col-md-6"),
+                                        getAddressColumn(),
                                         css_class="row"),
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Client organisation"),
@@ -143,14 +159,7 @@ class CompanyForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(CompanyForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column("name", "code", "businessOwner", "web", "legal_description", css_class="col-md-6"),
-                                        Column(TabHolder(Tab(_("Main address"), "street",
-                                                             Div(Column("city", css_class="col-md-6"), Column("zipcode", css_class="col-md-6"), css_class="row"),
-                                                             "country"),
-                                                         Tab(_("Billing address"), "billing_street",
-                                                             Div(Column("billing_city", css_class="col-md-6"), Column("billing_zipcode", css_class="col-md-6"), css_class="row"),
-                                                             "billing_country"),),
-                                               css_class="col-md-6"),
-                                        css_class="row"),
+                                    getAddressColumn(showBanner=False), css_class="row"),
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Company"),
                                                     Column("name", "code", "businessOwner", "web", css_class="col-md-6"),
