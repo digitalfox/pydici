@@ -28,12 +28,12 @@ from crm.models import Company, Client, ClientOrganisation, Contact, Administrat
     BusinessBroker, Supplier, Subsidiary
 from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm,\
     AdministrativeContactForm, BusinessBrokerForm, SupplierForm
-from staffing.models import Timesheet
 from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
+from leads.tables import ClientCompanyLeadTableDT
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
 from core.utils import sortedValues, previousMonth, COLORS
-from billing.models import ClientBill, SupplierBill
+from billing.models import ClientBill
 
 
 class ContactReturnToMixin(object):
@@ -402,6 +402,7 @@ def company_detail(request, company_id):
                    "administrative_contacts": administrative_contacts,
                    "contacts_count" : business_contacts.count() + mission_contacts.count() + administrative_contacts.count(),
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
+                   "lead_data_url": urlresolvers.reverse('client_company_lead_table_DT', args=[company.id,]),
                    "companies": companies,
                    "sales_last_year": sales_last_year
                   })

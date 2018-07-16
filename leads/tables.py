@@ -99,3 +99,7 @@ class RecentArchivedLeadTableDT(ActiveLeadTableDT):
         qs = qs.order_by("state", "-update_date").select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
         return qs
 
+
+class ClientCompanyLeadTableDT(LeadTableDT):
+    def get_initial_queryset(self):
+        return Lead.objects.filter(client__organisation__company__id=self.kwargs["clientcompany_id"]).select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
