@@ -403,6 +403,7 @@ def company_detail(request, company_id):
                    "contacts_count" : business_contacts.count() + mission_contacts.count() + administrative_contacts.count(),
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
                    "lead_data_url": urlresolvers.reverse('client_company_lead_table_DT', args=[company.id,]),
+                   "mission_data_url": urlresolvers.reverse('client_company_mission_table_DT', args=[company.id,]),
                    "companies": companies,
                    "sales_last_year": sales_last_year
                   })

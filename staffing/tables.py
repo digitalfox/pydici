@@ -73,7 +73,13 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
         else:
             return super(MissionsTableDT, self).render_column(row, column)
 
+
 class ActiveMissionsTableDT(MissionsTableDT):
     """Active missions table backend for datatables"""
     def get_initial_queryset(self):
         return Mission.objects.filter(active=True).select_related("lead__client__organisation__company", "subsidiary")
+
+
+class ClientCompanyActiveMissionsTablesDT(MissionsTableDT):
+    def get_initial_queryset(self):
+        return Mission.objects.filter(active=True, lead__client__organisation__company__id=self.kwargs["clientcompany_id"]).select_related("lead__client__organisation__company", "subsidiary")
