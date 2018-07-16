@@ -127,6 +127,8 @@ class ClientOrganisation(AbstractAddress):
         else:
             return self.company.billing_address()
 
+    def get_absolute_url(self):
+        return urlresolvers.reverse("crm.views.clientOrganisation", args=[self.id, ])
 
     class Meta:
         ordering = ["company", "name"]

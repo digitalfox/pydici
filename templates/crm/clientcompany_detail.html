@@ -26,6 +26,7 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="company-tabs">
         <li class="active"><a data-toggle="tab" href="#tab-dashboard"><span class="glyphicon glyphicon-home"></span> {% trans "Dashboard" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-structure"><span class="glyphicon glyphicon-equalizer"></span> {% trans "Structure" %}</a></li>
         <li><a data-toggle="tab" href="#tab-leads"><span class="glyphicon glyphicon-list"></span> {% trans "Leads" %}</a></li>
         <li><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"></span> {% trans "Consultants" %}</a></li>
         <li><a data-toggle="tab" href="#tab-contacts"><span class="glyphicon glyphicon-envelope"></span> {% trans "Client contacts" %}</a></li>
@@ -264,6 +265,25 @@
             </div>
         </div>
     </div> <!-- end of dashboard tab -->
+    <div id="tab-structure" class="tab-pane fade in">
+        <h2>{% trans "Company structure" %}</h2>
+        <div class="row">
+            <ul class="list-group">
+            {% for clientorganisation in company.clientorganisation_set.all %}
+                <div class="col-sm-12 col-md-6 col-lg-4" style="margin-top:20px">
+                <li class="list-group-item disabled"><a href="{% url 'client_organisation_change' clientorganisation.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ clientorganisation }}</a> {% include "crm/_client_picto.html" %}</li>
+                {% for client in clientorganisation.client_set.all %}
+                    <li class="list-group-item"><a href="{% url 'client_change' client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ client.contact|default_if_none:_("undefined") }}</a> {% include "crm/_client_picto.html" %}</li>
+                {% endfor %}
+                </div>
+            {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+
+
+
     <div id="tab-leads" class="tab-pane fade in">
         <h2>{% trans "Current active missions" %}</h2>
         <div class="row">
