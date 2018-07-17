@@ -118,11 +118,12 @@ class AbstractBill(models.Model):
 
 class ClientBill(AbstractBill):
     CLIENT_BILL_STATE = (
-        ('0_DRAFT', ugettext("Draft")),
-        ('1_SENT', ugettext("Sent")),
-        ('2_PAID', ugettext("Paid")),
-        ('3_LITIGIOUS', ugettext("Litigious")),
-        ('4_CANCELED', ugettext("Canceled")),)
+        ('0_DRAFT', _("Draft")),
+        ('0_PROPOSED', _("Proposed")),
+        ('1_SENT', _("Sent")),
+        ('2_PAID', _("Paid")),
+        ('3_LITIGIOUS', _("Litigious")),
+        ('4_CANCELED', _("Canceled")),)
     state = models.CharField(_("State"), max_length=30, choices=CLIENT_BILL_STATE, default="0_DRAFT")
     bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path,
                                  storage=BillStorage(nature="client"), null=True, blank=True)

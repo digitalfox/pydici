@@ -53,7 +53,7 @@ def get_billing_info(timesheet_data):
 
 def compute_bill(bill):
     """Compute bill amount according to its details and save it"""
-    if bill.state == "0_DRAFT":
+    if bill.state in ("0_DRAFT", "0_PROPOSED"):
         amount = 0
         amount_with_vat = 0
         for bill_detail in bill.billdetail_set.all():
