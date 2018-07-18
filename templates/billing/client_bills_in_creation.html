@@ -1,0 +1,30 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Client bills review" %}{% endblock %}
+
+{% block content %}
+
+<table id="clientbills_table" class="table table-striped table-hover table-condensed table-bordered" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th>{% trans "bill_id" %}</th>
+        <th>{% trans "lead" %}</th>
+        <th>{% trans "creation_date" %}</th>
+        <th>{% trans "state" %}</th>
+        <th>{% trans "amount" %}</th>
+        <th>{% trans "amount_with_vat" %}</th>
+        <th>{% trans "comment" %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+
+{% with "clientbills_table" as table_id %}
+    {% include "core/_datatables.html" %}
+{% endwith %}
+
+{% endblock %}

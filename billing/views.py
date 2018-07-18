@@ -285,6 +285,13 @@ def pre_billing(request, year=None, month=None, mine=False):
 
 
 @pydici_non_public
+def client_bills_in_creation(request):
+    """Review client bill in preparation"""
+    return render(request, "billing/client_bills_in_creation.html",
+                  {"data_url": urlresolvers.reverse('client_bills_in_creation_DT'),
+                   "user": request.user})
+
+@pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 10)
 def graph_billing_jqp(request):

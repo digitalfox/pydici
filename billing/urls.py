@@ -7,6 +7,7 @@
 from django.conf.urls import patterns, url
 
 import billing.views as v
+import billing.tables as t
 
 
 billing_urls = patterns('billing.views',
@@ -18,10 +19,12 @@ billing_urls = patterns('billing.views',
                         (r'^html/(?P<bill_id>\d+)$', v.Bill.as_view()),
                         url(r'^bill/client/add$', "client_bill", name='client_bill'),
                         url(r'^bill/client/(?P<bill_id>\d+)$', "client_bill", name='client_bill'),
+                        url(r'^bill/client/review$', "client_bills_in_creation", name='client_bills_in_creation'),
                         url(r'^pre_billing$', 'pre_billing', {"mine": False, }),
                         url(r'^pre_billing/mine$', 'pre_billing', {"mine": True, }),
                         url(r'^pre_billing/(?P<year>\d+)/(?P<month>\d+)/$', 'pre_billing', {"mine": False, }),
                         url(r'^pre_billing/(?P<year>\d+)/(?P<month>\d+)/mine$', 'pre_billing', {"mine": True, }),
+                        url(r'^datatable/client_bills_in_creation/data/$', t.ClientBillTableDT.as_view(), name='client_bills_in_creation_DT'),
                         (r'^graph/billing-jqp$', 'graph_billing_jqp'),
                         (r'^graph/yearly-billing$', 'graph_yearly_billing'),
                         )
