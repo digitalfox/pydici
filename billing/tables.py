@@ -34,3 +34,4 @@ class ClientBillTableDT(ThirdPartyMixin, BaseDatatableView):
                            Q(lead__client__organisation__company__name__icontains=search)
                            )
         return qs
+
