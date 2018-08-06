@@ -175,7 +175,7 @@ def client_bill(request, bill_id=None):
                 billDetailFormSet.save()
             if billExpenseFormSet:
                 billExpenseFormSet.save()
-            if bill.state in e in ("0_DRAFT", "0_PROPOSED"):
+            if bill.state in ("0_DRAFT", "0_PROPOSED"):
                 success_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
             else:
                 success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
