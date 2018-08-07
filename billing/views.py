@@ -185,7 +185,7 @@ def client_bill(request, bill_id=None):
     else:
         if bill:
             form = ClientBillForm(instance=bill)
-            if bill.state == "0_DRAFT":
+            if bill.state in ("0_DRAFT", "0_PROPOSED"):
                 billDetailFormSet = BillDetailFormSet(instance=bill)
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
         else:
