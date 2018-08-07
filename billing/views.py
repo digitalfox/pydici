@@ -149,7 +149,15 @@ class Bill(PydiciNonPublicdMixin, TemplateView):
 
 
 class BillPdf(Bill, PDFTemplateView):
-    filename = 'my_pdf.pdf'
+    def get_filename(self):
+
+        bill = self.get_context_data(**self.kwargs)["bill"]
+        try:
+            filename = u"%s-%s.pdf" % (bill.lead.deal_id, bill.bill_id)
+        except ValueError:
+            # Incomplete bill, we still want to generate the pdf
+            filename = "bill.pdf"
+        return filename
 
 
 def client_bill(request, bill_id=None):
