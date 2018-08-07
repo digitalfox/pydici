@@ -9,6 +9,7 @@ from django.db.models import Q
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
+from core.utils import to_int_or_round
 from crm.views import ThirdPartyMixin
 from billing.models import ClientBill
 
@@ -35,3 +36,8 @@ class ClientBillTableDT(ThirdPartyMixin, BaseDatatableView):
                            )
         return qs
 
+    def render_column(self, row, column):
+        if column in ("amount", "amount_with_vat"):
+            return to_int_or_round(getattr(row, column), 2)
+        else:
+            return super(ClientBillTableDT, self).render_column(row, column)
