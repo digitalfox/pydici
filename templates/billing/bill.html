@@ -82,8 +82,9 @@
 </tbody>
 </table>
 <div style="page-break-inside: avoid;">
-<p><small>{{  bill.lead.subsidiary.payment_description|linebreaksbr }}</small></p>
-<p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
+    <p>{{ bill.comment }}</p>
+    <p><small>{{  bill.lead.subsidiary.payment_description|linebreaksbr }}</small></p>
+    <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
 </div>
 
 {% if bill.billexpense_set.count %}
