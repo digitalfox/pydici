@@ -315,7 +315,7 @@ def graph_billing_jqp(request):
     graph_data = []  # Data that will be returned to jqplot
 
     # Gathering billsData
-    bills = ClientBill.objects.filter(creation_date__gt=start_date)
+    bills = ClientBill.objects.filter(creation_date__gt=start_date, state__in=("1_SENT", "2_PAID"))
     if bills.count() == 0:
         return HttpResponse()
 

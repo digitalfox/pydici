@@ -492,12 +492,12 @@ def graph_company_sales(request, onlyLastYear=False, subsidiary_id=None):
     graph_data = []
     labels = []
     small_clients_amount = 0
+    clientBills = ClientBill.objects.filter(state__in=("1_SENT", "2_PAID"))
     if subsidiary_id:
         subsidiary = Subsidiary.objects.get(id=subsidiary_id)
-        clientBills = ClientBill.objects.filter(lead__subsidiary=subsidiary)
+        clientBills = clientBills.filter(lead__subsidiary=subsidiary)
     else:
         subsidiary = None
-        clientBills = ClientBill.objects.all()
 
     minDate = clientBills.aggregate(Min("creation_date")).values()[0]
     if onlyLastYear:
@@ -542,7 +542,7 @@ def graph_company_business_activity(request, company_id):
     wonLeadsData = dict()
     company = Company.objects.get(id=company_id)
 
-    for bill in ClientBill.objects.filter(lead__client__organisation__company=company):
+    for bill in ClientBill.objects.filter(lead__client__organisation__company=company, state__in=("1_SENT", "2_PAID")):
         kdate = bill.creation_date.replace(day=1)
         if kdate in billsData:
             billsData[kdate] += int(float(bill.amount) / 1000)
