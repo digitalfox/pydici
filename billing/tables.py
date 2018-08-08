@@ -39,7 +39,7 @@ class BillTableDT(ThirdPartyMixin, BaseDatatableView):
             return super(BillTableDT, self).render_column(row, column)
 
 
-class ClientBillTableDT(BillTableDT):
+class ClientBillInCreationTableDT(BillTableDT):
     """Client Bill tables backend for datatables"""
     columns = ("bill_id", "lead", "responsible", "creation_date", "state", "amount", "amount_with_vat", "comment")
     order_columns = columns
@@ -72,4 +72,14 @@ class ClientBillTableDT(BillTableDT):
             responsibles = Consultant.objects.filter(id__in=responsibles)
             return ", ".join([unicode(c) for c in responsibles])
         else:
-            return super(ClientBillTableDT, self).render_column(row, column)
+            return super(ClientBillInCreationTableDT, self).render_column(row, column)
+
+
+class ClientBillArchiveTableDT(BillTableDT):
+    """Client bill archive"""
+    columns = ("bill_id", "lead","creation_date", "state", "amount", "amount_with_vat", "comment")
+    order_columns = columns
+    max_display_length = 20
+
+    def get_initial_queryset(self):
+        return ClientBill.objects.exclude(state__in=("0_DRAFT", "0_PROPOSED"))

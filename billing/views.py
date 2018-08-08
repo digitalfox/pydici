@@ -299,6 +299,15 @@ def client_bills_in_creation(request):
                   {"data_url": urlresolvers.reverse('client_bills_in_creation_DT'),
                    "user": request.user})
 
+
+@pydici_non_public
+def client_bills_archive(request):
+    """Review all client bill """
+    return render(request, "billing/client_bills_archive.html",
+                  {"data_url": urlresolvers.reverse('client_bills_archive'),
+                   "user": request.user})
+
+
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 10)
