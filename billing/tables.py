@@ -13,7 +13,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 from core.utils import to_int_or_round
 from crm.views import ThirdPartyMixin
-from billing.models import ClientBill
+from billing.models import ClientBill, SupplierBill
 from people.models import Consultant
 
 
@@ -83,3 +83,27 @@ class ClientBillArchiveTableDT(BillTableDT):
 
     def get_initial_queryset(self):
         return ClientBill.objects.exclude(state__in=("0_DRAFT", "0_PROPOSED"))
+
+
+class SupplierBillArchiveTableDT(BillTableDT):
+    """Supplier bill archive"""
+    columns = ("bill_id", "supplier", "lead","creation_date", "state", "amount", "amount_with_vat", "comment")
+    order_columns = columns
+    max_display_length = 20
+
+    def get_initial_queryset(self):
+        return SupplierBill.objects.all()
+
+    def filter_queryset(self, qs):
+        """ simple search on some attributes"""
+        search = self.request.GET.get(u'search[value]', None)
+        if search:
+            qs = qs.filter(Q(bill_id__icontains=search) |
+                           Q(lead__deal_id__icontains=search) |
+                           Q(lead__name__icontains=search) |
+                           Q(lead__responsible__name__icontains=search) |
+                           Q(lead__client__organisation__company__name__icontains=search) |
+                           Q(supplier__company__name__icontains=search) |
+                           Q(supplier__contact__name__icontains=search)
+                           )
+        return qs
