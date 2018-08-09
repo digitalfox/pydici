@@ -144,13 +144,18 @@ class ClientBill(AbstractBill):
             taxes[detail.vat] = taxes.get(detail.vat, 0) + (detail.amount_with_vat - detail.amount)
         return taxes.items()
 
-    def expensesTotal(self):
-        """Returns the total sum (with taxes) of all expenses of this bill"""
+    def expensesTotalWithTaxes(self):
+        """Returns the total sum (with added taxes) of all expenses of this bill"""
         return sum([b.amount_with_vat for b in self.billexpense_set.all()])
+
+    def expensesTotal(self):
+        """Returns the total sum (without added taxes) of all expenses of this bill"""
+        return sum([b.amount for b in self.billexpense_set.all()])
+
 
     def totalWithTaxesAndExpenses(self):
         """Returns total of this bill with all taxes and expenses"""
-        return (self.amount_with_vat or 0) + self.expensesTotal()
+        return (self.amount_with_vat or 0) + self.expensesTotalWithTaxes()
 
     def save(self, *args, **kwargs):
         compute_bill(self)
@@ -231,6 +236,7 @@ class BillExpense(models.Model):
     bill = models.ForeignKey(ClientBill)
     expense = models.ForeignKey(Expense, verbose_name=_(u"Expense"))
     expense_date = models.DateField(_(u"Expense date"), null=True)
+    amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, null=True, blank=True)
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, null=True, blank=True)
     label = models.CharField(_(u"Description"), max_length=200, blank=True, null=True)
 
@@ -241,6 +247,12 @@ class BillExpense(models.Model):
             self.amount_with_vat = self.expense.amount
         if not self.label: # Use expense description
             self.label = self.expense.description
+        # compute amount with VAT if amount is defined
+        if self.amount:
+            self.amount_with_vat = self.amount * (1 + self.bill.vat / 100)
+        # compute amount if not defined and amount with VAT is defined
+        elif self.amount_with_vat:
+            self.amount = self.amount_with_vat / (1 + self.bill.vat / 100)
 
         super(BillExpense, self).save(*args, **kwargs)
 

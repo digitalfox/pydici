@@ -61,10 +61,16 @@ def compute_bill(bill):
                 amount += bill_detail.amount
             if bill_detail.amount_with_vat:
                 amount_with_vat += bill_detail.amount_with_vat
+
+        # Add expenses
+        amount += bill.expensesTotal()
+        amount_with_vat += bill.expensesTotalWithTaxes()
+
         if amount != 0:
             bill.amount = amount
         if amount_with_vat != 0:
             bill.amount_with_vat = amount_with_vat
+
     # Automatically compute amount with VAT if not defined
     if not bill.amount_with_vat:
         if bill.amount:
