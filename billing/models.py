@@ -6,11 +6,13 @@ Database access layer for pydici billing module
 """
 from datetime import date, datetime, timedelta
 from time import strftime
+
 from os.path import join, dirname
 import os.path
 from decimal import Decimal
 
 from django.db import models
+from django.db.models import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core.files.storage import FileSystemStorage
@@ -150,12 +152,11 @@ class ClientBill(AbstractBill):
 
     def expensesTotal(self):
         """Returns the total sum (without added taxes) of all expenses of this bill"""
-        return sum([b.amount for b in self.billexpense_set.all()])
+        return self.billexpense_set.aggregate(Sum("amount")).values()[0] or 0
 
-
-    def totalWithTaxesAndExpenses(self):
-        """Returns total of this bill with all taxes and expenses"""
-        return (self.amount_with_vat or 0) + self.expensesTotalWithTaxes()
+    def prestationsTotal(self):
+        """Returns total of this bill without taxes and expenses"""
+        return self.billdetail_set.aggregate(Sum("amount")).values()[0] or 0
 
     def save(self, *args, **kwargs):
         if self.state in ("0_DRAFT", "0_PROPOSED"):
