@@ -206,8 +206,8 @@ class BillDetail(models.Model):
     mission = models.ForeignKey(Mission)
     month = models.DateField(null=True)
     consultant = models.ForeignKey(Consultant, null=True, blank=True)
-    quantity = models.FloatField(_("Quantity"), blank=True, null=True)
-    unit_price = models.DecimalField(_(u"Unit price (€)"), max_digits=10, decimal_places=2, blank=True, null=True)
+    quantity = models.FloatField(_("Quantity"))
+    unit_price = models.DecimalField(_(u"Unit price (€)"), max_digits=10, decimal_places=2)
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
                                           null=True)
