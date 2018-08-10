@@ -52,7 +52,7 @@ def get_billing_info(timesheet_data):
 
 
 def compute_bill(bill):
-    """Compute bill amount according to its details and save it"""
+    """Compute bill amount according to its details. Should only be called by clientBill model save method"""
     if bill.state in ("0_DRAFT", "0_PROPOSED"):
         amount = 0
         amount_with_vat = 0

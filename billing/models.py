@@ -158,7 +158,8 @@ class ClientBill(AbstractBill):
         return (self.amount_with_vat or 0) + self.expensesTotalWithTaxes()
 
     def save(self, *args, **kwargs):
-        compute_bill(self)
+        if self.state in ("0_DRAFT", "0_PROPOSED"):
+            compute_bill(self)
         # Automatically set payment date for paid bills
         if self.state == "2_PAID" and not self.payment_date:
             self.payment_date = date.today()

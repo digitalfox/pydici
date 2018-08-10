@@ -183,6 +183,7 @@ def client_bill(request, bill_id=None):
                 billDetailFormSet.save()
             if billExpenseFormSet:
                 billExpenseFormSet.save()
+            bill.save()  # Again, to take into account modified details.
             if bill.state in ("0_DRAFT", "0_PROPOSED"):
                 success_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
             else:
