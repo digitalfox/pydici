@@ -7,6 +7,9 @@ Database access layer for pydici expense module
 
 from time import strftime
 from os.path import join, dirname, split
+import mimetypes
+from cStringIO import StringIO
+from base64 import b64encode
 
 from django.db import models
 from django.core.files.storage import FileSystemStorage
@@ -105,13 +108,34 @@ class Expense(models.Model):
         else:
             return _("unknown")
 
-
     def transitions(self, user):
         """expense allowed transitions in workflows for given user"""
         if self.workflow_in_progress:
             return wf.get_allowed_transitions(self, user)
         else:
             return []
+
+    def receipt_data(self):
+        """Return receipt data in formated way to be included inline in a html page"""
+        response = ""
+        if self.receipt:
+            content_type = self.receipt_content_type()
+            data = StringIO()
+            for chunk in self.receipt.chunks():
+                data.write(chunk)
+
+            data = b64encode(data.getvalue())
+            if content_type == "application/pdf":
+                response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
+            else:
+                response = "<img src='data:%s;base64,%s'>" % (content_type, data)
+
+        return response
+
+    def receipt_content_type(self):
+        if self.receipt:
+            return mimetypes.guess_type(self.receipt.name)[0] or "application/stream"
+
 
     def get_absolute_url(self):
         return reverse('expense', args=[str(self.id)])

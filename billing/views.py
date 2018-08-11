@@ -9,7 +9,7 @@ from datetime import date, timedelta
 import mimetypes
 from collections import defaultdict
 import json
-
+from cStringIO import StringIO
 
 from django.shortcuts import render
 from django.core import urlresolvers
@@ -21,6 +21,8 @@ from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
 
 from django_weasyprint import PDFTemplateView
+from django_weasyprint.views import PDFTemplateResponse
+from PyPDF2 import PdfFileMerger, PdfFileReader
 
 from billing.utils import get_billing_info, generate_bill_pdf, create_client_bill_from_timesheet, create_client_bill_from_proportion
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
@@ -143,14 +145,38 @@ class Bill(PydiciNonPublicdMixin, TemplateView):
         try:
             bill = ClientBill.objects.get(id=kwargs.get("bill_id"))
             context["bill"] = bill
+            context["expenses_image_receipt"] = []
+            for expenseDetail in bill.billexpense_set.all():
+                if expenseDetail.expense.receipt_content_type() != "application/pdf":
+                    context["expenses_image_receipt"].append(expenseDetail.expense.receipt_data())
         except ClientBill.DoesNotExist:
             bill = None
         return context
 
 
-class BillPdf(Bill, PDFTemplateView):
-    def get_filename(self):
+class ExpensePDFTemplateResponse(PDFTemplateResponse):
+    """TemplateResponse override to merge """
+    @property
+    def rendered_content(self):
+        target = StringIO()
+        bill = self.context_data["bill"]
+        pdf_content = super(ExpensePDFTemplateResponse, self).rendered_content
+        pdf_stringio = StringIO()
+        pdf_stringio.write(pdf_content)
+        merger = PdfFileMerger()
+        merger.append(PdfFileReader(pdf_stringio))
+        for billExpense in bill.billexpense_set.all():
+            if billExpense.expense.receipt_content_type() == "application/pdf":
+                merger.append(PdfFileReader(billExpense.expense.receipt.file))
+        merger.write(target)
+        target.seek(0)  # Be kind, rewind
+        return target
 
+
+class BillPdf(Bill, PDFTemplateView):
+    response_class = ExpensePDFTemplateResponse
+
+    def get_filename(self):
         bill = self.get_context_data(**self.kwargs)["bill"]
         try:
             filename = u"%s-%s.pdf" % (bill.lead.deal_id, bill.bill_id)

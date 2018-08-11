@@ -7,9 +7,7 @@ Pydici expense views. Http request are processed here.
 
 from datetime import date, timedelta
 import json
-import mimetypes
 from cStringIO import StringIO
-from base64 import b64encode
 
 import permissions.utils as perm
 import workflows.utils as wf
@@ -128,26 +126,17 @@ def expenses(request, expense_id=None, clone_from=None):
 def expense_receipt(request, expense_id):
     """Returns expense receipt if authorize to"""
     data = StringIO()
-    content_type = ""
-
     try:
         expense = Expense.objects.get(id=expense_id)
+        content_type = expense.receipt_content_type()
         if expense.user == request.user or\
            utils.has_role(request.user, "expense paymaster") or\
            utils.has_role(request.user, "expense manager"):
-            if expense.receipt:
-                content_type = mimetypes.guess_type(expense.receipt.name)[0] or "application/stream"
-                for chunk in expense.receipt.chunks():
-                    data.write(chunk)
+            data = expense.receipt_data()
     except (Expense.DoesNotExist, OSError):
         pass
 
-    data = b64encode(data.getvalue())
-    if content_type=="application/pdf":
-        response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
-    else:
-        response = "<img src='data:%s;base64,%s'>" % (content_type, data)
-    return HttpResponse(response)
+    return HttpResponse(data)
 
 
 @pydici_non_public
