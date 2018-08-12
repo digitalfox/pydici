@@ -11,10 +11,13 @@ from collections import defaultdict
 import json
 from cStringIO import StringIO
 
+from django.core.files.base import ContentFile
+from os.path import basename
+
 from django.shortcuts import render
 from django.core import urlresolvers
 from django.utils.translation import ugettext as _
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
 from django.db.models import Sum, Q, F
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
@@ -24,7 +27,7 @@ from django_weasyprint import PDFTemplateView
 from django_weasyprint.views import PDFTemplateResponse
 from PyPDF2 import PdfFileMerger, PdfFileReader
 
-from billing.utils import get_billing_info, generate_bill_pdf, create_client_bill_from_timesheet, create_client_bill_from_proportion
+from billing.utils import get_billing_info, create_client_bill_from_timesheet, create_client_bill_from_proportion, bill_pdf_filename
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
@@ -129,7 +132,8 @@ def bill_file(request, bill_id=0, nature="client"):
         else:
             bill = SupplierBill.objects.get(id=bill_id)
         if bill.bill_file:
-            response['Content-Type'] = mimetypes.guess_type(bill.bill_file.name)[0] or "application/stream"
+            response["Content-Type"] = mimetypes.guess_type(bill.bill_file.name)[0] or "application/stream"
+            response["Content-Disposition"] = "attachment; filename='%s'" % basename(bill.bill_file.name)
             for chunk in bill.bill_file.chunks():
                 response.write(chunk)
     except (ClientBill.DoesNotExist, SupplierBill.DoesNotExist, OSError):
@@ -178,12 +182,7 @@ class BillPdf(Bill, PDFTemplateView):
 
     def get_filename(self):
         bill = self.get_context_data(**self.kwargs)["bill"]
-        try:
-            filename = u"%s-%s.pdf" % (bill.lead.deal_id, bill.bill_id)
-        except ValueError:
-            # Incomplete bill, we still want to generate the pdf
-            filename = "bill.pdf"
-        return filename
+        return bill_pdf_filename(bill)
 
 
 def client_bill(request, bill_id=None):
@@ -215,7 +214,16 @@ def client_bill(request, bill_id=None):
             else:
                 success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
                 if not bill.bill_file:
-                    generate_bill_pdf(bill, pydici.settings.MEDIA_ROOT)
+                    fake_http_request = HttpRequest()
+                    fake_http_request.user = request.user
+                    fake_http_request.method = "GET"
+                    fake_http_request.META = request.META
+                    response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
+                    pdf = response.rendered_content.read()
+                    filename = bill_pdf_filename(bill)
+                    content = ContentFile(pdf, name=filename)
+                    bill.bill_file.save(filename, content)
+                    bill.save()
             return HttpResponseRedirect(success_url)
     else:
         if bill:

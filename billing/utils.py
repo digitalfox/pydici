@@ -77,17 +77,6 @@ def compute_bill(bill):
             bill.amount_with_vat = bill.amount * (1 + bill.vat / 100)
 
 
-def generate_bill_pdf(bill, url):
-    """Create pdf and attached it to bill object"""
-    template = get_template("billing/bill.html")
-    context = Context({"bill": bill})
-    html = template.render(context)
-    pdf = weasyprint.HTML(string=html, base_url=url).write_pdf()
-    content = ContentFile(pdf)
-    bill.bill_file.save(u"generated pdf", content)
-    bill.save()
-
-
 def create_client_bill_from_timesheet(mission, month):
     """Create (and return) a bill and bill detail for given mission from timesheet of given month"""
     ClientBill = apps.get_model("billing", "clientbill")
@@ -115,3 +104,13 @@ def create_client_bill_from_proportion(mission, proportion):
     billDetail.save()
     compute_bill(bill)  # update bill amount according to its details
     return bill
+
+
+def bill_pdf_filename(bill):
+    """Nice name for generated pdf file"""
+    try:
+        filename = u"%s-%s.pdf" % (bill.lead.deal_id, bill.bill_id)
+    except ValueError:
+        # Incomplete bill, we still want to generate the pdf
+        filename = "bill.pdf"
+    return filename
