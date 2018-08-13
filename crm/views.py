@@ -18,7 +18,6 @@ from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core import urlresolvers
 from django.utils.decorators import method_decorator
-from django.utils.safestring import mark_for_escaping
 from django.contrib.auth.decorators import permission_required
 from django.utils.safestring import mark_safe
 from django.template.loader import get_template
@@ -30,9 +29,8 @@ from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactFo
     AdministrativeContactForm, BusinessBrokerForm, SupplierForm
 from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
-from leads.tables import ClientCompanyLeadTableDT
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
-from core.utils import sortedValues, previousMonth, COLORS
+from core.utils import COLORS
 from billing.models import ClientBill
 
 
