@@ -22,6 +22,7 @@ from django.db.models import Sum, Q, F
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
+from django.contrib import messages
 
 from django_weasyprint import PDFTemplateView
 from django_weasyprint.views import PDFTemplateResponse
@@ -257,7 +258,25 @@ def client_bill(request, bill_id=None):
                    "expense_formset": billExpenseFormSet,
                    "expense_formset_helper": BillExpenseFormSetHelper(),
                    "bill_id": bill.id if bill else None,
+                   "can_delete": bill.state in ("0_DRAFT", "0_PROPOSED") if bill else False,
                    "user": request.user})
+
+def clientbill_delete(request, bill_id):
+    """Delete client bill in early stage"""
+    redirect_url = urlresolvers.reverse("billing.views.client_bills_in_creation")
+    try:
+        bill = ClientBill.objects.get(id=bill_id)
+        if bill.state in ("0_DRAFT", "0_PROPOSED"):
+            bill.delete()
+            messages.add_message(request, messages.INFO, _("Bill removed successfully"))
+        else:
+            messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
+            redirect_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
+    except Exception, e:
+        print(e)
+        messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
+
+    return HttpResponseRedirect(redirect_url)
 
 
 @pydici_non_public
