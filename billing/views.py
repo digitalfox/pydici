@@ -215,10 +215,8 @@ def client_bill(request, bill_id=None):
             else:
                 success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
                 if not bill.bill_file:
-                    fake_http_request = HttpRequest()
-                    fake_http_request.user = request.user
+                    fake_http_request = request
                     fake_http_request.method = "GET"
-                    fake_http_request.META = request.META
                     response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
                     pdf = response.rendered_content.read()
                     filename = bill_pdf_filename(bill)
