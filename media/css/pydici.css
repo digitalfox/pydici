@@ -83,6 +83,21 @@ h4 { font-size:14px; }
   color: #843534;
 }
 
+.bill-total-border-left {
+     border-left: 2px solid #ddd !important;
+}
+.bill-total-border-right {
+     border-right: 2px solid #ddd !important;
+}
+.bill-total-border-top {
+     border-top: 2px solid #ddd !important;
+}
+.bill-total-border-bottom {
+     border-bottom: 2px solid #ddd !important;
+}
+.no-top-border {
+    border-top:0px !important;
+}
 
 form { margin:0; padding:0; }
 

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-21 19:18+0200\n"
-"PO-Revision-Date: 2018-08-21 19:18+0100\n"
+"POT-Creation-Date: 2018-08-21 19:55+0200\n"
+"PO-Revision-Date: 2018-08-21 19:55+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -787,7 +787,7 @@ msgstr "Utilisez une extension valide (%s)"
 msgid "You must define a lead if expense is chargeable"
 msgstr "Vous devez définir une affaire si les frais sont refacturables"
 
-#: expense/forms.py:97 expense/models.py:145 templates/billing/bill.html:79
+#: expense/forms.py:97 expense/models.py:145
 #: templates/core/_pydici_menu.html:78 templates/core/_pydici_menu.html:79
 #: templates/core/_pydici_menu.html:112 templates/staffing/mission.html:43
 msgid "Expenses"
@@ -831,11 +831,11 @@ msgstr "Refacturable"
 
 #: expense/models.py:86 staffing/models.py:328 staffing/models.py:339
 #: staffing/models.py:365 staffing/models.py:381
-#: templates/billing/bill.html:101
+#: templates/billing/bill.html:105
 msgid "Date"
 msgstr "Date"
 
-#: expense/models.py:89 expense/tables.py:164 templates/billing/bill.html:103
+#: expense/models.py:89 expense/tables.py:164 templates/billing/bill.html:107
 #: templates/expense/expense_archive.html:20
 #: templates/expense/expense_list.html:18
 #: templates/expense/expense_payments.html:44
@@ -1646,8 +1646,7 @@ msgid "Consultants"
 msgstr "Consultants"
 
 #: staffing/views.py:1067 templates/billing/_lead_billing.html:33
-#: templates/billing/bill.html:84 templates/billing/bill.html.py:115
-#: templates/leads/lead_detail.html:225
+#: templates/billing/bill.html:119 templates/leads/lead_detail.html:225
 #: templates/staffing/mission_timesheet.html:39
 #: templates/staffing/mission_timesheet.html:110
 #: templates/staffing/prod_report.html:72
@@ -1889,27 +1888,35 @@ msgstr "TVA (%%)"
 msgid "Amount inc. taxes €"
 msgstr "Montant (€ TTC)"
 
-#: templates/billing/bill.html:69
-msgid "Sub Total without taxes"
-msgstr "Sous total HT"
+#: templates/billing/bill.html:70
+msgid "Sub Total without taxes (€)"
+msgstr "Sous total HT (€)"
 
-#: templates/billing/bill.html:73
+#: templates/billing/bill.html:75
 msgid "VAT"
 msgstr "TVA"
 
-#: templates/billing/bill.html:92
+#: templates/billing/bill.html:82
+msgid "Expenses (€)"
+msgstr "Frais (€)"
+
+#: templates/billing/bill.html:88
+msgid "Total (€)"
+msgstr "Total (€)"
+
+#: templates/billing/bill.html:96
 msgid "Payment due date: "
 msgstr "Date de paiement : "
 
-#: templates/billing/bill.html:98
+#: templates/billing/bill.html:102
 msgid "Expenses details"
 msgstr "Détails des frais"
 
-#: templates/billing/bill.html:102
+#: templates/billing/bill.html:106
 msgid "Expense label"
 msgstr "Frais"
 
-#: templates/billing/bill.html:104
+#: templates/billing/bill.html:108
 msgid "Amount (with VAT)"
 msgstr "Montant (TTC)"
 

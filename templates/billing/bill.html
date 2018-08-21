@@ -66,22 +66,26 @@
 
 <tr><td colspan=6 class="noborder">&nbsp;</td></tr>
 <tr>
-    <td colspan=5 class="text-right noborder"><b>{% trans "Sub Total without taxes" %}</b></td><td class="text-right"><b>{{ bill.prestationsTotal|floatformat:-2 }}</b></td>
+    <td colspan=4 class="no-top-border"></td>
+    <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.prestationsTotal|floatformat:-2 }}</b></td>
 </tr>
 {% for vat, amount in bill.taxes %}
 <tr>
-    <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right"><b>{{ amount|floatformat:-2 }}</b></td>
+    <td colspan=4 class="no-top-border"></td>
+    <td class="text-right bill-total-border-left no-top-border"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ amount|floatformat:-2 }}</b></td>
 </tr>
 {% endfor %}
 {% with bill.expensesTotalWithTaxes as expensesTotalWithTaxes %}
     {% if expensesTotalWithTaxes %}
         <tr>
-            <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "Expenses" %}</b></td><td class="text-right"><b>{{ expensesTotalWithTaxes }}</b></td>
+            <td colspan=4 class="no-top-border"></td>
+            <td class="text-right bill-total-border-left no-top-border"><b>{% trans "Expenses (€)" %}</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ expensesTotalWithTaxes }}</b></td>
         </tr>
     {% endif %}
 {% endwith %}
 <tr>
-    <td colspan=5 class="text-right" style="border-top:0px"><b>{% trans "Total" %}</b></td><td class="text-right"><b>{{ bill.amount_with_vat|floatformat:-2 }}</b></td>
+    <td colspan=4 class="no-top-border"></td>
+    <td class="text-right bill-total-border-left bill-total-border-bottom no-top-border"><b>{% trans "Total (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-bottom no-top-border"><b>{{ bill.amount_with_vat|floatformat:-2 }}</b></td>
 </tr>
 
 </tbody>
