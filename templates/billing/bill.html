@@ -1,5 +1,6 @@
 {% extends "core/pydici.html" %}
 {% load i18n %}
+{% load pydici_filters %}
 
 {% block pydici-menu %}{% endblock %}
 {% block messages %}{% endblock %}
@@ -103,6 +104,7 @@
 <table class="table table-condensed table-stripped">
     <tr>
         <th>{% trans "Date" %}</th>
+        <th>{% trans "Consultant" %}</th>
         <th>{% trans "Expense label" %}</th>
         <th>{% trans "Amount" %}</th>
         <th>{% trans "Amount (with VAT)" %}</th>
@@ -110,6 +112,7 @@
     {% for billExpense in bill.billexpense_set.all %}
         <tr>
             <td> {{ billExpense.expense_date }}</td>
+            <td> {{ billExpense.expense.user.username|link_to_consultant|striptags }}</td>
             <td> {{ billExpense.label }}</td>
             <td> {{ billExpense.amount }} €</td>
             <td> {{ billExpense.amount_with_vat }} €</td>
