@@ -17,13 +17,16 @@
         {{ bill.lead.subsidiary.commercial_name }}<br/>
         {{ bill.lead.subsidiary.billing_address|linebreaksbr }}
         <br/><br/>
-        {% if bill.lead.client_deal_id %}{% trans "Client ref.: " %}{{ bill.lead.client_deal_id }}<br/>{% endif %}
+        {% if bill.lead.client_deal_id %}{% trans "Your ref.: " %}{{ bill.lead.client_deal_id }}<br/>{% endif %}
         {% trans "Our ref.: " %}{{ bill.lead.deal_id }}<br/>
+        <br/>
+        {% if bill.lead.client.contact %}{% trans "Your contact: " %}{{ bill.lead.client.contact }}<br/>{% endif %}
+        {% trans "Our contact: " %}{{ bill.lead.responsible }}<br/>
     </div>
     <div class="col-xs-offset-1 col-xs-6">
         <div class="well"><div class="lead text-uppercase"><strong>{% trans "Bill" %}</strong></div><strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
 
-        <div class="lead">{{ bill.lead.client }}</div>
+        <div class="lead">{{ bill.lead.client.organisation }}</div>
         {{ bill.lead.client.billing_address|linebreaksbr }}
     </div>
 </div>
