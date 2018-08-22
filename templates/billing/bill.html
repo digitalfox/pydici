@@ -33,52 +33,54 @@
 </div>
 <br/><br/>
 <table class="table">
-<thead>
-    <tr><th><small>{% trans "Description" %}</small></th><th class="text-center"><small>{% trans "Quantity" %}</small></th>
-        <th class="text-right"><small>{% trans "Unit Price €" %}</small></th><th class="text-right"><small>{% trans "Amount €" %}</small></th>
-        <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount inc. taxes €" %}</small></th>
-    </tr>
-</thead>
-<tbody>
+    {% if bill.billdetail_set.all %}
+        <thead>
+            <tr><th><small>{% trans "Description" %}</small></th><th class="text-center"><small>{% trans "Quantity" %}</small></th>
+                <th class="text-right"><small>{% trans "Unit Price €" %}</small></th><th class="text-right"><small>{% trans "Amount €" %}</small></th>
+                <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount inc. taxes €" %}</small></th>
+            </tr>
+        </thead>
+        <tbody>
 
-{% regroup bill.billdetail_set.all by mission as detail_list %}
+        {% regroup bill.billdetail_set.all by mission as detail_list %}
 
-{% for detail in detail_list %}
-        <tr><td class="noborder"></td></tr>
-        <tr><td colspan=6 class="text-left noborder"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
-        {% regroup detail.list by month as mission_detail_list %}
-        {% for mission_detail in mission_detail_list %}
-            <tr><td class="noborder"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
-            {% for item in mission_detail.list %}
-                <tr>
-                    {% ifequal item.mission.billing_mode "TIME_SPENT" %}
-                        {% if bill.anonymize_profile %}
-                            <td>{% if item.label %}{{ item.label }}{% else %}{{item.consultant.profil }}{% endif %}</td>
-                        {% else %}
-                            <td>{{ item.consultant|default_if_none:"" }}{% if item.label %} - {{ item.label }}{% endif %}</td>
-                        {% endif %}
-                        <td class="text-center">{{ item.quantity|floatformat:-2 }}</td>
-                    {% else %}
-                        <td>{% trans "Fixed price"%}{% if item.label %} - {{ item.label }}{% endif %}</td>
-                        <td class="text-center">{% widthratio item.quantity 1 100 %} %</td>
-                    {% endifequal %}
-                    <td class="text-right">{{ item.unit_price|floatformat:-2 }}</td>
-                    <td class="text-right">{{ item.amount|floatformat:-2 }}</td><td class="text-right">{{ item.vat|floatformat:-2 }}</td><td class="text-right">{{ item.amount_with_vat|floatformat:-2 }}</td>
-                </tr>
-            {% endfor %}
+        {% for detail in detail_list %}
+                <tr><td class="noborder"></td></tr>
+                <tr><td colspan=6 class="text-left noborder"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
+                {% regroup detail.list by month as mission_detail_list %}
+                {% for mission_detail in mission_detail_list %}
+                    <tr><td class="noborder"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
+                    {% for item in mission_detail.list %}
+                        <tr>
+                            {% ifequal item.mission.billing_mode "TIME_SPENT" %}
+                                {% if bill.anonymize_profile %}
+                                    <td>{% if item.label %}{{ item.label }}{% else %}{{item.consultant.profil }}{% endif %}</td>
+                                {% else %}
+                                    <td>{{ item.consultant|default_if_none:"" }}{% if item.label %} - {{ item.label }}{% endif %}</td>
+                                {% endif %}
+                                <td class="text-center">{{ item.quantity|floatformat:-2 }}</td>
+                            {% else %}
+                                <td>{% trans "Fixed price"%}{% if item.label %} - {{ item.label }}{% endif %}</td>
+                                <td class="text-center">{% widthratio item.quantity 1 100 %} %</td>
+                            {% endifequal %}
+                            <td class="text-right">{{ item.unit_price|floatformat:-2 }}</td>
+                            <td class="text-right">{{ item.amount|floatformat:-2 }}</td><td class="text-right">{{ item.vat|floatformat:-2 }}</td><td class="text-right">{{ item.amount_with_vat|floatformat:-2 }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
         {% endfor %}
-{% endfor %}
 
-<tr><td colspan=6 class="noborder">&nbsp;</td></tr>
-<tr>
-    <td colspan=4 class="no-top-border"></td>
-    <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.prestationsTotal|floatformat:2 }}</b></td>
-</tr>
-{% with bill.expensesTotal as expensesTotal %}
+        <tr><td colspan=6 class="noborder">&nbsp;</td></tr>
+        <tr>
+            <td colspan=4 class="no-top-border"></td>
+            <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.prestationsTotal|floatformat:2 }}</b></td>
+        </tr>
+    {% endif %}
+    {% with bill.expensesTotal as expensesTotal %}
     {% if expensesTotal %}
         <tr>
             <td colspan=4 class="no-top-border"></td>
-            <td class="text-right bill-total-border-left no-top-border"><b>{% trans "Expenses (€)" %}</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ expensesTotal|floatformat:2 }}</b></td>
+            <td class="text-right bill-total-border-left {% if bill.billdetail_set.all%}no-top-border{% endif %}"><b>{% trans "Expenses (€)" %}</b></td><td class="text-right bill-total-border-right {% if bill.billdetail_set.all%}no-top-border{% endif %}"><b>{{ expensesTotal|floatformat:2 }}</b></td>
         </tr>
     {% endif %}
 {% endwith %}
