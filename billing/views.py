@@ -13,6 +13,7 @@ from cStringIO import StringIO
 
 from django.core.files.base import ContentFile
 from os.path import basename
+import logging
 
 from django.shortcuts import render
 from django.core import urlresolvers
@@ -23,6 +24,11 @@ from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
+
+# Silent weasyprint logger
+logger = logging.getLogger("weasyprint")
+if not logger.handlers:
+    logger.addHandler(logging.NullHandler())
 
 from django_weasyprint import PDFTemplateView
 from django_weasyprint.views import PDFTemplateResponse
@@ -40,7 +46,6 @@ from core.utils import COLORS, sortedValues, nextMonth, previousMonth
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature
 from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
 from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper
-import pydici.settings
 
 
 @pydici_non_public

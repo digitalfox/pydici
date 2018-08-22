@@ -7,14 +7,8 @@ appropriate to live in Billing models or view
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.template.loader import get_template
-from django.template import Context
-from django.core.files.base import ContentFile
 from django.apps import apps
 from django.db.models import Sum
-
-import weasyprint
-from datetime import datetime
 
 from staffing.models import Mission
 from people.models import Consultant
