@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='lead',
             name='administrative_notes',
-            field=models.TextField(verbose_name='Admninistrative notes', blank=True),
+            field=models.TextField(verbose_name='Administrative notes', blank=True),
         ),
     ]
