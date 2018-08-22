@@ -24,6 +24,8 @@ from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import permission_required
 
 # Silent weasyprint logger
 logger = logging.getLogger("weasyprint")
@@ -119,6 +121,7 @@ def bill_payment_delay(request):
 
 @pydici_non_public
 @pydici_feature("management")
+@permission_required("billing.change_clientbill")
 def mark_bill_paid(request, bill_id):
     """Mark the given bill as paid"""
     bill = ClientBill.objects.get(id=bill_id)
@@ -163,6 +166,10 @@ class Bill(PydiciNonPublicdMixin, TemplateView):
             bill = None
         return context
 
+    @method_decorator(permission_required("billing.change_clientbill"))
+    def dispatch(self, *args, **kwargs):
+        return super(Bill, self).dispatch(*args, **kwargs)
+
 
 class ExpensePDFTemplateResponse(PDFTemplateResponse):
     """TemplateResponse override to merge """
@@ -191,6 +198,8 @@ class BillPdf(Bill, PDFTemplateView):
         return bill_pdf_filename(bill)
 
 
+@pydici_non_public
+@pydici_feature("management")
 def client_bill(request, bill_id=None):
     billDetailFormSet = None
     billExpenseFormSet = None
@@ -266,6 +275,9 @@ def client_bill(request, bill_id=None):
                    "can_preview": bill.state in wip_status if bill else False,
                    "user": request.user})
 
+
+@pydici_non_public
+@pydici_feature("management")
 def clientbill_delete(request, bill_id):
     """Delete client bill in early stage"""
     redirect_url = urlresolvers.reverse("billing.views.client_bills_in_creation")
