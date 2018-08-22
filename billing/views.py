@@ -203,9 +203,10 @@ def client_bill(request, bill_id=None):
         bill = None
     BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, formset=BillDetailInlineFormset, form=BillDetailForm, fields="__all__")
     BillExpenseFormSet = inlineformset_factory(ClientBill, BillExpense, formset=BillExpenseInlineFormset, form=BillExpenseForm, fields="__all__")
+    wip_status = ("0_DRAFT", "0_PROPOSED")
     if request.POST:
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
-        if bill and bill.state in ("0_DRAFT", "0_PROPOSED"):
+        if bill and bill.state in wip_status:
             billDetailFormSet = BillDetailFormSet(request.POST, instance=bill)
             billExpenseFormSet = BillExpenseFormSet(request.POST, instance=bill)
         if form.is_valid() and (billDetailFormSet is None or billDetailFormSet.is_valid()) and (billExpenseFormSet is None or billExpenseFormSet.is_valid()):
@@ -215,7 +216,7 @@ def client_bill(request, bill_id=None):
             if billExpenseFormSet:
                 billExpenseFormSet.save()
             bill.save()  # Again, to take into account modified details.
-            if bill.state in ("0_DRAFT", "0_PROPOSED"):
+            if bill.state in wip_status:
                 success_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
             else:
                 success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
@@ -232,7 +233,7 @@ def client_bill(request, bill_id=None):
     else:
         if bill:
             form = ClientBillForm(instance=bill)
-            if bill.state in ("0_DRAFT", "0_PROPOSED"):
+            if bill.state in wip_status:
                 billDetailFormSet = BillDetailFormSet(instance=bill)
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
         else:
@@ -261,7 +262,8 @@ def client_bill(request, bill_id=None):
                    "expense_formset": billExpenseFormSet,
                    "expense_formset_helper": BillExpenseFormSetHelper(),
                    "bill_id": bill.id if bill else None,
-                   "can_delete": bill.state in ("0_DRAFT", "0_PROPOSED") if bill else False,
+                   "can_delete": bill.state in wip_status if bill else False,
+                   "can_preview": bill.state in wip_status if bill else False,
                    "user": request.user})
 
 def clientbill_delete(request, bill_id):
