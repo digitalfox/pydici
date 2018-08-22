@@ -106,13 +106,20 @@ class ClientForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ClientForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column(AppendedText("organisation", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation")),
-                                               "expectations", AppendedText("contact", "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add")),
-                                               "alignment", css_class="col-md-6"),
-                                        getAddressColumn(),
-                                        css_class="row"),
-                                    "active",
-                                    self.submit)
+        self.helper.layout = Layout(Div(
+            Column(
+                FieldWithButtons(
+                    "organisation",
+                    StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm.views.clientOrganisation"))),
+                "expectations",
+                FieldWithButtons("contact",
+                                 StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add"))),
+                "alignment",
+                css_class="col-md-6"),
+            getAddressColumn(),
+            css_class="row"),
+            "active",
+            self.submit)
         self.inline_helper.layout = Layout(Div(Column("expectations",
                                                     FieldWithButtons("organisation",
                                                         StrictButton("""<a href='#' onclick='$("#organisationForm").show("slow"); $("#organisation_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="organisation_input_group"),
