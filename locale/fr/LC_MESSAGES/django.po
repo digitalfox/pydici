@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-22 11:44+0200\n"
-"PO-Revision-Date: 2018-08-22 11:43+0100\n"
+"POT-Creation-Date: 2018-08-22 14:58+0200\n"
+"PO-Revision-Date: 2018-08-22 14:58+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -47,7 +47,7 @@ msgid "When a consultant is created"
 msgstr "Quand un consultant est créé"
 
 #: actionset/models.py:25 actionset/models.py:46 crm/models.py:44
-#: crm/models.py:141 crm/models.py:448 expense/models.py:47 leads/models.py:57
+#: crm/models.py:141 crm/models.py:449 expense/models.py:47 leads/models.py:57
 #: leads/views.py:210 people/models.py:30 people/models.py:268
 #: templates/crm/clientcompany_detail.html:389 templates/leads/review.html:26
 #: templates/leads/review.html.py:61 templates/people/consultant.html:49
@@ -524,7 +524,7 @@ msgstr "affaire"
 msgid "amount"
 msgstr "montant"
 
-#: core/views.py:336 core/views.py:354 crm/models.py:430 crm/models.py:459
+#: core/views.py:336 core/views.py:354 crm/models.py:431 crm/models.py:460
 #: templates/core/risks.html:41 templates/crm/_contact_list.html:10
 #: templates/crm/contact_list.html:13
 msgid "company"
@@ -568,18 +568,22 @@ msgstr "Adresse de facturation"
 msgid "%s (inactive)"
 msgstr "%s (inactif)"
 
-#: crm/forms.py:141 crm/models.py:135
+#: crm/forms.py:124
+msgid "Leave blank to use standard name"
+msgstr "Laissez vide pour utiliser le nom standard"
+
+#: crm/forms.py:149 crm/models.py:135
 msgid "Client organisation"
 msgstr "Département"
 
-#: crm/forms.py:163 crm/models.py:105
+#: crm/forms.py:171 crm/models.py:105
 #: templates/crm/clientcompany_detail.html:390
 #: templates/staffing/mission_contacts.html:13
 msgid "Company"
 msgstr "Société"
 
-#: crm/forms.py:181 crm/models.py:259 crm/models.py:282 crm/models.py:310
-#: crm/models.py:431 crm/models.py:464
+#: crm/forms.py:189 crm/models.py:259 crm/models.py:282 crm/models.py:310
+#: crm/models.py:432 crm/models.py:465
 #: templates/crm/_clientcompany_rates_margin.html:13
 #: templates/crm/_clientcompany_rates_margin.html:40
 #: templates/leads/lead_detail.html:120
@@ -659,7 +663,7 @@ msgstr "Téléphone mobile"
 msgid "Fax"
 msgstr "Fax"
 
-#: crm/models.py:146 crm/models.py:460
+#: crm/models.py:146 crm/models.py:461
 #: templates/crm/clientcompany_detail.html:391
 #: templates/staffing/mission_contacts.html:14
 msgid "Function"
@@ -729,7 +733,11 @@ msgstr "Perspectives"
 msgid "Strategic alignment"
 msgstr "Alignement stratégique"
 
-#: crm/models.py:424 leads/models.py:71 leads/views.py:210
+#: crm/models.py:314
+msgid "Name used for billing"
+msgstr "Nom utilisé pour la facturation"
+
+#: crm/models.py:425 leads/models.py:71 leads/views.py:210
 #: templates/billing/bill_review.html:20 templates/billing/bill_review.html:68
 #: templates/billing/bill_review.html:116
 #: templates/billing/bill_review.html:165
@@ -742,23 +750,23 @@ msgstr "Alignement stratégique"
 msgid "Client"
 msgstr "Client"
 
-#: crm/models.py:442
+#: crm/models.py:443
 msgid "Mission contact"
 msgstr "Contact mission"
 
-#: crm/models.py:461
+#: crm/models.py:462
 msgid "Phone Switchboard"
 msgstr "Standard téléphonique"
 
-#: crm/models.py:462
+#: crm/models.py:463
 msgid "Generic email"
 msgstr "Courriel générique"
 
-#: crm/models.py:463
+#: crm/models.py:464
 msgid "Generic fax"
 msgstr "Fax générique"
 
-#: crm/models.py:496
+#: crm/models.py:497
 msgid "Administrative contact"
 msgstr "Contact administratif"
 
@@ -835,11 +843,11 @@ msgstr "Refacturable"
 
 #: expense/models.py:86 staffing/models.py:328 staffing/models.py:339
 #: staffing/models.py:365 staffing/models.py:381
-#: templates/billing/bill.html:110
+#: templates/billing/bill.html:112
 msgid "Date"
 msgstr "Date"
 
-#: expense/models.py:89 expense/tables.py:164 templates/billing/bill.html:113
+#: expense/models.py:89 expense/tables.py:164 templates/billing/bill.html:115
 #: templates/expense/expense_archive.html:20
 #: templates/expense/expense_list.html:18
 #: templates/expense/expense_payments.html:44
@@ -864,7 +872,7 @@ msgid "unknown"
 msgstr "inconnu"
 
 #: expense/tables.py:96 expense/tables.py:163 people/models.py:239
-#: staffing/views.py:1141 templates/billing/bill.html:111
+#: staffing/views.py:1141 templates/billing/bill.html:113
 #: templates/expense/expense_archive.html:16
 #: templates/expense/expense_payments.html:43
 #: templates/staffing/mission.html:121
@@ -1651,7 +1659,7 @@ msgid "Consultants"
 msgstr "Consultants"
 
 #: staffing/views.py:1067 templates/billing/_lead_billing.html:33
-#: templates/billing/bill.html:126 templates/leads/lead_detail.html:225
+#: templates/billing/bill.html:128 templates/leads/lead_detail.html:225
 #: templates/staffing/mission_timesheet.html:39
 #: templates/staffing/mission_timesheet.html:110
 #: templates/staffing/prod_report.html:72
@@ -1909,19 +1917,19 @@ msgstr "TVA"
 msgid "Total (€)"
 msgstr "Total (€)"
 
-#: templates/billing/bill.html:101
+#: templates/billing/bill.html:103
 msgid "Payment due date: "
 msgstr "Date de paiement : "
 
-#: templates/billing/bill.html:107
+#: templates/billing/bill.html:109
 msgid "Expenses details"
 msgstr "Détails des frais"
 
-#: templates/billing/bill.html:112
+#: templates/billing/bill.html:114
 msgid "Expense label"
 msgstr "Frais"
 
-#: templates/billing/bill.html:114
+#: templates/billing/bill.html:116
 msgid "Amount (with VAT)"
 msgstr "Montant (TTC)"
 
