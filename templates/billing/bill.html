@@ -52,7 +52,11 @@
             {% for item in mission_detail.list %}
                 <tr>
                     {% ifequal item.mission.billing_mode "TIME_SPENT" %}
-                        <td>{{ item.consultant|default_if_none:"" }}{% if item.label %} - {{ item.label }}{% endif %}</td>
+                        {% if bill.anonymize_profile %}
+                            <td>{% if item.label %}{{ item.label }}{% else %}{{item.consultant.profil }}{% endif %}</td>
+                        {% else %}
+                            <td>{{ item.consultant|default_if_none:"" }}{% if item.label %} - {{ item.label }}{% endif %}</td>
+                        {% endif %}
                         <td class="text-center">{{ item.quantity|floatformat:-2 }}</td>
                     {% else %}
                         <td>{% trans "Fixed price"%}{% if item.label %} - {{ item.label }}{% endif %}</td>

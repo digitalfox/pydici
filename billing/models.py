@@ -132,6 +132,7 @@ class ClientBill(AbstractBill):
     state = models.CharField(_("State"), max_length=30, choices=CLIENT_BILL_STATE, default="0_DRAFT")
     bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path,
                                  storage=BillStorage(nature="client"), null=True, blank=True)
+    anonymize_profile = models.BooleanField(_("Anonymize profile name"), default=False)
 
     def client(self):
         if self.lead.paying_authority:
