@@ -27,7 +27,7 @@
     <div class="col-xs-offset-1 col-xs-6">
         <div class="well"><div class="lead text-uppercase"><strong>{% trans "Bill" %}</strong></div><strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
 
-        <div class="lead">{{ bill.lead.client.organisation }}</div>
+        <div class="lead">{{ bill.lead.client.billing_name|default_if_none:bill.lead.client.organisation }}</div>
         {{ bill.lead.client.billing_address|linebreaksbr }}
     </div>
 </div>

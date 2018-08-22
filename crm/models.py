@@ -311,6 +311,7 @@ class Client(AbstractAddress):
     expectations = models.CharField(max_length=30, choices=EXPECTATIONS, default=EXPECTATIONS[2][0], verbose_name=_("Expectations"))
     alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
     active = models.BooleanField(_("Active"), default=True)
+    billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
 
     def __unicode__(self):
         if self.contact:

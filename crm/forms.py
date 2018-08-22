@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from django.forms.widgets import Textarea
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
-from crispy_forms.layout import Layout, Div, Column, Fieldset, HTML
+from crispy_forms.layout import Layout, Div, Column, Fieldset, HTML, Field
 from crispy_forms.bootstrap import AppendedText, FieldWithButtons, StrictButton, Tab, TabHolder
 
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
@@ -115,21 +115,22 @@ class ClientForm(PydiciCrispyModelForm):
                 FieldWithButtons("contact",
                                  StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add"))),
                 "alignment",
-                css_class="col-md-6"),
+                "billing_name",
+        css_class="col-md-6"),
             getAddressColumn(),
             css_class="row"),
             "active",
             self.submit)
-        self.inline_helper.layout = Layout(Div(Column("expectations",
-                                                    FieldWithButtons("organisation",
-                                                        StrictButton("""<a href='#' onclick='$("#organisationForm").show("slow"); $("#organisation_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="organisation_input_group"),
-                                                    css_class="col-md-6"),
+        self.inline_helper.layout = Layout(Div(Column(Field("billing_name", placeholder=_("Leave blank to use standard name")),
+                                                      FieldWithButtons("organisation",
+                                                                        StrictButton("""<a href='#' onclick='$("#organisationForm").show("slow"); $("#organisation_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="organisation_input_group"),
+                                                      FieldWithButtons("contact",
+                                                                       StrictButton("""<a href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="contact_input_group"),
+                                                      css_class="col-md-6"),
                                                 Column("alignment",
-                                                    FieldWithButtons("contact",
-                                                        StrictButton("""<a href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""), css_id="contact_input_group"),
-                                                    css_class="col-md-6"),
-                                                css_class="row"),
-                                    )
+                                                       "expectations",
+                                                        css_class="col-md-6"),
+                                                css_class="row"))
 
 
 class ClientOrganisationForm(PydiciCrispyModelForm):
