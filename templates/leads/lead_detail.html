@@ -194,6 +194,12 @@
                     {% endfor %}
                 </table>
             </div>
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                {% if lead.administrative_notes %}
+                    <h2>{% trans "Administrative notes" %}</h2>
+                    <div class='well'>{{ lead.administrative_notes|pydici_simple_format }}</div>
+                {% endif %}
+            </div>
         </div>
     </div> {# End of description tab #}
 

@@ -65,10 +65,15 @@ class LeadForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)
         clientPopupUrl = reverse("crm.views.client_organisation_company_popup")
-        self.helper.layout = Layout(TabHolder(Tab(_("Identification"), Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))),
-                                                  FieldWithButtons("client", StrictButton(
+        self.helper.layout = Layout(TabHolder(Tab(_("Identification"),
+                                                  Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-12"),
+                                                  Column(FieldWithButtons("client", StrictButton(
                                                       "<a href='%s' data-remote='false' data-toggle='modal' data-target='#clientModal'><span class='glyphicon glyphicon-plus'></span></a>" % clientPopupUrl)),
-                                                  "subsidiary", "description", Field("action", placeholder=_("Next commercial action to be done"))),
+                                                         css_class="col-md-6"),
+                                                  Column("subsidiary", css_class="col-md-6"),
+                                                  Column("description", css_class="col-md-6"),
+                                                  Column("administrative_notes", css_class="col-md-6"),
+                                                  Column(Field("action", placeholder=_("Next commercial action to be done")), css_class="col-md-6")),
                                               Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
                                                                                       Field("start_date", placeholder=_("Date of the operational start"), css_class="datepicker"),
                                                                                       css_class='col-md-6'),

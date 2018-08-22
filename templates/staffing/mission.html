@@ -69,45 +69,58 @@
              {% else %}
                     <div class="alert alert-info">{% trans "This mission is archived" %}</div>
              {% endif %}
-        
-         
+
          {% if mission.lead %}
             {% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
-            {% include "staffing/_check_mission_billing_mode.html" %}
-            {% include "staffing/_check_mission_rates.html" %}
+            <div class="row">
+                <div class="col-md-12">
+                    {% include "staffing/_check_mission_billing_mode.html" %}
+                    {% include "staffing/_check_mission_rates.html" %}
+                </div>
+            </div>
          {% endif %}
-        
-            <table class="table table-hover table-striped table-condensed">
-                <tr>
-                    <th>{% trans "Type" %}</th><td>{{ mission.get_nature_display }}</td>
-                </tr>
-                <tr>
-                    <th>{% trans "Subsidiary" %}</th><td>{{ mission.subsidiary }}</td>
-                </tr>
-                <tr>
-                    <th>{% trans "Responsible" %}</th><td>{% if mission.responsible %}{% with consultant=mission.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}{% endif %}</td>
-                </tr>
-                
-                <tr>
-                    <th>{% trans "Mission id" %}</th><td>{{ mission.mission_id }}</td>
-                </tr>
-                {% if mission.lead %}
-                    {% if mission.lead.client_deal_id %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-hover table-striped table-condensed">
+                    <tr>
+                        <th>{% trans "Type" %}</th><td>{{ mission.get_nature_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans "Subsidiary" %}</th><td>{{ mission.subsidiary }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans "Responsible" %}</th><td>{% if mission.responsible %}{% with consultant=mission.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}{% endif %}</td>
+                    </tr>
+
+                    <tr>
+                        <th>{% trans "Mission id" %}</th><td>{{ mission.mission_id }}</td>
+                    </tr>
+                    {% if mission.lead %}
+                        {% if mission.lead.client_deal_id %}
+                            <tr>
+                                <th>{% trans "Client lead id" %}</th><td>{{ mission.lead.client_deal_id }}</td>
+                            </tr>
+                        {% endif %}
                         <tr>
-                            <th>{% trans "Client lead id" %}</th><td>{{ mission.lead.client_deal_id }}</td>
+                            <th>{% trans "Billing mode" %}</th><td><div  id="billing_mode-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></td>
                         </tr>
+                        <tr>
+                            <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.probability }} %</div></td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Lead of this mission" %}</th><td><a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></td>
+                        </tr>
+                 {% endif %}
+                </table>
+                </div>
+                <div class="col-md-6">
+                    {% if mission.lead.administrative_notes %}
+                        <h2>{% trans "Administrative notes" %}</h2>
+                        <div class='well'>{{ mission.lead.administrative_notes|pydici_simple_format }}</div>
                     {% endif %}
-                    <tr>
-                        <th>{% trans "Billing mode" %}</th><td><div  id="billing_mode-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></td>
-                    </tr>
-                    <tr>
-                        <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.probability }} %</div></td>
-                    </tr>
-                    <tr>
-                        <th>{% trans "Lead of this mission" %}</th><td><a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></td>
-                    </tr>
-             {% endif %}
-            </table>
+                </div>
+            </div>
             {% if mission.lead.description %}
                     <div class='well'>{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }}</div>
             {% endif %}

@@ -56,6 +56,7 @@ class Lead(models.Model):
            )
     name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)
+    administrative_notes = models.TextField(_("Admninistrative notes"), blank=True)
     action = models.CharField(_("Action"), max_length=2000, blank=True, null=True)
     sales = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
     salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"))
@@ -87,6 +88,7 @@ class Lead(models.Model):
 
     def save(self, force_insert=False, force_update=False):
         self.description = compact_text(self.description)
+        self.administrative_notes= compact_text(self.administrative_notes)
         if self.deal_id == "":
             # First, client company code
             deal_id = unicode(self.client.organisation.company.code)
