@@ -144,6 +144,10 @@ class ClientBill(AbstractBill):
         taxes = {}
         for detail in self.billdetail_set.all():
             taxes[detail.vat] = taxes.get(detail.vat, 0) + (detail.amount_with_vat - detail.amount)
+        for billexpense in self.billexpense_set.all():
+            if not self.vat in taxes:
+                taxes[self.vat] = 0
+            taxes[self.vat] += billexpense.amount_with_vat - billexpense.amount
         return taxes.items()
 
     def expensesTotalWithTaxes(self):
