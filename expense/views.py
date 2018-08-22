@@ -212,7 +212,9 @@ def lead_expenses(request, lead_id):
 @pydici_feature("reports")
 def chargeable_expenses(request):
     """Display all chargeable expenses that are not yet charged in a bill"""
-    expenses= Expense.objects.filter(chargeable=True).annotate(Count("clientbill")).filter(clientbill__count=0)
+    expenses= Expense.objects.filter(chargeable=True)
+    expenses = expenses.annotate(Count("clientbill"), Count("billexpense"))
+    expenses = expenses.filter(clientbill__count=0, billexpense__count=0)
     expenses = expenses.select_related("lead__client__organisation__company").prefetch_related("clientbill_set")
     return render(request, "expense/chargeable_expenses.html",
                   {"expenses": expenses,
