@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-21 19:55+0200\n"
-"PO-Revision-Date: 2018-08-21 19:55+0100\n"
+"POT-Creation-Date: 2018-08-22 11:44+0200\n"
+"PO-Revision-Date: 2018-08-22 11:43+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -57,10 +57,10 @@ msgid "Name"
 msgstr "Nom"
 
 #: actionset/models.py:26 actionset/models.py:47 billing/admin.py:29
-#: billing/admin.py:43 billing/forms.py:69 billing/models.py:243
+#: billing/admin.py:43 billing/forms.py:69 billing/models.py:248
 #: core/models.py:64 expense/models.py:82 leads/models.py:129
 #: leads/views.py:210 staffing/models.py:43 staffing/models.py:329
-#: templates/billing/bill.html:36 templates/expense/expense_archive.html:18
+#: templates/billing/bill.html:37 templates/expense/expense_archive.html:18
 #: templates/expense/expense_list.html:15 templates/leads/lead_detail.html:41
 #: templates/staffing/mission.html:34
 msgid "Description"
@@ -88,7 +88,7 @@ msgid "N/A"
 msgstr "N/A"
 
 #: actionset/models.py:60 billing/admin.py:32 billing/admin.py:46
-#: billing/models.py:132 billing/models.py:182 leads/models.py:69
+#: billing/models.py:132 billing/models.py:187 leads/models.py:69
 #: leads/models.py:279 leads/views.py:212
 #: templates/billing/_lead_billing.html:12
 #: templates/billing/_lead_billing.html:49
@@ -179,12 +179,12 @@ msgstr "Il faut définir le mois pour les missions au temps passé"
 msgid "Consultant must be defined for time spent mission"
 msgstr "Il faut définir le consultant pour les missions au temps passé"
 
-#: billing/forms.py:140 billing/models.py:239 expense/models.py:144
+#: billing/forms.py:140 billing/models.py:244 expense/models.py:144
 #: templates/expense/expenses.html:9
 msgid "Expense"
 msgstr "Note de frais"
 
-#: billing/forms.py:141 billing/models.py:240 expense/models.py:87
+#: billing/forms.py:141 billing/models.py:245 expense/models.py:87
 #: templates/expense/expense_archive.html:26
 #: templates/expense/expense_list.html:22
 msgid "Expense date"
@@ -260,7 +260,7 @@ msgstr "Facture de l'année N-1"
 msgid "Comments"
 msgstr "Remarques"
 
-#: billing/models.py:77 billing/models.py:213 billing/models.py:241
+#: billing/models.py:77 billing/models.py:218 billing/models.py:246
 #: templates/billing/_lead_billing.html:13
 #: templates/billing/_lead_billing.html:50
 #: templates/billing/bill_review.html:21 templates/billing/bill_review.html:69
@@ -272,14 +272,14 @@ msgstr "Remarques"
 msgid "Amount (€ excl tax)"
 msgstr "Montant (€ HT)"
 
-#: billing/models.py:78 billing/models.py:214 billing/models.py:242
+#: billing/models.py:78 billing/models.py:219 billing/models.py:247
 #: templates/billing/client_bills_archive.html:17
 #: templates/billing/client_bills_in_creation.html:18
 #: templates/billing/supplier_bills_archive.html:18
 msgid "Amount (€ incl tax)"
 msgstr "Montant (€ TTC)"
 
-#: billing/models.py:80 billing/models.py:216
+#: billing/models.py:80 billing/models.py:221
 msgid "VAT (%)"
 msgstr "TVA (%)"
 
@@ -299,20 +299,20 @@ msgstr "Proposée"
 msgid "Sent"
 msgstr "Envoyée"
 
-#: billing/models.py:129 billing/models.py:179
+#: billing/models.py:129 billing/models.py:184
 #: templates/expense/_expense_state_column.html:5
 msgid "Paid"
 msgstr "Payée"
 
-#: billing/models.py:130 billing/models.py:180
+#: billing/models.py:130 billing/models.py:185
 msgid "Litigious"
 msgstr "En litige"
 
-#: billing/models.py:131 billing/models.py:181
+#: billing/models.py:131 billing/models.py:186
 msgid "Canceled"
 msgstr "Annulée"
 
-#: billing/models.py:133 billing/models.py:183
+#: billing/models.py:133 billing/models.py:188
 #: templates/billing/_lead_billing.html:18
 #: templates/billing/_lead_billing.html:55
 #: templates/billing/bill_review.html:24 templates/billing/bill_review.html:72
@@ -321,31 +321,35 @@ msgstr "Annulée"
 msgid "File"
 msgstr "Fichier"
 
-#: billing/models.py:173
+#: billing/models.py:135
+msgid "Anonymize profile name"
+msgstr "Anonymiser les noms des consultants"
+
+#: billing/models.py:178
 msgid "Client Bill"
 msgstr "Facture client"
 
-#: billing/models.py:178
+#: billing/models.py:183
 msgid "Received"
 msgstr "Reçue"
 
-#: billing/models.py:186 templates/billing/_lead_billing.html:48
+#: billing/models.py:191 templates/billing/_lead_billing.html:48
 msgid "Supplier Bill id"
 msgstr "N° de facture fournisseur"
 
-#: billing/models.py:201
+#: billing/models.py:206
 msgid "Supplier Bill"
 msgstr "Facture fournisseur"
 
-#: billing/models.py:211 templates/billing/bill.html:36
+#: billing/models.py:216 templates/billing/bill.html:37
 msgid "Quantity"
 msgstr "Quantité"
 
-#: billing/models.py:212
+#: billing/models.py:217
 msgid "Unit price (€)"
 msgstr "Prix unitaire (€)"
 
-#: billing/models.py:218
+#: billing/models.py:223
 msgid "Label"
 msgstr "Libellé"
 
@@ -831,11 +835,11 @@ msgstr "Refacturable"
 
 #: expense/models.py:86 staffing/models.py:328 staffing/models.py:339
 #: staffing/models.py:365 staffing/models.py:381
-#: templates/billing/bill.html:105
+#: templates/billing/bill.html:110
 msgid "Date"
 msgstr "Date"
 
-#: expense/models.py:89 expense/tables.py:164 templates/billing/bill.html:107
+#: expense/models.py:89 expense/tables.py:164 templates/billing/bill.html:113
 #: templates/expense/expense_archive.html:20
 #: templates/expense/expense_list.html:18
 #: templates/expense/expense_payments.html:44
@@ -860,7 +864,8 @@ msgid "unknown"
 msgstr "inconnu"
 
 #: expense/tables.py:96 expense/tables.py:163 people/models.py:239
-#: staffing/views.py:1141 templates/expense/expense_archive.html:16
+#: staffing/views.py:1141 templates/billing/bill.html:111
+#: templates/expense/expense_archive.html:16
 #: templates/expense/expense_payments.html:43
 #: templates/staffing/mission.html:121
 #: templates/staffing/mission_staffing.html:25
@@ -1458,7 +1463,7 @@ msgstr "Haute (75 %)"
 msgid "Certain (100 %)"
 msgstr "Certaine (100 %)"
 
-#: staffing/models.py:39 templates/billing/bill.html:57
+#: staffing/models.py:39 templates/billing/bill.html:62
 msgid "Fixed price"
 msgstr "Forfait"
 
@@ -1646,7 +1651,7 @@ msgid "Consultants"
 msgstr "Consultants"
 
 #: staffing/views.py:1067 templates/billing/_lead_billing.html:33
-#: templates/billing/bill.html:119 templates/leads/lead_detail.html:225
+#: templates/billing/bill.html:126 templates/leads/lead_detail.html:225
 #: templates/staffing/mission_timesheet.html:39
 #: templates/staffing/mission_timesheet.html:110
 #: templates/staffing/prod_report.html:72
@@ -1851,72 +1856,72 @@ msgstr "Aucune facture"
 msgid "Suppliers bills"
 msgstr "Factures fournisseurs"
 
-#: templates/billing/bill.html:20
+#: templates/billing/bill.html:21
 msgid "Your ref.: "
 msgstr "V/Réf :"
 
-#: templates/billing/bill.html:21
+#: templates/billing/bill.html:22
 msgid "Our ref.: "
 msgstr "N/Réf :"
 
-#: templates/billing/bill.html:23
+#: templates/billing/bill.html:24
 msgid "Your contact: "
 msgstr "V/Contact : "
 
-#: templates/billing/bill.html:24
+#: templates/billing/bill.html:25
 msgid "Our contact: "
 msgstr "N/Contact : "
 
-#: templates/billing/bill.html:27
+#: templates/billing/bill.html:28
 msgid "Bill"
 msgstr "Facture"
 
-#: templates/billing/bill.html:37
+#: templates/billing/bill.html:38
 msgid "Unit Price €"
 msgstr "Prix unitaire (€)"
 
-#: templates/billing/bill.html:37
+#: templates/billing/bill.html:38
 msgid "Amount €"
 msgstr "Montant €"
 
-#: templates/billing/bill.html:38
+#: templates/billing/bill.html:39
 #, python-format
 msgid "VAT (%%)"
 msgstr "TVA (%%)"
 
-#: templates/billing/bill.html:38
+#: templates/billing/bill.html:39
 msgid "Amount inc. taxes €"
 msgstr "Montant (€ TTC)"
 
-#: templates/billing/bill.html:70
+#: templates/billing/bill.html:75
 msgid "Sub Total without taxes (€)"
 msgstr "Sous total HT (€)"
 
-#: templates/billing/bill.html:75
-msgid "VAT"
-msgstr "TVA"
-
-#: templates/billing/bill.html:82
+#: templates/billing/bill.html:81
 msgid "Expenses (€)"
 msgstr "Frais (€)"
 
 #: templates/billing/bill.html:88
+msgid "VAT"
+msgstr "TVA"
+
+#: templates/billing/bill.html:93
 msgid "Total (€)"
 msgstr "Total (€)"
 
-#: templates/billing/bill.html:96
+#: templates/billing/bill.html:101
 msgid "Payment due date: "
 msgstr "Date de paiement : "
 
-#: templates/billing/bill.html:102
+#: templates/billing/bill.html:107
 msgid "Expenses details"
 msgstr "Détails des frais"
 
-#: templates/billing/bill.html:106
+#: templates/billing/bill.html:112
 msgid "Expense label"
 msgstr "Frais"
 
-#: templates/billing/bill.html:108
+#: templates/billing/bill.html:114
 msgid "Amount (with VAT)"
 msgstr "Montant (TTC)"
 
