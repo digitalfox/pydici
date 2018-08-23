@@ -21,14 +21,23 @@
         {% if bill.lead.client_deal_id %}{% trans "Your ref.: " %}{{ bill.lead.client_deal_id }}<br/>{% endif %}
         {% trans "Our ref.: " %}{{ bill.lead.deal_id }}<br/>
         <br/>
-        {% if bill.lead.client.contact %}{% trans "Your contact: " %}{{ bill.lead.client.contact }}<br/>{% endif %}
+        {% if bill.lead.paying_authority %}
+            {% if bill.lead.paying_authority.contact %}{% trans "Your contact: " %}{{ bill.lead.paying_authority.contact }}<br/>{% endif %}
+        {% else %}
+            {% if bill.lead.client.contact %}{% trans "Your contact: " %}{{ bill.lead.client.contact }}<br/>{% endif %}
+        {% endif %}
         {% trans "Our contact: " %}{{ bill.lead.responsible }}<br/>
     </div>
     <div class="col-xs-offset-1 col-xs-6">
         <div class="well"><div class="lead text-uppercase"><strong>{% trans "Bill" %}</strong></div><strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
 
-        <div class="lead">{{ bill.lead.client.billing_name|default_if_none:bill.lead.client.organisation }}</div>
-        {{ bill.lead.client.billing_address|linebreaksbr }}
+        {% if bill.lead.paying_authority %}
+            <div class="lead">{{ bill.lead.paying_authority.company }}</div>
+            {{ bill.lead.paying_authority.company.billing_address|linebreaksbr }}
+        {% else %}
+            <div class="lead">{{ bill.lead.client.billing_name|default_if_none:bill.lead.client.organisation }}</div>
+            {{ bill.lead.client.billing_address|linebreaksbr }}
+        {% endif %}
     </div>
 </div>
 <br/><br/>
