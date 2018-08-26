@@ -189,7 +189,7 @@ def financialControl(request, start_date=None, end_date=None):
     # Header
     header = ["FiscalYear", "Month", "Type", "Nature", "Archived",
               "MissionSubsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
-              "Lead", "DealId", "LeadPrice", "LeadResponsible", "LeadResponsibleTrigramme", "LeadTeam",
+              "Lead", "DealId", "LeadPrice", "Billed", "LeadResponsible", "LeadResponsibleTrigramme", "LeadTeam",
               "Mission", "MissionId", "BillingMode", "MissionPrice",
               "TotalQuantityInDays", "TotalQuantityInEuros",
               "ConsultantSubsidiary", "ConsultantTeam", "Trigramme", "Consultant", "Subcontractor", "CrossBilling",
@@ -225,6 +225,7 @@ def financialControl(request, start_date=None, end_date=None):
             missionRow.append(mission.lead.name)
             missionRow.append(mission.lead.deal_id)
             missionRow.append(mission.lead.sales or 0)
+            missionRow.append(mission.lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID"), creation_date__lt=end_date, creation_date__gte=start_date).aggregate(Sum("amount")).values()[0] or 0)
             if mission.lead.responsible:
                 missionRow.append(mission.lead.responsible.name)
                 missionRow.append(mission.lead.responsible.trigramme)
@@ -232,7 +233,7 @@ def financialControl(request, start_date=None, end_date=None):
             else:
                 missionRow.extend(["", "", ""])
         else:
-            missionRow.extend(["", "", "", "", "", 0, "", "", ""])
+            missionRow.extend(["", "", "", "", "", 0, 0, "", "", ""])
         missionRow.append(mission.description or "")
         missionRow.append(mission.mission_id())
         missionRow.append(mission.billing_mode or "")
