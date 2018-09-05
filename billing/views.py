@@ -160,7 +160,7 @@ class Bill(PydiciNonPublicdMixin, TemplateView):
             context["bill"] = bill
             context["expenses_image_receipt"] = []
             for expenseDetail in bill.billexpense_set.all():
-                if expenseDetail.expense.receipt_content_type() != "application/pdf":
+                if expenseDetail.expense and expenseDetail.expense.receipt_content_type() != "application/pdf":
                     context["expenses_image_receipt"].append(expenseDetail.expense.receipt_data())
         except ClientBill.DoesNotExist:
             bill = None
@@ -183,7 +183,7 @@ class ExpensePDFTemplateResponse(PDFTemplateResponse):
         merger = PdfFileMerger()
         merger.append(PdfFileReader(pdf_stringio))
         for billExpense in bill.billexpense_set.all():
-            if billExpense.expense.receipt_content_type() == "application/pdf":
+            if billExpense.expense and billExpense.expense.receipt_content_type() == "application/pdf":
                 merger.append(PdfFileReader(billExpense.expense.receipt.file))
         merger.write(target)
         target.seek(0)  # Be kind, rewind
