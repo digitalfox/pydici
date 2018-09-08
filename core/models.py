@@ -33,6 +33,8 @@ _FEATURES_CHOICES = (
     ("staffing_mass", _("Staffing, mass edit: Access to mass staffing features")),
     ("timesheet_all", _("Timesheet, all: Access to all timesheets of all users")),
     ("timesheet_current_month", _("Timesheet, current month: Access to current month timesheets of all users")),
+    ("billing_management", _("Manage bills, allow to mark bills sent, paid etc.")),
+    ("billing_request", _("Create bills and proposed them to billing team ")),
 )
 
 FEATURES = set([x[0] for x in _FEATURES_CHOICES])

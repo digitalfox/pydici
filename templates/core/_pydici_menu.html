@@ -79,13 +79,15 @@
                 <li><a href="{% url 'expense.views.expenses' %}">{% trans "Expenses" %}</a></li>
                 <li><a href="{% url 'expense.views.expense_payments' %}">{% trans "Expenses payment" %}</a></li>
                 <li class="divider"></li>
-                <li class="dropdown-header">{% trans "Billing" %}</li>
-                <li><a href="{% url 'billing.views.pre_billing' %}">{% trans "Pre billing" %}</a></li>
-                {% if perms.billing.change_clientbill %}<li><a href="{% url 'billing.views.client_bills_archive' %}">{% trans "All client bills" %}</a></li>{% endif %}
-                {% if perms.billing.add_clientbill %}<li><a href="{% url 'client_bill' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>{% endif %}
-                <li><a href="{% url 'billing.views.client_bills_in_creation' %}">{% trans "Client bills in creation" %}</a></li>
-                {% if perms.billing.change_supplierbill %}<li><a href="{% url 'billing.views.supplier_bills_archive' %}">{% trans "All supplier bills" %}</a></li>{% endif %}
-                {% if perms.billing.add_supplierbill %}<li><a href="{% url 'admin:billing_supplierbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier bill" %}</a></li>{% endif %}
+                {% if pydici_feature.billing_request %}
+                    <li class="dropdown-header">{% trans "Billing" %}</li>
+                    <li><a href="{% url 'billing.views.pre_billing' %}">{% trans "Pre billing" %}</a></li>
+                    <li><a href="{% url 'billing.views.client_bills_archive' %}">{% trans "All client bills" %}</a></li>
+                    <li><a href="{% url 'client_bill' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>
+                    <li><a href="{% url 'billing.views.client_bills_in_creation' %}">{% trans "Client bills in creation" %}</a></li>
+                    {% if perms.billing.change_supplierbill %}<li><a href="{% url 'billing.views.supplier_bills_archive' %}">{% trans "All supplier bills" %}</a></li>{% endif %}
+                    {% if perms.billing.add_supplierbill %}<li><a href="{% url 'admin:billing_supplierbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier bill" %}</a></li>{% endif %}
+                {% endif %}
                 {% if pydici_menu.management %}
                     {% for name in pydici_menu.management %}
                         {% include name %}

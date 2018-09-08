@@ -200,7 +200,7 @@
 	    {% if mission.lead %}
 	        {% with mission.lead as lead %}
 	        {% include "billing/_lead_billing.html" %}
-            {% if perms.billing.add_clientbill %}
+            {% if pydici_feature.billing_request %}
                 <a class="btn btn-default" href="{% url 'client_bill' %}?mission={{ mission.id|unlocalize}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
             {% endif %}
             {% if perms.billing.add_supplierbill %}

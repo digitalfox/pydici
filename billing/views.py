@@ -42,7 +42,7 @@ from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
 from crm.models import Subsidiary
-from core.utils import get_fiscal_years, get_parameter
+from core.utils import get_fiscal_years, get_parameter, user_has_feature
 from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature
@@ -166,7 +166,7 @@ class Bill(PydiciNonPublicdMixin, TemplateView):
             bill = None
         return context
 
-    @method_decorator(permission_required("billing.change_clientbill"))
+    @method_decorator(pydici_feature("billing_request"))
     def dispatch(self, *args, **kwargs):
         return super(Bill, self).dispatch(*args, **kwargs)
 
@@ -199,10 +199,12 @@ class BillPdf(Bill, PDFTemplateView):
 
 
 @pydici_non_public
-@pydici_feature("management")
+@pydici_feature("billing_request")
 def client_bill(request, bill_id=None):
     billDetailFormSet = None
     billExpenseFormSet = None
+    billing_management_feature = "billing_management"
+    forbiden = HttpResponseRedirect(urlresolvers.reverse("forbiden"))
     if bill_id:
         try:
             bill = ClientBill.objects.get(id=bill_id)
@@ -215,6 +217,14 @@ def client_bill(request, bill_id=None):
     wip_status = ("0_DRAFT", "0_PROPOSED")
     if request.POST:
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
+        # First, ensure user is allowed to manipulate the bill
+        if bill and bill.state not in wip_status and not user_has_feature(request.user, billing_management_feature):
+            print("1")
+            return forbiden
+        if form.data["state"] not in wip_status and not user_has_feature(request.user, billing_management_feature):
+            print("2")
+            return forbiden
+        # Now, process form
         if bill and bill.state in wip_status:
             billDetailFormSet = BillDetailFormSet(request.POST, instance=bill)
             billExpenseFormSet = BillExpenseFormSet(request.POST, instance=bill)
@@ -277,7 +287,7 @@ def client_bill(request, bill_id=None):
 
 
 @pydici_non_public
-@pydici_feature("management")
+@pydici_feature("billing_request")
 def clientbill_delete(request, bill_id):
     """Delete client bill in early stage"""
     redirect_url = urlresolvers.reverse("billing.views.client_bills_in_creation")
@@ -297,7 +307,7 @@ def clientbill_delete(request, bill_id):
 
 
 @pydici_non_public
-@pydici_feature("management")
+@pydici_feature("billing_request")
 def pre_billing(request, year=None, month=None, mine=False):
     """Pre billing page: help to identify bills to send"""
     if year and month:
@@ -364,6 +374,7 @@ def pre_billing(request, year=None, month=None, mine=False):
 
 
 @pydici_non_public
+@pydici_feature("billing_request")
 def client_bills_in_creation(request):
     """Review client bill in preparation"""
     return render(request, "billing/client_bills_in_creation.html",
@@ -372,6 +383,7 @@ def client_bills_in_creation(request):
 
 
 @pydici_non_public
+@pydici_feature("billing_request")
 def client_bills_archive(request):
     """Review all client bill """
     return render(request, "billing/client_bills_archive.html",
@@ -380,6 +392,7 @@ def client_bills_archive(request):
 
 
 @pydici_non_public
+@pydici_feature("billing_request")
 def supplier_bills_archive(request):
     """Review all supplier bill """
     return render(request, "billing/supplier_bills_archive.html",
