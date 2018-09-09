@@ -85,6 +85,9 @@ class ContactMChoices(ModelSelect2MultipleWidget):
     search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
                      "client__organisation__name__icontains"]
 
+class BillingContactChoice(ModelSelect2Widget):
+    model = AdministrativeContact
+    search_fields = ["contact__name__icontains", "contact__email__icontains", "function__name__icontains", "company__name__icontains"]
 
 class ClientOrganisationChoices(ModelSelect2Widget):
     model = ClientOrganisation
@@ -101,7 +104,8 @@ class ClientForm(PydiciCrispyModelForm):
         model = Client
         fields = "__all__"
         widgets = { "contact": ContactChoices,
-                    "organisation": ClientOrganisationChoices}
+                    "organisation": ClientOrganisationChoices,
+                    "billing_contact": BillingContactChoice}
 
 
     def __init__(self, *args, **kwargs):
@@ -116,6 +120,10 @@ class ClientForm(PydiciCrispyModelForm):
                                  StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("contact_add"))),
                 "alignment",
                 "billing_name",
+                FieldWithButtons(
+                    "billing_contact",
+                    StrictButton(
+                        "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("administrative_contact_add"))),
         css_class="col-md-6"),
             getAddressColumn(),
             css_class="row"),

@@ -312,6 +312,7 @@ class Client(AbstractAddress):
     alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
     active = models.BooleanField(_("Active"), default=True)
     billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
+    billing_contact = models.ForeignKey("AdministrativeContact", null=True, verbose_name=_("Billing contact"))
 
     def __unicode__(self):
         if self.contact:
@@ -463,6 +464,9 @@ class AdministrativeContact(models.Model):
     default_mail = models.EmailField(_("Generic email"), max_length=100, blank=True, null=True)
     default_fax = models.CharField(_("Generic fax"), max_length=100, blank=True, null=True)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
+
+    def __unicode__(self):
+        return u"%s (%s)" % (unicode(self.contact), unicode(self.company))
 
     def phone(self):
         """Best phone number to use"""

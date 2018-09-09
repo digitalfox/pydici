@@ -35,7 +35,8 @@
             <div class="lead">{{ bill.lead.paying_authority.company }}</div>
             {{ bill.lead.paying_authority.company.billing_address|linebreaksbr }}
         {% else %}
-            <div class="lead">{{ bill.lead.client.billing_name|default_if_none:bill.lead.client.organisation }}</div>
+            <div class="lead">{{ bill.lead.client.billing_name|default:bill.lead.client.organisation }}</div>
+            {{ bill.lead.client.billing_contact.contact }}<br>
             {{ bill.lead.client.billing_address|linebreaksbr }}
         {% endif %}
     </div>
