@@ -18,6 +18,7 @@ import logging
 from django.shortcuts import render
 from django.core import urlresolvers
 from django.utils.translation import ugettext as _
+from django.utils.translation import activate as translation_activate
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
 from django.db.models import Sum, Q, F
 from django.views.generic import TemplateView
@@ -157,6 +158,7 @@ class Bill(PydiciNonPublicdMixin, TemplateView):
         context = super(Bill, self).get_context_data(**kwargs)
         try:
             bill = ClientBill.objects.get(id=kwargs.get("bill_id"))
+            translation_activate(bill.lang)
             context["bill"] = bill
             context["expenses_image_receipt"] = []
             for expenseDetail in bill.billexpense_set.all():

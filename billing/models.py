@@ -129,10 +129,16 @@ class ClientBill(AbstractBill):
         ('2_PAID', _("Paid")),
         ('3_LITIGIOUS', _("Litigious")),
         ('4_CANCELED', _("Canceled")),)
+
+    CLIENT_BILL_LANG = (
+        ("fr-fr", _("French")),
+        ("en-en", _("English"))
+    )
     state = models.CharField(_("State"), max_length=30, choices=CLIENT_BILL_STATE, default="0_DRAFT")
     bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path,
                                  storage=BillStorage(nature="client"), null=True, blank=True)
     anonymize_profile = models.BooleanField(_("Anonymize profile name"), default=False)
+    lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, default=pydici.settings.LANGUAGE_CODE)
 
     def client(self):
         if self.lead.paying_authority:
