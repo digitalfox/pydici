@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-31 17:49+0200\n"
-"PO-Revision-Date: 2018-08-31 17:48+0100\n"
+"POT-Creation-Date: 2018-09-10 21:38+0200\n"
+"PO-Revision-Date: 2018-09-10 21:38+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -88,7 +88,7 @@ msgstr "N/A"
 
 #: actionset/models.py:60 billing/admin.py:32 billing/admin.py:46
 #: billing/models.py:115 billing/models.py:152 leads/models.py:69
-#: leads/models.py:279 leads/views.py:212
+#: leads/models.py:289 leads/views.py:212
 #: templates/billing/_lead_billing.html:12
 #: templates/billing/_lead_billing.html:52
 #: templates/expense/expense_archive.html:24
@@ -149,7 +149,7 @@ msgstr "Dates"
 msgid "Link with expenses"
 msgstr "Lien avec les notes de frais"
 
-#: billing/models.py:62 expense/models.py:81 leads/models.py:273
+#: billing/models.py:62 expense/models.py:81 leads/models.py:283
 #: staffing/models.py:41 staffing/views.py:1140
 #: templates/billing/bill_review.html:201 templates/core/index.html:13
 #: templates/core/index.html.py:38 templates/core/index.html:62
@@ -396,7 +396,7 @@ msgstr "factures envoyées"
 msgid "type"
 msgstr "type"
 
-#: core/views.py:333 core/views.py:351 leads/views.py:448
+#: core/views.py:333 core/views.py:351 leads/views.py:449
 #: staffing/models.py:308 staffing/views.py:1262 templates/core/risks.html:40
 #: templates/core/risks.html.py:46 templates/leads/lead_pivotable.html:47
 #: templates/leads/leads.html:17 templates/leads/leads_pivotable.html:53
@@ -1001,7 +1001,7 @@ msgstr "Référence affaire client"
 msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
-#: leads/models.py:280
+#: leads/models.py:290
 msgid "Score"
 msgstr "Score"
 
@@ -1130,6 +1130,10 @@ msgstr "état"
 #: leads/views.py:447 templates/leads/leads_pivotable.html:62
 msgid "billed (€)"
 msgstr "facturé (€)"
+
+#: leads/views.py:448
+msgid "Over budget margin (k€)"
+msgstr "Marge au delà du budget (k€)"
 
 #: people/admin.py:32
 msgid "For subcontractors"
