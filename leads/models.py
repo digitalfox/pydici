@@ -196,10 +196,11 @@ class Lead(models.Model):
         """Compute sum of missions margin. For timespent mission, only objective margin is computed, for fixed price, we also consider
         price minus total work done and forecasted work
         @:return: margin in k€"""
-        margin = self.totalObjectiveMargin()
+        margin = 0
         for mission in self.mission_set.all():
+            margin += sum(mission.objectiveMargin().values())
             if mission.billing_mode == "FIXED_PRICE":
-                margin += float(mission.price) - mission.done_work_k()[1] - mission.forecasted_work_k()[1]
+                margin += mission.margin(mode="target")
         return margin
 
     @cacheable("Lead.__billed__%(id)s", 3)
