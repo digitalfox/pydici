@@ -198,7 +198,7 @@ class Lead(models.Model):
         @:return: margin in k€"""
         margin = 0
         for mission in self.mission_set.all():
-            margin += sum(mission.objectiveMargin().values())
+            margin += sum(mission.objectiveMargin().values()) / 1000
             if mission.billing_mode == "FIXED_PRICE":
                 margin += mission.margin(mode="target")
         return margin
