@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-10 21:38+0200\n"
-"PO-Revision-Date: 2018-09-10 21:38+0100\n"
+"POT-Creation-Date: 2018-09-10 22:16+0200\n"
+"PO-Revision-Date: 2018-09-10 22:16+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -399,8 +399,9 @@ msgstr "type"
 #: core/views.py:333 core/views.py:351 leads/views.py:449
 #: staffing/models.py:308 staffing/views.py:1262 templates/core/risks.html:40
 #: templates/core/risks.html.py:46 templates/leads/lead_pivotable.html:47
-#: templates/leads/leads.html:17 templates/leads/leads_pivotable.html:53
-#: templates/leads/leads_pivotable.html:60 templates/staffing/missions.html:27
+#: templates/leads/leads.html:17 templates/leads/leads_pivotable.html:54
+#: templates/leads/leads_pivotable.html:61
+#: templates/leads/leads_pivotable.html:67 templates/staffing/missions.html:27
 #: templates/staffing/missions_report.html:65
 msgid "subsidiary"
 msgstr "filiale"
@@ -950,7 +951,8 @@ msgstr "Propal. envoyée"
 msgid "Negotiation"
 msgstr "En négo."
 
-#: leads/models.py:52 templates/leads/leads_pivotable.html:61
+#: leads/models.py:52 templates/leads/leads_pivotable.html:62
+#: templates/leads/leads_pivotable.html:69
 msgid "Won"
 msgstr "Gagnée"
 
@@ -1073,7 +1075,7 @@ msgstr "C.A. (k€)"
 msgid "Lead %(id)s was sent to %(mail)s !"
 msgstr "L'affaire %(id)s a été envoyée à %(mail)s !"
 
-#: leads/views.py:420 templates/leads/leads_pivotable.html:54
+#: leads/views.py:420 templates/leads/leads_pivotable.html:55
 msgid "sales (interval)"
 msgstr "prix (interval)"
 
@@ -1096,7 +1098,8 @@ msgstr "nom"
 msgid "client organisation"
 msgstr "département"
 
-#: leads/views.py:441 templates/leads/leads_pivotable.html:59
+#: leads/views.py:441 templates/leads/leads_pivotable.html:60
+#: templates/leads/leads_pivotable.html:68
 msgid "client company"
 msgstr "entreprise"
 
@@ -1108,13 +1111,13 @@ msgstr "C.A. (k€)"
 #: templates/crm/company_pivotable.html:48
 #: templates/crm/company_pivotable.html:54
 #: templates/leads/lead_pivotable.html:48
-#: templates/leads/leads_pivotable.html:48
+#: templates/leads/leads_pivotable.html:49
 msgid "date"
 msgstr "date"
 
 #: leads/views.py:444 templates/leads/leads.html:18
-#: templates/leads/leads_pivotable.html:53
-#: templates/leads/leads_pivotable.html:60 templates/staffing/missions.html:28
+#: templates/leads/leads_pivotable.html:54
+#: templates/leads/leads_pivotable.html:61 templates/staffing/missions.html:28
 msgid "responsible"
 msgstr "responsable"
 
@@ -1122,16 +1125,17 @@ msgstr "responsable"
 msgid "broker"
 msgstr "apporteur"
 
-#: leads/views.py:446 templates/leads/leads_pivotable.html:47
-#: templates/leads/leads_pivotable.html:61
+#: leads/views.py:446 templates/leads/leads_pivotable.html:48
+#: templates/leads/leads_pivotable.html:62
+#: templates/leads/leads_pivotable.html:69
 msgid "state"
 msgstr "état"
 
-#: leads/views.py:447 templates/leads/leads_pivotable.html:62
+#: leads/views.py:447 templates/leads/leads_pivotable.html:63
 msgid "billed (€)"
 msgstr "facturé (€)"
 
-#: leads/views.py:448
+#: leads/views.py:448 templates/leads/leads_pivotable.html:70
 msgid "Over budget margin (k€)"
 msgstr "Marge au delà du budget (k€)"
 
@@ -2259,7 +2263,7 @@ msgid "Risks per type (graph)"
 msgstr "Risques par type (graphique)"
 
 #: templates/core/risks.html:42 templates/core/risks.html.py:48
-#: templates/leads/leads_pivotable.html:62
+#: templates/leads/leads_pivotable.html:63
 msgid "Integer Sum"
 msgstr "Somme en entiers"
 
@@ -2526,6 +2530,7 @@ msgstr "Jusqu'à "
 #: templates/crm/company_pivotable.html:55
 #: templates/leads/lead_pivotable.html:49
 #: templates/leads/lead_pivotable.html:55
+#: templates/leads/leads_pivotable.html:70
 #: templates/staffing/missions_report.html:67
 #: templates/staffing/missions_report.html:73
 #: templates/staffing/missions_report.html:79
@@ -2971,6 +2976,10 @@ msgstr "Affaires par interval de prix"
 #: templates/leads/leads_pivotable.html:24
 msgid "Billing per client"
 msgstr "Facturation par client"
+
+#: templates/leads/leads_pivotable.html:25
+msgid "Margin over budget"
+msgstr "Marge au delà du budget"
 
 #: templates/leads/mail.html:8 templates/leads/mail.txt:7
 msgid "Due date: "
