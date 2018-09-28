@@ -417,7 +417,7 @@ def leads_pivotable(request, year=None):
     """Pivot table for all leads of given year"""
     data = []
     leads = Lead.objects.passive()
-    derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _("sales"))
+    derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _(u"sales (k€)"))
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
     if not leads:
@@ -445,6 +445,7 @@ def leads_pivotable(request, year=None):
                      _("broker"): unicode(lead.business_broker),
                      _("state"): lead.get_state_display(),
                      _(u"billed (€)"): int(lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values()[0] or 0),
+                     _(u"Over budget margin (k€)"): lead.margin(),
                      _("subsidiary"): unicode(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,

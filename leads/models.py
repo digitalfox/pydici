@@ -194,6 +194,17 @@ class Lead(models.Model):
         @see: for per consultant, look at marginObjectives()"""
         return sum(self.objectiveMargin(startDate, endDate).values())
 
+    def margin(self):
+        """Compute sum of missions margin. For timespent mission, only objective margin is computed, for fixed price, we also consider
+        price minus total work done and forecasted work
+        @:return: margin in k€"""
+        margin = 0
+        for mission in self.mission_set.all():
+            margin += sum(mission.objectiveMargin().values()) / 1000
+            if mission.billing_mode == "FIXED_PRICE":
+                margin += mission.margin(mode="target")
+        return margin
+
     @cacheable("Lead.__billed__%(id)s", 3)
     def billed(self):
         """Total amount billed for this lead"""

@@ -22,6 +22,7 @@
             <button class="btn btn-default active" onclick="lead_per_state();">{% trans "Lead per state" %}</button>
             <button class="btn btn-default" onclick="price_interval();">{% trans "Lead per price interval" %}</button>
             <button class="btn btn-default" onclick="billing_per_client();">{% trans "Billing per client" %}</button>
+            <button class="btn btn-default" onclick="margin_over_budget();">{% trans "Margin over budget" %}</button>
         </div>
 
         <div id="pivotable-output" style="margin: 10px;"></div>
@@ -60,6 +61,13 @@
                 var cols = ["{% trans 'subsidiary' %}", "{% trans 'responsible' %}"];
                 var inclusions = { {% trans "state" %}: ['{% trans "Won" %}'] };
                 drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "billed (€)" %}'], inclusions);
+            }
+
+            function margin_over_budget() {
+                var rows = ["{% trans 'subsidiary' %}"];
+                var cols = ["{% trans 'client company' %}"];
+                var inclusions = { {% trans "state" %}: ['{% trans "Won" %}'] };
+                drawPivot(data, rows, cols, "Horizontal Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "Over budget margin (k€)" %}'], inclusions);
             }
 
             // default
