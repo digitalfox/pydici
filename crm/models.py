@@ -312,7 +312,7 @@ class Client(AbstractAddress):
     alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
     active = models.BooleanField(_("Active"), default=True)
     billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
-    billing_contact = models.ForeignKey("AdministrativeContact", null=True, verbose_name=_("Billing contact"))
+    billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True, verbose_name=_("Billing contact"))
 
     def __unicode__(self):
         if self.contact:
