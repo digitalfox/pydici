@@ -14,7 +14,7 @@
 
 <div class="row">
     <div class="col-xs-5">
-        <img alt="" src="{{ MEDIA_URL }}pydici/company_logo.png" height=40/><br/>
+        <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ bill.lead.subsidiary.code}}.png" height=40/><br/>
         {{ bill.lead.subsidiary.commercial_name }}<br/>
         {{ bill.lead.subsidiary.billing_address|linebreaksbr }}
         <br/><br/>
