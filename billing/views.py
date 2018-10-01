@@ -18,7 +18,7 @@ import logging
 from django.shortcuts import render
 from django.core import urlresolvers
 from django.utils.translation import ugettext as _
-from django.utils.translation import activate as translation_activate
+from django.utils import translation
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
 from django.db.models import Sum, Q, F
 from django.views.generic import TemplateView
@@ -158,7 +158,6 @@ class Bill(PydiciNonPublicdMixin, TemplateView):
         context = super(Bill, self).get_context_data(**kwargs)
         try:
             bill = ClientBill.objects.get(id=kwargs.get("bill_id"))
-            translation_activate(bill.lang)
             context["bill"] = bill
             context["expenses_image_receipt"] = []
             for expenseDetail in bill.billexpense_set.all():
@@ -177,19 +176,25 @@ class ExpensePDFTemplateResponse(PDFTemplateResponse):
     """TemplateResponse override to merge """
     @property
     def rendered_content(self):
-        target = StringIO()
-        bill = self.context_data["bill"]
-        pdf_content = super(ExpensePDFTemplateResponse, self).rendered_content
-        pdf_stringio = StringIO()
-        pdf_stringio.write(pdf_content)
-        merger = PdfFileMerger()
-        merger.append(PdfFileReader(pdf_stringio))
-        for billExpense in bill.billexpense_set.all():
-            if billExpense.expense and billExpense.expense.receipt_content_type() == "application/pdf":
-                merger.append(PdfFileReader(billExpense.expense.receipt.file))
-        merger.write(target)
-        target.seek(0)  # Be kind, rewind
-        return target
+        old_lang = translation.get_language()
+        try:
+            target = StringIO()
+            bill = self.context_data["bill"]
+            translation.activate(bill.lang)
+            pdf_content = super(ExpensePDFTemplateResponse, self).rendered_content
+            pdf_stringio = StringIO()
+            pdf_stringio.write(pdf_content)
+            merger = PdfFileMerger()
+            merger.append(PdfFileReader(pdf_stringio))
+            for billExpense in bill.billexpense_set.all():
+                if billExpense.expense and billExpense.expense.receipt_content_type() == "application/pdf":
+                    merger.append(PdfFileReader(billExpense.expense.receipt.file))
+            merger.write(target)
+            target.seek(0)  # Be kind, rewind
+            return target
+        finally:
+            translation.activate(old_lang)
+
 
 
 class BillPdf(Bill, PDFTemplateView):
