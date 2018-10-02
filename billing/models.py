@@ -172,6 +172,9 @@ class ClientBill(AbstractBill):
     def save(self, *args, **kwargs):
         if self.state in ("0_DRAFT", "0_PROPOSED"):
             compute_bill(self)
+            # Update creation and due date till bill is not really sent
+            self.due_date = date.today() + (self.due_date - self.creation_date) # shift with same timeframe
+            self.creation_date = date.today()
         # Automatically set payment date for paid bills
         if self.state == "2_PAID" and not self.payment_date:
             self.payment_date = date.today()
