@@ -143,7 +143,7 @@ def bill_file(request, bill_id=0, nature="client"):
             bill = SupplierBill.objects.get(id=bill_id)
         if bill.bill_file:
             response["Content-Type"] = mimetypes.guess_type(bill.bill_file.name)[0] or "application/stream"
-            response["Content-Disposition"] = "attachment; filename='%s'" % basename(bill.bill_file.name)
+            response["Content-Disposition"] = 'attachment; filename="%s"' % basename(bill.bill_file.name)
             for chunk in bill.bill_file.chunks():
                 response.write(chunk)
     except (ClientBill.DoesNotExist, SupplierBill.DoesNotExist, OSError):
