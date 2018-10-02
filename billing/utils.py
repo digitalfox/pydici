@@ -103,7 +103,7 @@ def create_client_bill_from_proportion(mission, proportion):
 def bill_pdf_filename(bill):
     """Nice name for generated pdf file"""
     try:
-        filename = u"%s-%s.pdf" % (bill.lead.deal_id, bill.bill_id)
+        filename = u"%s-%s.pdf" % (bill.bill_id, bill.lead.deal_id)
     except ValueError:
         # Incomplete bill, we still want to generate the pdf
         filename = "bill.pdf"
