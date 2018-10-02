@@ -29,15 +29,17 @@
         {% trans "Our contact: " %}{{ bill.lead.responsible }}<br/>
     </div>
     <div class="col-xs-offset-1 col-xs-6">
-        <div class="well"><div class="lead text-uppercase"><strong>{% trans "Bill" %}</strong></div><strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
+        <div class="well small-margin"><div class="lead small-margin text-uppercase"><strong>{% trans "Bill" %}</strong></div><strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
 
         {% if bill.lead.paying_authority %}
             <div class="lead">{{ bill.lead.paying_authority.company }}</div>
             {{ bill.lead.paying_authority.company.billing_address|linebreaksbr }}
         {% else %}
-            <div class="lead">{{ bill.lead.client.billing_name|default:bill.lead.client.organisation }}</div>
-            {{ bill.lead.client.billing_contact.contact }}<br>
-            {{ bill.lead.client.billing_address|linebreaksbr }}
+            <div class="lead">
+                {{ bill.lead.client.billing_name|default:bill.lead.client.organisation }}
+                {{ bill.lead.client.billing_contact.contact }}<br>
+                {{ bill.lead.client.billing_address|linebreaksbr }}
+            </div>
         {% endif %}
     </div>
 </div>

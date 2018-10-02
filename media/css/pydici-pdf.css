@@ -13,3 +13,8 @@ footer
     text-align      : center;
     font-size       : 10px;
 }
+
+/* used to reduce some default boostrap margin */
+.small-margin {
+    margin-bottom: 5px;
+}
