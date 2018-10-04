@@ -188,7 +188,7 @@ def financialControl(request, start_date=None, end_date=None):
 
     # Header
     header = ["FiscalYear", "Month", "Type", "Nature", "Archived",
-              "MissionSubsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
+              "Subsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
               "Lead", "DealId", "LeadPrice", "Billed", "LeadResponsible", "LeadResponsibleTrigramme", "LeadTeam",
               "Mission", "MissionId", "BillingMode", "MissionPrice",
               "TotalQuantityInDays", "TotalQuantityInEuros",
@@ -217,8 +217,8 @@ def financialControl(request, start_date=None, end_date=None):
         missionRow.append("timesheet")
         missionRow.append(mission.nature)
         missionRow.append(not mission.active)
-        missionRow.append(mission.subsidiary)
         if mission.lead:
+            missionRow.append(mission.lead.subsidiary)
             missionRow.append(mission.lead.client.organisation.company.name)
             missionRow.append(mission.lead.client.organisation.company.code)
             missionRow.append(mission.lead.client.organisation.name)
@@ -233,7 +233,7 @@ def financialControl(request, start_date=None, end_date=None):
             else:
                 missionRow.extend(["", "", ""])
         else:
-            missionRow.extend(["", "", "", "", "", 0, 0, "", "", ""])
+            missionRow.extend([mission.subsidiary, "", "", "", "", "", 0, 0, "", "", ""])
         missionRow.append(mission.description or "")
         missionRow.append(mission.mission_id())
         missionRow.append(mission.billing_mode or "")
@@ -258,7 +258,10 @@ def financialControl(request, start_date=None, end_date=None):
             consultantRow.append(consultant.trigramme)
             consultantRow.append(consultant.name)
             consultantRow.append(consultant.subcontractor)
-            consultantRow.append(mission.subsidiary != consultant.company)
+            if mission.lead:
+                consultantRow.append(mission.lead.subsidiary != consultant.company)
+            else:
+                consultantRow.append(mission.subsidiary != consultant.company)
             consultantRow.append(rateObjective)
             consultantRow.append(daily_rate or 0)
             consultantRow.append(bought_daily_rate or 0)
