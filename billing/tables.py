@@ -28,7 +28,9 @@ class BillTableDT(ThirdPartyMixin, BaseDatatableView):
                            Q(lead__deal_id__icontains=search) |
                            Q(lead__name__icontains=search) |
                            Q(lead__responsible__name__icontains=search) |
-                           Q(lead__client__organisation__company__name__icontains=search)
+                           Q(lead__client__organisation__company__name__icontains=search) |
+                           Q(amount=search) |
+                           Q(amount_with_vat=search)
                            )
         return qs
 
@@ -59,6 +61,8 @@ class ClientBillInCreationTableDT(BillTableDT):
                            Q(lead__name__icontains=search) |
                            Q(lead__responsible__name__icontains=search) |
                            Q(lead__client__organisation__company__name__icontains=search) |
+                           Q(amount=search) |
+                           Q(amount_with_vat=search) |
                            Q(billdetail__mission__responsible__name__icontains=search)
                            ).distinct()
         return qs

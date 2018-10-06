@@ -60,7 +60,8 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
                            Q(lead__client__organisation__company__name__icontains=search) |
                            Q(lead__client__organisation__name__iexact=search) |
                            Q(lead__description__icontains=search) |
-                           Q(lead__deal_id__icontains=search))
+                           Q(lead__deal_id__icontains=search) |
+                           Q(amount=search))
             qs = qs.distinct()
         return qs
 
