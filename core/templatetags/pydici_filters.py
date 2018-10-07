@@ -144,11 +144,11 @@ def pydici_simple_format(value, arg=None):
     trigrammes = [i[0] for i in Consultant.objects.values_list("trigramme")]
 
     #TODO: this may not scale with thousands of leads. It may be splitted in shunk on day.
-    for dealId in re.findall(r"%s" % "|".join(dealIds), value):
+    for dealId in set(re.findall(r"\b(%s)\b" % "|".join(dealIds), value)):
         value = value.replace(dealId, u"<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=dealId).get_absolute_url(), dealId))
 
-    for trigramme in re.findall(r"%s" % "|".join(trigrammes), value):
-        value = value.replace(trigramme, u"<a href='%s'>%s</a>" % (Consultant.objects.get(trigramme=trigramme).get_absolute_url(), trigramme))
+    for trigramme in set(re.findall(r"\b(%s)\b" % "|".join(trigrammes), value)):
+        value = value.replace(trigramme, u"<a href=%s>%s</a>" % (Consultant.objects.get(trigramme=trigramme).get_absolute_url(), trigramme))
 
     # Authorized tags for markdown (thanks https://github.com/yourcelf/bleach-whitelist/blob/master/bleach_whitelist/bleach_whitelist.py)
     markdown_tags = ["h1", "h2", "h3", "h4", "h5", "h6", "b", "i", "strong", "em", "tt", "p", "br",
