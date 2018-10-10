@@ -48,21 +48,35 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
             expenses = expenses.filter(Q(user=self.request.user) | Q(user__in=user_team))
         return expenses.select_related("lead__client__contact", "lead__client__organisation__company", "user")
 
+    def get_filters(self, search):
+        """Custom method to get Q filter objects that should be combined with OR keyword"""
+        filters = []
+        try:
+            fsearch = float(search)
+            filters = [Q(amount=fsearch),]
+
+        except ValueError:
+            # search term is not a number
+            filters.extend([Q(comment__icontains=search),
+                            Q(description__icontains=search),
+                            Q(user__first_name__icontains=search),
+                            Q(user__last_name__icontains=search),
+                            Q(user__username=search),
+                            Q(lead__client__organisation__company__name__icontains=search),
+                            Q(lead__client__organisation__name__iexact=search),
+                            Q(lead__description__icontains=search),
+                            Q(lead__deal_id__icontains=search)])
+        return filters
+
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
         search = self.request.GET.get(u'search[value]', None)
         if search:
-            qs = qs.filter(Q(comment__icontains=search) |
-                           Q(description__icontains=search) |
-                           Q(user__first_name__icontains=search) |
-                           Q(user__last_name__icontains=search) |
-                           Q(user__username=search) |
-                           Q(lead__client__organisation__company__name__icontains=search) |
-                           Q(lead__client__organisation__name__iexact=search) |
-                           Q(lead__description__icontains=search) |
-                           Q(lead__deal_id__icontains=search) |
-                           Q(amount=search))
-            qs = qs.distinct()
+            filters = self.get_filters(search)
+            query = Q()
+            for filter in filters:
+                query |= filter
+            qs = qs.filter(query).distinct()
         return qs
 
     def render_column(self, row, column):
