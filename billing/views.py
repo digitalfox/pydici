@@ -399,6 +399,7 @@ def client_bills_archive(request):
     """Review all client bill """
     return render(request, "billing/client_bills_archive.html",
                   {"data_url": urlresolvers.reverse('client_bills_archive_DT'),
+                   "datatable_options": ''' "order": [[2, "desc"]] ''',
                    "user": request.user})
 
 
