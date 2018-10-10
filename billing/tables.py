@@ -12,14 +12,13 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 from core.utils import to_int_or_round
-from crm.views import ThirdPartyMixin
+from billing.views import BillingRequestMixin
 from billing.models import ClientBill, SupplierBill
 from people.models import Consultant
 
 
-class BillTableDT(ThirdPartyMixin, BaseDatatableView):
+class BillTableDT(BillingRequestMixin, BaseDatatableView):
     """Base bill table backend for datatables"""
-    max_display_length = 500
 
     def get_filters(self, search):
         """Custom method to get Q filter objects that should be combined with OR keyword"""
@@ -95,7 +94,7 @@ class ClientBillArchiveTableDT(BillTableDT):
     """Client bill archive"""
     columns = ("bill_id", "lead","creation_date", "state", "amount", "amount_with_vat", "comment")
     order_columns = columns
-    max_display_length = 20
+    max_display_length = 100
 
     def get_initial_queryset(self):
         return ClientBill.objects.exclude(state__in=("0_DRAFT", "0_PROPOSED"))

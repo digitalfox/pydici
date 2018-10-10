@@ -46,7 +46,7 @@ from crm.models import Subsidiary
 from core.utils import get_fiscal_years, get_parameter, user_has_feature
 from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth
-from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature
+from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
 from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
 from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper
 
@@ -118,6 +118,10 @@ def bill_payment_delay(request):
                   {"direct_delays": directDelays,
                    "indirect_delays": indirectDelays,
                    "user": request.user},)
+
+
+class BillingRequestMixin(PydiciFeatureMixin):
+    pydici_feature = "billing_request"
 
 
 @pydici_non_public
