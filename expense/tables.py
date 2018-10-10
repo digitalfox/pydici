@@ -52,8 +52,9 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         """Custom method to get Q filter objects that should be combined with OR keyword"""
         filters = []
         try:
-            fsearch = float(search)
-            filters = [Q(amount=fsearch),]
+            # Just try to cast to see if we have a number but use str for filter to allow proper casting by django himself
+            float(search)
+            filters = [Q(amount=search),]
 
         except ValueError:
             # search term is not a number

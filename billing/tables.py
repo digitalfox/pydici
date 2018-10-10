@@ -24,9 +24,10 @@ class BillTableDT(BillingRequestMixin, BaseDatatableView):
         """Custom method to get Q filter objects that should be combined with OR keyword"""
         filters = []
         try:
-            fsearch = float(search)
-            filters.extend([Q(amount=fsearch),
-                            Q(amount_with_vat=fsearch)])
+            # Just try to cast to see if we have a number but use str for filter to allow proper casting by django himself
+            float(search)
+            filters.extend([Q(amount=search),
+                            Q(amount_with_vat=search)])
         except ValueError:
             # search term is not a number
             filters.extend([Q(bill_id__icontains=search),
