@@ -39,7 +39,7 @@ from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMi
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm
-from people.utils import getScopes, getSubsidiaryFromRequest
+from people.utils import get_scopes, get_subsidiary_from_request
 
 TIMESTRING_FORMATTER = {
     'cycle': formats.number_format,
@@ -425,7 +425,7 @@ def pdc_review(request, year=None, month=None):
     else:
         staffing.sort(cmp=lambda x, y: cmp(x[0].profil.level, y[0].profil.level))  # Sort by level
 
-    scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
+    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team)
     if team:
         team_name = _(u"team %(manager_name)s") % {"manager_name": team}
     else:
@@ -479,7 +479,7 @@ def prod_report(request, year=None, month=None):
     #TODO: extract that in CSV as well
 
     team = None
-    subsidiary = getSubsidiaryFromRequest(request)
+    subsidiary = get_subsidiary_from_request(request)
     months = []
     n_month = 5
     tooltip_template = get_template("staffing/_consultant_prod_tooltip.html")
@@ -589,7 +589,7 @@ def prod_report(request, year=None, month=None):
     data.append([None, totalData])
 
     # Get scopes
-    scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
+    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team)
     if team:
         team_name = _(u"team %(manager_name)s") % {"manager_name": team}
     else:
@@ -628,7 +628,7 @@ def fixed_price_missions_report(request):
         data.append((mission, round(mission.done_work_k()[1],1), current_margin, target_margin))
 
     # Get scopes
-    scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, None, target="subsidiary")
+    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, None, target="subsidiary")
 
     return render(request, "staffing/fixed_price_report.html",
                   {"data": data,
@@ -1016,7 +1016,7 @@ def mission_csv_timesheet(request, mission, consultants):
 def all_timesheet(request, year=None, month=None):
 
     # var for filtering
-    subsidiary = getSubsidiaryFromRequest(request)
+    subsidiary = get_subsidiary_from_request(request)
     timesheets = None
 
     if year and month:
@@ -1040,7 +1040,6 @@ def all_timesheet(request, year=None, month=None):
     consultants = Consultant.objects.filter(id__in=consultants).order_by("name")
     missions = sortMissions(Mission.objects.filter(id__in=missions))
     charges = {}
-
 
     if "csv" in request.GET:
         # Simple consultant list
@@ -1093,14 +1092,13 @@ def all_timesheet(request, year=None, month=None):
     # Mission 2, M2/C1, M2/C2, M2/C3
     # with. tk   C1,    C2,    C3...
 
-
     if "csv" in request.GET and charges:
         # Return CSV timesheet
         return all_csv_timesheet(request, charges, month)
     else:
 
         # Get scopes
-        scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, None, include_team=False)
+        scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, None, target="subsidiary")
 
         # Return html page
         return render(request, "staffing/all_timesheet.html",
@@ -1108,7 +1106,6 @@ def all_timesheet(request, year=None, month=None):
                        "next_date": next_date,
                        "previous_date": previous_date,
                        "month": month,
-                       "year": year,
                        "consultants": consultants,
                        "missions": missions,
                        "charges": charges,
