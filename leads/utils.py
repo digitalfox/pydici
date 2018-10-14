@@ -182,16 +182,59 @@ def tag_leads_files(leads):
                     tag_id = rows[0][0]
                     print("Tag ", tag, " found, id: ", tag_id)
 
-                # Find all files of the lead
-                # TODO: tag business and delivery with appropriate tags
+                # Find all business files of the lead
                 lead_dir = DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id)
                 cursor.execute(REQUEST_FILES_ID.format(lead_dir=lead_dir,
                                                        first_level_dir=DOCUMENT_PROJECT_BUSINESS_DIR))
                 lead_files = cursor.fetchall()
 
+                cursor.execute(REQUEST_TAG_ID.format(tag_name=DOCUMENT_PROJECT_BUSINESS_DIR))
+                rows = cursor.fetchall()
+                if len(rows) == 0:
+                    # Tag doesn't exist, we create it
+                    cursor.execute(create_tag, (DOCUMENT_PROJECT_BUSINESS_DIR, "1", "1"))
+                    business_tag_id = cursor.lastrowid
+                else:
+                    # Tag exists, fetch the first result
+                    business_tag_id = rows[0][0]
+
                 data_file_mapping = []
                 for lead_file in lead_files:
                     print("Setting the tag : ", tag, " - ", tag_id, " on file ", lead_file[0])
+                    data_file_mapping.append({
+                        'file_id': lead_file[0],
+                        'object_type': '"files"',
+                        'tag_id': business_tag_id
+                    })
+                    data_file_mapping.append({
+                        'file_id': lead_file[0],
+                        'object_type': '"files"',
+                        'tag_id': tag_id
+                    })
+
+                # Doing the same for delivery files
+                cursor.execute(REQUEST_FILES_ID.format(lead_dir=lead_dir,
+                                                       first_level_dir=DOCUMENT_PROJECT_DELIVERY_DIR))
+                lead_files = cursor.fetchall()
+
+                cursor.execute(REQUEST_TAG_ID.format(tag_name=DOCUMENT_PROJECT_DELIVERY_DIR))
+                rows = cursor.fetchall()
+                if len(rows) == 0:
+                    # Tag doesn't exist, we create it
+                    cursor.execute(create_tag, (DOCUMENT_PROJECT_DELIVERY_DIR, "1", "1"))
+                    delivery_tag_id = cursor.lastrowid
+                else:
+                    # Tag exists, fetch the first result
+                    delivery_tag_id = rows[0][0]
+
+                data_file_mapping = []
+                for lead_file in lead_files:
+                    print("Setting the tag : ", tag, " - ", tag_id, " on file ", lead_file[0])
+                    data_file_mapping.append({
+                        'file_id': lead_file[0],
+                        'object_type': '"files"',
+                        'tag_id': delivery_tag_id
+                    })
                     data_file_mapping.append({
                         'file_id': lead_file[0],
                         'object_type': '"files"',
@@ -214,20 +257,21 @@ def remove_lead_tag(lead, tag):
         cursor.execute(REQUEST_TAG_ID.format(tag_name=tag))
         rows = cursor.fetchall()
         if len(rows) == 0:
-            # Tag doesn't exist, we create it
-            # TODO: raise?
-            print("Tag doesn't exist?")
+            # Tag doesn't exist, hence we don't do anything
+            return
         else:
             # Tag exists, fetch the first result
             tag_id = rows[0][0]
             print("Tag ", tag, " found, id: ", tag_id)
 
         # Find all files of the lead
-        # TODO: tag business and delivery with appropriate tags
         lead_dir = DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id)
         cursor.execute(REQUEST_FILES_ID.format(lead_dir=lead_dir,
                                                first_level_dir=DOCUMENT_PROJECT_BUSINESS_DIR))
         lead_files = cursor.fetchall()
+        cursor.execute(REQUEST_FILES_ID.format(lead_dir=lead_dir,
+                                               first_level_dir=DOCUMENT_PROJECT_DELIVERY_DIR))
+        lead_files.extend(cursor.fetchall())
 
         data_file_mapping = []
         for lead_file in lead_files:
