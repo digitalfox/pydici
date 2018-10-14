@@ -29,6 +29,7 @@ from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
+from leads.utils import tag_leads_files, remove_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
 import pydici.settings
@@ -293,7 +294,7 @@ def add_tag(request):
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity()  # update lead similarity model in background
-        #TODO: call here tag_lead_files
+        tag_leads_files([lead])  # Update lead tags from lead files
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
         answer["tag_url"] = urlresolvers.reverse("leads.views.tag", args=[tag.id, ])
         answer["tag_remove_url"] = urlresolvers.reverse("leads.views.remove_tag", args=[tag.id, lead.id])
@@ -317,7 +318,7 @@ def remove_tag(request, tag_id, lead_id):
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity()  # update lead similarity model in background
-        # TODO: call here tag_lead_files
+        remove_lead_tag(lead, tag)  # Remove the lead tag from the lead files
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         answer["error"] = True
     return HttpResponse(json.dumps(answer), content_type="application/json")

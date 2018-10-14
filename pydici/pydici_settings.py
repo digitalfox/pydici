@@ -51,3 +51,7 @@ TELEGRAM_STICKERS = {
                         "happy": "BQADBAADQAADyIsGAAGMQCvHaYLU_AI",
                         "sad": "BQADBAADFQADyIsGAAEO_vKI0MR5bAI",
                     }
+
+# Nextcloud document tag integration
+NEXTCLOUD_TAG_IS_ENABLED = True # Wether to enable or not Nextcloud tag add/remove by Pydici
+NEXTCLOUD_DATABASE = "nextcloud"

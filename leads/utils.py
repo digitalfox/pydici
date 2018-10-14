@@ -12,15 +12,30 @@ from django.contrib import messages
 from django.contrib.admin.models import LogEntry, ADDITION, ContentType
 from django.utils.encoding import force_unicode
 from django.core import urlresolvers
+from django.template.defaultfilters import slugify
 
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from staffing.models import Mission
 from leads.models import StateProba
 from core.utils import send_lead_mail, get_parameter
 from pydici.pydici_settings import TELEGRAM_IS_ENABLED, TELEGRAM_CHAT, TELEGRAM_TOKEN, TELEGRAM_STICKERS
+from pydici.pydici_settings import NEXTCLOUD_TAG_IS_ENABLED, NEXTCLOUD_DATABASE
+from pydici.pydici_settings import DOCUMENT_PROJECT_LEAD_DIR, DOCUMENT_PROJECT_DELIVERY_DIR, DOCUMENT_PROJECT_BUSINESS_DIR
+
 
 if TELEGRAM_IS_ENABLED:
     import telegram
+
+if NEXTCLOUD_TAG_IS_ENABLED:
+    import mysql.connector
+
+# Nextcloud database queries
+REQUEST_TAG_ID = u"SELECT id FROM oc_systemtag st WHERE st.name = '{tag_name}'"
+CREATE_TAG = u"INSERT INTO oc_systemtag (name, visibility, editable) VALUES (%s, %s, %s)"
+REQUEST_FILES_ID = u"SELECT fileid FROM oc_filecache WHERE path LIKE 'client/%{lead_dir}/{first_level_dir}/%' AND mimetype <> 2 LIMIT 5"
+TAG_FILE = (u"INSERT INTO oc_systemtag_object_mapping (objectid, objecttype, systemtagid) VALUES (%(file_id)s, %(object_type)s, %(tag_id)s) "
+            u"ON DUPLICATE KEY UPDATE objectid=objectid")
+UNTAG_FILE = u"DELETE FROM oc_systemtag_object_mapping WHERE objectid=%(file_id)s AND objecttype=%(object_type)s AND systemtagid=%(tag_id)s"
 
 
 def create_default_mission(lead):
@@ -143,16 +158,92 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
 
 def tag_leads_files(leads):
     """Tag all files of given leads.
-    Can be called from tag views (when adding tags) or tag batch (for new files or initial sync"""
-    #TODO: make this a background task
-    connect = connect_to_nextcloud_db()
-    #TODO: check if tags exist in catalog, else create it
-    #TODO: for lead in leads. Find files, create tag / file link if it does not already exist
+    Can be called from tag views (when adding tags) or tag batch (for new files or initial sync)"""
+    # TODO: make this a background task
+    try:
+        connection = connect_to_nextcloud_db()
+        cursor = connection.cursor()
+
+        for lead in leads:
+            # Get all the lead tags
+            tags = lead.tags.all().values_list('name', flat=True)
+            for tag in tags:
+                # Get the tag id in nextcloud database
+                cursor.execute(REQUEST_TAG_ID.format(tag_name=tag))
+                rows = cursor.fetchall()
+                if len(rows) == 0:
+                    # Tag doesn't exist, we create it
+                    print(CREATE_TAG.format(tag, "1", "1"))
+                    cursor.execute(CREATE_TAG, (tag, "1", "1"))
+                    tag_id = cursor.lastrowid
+                    print("Tag ", tag, " doesn't exist, created with id ", tag_id)
+                else:
+                    # Tag exists, fetch the first result
+                    tag_id = rows[0][0]
+                    print("Tag ", tag, " found, id: ", tag_id)
+
+                # Find all files of the lead
+                # TODO: tag business and delivery with appropriate tags
+                lead_dir = DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id)
+                cursor.execute(REQUEST_FILES_ID.format(lead_dir=lead_dir,
+                                                       first_level_dir=DOCUMENT_PROJECT_BUSINESS_DIR))
+                lead_files = cursor.fetchall()
+
+                data_file_mapping = []
+                for lead_file in lead_files:
+                    print("Setting the tag : ", tag, " - ", tag_id, " on file ", lead_file[0])
+                    data_file_mapping.append({
+                        'file_id': lead_file[0],
+                        'object_type': '"files"',
+                        'tag_id': tag_id
+                    })
+                cursor.executemany(TAG_FILE, data_file_mapping)
+
+                # Commit the changes to the database
+                connection.commit()
+    finally:
+        connection.close()
 
 
 def remove_lead_tag(lead, tag):
     """ Remove tag on given lead"""
-    pass
+    try:
+        connection = connect_to_nextcloud_db()
+        cursor = connection.cursor()
+
+        cursor.execute(REQUEST_TAG_ID.format(tag_name=tag))
+        rows = cursor.fetchall()
+        if len(rows) == 0:
+            # Tag doesn't exist, we create it
+            # TODO: raise?
+            print("Tag doesn't exist?")
+        else:
+            # Tag exists, fetch the first result
+            tag_id = rows[0][0]
+            print("Tag ", tag, " found, id: ", tag_id)
+
+        # Find all files of the lead
+        # TODO: tag business and delivery with appropriate tags
+        lead_dir = DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id)
+        cursor.execute(REQUEST_FILES_ID.format(lead_dir=lead_dir,
+                                               first_level_dir=DOCUMENT_PROJECT_BUSINESS_DIR))
+        lead_files = cursor.fetchall()
+
+        data_file_mapping = []
+        for lead_file in lead_files:
+            print("Removing the tag : ", tag, " - ", tag_id, " on file ", lead_file[0])
+            data_file_mapping.append({
+                'file_id': lead_file[0],
+                'object_type': '"files"',
+                'tag_id': tag_id
+            })
+
+        cursor.executemany(UNTAG_FILE, data_file_mapping)
+
+        # Commit the changes to the database
+        connection.commit()
+    finally:
+        connection.close()
 
 
 def merge_lead_tag(old_tag, target_tag):
@@ -163,6 +254,12 @@ def merge_lead_tag(old_tag, target_tag):
 
 def connect_to_nextcloud_db():
     """Create a connexion to nextcloud database"""
-    #TODO: get parameters on pydici settings
-    #TODO: create database connexion, handle connection errors, return connection object
-    pass
+    # TODO: get parameters on pydici settings
+    # TODO: create database connexion, handle connection errors, return connection object
+    try:
+        connection = mysql.connector.connect(host="localhost", database=NEXTCLOUD_DATABASE,
+                                             user="root", password="")
+        print "Connected!"
+        return connection
+    except mysql.connector.Error as e:
+        print "Error on mySQL connection" + e.msg
