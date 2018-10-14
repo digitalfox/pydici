@@ -173,14 +173,11 @@ def tag_leads_files(leads):
                 rows = cursor.fetchall()
                 if len(rows) == 0:
                     # Tag doesn't exist, we create it
-                    print(CREATE_TAG.format(tag, "1", "1"))
                     cursor.execute(CREATE_TAG, (tag, "1", "1"))
                     tag_id = cursor.lastrowid
-                    print("Tag ", tag, " doesn't exist, created with id ", tag_id)
                 else:
                     # Tag exists, fetch the first result
                     tag_id = rows[0][0]
-                    print("Tag ", tag, " found, id: ", tag_id)
 
                 # Find all business files of the lead
                 lead_dir = DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id)
@@ -200,7 +197,6 @@ def tag_leads_files(leads):
 
                 data_file_mapping = []
                 for lead_file in lead_files:
-                    print("Setting the tag : ", tag, " - ", tag_id, " on file ", lead_file[0])
                     data_file_mapping.append({
                         'file_id': lead_file[0],
                         'object_type': '"files"',
@@ -229,7 +225,6 @@ def tag_leads_files(leads):
 
                 data_file_mapping = []
                 for lead_file in lead_files:
-                    print("Setting the tag : ", tag, " - ", tag_id, " on file ", lead_file[0])
                     data_file_mapping.append({
                         'file_id': lead_file[0],
                         'object_type': '"files"',
@@ -262,7 +257,6 @@ def remove_lead_tag(lead, tag):
         else:
             # Tag exists, fetch the first result
             tag_id = rows[0][0]
-            print("Tag ", tag, " found, id: ", tag_id)
 
         # Find all files of the lead
         lead_dir = DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id)
@@ -275,7 +269,6 @@ def remove_lead_tag(lead, tag):
 
         data_file_mapping = []
         for lead_file in lead_files:
-            print("Removing the tag : ", tag, " - ", tag_id, " on file ", lead_file[0])
             data_file_mapping.append({
                 'file_id': lead_file[0],
                 'object_type': '"files"',
