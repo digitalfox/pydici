@@ -260,8 +260,8 @@ class BillExpense(models.Model):
         if self.expense:  # use expense data to fill in data if not provided
             if not self.expense_date:  # Use expense date if not provided
                 self.expense_date = self.expense.expense_date
-            if not self.amount_with_vat:  # Use expense amount if not provided
-                self.amount_with_vat = self.expense.amount
+            if not self.amount:  # Use expense amount if not provided
+                self.amount = self.expense.amount
             if not self.label: # Use expense description
                 self.label = self.expense.description
 
