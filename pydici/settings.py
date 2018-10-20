@@ -152,9 +152,9 @@ INSTALLED_APPS = [
     'django_extensions',
     'django.contrib.staticfiles',  # Static files are served by web server in production mode, but this apps allow collectstatic
     'taggit',
-    'taggit_templatetags',
-    'permissions',
-    'workflows',
+    'taggit_templatetags2',
+    #'permissions',
+    #'workflows',
     'django_tables2',
     'crispy_forms',
     'django_select2',

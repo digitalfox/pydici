@@ -7,9 +7,10 @@
 import os
 
 # Django import
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
+import django.views.static
 
 admin.autodiscover()
 
@@ -36,18 +37,18 @@ from batch.incwo.urls import incwo_urls
 # Overide internal server error view
 handler500 = "core.views.internal_error"
 
-pydici_patterns = patterns('', (r'^admin/', include(admin.site.urls)))
+pydici_patterns = [url(r'^admin/', admin.site.urls),]
 
 if pydici.settings.DEBUG:
     import debug_toolbar
-    pydici_patterns += patterns('', url(r'^__debug__/', include(debug_toolbar.urls)),)
+    pydici_patterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
 
-pydici_patterns += patterns('',
+pydici_patterns.extend([
     # Direct to template and direct pages
     url(r'^help', RedirectView.as_view(url=get_parameter("HELP_PAGE"), permanent=True), name='help'),
 
     # Media
-    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+    url(r'^media/(?P<path>.*)$', django.views.static.serve,
             {'document_root': os.path.join(pydici.settings.PYDICI_ROOTDIR, 'media')}),
 
     # Feeds
@@ -58,21 +59,20 @@ pydici_patterns += patterns('',
     url(r'^feeds/latestStaffing/?$', LatestStaffing(), name='latestStaffing'),
     url(r'^feeds/myLatestStaffing/?$', MyLatestStaffing(), name='myLatestStaffing'),
     url(r'^feeds/archivedMission/?$', ArchivedMission(), name='archivedMission'),
-)
+    ])
 
 
 # Include pydici modules URLs
-pydici_patterns += patterns("",
-                            ("", include(core_urls)),
-                            ("people/", include(people_urls)),
-                            ("crm/", include(crm_urls)),
-                            ("staffing/", include(staffing_urls)),
-                            ("billing/", include(billing_urls)),
-                            ("actionset/", include(actionset_urls)),
-                            ("expense/", include(expense_urls)),
-                            ("leads/", include(leads_urls)),
-                            ("incwo/", include(incwo_urls)),
-                            )
+pydici_patterns.extend([url("", include(core_urls)),
+                        url("people/", include(people_urls)),
+                        url("crm/", include(crm_urls)),
+                        url("staffing/", include(staffing_urls)),
+                        url("billing/", include(billing_urls)),
+                        url("actionset/", include(actionset_urls)),
+                        url("expense/", include(expense_urls)),
+                        url("leads/", include(leads_urls)),
+                        url("incwo/", include(incwo_urls)),
+                        ])
 
 
 # Application prefix
@@ -82,4 +82,4 @@ else:
     pydici_prefix = ''
 
 # Define URL patterns
-urlpatterns = patterns('', (pydici_prefix, include(pydici_patterns)))
+urlpatterns = [url(pydici_prefix, include(pydici_patterns))]

@@ -1,7 +1,7 @@
-django>=1.8.9,<1.9.0
+django>=1.9.0,<1.10.0
 django_tables2==1.16
 django-taggit==0.22.2
-django-taggit-templatetags==0.4.6.dev0
+django-taggit-templatetags2
 -e git://github.com/bport/django-permissions.git@fix_get_roles#egg=django-permissions
 -e git://github.com/diefenbach/django-workflows.git#egg=django-workflows
 django-extensions==2.0.7

@@ -8,7 +8,8 @@ Database access layer for pydici CRM module
 from datetime import date, timedelta
 
 from django.db import models
-from django.db.models import Sum, Q, get_model
+from django.db.models import Sum, Q
+from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core import urlresolvers
@@ -323,8 +324,8 @@ class Client(AbstractAddress):
     def getFinancialConditions(self):
         """Get financial condition for this client by profil
         @return: ((profil1, avgrate1), (profil2, avgrate2)...)"""
-        FinancialCondition = get_model("staffing", "FinancialCondition")
-        ConsultantProfile = get_model("people", "ConsultantProfile")
+        FinancialCondition = apps.get_model("staffing", "FinancialCondition")
+        ConsultantProfile = apps.get_model("people", "ConsultantProfile")
         data = {}
         rates = []
 
@@ -354,7 +355,7 @@ class Client(AbstractAddress):
     def objectiveMargin(self):
         """Compute margin over budget objective across all mission of this client
         @return: list of (margin in €, margin in % of total turnover) for internal consultant and subcontractor"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         consultantMargin = 0
         subcontractorMargin = 0
 
@@ -376,7 +377,7 @@ class Client(AbstractAddress):
     def fixedPriceMissionMargin(self):
         """Compute total fixed price margin in €  mission for this client. Only finished mission (ie archived) are
         considered"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         margin = 0
         missions = Mission.objects.filter(lead__client=self, active=False,
                                           lead__state = "WON", billing_mode="FIXED_PRICE")

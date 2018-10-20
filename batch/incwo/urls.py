@@ -5,10 +5,10 @@ URL dispatcher for Incwo module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.conf.urls import patterns
+from django.conf.urls import url
+import batch.incwo.views as v
 
 
-incwo_urls = patterns('batch.incwo.views',
-                      (r'^/?$', 'imports'),
-                      (r'^/(?P<log_dir>[-:T0-9]+)$', 'details'),
-                      )
+incwo_urls = [url(r'^$', v.imports),
+              url(r'^(P<log_dir>[-:T0-9]+)$', v.details),
+            ]

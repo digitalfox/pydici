@@ -4,10 +4,9 @@
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.conf.urls import patterns
+from django.conf.urls import url
+import actionset.views as v
 
-
-actionset_urls = patterns('actionset.views',
-                          (r'^$', 'actionset_catalog'),
-                          (r'^(?P<action_state_id>\d+)/(?P<state>\w+)', 'update_action_state'),
-                          )
+actionset_urls = [url(r'^$', v.actionset_catalog),
+                  url(r'^(?P<action_state_id>\d+)/(?P<state>\w+)', v.update_action_state),
+                  ]
