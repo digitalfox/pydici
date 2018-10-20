@@ -85,7 +85,7 @@
                 {% if forloop.counter > 12 %}
                     <div class="collapse collapse-business-territory">
                 {% endif %}
-                <li class="col-sm-6"><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
+                <li class="col-sm-6"><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
                 {% if forloop.counter > 12 %}
                     </div>
                 {% endif %}
@@ -110,7 +110,7 @@
                 {% if forloop.counter > 12 %}
                     <div class="collapse collapse-clients">
                 {% endif %}
-                <li class="col-sm-6"><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
+                <li class="col-sm-6"><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
                 {% if forloop.counter > 12 %}
                     </div>
                 {% endif %}

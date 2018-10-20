@@ -32,8 +32,8 @@
 </div>
 
 {% if pydici_feature.contacts_write %}
-    <a role="button" class="btn btn-default" href="{% url 'contact_update' contact.id %}">{% trans "edit" %}</a>
-    <a role="button" class="btn btn-danger" style="color:#FFFFFF" href="{% url 'contact_delete' contact.id %}">{% trans "delete" %}</a>
+    <a role="button" class="btn btn-default" href="{% url 'crm:contact_update' contact.id %}">{% trans "edit" %}</a>
+    <a role="button" class="btn btn-danger" style="color:#FFFFFF" href="{% url 'crm:contact_delete' contact.id %}">{% trans "delete" %}</a>
 <br/><br/>
 {% endif %}
 

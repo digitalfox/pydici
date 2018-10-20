@@ -31,7 +31,7 @@
     </ul>
     {% endif %}
 
-    <h2><a href="{% url 'crm.views.company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a>
+    <h2><a href="{% url 'crm:company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a>
         {% with lead.client as client %}{% include "crm/_client_picto.html" %}{% endwith %}
         - <a href="{% url 'leads.views.lead' lead.id %}" class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
@@ -118,7 +118,7 @@
             <table class="table table-hover table-striped table-condensed">
                 <tr>
                     <th>{% trans "Contact" %}</th>
-                    <td>{% if lead.client.contact %}<a href="{% url 'contact_detail' lead.client.contact.id %}">{{ lead.client.contact }}</a> {% else %}{% trans "Unknown" context "client" %} {% endif %} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}</td>
+                    <td>{% if lead.client.contact %}<a href="{% url 'crm:contact_detail' lead.client.contact.id %}">{{ lead.client.contact }}</a> {% else %}{% trans "Unknown" context "client" %} {% endif %} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}</td>
                 </tr>
                 <tr>
                     <th>{% trans "Deal id" %}</th><td>{{ lead.deal_id }}</td>

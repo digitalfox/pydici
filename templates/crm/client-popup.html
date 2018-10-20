@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 
-<form method="post" id="pydici-ajax-form-client" action="{% url 'crm.views.client_organisation_company_popup' %}">
+<form method="post" id="pydici-ajax-form-client" action="{% url 'crm:client_organisation_company_popup' %}">
     {% crispy clientForm clientForm.inline_helper %}
     {% crispy contactForm contactForm.inline_helper %}
     {% crispy organisationForm organisationForm.inline_helper %}

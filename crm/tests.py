@@ -25,7 +25,7 @@ class CrmViewsTest(TestCase):
 
     def test_client_all_in_one(self):
         self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        view = urlresolvers.reverse("crm.views.client_organisation_company_popup")
+        view = urlresolvers.reverse("crm:client_organisation_company_popup")
         error_tag = "form-group has-error"
 
         # Initial data

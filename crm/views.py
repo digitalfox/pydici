@@ -41,7 +41,7 @@ class ContactReturnToMixin(object):
             target = self.object.contact.id
         else:
             target = self.object.id
-        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("contact_detail", args=[target, ])
+        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("crm:contact_detail", args=[target, ])
 
 
 class ThirdPartyMixin(PydiciFeatureMixin):
@@ -98,7 +98,7 @@ class ContactList(PydiciNonPublicdMixin, ThirdPartyMixin, ListView):
 @pydici_feature("3rdparties")
 def contact_list(request):
     return render(request, "crm/contact_list.html",
-                  {"data_url": urlresolvers.reverse("all_contacts_table_DT"),
+                  {"data_url": urlresolvers.reverse("crm:all_contacts_table_DT"),
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [1] },
                                                    { className: "hidden-xs hidden-sm hidden-md", "targets": [6]}],
                                    "order": [[0, "asc"]] ''',
@@ -181,7 +181,7 @@ def client(request, client_id=None):
         if form.is_valid():
             client = form.save()
             client.save()
-            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[client.organisation.company.id]))
+            return HttpResponseRedirect(urlresolvers.reverse("crm:company_detail", args=[client.organisation.company.id]))
     else:
         if client:
             form = ClientForm(instance=client)  # A form that edit current client
@@ -286,7 +286,7 @@ def clientOrganisation(request, client_organisation_id=None):
         if form.is_valid():
             clientOrganisation = form.save()
             clientOrganisation.save()
-            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[clientOrganisation.company.id]))
+            return HttpResponseRedirect(urlresolvers.reverse("crm:company_detail", args=[clientOrganisation.company.id]))
     else:
         if clientOrganisation:
             form = ClientOrganisationForm(instance=clientOrganisation)  # A form that edit current client organisation
@@ -317,7 +317,7 @@ def company(request, company_id=None):
         if form.is_valid():
             company = form.save()
             company.save()
-            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[company.id]))
+            return HttpResponseRedirect(urlresolvers.reverse("crm:company_detail", args=[company.id]))
     else:
         if company:
             form = CompanyForm(instance=company)  # A form that edit current company

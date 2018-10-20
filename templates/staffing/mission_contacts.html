@@ -6,7 +6,7 @@
 {% for mission_contact in mission_contacts %}
     {% ifchanged mission_contact.company %}
         {% if not loop.first %}</table>{% endif %}
-        <h3><a href="{% url 'crm.views.company_detail' mission_contact.company.id %}">{{ mission_contact.company }}</a></h3>
+        <h3><a href="{% url 'crm:company_detail' mission_contact.company.id %}">{{ mission_contact.company }}</a></h3>
         <table class="table table-hover table-striped table-condensed">
          <tr>
             <th>{% trans "Name" %}</th>
@@ -39,7 +39,7 @@
         <input class="btn btn-default" type="submit" value="{% trans 'Save' %}"/>
     </form>
        <br/>
-    <a href="{% url 'mission_contact_add' %}?return_to={% url 'staffing.views.mission_home' mission.id %}#goto_tab-contacts" class="btn btn-default">{% trans "New mission contact" %}</a>
+    <a href="{% url 'crm:mission_contact_create' %}?return_to={% url 'staffing.views.mission_home' mission.id %}#goto_tab-contacts" class="btn btn-default">{% trans "New mission contact" %}</a>
     <a class="btn btn-default" href="javascript:;"
        onClick="$('#contact_display').show();$('#contact_edit').hide();">
        {% trans "Close" %}</a>

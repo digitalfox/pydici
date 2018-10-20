@@ -36,7 +36,7 @@
             <h2>{% trans "Contacts"%}</h2>
             <ul>
             {% for contact in contacts %}
-                <li><a href="{% url 'contact_detail' contact.id %}">{{ contact }} ({{ contact.company }})</a></li>
+                <li><a href="{% url 'crm:contact_detail' contact.id %}">{{ contact }} ({{ contact.company }})</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -47,7 +47,7 @@
             <h2>{% trans "Companies"%}</h2>
             <ul>
             {% for company in companies %}
-                <li><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
+                <li><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
             {% endfor %}
             </ul>
         </div>

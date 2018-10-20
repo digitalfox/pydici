@@ -161,6 +161,7 @@ class SimpleTest(TestCase):
                      "/staffing/timesheet/mission/3/",
                      "/people/detail/consultant/1/",
                      ):
+            print(page)
             response = self.client.get(PREFIX + page)
             self.failUnlessEqual(response.status_code, 302)
 

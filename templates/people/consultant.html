@@ -22,7 +22,7 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="consultant-tabs">
         {% if consultant.subcontractor %}
-            <li class="active"><a data-toggle="tab" href="#tab-home" data-tab-url="{% url 'people.views.subcontractor_detail' consultant.id %}"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
+            <li class="active"><a data-toggle="tab" href="#tab-home" data-tab-url="{% url 'people:subcontractor_detail' consultant.id %}"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
         {% else %}
             <li class="active"><a data-toggle="tab" href="#tab-home" data-tab-url="{% url 'people:consultant_detail' consultant.id %}"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
         {% endif %}

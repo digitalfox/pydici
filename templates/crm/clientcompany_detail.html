@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<h1><a href="{% url 'crm.views.company' company.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ company }}</a> ({{ company.code }})</h1>
+<h1><a href="{% url 'crm:company' company.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ company }}</a> ({{ company.code }})</h1>
 {% if company.web %}{{ company.web|urlize }}<br/><br/>{% endif %}
 
 
@@ -30,9 +30,9 @@
         <li><a data-toggle="tab" href="#tab-leads"><span class="glyphicon glyphicon-list"></span> {% trans "Leads" %}</a></li>
         <li><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"></span> {% trans "Consultants" %}</a></li>
         <li><a data-toggle="tab" href="#tab-contacts"><span class="glyphicon glyphicon-envelope"></span> {% trans "Client contacts" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-rates-margin" data-tab-url="{% url 'company_rates_margin' company.id %}"><span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Rates and margin" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-billing" data-tab-url="{% url 'company_billing' company.id %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'crm.views.company_pivotable' company.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-rates-margin" data-tab-url="{% url 'crm:company_rates_margin' company.id %}"><span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Rates and margin" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-billing" data-tab-url="{% url 'crm:company_billing' company.id %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'crm:company_pivotable' company.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
         <li><a data-toggle="tab" href="#tab-all-companies"><span class="glyphicon glyphicon-folder-open"></span> {% trans "All companies list" %}</a></li>
     </ul>
 </div>
@@ -344,7 +344,7 @@
         <h2>{% trans "Business owner for this company:" %}</h2>
             <ul>
                 <li>{% if company.businessOwner %}{% with consultant=company.businessOwner %}{% include "people/__consultant_name.html" %}{% endwith %}
-                    {% else %} <a href="{% url 'crm.views.company' company.id %}">{% trans "To be defined" %}</a>
+                    {% else %} <a href="{% url 'crm:company' company.id %}">{% trans "To be defined" %}</a>
                     {% endif %}</li>
             </ul>
         <h2>{% trans "Consultants that work for this company:" %}</h2>
@@ -401,7 +401,7 @@
                     <td>
                     {% if admincontact.contact %}
                         {% if pydici_feature.contacts_write %}
-                            <a rel=external href="{% url 'contact_update' admincontact.contact.id %}?return_to={{ request.get_full_path }}">
+                            <a rel=external href="{% url 'crm:contact_update' admincontact.contact.id %}?return_to={{ request.get_full_path }}">
                             {{ admincontact.contact.name }}
                             </a>
                         {% else %}
@@ -423,7 +423,7 @@
              {% include "core/_datatables-dj-tables.html" %}
         {% endwith %}
         {% if pydici_feature.contacts_write %}
-        <br/><a class="btn btn-default" href="{% url 'administrative_contact_add' %}?company={{ company.id|safe }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
+        <br/><a class="btn btn-default" href="{% url 'crm:administrative_contact_add' %}?company={{ company.id|safe }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
         {% endif %}
     </div>
 
