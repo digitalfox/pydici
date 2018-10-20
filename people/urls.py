@@ -8,8 +8,8 @@ from django.conf.urls import url
 import people.views as v
 
 
-people_urls = [url(r'^home/consultant/(?P<consultant_id>\d+)/$', v.consultant_home_by_id),
-               url(r'^home/consultant/(?P<consultant_trigramme>[a-zA-Z]{3})/$', v.consultant_home),
-               url(r'^detail/consultant/(?P<consultant_id>\d+)/$', v.consultant_detail),
-               url(r'^detail/subcontractor/(?P<consultant_id>\d+)/$', v.subcontractor_detail),
+people_urls = [url(r'^home/consultant/(?P<consultant_id>\d+)/$', v.consultant_home_by_id, name="consultant_home_by_id"),
+               url(r'^home/consultant/(?P<consultant_trigramme>[a-zA-Z]{3})/$', v.consultant_home, name="consultant_home"),
+               url(r'^detail/consultant/(?P<consultant_id>\d+)/$', v.consultant_detail, name="consultant_detail"),
+               url(r'^detail/subcontractor/(?P<consultant_id>\d+)/$', v.subcontractor_detail, name="subcontractor_detail"),
                ]

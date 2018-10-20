@@ -89,7 +89,7 @@ def link_to_consultant(value, arg=None):
         if consultant.subcontractor or arg == "nolink":
             result = escape(name)
         else:
-            result = "<a href='%s'>%s</a>" % (reverse("people.views.consultant_home", args=[consultant.trigramme, ]),
+            result = "<a href='%s'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme, ]),
                                         escape(name))
         result = mark_safe(result)
         cache.set("link_to_consultant_%s" % value, result, 180)
@@ -109,7 +109,7 @@ def link_to_timesheet(value, arg=None):
     @param value: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
-        url = "<a href='%s#tab-timesheet'>%s</a>" % (reverse("people.views.consultant_home", args=[c.trigramme, ]),
+        url = "<a href='%s#tab-timesheet'>%s</a>" % (reverse("people:consultant_home", args=[c.trigramme, ]),
                                         escape(_("My timesheet")))
         return mark_safe(url)
     except Consultant.DoesNotExist:
@@ -122,7 +122,7 @@ def link_to_staffing(value, arg=None):
     @param arg: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
-        url = "<a href='%s#tab-staffing'>%s</a>" % (reverse("people.views.consultant_home", args=[c.trigramme, ]),
+        url = "<a href='%s#tab-staffing'>%s</a>" % (reverse("people:consultant_home", args=[c.trigramme, ]),
                                         escape(_("My staffing")))
         return mark_safe(url)
     except Consultant.DoesNotExist:

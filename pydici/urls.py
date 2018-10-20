@@ -64,7 +64,7 @@ pydici_patterns.extend([
 
 # Include pydici modules URLs
 pydici_patterns.extend([url("", include(core_urls)),
-                        url("people/", include(people_urls)),
+                        url("people/", include(people_urls, namespace="people")),
                         url("crm/", include(crm_urls)),
                         url("staffing/", include(staffing_urls)),
                         url("billing/", include(billing_urls)),
