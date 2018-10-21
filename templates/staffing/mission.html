@@ -25,7 +25,7 @@
     <a href="{% url 'crm:company_detail' mission.lead.client.organisation.company.id %}">{{ mission.lead.client.organisation }}</a>
     {% with mission.lead.client as client %}{% include "crm/_client_picto.html" %}{% endwith %} :
 {% endif %}
-    <a href="{% url 'mission_update' mission.id %}?return_to={% url 'staffing.views.mission_home' mission.id %}" class='changelink' >{{ mission.short_name }}</a>
+    <a href="{% url 'staffing:mission_update' mission.id %}?return_to={% url 'staffing:mission_home' mission.id %}" class='changelink' >{{ mission.short_name }}</a>
 </h1>
 
 <div>
@@ -33,11 +33,11 @@
     <ul class="nav nav-tabs" id="mission-tabs" role="tablist">
         <li role="presentation" class="active"><a data-toggle="tab" href="#tab-home"><span class="glyphicon glyphicon-home"></span> {% trans "Description" %}</a></li>
         <li role="presentation"><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"></span> {% trans "Consultants" %}</a></li>
-        <li role="presentation"><a data-toggle="tab" href="#tab-contacts" data-tab-url="{% url 'staffing.views.mission_contacts' mission.id %}"><span class="glyphicon glyphicon-envelope"></span> {% trans "Contacts" %}</a></li>
+        <li role="presentation"><a data-toggle="tab" href="#tab-contacts" data-tab-url="{% url 'staffing:mission_contacts' mission.id %}"><span class="glyphicon glyphicon-envelope"></span> {% trans "Contacts" %}</a></li>
         <li role="presentation"><a data-toggle="tab" href="#tab-other-missions" id="tabheader-other-missions"><span class="glyphicon glyphicon-list"></span> {% trans "Other missions" %}</a></li>
-        <li role="presentation"><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing.views.mission_timesheet' mission.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
+        <li role="presentation"><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing:mission_timesheet' mission.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
         {% if mission.active %}
-            <li role="presentation"><a data-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'manual_mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'staffing:manual_mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
         {% endif %}
         {% if mission.lead %}
             <li role="presentation"><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense.views.lead_expenses' mission.lead.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
@@ -58,7 +58,7 @@
                        <div id="mission_no_staffing_warning" class="alert alert-warning">
                            {% trans "This mission has no staffing in future" %}.
                            {% if mission.lead %}<strong>{% trans "Still to be billed" %}: {{ mission.lead.still_to_be_billed|floatformat:-2 }} €. </strong>{% endif %}
-                            <button onClick="$.get('{% url 'staffing.views.deactivate_mission' mission.id %}', process_mission_archive)"
+                            <button onClick="$.get('{% url 'staffing:deactivate_mission' mission.id %}', process_mission_archive)"
                                class="btn btn-default">{% trans "Archive this mission" %}</button>
                        </div>
                    {% else %}
@@ -165,7 +165,7 @@
         </tr>
         {% for sister_mission in mission.sister_missions %}
         <tr>
-	        <td><a href="{% url 'staffing.views.mission_home' sister_mission.id %}">{{ sister_mission }}</a></td>
+	        <td><a href="{% url 'staffing:mission_home' sister_mission.id %}">{{ sister_mission }}</a></td>
 	        <td>{{ sister_mission.mission_id }}</td>
 	        <td>{{ sister_mission.done_work_k.0 }}</td>
 	        <td>{{ sister_mission.done_work_k.1|floatformat }}</td>
@@ -235,7 +235,7 @@
 <!--
 $(document).ready(function() {
 {% if mission.active %}
-    $(".jeditable-rate").editable("{% url 'staffing.views.mission_consultant_rate' %}", { 
+    $(".jeditable-rate").editable("{% url 'staffing:mission_consultant_rate' %}", {
         indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
         tooltip   : "{% trans 'click to edit...' %}",
         event     : "click",
@@ -247,13 +247,13 @@ $(document).ready(function() {
           }
     });
 
-    $(".jeditable-mission-update").editable("{% url 'mission_inline_update' %}", { 
+    $(".jeditable-mission-update").editable("{% url 'staffing:mission_inline_update' %}", {
         indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
         tooltip   : "{% trans 'click to edit...' %}",
         event     : "click",
         style  : "inherit",
         type   : "select",
-        loadurl : "{% url 'mission_inline_update' %}",
+        loadurl : "{% url 'staffing:mission_inline_update' %}",
         submit : 'OK',
         onblur : 'submit',
     });

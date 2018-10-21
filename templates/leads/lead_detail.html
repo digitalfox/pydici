@@ -218,7 +218,7 @@
         </tr>
         {% for mission in lead.mission_set.all %}
         <tr>
-            <td><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></td>
+            <td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></td>
             <td>{{ mission.mission_id }}</td>
             <td>{{ mission.done_work_k.0 }}</td>
             <td>{{ mission.done_work_k.1|floatformat }}</td>
@@ -239,7 +239,7 @@
         </table>
         </div>
         {% if perms.staffing.add_mission %}
-            <a class="btn btn-default" href="{% url 'staffing.views.create_new_mission_from_lead' lead.id %}">{% trans "Create a new mission for this lead" %}</a>
+            <a class="btn btn-default" href="{% url 'staffing:create_new_mission_from_lead' lead.id %}">{% trans "Create a new mission for this lead" %}</a>
         {% endif %}
     {% else %}
         <br/>

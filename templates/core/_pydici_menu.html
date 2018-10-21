@@ -33,9 +33,9 @@
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Missions" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                 {% if pydici_feature.staffing_mass %}
-                    <li><a href="{% url 'pdcreview-index' %}">{% trans "Workload schedule" %}</a></li>
+                    <li><a href="{% url 'staffing:pdcreview-index' %}">{% trans "Workload schedule" %}</a></li>
                 {% endif %}
-                <li><a href="{% url 'missions' %}">{% trans "Active missions" %}</a></li>
+                <li><a href="{% url 'staffing:missions' %}">{% trans "Active missions" %}</a></li>
                 {% with user.username|link_to_timesheet as link %}
                     {% if link %}<li>{{ link }}</li>{% endif %}
                 {% endwith %}
@@ -45,7 +45,7 @@
                     {% endwith %}
                 {% endif %}
                 {% if pydici_feature.staffing_mass %}
-                    <li><a href="{% url 'staffing.views.mass_staffing' %}">{% trans "Mass staffing" %}</a></li>
+                    <li><a href="{% url 'staffing:mass_staffing' %}">{% trans "Mass staffing" %}</a></li>
                 {% endif %}
             </ul>
         </li>
@@ -69,7 +69,7 @@
         {% if pydici_feature.management %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Management" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-                <li><a href="{% url 'staffing.views.holidays_planning' %}">{% trans "Holidays planning" %}</a></li>
+                <li><a href="{% url 'staffing:holidays_planning' %}">{% trans "Holidays planning" %}</a></li>
                 <li><a href="{% url 'actionset.views.actionset_catalog' %}">{% trans "Actionset catalog" %}</a></li>
                 {% if perms.actionset.change_actionstate %}
                     <li><a href="{% url 'admin:actionset_actionstate_changelist' %}">{% trans "On going actions" %}</a></li>
@@ -102,11 +102,11 @@
             <ul class="dropdown-menu" role="menu">
                 <li class="dropdown-header">{% trans "Operationnal reporting" %}</li>
                 <li><a href="{% url 'dashboard' %}">{% trans "Management dashboard" %}</a></li>
-                <li><a href="{% url 'staffing.views.all_timesheet' %}">{% trans "All people timesheet" %}</a></li>
-                <li><a href="{% url 'staffing.views.prod_report' %}">{% trans "Staff production" %}</a></li>
-                <li><a href="{% url 'staffing.views.fixed_price_missions_report' %}">{% trans "Fixed price missions" %}</a></li>
-                <li><a href="{% url 'holidays-pivotable' %}">{% trans "Holiday pivot table" %}</a></li>
-                <li><a href="{% url 'nonprod-pivotable' %}">{% trans "Non productive missions pivot table" %}</a></li>
+                <li><a href="{% url 'staffing:all_timesheet' %}">{% trans "All people timesheet" %}</a></li>
+                <li><a href="{% url 'staffing:prod_report' %}">{% trans "Staff production" %}</a></li>
+                <li><a href="{% url 'staffing:fixed_price_missions_report' %}">{% trans "Fixed price missions" %}</a></li>
+                <li><a href="{% url 'staffing:holidays-pivotable' %}">{% trans "Holiday pivot table" %}</a></li>
+                <li><a href="{% url 'staffing:nonprod-pivotable' %}">{% trans "Non productive missions pivot table" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Leads" %}</li>
                 <li><a href="{% url 'leads-pivotable' %}">{% trans "Leads pivot table" %}</a></li>

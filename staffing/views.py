@@ -100,9 +100,9 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
 def missions(request, onlyActive=True):
     """List of missions"""
     if onlyActive:
-        data_url = urlresolvers.reverse('active_mission_table_DT')
+        data_url = urlresolvers.reverse('staffing:active_mission_table_DT')
     else:
-        data_url = urlresolvers.reverse('all_mission_table_DT')
+        data_url = urlresolvers.reverse('staffing:all_mission_table_DT')
     return render(request, "staffing/missions.html",
                   {"all": not onlyActive,
                    "data_url": data_url,
@@ -134,7 +134,7 @@ def mission_staffing(request, mission_id, form_mode="manual"):
 
     if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # This view should only be accessed by ajax request. Redirect lost users
-        return redirect(mission_home, mission_id)
+        return redirect("staffing:mission_home", mission_id)
 
     StaffingFormSet = inlineformset_factory(Mission, Staffing,
                                             formset=MissionStaffingInlineFormset,
@@ -235,7 +235,7 @@ def mass_staffing(request):
                         staffing.save()
             # Redirect to self to display a new unbound form
             messages.add_message(request, messages.INFO, _("Staffing has been updated"))
-            return HttpResponseRedirect(urlresolvers.reverse("staffing.views.mass_staffing"))
+            return HttpResponseRedirect(urlresolvers.reverse("staffing:mass_staffing"))
     else:
         # An unbound form
         form = MassStaffingForm(staffing_dates=staffing_dates)
@@ -818,7 +818,7 @@ def mission_timesheet(request, mission_id):
 
     if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # This view should only be accessed by ajax request. Redirect lost users
-        return redirect(mission_home, mission_id)
+        return redirect("staffing:mission_home", mission_id)
 
     # Gather timesheet (Only consider timesheet up to current month)
     timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
@@ -1046,7 +1046,7 @@ def all_timesheet(request, year=None, month=None):
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = to_int_or_round(timesheet["sum"], 2)
     for mission in missions:
-        missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]),
+        missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("staffing:mission_home", args=[mission.id, ]),
                                         escape(unicode(mission)))
         if "csv" in request.GET:
             # Simple mission name
@@ -1306,7 +1306,7 @@ def create_new_mission_from_lead(request, lead_id):
 
     # Redirect user to change page of the mission
     # in order to type description and deal id
-    return HttpResponseRedirect(urlresolvers.reverse("mission_update", args=[mission.id, ]) + "?return_to=" + lead.get_absolute_url() + "#goto_tab-missions")
+    return HttpResponseRedirect(urlresolvers.reverse("staffing:mission_update", args=[mission.id, ]) + "?return_to=" + lead.get_absolute_url() + "#goto_tab-missions")
 
 
 @pydici_non_public
@@ -1382,7 +1382,7 @@ def mission_contacts(request, mission_id):
         form = MissionContactsForm(request.POST, instance=mission)
         if form.is_valid():
             form.save()
-        return HttpResponseRedirect(urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]))
+        return HttpResponseRedirect(urlresolvers.reverse("staffing:mission_home", args=[mission.id, ]))
 
     # Unbound form
     form = MissionContactsForm(instance=mission)
@@ -1400,7 +1400,7 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
     form_class = MissionForm
 
     def get_success_url(self):
-        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("mission_home", args=[self.object.id, ])
+        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("staffing:mission_home", args=[self.object.id, ])
 
 
 @pydici_non_public

@@ -316,7 +316,7 @@ class Mission(models.Model):
 
 
     def get_absolute_url(self):
-        return reverse('staffing.views.mission_home', args=[str(self.id)])
+        return reverse('staffing:mission_home', args=[str(self.id)])
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "id", "description"]

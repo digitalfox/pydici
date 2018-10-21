@@ -27,12 +27,12 @@
             <li class="active"><a data-toggle="tab" href="#tab-home" data-tab-url="{% url 'people:consultant_detail' consultant.id %}"><span class="glyphicon glyphicon-home"></span> {% trans "Home" %}</a></li>
         {% endif %}
         {% if request.GET.year and request.GET.month %}
-            <li><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing.views.consultant_timesheet' consultant.id request.GET.year request.GET.month %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
+            <li><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing:consultant_timesheet' consultant.id request.GET.year request.GET.month %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
         {% else %}
-            <li><a href="#tab-timesheet" data-tab-url="{% url 'staffing.views.consultant_timesheet' consultant.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
+            <li><a href="#tab-timesheet" data-tab-url="{% url 'staffing:consultant_timesheet' consultant.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
         {% endif %}
         {% if pydici_feature.staffing %}
-            <li><a data-toggle="tab" href="#tab-staffing"  data-tab-url="{% url 'staffing.views.consultant_staffing' consultant.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
+            <li><a data-toggle="tab" href="#tab-staffing"  data-tab-url="{% url 'staffing:consultant_staffing' consultant.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
         {% endif %}
         <li><a data-toggle="tab" href="#tab-missions"><span class="glyphicon glyphicon-list"></span> {% trans "Missions" %}</a></li>
     </ul>
@@ -55,10 +55,10 @@
         <tbody>
         {% for mission in consultant.current_missions %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <th scope="row"><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></th>
+                <th scope="row"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></th>
                 <td>{{ mission.mission_id }}</td>
                 <td>{{ mission.probability }} %</td>
-                <td scope="row"><a href="{% url 'mission_update' mission.id %}?return_to={% url 'people:consultant_home' consultant.trigramme %}#goto_tab-missions" title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}' class='changelink'><em>{% trans "Change" %}</em></a></td>
+                <td scope="row"><a href="{% url 'staffing:mission_update' mission.id %}?return_to={% url 'people:consultant_home' consultant.trigramme %}#goto_tab-missions" title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}' class='changelink'><em>{% trans "Change" %}</em></a></td>
             </tr>
         {% endfor %}
         </tbody>

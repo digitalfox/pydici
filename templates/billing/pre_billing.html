@@ -36,7 +36,7 @@
 {% for lead, lead_data in time_spent_billing %}
     <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
     {% for mission, mission_data in lead_data.1.items %}
-        <h5><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }})</a></h5>
+        <h5><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }})</a></h5>
             <div class="row">
             <div class="col-lg-4 col-md-6 col-sm-8">
             <table class="table table-condensed table-striped table-hover">
@@ -75,7 +75,7 @@
         <h3>{% trans "Fixed price mission(s)" %}</h3>
         <ul>
     {% endifchanged %}
-    <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }}) : </a>
+    <li><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }}) : </a>
         {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
         <a class="btn btn-default" href="{% url 'client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.3" target="_blank">{% trans "Bill 30% for this mission" %}</a>
         <a class="btn btn-default" href="{% url 'client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.7" target="_blank">{% trans "Bill 70% for this mission" %}</a>
@@ -94,7 +94,7 @@
     {% for lead, lead_data in subsidiary_internal_billing %}
         <h2><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
         {% for mission, mission_data in lead_data.1.items %}
-            <h5><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }})</a></h5>
+            <h5><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }})</a></h5>
                 <div class="row">
                 <div class="col-lg-4 col-md-6 col-sm-8">
                 <table class="table table-condensed table-striped table-hover">
@@ -132,7 +132,7 @@
         <h2>{{ mission.lead }} ({{ mission.lead.deal_id }})</h2>
         <ul>
     {% endifchanged %}
-    <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }}) : </a>
+    <li><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }}) : </a>
     {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
 {% endfor %}
 

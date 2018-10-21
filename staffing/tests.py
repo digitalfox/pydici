@@ -95,7 +95,7 @@ class StaffingViewsTest(TestCase):
         mission = Mission(lead=lead, subsidiary_id=1, billing_mode="TIME_SPENT", nature="PROD", probability=100)
         mission.save()
         cache.clear()  # avoid bad computation due to rates cache with previous values
-        response = self.client.get(urlresolvers.reverse("staffing.views.mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.client.get(urlresolvers.reverse("staffing:mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["margin"], 0)
         self.assertEqual(response.context["objective_margin_total"], 0)
@@ -123,7 +123,7 @@ class StaffingViewsTest(TestCase):
         mission.save()
         # Let's test if computation are rights
         cache.clear()  # avoid bad computation due to rates cache with previous values
-        response = self.client.get(urlresolvers.reverse("staffing.views.mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.client.get(urlresolvers.reverse("staffing:mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["margin"], 0)  # That's because we are in fixed price
         self.assertEqual(response.context["objective_margin_total"], 2600)
@@ -132,7 +132,7 @@ class StaffingViewsTest(TestCase):
         # Switch to fixed price mission
         mission.billing_mode = "FIXED_PRICE"
         mission.save()
-        response = self.client.get(urlresolvers.reverse("staffing.views.mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.client.get(urlresolvers.reverse("staffing:mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["margin"], 2.1)
         self.assertEqual(response.context["objective_margin_total"], 2600)

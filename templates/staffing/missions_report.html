@@ -24,14 +24,14 @@
         <div id="date-selector" class="btn-group" role="group">
             {% for year in years %}
                 <a class="btn btn-default {% ifequal year selected_year %}active{% endifequal %}"
-                   {% ifequal nature "HOLIDAYS" %}href="{% url 'holidays-pivotable-year' year %}"
-                   {% else %}                     href="{% url 'nonprod-pivotable-year' year %}"
+                   {% ifequal nature "HOLIDAYS" %}href="{% url 'staffing:holidays-pivotable-year' year %}"
+                   {% else %}                     href="{% url 'staffing:nonprod-pivotable-year' year %}"
                    {% endifequal %}
                     >{{ year }}</a>
             {% endfor %}
                 <a class="btn btn-default {% ifequal 'all' selected_year %}active{% endifequal %}"
-                   {% ifequal nature "HOLIDAYS" %}href="{% url 'holidays-pivotable-all' %}"
-                   {% else %}                     href="{% url 'nonprod-pivotable-all' %}"
+                   {% ifequal nature "HOLIDAYS" %}href="{% url 'staffing:holidays-pivotable-all' %}"
+                   {% else %}                     href="{% url 'staffing:nonprod-pivotable-all' %}"
                    {% endifequal %}
             >{% trans "All" %}</a>
         </div>
