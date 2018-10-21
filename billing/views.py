@@ -301,7 +301,7 @@ def client_bill(request, bill_id=None):
 @pydici_feature("billing_request")
 def clientbill_delete(request, bill_id):
     """Delete client bill in early stage"""
-    redirect_url = urlresolvers.reverse("billing.views.client_bills_in_creation")
+    redirect_url = urlresolvers.reverse("billing:client_bills_in_creation")
     try:
         bill = ClientBill.objects.get(id=bill_id)
         if bill.state in ("0_DRAFT", "0_PROPOSED"):
@@ -389,7 +389,7 @@ def pre_billing(request, year=None, month=None, mine=False):
 def client_bills_in_creation(request):
     """Review client bill in preparation"""
     return render(request, "billing/client_bills_in_creation.html",
-                  {"data_url": urlresolvers.reverse('client_bills_in_creation_DT'),
+                  {"data_url": urlresolvers.reverse('billing:client_bills_in_creation_DT'),
                    "user": request.user})
 
 
@@ -398,7 +398,7 @@ def client_bills_in_creation(request):
 def client_bills_archive(request):
     """Review all client bill """
     return render(request, "billing/client_bills_archive.html",
-                  {"data_url": urlresolvers.reverse('client_bills_archive_DT'),
+                  {"data_url": urlresolvers.reverse('billing:client_bills_archive_DT'),
                    "datatable_options": ''' "order": [[2, "desc"]] ''',
                    "user": request.user})
 
@@ -408,7 +408,7 @@ def client_bills_archive(request):
 def supplier_bills_archive(request):
     """Review all supplier bill """
     return render(request, "billing/supplier_bills_archive.html",
-                  {"data_url": urlresolvers.reverse('supplier_bills_archive_DT'),
+                  {"data_url": urlresolvers.reverse('billing:supplier_bills_archive_DT'),
                    "user": request.user})
 
 

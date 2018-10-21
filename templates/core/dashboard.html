@@ -35,7 +35,7 @@ $('#graph_bar_jqp').load('{% url 'leads.views.graph_bar_jqp' %}')
 <center><h1>{% trans "Billing review and done work" %}</h1></center>
     <div id="graph_billing_jqp_content"></div>
     <script type="text/javascript">
-    $('#graph_billing_jqp_content').load('{% url 'billing.views.graph_billing_jqp' %}')
+    $('#graph_billing_jqp_content').load('{% url 'billing:graph_billing_jqp' %}')
     </script>
 
 <br/>
@@ -69,7 +69,7 @@ $('#graph_bar_jqp').load('{% url 'leads.views.graph_bar_jqp' %}')
     <div id="yearly_billing_graph_content" class="col-lg-12"></div>
     <script type="text/javascript">
     $(document).ready(function() {
-        $('#yearly_billing_graph_content').load("{% url 'billing.views.graph_yearly_billing' %}")
+        $('#yearly_billing_graph_content').load("{% url 'billing:graph_yearly_billing' %}")
      });
     </script>
 

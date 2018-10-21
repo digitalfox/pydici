@@ -41,10 +41,10 @@ class BillStorage(FileSystemStorage):
             bill_id = os.path.split(dirname(name))[1]
             if self.nature == "client":
                 bill = ClientBill.objects.get(bill_id=bill_id)
-                return reverse("billing.views.bill_file", kwargs={"bill_id": bill.id, "nature": "client"})
+                return reverse("billing:bill_file", kwargs={"bill_id": bill.id, "nature": "client"})
             else:
                 bill = SupplierBill.objects.get(bill_id=bill_id)
-                return reverse("billing.views.bill_file", kwargs={"bill_id": bill.id, "nature": "supplier"})
+                return reverse("billing:bill_file", kwargs={"bill_id": bill.id, "nature": "supplier"})
         except Exception:
             # Don't display URL if Bill does not exist or path is invalid
             return ""

@@ -36,12 +36,12 @@
     <td>{% if expense.chargeable %}
             {% if expense.clientbill_set.all %}
                 {% for bill in expense.clientbill_set.all %}
-                    <a href="{% url 'client_bill' bill.id %}">{{ bill }}</a>
+                    <a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a>
                     <a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
                 {% endfor %}
             {% elif expense.billexpense_set.all %}
                 {% for billexpense in expense.billexpense_set.all %}
-                    <a href="{% url 'client_bill' billexpense.bill.id %}">{{ billexpense.bill }}</a>
+                    <a href="{% url 'billing:client_bill' billexpense.bill.id %}">{{ billexpense.bill }}</a>
                     <a href='{{ billexpense.bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
                 {% endfor %}
             {% else %}

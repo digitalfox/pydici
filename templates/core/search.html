@@ -69,7 +69,7 @@
     <h2>{% trans "Client Bills" %}</h2>
     <ul>
     {% for bill in bills %}
-        <li><a href="{% url 'client_bill' bill.id %}?return_to={{ request.get_full_path }}">{{ bill }} - {{ bill.lead }} ({{ bill.get_state_display }})</a></li>
+        <li><a href="{% url 'billing:client_bill' bill.id %}?return_to={{ request.get_full_path }}">{{ bill }} - {{ bill.lead }} ({{ bill.get_state_display }})</a></li>
     {% endfor %}
     </ul>
 {% endif %}
