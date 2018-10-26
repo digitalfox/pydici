@@ -1046,22 +1046,25 @@ def all_timesheet(request, year=None, month=None):
         data = list(consultants)
     else:
         # drill down link
-        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (urlresolvers.reverse("people.views.consultant_home", args=[consultant.trigramme]),
+        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet' class='pydici-tooltip' title='%s'>%s</a>" % (urlresolvers.reverse("people.views.consultant_home", args=[consultant.trigramme]),
                                                                                    month.year,
                                                                                    month.month,
-                                                                                   escape(unicode(consultant)))) for consultant in consultants]
-    data = [[_("Mission"), _("Mission id")] + data]
+                                                                                   escape(unicode(consultant.name)),
+                                                                                   escape(unicode(consultant.trigramme)))) for consultant in consultants]
+    data = [[_("Mission")] + data]
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = to_int_or_round(timesheet["sum"], 2)
     for mission in missions:
-        missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]),
+        missionUrl = "<a href='%s' class='pydici-tooltip' title='%s'>%s</a>" % (urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]),
+                                        escape(unicode(mission.mission_id())),
                                         escape(unicode(mission)))
         if "csv" in request.GET:
             # Simple mission name
             consultantData = [unicode(mission), mission.mission_id()]
         else:
             # Drill down link
-            consultantData = [mark_safe(missionUrl), mission.mission_id()]
+            # consultantData = [mark_safe(missionUrl), mission.mission_id()]
+            consultantData = [mark_safe(missionUrl)]
         for consultant in consultants:
             consultantData.append(charges.get((mission.id, consultant.id), 0))
         data.append(consultantData)
