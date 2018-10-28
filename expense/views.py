@@ -68,7 +68,7 @@ def expenses(request, expense_id=None, clone_from=None):
             expense.creation_date = date.today()
             expense.save()
             wf.set_initial_state(expense)  # Start a new workflow for this expense
-            return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
+            return HttpResponseRedirect(urlresolvers.reverse("expense:expenses"))
     else:
         if expense_id:
             form = ExpenseForm(instance=expense)  # A form that edit current expense
@@ -180,7 +180,7 @@ def expenses_history(request):
     @param year: year of history. If None, display recent items and year index"""
 
     return render(request, "expense/expense_archive.html",
-                  {"data_url": urlresolvers.reverse('expense_table_DT'),
+                  {"data_url": urlresolvers.reverse('expense:expense_table_DT'),
                    "data_options": ''' "pageLength": 25,
                                        "order": [[0, "desc"]],
                                        "columnDefs": [{ "orderable": false, "targets": [6, 9] },
@@ -303,7 +303,7 @@ def expense_payments(request, expense_payment_id=None):
                     expense.expensePayment = expensePayment
                     expense.workflow_in_progress = False
                     expense.save()
-            return HttpResponseRedirect(urlresolvers.reverse("expense.views.expense_payments"))
+            return HttpResponseRedirect(urlresolvers.reverse("expense:expense_payments"))
         else:
             print "form is not valid"
 
@@ -316,7 +316,7 @@ def expense_payments(request, expense_payment_id=None):
 
     return render(request, "expense/expense_payments.html",
                   {"modify_expense_payment": bool(expense_payment_id),
-                   "data_url": urlresolvers.reverse('expense_payment_table_DT'),
+                   "data_url": urlresolvers.reverse('expense:expense_payment_table_DT'),
                    "data_options": ''' "pageLength": 25,
                         "order": [[0, "desc"]],
                         "columnDefs": [{ "orderable": false, "targets": [1, 2, 4] }]''',

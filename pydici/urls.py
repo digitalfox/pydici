@@ -69,7 +69,7 @@ pydici_patterns.extend([url("", include(core_urls)),
                         url("staffing/", include(staffing_urls, namespace="staffing")),
                         url("billing/", include(billing_urls, namespace="billing")),
                         url("actionset/", include(actionset_urls, namespace="actionset")),
-                        url("expense/", include(expense_urls)),
+                        url("expense/", include(expense_urls, namespace="expense")),
                         url("leads/", include(leads_urls)),
                         url("incwo/", include(incwo_urls)),
                         ])

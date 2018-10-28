@@ -136,21 +136,21 @@ class ExpenseWorkflowTable(ExpenseTable):
         result = []
         for transition in self.transitionsData[record.id]:
             result.append("""<a role='button' title='%s' class='btn btn-default btn-xs' href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
-                          % (unicode(transition), reverse("expense.views.update_expense_state", args=[record.id, transition.id]), unicode(transition)[0:2]))
+                          % (unicode(transition), reverse("expense:update_expense_state", args=[record.id, transition.id]), unicode(transition)[0:2]))
         if self.expenseEditPerm[record.id]:
             result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>"
                           % (smart_bytes(_("Edit")),
-                             reverse("expense.views.expenses", kwargs={"expense_id": record.id}),
+                             reverse("expense:expenses", kwargs={"expense_id": record.id}),
                              # Translators: Ed is the short term for Edit
                              smart_bytes(_("Ed"))))
             result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
                           (smart_bytes(_("Delete")),
-                           reverse("expense.views.expense_delete",kwargs={"expense_id": record.id}),
+                           reverse("expense:expense_delete",kwargs={"expense_id": record.id}),
                            # Translators: De is the short term for Delete
                            smart_bytes(_("De"))))
         result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
                       (smart_bytes(_("Clone")),
-                      reverse("expense.views.expenses", kwargs={"clone_from": record.id}),
+                      reverse("expense:expenses", kwargs={"clone_from": record.id}),
                        # Translators: Cl is the short term for Clone
                       smart_bytes(_("Cl"))))
         return mark_safe(" ".join(result))
@@ -178,9 +178,9 @@ class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
 class ExpensePaymentTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"), orderable=False)
     amount = tables.Column(verbose_name=_("Amount"), orderable=False)
-    id = tables.LinkColumn(viewname="expense.views.expense_payment_detail", args=[A("pk")])
-    detail = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_payment_detail' record.id %}"><img src='{{MEDIA_URL}}pydici/menu/magnifier.png'/></a>""", verbose_name=_("detail"), orderable=False)
-    modify = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>""", verbose_name=_("change"), orderable=False)
+    id = tables.LinkColumn(viewname="expense:expense_payment_detail", args=[A("pk")])
+    detail = tables.TemplateColumn("""<a href="{% url 'expense:expense_payment_detail' record.id %}"><img src='{{MEDIA_URL}}pydici/menu/magnifier.png'/></a>""", verbose_name=_("detail"), orderable=False)
+    modify = tables.TemplateColumn("""<a href="{% url 'expense:expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>""", verbose_name=_("change"), orderable=False)
     payment_date = tables.TemplateColumn("""<span title="{{ record.payment_date|date:"Ymd" }}">{{ record.payment_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
 
     def render_user(self, value):
@@ -201,7 +201,7 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
     order_columns = columns
     max_display_length = 500
     date_template = get_template("core/_date_column.html")
-    modification_template = Template("""<a href="{% url 'expense.views.expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/>""")
+    modification_template = Template("""<a href="{% url 'expense:expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/>""")
 
     def get_initial_queryset(self):
         try:

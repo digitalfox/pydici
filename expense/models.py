@@ -27,7 +27,7 @@ class ExpenseStorage(FileSystemStorage):
     def url(self, name):
         try:
             expense_id = split(dirname(name))[1]
-            return reverse("expense.views.expense_receipt", kwargs={"expense_id": expense_id})
+            return reverse("expense:expense_receipt", kwargs={"expense_id": expense_id})
         except Exception:
             # Don't display URL if Expense does not exist or path is invalid
             return ""
@@ -69,7 +69,7 @@ class ExpensePayment(models.Model):
         return amount
 
     def get_absolute_url(self):
-        return reverse('expense.views.expense_payment_detail', args=[str(self.id)])
+        return reverse('expense:expense_payment_detail', args=[str(self.id)])
 
 
     class Meta:

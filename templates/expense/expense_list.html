@@ -50,7 +50,7 @@
         {% else %}
             {% trans "No" %}
         {% endif %}</td>
-    <td>{% if expense.receipt %}<a href="{% url 'expense.views.expense_receipt' expense.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}</td>
+    <td>{% if expense.receipt %}<a href="{% url 'expense:expense_receipt' expense.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}</td>
     <td>{{ expense.state }}</td>
     <td>{{ expense.expense_date }}</td>
     <td>{{ expense.update_date }}</td>
@@ -60,7 +60,7 @@
 </tbody>
 </table>
 {% if lead %}
-    <a href="{% url 'expense.views.lead_expenses' lead.id %}?csv" class="btn btn-default">{% trans "Export expenses in a spreadsheet" %}</a>
+    <a href="{% url 'expense:lead_expenses' lead.id %}?csv" class="btn btn-default">{% trans "Export expenses in a spreadsheet" %}</a>
 {% endif %}
 {% with "expenses-table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
 {% else %}

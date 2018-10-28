@@ -40,7 +40,7 @@
             <li role="presentation"><a data-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'staffing:manual_mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
         {% endif %}
         {% if mission.lead %}
-            <li role="presentation"><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense.views.lead_expenses' mission.lead.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense:lead_expenses' mission.lead.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
             <li role="presentation"><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads.views.lead_documents' mission.lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
             <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads.views.lead_pivotable' mission.lead.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
         {% endif %}
