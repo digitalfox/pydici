@@ -70,7 +70,7 @@
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Management" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'staffing:holidays_planning' %}">{% trans "Holidays planning" %}</a></li>
-                <li><a href="{% url 'actionset.views.actionset_catalog' %}">{% trans "Actionset catalog" %}</a></li>
+                <li><a href="{% url 'actionset:actionset_catalog' %}">{% trans "Actionset catalog" %}</a></li>
                 {% if perms.actionset.change_actionstate %}
                     <li><a href="{% url 'admin:actionset_actionstate_changelist' %}">{% trans "On going actions" %}</a></li>
                 {% endif %}
