@@ -18,6 +18,9 @@ body {
 .table-pydici-extra-condensed thead th {
     text-align: center
 }
+.table-pydici-all-timehseets > tbody > tr > td {
+    min-width: 40px;
+}
 
 .noborder {
     border: none !important;
