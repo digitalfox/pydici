@@ -1072,10 +1072,10 @@ def all_timesheet(request, year=None, month=None):
 
     # Compute total per consultant
     if len(charges) > 1:
-        total = [i[2:] for i in charges[1:]]
+        total = [i[1:] for i in charges[1:]]
         total = zip(*total)  # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
         total = [sum(t) for t in total]
-        charges.append([_("Total"), ""] + total)
+        charges.append([_("Total")] + total)
     else:
         # Set charges to None to allow proper message on template
         charges = None
@@ -1088,7 +1088,7 @@ def all_timesheet(request, year=None, month=None):
         ticketData.append(lunchTickets.count())
 
     if charges:
-        charges.append([_("Days without lunch ticket"), ""] + ticketData)
+        charges.append([_("Days without lunch ticket")] + ticketData)
 
     #          , Cons1, Cons2, Cons3
     # Mission 1, M1/C1, M1/C2, M1/C3
