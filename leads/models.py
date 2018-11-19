@@ -279,7 +279,7 @@ class Lead(models.Model):
         return url
 
     def get_absolute_url(self):
-        return reverse('leads.views.detail', args=[str(self.id)])
+        return reverse('leads:detail', args=[str(self.id)])
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]

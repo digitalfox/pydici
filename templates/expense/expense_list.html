@@ -30,8 +30,8 @@
     <td>{{ expense.id }}</td>
     <td>{{ expense.user.username|link_to_consultant }}</td>
     <td>{{ expense.description }}</td>
-    <td>{% if expense.lead %}<a href="{% url 'leads.views.detail' expense.lead.id %}">{{ expense.lead.deal_id }}</a>{% endif %}</td>
-    <td>{% if expense.lead %}<a href="{% url 'leads.views.detail' expense.lead.id %}">{{ expense.lead }}</a>{% endif %}</td>
+    <td>{% if expense.lead %}<a href="{% url 'leads:detail' expense.lead.id %}">{{ expense.lead.deal_id }}</a>{% endif %}</td>
+    <td>{% if expense.lead %}<a href="{% url 'leads:detail' expense.lead.id %}">{{ expense.lead }}</a>{% endif %}</td>
     <td>{{ expense.amount }}</td>
     <td>{% if expense.chargeable %}
             {% if expense.clientbill_set.all %}

@@ -110,7 +110,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
 
 class ExpenseTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"))
-    lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads.views.detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
+    lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads:detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
     receipt = tables.TemplateColumn(template_name="expense/_receipt_column.html")
     state = tables.TemplateColumn(template_name="expense/_expense_state_column.html", orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting

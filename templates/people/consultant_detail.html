@@ -142,7 +142,7 @@
                     <h3 class="pydici-block-title">{% trans "Current leads as responsible" %}</h3>
                     <ul class="row icon-list chevron-right">
                     {% for lead in leads_as_responsible %}
-                        <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
+                        <li><a href="{% url 'leads:detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
                     {% endfor %}
                     </ul>
             </div>
@@ -155,7 +155,7 @@
                     <h3 class="pydici-block-title">{% trans "Current leads as resource" %}</h3>
                     <ul class="icon-list chevron-right">
                     {% for lead in leads_as_staffee %}
-                        <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
+                        <li><a href="{% url 'leads:detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
                     {% endfor %}
                     </ul>
             </div>

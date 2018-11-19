@@ -21,11 +21,11 @@
         {% if pydici_feature.leads %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Leads" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-                <li><a href="{% url 'leads.views.review' %}">{% trans "Current leads review" %}</a></li>
+                <li><a href="{% url 'leads:review' %}">{% trans "Current leads review" %}</a></li>
                 {% if pydici_feature.leads_list_all %}
-                <li><a href="{% url 'leads.views.leads' %}">{% trans "All leads" %}</a></li>
+                <li><a href="{% url 'leads:leads' %}">{% trans "All leads" %}</a></li>
                 {% endif %}
-                <li><a href="{% url 'leads.views.lead' %}">{% trans 'New lead' %}</a></li>
+                <li><a href="{% url 'leads:lead' %}">{% trans 'New lead' %}</a></li>
             </ul>
         </li>
         {% endif %}
@@ -109,7 +109,7 @@
                 <li><a href="{% url 'staffing:nonprod-pivotable' %}">{% trans "Non productive missions pivot table" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Leads" %}</li>
-                <li><a href="{% url 'leads-pivotable' %}">{% trans "Leads pivot table" %}</a></li>
+                <li><a href="{% url 'leads:leads-pivotable' %}">{% trans "Leads pivot table" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Expenses" %}</li>
                 <li><a href="{% url 'expense:chargeable_expenses' %}">{% trans "Chargeable expenses review" %}</a></li>
@@ -121,10 +121,10 @@
                 <li><a href="{% url 'core.views.riskReporting' %}">{% trans "Risks synthesis" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Extractions" %}</li>
-                <li><a href="{% url 'leads.views.csv_export' target='active' %}">{% trans "Active leads (csv)" %}</a></li>
-                <li><a href="{% url 'leads.views.csv_export' target='all' %}">{% trans "All leads (csv)" %}</a></li>
-                <li><a href="{% url 'lead-mail-html' %}">{% trans "Week summary mail (html)" %}</a></li>
-                <li><a href="{% url 'lead-mail-text' %}">{% trans "Week summary mail (text)" %}</a></li>
+                <li><a href="{% url 'leads:csv_export' target='active' %}">{% trans "Active leads (csv)" %}</a></li>
+                <li><a href="{% url 'leads:csv_export' target='all' %}">{% trans "All leads (csv)" %}</a></li>
+                <li><a href="{% url 'leads:summary_mail_html' %}">{% trans "Week summary mail (html)" %}</a></li>
+                <li><a href="{% url 'leads:summary_mail_text' %}">{% trans "Week summary mail (text)" %}</a></li>
                 <li><a href="{% url 'core.views.financialControl' %}">{% trans "Financial control" %}</a></li>
             </ul>
         </li>

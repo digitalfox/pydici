@@ -46,7 +46,7 @@ def send_lead_mail(lead, request, fromAddr=None, fromName=""):
     """
     if not fromAddr:
         fromAddr = get_parameter("MAIL_FROM")
-    url = get_parameter("HOST") + urlresolvers.reverse("leads.views.lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
+    url = get_parameter("HOST") + urlresolvers.reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
     subject = u"[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
     msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj": lead,
                                                                                   "lead_url": url}))

@@ -41,8 +41,8 @@
         {% endif %}
         {% if mission.lead %}
             <li role="presentation"><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense:lead_expenses' mission.lead.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
-            <li role="presentation"><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads.views.lead_documents' mission.lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
-            <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads.views.lead_pivotable' mission.lead.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads:lead_documents' mission.lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
+            <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' mission.lead.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
         {% endif %}
         <li role="presentation"><a data-toggle="tab" href="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
         {% if mission.lead %}<li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>{% endif %}
@@ -109,7 +109,7 @@
                             <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.probability }} %</div></td>
                         </tr>
                         <tr>
-                            <th>{% trans "Lead of this mission" %}</th><td><a href="{% url 'leads.views.detail' mission.lead.id %}">{{ mission.lead }}</a></td>
+                            <th>{% trans "Lead of this mission" %}</th><td><a href="{% url 'leads:detail' mission.lead.id %}">{{ mission.lead }}</a></td>
                         </tr>
                  {% endif %}
                 </table>

@@ -34,7 +34,7 @@
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
-                <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
@@ -82,7 +82,7 @@
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
-                <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
@@ -130,7 +130,7 @@
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
-                <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
@@ -179,7 +179,7 @@
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
-                <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.creation_date }}</td>
@@ -209,7 +209,7 @@
         <tbody>
         {% for lead in leads_without_bill %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><a href="{% url 'leads.views.detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
+                <td><a href="{% url 'leads:detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
                 <td>{% if lead.responsible %}<a href="{% url 'people:consultant_home' lead.responsible.trigramme%}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.sales }}</td>

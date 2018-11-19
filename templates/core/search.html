@@ -58,7 +58,7 @@
             <h2>{% trans "Tags"%}</h2>
             <ul>
             {% for tag in tags %}
-                <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads.views.tag' tag.id %}">{{ tag }}</a></li>
+                <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -80,7 +80,7 @@
         <h2 class="col-lg-12">{% trans "Leads" %}</h2>
         <ul>
         {% for lead in leads %}
-            <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads.views.detail' lead.id %}">{{ lead }} ({{ lead.deal_id|default:_("no deal id") }})</a></li>
+            <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id|default:_("no deal id") }})</a></li>
         {% endfor %}
         </ul>
     {% endif %}
