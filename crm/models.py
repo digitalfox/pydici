@@ -77,7 +77,7 @@ class Subsidiary(AbstractCompany):
 
 class Company(AbstractCompany):
     """Company"""
-    businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True)
+    businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True, on_delete=models.SET_NULL)
     external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
 
     def sales(self, onlyLastYear=False):
@@ -111,7 +111,7 @@ class Company(AbstractCompany):
 class ClientOrganisation(AbstractAddress):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
-    company = models.ForeignKey(Company, verbose_name=_("Client company"))
+    company = models.ForeignKey(Company, verbose_name=_("Client company"), on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"%s : %s " % (self.company, self.name)
@@ -256,7 +256,7 @@ class Contact(models.Model):
 class BusinessBroker(models.Model):
     """A business broken: someone that is not a client but an outsider that act
     as a partner to provide some business"""
-    company = models.ForeignKey(Company, verbose_name=_("Broker company"))
+    company = models.ForeignKey(Company, verbose_name=_("Broker company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
 
     def __unicode__(self):
@@ -279,7 +279,7 @@ class BusinessBroker(models.Model):
 
 class Supplier(models.Model):
     """A supplier is defined by a contact and the supplier company where he works at the moment"""
-    company = models.ForeignKey(Company, verbose_name=_("Supplier company"))
+    company = models.ForeignKey(Company, verbose_name=_("Supplier company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
 
     def __unicode__(self):
@@ -307,7 +307,7 @@ class Client(AbstractAddress):
             ("2_STANDARD", ugettext("Standard")),
             ("3_STRATEGIC", ugettext("Strategic")),
                  )
-    organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Company : Organisation"))
+    organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Company : Organisation"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
     expectations = models.CharField(max_length=30, choices=EXPECTATIONS, default=EXPECTATIONS[2][0], verbose_name=_("Expectations"))
     alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
@@ -430,8 +430,8 @@ class Client(AbstractAddress):
 
 class MissionContact(models.Model):
     """Contact encountered during mission"""
-    company = models.ForeignKey(Company, verbose_name=_("company"))
-    contact = models.ForeignKey(Contact, verbose_name=_("Contact"))
+    company = models.ForeignKey(Company, verbose_name=_("company"), on_delete=models.CASCADE)
+    contact = models.ForeignKey(Contact, verbose_name=_("Contact"), on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"%s (%s)" % (self.contact, self.company)
@@ -459,12 +459,12 @@ class AdministrativeFunction(models.Model):
 
 class AdministrativeContact(models.Model):
     """Administrative contact (team or people) of a company."""
-    company = models.ForeignKey(Company, verbose_name=_("company"))
-    function = models.ForeignKey(AdministrativeFunction, verbose_name=_("Function"))
+    company = models.ForeignKey(Company, verbose_name=_("company"), on_delete=models.CASCADE)
+    function = models.ForeignKey(AdministrativeFunction, verbose_name=_("Function"), on_delete=models.CASCADE)
     default_phone = models.CharField(_("Phone Switchboard"), max_length=30, blank=True, null=True)
     default_mail = models.EmailField(_("Generic email"), max_length=100, blank=True, null=True)
     default_fax = models.CharField(_("Generic fax"), max_length=100, blank=True, null=True)
-    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
+    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"%s (%s)" % (unicode(self.contact), unicode(self.company))

@@ -80,19 +80,19 @@ class ExpensePayment(models.Model):
 class Expense(models.Model):
     """Consultant expense"""
     description = models.CharField(_("Description"), max_length=200)
-    user = models.ForeignKey(User)
-    lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"))
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"), on_delete=models.CASCADE)
     chargeable = models.BooleanField(_("Chargeable"))
     creation_date = models.DateField(_("Date"))
     expense_date = models.DateField(_("Expense date"))
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     amount = models.DecimalField(_("Amount"), max_digits=7, decimal_places=2)
-    category = models.ForeignKey(ExpenseCategory, verbose_name=_("Category"))
+    category = models.ForeignKey(ExpenseCategory, verbose_name=_("Category"), on_delete=models.CASCADE)
     receipt = models.FileField(_("Receipt"), max_length=500, upload_to=expense_receipt_path, storage=ExpenseStorage(), null=True, blank=True)
     corporate_card = models.BooleanField(_("Paid with corporate card"), default=False)
     comment = models.TextField(_("Comments"), blank=True)
     workflow_in_progress = models.BooleanField(default=True)
-    expensePayment = models.ForeignKey(ExpensePayment, blank=True, null=True)
+    expensePayment = models.ForeignKey(ExpensePayment, blank=True, null=True, on_delete=models.SET_NULL)
 
     def __unicode__(self):
         if self.lead:

@@ -67,7 +67,7 @@ def default_bill_id():
 
 class AbstractBill(models.Model):
     """Abstract class that factorize ClientBill and SupplierBill fields and logic"""
-    lead = models.ForeignKey(Lead, verbose_name=_("Lead"))
+    lead = models.ForeignKey(Lead, verbose_name=_("Lead"), on_delete=models.CASCADE)
     bill_id = models.CharField(_("Bill id"), max_length=200, unique=True, default=default_bill_id)
     creation_date = models.DateField(_("Creation date"), default=date.today)
     due_date = models.DateField(_("Due date"), default=default_due_date)
@@ -196,7 +196,7 @@ class SupplierBill(AbstractBill):
     state = models.CharField(_("State"), max_length=30, choices=SUPPLIER_BILL_STATE, default="1_RECEIVED")
     bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path,
                                  storage=BillStorage(nature="supplier"))
-    supplier = models.ForeignKey(Supplier)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     supplier_bill_id = models.CharField(_("Supplier Bill id"), max_length=200)
 
     def save(self, *args, **kwargs):
@@ -218,10 +218,10 @@ class SupplierBill(AbstractBill):
 
 class BillDetail(models.Model):
     """Lines of a client bill that describe what's actually billed for mission"""
-    bill = models.ForeignKey(ClientBill)
-    mission = models.ForeignKey(Mission)
+    bill = models.ForeignKey(ClientBill, on_delete=models.CASCADE)
+    mission = models.ForeignKey(Mission, on_delete=models.CASCADE)
     month = models.DateField(null=True)
-    consultant = models.ForeignKey(Consultant, null=True, blank=True)
+    consultant = models.ForeignKey(Consultant, null=True, blank=True, on_delete=models.CASCADE)
     quantity = models.FloatField(_("Quantity"))
     unit_price = models.DecimalField(_(u"Unit price (€)"), max_digits=10, decimal_places=2)
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
@@ -249,8 +249,8 @@ class BillDetail(models.Model):
 
 class BillExpense(models.Model):
     """Lines of a client bill that describe what's actually billed for expenses and generic stuff"""
-    bill = models.ForeignKey(ClientBill)
-    expense = models.ForeignKey(Expense, verbose_name=_(u"Expense"), null=True, blank=True)
+    bill = models.ForeignKey(ClientBill, on_delete=models.CASCADE)
+    expense = models.ForeignKey(Expense, verbose_name=_(u"Expense"), null=True, blank=True, on_delete=models.SET_NULL)
     expense_date = models.DateField(_(u"Expense date"), null=True)
     amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, null=True, blank=True)
     amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, null=True, blank=True)
