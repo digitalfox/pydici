@@ -36,7 +36,7 @@ from core import utils
 def expenses(request, expense_id=None, clone_from=None):
     """Display user expenses and expenses that he can validate"""
     if not request.user.groups.filter(name="expense_requester").exists():
-        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+        return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
     try:
         consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
         user_team = consultant.userTeam(excludeSelf=False)
@@ -145,7 +145,7 @@ def expense_delete(request, expense_id):
     """Delete given expense if authorized to"""
     expense = None
     if not request.user.groups.filter(name="expense_requester").exists():
-        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+        return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
     try:
         consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
         user_team = consultant.userTeam(excludeSelf=False)
@@ -286,7 +286,7 @@ def expense_payments(request, expense_payment_id=None):
     if request.method == "POST":
         if readOnly:
             # A bad user is playing with urls...
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+            return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
         form = ExpensePaymentForm(request.POST)
         if form.is_valid():
             if expense_payment_id:
@@ -331,14 +331,14 @@ def expense_payments(request, expense_payment_id=None):
 def expense_payment_detail(request, expense_payment_id):
     """Display detail of this expense payment"""
     if not request.user.groups.filter(name="expense_requester").exists():
-        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+        return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
     try:
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
         if not (expensePayment.user() == request.user or\
            utils.has_role(request.user, "expense paymaster") or\
            utils.has_role(request.user, "expense manager")):
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+            return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
 
     except ExpensePayment.DoesNotExist:
         messages.add_message(request, messages.ERROR, _("Expense payment %s does not exist" % expense_payment_id))

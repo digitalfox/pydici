@@ -215,7 +215,7 @@ def client_bill(request, bill_id=None):
     billDetailFormSet = None
     billExpenseFormSet = None
     billing_management_feature = "billing_management"
-    forbiden = HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+    forbiden = HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
     if bill_id:
         try:
             bill = ClientBill.objects.get(id=bill_id)

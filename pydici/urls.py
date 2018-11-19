@@ -17,6 +17,7 @@ admin.autodiscover()
 # Pydici settings
 import pydici.settings
 from core.utils import get_parameter
+from core.views import PydiciSelect2View
 
 # Feeds definition
 from leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
@@ -61,9 +62,11 @@ pydici_patterns.extend([
     url(r'^feeds/archivedMission/?$', ArchivedMission(), name='archivedMission'),
     ])
 
+# Add select2 url
+pydici_patterns.append(url(r"^select2/auto.json$", PydiciSelect2View.as_view(), name="django_select2-json"))
 
 # Include pydici modules URLs
-pydici_patterns.extend([url("", include(core_urls)),
+pydici_patterns.extend([url("", include(core_urls, namespace="core")),
                         url("people/", include(people_urls, namespace="people")),
                         url("crm/", include(crm_urls, namespace="crm")),
                         url("staffing/", include(staffing_urls, namespace="staffing")),

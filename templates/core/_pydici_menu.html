@@ -10,7 +10,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{% url 'index' %}">Pydici
+          <a class="navbar-brand" href="{% url 'core:index' %}">Pydici
           <img class="hidden-xs hidden-sm" alt="" src="{{ MEDIA_URL }}pydici/company_logo.png" height=20/></a>
         </div>
 
@@ -101,7 +101,7 @@
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Reports" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                 <li class="dropdown-header">{% trans "Operationnal reporting" %}</li>
-                <li><a href="{% url 'dashboard' %}">{% trans "Management dashboard" %}</a></li>
+                <li><a href="{% url 'core:dashboard' %}">{% trans "Management dashboard" %}</a></li>
                 <li><a href="{% url 'staffing:all_timesheet' %}">{% trans "All people timesheet" %}</a></li>
                 <li><a href="{% url 'staffing:prod_report' %}">{% trans "Staff production" %}</a></li>
                 <li><a href="{% url 'staffing:fixed_price_missions_report' %}">{% trans "Fixed price missions" %}</a></li>
@@ -118,14 +118,14 @@
                 <li class="dropdown-header">{% trans "Billing" %}</li>
                 <li><a href="{% url 'billing:bill_review' %}">{% trans "Bills review" %}</a></li>
                 <li><a href="{% url 'billing:bill_payment_delay' %}">{% trans "Payment delay review" %}</a></li>
-                <li><a href="{% url 'core.views.riskReporting' %}">{% trans "Risks synthesis" %}</a></li>
+                <li><a href="{% url 'core:risk_reporting' %}">{% trans "Risks synthesis" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Extractions" %}</li>
                 <li><a href="{% url 'leads:csv_export' target='active' %}">{% trans "Active leads (csv)" %}</a></li>
                 <li><a href="{% url 'leads:csv_export' target='all' %}">{% trans "All leads (csv)" %}</a></li>
                 <li><a href="{% url 'leads:summary_mail_html' %}">{% trans "Week summary mail (html)" %}</a></li>
                 <li><a href="{% url 'leads:summary_mail_text' %}">{% trans "Week summary mail (text)" %}</a></li>
-                <li><a href="{% url 'core.views.financialControl' %}">{% trans "Financial control" %}</a></li>
+                <li><a href="{% url 'core:financial_control' %}">{% trans "Financial control" %}</a></li>
             </ul>
         </li>
         {% endif %}
@@ -136,7 +136,7 @@
                 <li><a href="{% url 'help' %}">{% trans "Help page" %}</a></li>
                 <li>{{ foo|get_admin_mail }}</li>
                 {% if pydici_feature.search %}
-                    <li><form class="navbar-form keep-open hidden-xs hidden-md hidden-lg" role="search" action="{% url 'search' %}" method="GET">
+                    <li><form class="navbar-form keep-open hidden-xs hidden-md hidden-lg" role="search" action="{% url 'core:search' %}" method="GET">
                         <div class="form-group">
                             <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q">
                         </div>
@@ -148,7 +148,7 @@
         </ul>
 
         {% if pydici_feature.search %}
-        <form class="navbar-form pull-right hidden-sm" role="search" action="{% url 'search' %}" method="GET">
+        <form class="navbar-form pull-right hidden-sm" role="search" action="{% url 'core:search' %}" method="GET">
             <div class="form-group">
               <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q"  value="{{ query|escape }}" >
             </div>

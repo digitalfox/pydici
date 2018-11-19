@@ -166,7 +166,7 @@ def dashboard(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-def financialControl(request, start_date=None, end_date=None):
+def financial_control(request, start_date=None, end_date=None):
     """Financial control extraction. This view is intented to be processed by
     a spreadsheet or a financial package software"""
     if end_date is None:
@@ -322,7 +322,7 @@ def financialControl(request, start_date=None, end_date=None):
 
 @pydici_non_public
 @pydici_feature("reports")
-def riskReporting(request):
+def risk_reporting(request):
     """Risk reporting synthesis"""
     data = []
     today = datetime.date.today()

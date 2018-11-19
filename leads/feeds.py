@@ -18,7 +18,7 @@ class LeadFeed(Feed):
     title_template = "leads/feed_title.txt"
 
     def link(self):
-        return urlresolvers.reverse("core.views.index")
+        return urlresolvers.reverse("core:index")
 
     def item_pubdate(self, item):
         return item.update_date

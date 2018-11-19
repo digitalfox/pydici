@@ -143,7 +143,7 @@ def mission_staffing(request, mission_id, form_mode="manual"):
     if request.method == "POST":
         if readOnly:
             # Readonly users should never go here !
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+            return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
         if form_mode=="manual":
             formset = StaffingFormSet(request.POST, instance=mission)
             if formset.is_valid():
@@ -181,7 +181,7 @@ def consultant_staffing(request, consultant_id):
             request.user.has_perm("staffing.delete_staffing")):
         # Only forbid access if the user try to edit someone else staffing
         if request.user.username.upper() != consultant.trigramme:
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+            return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
                                           formset=ConsultantStaffingInlineFormset, fields="__all__")
@@ -687,7 +687,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         previous_week = 0
         next_week = 0
 
-    notAllowed = HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+    notAllowed = HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
 
     consultant = Consultant.objects.get(id=consultant_id)
 
@@ -725,7 +725,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         if readOnly:
             # We should never go here as validate button is not displayed when read only...
             # This is just a security control
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+            return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
         form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
         if form.is_valid():  # All validation rules pass

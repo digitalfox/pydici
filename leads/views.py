@@ -97,7 +97,7 @@ def detail(request, lead_id):
                    "active_rank": rank + 1,
                    "next_lead": next_lead,
                    "previous_lead": previous_lead,
-                   "link_root": urlresolvers.reverse("index"),
+                   "link_root": urlresolvers.reverse("core:index"),
                    "action_list": lead.get_change_history(),
                    "completion_url": urlresolvers.reverse("leads:tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
