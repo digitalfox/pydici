@@ -134,8 +134,7 @@ PYDICI_APPS = [
     'crm',
     'billing',
     'expense',
-    'actionset',
-    'batch.incwo',
+    'actionset'
 ]
 
 INSTALLED_APPS = [

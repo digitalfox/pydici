@@ -32,8 +32,6 @@ from actionset.urls import actionset_urls
 from expense.urls import expense_urls
 from leads.urls import leads_urls
 from core.urls import core_urls
-from batch.incwo.urls import incwo_urls
-
 
 # Overide internal server error view
 handler500 = "core.views.internal_error"
@@ -73,8 +71,7 @@ pydici_patterns.extend([url("", include(core_urls, namespace="core")),
                         url("billing/", include(billing_urls, namespace="billing")),
                         url("actionset/", include(actionset_urls, namespace="actionset")),
                         url("expense/", include(expense_urls, namespace="expense")),
-                        url("leads/", include(leads_urls, namespace="leads")),
-                        url("incwo/", include(incwo_urls)),
+                        url("leads/", include(leads_urls, namespace="leads"))
                         ])
 
 
