@@ -39,14 +39,14 @@ class Migration(migrations.Migration):
                 ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name='Creation')),
                 ('update_date', models.DateTimeField(auto_now=True, verbose_name='Updated')),
                 ('target_id', models.PositiveIntegerField(null=True, verbose_name='Content id', blank=True)),
-                ('action', models.ForeignKey(to='actionset.Action')),
-                ('target_type', models.ForeignKey(verbose_name='Target content type', blank=True, to='contenttypes.ContentType', null=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('action', models.ForeignKey(to='actionset.Action', on_delete=models.deletion.CASCADE)),
+                ('target_type', models.ForeignKey(verbose_name='Target content type', blank=True, to='contenttypes.ContentType', null=True, on_delete=models.deletion.CASCADE,)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE)),
             ],
         ),
         migrations.AddField(
             model_name='action',
             name='actionset',
-            field=models.ForeignKey(to='actionset.ActionSet'),
+            field=models.ForeignKey(to='actionset.ActionSet', on_delete=models.deletion.CASCADE),
         ),
     ]

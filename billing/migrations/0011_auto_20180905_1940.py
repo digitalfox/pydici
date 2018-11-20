@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='billexpense',
             name='expense',
-            field=models.ForeignKey(verbose_name='Expense', blank=True, to='expense.Expense', null=True),
+            field=models.ForeignKey(verbose_name='Expense', blank=True, to='expense.Expense', null=True, on_delete=models.deletion.SET_NULL),
         ),
     ]

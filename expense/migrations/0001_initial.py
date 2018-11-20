@@ -60,21 +60,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='expense',
             name='category',
-            field=models.ForeignKey(verbose_name='Category', to='expense.ExpenseCategory'),
+            field=models.ForeignKey(verbose_name='Category', to='expense.ExpenseCategory', on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='expense',
             name='expensePayment',
-            field=models.ForeignKey(blank=True, to='expense.ExpensePayment', null=True),
+            field=models.ForeignKey(blank=True, to='expense.ExpensePayment', null=True, on_delete=models.deletion.SET_NULL),
         ),
         migrations.AddField(
             model_name='expense',
             name='lead',
-            field=models.ForeignKey(verbose_name='Lead', blank=True, to='leads.Lead', null=True),
+            field=models.ForeignKey(verbose_name='Lead', blank=True, to='leads.Lead', null=True, on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='expense',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE),
         ),
     ]

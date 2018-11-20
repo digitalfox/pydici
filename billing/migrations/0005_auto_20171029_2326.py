@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='billexpense',
             name='expense',
-            field=models.ForeignKey(verbose_name='Expense', to='expense.Expense'),
+            field=models.ForeignKey(verbose_name='Expense', to='expense.Expense', on_delete=models.deletion.SET_NULL),
         ),
         migrations.AlterField(
             model_name='billexpense',
