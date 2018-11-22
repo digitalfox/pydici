@@ -399,7 +399,7 @@ def client_bills_archive(request):
     """Review all client bill """
     return render(request, "billing/client_bills_archive.html",
                   {"data_url": urlresolvers.reverse('client_bills_archive_DT'),
-                   "datatable_options": ''' "order": [[2, "desc"]] ''',
+                   "datatable_options": ''' "order": [[2, "desc"]], "columnDefs": [{ "orderable": false, "targets": [7] }]  ''',
                    "user": request.user})
 
 
@@ -409,6 +409,7 @@ def supplier_bills_archive(request):
     """Review all supplier bill """
     return render(request, "billing/supplier_bills_archive.html",
                   {"data_url": urlresolvers.reverse('supplier_bills_archive_DT'),
+                   "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [8] }]  ''',
                    "user": request.user})
 
 

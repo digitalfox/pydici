@@ -8,6 +8,7 @@ Pydici billing tables
 from itertools import chain
 
 from django.db.models import Q
+from django.utils.safestring import mark_safe
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
@@ -61,6 +62,8 @@ class BillTableDT(BillingRequestMixin, BaseDatatableView):
             return getattr(row, column).strftime("%d/%m/%y")
         elif column == "state":
             return row.get_state_display()
+        elif column == "file":
+            return mark_safe(u"""<a href='%s'><span class="glyphicon glyphicon-file"></span></a>""" % row.bill_file_url())
         else:
             return super(BillTableDT, self).render_column(row, column)
 
@@ -93,7 +96,7 @@ class ClientBillInCreationTableDT(BillTableDT):
 
 class ClientBillArchiveTableDT(BillTableDT):
     """Client bill archive"""
-    columns = ("bill_id", "lead","creation_date", "state", "amount", "amount_with_vat", "comment")
+    columns = ("bill_id", "lead","creation_date", "state", "amount", "amount_with_vat", "comment", "file")
     order_columns = columns
     max_display_length = 100
 
@@ -103,7 +106,7 @@ class ClientBillArchiveTableDT(BillTableDT):
 
 class SupplierBillArchiveTableDT(BillTableDT):
     """Supplier bill archive"""
-    columns = ("bill_id", "supplier", "lead","creation_date", "state", "amount", "amount_with_vat", "comment")
+    columns = ("bill_id", "supplier", "lead","creation_date", "state", "amount", "amount_with_vat", "comment",  "file")
     order_columns = columns
     max_display_length = 20
 
