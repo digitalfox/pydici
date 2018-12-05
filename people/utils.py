@@ -13,19 +13,20 @@ from django.utils.translation import ugettext as _
 from people.models import Consultant
 from crm.models import Subsidiary
 
-def getScopes(subsidiary, team, target="all"):
+
+def getScopes(subsidiary, team, target="all", include_team=True):
     """Define scopes than can be used to filter data. Either team, subsidiary or everybody (default). Format is (type, filter, label) where type is "team_id" or "subsidiary_id".
     @:param target: all (default), subsidiary or team
     @:return: scopes, scope_current_filter, scope_current_url_filter"""
 
     # Gather scopes
     scopes = [(None, "all", _(u"Everybody")), ]
+
     if target in ("all", "subsidiary"):
         for s in Subsidiary.objects.filter(consultant__active=True, consultant__subcontractor=False,
                                            consultant__productive=True).annotate(num=Count('consultant')).filter(num__gt=0):
             scopes.append(("subsidiary_id", "subsidiary_id=%s" % s.id, unicode(s)))
-
-    if target in ("all", "team"):
+    if include_team and target in ("all", "team"):
         for manager_id, manager_name in Consultant.objects.filter(active=True, productive=True,
                                                                   subcontractor=False).values_list("staffing_manager",
                                                                                                    "staffing_manager__name").order_by().distinct():
@@ -43,3 +44,15 @@ def getScopes(subsidiary, team, target="all"):
         scope_current_url_filter = ""
 
     return scopes, scope_current_filter, scope_current_url_filter
+
+
+def getSubsidiaryFromRequest(request):
+    """ Check if Retrieves a subsidiary by given id
+    :param id: subsidiary_id
+    :param request
+    :return: found subsidiary otherwise none
+    """
+
+    if "subsidiary_id" in request.GET:
+        return Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
+    return False

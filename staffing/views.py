@@ -39,7 +39,7 @@ from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMi
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm
-from people.utils import getScopes
+from people.utils import getScopes, getSubsidiaryFromRequest
 
 TIMESTRING_FORMATTER = {
     'cycle': formats.number_format,
@@ -479,7 +479,7 @@ def prod_report(request, year=None, month=None):
     #TODO: extract that in CSV as well
 
     team = None
-    subsidiary = None
+    subsidiary = getSubsidiaryFromRequest(request)
     months = []
     n_month = 5
     tooltip_template = get_template("staffing/_consultant_prod_tooltip.html")
@@ -512,8 +512,6 @@ def prod_report(request, year=None, month=None):
     # Get team and subsidiary
     if "team_id" in request.GET:
         team = Consultant.objects.get(id=int(request.GET["team_id"]))
-    if "subsidiary_id" in request.GET:
-        subsidiary = Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
 
     # Filter on scope
     consultants = Consultant.objects.filter(productive=True).filter(active=True).filter(
@@ -1016,6 +1014,11 @@ def mission_csv_timesheet(request, mission, consultants):
 @pydici_non_public
 @pydici_feature("reports")
 def all_timesheet(request, year=None, month=None):
+
+    # var for filtering
+    subsidiary = getSubsidiaryFromRequest(request)
+    timesheets = None
+
     if year and month:
         month = date(int(year), int(month), 1)
     else:
@@ -1024,7 +1027,11 @@ def all_timesheet(request, year=None, month=None):
     previous_date = (month - timedelta(days=5)).replace(day=1)
     next_date = nextMonth(month)
 
-    timesheets = Timesheet.objects.filter(working_date__gte=month)  # Filter on current month
+    if subsidiary:
+        timesheets = Timesheet.objects.filter(working_date__gte=month, consultant__company=subsidiary)
+    else:
+        timesheets = Timesheet.objects.filter(working_date__gte=month)  # Filter on current month
+
     timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1))  # Discard next month
     timesheets = timesheets.values("consultant", "mission")  # group by consultant, mission
     timesheets = timesheets.annotate(sum=Sum('charge')).order_by("mission", "consultant")  # Sum and clean order by (else, group by won't work because of default ordering)
@@ -1033,6 +1040,8 @@ def all_timesheet(request, year=None, month=None):
     consultants = Consultant.objects.filter(id__in=consultants).order_by("name")
     missions = sortMissions(Mission.objects.filter(id__in=missions))
     charges = {}
+
+
     if "csv" in request.GET:
         # Simple consultant list
         data = list(consultants)
@@ -1084,20 +1093,29 @@ def all_timesheet(request, year=None, month=None):
     # Mission 2, M2/C1, M2/C2, M2/C3
     # with. tk   C1,    C2,    C3...
 
+
     if "csv" in request.GET and charges:
         # Return CSV timesheet
         return all_csv_timesheet(request, charges, month)
     else:
+
+        # Get scopes
+        scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, None, include_team=False)
+
         # Return html page
         return render(request, "staffing/all_timesheet.html",
                       {"user": request.user,
                        "next_date": next_date,
                        "previous_date": previous_date,
                        "month": month,
+                       "year": year,
                        "consultants": consultants,
                        "missions": missions,
-                       "charges": charges})
-
+                       "charges": charges,
+                       "scope": subsidiary or _(u"Everybody"),
+                       "scope_current_filter": scope_current_filter,
+                       "scope_current_url_filter": scope_current_url_filter,
+                       "scopes": scopes})
 
 @pydici_non_public
 @pydici_feature("reports")
