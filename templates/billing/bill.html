@@ -52,7 +52,6 @@
                 <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount inc. taxes €" %}</small></th>
             </tr>
         </thead>
-        <tbody>
 
         {% regroup bill.billdetail_set.all by mission as detail_list %}
 
@@ -83,7 +82,9 @@
                     </tbody>
                 {% endfor %}
         {% endfor %}
-
+    {% endif %}
+    <tbody style="page-break-inside: avoid;">
+    {% if bill.billdetail_set.all %}
         <tr><td colspan=6 class="noborder">&nbsp;</td></tr>
         <tr>
             <td colspan=4 class="no-top-border"></td>
@@ -91,30 +92,31 @@
         </tr>
     {% endif %}
     {% with bill.expensesTotal as expensesTotal %}
-    {% if expensesTotal %}
+        {% if expensesTotal %}
+            <tr>
+                <td colspan=4 class="no-top-border"></td>
+                <td class="text-right bill-total-border-left {% if bill.billdetail_set.all%}no-top-border{% endif %}"><b>{% trans "Expenses (€)" %}</b></td><td class="text-right bill-total-border-right {% if bill.billdetail_set.all%}no-top-border{% endif %}"><b>{{ expensesTotal|floatformat:2 }}</b></td>
+            </tr>
+        {% endif %}
+    {% endwith %}
+    {% for vat, amount in bill.taxes %}
         <tr>
             <td colspan=4 class="no-top-border"></td>
-            <td class="text-right bill-total-border-left {% if bill.billdetail_set.all%}no-top-border{% endif %}"><b>{% trans "Expenses (€)" %}</b></td><td class="text-right bill-total-border-right {% if bill.billdetail_set.all%}no-top-border{% endif %}"><b>{{ expensesTotal|floatformat:2 }}</b></td>
+            <td class="text-right bill-total-border-left no-top-border"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ amount|floatformat:2 }}</b></td>
         </tr>
-    {% endif %}
-{% endwith %}
-{% for vat, amount in bill.taxes %}
-<tr>
-    <td colspan=4 class="no-top-border"></td>
-    <td class="text-right bill-total-border-left no-top-border"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ amount|floatformat:2 }}</b></td>
-</tr>
-{% endfor %}
-<tr>
-    <td colspan=4 class="no-top-border"></td>
-    <td class="text-right bill-total-border-left bill-total-border-bottom no-top-border"><b>{% trans "Total (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-bottom no-top-border"><b>{{ bill.amount_with_vat|floatformat:2 }}</b></td>
-</tr>
-
-</tbody>
+    {% endfor %}
+    <tr>
+        <td colspan=4 class="no-top-border"></td>
+        <td class="text-right bill-total-border-left bill-total-border-bottom no-top-border"><b>{% trans "Total (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-bottom no-top-border"><b>{{ bill.amount_with_vat|floatformat:2 }}</b></td>
+    </tr>
+    </tbody>
 </table>
-{% if bill.comment %}
-    <div class="alert alert-info" style="display: inline-block"><p>{{ bill.comment}}</p></div>
-{% endif %}
+
 <div style="page-break-inside: avoid;">
+    {% if bill.comment %}
+        <div class="alert alert-info" style="display: inline-block"><p>{{ bill.comment}}</p></div>
+    {% endif %}
+
     <p><small>{{  bill.lead.subsidiary.payment_description|linebreaksbr }}</small></p>
     <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
 </div>
