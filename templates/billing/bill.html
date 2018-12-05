@@ -61,6 +61,7 @@
                 <tr><td colspan=6 class="text-left noborder"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
                 {% regroup detail.list by month as mission_detail_list %}
                 {% for mission_detail in mission_detail_list %}
+                    <tbody style="page-break-inside: avoid;">
                     <tr><td class="noborder"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
                     {% for item in mission_detail.list %}
                         <tr>
@@ -79,6 +80,7 @@
                             <td class="text-right">{{ item.amount|floatformat:-2 }}</td><td class="text-right">{{ item.vat|floatformat:-2 }}</td><td class="text-right">{{ item.amount_with_vat|floatformat:-2 }}</td>
                         </tr>
                     {% endfor %}
+                    </tbody>
                 {% endfor %}
         {% endfor %}
 
