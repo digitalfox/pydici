@@ -390,6 +390,7 @@ def client_bills_in_creation(request):
     """Review client bill in preparation"""
     return render(request, "billing/client_bills_in_creation.html",
                   {"data_url": urlresolvers.reverse('client_bills_in_creation_DT'),
+                   "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2] }]  ''',
                    "user": request.user})
 
 
