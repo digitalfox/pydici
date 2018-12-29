@@ -27,6 +27,8 @@ For groups control permissions around this simple workflow:
 - expense_requester: can create new expense
 """
 
+from django.core.cache import cache
+
 from expense.models import EXPENSE_STATES
 from people.models import Consultant
 
@@ -37,17 +39,10 @@ def expense_next_states(expense, user):
     next_states = ()
 
     # Get roles according to standard expense groups
-    expense_administrator = user.groups.filter(name="expense_administrator").exists() or user.is_superuser
-    expense_manager = user.groups.filter(name="expense_manager").exists() or user.is_superuser or expense_administrator
-    expense_paymaster = user.groups.filter(name="expense_paymaster").exists() or user.is_superuser or expense_administrator
-    expense_requester = user.groups.filter(name="expense_requester").exists() or user.is_superuser or expense_administrator
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(user)
 
     # Get user team if any
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=user.username)
-        user_team = consultant.userTeam(excludeSelf=False)
-    except Consultant.DoesNotExist:
-        user_team = []
+    user_team = user_expense_team(user)
 
     # A user cannot manipulate his own expense, except admin
     if expense.user == user and not expense_administrator:
@@ -77,17 +72,10 @@ def expense_next_states(expense, user):
 
     return next_states
 
+
 def can_edit_expense(expense, user):
     """Check if user can modify given expense"""
-    expense_administrator = user.groups.filter(name="expense_administrator").exists() or user.is_superuser
-    expense_manager = user.groups.filter(name="expense_manager").exists() or user.is_superuser or expense_administrator
-
-    # Get user team if any
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=user.username)
-        user_team = consultant.userTeam(excludeSelf=False)
-    except Consultant.DoesNotExist:
-        user_team = []
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(user)
 
     if expense_administrator:
         return True
@@ -98,9 +86,38 @@ def can_edit_expense(expense, user):
     if expense.user == user:
         return True
 
+    user_team = user_expense_team(user)
+
     if expense.user in user_team and expense_manager:
         return True
 
     # All other case, it's a no, sorry
     return False
 
+
+def expense_state_display(state):
+    d = dict(EXPENSE_STATES)
+    return d.get(state, "??")
+
+
+def user_expense_perm(user):
+    """compute user perm and returns expense_administrator, expense_manager, expense_paymaster, expense_requester"""
+    expense_administrator = user.is_superuser or user.groups.filter(name="expense_administrator").exists()
+    expense_manager = expense_administrator or user.groups.filter(name="expense_manager").exists()
+    expense_paymaster = expense_administrator or user.groups.filter(name="expense_paymaster").exists()
+    expense_requester = expense_administrator or user.groups.filter(name="expense_requester").exists()
+
+    return expense_administrator, expense_manager, expense_paymaster, expense_requester
+
+
+def user_expense_team(user):
+    EXPENSE_USER_TEAM_CACHE_KEY = "PYDICI_EXPENSE_USER_%s"
+    try:
+        consultant = Consultant.objects.get(trigramme__iexact=user.username)
+        user_team = cache.get(EXPENSE_USER_TEAM_CACHE_KEY % consultant.id)
+        if not user_team:
+            user_team = consultant.userTeam(excludeSelf=False)
+            cache.set(EXPENSE_USER_TEAM_CACHE_KEY % consultant.id, user_team, 3600)
+    except Consultant.DoesNotExist:
+        user_team = []
+    return user_team
