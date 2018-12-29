@@ -15,6 +15,7 @@ from django.db import models
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
 from django.contrib.auth.models import User
 import workflows.utils as wf
 
@@ -22,6 +23,14 @@ from leads.models import Lead
 from core.utils import sanitizeName
 import pydici.settings
 
+EXPENSE_STATES = (
+    ("REQUESTED", ugettext("requested")),
+    ("VALIDATED", ugettext("validated")),
+    ("REJECTED", ugettext("rejected")),
+    ("NEEDS_INFORMATION", ugettext("needs information")),
+    ("CONTROLLED", ugettext("controlled")),
+    ("PAID", ugettext("paid")),
+)
 
 class ExpenseStorage(FileSystemStorage):
     def url(self, name):
@@ -93,6 +102,7 @@ class Expense(models.Model):
     comment = models.TextField(_("Comments"), blank=True)
     workflow_in_progress = models.BooleanField(default=True)
     expensePayment = models.ForeignKey(ExpensePayment, blank=True, null=True, on_delete=models.SET_NULL)
+    state = models.CharField(_("state"), choices=EXPENSE_STATES, default="REQUESTED", max_length=20)
 
     def __unicode__(self):
         if self.lead:
@@ -100,13 +110,6 @@ class Expense(models.Model):
         else:
             return u"%s (%s) - %s € - %s" % (self.description, self.expense_date, self.amount, self.state())
 
-    def state(self):
-        """expense state according to expense workflow"""
-        state = wf.get_state(self)
-        if state:
-            return state.name
-        else:
-            return _("unknown")
 
     def transitions(self, user):
         """expense allowed transitions in workflows for given user"""
