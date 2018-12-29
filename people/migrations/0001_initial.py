@@ -21,8 +21,8 @@ class Migration(migrations.Migration):
                 ('active', models.BooleanField(default=True, verbose_name='Active')),
                 ('subcontractor', models.BooleanField(default=False, verbose_name='Subcontractor')),
                 ('subcontractor_company', models.CharField(max_length=200, null=True, blank=True)),
-                ('company', models.ForeignKey(verbose_name='Subsidiary', to='crm.Subsidiary')),
-                ('manager', models.ForeignKey(related_name='team_as_manager', blank=True, to='people.Consultant', null=True)),
+                ('company', models.ForeignKey(verbose_name='Subsidiary', to='crm.Subsidiary', on_delete=models.CASCADE)),
+                ('manager', models.ForeignKey(related_name='team_as_manager', blank=True, to='people.Consultant', null=True, on_delete=models.SET_NULL)),
             ],
             options={
                 'ordering': ['name'],
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('start_date', models.DateField(verbose_name='Starting')),
                 ('daily_rate', models.IntegerField(verbose_name='Daily rate')),
-                ('consultant', models.ForeignKey(to='people.Consultant')),
+                ('consultant', models.ForeignKey(to='people.Consultant', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('active', models.BooleanField(default=True, verbose_name='Active')),
                 ('email', models.EmailField(max_length=254, blank=True)),
                 ('phone', models.CharField(max_length=30, verbose_name='Phone', blank=True)),
-                ('company', models.ForeignKey(verbose_name='Subsidiary', to='crm.Subsidiary')),
+                ('company', models.ForeignKey(verbose_name='Subsidiary', to='crm.Subsidiary', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['name'],
@@ -70,11 +70,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='consultant',
             name='profil',
-            field=models.ForeignKey(verbose_name='Profil', to='people.ConsultantProfile'),
+            field=models.ForeignKey(verbose_name='Profil', to='people.ConsultantProfile', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='consultant',
             name='staffing_manager',
-            field=models.ForeignKey(related_name='team_as_staffing_manager', blank=True, to='people.Consultant', null=True),
+            field=models.ForeignKey(related_name='team_as_staffing_manager', blank=True, to='people.Consultant', null=True, on_delete=models.SET_NULL),
         ),
     ]
