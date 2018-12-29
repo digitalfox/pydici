@@ -17,7 +17,6 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.auth.models import User
-import workflows.utils as wf
 
 from leads.models import Lead
 from core.utils import sanitizeName
@@ -110,13 +109,6 @@ class Expense(models.Model):
         else:
             return u"%s (%s) - %s € - %s" % (self.description, self.expense_date, self.amount, self.state())
 
-
-    def transitions(self, user):
-        """expense allowed transitions in workflows for given user"""
-        if self.workflow_in_progress:
-            return wf.get_allowed_transitions(self, user)
-        else:
-            return []
 
     def receipt_data(self):
         """Return receipt data in formated way to be included inline in a html page"""

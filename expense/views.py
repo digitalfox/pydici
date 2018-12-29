@@ -9,9 +9,6 @@ from datetime import date, timedelta
 import json
 from cStringIO import StringIO
 
-import permissions.utils as perm
-import workflows.utils as wf
-from workflows.models import Transition
 from django_tables2 import RequestConfig
 
 from django.http import HttpResponseRedirect, HttpResponse
@@ -29,6 +26,7 @@ from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature
 from core.views import tableToCSV
 from core import utils
+from expense.utils import expense_next_states, can_edit_expense
 
 
 @pydici_non_public
@@ -46,8 +44,7 @@ def expenses(request, expense_id=None, clone_from=None):
     try:
         if expense_id:
             expense = Expense.objects.get(id=expense_id)
-            if not (perm.has_permission(expense, request.user, "expense_edit")
-                    and (expense.user == request.user or expense.user in user_team)):
+            if not can_edit_expense(expense, request.user):
                 messages.add_message(request, messages.WARNING, _("You are not allowed to edit that expense"))
                 expense_id = None
                 expense = None
@@ -67,7 +64,6 @@ def expenses(request, expense_id=None, clone_from=None):
                 expense.user = request.user
             expense.creation_date = date.today()
             expense.save()
-            wf.set_initial_state(expense)  # Start a new workflow for this expense
             return HttpResponseRedirect(urlresolvers.reverse("expense:expenses"))
     else:
         if expense_id:
@@ -99,20 +95,13 @@ def expenses(request, expense_id=None, clone_from=None):
 
     userExpenseTable = UserExpenseWorkflowTable(user_expenses)
     userExpenseTable.transitionsData = dict([(e.id, []) for e in user_expenses])  # Inject expense allowed transitions. Always empty for own expense
-    userExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in user_expenses])  # Inject expense edit permissions
+    userExpenseTable.expenseEditPerm = dict([(e.id, can_edit_expense(e, request.user)) for e in user_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 50}).configure(userExpenseTable)
 
     managedExpenseTable = ManagedExpenseWorkflowTable(managed_expenses)
-    managedExpenseTable.transitionsData = dict([(e.id, e.transitions(request.user)) for e in managed_expenses])  # Inject expense allowed transitions
-    managedExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in managed_expenses])  # Inject expense edit permissions
+    managedExpenseTable.transitionsData = dict([(e.id, expense_next_states(e, request.user)) for e in managed_expenses])  # Inject expense allowed transitions
+    managedExpenseTable.expenseEditPerm = dict([(e.id, can_edit_expense(e, request.user)) for e in managed_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 100}).configure(managedExpenseTable)
-
-    # Prune every expense not updated since 60 days. For instance, rejected expense.
-    for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(60))):
-        if wf.get_state(expense).transitions.count() == 0:
-            expense.workflow_in_progress = False
-            expense.save()
-
     return render(request, "expense/expenses.html",
                   {"user_expense_table": userExpenseTable,
                    "managed_expense_table": managedExpenseTable,

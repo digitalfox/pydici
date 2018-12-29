@@ -10,7 +10,7 @@ import expense.views as v
 
 
 expense_urls = [url(r'^$', v.expenses, name="expenses"),
-                url(r'^(?P<expense_id>\d+)$', v.expenses, name="expense"),
+                url(r'^(?P<expense_id>\d+)$', v.expenses, name="expenses"),
                 url(r'^(?P<expense_id>\d+)/receipt$', v.expense_receipt, name="expense_receipt"),
                 url(r'^(?P<expense_id>\d+)/delete$', v.expense_delete, name="expense_delete"),
                 url(r'^(?P<expense_id>\d+)/(?P<transition_id>\w+)', v.update_expense_state, name="update_expense_state"),
