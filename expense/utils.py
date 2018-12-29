@@ -56,7 +56,7 @@ def expense_next_states(expense, user):
 
     if state == "REQUESTED":
         if expense_administrator:
-            next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED")
+            next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED", "lala")
         if expense.user in user_team and expense_manager:
             next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED")
     elif state == "VALIDATED":
@@ -71,6 +71,10 @@ def expense_next_states(expense, user):
         if expense_administrator or expense_paymaster:
             if not expense.corporate_card:
                 next_states = ("PAID",)
+
+    allowed_states = [i[0] for i in EXPENSE_STATES]
+    for state in next_states:
+        assert state in allowed_states  # Just to be sure we don't mess up
 
     return next_states
 
