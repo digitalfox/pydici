@@ -20,9 +20,9 @@ from django_tables2.utils import A
 from expense.models import Expense, ExpensePayment
 from people.models import Consultant
 from core.templatetags.pydici_filters import link_to_consultant
-from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round, has_role
+from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
-from expense.utils import expense_state_display, expense_transition_to_state_display
+from expense.utils import expense_state_display, expense_transition_to_state_display, user_expense_perm
 
 
 class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
@@ -44,8 +44,9 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         except Consultant.DoesNotExist:
             user_team = []
 
+        expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
         expenses = Expense.objects.all()
-        if not has_role(self.request.user, "expense paymaster"):
+        if not expense_paymaster:
             expenses = expenses.filter(Q(user=self.request.user) | Q(user__in=user_team))
         return expenses.select_related("lead__client__contact", "lead__client__organisation__company", "user")
 
@@ -212,7 +213,8 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
             user_team = []
 
         expensePayments = ExpensePayment.objects.all()
-        if not has_role(self.request.user, "expense paymaster"):
+        expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
+        if not expense_paymaster:
             expensePayments = expensePayments.filter(
                 Q(expense__user=self.request.user) | Q(expense__user__in=user_team)).distinct()
         return expensePayments

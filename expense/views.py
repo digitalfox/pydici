@@ -26,20 +26,19 @@ from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature
 from core.views import tableToCSV
 from core import utils
-from expense.utils import expense_next_states, can_edit_expense, in_terminal_state
+from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm, user_expense_team
 
 
 @pydici_non_public
 @pydici_feature("reports")
 def expenses(request, expense_id=None, clone_from=None):
     """Display user expenses and expenses that he can validate"""
-    if not request.user.groups.filter(name="expense_requester").exists():
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+
+    if not expense_requester:
         return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-        user_team = consultant.userTeam(excludeSelf=False)
-    except Consultant.DoesNotExist:
-        user_team = []
+
+    user_team = user_expense_team(request.user)
 
     try:
         if expense_id:
@@ -60,7 +59,7 @@ def expenses(request, expense_id=None, clone_from=None):
         if form.is_valid():
             expense = form.save(commit=False)
             if not hasattr(expense, "user"):
-                # Don't update user if defined (case of expense updated by manager or adminstrator)
+                # Don't update user if defined (case of expense updated by manager or administrator)
                 expense.user = request.user
             expense.creation_date = date.today()
             expense.save()
@@ -87,8 +86,9 @@ def expenses(request, expense_id=None, clone_from=None):
     else:
         team_expenses = []
 
-    # Paymaster manage all expenses
-    if utils.has_role(request.user, "expense paymaster"):
+    if expense_administrator: # Admin manage all expenses
+        managed_expenses = Expense.objects.filter(workflow_in_progress=True).select_related()
+    elif expense_paymaster: # Paymaster manage all expenses except his own
         managed_expenses = Expense.objects.filter(workflow_in_progress=True).exclude(user=request.user).select_related()
     else:
         managed_expenses = team_expenses
@@ -133,20 +133,14 @@ def expense_receipt(request, expense_id):
 def expense_delete(request, expense_id):
     """Delete given expense if authorized to"""
     expense = None
-    if not request.user.groups.filter(name="expense_requester").exists():
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    if not expense_requester:
         return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-        user_team = consultant.userTeam(excludeSelf=False)
-    except Consultant.DoesNotExist:
-        user_team = []
 
-    #TODO: factorize this code with expense views above
     try:
         if expense_id:
             expense = Expense.objects.get(id=expense_id)
-            if not (perm.has_permission(expense, request.user, "expense_edit")
-                    and (expense.user == request.user or expense.user in user_team)):
+            if not can_edit_expense(expense, request.user):
                 messages.add_message(request, messages.WARNING, _("You are not allowed to edit that expense"))
                 expense_id = None
                 expense = None
@@ -259,8 +253,7 @@ def expense_payments(request, expense_payment_id=None):
     if readOnly:
         expensesToPay = []
     else:
-        expensesToPay = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
-        expensesToPay = [expense for expense in expensesToPay if wf.get_state(expense).transitions.count() == 0]
+        expensesToPay = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None, state="CONTROLLED")
 
     if request.method == "POST":
         if readOnly:
@@ -309,14 +302,13 @@ def expense_payments(request, expense_payment_id=None):
 @pydici_feature("management")
 def expense_payment_detail(request, expense_payment_id):
     """Display detail of this expense payment"""
-    if not request.user.groups.filter(name="expense_requester").exists():
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    if not expense_requester:
         return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
     try:
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
-        if not (expensePayment.user() == request.user or\
-           utils.has_role(request.user, "expense paymaster") or\
-           utils.has_role(request.user, "expense manager")):
+        if not (expensePayment.user() == request.user or expense_paymaster or expense_administrator):
             return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
 
     except ExpensePayment.DoesNotExist:

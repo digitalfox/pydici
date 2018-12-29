@@ -14,7 +14,6 @@ from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Field
-import workflows.utils as wf
 from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
 
 from expense.models import Expense
@@ -47,11 +46,7 @@ class ChargeableExpenseMChoices(ExpenseMChoices):
 class PayableExpenseMChoices(ExpenseMChoices):
     """Expenses that are payable to consultants"""
     def get_queryset(self):
-        expenses = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
-        # Filter on expenses that really terminate their workflow.
-        expenses_id = [expense.id for expense in expenses if wf.get_state(expense).transitions.count() == 0]
-        # Recreate a queryset that match thoses expenses
-        expenses = Expense.objects.filter(id__in=expenses_id)
+        expenses = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None, state="CONTROLLED")
         return expenses
 
 

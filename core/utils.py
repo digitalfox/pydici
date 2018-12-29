@@ -15,8 +15,6 @@ from functools import wraps
 import json
 from decimal import Decimal
 
-import permissions.utils as perm
-
 from django.template.loader import get_template
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
@@ -383,14 +381,6 @@ class GEdges(list):
     """A list of CEdges that can be dumped in json"""
     def dump(self):
         return json.dumps([{"u": edge.source.id_, "v": edge.target.id_, "value": { "style": "stroke: %s;" % edge.color}} for edge in self])
-
-
-def has_role(user, role):
-    if isinstance(role, str):
-        role = perm.Role.objects.get(name=role)
-
-    roles = perm.get_roles(user)
-    return role in roles
 
 
 def _get_user_features(user):
