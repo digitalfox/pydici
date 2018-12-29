@@ -5,7 +5,7 @@ Pydici expense views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date, timedelta
+from datetime import date
 import json
 from cStringIO import StringIO
 
@@ -20,13 +20,13 @@ from django.contrib import messages
 
 from expense.forms import ExpenseForm, ExpensePaymentForm
 from expense.models import Expense, ExpensePayment
-from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable, ExpensePaymentTable
+from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable
 from people.models import Consultant
 from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature
 from core.views import tableToCSV
 from core import utils
-from expense.utils import expense_next_states, can_edit_expense
+from expense.utils import expense_next_states, can_edit_expense, in_terminal_state
 
 
 @pydici_non_public
@@ -212,37 +212,27 @@ def chargeable_expenses(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-def update_expense_state(request, expense_id, transition_id):
+def update_expense_state(request, expense_id, target_state):
     """Do workflow transition for that expense."""
     error = False
     message = ""
 
     try:
         expense = Expense.objects.get(id=expense_id)
-        if expense.user == request.user and not utils.has_role(request.user, "expense administrator"):
-            message =  _("You cannot manage your own expense !")
-            error = True
     except Expense.DoesNotExist:
         message =  _("Expense %s does not exist" % expense_id)
         error = True
 
     if not error:
-        try:
-            transition = Transition.objects.get(id=transition_id)
-        except Transition.DoesNotExist:
-            message = ("Transition %s does not exist" % transition_id)
-            error = True
-
-        if wf.do_transition(expense, transition, request.user):
-            message = _("Successfully update expense")
-
-            # Prune expense in terminal state (no more transition) and without payment (ie paid ith corporate card)
-            # Expense that need to be paid are pruned during payment process.
-            if expense.corporate_card and wf.get_state(expense).transitions.count() == 0:
+        next_states = expense_next_states(expense, request.user)
+        if target_state in next_states:
+            expense.state = target_state
+            if in_terminal_state(expense):
                 expense.workflow_in_progress = False
-                expense.save()
+            expense.save()
+            message = _("Successfully update expense")
         else:
-            message = _("You cannot do this transition")
+            message = ("Transition %s is not allowed" % target_state)
             error = True
 
     response = {"message": message,

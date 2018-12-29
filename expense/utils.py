@@ -95,9 +95,19 @@ def can_edit_expense(expense, user):
     return False
 
 
+def in_terminal_state(expense):
+    """Return True if expense is in terminal state"""
+    if expense.state == "PAID":
+        return True
+    elif expense.state == "CONTROLLED" and expense.corporate_card:
+        return True
+    else:
+        return False
+
 def expense_state_display(state):
     d = dict(EXPENSE_STATES)
     return d.get(state, "??")
+
 
 def expense_transition_to_state_display(state):
     d = dict(EXPENSE_TRANSITION_TO_STATES)
