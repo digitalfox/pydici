@@ -64,14 +64,14 @@ pydici_patterns.extend([
 pydici_patterns.append(url(r"^select2/auto.json$", PydiciSelect2View.as_view(), name="django_select2-json"))
 
 # Include pydici modules URLs
-pydici_patterns.extend([url("", include(core_urls, namespace="core")),
-                        url("people/", include(people_urls, namespace="people")),
-                        url("crm/", include(crm_urls, namespace="crm")),
-                        url("staffing/", include(staffing_urls, namespace="staffing")),
-                        url("billing/", include(billing_urls, namespace="billing")),
-                        url("actionset/", include(actionset_urls, namespace="actionset")),
-                        url("expense/", include(expense_urls, namespace="expense")),
-                        url("leads/", include(leads_urls, namespace="leads"))
+pydici_patterns.extend([url("", include((core_urls, "core"), namespace="core")),
+                        url("people/", include((people_urls, "people"), namespace="people")),
+                        url("crm/", include((crm_urls, "crm"), namespace="crm")),
+                        url("staffing/", include((staffing_urls, "staffing"), namespace="staffing")),
+                        url("billing/", include((billing_urls, "billing"), namespace="billing")),
+                        url("actionset/", include((actionset_urls, "actionset"), namespace="actionset")),
+                        url("expense/", include((expense_urls, "expense"), namespace="expense")),
+                        url("leads/", include((leads_urls, "lead"), namespace="leads"))
                         ])
 
 
