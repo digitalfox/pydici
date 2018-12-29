@@ -33,7 +33,6 @@ from people.models import Consultant
 
 def expense_next_states(expense, user):
     """Allowed next states for this expense and given user"""
-
     state = expense.state
     next_states = ()
 
@@ -56,7 +55,7 @@ def expense_next_states(expense, user):
 
     if state == "REQUESTED":
         if expense_administrator:
-            next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED", "lala")
+            next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED")
         if expense.user in user_team and expense_manager:
             next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED")
     elif state == "VALIDATED":
