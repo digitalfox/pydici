@@ -13,7 +13,7 @@ from django_tables2 import RequestConfig
 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
-from django.core import urlresolvers
+from django.urls import reverse
 from django.db.models import Q, Count
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -36,7 +36,7 @@ def expenses(request, expense_id=None, clone_from=None):
     expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
 
     if not expense_requester:
-        return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
+        return HttpResponseRedirect(reverse("core:forbiden"))
 
     user_team = user_expense_team(request.user)
 
@@ -63,7 +63,7 @@ def expenses(request, expense_id=None, clone_from=None):
                 expense.user = request.user
             expense.creation_date = date.today()
             expense.save()
-            return HttpResponseRedirect(urlresolvers.reverse("expense:expenses"))
+            return HttpResponseRedirect(reverse("expense:expenses"))
     else:
         if expense_id:
             form = ExpenseForm(instance=expense)  # A form that edit current expense
@@ -135,7 +135,7 @@ def expense_delete(request, expense_id):
     expense = None
     expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
     if not expense_requester:
-        return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
+        return HttpResponseRedirect(reverse("core:forbiden"))
 
     try:
         if expense_id:
@@ -163,7 +163,7 @@ def expenses_history(request):
     @param year: year of history. If None, display recent items and year index"""
 
     return render(request, "expense/expense_archive.html",
-                  {"data_url": urlresolvers.reverse('expense:expense_table_DT'),
+                  {"data_url": reverse('expense:expense_table_DT'),
                    "data_options": ''' "pageLength": 25,
                                        "order": [[0, "desc"]],
                                        "columnDefs": [{ "orderable": false, "targets": [6, 9] },
@@ -258,7 +258,7 @@ def expense_payments(request, expense_payment_id=None):
     if request.method == "POST":
         if readOnly:
             # A bad user is playing with urls...
-            return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbiden"))
         form = ExpensePaymentForm(request.POST)
         if form.is_valid():
             if expense_payment_id:
@@ -275,7 +275,7 @@ def expense_payments(request, expense_payment_id=None):
                     expense.expensePayment = expensePayment
                     expense.workflow_in_progress = False
                     expense.save()
-            return HttpResponseRedirect(urlresolvers.reverse("expense:expense_payments"))
+            return HttpResponseRedirect(reverse("expense:expense_payments"))
         else:
             print "form is not valid"
 
@@ -288,7 +288,7 @@ def expense_payments(request, expense_payment_id=None):
 
     return render(request, "expense/expense_payments.html",
                   {"modify_expense_payment": bool(expense_payment_id),
-                   "data_url": urlresolvers.reverse('expense:expense_payment_table_DT'),
+                   "data_url": reverse('expense:expense_payment_table_DT'),
                    "data_options": ''' "pageLength": 25,
                         "order": [[0, "desc"]],
                         "columnDefs": [{ "orderable": false, "targets": [1, 2, 4] }]''',
@@ -304,12 +304,12 @@ def expense_payment_detail(request, expense_payment_id):
     """Display detail of this expense payment"""
     expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
     if not expense_requester:
-        return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
+        return HttpResponseRedirect(reverse("core:forbiden"))
     try:
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
         if not (expensePayment.user() == request.user or expense_paymaster or expense_administrator):
-            return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbiden"))
 
     except ExpensePayment.DoesNotExist:
         messages.add_message(request, messages.ERROR, _("Expense payment %s does not exist" % expense_payment_id))

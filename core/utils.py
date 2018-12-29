@@ -19,7 +19,7 @@ from django.template.loader import get_template
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
-from django.core import urlresolvers
+from django.urls import reverse
 from django.core.cache import cache
 from django.db.models import Max, Min
 
@@ -44,7 +44,7 @@ def send_lead_mail(lead, request, fromAddr=None, fromName=""):
     """
     if not fromAddr:
         fromAddr = get_parameter("MAIL_FROM")
-    url = get_parameter("HOST") + urlresolvers.reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
+    url = get_parameter("HOST") + reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
     subject = u"[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
     msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj": lead,
                                                                                   "lead_url": url}))

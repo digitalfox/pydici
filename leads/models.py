@@ -15,7 +15,7 @@ from django.contrib.admin.models import LogEntry, ContentType
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q, Sum
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from taggit.managers import TaggableManager
 

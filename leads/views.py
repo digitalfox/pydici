@@ -14,7 +14,7 @@ from collections import defaultdict
 
 
 from django.shortcuts import render
-from django.core import urlresolvers
+from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
@@ -97,9 +97,9 @@ def detail(request, lead_id):
                    "active_rank": rank + 1,
                    "next_lead": next_lead,
                    "previous_lead": previous_lead,
-                   "link_root": urlresolvers.reverse("core:index"),
+                   "link_root": reverse("core:index"),
                    "action_list": lead.get_change_history(),
-                   "completion_url": urlresolvers.reverse("leads:tags", args=[lead.id, ]),
+                   "completion_url": reverse("leads:tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
                    "similar_leads": predict_similar(lead),
                    "user": request.user})
@@ -147,7 +147,7 @@ def lead(request, lead_id=None):
                     updated_fields.append("%s: %s" % (force_text(field.label or field_name), value))
             lead = form.save()
             postSaveLead(request, lead, updated_fields, created=created, state_changed=state_changed)
-            return HttpResponseRedirect(urlresolvers.reverse("leads:detail", args=[lead.id]))
+            return HttpResponseRedirect(reverse("leads:detail", args=[lead.id]))
     else:
         if lead:
             form = LeadForm(instance=lead)  # A form that edit current lead
@@ -243,12 +243,12 @@ def mail_lead(request, lead_id=0):
 @pydici_feature("leads")
 def review(request):
     return render(request, "leads/review.html",
-                  {"active_data_url": urlresolvers.reverse('leads:active_lead_table_DT'),
+                  {"active_data_url": reverse('leads:active_lead_table_DT'),
                    "active_data_options": ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
                                                              { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11,12]}],
                                                "pageLength": 25,
                                                "order": [[9, "asc"]] ''',
-                   "recent_archived_data_url": urlresolvers.reverse('leads:recent_archived_lead_table_DT'),
+                   "recent_archived_data_url": reverse('leads:recent_archived_lead_table_DT'),
                    "recent_archived_data_options" : ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
                                                                        { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}],
                                                          "order": [[9, "asc"]] ''',
@@ -260,7 +260,7 @@ def review(request):
 def leads(request):
     """All leads page"""
     return render(request, "leads/leads.html",
-                  {"data_url" : urlresolvers.reverse('leads:lead_table_DT'),
+                  {"data_url" : reverse('leads:lead_table_DT'),
                    "user": request.user})
 
 
@@ -294,8 +294,8 @@ def add_tag(request):
             compute_leads_state(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity()  # update lead similarity model in background
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
-        answer["tag_url"] = urlresolvers.reverse("leads:tag", args=[tag.id, ])
-        answer["tag_remove_url"] = urlresolvers.reverse("leads:remove_tag", args=[tag.id, lead.id])
+        answer["tag_url"] = reverse("leads:tag", args=[tag.id, ])
+        answer["tag_remove_url"] = reverse("leads:remove_tag", args=[tag.id, lead.id])
         answer["tag_name"] = tag.name
         answer["id"] = tag.id
     return HttpResponse(json.dumps(answer), content_type="application/json")

@@ -13,7 +13,7 @@ from base64 import b64encode
 
 from django.db import models
 from django.core.files.storage import FileSystemStorage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.auth.models import User

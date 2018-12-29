@@ -11,7 +11,7 @@ from django.db.models import F, Sum
 from django.apps import apps
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from datetime import date, timedelta
 

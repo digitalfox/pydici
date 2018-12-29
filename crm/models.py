@@ -12,7 +12,7 @@ from django.db.models import Sum, Q
 from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
-from django.core import urlresolvers
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 
@@ -129,7 +129,7 @@ class ClientOrganisation(AbstractAddress):
             return self.company.billing_address()
 
     def get_absolute_url(self):
-        return urlresolvers.reverse("crm:client_organisation", args=[self.id, ])
+        return reverse("crm:client_organisation", args=[self.id, ])
 
     class Meta:
         ordering = ["company", "name"]
@@ -163,12 +163,12 @@ class Contact(models.Model):
             return _("None")
         elif companies_count == 1:
             if html:
-                return mark_safe(u"<a href='%s'>%s</a>" % (urlresolvers.reverse("crm:company_detail", args=[companies[0].id,]), unicode(companies[0])))
+                return mark_safe(u"<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[companies[0].id,]), unicode(companies[0])))
             else:
                 return companies[0]
         elif companies_count > 1:
             if html:
-                return mark_safe(u", ".join([u"<a href='%s'>%s</a>" % (urlresolvers.reverse("crm:company_detail", args=[i.id,]), unicode(i)) for i in companies]))
+                return mark_safe(u", ".join([u"<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[i.id,]), unicode(i)) for i in companies]))
             else:
                 return u", ".join([unicode(i) for i in companies])
     companies.short_description = _("Companies")
@@ -247,7 +247,7 @@ class Contact(models.Model):
             print e
 
     def get_absolute_url(self):
-        return urlresolvers.reverse("contact_detail", args=[self.id, ])
+        return reverse("contact_detail", args=[self.id, ])
 
     class Meta:
         ordering = ["name"]
@@ -355,7 +355,7 @@ class Client(AbstractAddress):
     def objectiveMargin(self):
         """Compute margin over budget objective across all mission of this client
         @return: list of (margin in €, margin in % of total turnover) for internal consultant and subcontractor"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         consultantMargin = 0
         subcontractorMargin = 0
 
@@ -377,7 +377,7 @@ class Client(AbstractAddress):
     def fixedPriceMissionMargin(self):
         """Compute total fixed price margin in €  mission for this client. Only finished mission (ie archived) are
         considered"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         margin = 0
         missions = Mission.objects.filter(lead__client=self, active=False,
                                           lead__state = "WON", billing_mode="FIXED_PRICE")
@@ -420,7 +420,7 @@ class Client(AbstractAddress):
             return self.organisation.billing_address()
 
     def get_absolute_url(self):
-        return urlresolvers.reverse("company_detail", args=[self.organisation.company.id, ])
+        return reverse("company_detail", args=[self.organisation.company.id, ])
 
     class Meta:
         ordering = ["organisation", "contact"]
@@ -437,7 +437,7 @@ class MissionContact(models.Model):
         return u"%s (%s)" % (self.contact, self.company)
 
     def get_absolute_url(self):
-        return urlresolvers.reverse("contact_detail", args=[self.contact.id, ])
+        return reverse("contact_detail", args=[self.contact.id, ])
 
 
     class Meta:

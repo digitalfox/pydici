@@ -15,7 +15,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
-from django.core.urlresolvers import reverse
 from django.core.cache import cache
 
 from django_select2.views import AutoResponseView

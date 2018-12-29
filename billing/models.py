@@ -16,7 +16,7 @@ from django.db.models import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core.files.storage import FileSystemStorage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from leads.models import Lead
 from staffing.models import Mission

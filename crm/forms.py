@@ -8,7 +8,7 @@ CRM form setup
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.utils.encoding import smart_unicode
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from django.forms.widgets import Textarea
 

@@ -11,7 +11,6 @@ from decimal import Decimal
 
 from django import forms
 from django.conf import settings
-from django.core import urlresolvers
 from django.forms.models import BaseInlineFormSet
 from django.forms import ChoiceField, ModelChoiceField
 from django.utils.translation import ugettext as _

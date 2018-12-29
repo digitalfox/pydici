@@ -15,7 +15,7 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
-from django.core import urlresolvers
+from django.urls import reverse
 from django.db.models import Sum, Count, Q, Max
 from django.db import connections
 from django.utils.safestring import mark_safe
@@ -100,9 +100,9 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
 def missions(request, onlyActive=True):
     """List of missions"""
     if onlyActive:
-        data_url = urlresolvers.reverse('staffing:active_mission_table_DT')
+        data_url = reverse('staffing:active_mission_table_DT')
     else:
-        data_url = urlresolvers.reverse('staffing:all_mission_table_DT')
+        data_url = reverse('staffing:all_mission_table_DT')
     return render(request, "staffing/missions.html",
                   {"all": not onlyActive,
                    "data_url": data_url,
@@ -143,7 +143,7 @@ def mission_staffing(request, mission_id, form_mode="manual"):
     if request.method == "POST":
         if readOnly:
             # Readonly users should never go here !
-            return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbiden"))
         if form_mode=="manual":
             formset = StaffingFormSet(request.POST, instance=mission)
             if formset.is_valid():
@@ -181,7 +181,7 @@ def consultant_staffing(request, consultant_id):
             request.user.has_perm("staffing.delete_staffing")):
         # Only forbid access if the user try to edit someone else staffing
         if request.user.username.upper() != consultant.trigramme:
-            return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbiden"))
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
                                           formset=ConsultantStaffingInlineFormset, fields="__all__")
@@ -235,7 +235,7 @@ def mass_staffing(request):
                         staffing.save()
             # Redirect to self to display a new unbound form
             messages.add_message(request, messages.INFO, _("Staffing has been updated"))
-            return HttpResponseRedirect(urlresolvers.reverse("staffing:mass_staffing"))
+            return HttpResponseRedirect(reverse("staffing:mass_staffing"))
     else:
         # An unbound form
         form = MassStaffingForm(staffing_dates=staffing_dates)
@@ -393,7 +393,7 @@ def pdc_review(request, year=None, month=None):
         # Add client synthesis to staffing dict
         company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
         client_list = ", ".join(["<a href='%s'>%s</a>" %
-                                (urlresolvers.reverse("crm:company_detail", args=[c.id]), unicode(c)) for c in company])
+                                (reverse("crm:company_detail", args=[c.id]), unicode(c)) for c in company])
         client_list = "<div class='hidden-xs hidden-sm'>%s</div>" % client_list
         staffing[consultant].append([client_list])
 
@@ -687,7 +687,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         previous_week = 0
         next_week = 0
 
-    notAllowed = HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
+    notAllowed = HttpResponseRedirect(reverse("core:forbiden"))
 
     consultant = Consultant.objects.get(id=consultant_id)
 
@@ -1038,7 +1038,7 @@ def all_timesheet(request, year=None, month=None):
         data = list(consultants)
     else:
         # drill down link
-        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (urlresolvers.reverse("people:consultant_home", args=[consultant.trigramme]),
+        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme]),
                                                                                    month.year,
                                                                                    month.month,
                                                                                    escape(unicode(consultant)))) for consultant in consultants]
@@ -1046,7 +1046,7 @@ def all_timesheet(request, year=None, month=None):
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = to_int_or_round(timesheet["sum"], 2)
     for mission in missions:
-        missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("staffing:mission_home", args=[mission.id, ]),
+        missionUrl = "<a href='%s'>%s</a>" % (reverse("staffing:mission_home", args=[mission.id, ]),
                                         escape(unicode(mission)))
         if "csv" in request.GET:
             # Simple mission name
@@ -1306,7 +1306,7 @@ def create_new_mission_from_lead(request, lead_id):
 
     # Redirect user to change page of the mission
     # in order to type description and deal id
-    return HttpResponseRedirect(urlresolvers.reverse("staffing:mission_update", args=[mission.id, ]) + "?return_to=" + lead.get_absolute_url() + "#goto_tab-missions")
+    return HttpResponseRedirect(reverse("staffing:mission_update", args=[mission.id, ]) + "?return_to=" + lead.get_absolute_url() + "#goto_tab-missions")
 
 
 @pydici_non_public
@@ -1382,7 +1382,7 @@ def mission_contacts(request, mission_id):
         form = MissionContactsForm(request.POST, instance=mission)
         if form.is_valid():
             form.save()
-        return HttpResponseRedirect(urlresolvers.reverse("staffing:mission_home", args=[mission.id, ]))
+        return HttpResponseRedirect(reverse("staffing:mission_home", args=[mission.id, ]))
 
     # Unbound form
     form = MissionContactsForm(instance=mission)

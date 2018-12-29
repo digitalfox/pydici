@@ -12,7 +12,7 @@ from markdown.extensions.sane_lists import SaneListExtension
 import bleach
 
 from django import template
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
