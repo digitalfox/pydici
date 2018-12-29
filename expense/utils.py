@@ -29,7 +29,7 @@ For groups control permissions around this simple workflow:
 
 from django.core.cache import cache
 
-from expense.models import EXPENSE_STATES
+from expense.models import EXPENSE_STATES, EXPENSE_TRANSITION_TO_STATES
 from people.models import Consultant
 
 
@@ -98,6 +98,11 @@ def can_edit_expense(expense, user):
 def expense_state_display(state):
     d = dict(EXPENSE_STATES)
     return d.get(state, "??")
+
+def expense_transition_to_state_display(state):
+    d = dict(EXPENSE_TRANSITION_TO_STATES)
+    return d.get(state, "??")
+
 
 
 def user_expense_perm(user):

@@ -22,7 +22,7 @@ from people.models import Consultant
 from core.templatetags.pydici_filters import link_to_consultant
 from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round, has_role
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
-from expense.utils import expense_state_display
+from expense.utils import expense_state_display, expense_transition_to_state_display
 
 
 class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
@@ -137,7 +137,7 @@ class ExpenseWorkflowTable(ExpenseTable):
         result = []
         for transition in self.transitionsData[record.id]:
             result.append("""<a role='button' title='%s' class='btn btn-default btn-xs' href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
-                          % (expense_state_display(transition), reverse("expense:update_expense_state", args=[record.id, transition]), expense_state_display((transition)[0:2])))
+                          % (expense_transition_to_state_display(transition), reverse("expense:update_expense_state", args=[record.id, transition]), expense_transition_to_state_display(transition)[0:2]))
         if self.expenseEditPerm[record.id]:
             result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>"
                           % (smart_bytes(_("Edit")),

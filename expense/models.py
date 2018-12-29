@@ -23,12 +23,21 @@ from core.utils import sanitizeName
 import pydici.settings
 
 EXPENSE_STATES = (
-    ("REQUESTED", ugettext("requested")),
-    ("VALIDATED", ugettext("validated")),
-    ("REJECTED", ugettext("rejected")),
-    ("NEEDS_INFORMATION", ugettext("needs information")),
-    ("CONTROLLED", ugettext("controlled")),
-    ("PAID", ugettext("paid")),
+    ("REQUESTED", ugettext("Requested")),
+    ("VALIDATED", ugettext("Validated")),
+    ("REJECTED", ugettext("Rejected")),
+    ("NEEDS_INFORMATION", ugettext("Needs information")),
+    ("CONTROLLED", ugettext("Controlled")),
+    ("PAID", ugettext("Paid")),
+)
+
+EXPENSE_TRANSITION_TO_STATES = (
+    ("REQUESTED", ugettext("Request")),
+    ("VALIDATED", ugettext("Validate")),
+    ("REJECTED", ugettext("Reject")),
+    ("NEEDS_INFORMATION", ugettext("Ask for information")),
+    ("CONTROLLED", ugettext("Control")),
+    ("PAID", ugettext("Pay")),
 )
 
 class ExpenseStorage(FileSystemStorage):
