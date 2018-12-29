@@ -164,6 +164,7 @@ class Consultant(models.Model):
             turnover += charge * rates.get(mission, 0)
         return turnover
 
+    @cacheable("Consultant.getUser%(id)s", 3600)
     def getUser(self):
         """Returns django user behind this consultant
         Current algorithm check only for equal trigramme
