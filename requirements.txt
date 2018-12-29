@@ -9,7 +9,6 @@ django-debug-toolbar==1.8
 django-userswitch
 django-crispy-forms==1.7.1
 Django-Select2==5.8.10
-requests==2.5.2
 lxml==3.4.2
 python-memcached==1.54
 django-datatables-view==1.16.0
