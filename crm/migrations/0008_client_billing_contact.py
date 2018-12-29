@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='client',
             name='billing_contact',
-            field=models.ForeignKey(to='crm.AdministrativeContact', null=True),
+            field=models.ForeignKey(to='crm.AdministrativeContact', null=True, on_delete=models.SET_NULL),
         ),
     ]
