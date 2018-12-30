@@ -9,7 +9,7 @@ django-crispy-forms==1.7.1
 Django-Select2==5.11.1
 lxml==3.4.2
 python-memcached==1.54
-django-datatables-view==1.16.0
+django-datatables-view==1.17.0
 django-background-tasks==1.1.9
 WeasyPrint==0.34
 django-weasyprint==0.1

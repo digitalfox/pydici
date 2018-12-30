@@ -86,7 +86,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         if column == "user":
             return link_to_consultant(row.user)
         elif column == "receipt":
-            return self.receipt_template.render(RequestContext(self.request, {"record": row}))
+            return self.receipt_template.render({"record": row})
         elif column == "lead":
             if row.lead:
                 return u"<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
@@ -102,7 +102,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
             else:
                 return self.ko_sign
         elif column == "state":
-            return self.state_template.render(RequestContext(self.request, {"record": row}))
+            return self.state_template.render({"record": row})
         elif column == "amount":
             return to_int_or_round(row.amount, 2)
         else:

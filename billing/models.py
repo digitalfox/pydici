@@ -114,7 +114,7 @@ class AbstractBill(models.Model):
         return self.amount_with_vat - self.amount
 
     def get_absolute_url(self):
-        return reverse("client_bill", args=[self.id,])
+        return reverse("billing:client_bill", args=[self.id,])
 
     class Meta:
         abstract = True

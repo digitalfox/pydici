@@ -142,7 +142,7 @@ class Expense(models.Model):
 
 
     def get_absolute_url(self):
-        return reverse('expense', args=[str(self.id)])
+        return reverse('expense:expenses', args=[str(self.id)])
 
     class Meta:
         verbose_name = _("Expense")
