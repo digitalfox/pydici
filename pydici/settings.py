@@ -152,8 +152,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',  # Static files are served by web server in production mode, but this apps allow collectstatic
     'taggit',
     'taggit_templatetags2',
-    #'permissions',
-    #'workflows',
     'django_tables2',
     'crispy_forms',
     'django_select2',
@@ -185,3 +183,4 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 SELECT2_JS = u'//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js'
 SELECT2_CSS = u'//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css'
 SELECT2_CACHE_BACKEND = 'select2'
+TAGGIT_LIMIT = 200
