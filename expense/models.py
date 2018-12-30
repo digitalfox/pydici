@@ -114,9 +114,9 @@ class Expense(models.Model):
 
     def __unicode__(self):
         if self.lead:
-            return u"%s (%s %s %s) - %s € - %s" % (self.description, self.lead, self.lead.deal_id, self.expense_date, self.amount, self.state())
+            return u"%s (%s %s %s) - %s € - %s" % (self.description, self.lead, self.lead.deal_id, self.expense_date, self.amount, self.get_state_display())
         else:
-            return u"%s (%s) - %s € - %s" % (self.description, self.expense_date, self.amount, self.state())
+            return u"%s (%s) - %s € - %s" % (self.description, self.expense_date, self.amount, self.get_state_display())
 
 
     def receipt_data(self):

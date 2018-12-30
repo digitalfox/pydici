@@ -247,7 +247,7 @@ class Contact(models.Model):
             print e
 
     def get_absolute_url(self):
-        return reverse("contact_detail", args=[self.id, ])
+        return reverse("crm:contact_detail", args=[self.id, ])
 
     class Meta:
         ordering = ["name"]
@@ -420,7 +420,7 @@ class Client(AbstractAddress):
             return self.organisation.billing_address()
 
     def get_absolute_url(self):
-        return reverse("company_detail", args=[self.organisation.company.id, ])
+        return reverse("crm:company_detail", args=[self.organisation.company.id, ])
 
     class Meta:
         ordering = ["organisation", "contact"]
@@ -437,7 +437,7 @@ class MissionContact(models.Model):
         return u"%s (%s)" % (self.contact, self.company)
 
     def get_absolute_url(self):
-        return reverse("contact_detail", args=[self.contact.id, ])
+        return reverse("crm:contact_detail", args=[self.contact.id, ])
 
 
     class Meta:

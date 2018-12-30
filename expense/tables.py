@@ -243,7 +243,7 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
         elif column == "amount":
             return to_int_or_round(row.amount(), 2)
         elif column == "modification":
-            return self.modification_template.render(context={"record": row}, request=self.request)
+            return self.modification_template.render(RequestContext(self.request, {"record": row}))
         else:
             return super(ExpensePaymentTableDT, self).render_column(row, column)
 
