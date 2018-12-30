@@ -86,14 +86,14 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         if column == "user":
             return link_to_consultant(row.user)
         elif column == "receipt":
-            return self.receipt_template.render({"record": row})
+            return self.receipt_template.render(context={"record": row}, request=self.request)
         elif column == "lead":
             if row.lead:
                 return u"<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
             else:
                 return u"-"
         elif column in ("creation_date", "expense_date"):
-            return self.date_template.render({"date": getattr(row, column)})
+            return self.date_template.render(context={"date": getattr(row, column)}, request=self.request)
         elif column == "update_date":
             return row.update_date.strftime("%x %X")
         elif column in ("chargeable", "corporate_card"):
@@ -102,7 +102,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
             else:
                 return self.ko_sign
         elif column == "state":
-            return self.state_template.render({"record": row})
+            return self.state_template.render(context={"record": row}, request=self.request)
         elif column == "amount":
             return to_int_or_round(row.amount, 2)
         else:
@@ -239,11 +239,11 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
         if column == "user":
             return link_to_consultant(row.user())
         elif column == "payment_date":
-            return self.date_template.render({"date": row.payment_date})
+            return self.date_template.render(context={"date": row.payment_date}, request=self.request)
         elif column == "amount":
             return to_int_or_round(row.amount(), 2)
         elif column == "modification":
-            return self.modification_template.render(RequestContext(self.request, {"record": row}))
+            return self.modification_template.render(context={"record": row}, request=self.request)
         else:
             return super(ExpensePaymentTableDT, self).render_column(row, column)
 
