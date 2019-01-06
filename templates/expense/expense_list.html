@@ -51,7 +51,7 @@
             {% trans "No" %}
         {% endif %}</td>
     <td>{% if expense.receipt %}<a href="{% url 'expense:expense_receipt' expense.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}</td>
-    <td>{{ expense.state }}</td>
+    <td>{{ expense.get_state_display }}</td>
     <td>{{ expense.expense_date }}</td>
     <td>{{ expense.update_date }}</td>
     <td>{{ expense.comment }}</td>
