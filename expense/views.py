@@ -153,7 +153,7 @@ def expense_delete(request, expense_id):
         messages.add_message(request, messages.INFO, _("Expense %s has been deleted" % expense_id))
 
     # Redirect user to expense main page
-    return redirect(expenses)
+    return redirect("expense:expenses")
 
 
 @pydici_non_public
@@ -313,7 +313,7 @@ def expense_payment_detail(request, expense_payment_id):
 
     except ExpensePayment.DoesNotExist:
         messages.add_message(request, messages.ERROR, _("Expense payment %s does not exist" % expense_payment_id))
-        return redirect(expense_payments)
+        return redirect("expense:expense_payments")
 
     return render(request, "expense/expense_payment_detail.html",
                   {"expense_payment": expensePayment,
