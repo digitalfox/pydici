@@ -247,9 +247,9 @@ def client_bill(request, bill_id=None):
                 billExpenseFormSet.save()
             bill.save()  # Again, to take into account modified details.
             if bill.state in wip_status:
-                success_url = reverse_lazy("client_bill", args=[bill.id, ])
+                success_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
             else:
-                success_url = request.GET.get('return_to', False) or reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
+                success_url = request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
                 if not bill.bill_file:
                     fake_http_request = request
                     fake_http_request.method = "GET"
@@ -309,7 +309,7 @@ def clientbill_delete(request, bill_id):
             messages.add_message(request, messages.INFO, _("Bill removed successfully"))
         else:
             messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
-            redirect_url = reverse_lazy("client_bill", args=[bill.id, ])
+            redirect_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
     except Exception, e:
         print(e)
         messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))

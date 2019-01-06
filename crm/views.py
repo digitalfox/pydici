@@ -75,7 +75,7 @@ class ContactDelete(PydiciNonPublicdMixin, FeatureContactsWriteMixin, DeleteView
     model = Contact
     template_name = "core/delete.html"
     form_class = ContactForm
-    success_url = reverse_lazy("contact_list")
+    success_url = reverse_lazy("crm:contact_list")
 
     def form_valid(self, form):
         messages.add_message(self.request, messages.INFO, _("Contact removed successfully"))
@@ -150,7 +150,7 @@ class AdministrativeContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMix
         return {'company': self.request.GET.get("company")}
 
     def get_success_url(self):
-        return self.request.GET.get('return_to', False) or reverse_lazy("company_detail", args=[self.object.company.id, ])
+        return self.request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[self.object.company.id, ])
 
 
 class AdministrativeContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, UpdateView):
@@ -159,7 +159,7 @@ class AdministrativeContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMix
     form_class = AdministrativeContactForm
 
     def get_success_url(self):
-        return self.request.GET.get('return_to', False) or reverse_lazy("company_detail", args=[self.object.company.id, ])
+        return self.request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[self.object.company.id, ])
 
 
 @pydici_non_public
