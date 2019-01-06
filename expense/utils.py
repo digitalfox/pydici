@@ -97,7 +97,7 @@ def can_edit_expense(expense, user):
 
 def in_terminal_state(expense):
     """Return True if expense is in terminal state"""
-    if expense.state == "PAID":
+    if expense.state in ("PAID", "REJECTED"):
         return True
     elif expense.state == "CONTROLLED" and expense.corporate_card:
         return True
