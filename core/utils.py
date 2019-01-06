@@ -16,7 +16,6 @@ import json
 from decimal import Decimal
 
 from django.template.loader import get_template
-from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
@@ -46,10 +45,10 @@ def send_lead_mail(lead, request, fromAddr=None, fromName=""):
         fromAddr = get_parameter("MAIL_FROM")
     url = get_parameter("HOST") + reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
     subject = u"[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
-    msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj": lead,
-                                                                                  "lead_url": url}))
-    msgHtml = get_template("leads/lead_mail.html").render(RequestContext(request, {"obj": lead,
-                                                                                   "lead_url": url}))
+    msgText = get_template("leads/lead_mail.txt").render(request=request, context={"obj": lead,
+                                                                                  "lead_url": url})
+    msgHtml = get_template("leads/lead_mail.html").render(request=request, context={"obj": lead,
+                                                                                   "lead_url": url})
     msg = EmailMultiAlternatives(subject, msgText, fromAddr, [get_parameter("LEAD_MAIL_TO"), ])
     msg.attach_alternative(msgHtml, "text/html")
     msg.send()
