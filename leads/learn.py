@@ -45,7 +45,7 @@ SIMILARITY_MODEL_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_MODEL"
 SIMILARITY_LEADS_IDS_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_LEADS_IDS"
 SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_SALES_SCALER"
 
-FR_STOP_WORDS = """alors au aucuns aussi autre avant avec avoir bon car ce cela ces ceux chaque ci comme comment
+FR_STOP_WORDS = u"""alors au aucun aussi autre avant avec avoir bon car ce cela ces ceux chaque ci comme comment
  dans des du dedans dehors depuis devrait doit donc dos début elle elles en encore essai est et eu fait faites fois
  font hors ici il ils je juste la le les leur là ma maintenant mais mes mine moins mon mot même ni nommés notre nous
  ou où par parce pas peut peu plupart pour pourquoi quand que quel quelle quelles quels qui sa sans ses seulement
@@ -187,7 +187,7 @@ def get_state_model():
 
 def get_tag_model():
         model = Pipeline([("vect", TfidfVectorizer(stop_words=FR_STOP_WORDS.split(), min_df=2, sublinear_tf=False)),
-                           ("clf", SGDClassifier(loss="log", penalty="l1"))])
+                           ("clf", SGDClassifier(loss="log", penalty="l1", max_iter=1000, tol=0.01))])
         return model
 
 
@@ -203,7 +203,7 @@ def test_state_model():
     features, targets = extract_leads_state(leads)
     model = get_state_model()
     model.fit(features, processTarget(targets))
-    scores = cross_val_score(model, features, processTarget(targets))
+    scores = cross_val_score(model, features, processTarget(targets), cv=3)
     print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
     return scores.mean()
 
@@ -241,7 +241,7 @@ def test_tag_model():
     test_features, test_targets = extract_leads_tag(leads, include_leads=True)
     model = get_tag_model()
     model.fit(test_features, test_targets)
-    scores = cross_val_score(model, test_features, test_targets, scoring=score_tag_lead)
+    scores = cross_val_score(model, test_features, test_targets, scoring=score_tag_lead, cv=3)
     m = cPickle.dumps(model)
     print "size %s - compressed %s" % (len(m)/(1024*1024), len(zlib.compress(m))/(1024*1024))
     print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
@@ -262,7 +262,7 @@ def gridCV_tag_model():
     features, targets = extract_leads_tag(learn_leads, include_leads=True)
     model = get_tag_model()
     model.fit(features, targets)
-    g=GridSearchCV(model, parameters, verbose=2, n_jobs=1, scoring=score_tag_lead)
+    g=GridSearchCV(model, parameters, verbose=2, n_jobs=1, scoring=score_tag_lead, cv=3)
     g.fit(features, targets)
     return g
 
@@ -279,7 +279,7 @@ def gridCV_state_model():
     learn_leads = Lead.objects.filter(state__in=STATES.keys())
     features, targets = extract_leads_state(learn_leads)
     model = get_state_model()
-    g=GridSearchCV(model, parameters, verbose=1, n_jobs=6)
+    g=GridSearchCV(model, parameters, verbose=1, n_jobs=6, cv=3)
     g.fit(features, processTarget(targets))
     eval_state_model(g.best_estimator_)
     return g
