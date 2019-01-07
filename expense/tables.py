@@ -33,8 +33,8 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
     date_template = get_template("core/_date_column.html")
     receipt_template = get_template("expense/_receipt_column.html")
     state_template = get_template("expense/_expense_state_column.html")
-    ko_sign = mark_safe("""<span class="glyphicon glyphicon-remove" style="color:red"></span>""")
-    ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"></span>""")
+    ko_sign = mark_safe("""<span class="glyphicon glyphicon-remove" style="color:red"><span class="visuallyhidden">No</span></span>""")
+    ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"><span class="visuallyhidden">Yes</span></span>""")
 
     def get_initial_queryset(self):
         try:
