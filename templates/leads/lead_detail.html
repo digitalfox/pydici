@@ -228,6 +228,14 @@
         {% endfor %}
         {% ifnotequal lead.mission_set.count 1 %}
     	    <tr>
+    	        <th>{% trans "Unused" %}</th>
+    	        <th></th>
+    	        <th></th>
+    	        <th></th>
+    	        <th>{{ lead.unused }}</th>
+    	        <th></th>
+    	    </tr>
+            <tr>
     	        <th>{% trans "Total" %}</th>
     	        <th></th>
     	        <th>{{ lead.done_work_k.0 }}</th>
