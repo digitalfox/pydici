@@ -5,7 +5,7 @@
 """
 
 from django.conf.urls import patterns, url
-from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT, ClientCompanyLeadTableDT
+from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT, ClientCompanyLeadTableDT, LeadToBill
 
 
 leads_urls = patterns('leads.views',
@@ -19,6 +19,7 @@ leads_urls = patterns('leads.views',
                       (r'^leads$', 'leads'),
                       (r'^lead$', 'lead'),
                       (r'^lead/(?P<lead_id>\d+)/change$', 'lead'),
+                      url(r'^lead/to_bill$', 'leads_to_bill', name="leads_to_bill"),
                       (r'^documents/(?P<lead_id>\d+)/$', 'lead_documents'),
                       (r'^sendmail/(?P<lead_id>\d+)/$', 'mail_lead'),
                       url(r'^mail/text', 'summary_mail', {"html": False}, name="lead-mail-text"),
@@ -32,4 +33,5 @@ leads_urls = patterns('leads.views',
                       url(r'^datatable/active-lead/data/$', ActiveLeadTableDT.as_view(), name='active_lead_table_DT'),
                       url(r'^datatable/recent-archived-lead/data/$', RecentArchivedLeadTableDT.as_view(), name='recent_archived_lead_table_DT'),
                       url(r'^datatable/clientcompany-lead/(?P<clientcompany_id>\d+)/data/$', ClientCompanyLeadTableDT.as_view(), name='client_company_lead_table_DT'),
+                      url(r'^datatable/leads-to-bill/data/$', LeadToBill.as_view(), name='leads_to_bill_table_DT'),
                       )

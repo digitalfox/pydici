@@ -16,7 +16,7 @@ from core.utils import to_int_or_round
 from billing.views import BillingRequestMixin
 from billing.models import ClientBill, SupplierBill
 from people.models import Consultant
-
+from leads.models import Lead
 
 class BillTableDT(BillingRequestMixin, BaseDatatableView):
     """Base bill table backend for datatables"""

@@ -119,6 +119,7 @@
                 <li><a href="{% url 'billing.views.bill_review' %}">{% trans "Bills review" %}</a></li>
                 <li><a href="{% url 'billing.views.bill_payment_delay' %}">{% trans "Payment delay review" %}</a></li>
                 <li><a href="{% url 'core.views.riskReporting' %}">{% trans "Risks synthesis" %}</a></li>
+                <li><a href="{% url 'leads.views.leads_to_bill' %}">{% trans "Leads still to be billed" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Extractions" %}</li>
                 <li><a href="{% url 'leads.views.csv_export' target='active' %}">{% trans "Active leads (csv)" %}</a></li>
