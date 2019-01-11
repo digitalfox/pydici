@@ -59,6 +59,7 @@
      {% else %}
         <h4>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</h4>
      {% endifequal %}
+     <h4>{% trans "Still to be billed:" %} {{ lead.still_to_be_billed }} €</h4>
      <br/><br/><hr/>
 {% endfor %}
 
