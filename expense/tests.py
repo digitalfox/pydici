@@ -78,8 +78,6 @@ class WorkflowTest(TestCase):
             self.assertEqual(len(expense_next_states(e, user)), 0)  # No transition allowed
             self.assertFalse(can_edit_expense(e, user))  # No edition allowed
         self.assertTrue(can_edit_expense(e, sre))  # Except admin
-        # Except for paymaster to pay expense if payable...
-        self.assertEqual(expense_next_states(e, fla), ("PAID",))
         e.corporate_card = True
         e.save()
         self.assertEqual(len(expense_next_states(e, fla)), 0)  # No payment if corporate card was used

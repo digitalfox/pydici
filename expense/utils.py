@@ -58,13 +58,7 @@ def expense_next_states(expense, user):
             next_states = ("NEEDS_INFORMATION", "CONTROLLED")
     elif state == "NEEDS_INFORMATION":
         if expense_administrator or expense_paymaster:
-            next_states = ("VALIDATED", "REJECTED", "REQUESTED")
-        if expense.user == user and expense_requester:
-            next_states = ("REQUESTED",)
-    elif state == "CONTROLLED":
-        if expense_administrator or expense_paymaster:
-            if not expense.corporate_card:
-                next_states = ("PAID",)
+            next_states = ("VALIDATED", "REJECTED")
 
     allowed_states = [i[0] for i in EXPENSE_STATES]
     for state in next_states:

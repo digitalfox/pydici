@@ -32,12 +32,10 @@ EXPENSE_STATES = (
 )
 
 EXPENSE_TRANSITION_TO_STATES = (
-    ("REQUESTED", ugettext("Request")),
     ("VALIDATED", ugettext("Validate")),
     ("REJECTED", ugettext("Reject")),
     ("NEEDS_INFORMATION", ugettext("Ask for information")),
     ("CONTROLLED", ugettext("Control")),
-    ("PAID", ugettext("Pay")),
 )
 
 class ExpenseStorage(FileSystemStorage):
@@ -100,7 +98,7 @@ class Expense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"), on_delete=models.CASCADE)
     chargeable = models.BooleanField(_("Chargeable"))
-    creation_date = models.DateField(_("Date"))
+    creation_date = models.DateField(_("Date"), auto_now_add=True)
     expense_date = models.DateField(_("Expense date"))
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     amount = models.DecimalField(_("Amount"), max_digits=7, decimal_places=2)

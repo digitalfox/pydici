@@ -61,7 +61,7 @@ def expenses(request, expense_id=None, clone_from=None):
             if not hasattr(expense, "user"):
                 # Don't update user if defined (case of expense updated by manager or administrator)
                 expense.user = request.user
-            expense.creation_date = date.today()
+            expense.state = "REQUESTED"
             expense.save()
             return HttpResponseRedirect(reverse("expense:expenses"))
     else:
