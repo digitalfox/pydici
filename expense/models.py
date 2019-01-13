@@ -23,12 +23,12 @@ from core.utils import sanitizeName
 import pydici.settings
 
 EXPENSE_STATES = (
-    ("REQUESTED", ugettext("Requested")),
-    ("VALIDATED", ugettext("Validated")),
-    ("REJECTED", ugettext("Rejected")),
-    ("NEEDS_INFORMATION", ugettext("Needs information")),
-    ("CONTROLLED", ugettext("Controlled")),
-    ("PAID", ugettext("Paid")),
+    ("REQUESTED", _("Requested")),
+    ("VALIDATED", _("Validated")),
+    ("REJECTED", _("Rejected")),
+    ("NEEDS_INFORMATION", _("Needs information")),
+    ("CONTROLLED", _("Controlled")),
+    ("PAID", _("Paid")),
 )
 
 EXPENSE_TRANSITION_TO_STATES = (
