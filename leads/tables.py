@@ -102,3 +102,19 @@ class RecentArchivedLeadTableDT(ActiveLeadTableDT):
 class ClientCompanyLeadTableDT(LeadTableDT):
     def get_initial_queryset(self):
         return Lead.objects.filter(client__organisation__company__id=self.kwargs["clientcompany_id"]).select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+
+
+class LeadToBill(LeadTableDT):
+        """Track missing bills"""
+        columns = ("client", "name", "deal_id", "subsidiary", "responsible", "creation_date", "sales", "to_be_billed")
+        order_columns = columns
+        max_display_length = 100
+
+        def get_initial_queryset(self):
+            return Lead.objects.filter(state="WON", mission__active=True).distinct()
+
+        def render_column(self, row, column):
+            if column == "to_be_billed":
+                return round(row.still_to_be_billed()/1000, 3)
+            else:
+                return super(LeadToBill, self).render_column(row, column)

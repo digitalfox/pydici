@@ -266,6 +266,16 @@ def leads(request):
 
 @pydici_non_public
 @pydici_feature("leads")
+def leads_to_bill(request):
+    """All leads page"""
+    return render(request, "leads/leads_to_bill.html",
+                  {"data_url" : urlresolvers.reverse('leads_to_bill_table_DT'),
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [7,] }] ''',
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("leads")
 def tag(request, tag_id):
     """Displays leads for given tag"""
 

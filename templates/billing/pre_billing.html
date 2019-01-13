@@ -57,8 +57,9 @@
      {% ifequal lead.mission_set.count 1 %}
         <h4></h4>
      {% else %}
-        <h4>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</h4>
+        <p><strong>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</strong></p>
      {% endifequal %}
+     <p><strong>{% trans "Still to be billed" %}: {{ lead.still_to_be_billed }} €</strong></p>
      <br/><br/><hr/>
 {% endfor %}
 
