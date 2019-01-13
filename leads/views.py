@@ -269,7 +269,7 @@ def leads(request):
 def leads_to_bill(request):
     """All leads page"""
     return render(request, "leads/leads_to_bill.html",
-                  {"data_url" : urlresolvers.reverse('leads_to_bill_table_DT'),
+                  {"data_url" : reverse('leads:leads_to_bill_table_DT'),
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [7,] }] ''',
                    "user": request.user})
 

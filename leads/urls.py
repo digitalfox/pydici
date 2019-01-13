@@ -5,7 +5,7 @@
 """
 
 from django.conf.urls import url
-from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT, ClientCompanyLeadTableDT
+from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT, ClientCompanyLeadTableDT, LeadToBill
 import leads.views as v
 
 
@@ -33,4 +33,5 @@ leads_urls = [url(r'^review', v.review, name="review"),
               url(r'^datatable/active-lead/data/$', ActiveLeadTableDT.as_view(), name='active_lead_table_DT'),
               url(r'^datatable/recent-archived-lead/data/$', RecentArchivedLeadTableDT.as_view(), name='recent_archived_lead_table_DT'),
               url(r'^datatable/clientcompany-lead/(?P<clientcompany_id>\d+)/data/$', ClientCompanyLeadTableDT.as_view(), name='client_company_lead_table_DT'),
+              url(r'^datatable/leads-to-bill/data/$', LeadToBill.as_view(), name='leads_to_bill_table_DT'),
               ]
