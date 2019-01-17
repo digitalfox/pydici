@@ -21,7 +21,6 @@ from django.contrib import messages
 from expense.forms import ExpenseForm, ExpensePaymentForm
 from expense.models import Expense, ExpensePayment
 from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable
-from people.models import Consultant
 from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature
 from core.views import tableToCSV
@@ -115,12 +114,12 @@ def expenses(request, expense_id=None, clone_from=None):
 def expense_receipt(request, expense_id):
     """Returns expense receipt if authorize to"""
     data = StringIO()
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
     try:
         expense = Expense.objects.get(id=expense_id)
         content_type = expense.receipt_content_type()
         if expense.user == request.user or\
-           utils.has_role(request.user, "expense paymaster") or\
-           utils.has_role(request.user, "expense manager"):
+           expense_manager or expense_paymaster or expense_administrator:
             data = expense.receipt_data()
     except (Expense.DoesNotExist, OSError):
         pass
