@@ -145,8 +145,8 @@ def migrate_default_workflow():
 
     # Get current states from old workflow
     with connection.cursor() as cursor:
-        rows = cursor.execute("select content_id, state_id from workflows_stateobjectrelation")
-        expense_states = dict(rows.fetchall())
+        cursor.execute("select content_id, state_id from workflows_stateobjectrelation")
+        expense_states = dict(cursor.fetchall())
 
     # Map old to new state
     with transaction.atomic():
