@@ -907,6 +907,13 @@ def mission_timesheet(request, mission_id):
         currentUnused = 0
         forecastedUnused = 0
 
+    # pad to 8 values
+    padded_mission_data = []
+    for consultant, timesheet, staffing, estimated in missionData:
+        padded_mission_data.append((consultant, timesheet, staffing, estimated, None, None, None, None))
+    missionData = padded_mission_data
+
+    # add total
     missionData.append((None, timesheetTotal, staffingTotal, estimatedTotal,
                         timesheetTotalAmount[:-1], staffingTotalAmount[:-1],  # We remove last one not to  display total twice
                         timesheetAverageRate, staffingAverageRate))
