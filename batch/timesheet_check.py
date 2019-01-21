@@ -88,13 +88,12 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
                     recipients.append(managerUser.email)
 
             if recipients:
-                msgText = emailTemplate.render(Context(
-                                            {"month": currentMonth,
-                                             "surbooking_days": surbookingDays,
-                                             "incomplete_days": incompleteDays,
-                                             "consultant": consultant,
-                                             "days": days,
-                                             "url": url}))
+                msgText = emailTemplate.render(context={"month": currentMonth,
+                                                        "surbooking_days": surbookingDays,
+                                                        "incomplete_days": incompleteDays,
+                                                        "consultant": consultant,
+                                                        "days": days,
+                                                        "url": url})
                 mails.append(((_("[pydici] Your timesheet is not correct"), msgText,
                           get_parameter("MAIL_FROM"), recipients)))
             else:
