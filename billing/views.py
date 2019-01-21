@@ -132,7 +132,7 @@ def mark_bill_paid(request, bill_id):
     bill = ClientBill.objects.get(id=bill_id)
     bill.state = "2_PAID"
     bill.save()
-    return HttpResponseRedirect(reverse("billing.views.bill_review"))
+    return HttpResponseRedirect(reverse("billing:bill_review"))
 
 
 @pydici_non_public
