@@ -1,0 +1,28 @@
+@page
+{
+    size: A4;
+    margin-left: 10mm;
+    margin-right: 10mm;
+    margin-top: 10mm;
+    margin-bottom: 20mm;
+}
+
+body
+{
+    font-size       : 10px;
+}
+footer
+{
+    position        : fixed;
+    width           : 100%;
+    bottom          : 0;
+    margin-bottom   : -15mm;
+    height          : 15mm;
+    text-align      : center;
+    font-size       : 10px;
+}
+
+/* used to reduce some default boostrap margin */
+.small-margin {
+    margin-bottom: 5px;
+}

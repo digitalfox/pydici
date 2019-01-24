@@ -32,17 +32,17 @@
                         {% ifequal request.user action.user %}
                         <div>
                             <button type="button" class="btn btn-default"
-                              onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DONE' %}',
+                              onClick="$.get('{% url 'actionset:update_action_state' action.id|unlocalize 'DONE' %}',
                                               process_update_action_state);">
                               {% trans "Mark as done" %}</button>
                            
                            <button type="button" class="btn btn-default" 
-                              onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'NA' %}',
+                              onClick="$.get('{% url 'actionset:update_action_state' action.id|unlocalize 'NA' %}',
                                               process_update_action_state);">
                               {% trans "N/A" %}</button>
                            
                            <button type="button" class="btn btn-default" 
-                              onClick="call_deleguate_action('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DELEGUATE' %}', '{{ action.id|unlocalize }}');">
+                              onClick="call_deleguate_action('{% url 'actionset:update_action_state' action.id|unlocalize 'DELEGUATE' %}', '{{ action.id|unlocalize }}');">
                               {% trans "Delegate to: " %}</button>
                            {% for field in action.delegateForm %}<div class="force_child_span_inline">{{ field }}</div>{% endfor %}
                            

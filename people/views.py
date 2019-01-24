@@ -38,7 +38,7 @@ def consultant_detail(request, consultant_id):
     """Summary page of consultant activity"""
     if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # This view should only be accessed by ajax request. Redirect lost users
-        return redirect(consultant_home_by_id, consultant_id)
+        return redirect("people:consultant_home_by_id", consultant_id)
     try:
         consultant = Consultant.objects.get(id=consultant_id)
         staff = consultant.team(onlyActive=True)

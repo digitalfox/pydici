@@ -14,7 +14,7 @@ from collections import defaultdict
 
 
 from django.shortcuts import render
-from django.core import urlresolvers
+from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
@@ -98,9 +98,9 @@ def detail(request, lead_id):
                    "active_rank": rank + 1,
                    "next_lead": next_lead,
                    "previous_lead": previous_lead,
-                   "link_root": urlresolvers.reverse("index"),
+                   "link_root": reverse("core:index"),
                    "action_list": lead.get_change_history(),
-                   "completion_url": urlresolvers.reverse("leads.views.tags", args=[lead.id, ]),
+                   "completion_url": reverse("leads:tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
                    "similar_leads": predict_similar(lead),
                    "user": request.user})
@@ -148,7 +148,7 @@ def lead(request, lead_id=None):
                     updated_fields.append("%s: %s" % (force_text(field.label or field_name), value))
             lead = form.save()
             postSaveLead(request, lead, updated_fields, created=created, state_changed=state_changed)
-            return HttpResponseRedirect(urlresolvers.reverse("leads.views.detail", args=[lead.id]))
+            return HttpResponseRedirect(reverse("leads:detail", args=[lead.id]))
     else:
         if lead:
             form = LeadForm(instance=lead)  # A form that edit current lead
@@ -244,12 +244,12 @@ def mail_lead(request, lead_id=0):
 @pydici_feature("leads")
 def review(request):
     return render(request, "leads/review.html",
-                  {"active_data_url": urlresolvers.reverse('active_lead_table_DT'),
+                  {"active_data_url": reverse('leads:active_lead_table_DT'),
                    "active_data_options": ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
                                                              { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11,12]}],
                                                "pageLength": 25,
                                                "order": [[9, "asc"]] ''',
-                   "recent_archived_data_url": urlresolvers.reverse('recent_archived_lead_table_DT'),
+                   "recent_archived_data_url": reverse('leads:recent_archived_lead_table_DT'),
                    "recent_archived_data_options" : ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
                                                                        { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}],
                                                          "order": [[9, "asc"]] ''',
@@ -261,7 +261,17 @@ def review(request):
 def leads(request):
     """All leads page"""
     return render(request, "leads/leads.html",
-                  {"data_url" : urlresolvers.reverse('lead_table_DT'),
+                  {"data_url" : reverse('leads:lead_table_DT'),
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def leads_to_bill(request):
+    """All leads page"""
+    return render(request, "leads/leads_to_bill.html",
+                  {"data_url" : reverse('leads:leads_to_bill_table_DT'),
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [7,] }] ''',
                    "user": request.user})
 
 
@@ -296,8 +306,8 @@ def add_tag(request):
         compute_lead_similarity()  # update lead similarity model in background
         tag_leads_files([lead])  # Update lead tags from lead files
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
-        answer["tag_url"] = urlresolvers.reverse("leads.views.tag", args=[tag.id, ])
-        answer["tag_remove_url"] = urlresolvers.reverse("leads.views.remove_tag", args=[tag.id, lead.id])
+        answer["tag_url"] = reverse("leads:tag", args=[tag.id, ])
+        answer["tag_remove_url"] = reverse("leads:remove_tag", args=[tag.id, lead.id])
         answer["tag_name"] = tag.name
         answer["id"] = tag.id
     return HttpResponse(json.dumps(answer), content_type="application/json")
@@ -341,7 +351,7 @@ def manage_tags(request):
                 tag.delete()
 
     return render(request, "leads/manage_tags.html",
-                  {"data_url": urlresolvers.reverse('tag_table_DT'),
+                  {"data_url": urlresolvers.reverse('leads:tag_table_DT'),
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
                                                              "order": [[1, "asc"]] ''',
                    "user": request.user})
@@ -443,7 +453,7 @@ def leads_pivotable(request, year=None):
     """Pivot table for all leads of given year"""
     data = []
     leads = Lead.objects.passive()
-    derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _("sales"))
+    derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _(u"sales (k€)"))
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
     if not leads:
@@ -471,6 +481,7 @@ def leads_pivotable(request, year=None):
                      _("broker"): unicode(lead.business_broker),
                      _("state"): lead.get_state_display(),
                      _(u"billed (€)"): int(lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values()[0] or 0),
+                     _(u"Over budget margin (k€)"): lead.margin(),
                      _("subsidiary"): unicode(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,

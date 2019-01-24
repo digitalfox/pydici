@@ -13,6 +13,7 @@ from django.contrib.admin.models import LogEntry, ADDITION, ContentType
 from django.utils.encoding import force_unicode
 from django.core import urlresolvers
 from django.template.defaultfilters import slugify
+from django.urls import reverse
 
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from staffing.models import Mission
@@ -85,7 +86,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
         try:
             bot = telegram.bot.Bot(token=TELEGRAM_TOKEN)
             sticker = None
-            url = get_parameter("HOST") + urlresolvers.reverse("leads.views.detail", args=[lead.id, ])
+            url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
             if created:
                 msg = ugettext(u"New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
                 sticker = TELEGRAM_STICKERS.get("happy")

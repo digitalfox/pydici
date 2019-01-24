@@ -15,7 +15,7 @@ from django.contrib.admin.models import LogEntry, ContentType
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q, Sum
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from taggit.managers import TaggableManager
 
@@ -56,19 +56,20 @@ class Lead(models.Model):
            )
     name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)
+    administrative_notes = models.TextField(_("Administrative notes"), blank=True)
     action = models.CharField(_("Action"), max_length=2000, blank=True, null=True)
     sales = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
-    salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"))
+    salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"), on_delete=models.SET_NULL)
     staffing = models.ManyToManyField(Consultant, blank=True, limit_choices_to={"active": True, "productive": True})
     external_staffing = models.CharField(_("External staffing"), max_length=300, blank=True)
-    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True)
-    business_broker = models.ForeignKey(BusinessBroker, related_name="%(class)s_broker", verbose_name=_("Business broker"), blank=True, null=True)
-    paying_authority = models.ForeignKey(BusinessBroker, related_name="%(class)s_paying", verbose_name=_("Paying authority"), blank=True, null=True)
+    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
+    business_broker = models.ForeignKey(BusinessBroker, related_name="%(class)s_broker", verbose_name=_("Business broker"), blank=True, null=True, on_delete=models.SET_NULL)
+    paying_authority = models.ForeignKey(BusinessBroker, related_name="%(class)s_paying", verbose_name=_("Paying authority"), blank=True, null=True, on_delete=models.SET_NULL)
     start_date = models.DateField(_("Starting"), blank=True, null=True)
     due_date = models.DateField(_("Due"), blank=True, null=True)
     state = models.CharField(_("State"), max_length=30, choices=STATES, default=STATES[0][0])
     state.db_index = True
-    client = models.ForeignKey(Client, verbose_name=_("Client"))
+    client = models.ForeignKey(Client, verbose_name=_("Client"), on_delete=models.CASCADE)
     creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
     deal_id = models.CharField(_("Deal id"), max_length=100, blank=True)
     client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
@@ -76,7 +77,7 @@ class Lead(models.Model):
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     send_email = models.BooleanField(_("Send lead by email"), default=True)
     tags = TaggableManager(blank=True)
-    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
+    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     external_id = models.CharField(max_length=200, default=None, blank=True, null=True, unique=True)
 
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
@@ -87,6 +88,7 @@ class Lead(models.Model):
 
     def save(self, force_insert=False, force_update=False):
         self.description = compact_text(self.description)
+        self.administrative_notes= compact_text(self.administrative_notes)
         if self.deal_id == "":
             # First, client company code
             deal_id = unicode(self.client.organisation.company.code)
@@ -192,6 +194,17 @@ class Lead(models.Model):
         @see: for per consultant, look at marginObjectives()"""
         return sum(self.objectiveMargin(startDate, endDate).values())
 
+    def margin(self):
+        """Compute sum of missions margin. For timespent mission, only objective margin is computed, for fixed price, we also consider
+        price minus total work done and forecasted work
+        @:return: margin in k€"""
+        margin = 0
+        for mission in self.mission_set.all():
+            margin += sum(mission.objectiveMargin().values()) / 1000
+            if mission.billing_mode == "FIXED_PRICE":
+                margin += mission.margin(mode="target")
+        return margin
+
     @cacheable("Lead.__billed__%(id)s", 3)
     def billed(self):
         """Total amount billed for this lead"""
@@ -266,7 +279,7 @@ class Lead(models.Model):
         return url
 
     def get_absolute_url(self):
-        return reverse('leads.views.detail', args=[str(self.id)])
+        return reverse('leads:detail', args=[str(self.id)])
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]
@@ -275,7 +288,7 @@ class Lead(models.Model):
 
 class StateProba(models.Model):
     """Lead state probability"""
-    lead = models.ForeignKey(Lead)
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE)
     state = models.CharField(_("State"), max_length=30, choices=Lead.STATES)
     score = models.IntegerField(_("Score"))
 

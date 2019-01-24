@@ -1,0 +1,162 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block pydici-menu %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block pydici_rss %}{% endblock %}
+
+{% block extracss %}
+    <link href="{{ MEDIA_URL }}css/pydici-pdf.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-xs-5">
+        <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ bill.lead.subsidiary.code}}.png" height=40/><br/><br/>
+        {{ bill.lead.subsidiary.commercial_name }}<br/>
+        {{ bill.lead.subsidiary.billing_address|linebreaksbr }}
+        <br/><br/>
+        {% if bill.lead.client_deal_id %}{% trans "Your ref.: " %}{{ bill.lead.client_deal_id }}<br/>{% endif %}
+        {% trans "Our ref.: " %}{{ bill.lead.deal_id }}<br/>
+        <br/>
+        {% if bill.lead.paying_authority %}
+            {% if bill.lead.paying_authority.contact %}{% trans "Your contact: " %}{{ bill.lead.paying_authority.contact }}<br/>{% endif %}
+        {% else %}
+            {% if bill.lead.client.contact %}{% trans "Your contact: " %}{{ bill.lead.client.contact }}<br/>{% endif %}
+        {% endif %}
+        {% trans "Our contact: " %}{{ bill.lead.responsible }}<br/>
+    </div>
+    <div class="col-xs-offset-1 col-xs-6">
+        <div class="well small-margin"><div class="lead small-margin text-uppercase"><strong>{% trans "Bill" %}</strong></div><strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
+
+        {% if bill.lead.paying_authority %}
+            <div class="lead">{{ bill.lead.paying_authority.company }}</div>
+            {{ bill.lead.paying_authority.company.billing_address|linebreaksbr }}
+        {% else %}
+            <div class="lead">
+                {{ bill.lead.client.billing_name|default:bill.lead.client.organisation }}
+                {{ bill.lead.client.billing_contact.contact }}<br>
+                {{ bill.lead.client.billing_address|linebreaksbr }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+<br/><br/>
+<table class="table">
+    {% if bill.billdetail_set.all %}
+        <thead>
+            <tr><th><small>{% trans "Description" %}</small></th><th class="text-center"><small>{% trans "Quantity" %}</small></th>
+                <th class="text-right"><small>{% trans "Unit Price €" %}</small></th><th class="text-right"><small>{% trans "Amount €" %}</small></th>
+                <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount inc. taxes €" %}</small></th>
+            </tr>
+        </thead>
+
+        {% regroup bill.billdetail_set.all by mission as detail_list %}
+
+        {% for detail in detail_list %}
+                <tr><td class="noborder"></td></tr>
+                <tr><td colspan=6 class="text-left noborder"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
+                {% regroup detail.list by month as mission_detail_list %}
+                {% for mission_detail in mission_detail_list %}
+                    <tbody style="page-break-inside: avoid;">
+                    <tr><td class="noborder"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
+                    {% for item in mission_detail.list %}
+                        <tr>
+                            {% ifequal item.mission.billing_mode "TIME_SPENT" %}
+                                {% if bill.anonymize_profile %}
+                                    <td>{% if item.label %}{{ item.label }}{% else %}{{item.consultant.profil }}{% endif %}</td>
+                                {% else %}
+                                    <td>{{ item.consultant|default_if_none:"" }}{% if item.label %} - {{ item.label }}{% endif %}</td>
+                                {% endif %}
+                                <td class="text-center">{{ item.quantity|floatformat:-2 }}</td>
+                            {% else %}
+                                <td>{% trans "Fixed price"%}{% if item.label %} - {{ item.label }}{% endif %}</td>
+                                <td class="text-center">{% widthratio item.quantity 1 100 %} %</td>
+                            {% endifequal %}
+                            <td class="text-right">{{ item.unit_price|floatformat:-2 }}</td>
+                            <td class="text-right">{{ item.amount|floatformat:-2 }}</td><td class="text-right">{{ item.vat|floatformat:-2 }}</td><td class="text-right">{{ item.amount_with_vat|floatformat:-2 }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                {% endfor %}
+        {% endfor %}
+    {% endif %}
+    <tbody style="page-break-inside: avoid;">
+    {% if bill.billdetail_set.all %}
+        <tr><td colspan=6 class="noborder">&nbsp;</td></tr>
+        <tr>
+            <td colspan=4 class="no-top-border"></td>
+            <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.prestationsTotal|floatformat:2 }}</b></td>
+        </tr>
+    {% endif %}
+    {% with bill.expensesTotal as expensesTotal %}
+        {% if expensesTotal %}
+            <tr>
+                <td colspan=4 class="no-top-border"></td>
+                <td class="text-right bill-total-border-left {% if bill.billdetail_set.all%}no-top-border{% endif %}"><b>{% trans "Expenses (€)" %}</b></td><td class="text-right bill-total-border-right {% if bill.billdetail_set.all%}no-top-border{% endif %}"><b>{{ expensesTotal|floatformat:2 }}</b></td>
+            </tr>
+        {% endif %}
+    {% endwith %}
+    {% for vat, amount in bill.taxes %}
+        <tr>
+            <td colspan=4 class="no-top-border"></td>
+            <td class="text-right bill-total-border-left no-top-border"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ amount|floatformat:2 }}</b></td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td colspan=4 class="no-top-border"></td>
+        <td class="text-right bill-total-border-left bill-total-border-bottom no-top-border"><b>{% trans "Total (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-bottom no-top-border"><b>{{ bill.amount_with_vat|floatformat:2 }}</b></td>
+    </tr>
+    </tbody>
+</table>
+
+<div style="page-break-inside: avoid;">
+    {% if bill.comment %}
+        <div class="alert alert-info" style="display: inline-block"><p>{{ bill.comment}}</p></div>
+    {% endif %}
+
+    <p><small>{{  bill.lead.subsidiary.payment_description|linebreaksbr }}</small></p>
+    <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
+</div>
+
+{% if bill.billexpense_set.count %}
+<div style="page-break-after:always;"></div>
+<br/><br/><br/><br/>
+<h2>{% trans "Expenses details" %}</h2>
+<table class="table table-condensed table-stripped">
+    <tr>
+        <th>{% trans "Date" %}</th>
+        <th>{% trans "Consultant" %}</th>
+        <th>{% trans "Expense label" %}</th>
+        <th>{% trans "Amount" %}</th>
+        <th>{% trans "Amount (with VAT)" %}</th>
+    </tr>
+    {% for billExpense in bill.billexpense_set.all %}
+        <tr>
+            <td> {{ billExpense.expense_date }}</td>
+            <td> {{ billExpense.expense.user.username|link_to_consultant|striptags }}</td>
+            <td> {{ billExpense.label }}</td>
+            <td> {{ billExpense.amount }} €</td>
+            <td> {{ billExpense.amount_with_vat }} €</td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <th colspan="3" class="text-right">{% trans "Total" %}</th>
+        <th>{{ bill.expensesTotal }} €</th>
+        <th>{{ bill.expensesTotalWithTaxes }} €</th>
+    </tr>
+
+</table>
+{% endif %}
+
+
+{% for receipt_data in expenses_image_receipt %}
+    {{ receipt_data|safe }}
+{% endfor %}
+
+<footer> <!-- footer contents will be repeated and overlapped on each page until </table> is not reached -->
+    <small><em>{{ bill.lead.subsidiary.legal_description|linebreaksbr }}</em></small>
+</footer>
+{% endblock %}

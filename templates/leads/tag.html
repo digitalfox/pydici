@@ -13,7 +13,7 @@
 <ul class="row">
 {% for lead in leads %}
     <li class="col-sm-6 col-md-4">
-        <a href="{% url 'leads.views.detail' lead.id %}">{{ lead }}</a>
+        <a href="{% url 'leads:detail' lead.id %}">{{ lead }}</a>
     </li>
 {% endfor %}
 </ul>

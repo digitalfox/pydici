@@ -58,7 +58,7 @@ USE_THOUSAND_SEPARATOR = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = ""
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -112,7 +112,7 @@ TEMPLATES = [{
                                "django.template.context_processors.static",
                                "django.template.context_processors.tz",
                                "django.contrib.messages.context_processors.messages",
-                               "django.core.context_processors.request",
+                               "django.template.context_processors.request",
                                "core.context_processors.feature",
                                "core.context_processors.menu",
                                ),
@@ -134,8 +134,7 @@ PYDICI_APPS = [
     'crm',
     'billing',
     'expense',
-    'actionset',
-    'batch.incwo',
+    'actionset'
 ]
 
 INSTALLED_APPS = [
@@ -152,9 +151,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django.contrib.staticfiles',  # Static files are served by web server in production mode, but this apps allow collectstatic
     'taggit',
-    'taggit_templatetags',
-    'permissions',
-    'workflows',
+    'taggit_templatetags2',
     'django_tables2',
     'crispy_forms',
     'django_select2',
@@ -186,3 +183,4 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 SELECT2_JS = u'//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js'
 SELECT2_CSS = u'//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css'
 SELECT2_CACHE_BACKEND = 'select2'
+TAGGIT_LIMIT = 200

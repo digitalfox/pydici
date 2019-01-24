@@ -9,23 +9,46 @@ from datetime import date, timedelta
 import mimetypes
 from collections import defaultdict
 import json
+from cStringIO import StringIO
 
+from django.core.files.base import ContentFile
+from os.path import basename
+import logging
 
 from django.shortcuts import render
-from django.core import urlresolvers
-from django.http import HttpResponseRedirect, HttpResponse
-from django.db.models import Sum, Q, F
-from django.views.decorators.cache import cache_page
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
+from django.utils import translation
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
+from django.db.models import Sum, Q, F
+from django.views.generic import TemplateView
+from django.views.decorators.cache import cache_page
+from django.forms.models import inlineformset_factory
+from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import permission_required
 
-from billing.models import ClientBill, SupplierBill
-from billing.utils import get_billing_info
+# Silent weasyprint logger
+logger = logging.getLogger("weasyprint")
+if not logger.handlers:
+    logger.addHandler(logging.NullHandler())
+
+from django_weasyprint import PDFTemplateView
+from django_weasyprint.views import PDFTemplateResponse
+from PyPDF2 import PdfFileMerger, PdfFileReader
+
+from billing.utils import get_billing_info, create_client_bill_from_timesheet, create_client_bill_from_proportion, bill_pdf_filename
+from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
-from crm.models import Company, Subsidiary
-from core.utils import COLORS, sortedValues, nextMonth, previousMonth, to_int_or_round, get_fiscal_years, get_parameter
-from core.decorator import pydici_non_public, pydici_feature
+from crm.models import Subsidiary
+from core.utils import get_fiscal_years, get_parameter, user_has_feature
+from crm.models import Company
+from core.utils import COLORS, sortedValues, nextMonth, previousMonth
+from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
+from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
+from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper
 
 
 @pydici_non_public
@@ -97,14 +120,19 @@ def bill_payment_delay(request):
                    "user": request.user},)
 
 
+class BillingRequestMixin(PydiciFeatureMixin):
+    pydici_feature = "billing_request"
+
+
 @pydici_non_public
 @pydici_feature("management")
+@permission_required("billing.change_clientbill")
 def mark_bill_paid(request, bill_id):
     """Mark the given bill as paid"""
     bill = ClientBill.objects.get(id=bill_id)
     bill.state = "2_PAID"
     bill.save()
-    return HttpResponseRedirect(urlresolvers.reverse("billing.views.bill_review"))
+    return HttpResponseRedirect(reverse("billing:bill_review"))
 
 
 @pydici_non_public
@@ -118,7 +146,8 @@ def bill_file(request, bill_id=0, nature="client"):
         else:
             bill = SupplierBill.objects.get(id=bill_id)
         if bill.bill_file:
-            response['Content-Type'] = mimetypes.guess_type(bill.bill_file.name)[0] or "application/stream"
+            response["Content-Type"] = mimetypes.guess_type(bill.bill_file.name)[0] or "application/stream"
+            response["Content-Disposition"] = 'attachment; filename="%s"' % basename(bill.bill_file.name)
             for chunk in bill.bill_file.chunks():
                 response.write(chunk)
     except (ClientBill.DoesNotExist, SupplierBill.DoesNotExist, OSError):
@@ -126,9 +155,170 @@ def bill_file(request, bill_id=0, nature="client"):
 
     return response
 
+class Bill(PydiciNonPublicdMixin, TemplateView):
+    template_name = 'billing/bill.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(Bill, self).get_context_data(**kwargs)
+        try:
+            bill = ClientBill.objects.get(id=kwargs.get("bill_id"))
+            context["bill"] = bill
+            context["expenses_image_receipt"] = []
+            for expenseDetail in bill.billexpense_set.all():
+                if expenseDetail.expense and expenseDetail.expense.receipt_content_type() != "application/pdf":
+                    context["expenses_image_receipt"].append(expenseDetail.expense.receipt_data())
+        except ClientBill.DoesNotExist:
+            bill = None
+        return context
+
+    @method_decorator(pydici_feature("billing_request"))
+    def dispatch(self, *args, **kwargs):
+        return super(Bill, self).dispatch(*args, **kwargs)
+
+
+class ExpensePDFTemplateResponse(PDFTemplateResponse):
+    """TemplateResponse override to merge """
+    @property
+    def rendered_content(self):
+        old_lang = translation.get_language()
+        try:
+            target = StringIO()
+            bill = self.context_data["bill"]
+            translation.activate(bill.lang)
+            pdf_content = super(ExpensePDFTemplateResponse, self).rendered_content
+            pdf_stringio = StringIO()
+            pdf_stringio.write(pdf_content)
+            merger = PdfFileMerger()
+            merger.append(PdfFileReader(pdf_stringio))
+            for billExpense in bill.billexpense_set.all():
+                if billExpense.expense and billExpense.expense.receipt_content_type() == "application/pdf":
+                    merger.append(PdfFileReader(billExpense.expense.receipt.file))
+            merger.write(target)
+            target.seek(0)  # Be kind, rewind
+            return target
+        finally:
+            translation.activate(old_lang)
+
+
+
+class BillPdf(Bill, PDFTemplateView):
+    response_class = ExpensePDFTemplateResponse
+
+    def get_filename(self):
+        bill = self.get_context_data(**self.kwargs)["bill"]
+        return bill_pdf_filename(bill)
+
 
 @pydici_non_public
-@pydici_feature("management")
+@pydici_feature("billing_request")
+def client_bill(request, bill_id=None):
+    billDetailFormSet = None
+    billExpenseFormSet = None
+    billing_management_feature = "billing_management"
+    forbiden = HttpResponseRedirect(reverse("core:forbiden"))
+    if bill_id:
+        try:
+            bill = ClientBill.objects.get(id=bill_id)
+        except ClientBill.DoesNotExist:
+            raise Http404
+    else:
+        bill = None
+    BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, formset=BillDetailInlineFormset, form=BillDetailForm, fields="__all__")
+    BillExpenseFormSet = inlineformset_factory(ClientBill, BillExpense, formset=BillExpenseInlineFormset, form=BillExpenseForm, fields="__all__")
+    wip_status = ("0_DRAFT", "0_PROPOSED")
+    if request.POST:
+        form = ClientBillForm(request.POST, request.FILES, instance=bill)
+        # First, ensure user is allowed to manipulate the bill
+        if bill and bill.state not in wip_status and not user_has_feature(request.user, billing_management_feature):
+            print("1")
+            return forbiden
+        if form.data["state"] not in wip_status and not user_has_feature(request.user, billing_management_feature):
+            print("2")
+            return forbiden
+        # Now, process form
+        if bill and bill.state in wip_status:
+            billDetailFormSet = BillDetailFormSet(request.POST, instance=bill)
+            billExpenseFormSet = BillExpenseFormSet(request.POST, instance=bill)
+        if form.is_valid() and (billDetailFormSet is None or billDetailFormSet.is_valid()) and (billExpenseFormSet is None or billExpenseFormSet.is_valid()):
+            bill = form.save()
+            if billDetailFormSet:
+                billDetailFormSet.save()
+            if billExpenseFormSet:
+                billExpenseFormSet.save()
+            bill.save()  # Again, to take into account modified details.
+            if bill.state in wip_status:
+                success_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
+            else:
+                success_url = request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
+                if not bill.bill_file:
+                    fake_http_request = request
+                    fake_http_request.method = "GET"
+                    response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
+                    pdf = response.rendered_content.read()
+                    filename = bill_pdf_filename(bill)
+                    content = ContentFile(pdf, name=filename)
+                    bill.bill_file.save(filename, content)
+                    bill.save()
+            return HttpResponseRedirect(success_url)
+    else:
+        if bill:
+            form = ClientBillForm(instance=bill)
+            if bill.state in wip_status:
+                billDetailFormSet = BillDetailFormSet(instance=bill)
+                billExpenseFormSet = BillExpenseFormSet(instance=bill)
+        else:
+            # Still no bill, let's create it with its detail if at least mission has been provided
+            if request.GET.get("mission"):
+                mission = Mission.objects.get(id=request.GET.get("mission"))
+                if mission.billing_mode == "TIME_SPENT":
+                    if request.GET.get("month") and request.GET.get("year"):
+                        month = date(int(request.GET.get("year")), int(request.GET.get("month")), 1)
+                    else:
+                        month = date.today().replace(day=1)
+                    bill = create_client_bill_from_timesheet(mission, month)
+                else: # FIXED_PRICE mission
+                    proportion = request.GET.get("proportion", 0.30)
+                    bill = create_client_bill_from_proportion(mission, proportion=proportion)
+
+                form = ClientBillForm(instance=bill)
+                billDetailFormSet = BillDetailFormSet(instance=bill)
+                billExpenseFormSet = BillExpenseFormSet(instance=bill)
+            else:
+                form = ClientBillForm()
+    return render(request, "billing/bill_form.html",
+                  {"bill_form": form,
+                   "detail_formset": billDetailFormSet,
+                   "detail_formset_helper": BillDetailFormSetHelper(),
+                   "expense_formset": billExpenseFormSet,
+                   "expense_formset_helper": BillExpenseFormSetHelper(),
+                   "bill_id": bill.id if bill else None,
+                   "can_delete": bill.state in wip_status if bill else False,
+                   "can_preview": bill.state in wip_status if bill else False,
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("billing_request")
+def clientbill_delete(request, bill_id):
+    """Delete client bill in early stage"""
+    redirect_url = reverse("billing:client_bills_in_creation")
+    try:
+        bill = ClientBill.objects.get(id=bill_id)
+        if bill.state in ("0_DRAFT", "0_PROPOSED"):
+            bill.delete()
+            messages.add_message(request, messages.INFO, _("Bill removed successfully"))
+        else:
+            messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
+            redirect_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
+    except Exception, e:
+        print(e)
+        messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
+
+    return HttpResponseRedirect(redirect_url)
+
+
+@pydici_non_public
+@pydici_feature("billing_request")
 def pre_billing(request, year=None, month=None, mine=False):
     """Pre billing page: help to identify bills to send"""
     if year and month:
@@ -195,6 +385,36 @@ def pre_billing(request, year=None, month=None, mine=False):
 
 
 @pydici_non_public
+@pydici_feature("billing_request")
+def client_bills_in_creation(request):
+    """Review client bill in preparation"""
+    return render(request, "billing/client_bills_in_creation.html",
+                  {"data_url": reverse('billing:client_bills_in_creation_DT'),
+                   "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2] }]  ''',
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("billing_request")
+def client_bills_archive(request):
+    """Review all client bill """
+    return render(request, "billing/client_bills_archive.html",
+                  {"data_url": reverse('billing:client_bills_archive_DT'),
+                   "datatable_options": ''' "order": [[2, "desc"]], "columnDefs": [{ "orderable": false, "targets": [7] }]  ''',
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("billing_request")
+def supplier_bills_archive(request):
+    """Review all supplier bill """
+    return render(request, "billing/supplier_bills_archive.html",
+                  {"data_url": reverse('billing:supplier_bills_archive_DT'),
+                   "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [8] }]  ''',
+                   "user": request.user})
+
+
+@pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 10)
 def graph_billing_jqp(request):
@@ -210,7 +430,7 @@ def graph_billing_jqp(request):
     graph_data = []  # Data that will be returned to jqplot
 
     # Gathering billsData
-    bills = ClientBill.objects.filter(creation_date__gt=start_date)
+    bills = ClientBill.objects.filter(creation_date__gt=start_date, state__in=("1_SENT", "2_PAID"))
     if bills.count() == 0:
         return HttpResponse()
 

@@ -15,7 +15,7 @@
         </tr>
         {% for company, delay in direct_delays %}
             <tr>
-                <td><a href="{% url 'crm.views.company_detail' company.id %}#tab-billing">{{ company }}</a></td>
+                <td><a href="{% url 'crm:company_detail' company.id %}#tab-billing">{{ company }}</a></td>
                 <td>{{ delay }}</td>
             </tr>
         {% endfor %}

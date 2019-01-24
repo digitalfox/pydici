@@ -10,7 +10,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{% url 'index' %}">Pydici
+          <a class="navbar-brand" href="{% url 'core:index' %}">Pydici
           <img class="hidden-xs hidden-sm" alt="" src="{{ MEDIA_URL }}pydici/company_logo.png" height=20/></a>
         </div>
 
@@ -21,12 +21,12 @@
         {% if pydici_feature.leads %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Leads" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-                <li><a href="{% url 'leads.views.review' %}">{% trans "Current leads review" %}</a></li>
+                <li><a href="{% url 'leads:review' %}">{% trans "Current leads review" %}</a></li>
                 {% if pydici_feature.leads_list_all %}
-                <li><a href="{% url 'leads.views.leads' %}">{% trans "All leads" %}</a></li>
+                <li><a href="{% url 'leads:leads' %}">{% trans "All leads" %}</a></li>
                 {% endif %}
-                <li><a href="{% url 'leads.views.lead' %}">{% trans 'New lead' %}</a></li>
-                <li><a href="{% url 'leads.views.manage_tags' %}">{% trans 'Leads tag management' %}</a></li>
+                <li><a href="{% url 'leads:lead' %}">{% trans 'New lead' %}</a></li>
+                <li><a href="{% url 'leads:manage_tags' %}">{% trans 'Leads tag management' %}</a></li>
             </ul>
         </li>
         {% endif %}
@@ -34,9 +34,9 @@
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Missions" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                 {% if pydici_feature.staffing_mass %}
-                    <li><a href="{% url 'pdcreview-index' %}">{% trans "Workload schedule" %}</a></li>
+                    <li><a href="{% url 'staffing:pdcreview-index' %}">{% trans "Workload schedule" %}</a></li>
                 {% endif %}
-                <li><a href="{% url 'missions' %}">{% trans "Active missions" %}</a></li>
+                <li><a href="{% url 'staffing:missions' %}">{% trans "Active missions" %}</a></li>
                 {% with user.username|link_to_timesheet as link %}
                     {% if link %}<li>{{ link }}</li>{% endif %}
                 {% endwith %}
@@ -46,7 +46,7 @@
                     {% endwith %}
                 {% endif %}
                 {% if pydici_feature.staffing_mass %}
-                    <li><a href="{% url 'staffing.views.mass_staffing' %}">{% trans "Mass staffing" %}</a></li>
+                    <li><a href="{% url 'staffing:mass_staffing' %}">{% trans "Mass staffing" %}</a></li>
                 {% endif %}
             </ul>
         </li>
@@ -54,14 +54,14 @@
         {% if pydici_feature.3rdparties %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Third parties" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-                <li><a href="{% url 'crm.views.company_list' %}">{% trans "All clients" %}</a></li>
-                <li><a href="{% url 'contact_list' %}">{% trans "Contact address directory" %}</a></li>
-                <li><a href="{% url 'crm.views.client' %}">{% trans "New client" %}</a></li>
+                <li><a href="{% url 'crm:company_list' %}">{% trans "All clients" %}</a></li>
+                <li><a href="{% url 'crm:contact_list' %}">{% trans "Contact address directory" %}</a></li>
+                <li><a href="{% url 'crm:client' %}">{% trans "New client" %}</a></li>
                 {% if pydici_feature.contacts_write %}
-                <li><a href="{% url 'mission_contact_add' %}?return_to={{ request.get_full_path }}">{% trans "New mission contact" %}</a></li>
-                <li><a href="{% url 'businessbroker_add' %}?return_to={{ request.get_full_path }}">{% trans "New business broker" %}</a></li>
-                <li><a href="{% url 'administrative_contact_add' %}?return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></li>
-                <li><a href="{% url 'supplier_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier" %}</a></li>
+                <li><a href="{% url 'crm:mission_contact_create' %}?return_to={{ request.get_full_path }}">{% trans "New mission contact" %}</a></li>
+                <li><a href="{% url 'crm:businessbroker_create' %}?return_to={{ request.get_full_path }}">{% trans "New business broker" %}</a></li>
+                <li><a href="{% url 'crm:administrative_contact_add' %}?return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></li>
+                <li><a href="{% url 'crm:supplier_create' %}?return_to={{ request.get_full_path }}">{% trans "New supplier" %}</a></li>
                 {% endif %}
             </ul>
         </li>
@@ -70,26 +70,24 @@
         {% if pydici_feature.management %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Management" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-                <li><a href="{% url 'staffing.views.holidays_planning' %}">{% trans "Holidays planning" %}</a></li>
-                <li><a href="{% url 'actionset.views.actionset_catalog' %}">{% trans "Actionset catalog" %}</a></li>
+                <li><a href="{% url 'staffing:holidays_planning' %}">{% trans "Holidays planning" %}</a></li>
+                <li><a href="{% url 'actionset:actionset_catalog' %}">{% trans "Actionset catalog" %}</a></li>
                 {% if perms.actionset.change_actionstate %}
                     <li><a href="{% url 'admin:actionset_actionstate_changelist' %}">{% trans "On going actions" %}</a></li>
                 {% endif %}
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Expenses" %}</li>
-                <li><a href="{% url 'expense.views.expenses' %}">{% trans "Expenses" %}</a></li>
-                <li><a href="{% url 'expense.views.expense_payments' %}">{% trans "Expenses payment" %}</a></li>
+                <li><a href="{% url 'expense:expenses' %}">{% trans "Expenses" %}</a></li>
+                <li><a href="{% url 'expense:expense_payments' %}">{% trans "Expenses payment" %}</a></li>
                 <li class="divider"></li>
-                <li class="dropdown-header">{% trans "Billing" %}</li>
-                <li><a href="{% url 'billing.views.pre_billing' %}">{% trans "Pre billing" %}</a></li>
-                {% if perms.billing.change_clientbill %}<li><a href="{% url 'admin:billing_clientbill_changelist' %}">{% trans "All client bills" %}</a></li>{% endif %}
-                {% if perms.billing.add_clientbill %}<li><a href="{% url 'admin:billing_clientbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>{% endif %}
-                {% if perms.billing.change_supplierbill %}<li><a href="{% url 'admin:billing_supplierbill_changelist' %}">{% trans "All supplier bills" %}</a></li>{% endif %}
-                {% if perms.billing.add_supplierbill %}<li><a href="{% url 'admin:billing_supplierbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier bill" %}</a></li>{% endif %}
-                {% if pydici_menu.management %}
-                    {% for name in pydici_menu.management %}
-                        {% include name %}
-                    {% endfor %}
+                {% if pydici_feature.billing_request %}
+                    <li class="dropdown-header">{% trans "Billing" %}</li>
+                    <li><a href="{% url 'billing:pre_billing' %}">{% trans "Pre billing" %}</a></li>
+                    <li><a href="{% url 'billing:client_bills_archive' %}">{% trans "All client bills" %}</a></li>
+                    <li><a href="{% url 'billing:client_bill' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>
+                    <li><a href="{% url 'billing:client_bills_in_creation' %}">{% trans "Client bills in creation" %}</a></li>
+                    {% if perms.billing.change_supplierbill %}<li><a href="{% url 'billing:supplier_bills_archive' %}">{% trans "All supplier bills" %}</a></li>{% endif %}
+                    {% if perms.billing.add_supplierbill %}<li><a href="{% url 'admin:billing_supplierbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier bill" %}</a></li>{% endif %}
                 {% endif %}
             </ul>
         </li>
@@ -99,31 +97,32 @@
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Reports" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                 <li class="dropdown-header">{% trans "Operationnal reporting" %}</li>
-                <li><a href="{% url 'dashboard' %}">{% trans "Management dashboard" %}</a></li>
-                <li><a href="{% url 'staffing.views.all_timesheet' %}">{% trans "All people timesheet" %}</a></li>
-                <li><a href="{% url 'staffing.views.prod_report' %}">{% trans "Staff production" %}</a></li>
-                <li><a href="{% url 'staffing.views.fixed_price_missions_report' %}">{% trans "Fixed price missions" %}</a></li>
-                <li><a href="{% url 'holidays-pivotable' %}">{% trans "Holiday pivot table" %}</a></li>
-                <li><a href="{% url 'nonprod-pivotable' %}">{% trans "Non productive missions pivot table" %}</a></li>
+                <li><a href="{% url 'core:dashboard' %}">{% trans "Management dashboard" %}</a></li>
+                <li><a href="{% url 'staffing:all_timesheet' %}">{% trans "All people timesheet" %}</a></li>
+                <li><a href="{% url 'staffing:prod_report' %}">{% trans "Staff production" %}</a></li>
+                <li><a href="{% url 'staffing:fixed_price_missions_report' %}">{% trans "Fixed price missions" %}</a></li>
+                <li><a href="{% url 'staffing:holidays-pivotable' %}">{% trans "Holiday pivot table" %}</a></li>
+                <li><a href="{% url 'staffing:nonprod-pivotable' %}">{% trans "Non productive missions pivot table" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Leads" %}</li>
-                <li><a href="{% url 'leads-pivotable' %}">{% trans "Leads pivot table" %}</a></li>
+                <li><a href="{% url 'leads:leads-pivotable' %}">{% trans "Leads pivot table" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Expenses" %}</li>
-                <li><a href="{% url 'expense.views.chargeable_expenses' %}">{% trans "Chargeable expenses review" %}</a></li>
-                <li><a href="{% url 'expense.views.expenses_history' %}">{% trans "Expenses history" %}</a></li>
+                <li><a href="{% url 'expense:chargeable_expenses' %}">{% trans "Chargeable expenses review" %}</a></li>
+                <li><a href="{% url 'expense:expenses_history' %}">{% trans "Expenses history" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Billing" %}</li>
-                <li><a href="{% url 'billing.views.bill_review' %}">{% trans "Bills review" %}</a></li>
-                <li><a href="{% url 'billing.views.bill_payment_delay' %}">{% trans "Payment delay review" %}</a></li>
-                <li><a href="{% url 'core.views.riskReporting' %}">{% trans "Risks synthesis" %}</a></li>
+                <li><a href="{% url 'billing:bill_review' %}">{% trans "Bills review" %}</a></li>
+                <li><a href="{% url 'billing:bill_payment_delay' %}">{% trans "Payment delay review" %}</a></li>
+                <li><a href="{% url 'core:risk_reporting' %}">{% trans "Risks synthesis" %}</a></li>
+                <li><a href="{% url 'leads:leads_to_bill' %}">{% trans "Leads still to be billed" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Extractions" %}</li>
-                <li><a href="{% url 'leads.views.csv_export' target='active' %}">{% trans "Active leads (csv)" %}</a></li>
-                <li><a href="{% url 'leads.views.csv_export' target='all' %}">{% trans "All leads (csv)" %}</a></li>
-                <li><a href="{% url 'lead-mail-html' %}">{% trans "Week summary mail (html)" %}</a></li>
-                <li><a href="{% url 'lead-mail-text' %}">{% trans "Week summary mail (text)" %}</a></li>
-                <li><a href="{% url 'core.views.financialControl' %}">{% trans "Financial control" %}</a></li>
+                <li><a href="{% url 'leads:csv_export' target='active' %}">{% trans "Active leads (csv)" %}</a></li>
+                <li><a href="{% url 'leads:csv_export' target='all' %}">{% trans "All leads (csv)" %}</a></li>
+                <li><a href="{% url 'leads:summary_mail_html' %}">{% trans "Week summary mail (html)" %}</a></li>
+                <li><a href="{% url 'leads:summary_mail_text' %}">{% trans "Week summary mail (text)" %}</a></li>
+                <li><a href="{% url 'core:financial_control' %}">{% trans "Financial control" %}</a></li>
             </ul>
         </li>
         {% endif %}
@@ -134,7 +133,7 @@
                 <li><a href="{% url 'help' %}">{% trans "Help page" %}</a></li>
                 <li>{{ foo|get_admin_mail }}</li>
                 {% if pydici_feature.search %}
-                    <li><form class="navbar-form keep-open hidden-xs hidden-md hidden-lg" role="search" action="{% url 'search' %}" method="GET">
+                    <li><form class="navbar-form keep-open hidden-xs hidden-md hidden-lg" role="search" action="{% url 'core:search' %}" method="GET">
                         <div class="form-group">
                             <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q">
                         </div>
@@ -146,7 +145,7 @@
         </ul>
 
         {% if pydici_feature.search %}
-        <form class="navbar-form pull-right hidden-sm" role="search" action="{% url 'search' %}" method="GET">
+        <form class="navbar-form pull-right hidden-sm" role="search" action="{% url 'core:search' %}" method="GET">
             <div class="form-group">
               <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q"  value="{{ query|escape }}" >
             </div>

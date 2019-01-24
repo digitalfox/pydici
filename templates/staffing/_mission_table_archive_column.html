@@ -6,7 +6,7 @@
 {% if row.active %}
     <div id=mission_{{row.id}}></div> {# Marker to allow js to detect which row must be hidden #}
     <a href="javascript:;"
-       onClick="$.get('{% url 'staffing.views.deactivate_mission' row.id %}', process_mission_archive)">
+       onClick="$.get('{% url 'staffing:deactivate_mission' row.id %}', process_mission_archive)">
         <em>{% trans "Archive" %}</em>
     </a>
 {% endif %}

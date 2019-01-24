@@ -5,20 +5,83 @@ Bill form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.forms import models
+from datetime import date, timedelta
 
-from billing.models import ClientBill, SupplierBill
+from django.forms import models, ModelForm
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext
+from django.forms.models import BaseInlineFormSet, ModelChoiceField, ChoiceField
+from django.forms.fields import DateField
+from django.forms.widgets import DateInput
+from django.forms.utils import ValidationError
+from django.utils import formats
+
+
+from crispy_forms.layout import Layout, Div, Column
+from crispy_forms.bootstrap import TabHolder, Tab
+from crispy_forms.helper import FormHelper
+from django_select2.forms import Select2Widget
+
+from billing.models import ClientBill, SupplierBill, BillDetail
+from staffing.models import Mission
+from expense.models import Expense
+from people.models import Consultant
 from leads.forms import LeadChoices
-from expense.forms import ChargeableExpenseMChoices
+from expense.forms import ChargeableExpenseMChoices, ExpenseChoices
 from crm.forms import SupplierChoices
+from staffing.forms import MissionChoices, LeadMissionChoices
+from people.forms import ConsultantChoices
+from core.forms import PydiciCrispyModelForm
+from core.utils import nextMonth
 
 
-class ClientBillForm(models.ModelForm):
+class BillingDateChoicesField(ChoiceField):
+    widget = Select2Widget(attrs={'data-placeholder':_("Select a month...")})
+    def __init__(self, *args, **kwargs):
+        minDate = kwargs.pop("minDate", date.today() - timedelta(30*11))
+        nMonth = kwargs.pop("nMonth", 12)
+        months = []
+        month = minDate.replace(day=1)
+        for i in range(nMonth):
+            months.append(month)
+            month = nextMonth(month)
+
+        kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in months]
+        kwargs["choices"].insert(0, ("", ""))  # Add the empty choice for extra empty choices
+        super(BillingDateChoicesField, self).__init__(*args, **kwargs)
+
+    def has_changed(self, initial, data):
+        initial = unicode(initial) if initial is not None else ''
+        return initial != data
+
+
+class ClientBillForm(PydiciCrispyModelForm):
     class Meta:
         model = ClientBill
         fields = "__all__"
         widgets = { "lead": LeadChoices,
                     "expenses": ChargeableExpenseMChoices}
+
+
+    def __init__(self, *args, **kwargs):
+        super(ClientBillForm, self).__init__(*args, **kwargs)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(Div(TabHolder(Tab(_("Description"),
+                                                      Column("lead", "bill_id", "state", css_class="col-md-6"),
+                                                      Column("comment", "lang", "anonymize_profile", "bill_file", css_class="col-md-6"), ),
+                                                  Tab(_("Amounts"),
+                                                      Column("amount", "vat", "amount_with_vat", css_class="col-md-6")),
+                                                  Tab(_("Dates"), Column("creation_date", "due_date", "payment_date",
+                                                                         "previous_year_bill", css_class="col-md-6"), ),
+                                                  css_class="row")))
+
+    def clean_amount(self):
+        if self.cleaned_data["amount"] or self.data["state"] == "0_DRAFT":
+            # Amount is defined or we are in early step, nothing to say
+            return self.cleaned_data["amount"]
+        else:
+            # Amount must be defined
+            raise ValidationError(_("Bill amount must be computed from bill detail or defined manually"))
 
 
 class SupplierBillForm(models.ModelForm):
@@ -29,3 +92,79 @@ class SupplierBillForm(models.ModelForm):
                    "expenses": ChargeableExpenseMChoices,
                    "supplier": SupplierChoices}
 
+
+class BillDetailInlineFormset(BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super(BillDetailInlineFormset, self).add_fields(form, index)
+        form.fields["mission"] = ModelChoiceField(widget=LeadMissionChoices(lead=self.instance.lead), queryset=Mission.objects)
+        form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices, queryset=Consultant.objects, required=False)
+        form.fields["month"] = BillingDateChoicesField(required=False)
+
+    def clean(self):
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        staffings = []
+        for form in self.forms:
+            if form.cleaned_data.get("detail_type", "") != "TIME_SPENT_MISSION":
+                continue
+            staffing = [form.cleaned_data['mission'].id, form.cleaned_data['month'].toordinal(), form.cleaned_data["consultant"].id]
+            if staffing in staffings:
+                raise ValidationError(_("Cannot declare twice the same consultant for the same mission on a given month"))
+            staffings.append(staffing)
+
+
+class BillDetailFormSetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super(BillDetailFormSetHelper, self).__init__(*args, **kwargs)
+        self.form_method = 'post'
+        self.form_tag = False
+        self.template = 'bootstrap/table_inline_formset.html'
+
+
+class BillDetailForm(ModelForm):
+    def clean(self):
+        mission = self.cleaned_data.get("mission", None)
+        if mission:
+            if not self.cleaned_data["month"] and mission.billing_mode=="TIME_SPENT":
+                raise ValidationError(_("Month must be defined for time spent mission"))
+            if not self.cleaned_data["consultant"] and mission.billing_mode=="TIME_SPENT":
+                raise ValidationError(_("Consultant must be defined for time spent mission"))
+        return self.cleaned_data
+
+
+class BillExpenseInlineFormset(BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super(BillExpenseInlineFormset, self).add_fields(form, index)
+        #TODO: should use Chargeable expense only
+        form.fields["expense"] = ModelChoiceField(label=_(u"Expense"), required=False, widget=ExpenseChoices, queryset=Expense.objects.filter(lead=self.instance.lead))
+        form.fields["expense_date"] = DateField(label=_(u"Expense date"), required=False, widget=DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
+
+
+    def clean(self):
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        expenses = []
+        for form in self.forms:
+            expense  = form.cleaned_data.get("expense", None)
+            if expense:
+                expense = expense.id
+            else:
+                continue
+            if expense in expenses:
+                raise ValidationError(_("Cannot declare twice the same expense"))
+            expenses.append(expense)
+
+
+class BillExpenseFormSetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super(BillExpenseFormSetHelper, self).__init__(*args, **kwargs)
+        self.form_method = 'post'
+        self.form_tag = False
+        self.template = 'bootstrap/table_inline_formset.html'
+
+
+class BillExpenseForm(ModelForm):
+    pass
+    #TODO: add sanity checks

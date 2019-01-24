@@ -11,7 +11,6 @@ from decimal import Decimal
 
 from django import forms
 from django.conf import settings
-from django.core import urlresolvers
 from django.forms.models import BaseInlineFormSet
 from django.forms import ChoiceField, ModelChoiceField
 from django.utils.translation import ugettext as _
@@ -49,6 +48,27 @@ class MissionMChoices(ModelSelect2MultipleWidget):
 
     def get_queryset(self):
         return Mission.objects.filter(active=True)
+
+
+class LeadMissionChoices(ModelSelect2Widget):
+    model = Mission
+    search_fields = MissionChoices.search_fields
+
+    def __init__(self, *args, **kwargs):
+        self.lead = kwargs.pop("lead", None)
+        super(LeadMissionChoices, self).__init__(*args, **kwargs)
+
+    def label_from_instance(self, mission):
+        if mission.description:
+            return "%s (%s)" % (mission.mission_id(), mission.description)
+        else:
+            return mission.mission_id()
+
+    def get_queryset(self):
+        if self.lead:
+            return Mission.objects.filter(lead=self.lead)
+        else:
+            return Mission.objects.all()
 
 
 class StaffingDateChoicesField(ChoiceField):

@@ -74,7 +74,7 @@
                     if (!isNaN(toDate.getTime())) {
                         param += "&end=" + yyyymmdd(toDate);
                     }
-                    $('#tab-reporting').load("{% url 'leads.views.lead_pivotable' lead.id %}?"+param);
+                    $('#tab-reporting').load("{% url 'leads:lead_pivotable' lead.id %}?"+param);
             });
 
 

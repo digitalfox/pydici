@@ -29,19 +29,19 @@
         <tbody>
         {% for bill in overdue_bills %}
             <tr>
-                {% if perms.billing.change_clientbill %}
-                    <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% if pydici_feature.billing_management %}
+                    <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
-                <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12 /></a></td>
                 <td>{{ bill.comment }}</td>
-                <td>{% if perms.billing.change_clientbill %}
-                    <a href="{% url 'billing.views.mark_bill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
+                <td>{% if pydici_feature.billing_management %}
+                        <a href="{% url 'billing:mark_bill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
                  </td>
             </tr>
@@ -77,19 +77,19 @@
         <tbody>
         {% for bill in soondue_bills %}
             <tr>
-                {% if perms.billing.change_clientbill %}
-                    <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% if pydici_feature.billing_management %}
+                    <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
-                <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
                 <td>{{ bill.comment }}</td>
-                <td>{% if perms.billing.change_clientbill %}
-                    <a href="{% url 'billing.views.mark_bill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
+                <td>{% if pydici_feature.billing_management %}
+                        <a href="{% url 'billing:mark_bill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
                  </td>
             </tr>
@@ -125,19 +125,19 @@
         <tbody>
         {% for bill in litigious_bills %}
             <tr>
-                {% if perms.billing.change_clientbill %}
-                    <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% if pydici_feature.billing_management %}
+                    <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
-                <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/ height=12></a></td>
                 <td>{{ bill.comment }}</td>
-                <td>{% if perms.billing.change_clientbill %}
-                    <a href="{% url 'billing.views.mark_bill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
+                <td>{% if pydici_feature.billing_management %}
+                    <a href="{% url 'billing:mark_bill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
                  </td>
             </tr>
@@ -174,12 +174,12 @@
         <tbody>
         {% for bill in recent_bills %}
             <tr>
-                {% if perms.billing.change_clientbill %}
-                    <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                {% if pydici_feature.billing_management %}
+                    <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
                 {% endif %}
-                <td><a href="{% url 'leads.views.detail' bill.lead.id %}">{{ bill.client }}</a></td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.creation_date }}</td>
@@ -209,8 +209,8 @@
         <tbody>
         {% for lead in leads_without_bill %}
             <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                <td><a href="{% url 'leads.views.detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
-                <td>{% if lead.responsible %}<a href="{% url 'people.views.consultant_home' lead.responsible.trigramme%}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
+                <td><a href="{% url 'leads:detail' lead.id %}" title='{{ lead.description }}'>{{ lead.client }} - {{ lead.name }}</a></td>
+                <td>{% if lead.responsible %}<a href="{% url 'people:consultant_home' lead.responsible.trigramme%}">{{ lead.responsible }}</a>{% else %}{% trans "To be defined" %}{% endif %}</td>
                 <td>{{ lead.staffing_list }}</td>
                 <td>{{ lead.sales }}</td>
                 <td>{{ lead.done_work.0 }}</td>
@@ -228,7 +228,7 @@
     
     <div id="graph_billing_jqp_content"></div>
     <script type="text/javascript">
-    $('#graph_billing_jqp_content').load('{% url 'billing.views.graph_billing_jqp' %}')
+    $('#graph_billing_jqp_content').load('{% url 'billing:graph_billing_jqp' %}')
     </script>
 
 

@@ -16,9 +16,8 @@ from django.views.generic import DetailView, ListView
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect, HttpResponse, Http404
-from django.core import urlresolvers
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
-from django.utils.safestring import mark_for_escaping
 from django.contrib.auth.decorators import permission_required
 from django.utils.safestring import mark_safe
 from django.template.loader import get_template
@@ -28,12 +27,11 @@ from crm.models import Company, Client, ClientOrganisation, Contact, Administrat
     BusinessBroker, Supplier, Subsidiary
 from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm,\
     AdministrativeContactForm, BusinessBrokerForm, SupplierForm
-from staffing.models import Timesheet
 from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
-from core.utils import sortedValues, previousMonth, COLORS
-from billing.models import ClientBill, SupplierBill
+from core.utils import COLORS
+from billing.models import ClientBill
 
 
 class ContactReturnToMixin(object):
@@ -43,7 +41,7 @@ class ContactReturnToMixin(object):
             target = self.object.contact.id
         else:
             target = self.object.id
-        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("contact_detail", args=[target, ])
+        return self.request.GET.get('return_to', False) or reverse_lazy("crm:contact_detail", args=[target, ])
 
 
 class ThirdPartyMixin(PydiciFeatureMixin):
@@ -77,7 +75,7 @@ class ContactDelete(PydiciNonPublicdMixin, FeatureContactsWriteMixin, DeleteView
     model = Contact
     template_name = "core/delete.html"
     form_class = ContactForm
-    success_url = urlresolvers.reverse_lazy("contact_list")
+    success_url = reverse_lazy("crm:contact_list")
 
     def form_valid(self, form):
         messages.add_message(self.request, messages.INFO, _("Contact removed successfully"))
@@ -100,7 +98,7 @@ class ContactList(PydiciNonPublicdMixin, ThirdPartyMixin, ListView):
 @pydici_feature("3rdparties")
 def contact_list(request):
     return render(request, "crm/contact_list.html",
-                  {"data_url": urlresolvers.reverse("all_contacts_table_DT"),
+                  {"data_url": reverse("crm:all_contacts_table_DT"),
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [1] },
                                                    { className: "hidden-xs hidden-sm hidden-md", "targets": [6]}],
                                    "order": [[0, "asc"]] ''',
@@ -152,7 +150,7 @@ class AdministrativeContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMix
         return {'company': self.request.GET.get("company")}
 
     def get_success_url(self):
-        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[self.object.company.id, ])
+        return self.request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[self.object.company.id, ])
 
 
 class AdministrativeContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, UpdateView):
@@ -161,7 +159,7 @@ class AdministrativeContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMix
     form_class = AdministrativeContactForm
 
     def get_success_url(self):
-        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[self.object.company.id, ])
+        return self.request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[self.object.company.id, ])
 
 
 @pydici_non_public
@@ -183,7 +181,7 @@ def client(request, client_id=None):
         if form.is_valid():
             client = form.save()
             client.save()
-            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[client.organisation.company.id]))
+            return HttpResponseRedirect(reverse("crm:company_detail", args=[client.organisation.company.id]))
     else:
         if client:
             form = ClientForm(instance=client)  # A form that edit current client
@@ -281,14 +279,14 @@ def clientOrganisation(request, client_organisation_id=None):
         pass
 
     if request.method == "POST":
-        if client:
+        if clientOrganisation:
             form = ClientOrganisationForm(request.POST, instance=clientOrganisation)
         else:
             form = ClientOrganisationForm(request.POST)
         if form.is_valid():
             clientOrganisation = form.save()
             clientOrganisation.save()
-            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[clientOrganisation.company.id]))
+            return HttpResponseRedirect(reverse("crm:company_detail", args=[clientOrganisation.company.id]))
     else:
         if clientOrganisation:
             form = ClientOrganisationForm(instance=clientOrganisation)  # A form that edit current client organisation
@@ -319,7 +317,7 @@ def company(request, company_id=None):
         if form.is_valid():
             company = form.save()
             company.save()
-            return HttpResponseRedirect(urlresolvers.reverse("crm.views.company_detail", args=[company.id]))
+            return HttpResponseRedirect(reverse("crm:company_detail", args=[company.id]))
     else:
         if company:
             form = CompanyForm(instance=company)  # A form that edit current company
@@ -402,6 +400,8 @@ def company_detail(request, company_id):
                    "administrative_contacts": administrative_contacts,
                    "contacts_count" : business_contacts.count() + mission_contacts.count() + administrative_contacts.count(),
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
+                   "lead_data_url": reverse('leads:client_company_lead_table_DT', args=[company.id,]),
+                   "mission_data_url": reverse('staffing:client_company_mission_table_DT', args=[company.id,]),
                    "companies": companies,
                    "sales_last_year": sales_last_year
                   })
@@ -490,12 +490,12 @@ def graph_company_sales(request, onlyLastYear=False, subsidiary_id=None):
     graph_data = []
     labels = []
     small_clients_amount = 0
+    clientBills = ClientBill.objects.filter(state__in=("1_SENT", "2_PAID"))
     if subsidiary_id:
         subsidiary = Subsidiary.objects.get(id=subsidiary_id)
-        clientBills = ClientBill.objects.filter(lead__subsidiary=subsidiary)
+        clientBills = clientBills.filter(lead__subsidiary=subsidiary)
     else:
         subsidiary = None
-        clientBills = ClientBill.objects.all()
 
     minDate = clientBills.aggregate(Min("creation_date")).values()[0]
     if onlyLastYear:
@@ -540,7 +540,7 @@ def graph_company_business_activity(request, company_id):
     wonLeadsData = dict()
     company = Company.objects.get(id=company_id)
 
-    for bill in ClientBill.objects.filter(lead__client__organisation__company=company):
+    for bill in ClientBill.objects.filter(lead__client__organisation__company=company, state__in=("1_SENT", "2_PAID")):
         kdate = bill.creation_date.replace(day=1)
         if kdate in billsData:
             billsData[kdate] += int(float(bill.amount) / 1000)
