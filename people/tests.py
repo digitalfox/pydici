@@ -6,13 +6,12 @@ Test cases for People module
 """
 
 from django.test import TestCase
-from django.core import urlresolvers
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 
-from crm.models import Client, Subsidiary
+from crm.models import Subsidiary
 from people.models import Consultant, ConsultantProfile
 from staffing.models import Mission
-from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME, TEST_PASSWORD
+from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
 
 
 class PeopleModelTest(TestCase):
