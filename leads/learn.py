@@ -221,7 +221,7 @@ def eval_state_model(model=None):
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     print confusion_matrix(y_test, y_pred)
-    print classification_report(y_test, y_pred, target_names=target_names)
+    print classification_report(y_test, y_pred)
     feature_names = model.named_steps["vect"].get_feature_names()
     coef = model.named_steps["clf"].feature_importances_
     max_coef = max(coef)

@@ -9,13 +9,14 @@ Test cases for staffing
 from django.test import TestCase
 from django.core.cache import cache
 from django.core import urlresolvers
+from django.contrib.auth.models import User
 
 from staffing import utils
 from leads.models import Lead
 from staffing.models import Mission, Staffing, Timesheet, FinancialCondition
 from people.models import Consultant, RateObjective
 from core.utils import previousMonth, nextMonth
-from core.tests import PYDICI_FIXTURES, TEST_USERNAME, TEST_PASSWORD, setup_test_user_features
+from core.tests import PYDICI_FIXTURES, TEST_USERNAME, setup_test_user_features
 
 from datetime import date
 
@@ -82,10 +83,11 @@ class StaffingViewsTest(TestCase):
 
     def setUp(self):
         setup_test_user_features()
+        self.test_user = User.objects.get(username=TEST_USERNAME)
 
 
     def test_mission_timesheet(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        self.client.force_login(self.test_user)
         current_month = date.today().replace(day=1)
         next_month = nextMonth(current_month)
         previous_month = previousMonth(current_month)
@@ -140,8 +142,8 @@ class StaffingViewsTest(TestCase):
         self.assertEqual(response.context["current_unused"], 0)  # idem
         # Check mission data main table
         data = response.context["mission_data"]
-        self.assertListEqual(data[0], [c2, [5, 9, 14, 15.4], [1, 6, 7, 7.7], [21, 23.1]])
-        self.assertListEqual(data[1], [c1, [8, 11, 19, 15.2], [4, 8, 12, 9.6], [31, 24.8]])
+        self.assertListEqual(data[0], [c2, [5, 9, 14, 15.4], [1, 6, 7, 7.7], [21, 23.1], None, None, None, None])
+        self.assertListEqual(data[1], [c1, [8, 11, 19, 15.2], [4, 8, 12, 9.6], [31, 24.8], None, None, None, None])
         self.assertListEqual(data[2], [None, [13, 20, 33, 30.6], [5, 14, 19, 17.3], [52, 47.9],
                                        [11.9, 18.7], [4.3, 13],
                                        [915.4, 935, 927.3], [860, 928.6, 910.5]])
