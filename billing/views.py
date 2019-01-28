@@ -9,7 +9,7 @@ from datetime import date, timedelta
 import mimetypes
 from collections import defaultdict
 import json
-from cStringIO import StringIO
+from io import StringIO
 
 from django.core.files.base import ContentFile
 from os.path import basename
@@ -310,7 +310,7 @@ def clientbill_delete(request, bill_id):
         else:
             messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
             redirect_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
-    except Exception, e:
+    except Exception as e:
         print(e)
         messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
 
@@ -464,23 +464,23 @@ def graph_billing_jqp(request):
         wStaffingData[kdate] += staffing.charge * financialConditions.get(staffing.consultant_id, {}).get(staffing.mission_id, 0) * staffing.mission.probability / 100 / 1000
 
     # Set bottom of each graph. Starts if [0, 0, 0, ...]
-    billKdates = billsData.keys()
+    billKdates = list(billsData.keys())
     billKdates.sort()
     isoBillKdates = [a.isoformat() for a in billKdates]  # List of date as string in ISO format
 
     # Draw a bar for each state
     for state in ClientBill.CLIENT_BILL_STATE:
         ydata = [sum([float(i.amount) / 1000 for i in x if i.state == state[0]]) for x in sortedValues(billsData)]
-        graph_data.append(zip(isoBillKdates, ydata))
+        graph_data.append(list(zip(isoBillKdates, ydata)))
 
     # Sort keys
-    tsKdates = tsData.keys()
+    tsKdates = list(tsData.keys())
     tsKdates.sort()
     isoTsKdates = [a.isoformat() for a in tsKdates]  # List of date as string in ISO format
-    staffingKdates = staffingData.keys()
+    staffingKdates = list(staffingData.keys())
     staffingKdates.sort()
     isoStaffingKdates = [a.isoformat() for a in staffingKdates]  # List of date as string in ISO format
-    wStaffingKdates = staffingData.keys()
+    wStaffingKdates = list(staffingData.keys())
     wStaffingKdates.sort()
     isoWstaffingKdates = [a.isoformat() for a in wStaffingKdates]  # List of date as string in ISO format
 
@@ -490,11 +490,11 @@ def graph_billing_jqp(request):
     wStaffingYData = sortedValues(wStaffingData)
 
     # Draw done work
-    graph_data.append(zip(isoTsKdates, tsYData))
+    graph_data.append(list(zip(isoTsKdates, tsYData)))
 
     # Draw forecasted work
-    graph_data.append(zip(isoStaffingKdates, staffingYData))
-    graph_data.append(zip(isoWstaffingKdates, wStaffingYData))
+    graph_data.append(list(zip(isoStaffingKdates, staffingYData)))
+    graph_data.append(list(zip(isoWstaffingKdates, wStaffingYData)))
 
     return render(request, "billing/graph_billing_jqp.html",
                   {"graph_data": json.dumps(graph_data),
@@ -528,7 +528,7 @@ def graph_yearly_billing(request):
             data[subsidiary.name].append(turnover.get(subsidiary.name, 0))
 
     last_turnover = 0
-    for current_turnover in [sum(i) for i in zip(*data.values())]:  # Total per year
+    for current_turnover in [sum(i) for i in zip(*list(data.values()))]:  # Total per year
         if last_turnover > 0:
             growth.append(round(100 * (current_turnover - last_turnover) / last_turnover, 1))
         else:
@@ -541,7 +541,7 @@ def graph_yearly_billing(request):
     graph_data.append(["x"] + years)  # X (years) axis
 
     # Add turnover per subsidiary
-    for key, value in data.items():
+    for key, value in list(data.items()):
         if sum(value) == 0:
             continue
         value.insert(0, key)

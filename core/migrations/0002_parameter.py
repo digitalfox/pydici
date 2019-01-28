@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import migrations, models
 
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('key', models.CharField(unique=True, max_length=255, verbose_name='Key')),
                 ('value', models.CharField(max_length=255, verbose_name='Value')),
-                ('type', models.CharField(max_length=30, verbose_name='Type', choices=[(b'TEXT', 'text'), (b'FLOAT', 'float')])),
+                ('type', models.CharField(max_length=30, verbose_name='Type', choices=[('TEXT', 'text'), ('FLOAT', 'float')])),
                 ('desc', models.CharField(max_length=255, verbose_name='Description')),
             ],
         ),

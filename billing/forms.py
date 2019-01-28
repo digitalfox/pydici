@@ -52,7 +52,7 @@ class BillingDateChoicesField(TypedChoiceField):
         super(BillingDateChoicesField, self).__init__(*args, **kwargs)
 
     def has_changed(self, initial, data):
-        initial = unicode(initial) if initial is not None else ''
+        initial = str(initial) if initial is not None else ''
         return initial != data
 
 
@@ -138,8 +138,8 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillExpenseInlineFormset, self).add_fields(form, index)
         #TODO: should use Chargeable expense only
-        form.fields["expense"] = ModelChoiceField(label=_(u"Expense"), required=False, widget=ExpenseChoices, queryset=Expense.objects.filter(lead=self.instance.lead))
-        form.fields["expense_date"] = DateField(label=_(u"Expense date"), required=False, widget=DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
+        form.fields["expense"] = ModelChoiceField(label=_("Expense"), required=False, widget=ExpenseChoices, queryset=Expense.objects.filter(lead=self.instance.lead))
+        form.fields["expense_date"] = DateField(label=_("Expense date"), required=False, widget=DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
 
 
     def clean(self):

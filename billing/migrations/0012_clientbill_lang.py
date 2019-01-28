@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import migrations, models
 
@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='clientbill',
             name='lang',
-            field=models.CharField(default=b'fr-fr', max_length=10, verbose_name='Lang'),
+            field=models.CharField(default='fr-fr', max_length=10, verbose_name='Lang'),
         ),
     ]

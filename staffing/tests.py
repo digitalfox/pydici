@@ -141,7 +141,7 @@ class StaffingViewsTest(TestCase):
         self.assertEqual(response.context["forecasted_unused"], 0)  # Unused is margin in fixes price :-)
         self.assertEqual(response.context["current_unused"], 0)  # idem
         # Check mission data main table
-        data = response.context["mission_data"]
+        data = list(response.context["mission_data"])
         self.assertListEqual(data[0], [c2, [5, 9, 14, 15.4], [1, 6, 7, 7.7], [21, 23.1], None, None, None, None])
         self.assertListEqual(data[1], [c1, [8, 11, 19, 15.2], [4, 8, 12, 9.6], [31, 24.8], None, None, None, None])
         self.assertListEqual(data[2], [None, [13, 20, 33, 30.6], [5, 14, 19, 17.3], [52, 47.9],

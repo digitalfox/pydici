@@ -127,7 +127,7 @@ def saveFormsetAndLog(formset, request):
             continue
         if form.changed_data and form.changed_data != ["update_date"]:  # don't consider update_date as L10N formating mess up has_changed widget method
             staffing = form.save()
-            staffing.last_user = unicode(request.user)
+            staffing.last_user = str(request.user)
             staffing.update_date = now
             staffing.save()
 
@@ -152,12 +152,12 @@ def sortMissions(missions):
             prodMissions.append(mission)
         else:
             # Oups, we should never go here. Just log, in case of
-            print "Unknown mission nature (%s). Cannot sort" % mission.nature
+            print("Unknown mission nature (%s). Cannot sort") % mission.nature
 
     # Sort each list
     holidaysMissions.sort(key=lambda x: x.description)
     nonProdMissions.sort(key=lambda x: x.description)
-    prodMissions.sort(key=lambda x: unicode(x))
+    prodMissions.sort(key=lambda x: str(x))
 
     return prodMissions + nonProdMissions + holidaysMissions
 
@@ -177,7 +177,7 @@ def staffingDates(n=12, format=None, minDate=None):
     as a list of dict() with short/long(encoded) string date"""
     staffingDate = minDate or date.today().replace(day=1)
     dates = []
-    for i in range(n):
+    for i in range(int(n)):
         if format == "datetime":
             dates.append(staffingDate)
         else:
@@ -195,7 +195,7 @@ def time_string_for_day_percent(day_percent, day_duration=settings.TIMESHEET_DAY
         # Using round() is important here because int() truncates the decimal
         # part so int(24.99) returns 24, whereas round(24.99) returns 25.
         total_minutes = int(round(day_percent * day_duration * 60))
-        hours = total_minutes / 60
+        hours = int(total_minutes / 60)
         minutes = total_minutes % 60
     return '{}:{:02}'.format(hours, minutes)
 
@@ -238,7 +238,7 @@ def compute_automatic_staffing(mission, mode, duration, user=None):
                 break
             s = Staffing(mission=mission, consultant=consultant, charge=days, staffing_date=month, update_date = now)
             if user:
-                s.last_user = unicode(user)
+                s.last_user = str(user)
             s.save()
             total += days * rates[consultant][0]
 

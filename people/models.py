@@ -29,7 +29,7 @@ class ConsultantProfile(models.Model):
     name = models.CharField(_("Name"), max_length=50, unique=True)
     level = models.IntegerField(_("Level"))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -50,7 +50,7 @@ class Consultant(models.Model):
     subcontractor = models.BooleanField(_("Subcontractor"), default=False)
     subcontractor_company = models.CharField(max_length=200, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def full_name(self):
@@ -200,7 +200,8 @@ class Consultant(models.Model):
         days = Timesheet.objects.filter(consultant=self,
                                         charge__gt=0,
                                         working_date__gte=today.replace(day=1),
-                                        working_date__lte=today).aggregate(Sum("charge")).values()[0]
+                                        working_date__lte=today).aggregate(Sum("charge"))
+        days = list(days.values())[0]
         return days or 0
 
     def forecasted_days(self):
@@ -211,7 +212,8 @@ class Consultant(models.Model):
         days = Staffing.objects.filter(consultant=self,
                                        charge__gt=0,
                                        staffing_date__gte=today.replace(day=1),
-                                       staffing_date__lte=today).aggregate(Sum("charge")).values()[0]
+                                       staffing_date__lte=today).aggregate(Sum("charge"))
+        days = list(days.values())[0]
         return days or 0
 
     @cacheable(CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY, 6*3600)
@@ -247,7 +249,7 @@ class Consultant(models.Model):
         current_month = date.today().replace(day=1)
         for month, up_to in ((previousMonth(current_month), current_month), (current_month, date.today())):
             wd = working_days(month, holidayDays(month=month),upToToday=True)
-            td = Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values()[0] or 0
+            td = list(Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values())[0] or 0
             result.append(wd - td)
         return result
 
@@ -272,7 +274,7 @@ class SalesMan(models.Model):
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s)" % (self.name, self.company)
 
     def save(self, force_insert=False, force_update=False):

@@ -27,7 +27,7 @@ class ActionSet(models.Model):
     trigger = models.CharField(_("Trigger"), max_length=50, choices=ACTIONSET_TRIGGERS, blank=True, null=True)
     active = models.BooleanField(_("Active"), default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def start(self, user, targetObject=None):
@@ -47,8 +47,8 @@ class Action(models.Model):
     description = models.TextField(_("Description"), blank=True)
     actionset = models.ForeignKey(ActionSet, on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return u"%s/%s" % (self.actionset, self.name)
+    def __str__(self):
+        return "%s/%s" % (self.actionset, self.name)
 
 
 class ActionState(models.Model):
@@ -62,15 +62,15 @@ class ActionState(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
-    target_type = models.ForeignKey(ContentType, verbose_name=_(u"Target content type"), blank=True, null=True, on_delete=models.CASCADE)
-    target_id = models.PositiveIntegerField(_(u"Content id"), blank=True, null=True)
+    target_type = models.ForeignKey(ContentType, verbose_name=_("Target content type"), blank=True, null=True, on_delete=models.CASCADE)
+    target_id = models.PositiveIntegerField(_("Content id"), blank=True, null=True)
     target = GenericForeignKey(ct_field="target_type", fk_field="target_id")
 
-    def __unicode__(self):
+    def __str__(self):
         if self.target:
-            return u"%s (%s)" % (self.action, self.target)
+            return "%s (%s)" % (self.action, self.target)
         else:
-            return unicode(self.action)
+            return str(self.action)
 
     def delegateForm(self):
         """A user selection Form for action delagation to be used in templates"""

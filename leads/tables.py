@@ -37,9 +37,9 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
             if row.responsible:
                 return self.consultantTemplate.render({"consultant": row.responsible})
             else:
-                return u"-"
+                return "-"
         elif column == "client":
-            return u"<a href='{0}'>{1}</a>".format(row.client.get_absolute_url(), row.client)
+            return "<a href='{0}'>{1}</a>".format(row.client.get_absolute_url(), row.client)
         elif column == "sales":
             if row.sales:
                 return round(float(row.sales),3)
@@ -56,7 +56,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(Q(name__icontains=search) |
                            Q(description__icontains=search) |

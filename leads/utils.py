@@ -10,7 +10,7 @@ appropriate to live in Lead models or view
 from django.utils.translation import ugettext
 from django.contrib import messages
 from django.contrib.admin.models import LogEntry, ADDITION, ContentType
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.urls import reverse
 
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
@@ -52,7 +52,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
         user_id         = request.user.pk,
         content_type_id = ContentType.objects.get_for_model(lead).pk,
         object_id       = lead.pk,
-        object_repr     = force_unicode(lead),
+        object_repr     = force_text(lead),
         action_flag     = ADDITION,
         change_message  = ", ".join(updated_fields),
     )
@@ -63,7 +63,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             send_lead_mail(lead, request, fromAddr=fromAddr,
                            fromName="%s %s" % (request.user.first_name, request.user.last_name))
             messages.add_message(request, messages.INFO, ugettext("Lead sent to business mailing list"))
-        except Exception, e:
+        except Exception as e:
             messages.add_message(request, messages.ERROR, ugettext("Failed to send mail: %s") % e)
 
     if TELEGRAM_IS_ENABLED:
@@ -72,16 +72,16 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             sticker = None
             url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
             if created:
-                msg = ugettext(u"New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
+                msg = ugettext("New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
                 sticker = TELEGRAM_STICKERS.get("happy")
                 chat_group = "new_leads"
             elif state_changed:
                 # Only notify when lead state changed to avoid useless spam
                 try:
-                    change = u"%s (%s)" % (lead.get_change_history()[0].change_message, lead.get_change_history()[0].user)
+                    change = "%s (%s)" % (lead.get_change_history()[0].change_message, lead.get_change_history()[0].user)
                 except:
-                    change = u""
-                msg = ugettext(u"Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
+                    change = ""
+                msg = ugettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
                 if lead.state == "WON":
                     sticker = TELEGRAM_STICKERS.get("happy")
                 elif lead.state in ("LOST", "FORGIVEN"):
@@ -95,8 +95,8 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
                 bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
                 if sticker:
                     bot.sendSticker(chat_id=chat_id, sticker=sticker)
-        except Exception, e:
-            messages.add_message(request, messages.ERROR, ugettext(u"Failed to send telegram notification: %s") % e)
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, ugettext("Failed to send telegram notification: %s") % e)
 
     # Compute leads probability
     if sync:

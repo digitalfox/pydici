@@ -130,7 +130,7 @@ def lead(request, lead_id=None):
             created = True
         if form.is_valid():
             changed_fields = form.changed_data
-            for field_name, field in form.fields.items():
+            for field_name, field in list(form.fields.items()):
                 if field_name in changed_fields and field_name not in blacklist_fields:
                     if field_name == "state":
                         state_changed = True
@@ -140,7 +140,7 @@ def lead(request, lead_id=None):
                             # Don't consider description field as changed if content is the same
                             continue
                     if isinstance(value, (list, QuerySet)):
-                        value = ", ".join([unicode(i) for i in value])
+                        value = ", ".join([str(i) for i in value])
                     else:
                         value = force_text(value)
                     value = value if len(value)<=max_length else value[0:max_length-3]+'...'
@@ -179,7 +179,7 @@ def lead_documents(request, lead_id):
             break
 
     for directory in (businessDir, inputDir, deliveryDir):
-        directoryName = directory.split(u"/")[-1]
+        directoryName = directory.split("/")[-1]
         dirs = []
         files = []
         for fileName in os.listdir(directory):
@@ -188,9 +188,9 @@ def lead_documents(request, lead_id):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 fileName = fileName.decode("utf8", "ignore")
             if os.path.isdir(filePath):
-                dirs.append((fileName + u"/", lead_url_dir + u"/" + directoryName + u"/" + fileName + u"/"))
+                dirs.append((fileName + "/", lead_url_dir + "/" + directoryName + "/" + fileName + "/"))
             else:
-                files.append((fileName, lead_url_file  + u"/" + directoryName + u"/" + fileName))
+                files.append((fileName, lead_url_file  + "/" + directoryName + "/" + fileName))
         dirs.sort(key=lambda x: x[0])
         files.sort(key=lambda x: x[0])
         documents.append([directoryName, dirs + files])
@@ -210,7 +210,7 @@ def csv_export(request, target):
     writer.writerow([i.encode("ISO-8859-15") for i in [_("Name"), _("Client"), _("Description"),
                                                        _("Managed by"), _("Salesman"), _("Starting"),
                                                        _("State"), _("Due date"), _("Staffing"),
-                                                       _(u"Sales (k€)"), _("Creation"),
+                                                       _("Sales (k€)"), _("Creation"),
                                                        _("Updated")]])
     if target != "all":
         leads = Lead.objects.active()
@@ -220,7 +220,7 @@ def csv_export(request, target):
         state = lead.get_state_display()
         row = [lead.name, lead.client, lead.description, lead.responsible, lead.salesman, lead.start_date, state,
                          lead.due_date, lead.staffing_list(), lead.sales, lead.creation_date, lead.update_date]
-        row = [unicode(x).encode("ISO-8859-15", "ignore") for x in row]
+        row = [str(x).encode("ISO-8859-15", "ignore") for x in row]
         writer.writerow(row)
     return response
 
@@ -236,7 +236,7 @@ def mail_lead(request, lead_id=0):
         send_lead_mail(lead)
         return HttpResponse(_("Lead %(id)s was sent to %(mail)s !") % {"id": lead_id,
                                                                        "mail": get_parameter("LEAD_MAIL_TO")})
-    except Exception, e:
+    except Exception as e:
         return HttpResponse(_("Failed to send mail: %s") % e)
 
 @pydici_non_public
@@ -359,7 +359,7 @@ def graph_bar_jqp(request):
     if not data:
         return HttpResponse('')
 
-    kdates = data.keys()
+    kdates = list(data.keys())
     kdates.sort()
     isoKdates = [a.isoformat() for a in kdates]  # List of date as string in ISO format
 
@@ -367,13 +367,13 @@ def graph_bar_jqp(request):
     for state in Lead.STATES:
         ydata = [len([i for i in x if i.state == state[0]]) for x in sortedValues(data)]
         ydata_detailed = [["%s (%s)" % (i.name, i.deal_id) for i in x if i.state == state[0]] for x in sortedValues(data)]
-        graph_data.append(zip(isoKdates, ydata, ydata_detailed))
+        graph_data.append(list(zip(isoKdates, ydata, ydata_detailed)))
 
     # Draw lead amount by month
     yAllLead = [float(sum([i.sales for i in x if i.sales])) for x in sortedValues(data)]
     yWonLead = [float(sum([i.sales for i in x if (i.sales and i.state == "WON")])) for x in sortedValues(data)]
-    graph_data.append(zip(isoKdates, yAllLead))
-    graph_data.append(zip(isoKdates, yWonLead))
+    graph_data.append(list(zip(isoKdates, yAllLead)))
+    graph_data.append(list(zip(isoKdates, yWonLead)))
     if kdates:
         min_date = (kdates[0] - timedelta(30)).isoformat()
     else:
@@ -427,7 +427,7 @@ def leads_pivotable(request, year=None):
     """Pivot table for all leads of given year"""
     data = []
     leads = Lead.objects.passive()
-    derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _(u"sales (k€)"))
+    derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _("sales (k€)"))
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
     if not leads:
@@ -447,16 +447,16 @@ def leads_pivotable(request, year=None):
     for lead in leads:
         data.append({_("deal id"): lead.deal_id,
                      _("name"): lead.name,
-                     _("client organisation"): unicode(lead.client.organisation),
-                     _("client company"): unicode(lead.client.organisation.company),
-                     _(u"sales (k€)"): int(lead.sales or 0),
+                     _("client organisation"): str(lead.client.organisation),
+                     _("client company"): str(lead.client.organisation.company),
+                     _("sales (k€)"): int(lead.sales or 0),
                      _("date"): lead.creation_date.strftime("%Y-%m"),
-                     _("responsible"): unicode(lead.responsible),
-                     _("broker"): unicode(lead.business_broker),
+                     _("responsible"): str(lead.responsible),
+                     _("broker"): str(lead.business_broker),
                      _("state"): lead.get_state_display(),
-                     _(u"billed (€)"): int(lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values()[0] or 0),
-                     _(u"Over budget margin (k€)"): lead.margin(),
-                     _("subsidiary"): unicode(lead.subsidiary)})
+                     _("billed (€)"): int(list(lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0),
+                     _("Over budget margin (k€)"): lead.margin(),
+                     _("subsidiary"): str(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
                                                     "years": years,

@@ -249,7 +249,7 @@ def client_organisation_company_popup(request):
             client.save()
             result["success"] = True
             result["client_id"] = client.id
-            result["client_name"] = unicode(client)
+            result["client_name"] = str(client)
 
     else:
         # Unbound forms for GET requests
@@ -342,7 +342,7 @@ def company_detail(request, company_id):
 
     # Statistics on won/lost etc.
     states = states = dict(Lead.STATES)
-    leads_stat = [i.values() for i in leads.values("state").order_by("state").annotate(Count("state"))]
+    leads_stat = [list(i.values()) for i in leads.values("state").order_by("state").annotate(Count("state"))]
     leads_stat = [[mark_safe(states[state]), count] for state, count in leads_stat]  # Use state label
 
     # Find consultant that work (=declare timesheet) for this company
@@ -456,7 +456,7 @@ def company_pivotable(request, company_id=None):
     except Company.DoesNotExist:
         return Http404()
     for lead in Lead.objects.filter(client__organisation__company=company):
-        clientName = unicode(lead.client)
+        clientName = str(lead.client)
         for mission in lead.mission_set.all():
             missionData = mission.pivotable_data(startDate=startDate, endDate=endDate)
             for item in missionData:
@@ -497,7 +497,7 @@ def graph_company_sales(request, onlyLastYear=False, subsidiary_id=None):
     else:
         subsidiary = None
 
-    minDate = clientBills.aggregate(Min("creation_date")).values()[0]
+    minDate = list(clientBills.aggregate(Min("creation_date")).values())[0]
     if onlyLastYear:
         clientBills = clientBills.filter(creation_date__gt=(date.today() - timedelta(365)))
 
@@ -559,12 +559,12 @@ def graph_company_business_activity(request, company_id):
             preSalesData[kdate] += 1
 
     graph_data = [
-        ["x_billing"] + [d.isoformat() for d in billsData.keys()],
-        ["x_leads"] + [d.isoformat() for d in wonLeadsData.keys()],
-        ["y_billing"] + billsData.values(),
-        ["y_lost_leads"] + lostLeadsData.values(),
-        ["y_won_leads"] + wonLeadsData.values(),
-        ["y_presales_leads"] + preSalesData.values(),
+        ["x_billing"] + [d.isoformat() for d in list(billsData.keys())],
+        ["x_leads"] + [d.isoformat() for d in list(wonLeadsData.keys())],
+        ["y_billing"] + list(billsData.values()),
+        ["y_lost_leads"] + list(lostLeadsData.values()),
+        ["y_won_leads"] + list(wonLeadsData.values()),
+        ["y_presales_leads"] + list(preSalesData.values()),
     ]
 
     return render(request, "crm/graph_company_business_activity.html",

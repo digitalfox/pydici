@@ -23,7 +23,7 @@ def getScopes(subsidiary, team, target="all"):
     if target in ("all", "subsidiary"):
         for s in Subsidiary.objects.filter(consultant__active=True, consultant__subcontractor=False,
                                            consultant__productive=True).annotate(num=Count('consultant')).filter(num__gt=0):
-            scopes.append(("subsidiary_id", "subsidiary_id=%s" % s.id, unicode(s)))
+            scopes.append(("subsidiary_id", "subsidiary_id=%s" % s.id, str(s)))
 
     if target in ("all", "team"):
         for manager_id, manager_name in Consultant.objects.filter(active=True, productive=True,

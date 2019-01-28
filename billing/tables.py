@@ -41,7 +41,7 @@ class BillTableDT(BillingRequestMixin, BaseDatatableView):
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             filters = self.get_filters(search)
             query = Q()
@@ -55,15 +55,15 @@ class BillTableDT(BillingRequestMixin, BaseDatatableView):
             return to_int_or_round(getattr(row, column), 2)
         elif column == "lead":
             if row.lead:
-                return u"<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
+                return "<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
             else:
-                return u"-"
+                return "-"
         elif column in ("creation_date", "due_date", "payment_date"):
             return getattr(row, column).strftime("%d/%m/%y")
         elif column == "state":
             return row.get_state_display()
         elif column == "file":
-            return mark_safe(u"""<a href='%s'><span class="glyphicon glyphicon-file"></span></a>""" % row.bill_file_url())
+            return mark_safe("""<a href='%s'><span class="glyphicon glyphicon-file"></span></a>""" % row.bill_file_url())
         else:
             return super(BillTableDT, self).render_column(row, column)
 
@@ -89,7 +89,7 @@ class ClientBillInCreationTableDT(BillTableDT):
             responsibles = ClientBill.objects.filter(id=row.id).values_list("billdetail__mission__responsible__id", "lead__responsible__id")
             responsibles = set(chain(*responsibles))  # flatten it
             responsibles = Consultant.objects.filter(id__in=responsibles)
-            return ", ".join([unicode(c) for c in responsibles])
+            return ", ".join([str(c) for c in responsibles])
         else:
             return super(ClientBillInCreationTableDT, self).render_column(row, column)
 
@@ -115,7 +115,7 @@ class SupplierBillArchiveTableDT(BillTableDT):
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(Q(bill_id__icontains=search) |
                            Q(lead__deal_id__icontains=search) |

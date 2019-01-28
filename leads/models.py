@@ -58,7 +58,7 @@ class Lead(models.Model):
     description = models.TextField(blank=True)
     administrative_notes = models.TextField(_("Administrative notes"), blank=True)
     action = models.CharField(_("Action"), max_length=2000, blank=True, null=True)
-    sales = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
+    sales = models.DecimalField(_("Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
     salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"), on_delete=models.SET_NULL)
     staffing = models.ManyToManyField(Consultant, blank=True, limit_choices_to={"active": True, "productive": True})
     external_staffing = models.CharField(_("External staffing"), max_length=300, blank=True)
@@ -83,15 +83,15 @@ class Lead(models.Model):
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
 
     @cacheable("Lead.__unicode__%(id)s", 3)
-    def __unicode__(self):
-        return u"%s - %s" % (self.client.organisation, self.name)
+    def __str__(self):
+        return "%s - %s" % (self.client.organisation, self.name)
 
     def save(self, force_insert=False, force_update=False):
         self.description = compact_text(self.description)
         self.administrative_notes= compact_text(self.administrative_notes)
         if self.deal_id == "":
             # First, client company code
-            deal_id = unicode(self.client.organisation.company.code)
+            deal_id = str(self.client.organisation.company.code)
             # Then, year in two digits
             deal_id += date.today().strftime("%y")
             # Then, next id available for this prefix
@@ -113,7 +113,7 @@ class Lead(models.Model):
     def staffing_list(self):
         staffing = ""
         if self.staffing:
-            staffing += ", ".join([x["trigramme"] for x in self.staffing.values()])
+            staffing += ", ".join([x["trigramme"] for x in list(self.staffing.values())])
         if self.external_staffing:
             staffing += ", (%s)" % self.external_staffing
         return staffing
@@ -208,7 +208,7 @@ class Lead(models.Model):
     @cacheable("Lead.__billed__%(id)s", 3)
     def billed(self):
         """Total amount billed for this lead"""
-        return self.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values()[0] or 0
+        return list(self.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0
 
     @cacheable("Lead.__still_to_be_billed__%(id)s", 3)
     def still_to_be_billed(self):
@@ -221,7 +221,7 @@ class Lead(models.Model):
                 # TODO: sum as well subcontractor bills for fixed priced mission
                 if mission.price:
                     to_bill += float(mission.price * 1000)
-        to_bill += float(self.expense_set.filter(chargeable=True).aggregate(Sum("amount")).values()[0] or 0)
+        to_bill += float(list(self.expense_set.filter(chargeable=True).aggregate(Sum("amount")).values())[0] or 0)
         return to_bill - float(self.billed())
 
     def actions(self):

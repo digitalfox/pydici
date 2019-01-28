@@ -50,8 +50,8 @@ class GroupFeature(models.Model):
     class Meta:
         unique_together = (('group', 'feature'))
 
-    def __unicode__(self):
-        return unicode(self.group) + '-' + unicode(self.feature)
+    def __str__(self):
+        return str(self.group) + '-' + str(self.feature)
 
 
 class Parameter(models.Model):

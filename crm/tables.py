@@ -26,7 +26,7 @@ class ContactTableDT(ThirdPartyMixin, BaseDatatableView):
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(Q(name__icontains=search) |
                            Q(function__icontains=search) |

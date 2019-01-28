@@ -8,6 +8,7 @@ Pydici staffing views. Http request are processed here.
 from datetime import date, timedelta, datetime
 import csv
 import json
+from itertools import zip_longest
 
 from django.core.cache import cache
 from django.shortcuts import render, redirect
@@ -231,7 +232,7 @@ def mass_staffing(request):
                         staffing.charge = form.cleaned_data["charge"]
                         staffing.comment = form.cleaned_data["comment"]
                         staffing.update_date = now
-                        staffing.last_user = unicode(request.user)
+                        staffing.last_user = str(request.user)
                         staffing.save()
             # Redirect to self to display a new unbound form
             messages.add_message(request, messages.INFO, _("Staffing has been updated"))
@@ -393,7 +394,7 @@ def pdc_review(request, year=None, month=None):
         # Add client synthesis to staffing dict
         company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
         client_list = ", ".join(["<a href='%s'>%s</a>" %
-                                (reverse("crm:company_detail", args=[c.id]), unicode(c)) for c in company])
+                                (reverse("crm:company_detail", args=[c.id]), str(c)) for c in company])
         client_list = "<div class='hidden-xs hidden-sm'>%s</div>" % client_list
         staffing[consultant].append([client_list])
 
@@ -409,8 +410,8 @@ def pdc_review(request, year=None, month=None):
         rates.append(map(to_int_or_round, rate))
 
     # Format total dict into list
-    total = total.items()
-    total.sort(cmp=lambda x, y: cmp(x[0], y[0]))  # Sort according date
+    total = list(total.items())
+    total.sort(key=lambda x: x[0])  # Sort according date
     # Remove date, and transform dict into ordered list:
     total = [(to_int_or_round(i[1]["prod"]),
             to_int_or_round(i[1]["unprod"]),
@@ -418,12 +419,12 @@ def pdc_review(request, year=None, month=None):
             i[1]["total"] - (to_int_or_round(i[1]["prod"]) + to_int_or_round(i[1]["unprod"]) + to_int_or_round(i[1]["holidays"]))) for i in total]
 
     # Order staffing list
-    staffing = staffing.items()
-    staffing.sort(cmp=lambda x, y: cmp(x[0].name, y[0].name))  # Sort by name
+    staffing = list(staffing.items())
+    staffing.sort(key=lambda x: x[0].name)  # Sort by name
     if groupby == "manager":
-        staffing.sort(cmp=lambda x, y: cmp(unicode(x[0].staffing_manager), unicode(y[0].staffing_manager)))  # Sort by staffing manager
+        staffing.sort(key=lambda x: str(x[0].staffing_manager))  # Sort by staffing manager
     else:
-        staffing.sort(cmp=lambda x, y: cmp(x[0].profil.level, y[0].profil.level))  # Sort by level
+        staffing.sort(key=lambda x: x[0].profil.level)  # Sort by level
 
     scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
     if team:
@@ -778,7 +779,7 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
     writer = csv.writer(response, delimiter=';')
 
     # Header
-    writer.writerow([("%s - %s" % (unicode(consultant), month)).encode("ISO-8859-15", "replace"), ])
+    writer.writerow([("%s - %s" % (str(consultant), month)).encode("ISO-8859-15", "replace"), ])
 
     # Days
     writer.writerow(["", ""] + [d.day for d in days])
@@ -789,7 +790,7 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
 
     for mission in missions:
         total = 0
-        row = [i.encode("ISO-8859-15", "replace") for i in [unicode(mission), mission.mission_id()]]
+        row = [i.encode("ISO-8859-15", "replace") for i in [str(mission), mission.mission_id()]]
         timesheets = Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission)
         for day in days:
             try:
@@ -870,8 +871,8 @@ def mission_timesheet(request, mission_id):
         # We don't compute the average rate for total (k€) columns, hence the [:-1]
         valuedTimesheet = [days * rate / 1000 for days in  timesheet[:-1]]
         valuedStaffing = [days * rate / 1000 for days in staffing[:-1]]
-        timesheetTotalAmount = map(lambda t, v: (t + v) if t else v, timesheetTotalAmount, valuedTimesheet)
-        staffingTotalAmount = map(lambda t, v: (t + v) if t else v, staffingTotalAmount, valuedStaffing)
+        timesheetTotalAmount = [sum(x) for x in zip_longest(timesheetTotalAmount, valuedTimesheet, fillvalue=0)]
+        staffingTotalAmount = [sum(x) for x in zip_longest(staffingTotalAmount, valuedStaffing, fillvalue=0)]
 
     # Compute total per month
     timesheetTotal = [timesheet for consultant, timesheet, staffing, estimated in missionData]
@@ -882,8 +883,8 @@ def mission_timesheet(request, mission_id):
     staffingTotal = [sum(t) for t in staffingTotal]
 
     # average = total 1000 * rate / number of billed days
-    timesheetAverageRate = map(lambda t, d: (1000 * t / d) if d else 0, timesheetTotalAmount, timesheetTotal[:-1])
-    staffingAverageRate = map(lambda t, d: (1000 * t / d) if d else 0, staffingTotalAmount, staffingTotal[:-1])
+    timesheetAverageRate = list(map(lambda t, d: (1000 * t / d) if d else 0, timesheetTotalAmount, timesheetTotal[:-1]))
+    staffingAverageRate = list(map(lambda t, d: (1000 * t / d) if d else 0, staffingTotalAmount, staffingTotal[:-1]))
 
     # Total estimated (timesheet + staffing)
     if timesheetTotal and staffingTotal:
@@ -918,7 +919,7 @@ def mission_timesheet(request, mission_id):
                         timesheetTotalAmount[:-1], staffingTotalAmount[:-1],  # We remove last one not to  display total twice
                         timesheetAverageRate, staffingAverageRate))
 
-    missionData = map(to_int_or_round, missionData)
+    missionData = list(map(to_int_or_round, missionData))
 
     objectiveMargin = mission.objectiveMargin(endDate=nextMonth(current_month))
 
@@ -995,7 +996,7 @@ def mission_csv_timesheet(request, mission, consultants):
 
         for consultant in consultants:
             total = 0
-            row = [unicode(consultant).encode("ISO-8859-15", "replace"), ]
+            row = [str(consultant).encode("ISO-8859-15", "replace"), ]
             consultant_timesheets = {}
             for timesheet in timesheets.filter(consultant_id=consultant.id,
                                                working_date__gte=month,
@@ -1048,16 +1049,16 @@ def all_timesheet(request, year=None, month=None):
         data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme]),
                                                                                    month.year,
                                                                                    month.month,
-                                                                                   escape(unicode(consultant)))) for consultant in consultants]
+                                                                                   escape(str(consultant)))) for consultant in consultants]
     data = [[_("Mission"), _("Mission id")] + data]
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = to_int_or_round(timesheet["sum"], 2)
     for mission in missions:
         missionUrl = "<a href='%s'>%s</a>" % (reverse("staffing:mission_home", args=[mission.id, ]),
-                                        escape(unicode(mission)))
+                                        escape(str(mission)))
         if "csv" in request.GET:
             # Simple mission name
-            consultantData = [unicode(mission), mission.mission_id()]
+            consultantData = [str(mission), mission.mission_id()]
         else:
             # Drill down link
             consultantData = [mark_safe(missionUrl), mission.mission_id()]
@@ -1114,14 +1115,14 @@ def all_csv_timesheet(request, charges, month):
     writer = csv.writer(response, delimiter=';')
 
     # Header
-    writer.writerow([unicode(month).encode("ISO-8859-15", "replace"), ])
+    writer.writerow([str(month).encode("ISO-8859-15", "replace"), ])
     for charge in charges:
         row = []
         for i in charge:
             if isinstance(i, float):
                 i = formats.number_format(i)
             else:
-                i = unicode(i).encode("ISO-8859-15", "replace")
+                i = str(i).encode("ISO-8859-15", "replace")
             row.append(i)
         writer.writerow(row)
     return response
@@ -1146,8 +1147,8 @@ def detailed_csv_timesheet(request, year=None, month=None):
     # Header
     header = [_("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
               _("Consultant"), _("Daily rate"), _("Bought daily rate"), _("Past done days"), _("Done days"), _("Days to be done")]
-    writer.writerow([unicode(month).encode("ISO-8859-15", "replace"), ])
-    writer.writerow([unicode(i).encode("ISO-8859-15", "replace") for i in header])
+    writer.writerow([str(month).encode("ISO-8859-15", "replace"), ])
+    writer.writerow([str(i).encode("ISO-8859-15", "replace") for i in header])
 
     missions = Mission.objects.filter(Q(timesheet__working_date__gte=month, timesheet__working_date__lt=next_month) |
                                       Q(staffing__staffing_date__gte=month, staffing__staffing_date__lt=next_month))
@@ -1180,7 +1181,7 @@ def detailed_csv_timesheet(request, year=None, month=None):
                                                staffing_date__gte=next_month).aggregate(Sum("charge")).values()[0]
             row.append(formats.number_format(forecast) if forecast else 0)
 
-            writer.writerow([unicode(i).encode("ISO-8859-15", "replace") for i in row])
+            writer.writerow([str(i).encode("ISO-8859-15", "replace") for i in row])
 
     return response
 

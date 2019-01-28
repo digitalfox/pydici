@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import migrations, models
 
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='company',
             name='legal_description',
-            field=models.TextField(null=True, verbose_name=b'Legal description', blank=True),
+            field=models.TextField(null=True, verbose_name='Legal description', blank=True),
         ),
         migrations.AddField(
             model_name='company',
@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subsidiary',
             name='legal_description',
-            field=models.TextField(null=True, verbose_name=b'Legal description', blank=True),
+            field=models.TextField(null=True, verbose_name='Legal description', blank=True),
         ),
         migrations.AddField(
             model_name='subsidiary',

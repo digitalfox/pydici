@@ -44,7 +44,7 @@ def send_lead_mail(lead, request, fromAddr=None, fromName=""):
     if not fromAddr:
         fromAddr = get_parameter("MAIL_FROM")
     url = get_parameter("HOST") + reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
-    subject = u"[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
+    subject = "[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
     msgText = get_template("leads/lead_mail.txt").render(request=request, context={"obj": lead,
                                                                                   "lead_url": url})
     msgHtml = get_template("leads/lead_mail.html").render(request=request, context={"obj": lead,
@@ -61,7 +61,7 @@ def capitalize(sentence):
     @return:Capitalize each word or sub-word (separated by dash or quote) of the sentence
     """
     result = []
-    for sep in (u" ", u"'", u"-"):
+    for sep in (" ", "'", "-"):
         for word in sentence.split(sep):
             if word:
                 if word.upper() != word:
@@ -92,7 +92,7 @@ def to_int_or_round(x, precision=1):
     @param x: object to be converted"""
     if isinstance(x, (list, tuple)):
         # Recurse
-        return map(to_int_or_round, x)
+        return list(map(to_int_or_round, x))
     if isinstance(x, (float, Decimal)):
         if (int(x) - x) == 0:
             return int(x)
@@ -222,7 +222,7 @@ def monthWeekNumber(cDate):
 
 def sortedValues(data):
     """Sorted value of a dict according to his keys"""
-    items = data.items()
+    items = list(data.items())
     items.sort(key=lambda x: x[0])
     return [x[1] for x in items]
 
@@ -251,10 +251,10 @@ def getLeadDirs(lead):
     if not os.path.exists(clientDir):
         # Look if an alternative path exists with proper client code
         for path in os.listdir(pydici.settings.DOCUMENT_PROJECT_PATH):
-            if isinstance(path, str):
+            if isinstance(path, bytes):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 path = path.decode("utf8", "ignore")
-            if path.endswith(u"_%s" % lead.client.organisation.company.code):
+            if path.endswith("_%s" % lead.client.organisation.company.code):
                 clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH, path)
                 break
 
@@ -266,8 +266,8 @@ def getLeadDirs(lead):
     if not os.path.exists(leadDir):
         # Look if an alternative path exists with proper lead code
         for path in os.listdir(clientDir):
-            if isinstance(path, str):
-            # Corner case, files are not encoded with filesystem encoding but another...
+            if isinstance(path, bytes):
+                # Corner case, files are not encoded with filesystem encoding but another...
                 path = path.decode("utf8", "ignore")
             if path.startswith(lead.deal_id):
                 leadDir = os.path.join(clientDir, path)
@@ -323,10 +323,10 @@ def convertDictKeyToDate(data):
     This is used to convert dict from queryset for sqlite3 that don't support properly date trunc functions
     and mysql that use datetime or date dependings on version...
     If data is empty or if key is already, date, return as is"""
-    if data and isinstance(data.keys()[0], unicode):
-        return dict((datetime.strptime(k, "%Y-%m-%d").date(), v) for k, v in data.items())
-    elif data and isinstance(data.keys()[0], datetime):
-        return dict((k.date(), v) for k, v in data.items())
+    if data and isinstance(list(data.keys())[0], str):
+        return dict((datetime.strptime(k, "%Y-%m-%d").date(), v) for k, v in list(data.items()))
+    elif data and isinstance(list(data.keys())[0], datetime):
+        return dict((k.date(), v) for k, v in list(data.items()))
     else:
         return data
 
@@ -365,7 +365,7 @@ class GNodes(object):
             self._nodes[node.id_] = node
 
     def dump(self):
-        return json.dumps([node.data() for node in self._nodes.values()])
+        return json.dumps([node.data() for node in list(self._nodes.values())])
 
 
 class GEdge(object):
@@ -429,7 +429,7 @@ def get_fiscal_years(queryset, date_field_name):
     if not years:
         return []
 
-    min_boundary, max_boundary = queryset.aggregate(Min(date_field_name), Max(date_field_name)).values()
+    min_boundary, max_boundary = list(queryset.aggregate(Min(date_field_name), Max(date_field_name)).values())
     month = get_parameter("FISCAL_YEAR_MONTH")
     if min_boundary.month < month:
         years.insert(0, years[0]-1)  # First date year is part of previous year. Let's add it

@@ -73,7 +73,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             filters = self.get_filters(search)
             query = Q()
@@ -89,9 +89,9 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
             return self.receipt_template.render(context={"record": row}, request=self.request)
         elif column == "lead":
             if row.lead:
-                return u"<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
+                return "<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
             else:
-                return u"-"
+                return "-"
         elif column in ("creation_date", "expense_date"):
             return self.date_template.render(context={"date": getattr(row, column)}, request=self.request)
         elif column == "update_date":
@@ -221,7 +221,7 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(Q(expense__comment__icontains=search) |
                            Q(expense__description__icontains=search) |

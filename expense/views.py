@@ -7,7 +7,7 @@ Pydici expense views. Http request are processed here.
 
 from datetime import date
 import json
-from cStringIO import StringIO
+from io import StringIO
 
 from django_tables2 import RequestConfig
 
@@ -276,7 +276,7 @@ def expense_payments(request, expense_payment_id=None):
                     expense.save()
             return HttpResponseRedirect(reverse("expense:expense_payments"))
         else:
-            print "form is not valid"
+            print("form is not valid")
 
     else:
         if expense_payment_id:

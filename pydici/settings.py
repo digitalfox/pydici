@@ -2,7 +2,7 @@
 # Django settings for pydici project.
 
 import os
-from pydici_settings import *
+from .pydici_settings import *
 DEBUG = True
 
 ADMINS = (
@@ -180,7 +180,7 @@ if DEBUG:
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = not DEBUG
-SELECT2_JS = u'//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js'
-SELECT2_CSS = u'//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css'
+SELECT2_JS = '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js'
+SELECT2_CSS = '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css'
 SELECT2_CACHE_BACKEND = 'select2'
 TAGGIT_LIMIT = 200

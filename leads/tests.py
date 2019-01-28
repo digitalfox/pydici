@@ -22,7 +22,7 @@ from leads.utils import postSaveLead
 import pydici.settings
 
 
-from urllib2 import urlparse
+from urllib.parse import urlsplit
 import os.path
 from decimal import Decimal
 from datetime import date, datetime
@@ -40,21 +40,21 @@ class LeadModelTest(TestCase):
     def test_create_lead(self):
         self.client.force_login(self.test_user)
         lead = create_lead()
-        self.failUnlessEqual(lead.staffing.count(), 0)
-        self.failUnlessEqual(lead.staffing_list(), ", (JCF)")
+        self.assertEqual(lead.staffing.count(), 0)
+        self.assertEqual(lead.staffing_list(), ", (JCF)")
         lead.staffing.add(Consultant.objects.get(pk=1))
-        self.failUnlessEqual(lead.staffing.count(), 1)
-        self.failUnlessEqual(len(lead.update_date_strf()), 14)
-        self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
-        self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
-        self.failUnlessEqual(urlresolvers.reverse("leads:detail", args=[4]), PREFIX + "/leads/4/")
+        self.assertEqual(lead.staffing.count(), 1)
+        self.assertEqual(len(lead.update_date_strf()), 14)
+        self.assertEqual(lead.staffing_list(), "SRE, (JCF)")
+        self.assertEqual(lead.short_description(), "A wonderfull lead th...")
+        self.assertEqual(urlresolvers.reverse("leads:detail", args=[4]), PREFIX + "/leads/4/")
 
-        url = "".join(urlparse.urlsplit(urlresolvers.reverse("leads:detail", args=[4]))[2:])
+        url = "".join(urlsplit(urlresolvers.reverse("leads:detail", args=[4]))[2:])
         response = self.client.get(url)
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         context = response.context[-1]
-        self.failUnlessEqual(unicode(context["lead"]), u"World company : DSI  - laala")
-        self.failUnlessEqual(unicode(context["user"]), "sre")
+        self.assertEqual(str(context["lead"]), "World company : DSI  - laala")
+        self.assertEqual(str(context["user"]), "sre")
 
     def test_save_lead(self):
         subsidiary = Subsidiary.objects.get(pk=1)
@@ -192,10 +192,10 @@ def create_lead():
     """Create test lead
     @return: lead object"""
     lead = Lead(name="laala",
-          due_date=date(2008,11,01),
+          due_date=date(2008,11,0o1),
           update_date=datetime(2008, 11, 1, 15,55,40),
           creation_date=datetime(2008, 11, 1, 15,43,43),
-          start_date=date(2008, 11, 01),
+          start_date=date(2008, 11, 0o1),
           responsible=None,
           sales=None,
           external_staffing="JCF",
