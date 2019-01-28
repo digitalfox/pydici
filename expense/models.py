@@ -8,7 +8,7 @@ Database access layer for pydici expense module
 from time import strftime
 from os.path import join, dirname, split
 import mimetypes
-from io import StringIO
+from io import BytesIO
 from base64 import b64encode
 
 from django.db import models
@@ -122,11 +122,11 @@ class Expense(models.Model):
         response = ""
         if self.receipt:
             content_type = self.receipt_content_type()
-            data = StringIO()
+            data = BytesIO()
             for chunk in self.receipt.chunks():
                 data.write(chunk)
 
-            data = b64encode(data.getvalue())
+            data = b64encode(data.getvalue()).decode()
             if content_type == "application/pdf":
                 response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
             else:

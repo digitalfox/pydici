@@ -9,7 +9,7 @@ from datetime import date, timedelta
 import mimetypes
 from collections import defaultdict
 import json
-from io import StringIO
+from io import BytesIO
 
 from django.core.files.base import ContentFile
 from os.path import basename
@@ -182,11 +182,11 @@ class ExpensePDFTemplateResponse(PDFTemplateResponse):
     def rendered_content(self):
         old_lang = translation.get_language()
         try:
-            target = StringIO()
+            target = BytesIO()
             bill = self.context_data["bill"]
             translation.activate(bill.lang)
             pdf_content = super(ExpensePDFTemplateResponse, self).rendered_content
-            pdf_stringio = StringIO()
+            pdf_stringio = BytesIO()
             pdf_stringio.write(pdf_content)
             merger = PdfFileMerger()
             merger.append(PdfFileReader(pdf_stringio))
