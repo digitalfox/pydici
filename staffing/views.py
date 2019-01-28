@@ -384,7 +384,7 @@ def pdc_review(request, year=None, month=None):
             unprod_round = to_int_or_round(unprod)
             holidays_round = to_int_or_round(holidays)
             available = available_month[month] - (prod + unprod + holidays)
-            available_displayed = available_month[month] - (prod_round + unprod_round + holidays_round)
+            available_displayed = to_int_or_round(available_month[month] - (prod_round + unprod_round + holidays_round))
             staffing[consultant].append([prod_round, unprod_round, holidays_round, available_displayed])
             total[month]["prod"] += prod
             total[month]["unprod"] += unprod

@@ -356,6 +356,7 @@ def company_detail(request, company_id):
     # Won rate
     try:
         won_rate = 100 * leads.filter(state="WON").count() / leads.filter(state__in=("LOST", "FORGIVEN", "WON")).count()
+        won_rate = round(won_rate, 1)
     except ZeroDivisionError:
         won_rate = 0
     try:
