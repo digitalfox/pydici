@@ -188,6 +188,42 @@ class LeadLearnTestCase(TestCase):
         self.assertEqual(mission.probability, 100)
 
 
+class LeadNextcloudTagTestCase(TestCase):
+    """Test lead tag on nextcloud file"""
+    fixtures = PYDICI_FIXTURES
+    CREATE_FILE = u"INSERT INTO oc_filecache (fileid, path, mimetype) VALUES (%s, %s, 6)"
+    GET_FILE_TAGS = u"SELECT objectid, objecttype, systemtagid FROM oc_systemtag_object_mapping " \
+                    u"WHERE objectid = %(file_id)s AND systemtagid = %(tag_id)s"
+
+    def setUp(self):
+        """Create the nextcloud file tables with init datas"""
+        # TODO
+        from leads.utils import connect_to_nextcloud_db
+        try:
+            connection = connect_to_nextcloud_db()
+            create_nextcloud_tag_database(connection)
+            cursor = connection.cursor()
+
+            # Create test data files
+            files = [
+                {"fileid": 1, "path": "/client/titi"},
+                {"fileid": 2, "path": "/client/tata"},
+                {"fileid": 3, "path": "/client/tutu"},
+            ]
+            cursor.execute(CREATE_FILE, files)
+
+        finally:
+            if connection:
+                connection.close()
+
+    def test_tag_and_remote_tag_file(self):
+        # TODO
+        from leads.utils import tag_leads_files, remove_lead_tag, merge_lead_tag
+        lead = Lead.objects.get(id=1)
+        tag_leads_files([lead])
+        pass
+
+
 def create_lead():
     """Create test lead
     @return: lead object"""
@@ -208,3 +244,37 @@ def create_lead():
 
     lead.save()
     return lead
+
+def create_nextcloud_tag_database(connection):
+    """Create the test nextcloud database and the 3 tables used for file tagging"""
+    create_nextcloud_file_table = u"""
+    DROP TABLE IF EXISTS `oc_filecache`;
+    CREATE TABLE `oc_filecache` (
+      `fileid` bigint(20) NOT NULL AUTO_INCREMENT,
+      `storage` bigint(20) NOT NULL DEFAULT '0',
+      `path` varchar(4000) COLLATE utf8_bin DEFAULT NULL,
+      `path_hash` varchar(32) COLLATE utf8_bin NOT NULL DEFAULT '',
+      `parent` bigint(20) NOT NULL DEFAULT '0',
+      `name` varchar(250) COLLATE utf8_bin DEFAULT NULL,
+      `mimetype` bigint(20) NOT NULL DEFAULT '0',
+      `mimepart` bigint(20) NOT NULL DEFAULT '0',
+      `size` bigint(20) NOT NULL DEFAULT '0',
+      `mtime` bigint(20) NOT NULL DEFAULT '0',
+      `storage_mtime` bigint(20) NOT NULL DEFAULT '0',
+      `encrypted` int(11) NOT NULL DEFAULT '0',
+      `unencrypted_size` bigint(20) NOT NULL DEFAULT '0',
+      `etag` varchar(40) COLLATE utf8_bin DEFAULT NULL,
+      `permissions` int(11) DEFAULT '0',
+      `checksum` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+      PRIMARY KEY (`fileid`),
+      UNIQUE KEY `fs_storage_path_hash` (`storage`,`path_hash`),
+      KEY `fs_parent_name_hash` (`parent`,`name`),
+      KEY `fs_storage_mimetype` (`storage`,`mimetype`),
+      KEY `fs_storage_mimepart` (`storage`,`mimepart`),
+      KEY `fs_storage_size` (`storage`,`size`,`fileid`),
+      KEY `fs_mtime` (`mtime`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=341112 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+    """
+    cursor = connection.cursor()
+    cursor.execute(create_nextcloud_file_table)
+
