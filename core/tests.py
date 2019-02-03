@@ -110,9 +110,12 @@ PYDICI_PAGES = ("/",
 PYDICI_AJAX_PAGES = (
                 "/staffing/forecast/consultant/1/",
                 "/staffing/timesheet/consultant/1/",
+                "/staffing/forecast/consultant/1/",
                 "/staffing/timesheet/consultant/1/?csv",
                 "/staffing/timesheet/consultant/1/2010/10",
                 "/staffing/timesheet/consultant/1/2010/10/2",
+                "/staffing/timesheet/mission/1/",
+                "/staffing/forecast/mission/1/",
                 "/leads/graph/bar-jqp",
                 "/crm/company/graph/sales",
                 "/crm/company/graph/sales/lastyear",
@@ -131,11 +134,13 @@ class SimpleTest(TestCase):
 
     def test_basic_page(self):
         self.client.force_login(self.test_user)
-        for page in PYDICI_PAGES + PYDICI_AJAX_PAGES:
+        error_msg = "Failed to test url %s (got %s instead of 200"
+        for page in PYDICI_PAGES:
             response = self.client.get(PREFIX + page)
-            self.assertEqual(response.status_code, 200,
-                                 "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
-
+            self.assertEqual(response.status_code, 200, error_msg % (page, response.status_code))
+        for page in PYDICI_AJAX_PAGES:
+            response = self.client.get(PREFIX + page, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+            self.assertEqual(response.status_code, 200, error_msg % (page, response.status_code))
 
     def test_page_with_args(self):
         self.client.force_login(self.test_user)
