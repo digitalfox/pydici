@@ -207,11 +207,9 @@ def csv_export(request, target):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("leads.csv")
     writer = csv.writer(response, delimiter=';')
-    writer.writerow([i.encode("ISO-8859-15") for i in [_("Name"), _("Client"), _("Description"),
-                                                       _("Managed by"), _("Salesman"), _("Starting"),
-                                                       _("State"), _("Due date"), _("Staffing"),
-                                                       _("Sales (k€)"), _("Creation"),
-                                                       _("Updated")]])
+    writer.writerow([_("Name"), _("Client"), _("Description"), _("Managed by"), _("Salesman"), _("Starting"),
+                                _("State"), _("Due date"), _("Staffing"), _("Sales (k€)"), _("Creation"),
+                                _("Updated")])
     if target != "all":
         leads = Lead.objects.active()
     else:
@@ -220,7 +218,6 @@ def csv_export(request, target):
         state = lead.get_state_display()
         row = [lead.name, lead.client, lead.description, lead.responsible, lead.salesman, lead.start_date, state,
                          lead.due_date, lead.staffing_list(), lead.sales, lead.creation_date, lead.update_date]
-        row = [str(x).encode("ISO-8859-15", "ignore") for x in row]
         writer.writerow(row)
     return response
 

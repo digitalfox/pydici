@@ -779,18 +779,18 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
     writer = csv.writer(response, delimiter=';')
 
     # Header
-    writer.writerow([("%s - %s" % (str(consultant), month)).encode("ISO-8859-15", "replace"), ])
+    writer.writerow(["%s - %s" % (consultant, month), ])
 
     # Days
     writer.writerow(["", ""] + [d.day for d in days])
-    writer.writerow([_("Mission").encode("ISO-8859-15", "replace"), _("Deal id").encode("ISO-8859-15", "replace")]
+    writer.writerow([_("Mission"), _("Deal id")]
                      + [_(d.strftime("%a")) for d in days] + [_("total")])
 
     timestring_formatter = TIMESTRING_FORMATTER[settings.TIMESHEET_INPUT_METHOD]
 
     for mission in missions:
         total = 0
-        row = [i.encode("ISO-8859-15", "replace") for i in [str(mission), mission.mission_id()]]
+        row = [mission, mission.mission_id()]
         timesheets = Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission)
         for day in days:
             try:
@@ -984,11 +984,11 @@ def mission_csv_timesheet(request, mission, consultants):
         next_month = nextMonth(month)
         padding = 31 - len(days)  # Padding for month with less than 31 days to align total column
         # Header
-        writer.writerow([("%s - %s" % (mission.full_name(), formats.date_format(month, format="YEAR_MONTH_FORMAT"))).encode("ISO-8859-15", "replace"), ])
+        writer.writerow(["%s - %s" % (mission.full_name(), formats.date_format(month, format="YEAR_MONTH_FORMAT")), ])
 
         # Days
         writer.writerow(["", ] + [d.day for d in days])
-        dayHeader = [_("Consultants").encode("ISO-8859-15", "replace")] + [_(d.strftime("%a")) for d in days]
+        dayHeader = [_("Consultants")] + [_(d.strftime("%a")) for d in days]
         if padding:
             dayHeader.extend([""] * padding)
         dayHeader.append(_("total"))
@@ -996,7 +996,7 @@ def mission_csv_timesheet(request, mission, consultants):
 
         for consultant in consultants:
             total = 0
-            row = [str(consultant).encode("ISO-8859-15", "replace"), ]
+            row = [consultant, ]
             consultant_timesheets = {}
             for timesheet in timesheets.filter(consultant_id=consultant.id,
                                                working_date__gte=month,
@@ -1115,14 +1115,12 @@ def all_csv_timesheet(request, charges, month):
     writer = csv.writer(response, delimiter=';')
 
     # Header
-    writer.writerow([str(month).encode("ISO-8859-15", "replace"), ])
+    writer.writerow(month)
     for charge in charges:
         row = []
         for i in charge:
             if isinstance(i, float):
                 i = formats.number_format(i)
-            else:
-                i = str(i).encode("ISO-8859-15", "replace")
             row.append(i)
         writer.writerow(row)
     return response
@@ -1147,8 +1145,8 @@ def detailed_csv_timesheet(request, year=None, month=None):
     # Header
     header = [_("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
               _("Consultant"), _("Daily rate"), _("Bought daily rate"), _("Past done days"), _("Done days"), _("Days to be done")]
-    writer.writerow([str(month).encode("ISO-8859-15", "replace"), ])
-    writer.writerow([str(i).encode("ISO-8859-15", "replace") for i in header])
+    writer.writerow([month,])
+    writer.writerow(header)
 
     missions = Mission.objects.filter(Q(timesheet__working_date__gte=month, timesheet__working_date__lt=next_month) |
                                       Q(staffing__staffing_date__gte=month, staffing__staffing_date__lt=next_month))
@@ -1181,7 +1179,7 @@ def detailed_csv_timesheet(request, year=None, month=None):
                                                staffing_date__gte=next_month).aggregate(Sum("charge")).values()[0]
             row.append(formats.number_format(forecast) if forecast else 0)
 
-            writer.writerow([str(i).encode("ISO-8859-15", "replace") for i in row])
+            writer.writerow(row)
 
     return response
 

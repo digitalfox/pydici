@@ -195,7 +195,7 @@ def financial_control(request, start_date=None, end_date=None):
               "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros",
               "StartDate", "EndDate"]
 
-    writer.writerow([str(i).encode("ISO-8859-15", "ignore") for i in header])
+    writer.writerow(header)
 
     timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=nextMonth(end_date))
     staffings = Staffing.objects.filter(staffing_date__gte=start_date, staffing_date__lt=nextMonth(end_date))
@@ -273,7 +273,7 @@ def financial_control(request, start_date=None, end_date=None):
                 row.append((quantity * daily_rate) if (quantity > 0 and daily_rate > 0) else 0)
                 row.append(days["min_date"] or "")
                 row.append(days["max_date"] or "")
-                writer.writerow([str(i).encode("ISO-8859-15", "ignore") for i in row])
+                writer.writerow(row)
 
     archivedMissions = Mission.objects.filter(active=False, archived_date__gte=start_date, archived_date__lt=end_date)
     archivedMissions = archivedMissions.filter(lead__state="WON")
@@ -283,7 +283,7 @@ def financial_control(request, start_date=None, end_date=None):
             # Mission has already been processed for this period
             continue
         missionRow = createMissionRow(mission, start_date, end_date)
-        writer.writerow([str(i).encode("ISO-8859-15", "ignore") for i in missionRow])
+        writer.writerow(missionRow)
 
     for expense in Expense.objects.filter(expense_date__gte=start_date, expense_date__lt=nextMonth(end_date), chargeable=False).select_related():
         row = []
@@ -314,7 +314,7 @@ def financial_control(request, start_date=None, end_date=None):
             row.extend(["", "", "", "", "", ""])
         row.extend(["", "", "", "", ""])
         row.append(expense.amount)  # TODO: compute pseudo HT amount
-        writer.writerow([str(i).encode("ISO-8859-15", "ignore") for i in row])
+        writer.writerow(row)
 
     return response
 
@@ -373,11 +373,11 @@ def tableToCSV(table, filename="data.csv"):
     response["Content-Disposition"] = "attachment; filename=%s" % filename
     writer = csv.writer(response, delimiter=';')
     header = [column.header for column in table.columns]
-    writer.writerow([h.encode("iso8859-1") for h in header])
+    writer.writerow(header)
     for row in table.rows:
         row = [strip_tags(str(cell)) for column, cell in list(row.items())]
         row = [i.replace("\u2714", _("No")).replace("\u2718", _("Yes")) for i in row]
-        writer.writerow([item.encode("iso8859-1", "ignore") for item in row])
+        writer.writerow(row)
     return response
 
 
