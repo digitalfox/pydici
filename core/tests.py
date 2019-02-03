@@ -302,6 +302,6 @@ def run_casper(test_filename, client, **kwargs):
         print(e)
         return True
     if verbose or p.returncode:
-        sys.stdout.write(out)
-        sys.stderr.write(err)
+        sys.stdout.write(out.decode())
+        sys.stderr.write(err.decode())
     return p.returncode == 0
