@@ -33,8 +33,8 @@ logger = logging.getLogger("weasyprint")
 if not logger.handlers:
     logger.addHandler(logging.NullHandler())
 
-from django_weasyprint import PDFTemplateView
-from django_weasyprint.views import PDFTemplateResponse
+from django_weasyprint import WeasyTemplateResponseMixin
+from django_weasyprint.views import WeasyTemplateResponse
 from PyPDF2 import PdfFileMerger, PdfFileReader
 
 from billing.utils import get_billing_info, create_client_bill_from_timesheet, create_client_bill_from_proportion, bill_pdf_filename
@@ -176,7 +176,7 @@ class Bill(PydiciNonPublicdMixin, TemplateView):
         return super(Bill, self).dispatch(*args, **kwargs)
 
 
-class ExpensePDFTemplateResponse(PDFTemplateResponse):
+class ExpensePDFTemplateResponse(WeasyTemplateResponse):
     """TemplateResponse override to merge """
     @property
     def rendered_content(self):
@@ -201,7 +201,7 @@ class ExpensePDFTemplateResponse(PDFTemplateResponse):
 
 
 
-class BillPdf(Bill, PDFTemplateView):
+class BillPdf(Bill, WeasyTemplateResponseMixin):
     response_class = ExpensePDFTemplateResponse
 
     def get_filename(self):
