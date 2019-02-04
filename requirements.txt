@@ -11,7 +11,7 @@ lxml==3.4.2
 python-memcached==1.59
 django-datatables-view==1.17.0
 django-background-tasks==1.1.9
-WeasyPrint==0.41
+WeasyPrint==44
 django-weasyprint==0.5.4
 bleach==3.0.2
 Markdown==2.6.11

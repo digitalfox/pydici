@@ -16,17 +16,20 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q, Max
 from django.db import connections
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
 from django.views.decorators.cache import cache_page, cache_control
+from django.utils.decorators import method_decorator
 from django.views.generic.edit import UpdateView
 from django.contrib import messages
 from django.conf import settings
 from django.template.loader import get_template
+
+from django_weasyprint import WeasyTemplateView
 
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from people.models import Consultant, Subsidiary
@@ -38,7 +41,8 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
     to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, get_fiscal_years
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
-    sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing
+    sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
+    timesheet_report_data
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm
 from people.utils import getScopes
 
@@ -726,7 +730,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         if readOnly:
             # We should never go here as validate button is not displayed when read only...
             # This is just a security control
-            return HttpResponseRedirect(urlresolvers.reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbiden"))
         form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
         if form.is_valid():  # All validation rules pass
@@ -770,6 +774,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                    "today": today,
                    "is_current_month": month == date.today().replace(day=1),
                    "user": request.user})
+
 
 def consultant_csv_timesheet(request, consultant, days, month, missions):
     """@return: csv timesheet for a given consultant"""
@@ -816,6 +821,8 @@ def mission_timesheet(request, mission_id):
 
     if "csv" in request.GET:
         return mission_csv_timesheet(request, mission, consultants)
+    if "pdf" in request.GET:
+        return MissionTimesheetReportPdf.as_view()(request, mission=mission)
 
     if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # This view should only be accessed by ajax request. Redirect lost users
@@ -970,56 +977,33 @@ def mission_timesheet(request, mission_id):
                    "user": request.user})
 
 
+@pydici_non_public
+@pydici_feature("reports")
 def mission_csv_timesheet(request, mission, consultants):
     """@return: csv timesheet for a given mission"""
     # This "view" is never called directly but only through consultant_timesheet view
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s.csv" % mission.mission_id()
     writer = csv.writer(response, delimiter=';')
-    timesheets = Timesheet.objects.select_related().filter(mission=mission)
-    months = timesheets.dates("working_date", "month")
+    for line in timesheet_report_data(mission, padding=True):
+        writer.writerow(line)
 
-    for month in months:
-        days = daysOfMonth(month)
-        next_month = nextMonth(month)
-        padding = 31 - len(days)  # Padding for month with less than 31 days to align total column
-        # Header
-        writer.writerow(["%s - %s" % (mission.full_name(), formats.date_format(month, format="YEAR_MONTH_FORMAT")), ])
-
-        # Days
-        writer.writerow(["", ] + [d.day for d in days])
-        dayHeader = [_("Consultants")] + [_(d.strftime("%a")) for d in days]
-        if padding:
-            dayHeader.extend([""] * padding)
-        dayHeader.append(_("total"))
-        writer.writerow(dayHeader)
-
-        for consultant in consultants:
-            total = 0
-            row = [consultant, ]
-            consultant_timesheets = {}
-            for timesheet in timesheets.filter(consultant_id=consultant.id,
-                                               working_date__gte=month,
-                                               working_date__lt=next_month):
-                consultant_timesheets[timesheet.working_date] = timesheet.charge
-            for day in days:
-                try:
-                    charge = consultant_timesheets.get(day)
-                    if charge:
-                        row.append(formats.number_format(charge))
-                        total += charge
-                    else:
-                        row.append("")
-                except Timesheet.DoesNotExist:
-                    row.append("")
-            if padding:
-                row.extend([""] * padding)
-            row.append(formats.number_format(total))
-            if total > 0:
-                writer.writerow(row)
-        writer.writerow([""])
     return response
 
+class MissionTimesheetReportPdf(PydiciNonPublicdMixin, WeasyTemplateView):
+    template_name = 'staffing/mission_timesheet_report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(MissionTimesheetReportPdf, self).get_context_data(**kwargs)
+        self.mission = self.kwargs["mission"]
+        context["mission"] = self.mission
+        context["timesheet_data"] = timesheet_report_data(self.mission, padding=True)
+        return context
+
+
+    @method_decorator(pydici_feature("reports"))
+    def dispatch(self, *args, **kwargs):
+        return super(MissionTimesheetReportPdf, self).dispatch(*args, **kwargs)
 
 @pydici_non_public
 @pydici_feature("reports")
@@ -1406,7 +1390,7 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
     form_class = MissionForm
 
     def get_success_url(self):
-        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("staffing:mission_home", args=[self.object.id, ])
+        return self.request.GET.get('return_to', False) or reverse_lazy("staffing:mission_home", args=[self.object.id, ])
 
 
 @pydici_non_public

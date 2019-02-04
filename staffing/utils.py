@@ -12,6 +12,7 @@ from math import floor
 
 from django.conf import settings
 from django.db import transaction
+from django.utils.translation import ugettext as _
 from django.db.models import Max
 from django.utils import formats
 from django.core.cache import cache
@@ -243,3 +244,52 @@ def compute_automatic_staffing(mission, mode, duration, user=None):
             total += days * rates[consultant][0]
 
             month = nextMonth(month)
+
+def timesheet_report_data(mission, start=None, end=None, padding=False):
+    """Prepare data for timesheet report from start to end.
+    Padding align total in the same column"""
+    timesheets = Timesheet.objects.select_related().filter(mission=mission)
+    months = timesheets.dates("working_date", "month")
+    #TODO: filter months with start/end
+    data = []
+    for month in months:
+        days = daysOfMonth(month)
+        next_month = nextMonth(month)
+        padding_length = 31 - len(days)  # Padding for month with less than 31 days to align total column
+        # Header
+        data.append([""])
+        data.append([formats.date_format(month, format="YEAR_MONTH_FORMAT")])
+
+        # Days
+        data.append(["", ] + [d.day for d in days])
+        dayHeader = [_("Consultants")] + [_(d.strftime("%a")) for d in days]
+        if padding:
+            dayHeader.extend([""] * padding_length)
+        dayHeader.append(_("total"))
+        data.append(dayHeader)
+
+        for consultant in mission.consultants():
+            total = 0
+            row = [consultant, ]
+            consultant_timesheets = {}
+            for timesheet in timesheets.filter(consultant_id=consultant.id,
+                                               working_date__gte=month,
+                                               working_date__lt=next_month):
+                consultant_timesheets[timesheet.working_date] = timesheet.charge
+            for day in days:
+                try:
+                    charge = consultant_timesheets.get(day)
+                    if charge:
+                        row.append(formats.number_format(charge))
+                        total += charge
+                    else:
+                        row.append("")
+                except Timesheet.DoesNotExist:
+                    row.append("")
+            if padding:
+                row.extend([""] * padding_length)
+            row.append(formats.number_format(total))
+            if total > 0:
+                data.append(row)
+
+    return data
