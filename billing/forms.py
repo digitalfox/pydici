@@ -69,7 +69,7 @@ class ClientBillForm(PydiciCrispyModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(Div(TabHolder(Tab(_("Description"),
                                                       Column("lead", "bill_id", "state", css_class="col-md-6"),
-                                                      Column("comment", "lang", "anonymize_profile", "bill_file", css_class="col-md-6"), ),
+                                                      Column("comment", "lang", "anonymize_profile", "include_timesheet", "bill_file", css_class="col-md-6"), ),
                                                   Tab(_("Amounts"),
                                                       Column("amount", "vat", "amount_with_vat", css_class="col-md-6")),
                                                   Tab(_("Dates"), Column("creation_date", "due_date", "payment_date",

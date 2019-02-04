@@ -115,6 +115,8 @@ PYDICI_AJAX_PAGES = (
                 "/staffing/timesheet/consultant/1/2010/10",
                 "/staffing/timesheet/consultant/1/2010/10/2",
                 "/staffing/timesheet/mission/1/",
+                "/staffing/timesheet/mission/1/?csv",
+                "/staffing/timesheet/mission/1/?pdf",
                 "/staffing/forecast/mission/1/",
                 "/leads/graph/bar-jqp",
                 "/crm/company/graph/sales",

@@ -138,6 +138,7 @@ class ClientBill(AbstractBill):
     bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path,
                                  storage=BillStorage(nature="client"), null=True, blank=True)
     anonymize_profile = models.BooleanField(_("Anonymize profile name"), default=False)
+    include_timesheet = models.BooleanField(_("Include timesheet"), default=False)
     lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, default=pydici.settings.LANGUAGE_CODE)
 
     def client(self):

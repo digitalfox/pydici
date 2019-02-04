@@ -41,6 +41,7 @@ from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
+from staffing.views import MissionTimesheetReportPdf
 from crm.models import Subsidiary
 from core.utils import get_fiscal_years, get_parameter, user_has_feature
 from crm.models import Company
@@ -175,7 +176,7 @@ class Bill(PydiciNonPublicdMixin, TemplateView):
         return super(Bill, self).dispatch(*args, **kwargs)
 
 
-class ExpensePDFTemplateResponse(WeasyTemplateResponse):
+class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
     """TemplateResponse override to merge """
     @property
     def rendered_content(self):
@@ -184,14 +185,20 @@ class ExpensePDFTemplateResponse(WeasyTemplateResponse):
             target = BytesIO()
             bill = self.context_data["bill"]
             translation.activate(bill.lang)
-            pdf_content = super(ExpensePDFTemplateResponse, self).rendered_content
-            pdf_stringio = BytesIO()
-            pdf_stringio.write(pdf_content)
+            bill_pdf = super(BillAnnexPDFTemplateResponse, self).rendered_content
             merger = PdfFileMerger()
-            merger.append(PdfFileReader(pdf_stringio))
+            merger.append(PdfFileReader(BytesIO(bill_pdf)))
+            # Add expense receipt
             for billExpense in bill.billexpense_set.all():
                 if billExpense.expense and billExpense.expense.receipt_content_type() == "application/pdf":
                     merger.append(PdfFileReader(billExpense.expense.receipt.file))
+            # Add timesheet
+            if bill.include_timesheet:
+                fake_http_request = self._request
+                fake_http_request.method = "GET"
+                for mission in Mission.objects.filter(billdetail__bill=bill).distinct():
+                    response = MissionTimesheetReportPdf.as_view()(fake_http_request, mission=mission)
+                    merger.append(BytesIO(response.rendered_content))
             merger.write(target)
             target.seek(0)  # Be kind, rewind
             return target
@@ -201,7 +208,7 @@ class ExpensePDFTemplateResponse(WeasyTemplateResponse):
 
 
 class BillPdf(Bill, WeasyTemplateView):
-    response_class = ExpensePDFTemplateResponse
+    response_class = BillAnnexPDFTemplateResponse
 
     def get_filename(self):
         bill = self.get_context_data(**self.kwargs)["bill"]
@@ -229,10 +236,8 @@ def client_bill(request, bill_id=None):
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
         # First, ensure user is allowed to manipulate the bill
         if bill and bill.state not in wip_status and not user_has_feature(request.user, billing_management_feature):
-            print("1")
             return forbiden
         if form.data["state"] not in wip_status and not user_has_feature(request.user, billing_management_feature):
-            print("2")
             return forbiden
         # Now, process form
         if bill and bill.state in wip_status:
