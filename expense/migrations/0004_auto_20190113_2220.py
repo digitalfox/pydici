@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='expense',
             name='state',
-            field=models.CharField(choices=[(b'REQUESTED', 'Requested'), (b'VALIDATED', 'Validated'), (b'REJECTED', 'Rejected'), (b'NEEDS_INFORMATION', 'Needs information'), (b'CONTROLLED', 'Controlled'), (b'PAID', 'Paid')], default=b'REQUESTED', max_length=20, verbose_name='state'),
+            field=models.CharField(choices=[('REQUESTED', 'Requested'), ('VALIDATED', 'Validated'), ('REJECTED', 'Rejected'), ('NEEDS_INFORMATION', 'Needs information'), ('CONTROLLED', 'Controlled'), ('PAID', 'Paid')], default='REQUESTED', max_length=20, verbose_name='state'),
         ),
     ]
