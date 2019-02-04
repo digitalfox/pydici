@@ -18,7 +18,7 @@ from django.utils import formats
 from django.core.cache import cache
 
 from staffing.models import Timesheet, Staffing, Mission, LunchTicket, Holiday
-from core.utils import month_days, nextMonth, daysOfMonth
+from core.utils import month_days, nextMonth, daysOfMonth, to_int_or_round
 from people.models import TIMESHEET_IS_UP_TO_DATE_CACHE_KEY, CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY
 
 
@@ -250,9 +250,13 @@ def timesheet_report_data(mission, start=None, end=None, padding=False):
     Padding align total in the same column"""
     timesheets = Timesheet.objects.select_related().filter(mission=mission)
     months = timesheets.dates("working_date", "month")
-    #TODO: filter months with start/end
     data = []
+
     for month in months:
+        if start and month < start:
+            continue
+        if end and month > end:
+            break
         days = daysOfMonth(month)
         next_month = nextMonth(month)
         padding_length = 31 - len(days)  # Padding for month with less than 31 days to align total column
@@ -280,7 +284,7 @@ def timesheet_report_data(mission, start=None, end=None, padding=False):
                 try:
                     charge = consultant_timesheets.get(day)
                     if charge:
-                        row.append(formats.number_format(charge))
+                        row.append(formats.number_format(to_int_or_round(charge, 2)))
                         total += charge
                     else:
                         row.append("")
@@ -288,7 +292,7 @@ def timesheet_report_data(mission, start=None, end=None, padding=False):
                     row.append("")
             if padding:
                 row.extend([""] * padding_length)
-            row.append(formats.number_format(total))
+            row.append(formats.number_format(to_int_or_round(total, 2)))
             if total > 0:
                 data.append(row)
 

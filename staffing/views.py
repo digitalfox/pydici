@@ -997,7 +997,9 @@ class MissionTimesheetReportPdf(PydiciNonPublicdMixin, WeasyTemplateView):
         context = super(MissionTimesheetReportPdf, self).get_context_data(**kwargs)
         self.mission = self.kwargs["mission"]
         context["mission"] = self.mission
-        context["timesheet_data"] = timesheet_report_data(self.mission, padding=True)
+        context["timesheet_data"] = timesheet_report_data(self.mission, padding=True,
+                                                          start=self.kwargs.get("start"),
+                                                          end=self.kwargs.get("end"))
         return context
 
 

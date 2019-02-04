@@ -20,7 +20,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
 from django.utils import translation
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
-from django.db.models import Sum, Q, F
+from django.db.models import Sum, Q, F, Min, Max
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
@@ -196,8 +196,10 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
             if bill.include_timesheet:
                 fake_http_request = self._request
                 fake_http_request.method = "GET"
-                for mission in Mission.objects.filter(billdetail__bill=bill).distinct():
-                    response = MissionTimesheetReportPdf.as_view()(fake_http_request, mission=mission)
+                for mission in Mission.objects.filter(billdetail__bill=bill).annotate(Min("billdetail__month"), Max("billdetail__month")).distinct():
+                    response = MissionTimesheetReportPdf.as_view()(fake_http_request, mission=mission,
+                                                                   start=mission.billdetail__month__min,
+                                                                   end=mission.billdetail__month__max)
                     merger.append(BytesIO(response.rendered_content))
             merger.write(target)
             target.seek(0)  # Be kind, rewind
