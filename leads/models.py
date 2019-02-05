@@ -82,7 +82,7 @@ class Lead(models.Model):
 
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
 
-    @cacheable("Lead.__unicode__%(id)s", 3)
+    @cacheable("Lead.__str__%(id)s", 3)
     def __str__(self):
         return "%s - %s" % (self.client.organisation, self.name)
 

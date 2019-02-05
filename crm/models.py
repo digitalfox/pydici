@@ -351,7 +351,7 @@ class Client(AbstractAddress):
         rates.sort(key=lambda x: x[0].level)
         return rates
 
-    @cacheable("Client__objectiveMargin__%(id)s", 60)
+    @cacheable("Client.objectiveMargin__%(id)s", 60)
     def objectiveMargin(self):
         """Compute margin over budget objective across all mission of this client
         @return: list of (margin in €, margin in % of total turnover) for internal consultant and subcontractor"""
