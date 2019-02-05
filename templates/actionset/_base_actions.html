@@ -46,13 +46,12 @@
                               {% trans "Delegate to: " %}</button>
                            {% for field in action.delegateForm %}<div class="force_child_span_inline">{{ field }}</div>{% endfor %}
                            
-                         <div/>
+                         </div>
                          {% endifequal %}
                     </div>
                 </div>
             </div>
       </div>
-    
 {% empty %}
     {% trans "No pending action" %}
 {% endfor %}
