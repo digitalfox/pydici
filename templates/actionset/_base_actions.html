@@ -8,7 +8,7 @@
 <ul class="more-items icon-list checkmark">
 {% for action in actions %}
     <div id="action_{{ action.id|unlocalize }}">
-        <li><a href="#" data-toggle="modal" data-target="#action_tooltip_{{ action.id|unlocalize }}">{{ action.action }}</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#action_tooltip_{{ action.id|unlocalize }}">{{ action.short_name }}</a></li>
     </div>
     <div id="action_tooltip_{{ action.id|unlocalize }}" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">

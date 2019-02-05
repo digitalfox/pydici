@@ -8,9 +8,12 @@ Database access layer for pydici action set module
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+
+from core.utils import cacheable
 
 
 class ActionSet(models.Model):
@@ -71,6 +74,21 @@ class ActionState(models.Model):
             return "%s (%s)" % (self.action, self.target)
         else:
             return str(self.action)
+
+    @cacheable("ActionState.short_name__%(id)s", 3600*24)
+    def short_name(self):
+        if self.target:
+            Lead = apps.get_model("leads", "Lead")
+            Mission = apps.get_model("staffing", "Mission")
+            if self.target_type == ContentType.objects.get_for_model(Lead):
+                target_label = self.target.deal_id
+            elif self.target_type == ContentType.objects.get_for_model(Mission):
+                target_label = self.target.mission_id()
+            else:
+                target_label = str(self.target)
+            return "%s (%s)" % (self.action.name, target_label)
+        else:
+            return str(self.action.name)
 
     def delegateForm(self):
         """A user selection Form for action delagation to be used in templates"""
