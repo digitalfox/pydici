@@ -1055,9 +1055,11 @@ def all_timesheet(request, year=None, month=None):
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = to_int_or_round(timesheet["sum"], 2)
     for mission in missions:
+        mission_data = escape(unicode(mission))
         missionUrl = "<a href='%s' class='pydici-tooltip' title='%s'>%s</a>" % (urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]),
                                         escape(unicode(mission.mission_id())),
-                                        escape(unicode(mission)))
+                                        (mission_data[:75] + '...' if len(mission_data) > 75 else mission_data))
+
         if "csv" in request.GET:
             # Simple mission name
             consultantData = [unicode(mission), mission.mission_id()]
