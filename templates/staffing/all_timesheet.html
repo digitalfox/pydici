@@ -33,13 +33,21 @@
 
 <div class="row"><br/></div>
 
-<div class="table-responsive">
+<div class="table-responsive table-pydici-all-timehseets">
 {% if charges %}
-    <table class="table table-striped table-hover table-pydici-extra-condensed table-pydici-all-timehseets">
+    <table class="table table-striped">
     {% for charge in charges %}
+        {% if forloop.first %}
+            <thead class="sticky-header">
+                <tr>
+                    <th>{{ charge|join:"</th><th>" }}</th>
+                </tr>
+            </thead>
+        {% else %}
         <tr>
         <td>{{ charge|join:"</td><td>" }}</td>
         </tr>
+        {% endif %}
     {% endfor %}
     </table>
 {% else %}
