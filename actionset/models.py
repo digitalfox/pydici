@@ -45,7 +45,7 @@ class Action(models.Model):
     """Single action"""
     name = models.CharField(_("Name"), max_length=100)
     description = models.TextField(_("Description"), blank=True)
-    actionset = models.ForeignKey(ActionSet)
+    actionset = models.ForeignKey(ActionSet, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"%s/%s" % (self.actionset, self.name)
@@ -56,13 +56,13 @@ class ActionState(models.Model):
     ACTION_STATES = (("TO_BE_DONE", _("To be done")),
                      ("DONE", _("Done")),
                      ("NA", _("N/A")))
-    action = models.ForeignKey(Action)
+    action = models.ForeignKey(Action, on_delete=models.CASCADE)
     state = models.CharField(_("State"), max_length=50, choices=ACTION_STATES, default=ACTION_STATES[0][0])
     state.db_index = True
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
-    target_type = models.ForeignKey(ContentType, verbose_name=_(u"Target content type"), blank=True, null=True)
+    target_type = models.ForeignKey(ContentType, verbose_name=_(u"Target content type"), blank=True, null=True, on_delete=models.CASCADE)
     target_id = models.PositiveIntegerField(_(u"Content id"), blank=True, null=True)
     target = GenericForeignKey(ct_field="target_type", fk_field="target_id")
 

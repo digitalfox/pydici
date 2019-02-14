@@ -7,7 +7,7 @@ Leads form setup
 
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_unicode
 from django import forms
@@ -64,7 +64,7 @@ class LeadForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)
-        clientPopupUrl = reverse("crm.views.client_organisation_company_popup")
+        clientPopupUrl = reverse("crm:client_organisation_company_popup")
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"),
                                                   Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-12"),
                                                   Column(FieldWithButtons("client", StrictButton(
@@ -81,9 +81,9 @@ class LeadForm(PydiciCrispyModelForm):
                                                                                       Field("client_deal_id", placeholder=_("Internal client reference")), "state", css_class='col-md-6'))),
                                               Tab(_("Commercial"), Div(Column(AppendedText("sales", "k€"), "salesman", css_class='col-md-6'),
                                                                        Column(FieldWithButtons("business_broker",
-                                                                                           StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("businessbroker_add"))),
+                                                                                           StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create"))),
                                                                               FieldWithButtons("paying_authority",
-                                                                                           StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("businessbroker_add"))), css_class='col-md-6'))),
+                                                                                           StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create"))), css_class='col-md-6'))),
                                               Tab(_("Staffing"), Div(Field("staffing", placeholder=_("People that could contribute...")),
                                                                      Field("external_staffing", placeholder=_("People outside company that could contribute...")),
                                                                      css_class="col-md-6"))),

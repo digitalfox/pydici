@@ -30,18 +30,18 @@
     <td>{{ expense.id }}</td>
     <td>{{ expense.user.username|link_to_consultant }}</td>
     <td>{{ expense.description }}</td>
-    <td>{% if expense.lead %}<a href="{% url 'leads.views.detail' expense.lead.id %}">{{ expense.lead.deal_id }}</a>{% endif %}</td>
-    <td>{% if expense.lead %}<a href="{% url 'leads.views.detail' expense.lead.id %}">{{ expense.lead }}</a>{% endif %}</td>
+    <td>{% if expense.lead %}<a href="{% url 'leads:detail' expense.lead.id %}">{{ expense.lead.deal_id }}</a>{% endif %}</td>
+    <td>{% if expense.lead %}<a href="{% url 'leads:detail' expense.lead.id %}">{{ expense.lead }}</a>{% endif %}</td>
     <td>{{ expense.amount }}</td>
     <td>{% if expense.chargeable %}
             {% if expense.clientbill_set.all %}
                 {% for bill in expense.clientbill_set.all %}
-                    <a href="{% url 'client_bill' bill.id %}">{{ bill }}</a>
+                    <a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a>
                     <a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
                 {% endfor %}
             {% elif expense.billexpense_set.all %}
                 {% for billexpense in expense.billexpense_set.all %}
-                    <a href="{% url 'client_bill' billexpense.bill.id %}">{{ billexpense.bill }}</a>
+                    <a href="{% url 'billing:client_bill' billexpense.bill.id %}">{{ billexpense.bill }}</a>
                     <a href='{{ billexpense.bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>
                 {% endfor %}
             {% else %}
@@ -50,8 +50,8 @@
         {% else %}
             {% trans "No" %}
         {% endif %}</td>
-    <td>{% if expense.receipt %}<a href="{% url 'expense.views.expense_receipt' expense.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}</td>
-    <td>{{ expense.state }}</td>
+    <td>{% if expense.receipt %}<a href="{% url 'expense:expense_receipt' expense.id %}"><img src='{{ MEDIA_URL }}pydici/receipt.png'/></a>{% endif %}</td>
+    <td>{{ expense.get_state_display }}</td>
     <td>{{ expense.expense_date }}</td>
     <td>{{ expense.update_date }}</td>
     <td>{{ expense.comment }}</td>
@@ -60,7 +60,7 @@
 </tbody>
 </table>
 {% if lead %}
-    <a href="{% url 'expense.views.lead_expenses' lead.id %}?csv" class="btn btn-default">{% trans "Export expenses in a spreadsheet" %}</a>
+    <a href="{% url 'expense:lead_expenses' lead.id %}?csv" class="btn btn-default">{% trans "Export expenses in a spreadsheet" %}</a>
 {% endif %}
 {% with "expenses-table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
 {% else %}

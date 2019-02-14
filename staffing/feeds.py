@@ -7,7 +7,7 @@
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import ugettext as _
-from django.core import urlresolvers
+from django.urls import reverse
 
 from staffing.models import Staffing, Mission
 from people.models import Consultant
@@ -19,7 +19,7 @@ class StaffingFeed(Feed):
     title_template = "staffing/feed_staffing_title.txt"
 
     def link(self):
-        return urlresolvers.reverse("core.views.index")
+        return reverse("core:index")
 
     def item_pubdate(self, item):
         return item.update_date
@@ -64,7 +64,7 @@ class ArchivedMission(Feed):
     # title_template = "staffing/feed_title.txt"
 
     def link(self):
-        return urlresolvers.reverse("core.views.index")
+        return reverse("core:index")
 
     def item_pubdate(self, item):
         return item.update_date

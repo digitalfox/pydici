@@ -12,7 +12,7 @@ from django.contrib.auth.models import Group, User
 from crm.models import Client, Subsidiary
 from people.models import Consultant, ConsultantProfile
 from staffing.models import Mission
-from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME, TEST_PASSWORD
+from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
 
 import json
 
@@ -22,10 +22,11 @@ class CrmViewsTest(TestCase):
 
     def setUp(self):
         setup_test_user_features()
+        self.test_user = User.objects.get(username=TEST_USERNAME)
 
     def test_client_all_in_one(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
-        view = urlresolvers.reverse("crm.views.client_organisation_company_popup")
+        self.client.force_login(self.test_user)
+        view = urlresolvers.reverse("crm:client_organisation_company_popup")
         error_tag = "form-group has-error"
 
         # Initial data

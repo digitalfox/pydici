@@ -16,7 +16,7 @@ from os.path import basename
 import logging
 
 from django.shortcuts import render
-from django.core import urlresolvers
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
 from django.utils import translation
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
@@ -132,7 +132,7 @@ def mark_bill_paid(request, bill_id):
     bill = ClientBill.objects.get(id=bill_id)
     bill.state = "2_PAID"
     bill.save()
-    return HttpResponseRedirect(urlresolvers.reverse("billing.views.bill_review"))
+    return HttpResponseRedirect(reverse("billing:bill_review"))
 
 
 @pydici_non_public
@@ -215,7 +215,7 @@ def client_bill(request, bill_id=None):
     billDetailFormSet = None
     billExpenseFormSet = None
     billing_management_feature = "billing_management"
-    forbiden = HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+    forbiden = HttpResponseRedirect(reverse("core:forbiden"))
     if bill_id:
         try:
             bill = ClientBill.objects.get(id=bill_id)
@@ -247,9 +247,9 @@ def client_bill(request, bill_id=None):
                 billExpenseFormSet.save()
             bill.save()  # Again, to take into account modified details.
             if bill.state in wip_status:
-                success_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
+                success_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
             else:
-                success_url = request.GET.get('return_to', False) or urlresolvers.reverse_lazy("company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
+                success_url = request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
                 if not bill.bill_file:
                     fake_http_request = request
                     fake_http_request.method = "GET"
@@ -301,7 +301,7 @@ def client_bill(request, bill_id=None):
 @pydici_feature("billing_request")
 def clientbill_delete(request, bill_id):
     """Delete client bill in early stage"""
-    redirect_url = urlresolvers.reverse("billing.views.client_bills_in_creation")
+    redirect_url = reverse("billing:client_bills_in_creation")
     try:
         bill = ClientBill.objects.get(id=bill_id)
         if bill.state in ("0_DRAFT", "0_PROPOSED"):
@@ -309,7 +309,7 @@ def clientbill_delete(request, bill_id):
             messages.add_message(request, messages.INFO, _("Bill removed successfully"))
         else:
             messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
-            redirect_url = urlresolvers.reverse_lazy("client_bill", args=[bill.id, ])
+            redirect_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
     except Exception, e:
         print(e)
         messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
@@ -389,7 +389,7 @@ def pre_billing(request, year=None, month=None, mine=False):
 def client_bills_in_creation(request):
     """Review client bill in preparation"""
     return render(request, "billing/client_bills_in_creation.html",
-                  {"data_url": urlresolvers.reverse('client_bills_in_creation_DT'),
+                  {"data_url": reverse('billing:client_bills_in_creation_DT'),
                    "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2] }]  ''',
                    "user": request.user})
 
@@ -399,7 +399,7 @@ def client_bills_in_creation(request):
 def client_bills_archive(request):
     """Review all client bill """
     return render(request, "billing/client_bills_archive.html",
-                  {"data_url": urlresolvers.reverse('client_bills_archive_DT'),
+                  {"data_url": reverse('billing:client_bills_archive_DT'),
                    "datatable_options": ''' "order": [[2, "desc"]], "columnDefs": [{ "orderable": false, "targets": [7] }]  ''',
                    "user": request.user})
 
@@ -409,7 +409,7 @@ def client_bills_archive(request):
 def supplier_bills_archive(request):
     """Review all supplier bill """
     return render(request, "billing/supplier_bills_archive.html",
-                  {"data_url": urlresolvers.reverse('supplier_bills_archive_DT'),
+                  {"data_url": reverse('billing:supplier_bills_archive_DT'),
                    "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [8] }]  ''',
                    "user": request.user})
 

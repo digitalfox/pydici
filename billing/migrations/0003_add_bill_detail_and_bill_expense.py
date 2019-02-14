@@ -75,26 +75,26 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='billexpense',
             name='bill',
-            field=models.ForeignKey(to='billing.ClientBill'),
+            field=models.ForeignKey(to='billing.ClientBill', on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='billexpense',
             name='expense',
-            field=models.ForeignKey(to='expense.Expense'),
+            field=models.ForeignKey(to='expense.Expense', on_delete=models.deletion.SET_NULL),
         ),
         migrations.AddField(
             model_name='billdetail',
             name='bill',
-            field=models.ForeignKey(to='billing.ClientBill'),
+            field=models.ForeignKey(to='billing.ClientBill', on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='billdetail',
             name='consultant',
-            field=models.ForeignKey(to='people.Consultant', null=True),
+            field=models.ForeignKey(to='people.Consultant', null=True, on_delete=models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='billdetail',
             name='mission',
-            field=models.ForeignKey(to='staffing.Mission'),
+            field=models.ForeignKey(to='staffing.Mission', on_delete=models.deletion.CASCADE),
         ),
     ]

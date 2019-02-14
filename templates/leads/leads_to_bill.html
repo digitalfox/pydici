@@ -1,0 +1,33 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+
+{% block title %}
+{% trans "Leads still to be billed" %}
+{% endblock %}
+
+{% block content %}
+
+    <h2>{% trans "Leads still to be billed" %}</h2>
+    <table id="leads_to_bill_table" class="table table-striped table-hover table-condensed table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>{% trans "client" %}</th>
+                <th>{% trans "name" %}</th>
+                <th>{% trans "deal id" %}</th>
+                <th>{% trans "subsidiary" %}</th>
+                <th>{% trans "responsible" %}</th>
+                <th>{% trans "creation date" %}</th>
+                <th>{% trans "amount (k€)" %}</th>
+                <th>{% trans "Still to be billed (k€)" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+
+{% with "leads_to_bill_table" as table_id %}
+    {% include "core/_datatables.html" %}
+{% endwith %}
+{% endblock %}

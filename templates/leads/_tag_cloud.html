@@ -2,7 +2,7 @@
 {# Context/Argument: None #}
 
 {% load i18n %}
-{% load taggit_extras %}
+{% load taggit_templatetags2_tags %}
 {% load cache %}
 
 {% cache 3600 tag_cloud %}
@@ -15,7 +15,7 @@
     {% for tag in tags %}
         <li class="col-xs-6 col-sm-3 col-md-2">
             <font size={{tag.weight|floatformat:0}}>
-                <a href="{% url 'leads.views.tag' tag.id %}">{{ tag }} ({{tag.num_times}})</a>
+                <a href="{% url 'leads:tag' tag.id %}">{{ tag }} ({{tag.num_times}})</a>
             </font>
         </li>
     {% endfor %}

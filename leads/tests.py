@@ -16,7 +16,7 @@ from people.models import Consultant
 from leads.models import Lead
 from staffing.models import Mission
 from crm.models import Subsidiary, BusinessBroker, Client
-from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME, TEST_PASSWORD, PREFIX
+from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME, PREFIX
 from leads import learn as leads_learn
 from leads.utils import postSaveLead
 import pydici.settings
@@ -33,11 +33,12 @@ class LeadModelTest(TestCase):
 
     def setUp(self):
         setup_test_user_features()
+        self.test_user = User.objects.get(username=TEST_USERNAME)
         if not os.path.exists(pydici.settings.DOCUMENT_PROJECT_PATH):
             os.makedirs(pydici.settings.DOCUMENT_PROJECT_PATH)
 
     def test_create_lead(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        self.client.force_login(self.test_user)
         lead = create_lead()
         self.failUnlessEqual(lead.staffing.count(), 0)
         self.failUnlessEqual(lead.staffing_list(), ", (JCF)")
@@ -46,9 +47,9 @@ class LeadModelTest(TestCase):
         self.failUnlessEqual(len(lead.update_date_strf()), 14)
         self.failUnlessEqual(lead.staffing_list(), "SRE, (JCF)")
         self.failUnlessEqual(lead.short_description(), "A wonderfull lead th...")
-        self.failUnlessEqual(urlresolvers.reverse("leads.views.detail", args=[4]), PREFIX + "/leads/4/")
+        self.failUnlessEqual(urlresolvers.reverse("leads:detail", args=[4]), PREFIX + "/leads/4/")
 
-        url = "".join(urlparse.urlsplit(urlresolvers.reverse("leads.views.detail", args=[4]))[2:])
+        url = "".join(urlparse.urlsplit(urlresolvers.reverse("leads:detail", args=[4]))[2:])
         response = self.client.get(url)
         self.failUnlessEqual(response.status_code, 200)
         context = response.context[-1]

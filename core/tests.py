@@ -18,7 +18,7 @@ from core.models import GroupFeature, FEATURES, Parameter
 import pydici.settings
 
 # Python modules used by tests
-from datetime import date, datetime
+from datetime import date
 import os
 import os.path
 import sys
@@ -26,7 +26,6 @@ from subprocess import Popen, PIPE
 
 
 TEST_USERNAME = "sre"
-TEST_PASSWORD = "sre"
 PREFIX = "/" + pydici.settings.PYDICI_PREFIX
 PYDICI_PAGES = ("/",
                 "/search",
@@ -128,9 +127,10 @@ class SimpleTest(TestCase):
 
     def setUp(self):
         setup_test_user_features()
+        self.test_user = User.objects.get(username=TEST_USERNAME)
 
     def test_basic_page(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        self.client.force_login(self.test_user)
         for page in PYDICI_PAGES + PYDICI_AJAX_PAGES:
             response = self.client.get(PREFIX + page)
             self.failUnlessEqual(response.status_code, 200,
@@ -138,7 +138,7 @@ class SimpleTest(TestCase):
 
 
     def test_page_with_args(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        self.client.force_login(self.test_user)
         for page, args in  (("/search", {"q": "a"}),
                             ("/search", {"q": "sre"}),
                             ("/search", {"q": "a+e"})
@@ -148,7 +148,7 @@ class SimpleTest(TestCase):
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
 
     def test_redirect(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        self.client.force_login(self.test_user)
         response = self.client.get(PREFIX + "/help")
         self.failUnlessEqual(response.status_code, 301)
         for page in ("/staffing/mission/newfromdeal/1/",
@@ -165,7 +165,7 @@ class SimpleTest(TestCase):
             self.failUnlessEqual(response.status_code, 302)
 
     def test_not_found_page(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        self.client.force_login(self.test_user)
         for page in (PREFIX + "/leads/234/",
                      PREFIX + "/leads/sendmail/434/"):
             response = self.client.get(page)
@@ -173,7 +173,7 @@ class SimpleTest(TestCase):
                                  "Failed to test url %s (got %s instead of 404" % (page, response.status_code))
 
     def test_pdc_review(self):
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        self.client.force_login(self.test_user)
         url = PREFIX + "/staffing/pdcreview/2009/07"
         for arg in ({}, {"projected": None}, {"groupby": "manager"}, {"groupby": "position"},
                     {"n_month": "5"}, {"n_month": "50"}):
@@ -258,7 +258,8 @@ class JsTest(StaticLiveServerTestCase):
     def test_missing_resource_and_js_errors(self):
         # Add a check to skip if casperjs is not available
         setup_test_user_features()
-        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        self.test_user = User.objects.get(username=TEST_USERNAME)
+        self.client.force_login(self.test_user)
         urls = ",".join([self.live_server_url + PREFIX + page for page in PYDICI_PAGES])
         test_filename = os.path.join(os.path.dirname(__file__), 'tests.js')
         self.assertTrue(run_casper(test_filename, self.client, verbose=False, urls = urls), "At least one Casper test failed. See above the detailed log.")

@@ -15,13 +15,10 @@ from functools import wraps
 import json
 from decimal import Decimal
 
-import permissions.utils as perm
-
 from django.template.loader import get_template
-from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
-from django.core import urlresolvers
+from django.urls import reverse
 from django.core.cache import cache
 from django.db.models import Max, Min
 
@@ -46,12 +43,12 @@ def send_lead_mail(lead, request, fromAddr=None, fromName=""):
     """
     if not fromAddr:
         fromAddr = get_parameter("MAIL_FROM")
-    url = get_parameter("HOST") + urlresolvers.reverse("leads.views.lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
+    url = get_parameter("HOST") + reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
     subject = u"[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
-    msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj": lead,
-                                                                                  "lead_url": url}))
-    msgHtml = get_template("leads/lead_mail.html").render(RequestContext(request, {"obj": lead,
-                                                                                   "lead_url": url}))
+    msgText = get_template("leads/lead_mail.txt").render(request=request, context={"obj": lead,
+                                                                                  "lead_url": url})
+    msgHtml = get_template("leads/lead_mail.html").render(request=request, context={"obj": lead,
+                                                                                   "lead_url": url})
     msg = EmailMultiAlternatives(subject, msgText, fromAddr, [get_parameter("LEAD_MAIL_TO"), ])
     msg.attach_alternative(msgHtml, "text/html")
     msg.send()
@@ -383,14 +380,6 @@ class GEdges(list):
     """A list of CEdges that can be dumped in json"""
     def dump(self):
         return json.dumps([{"u": edge.source.id_, "v": edge.target.id_, "value": { "style": "stroke: %s;" % edge.color}} for edge in self])
-
-
-def has_role(user, role):
-    if isinstance(role, str):
-        role = perm.Role.objects.get(name=role)
-
-    roles = perm.get_roles(user)
-    return role in roles
 
 
 def _get_user_features(user):

@@ -7,12 +7,11 @@ Database access layer for pydici people module
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 from django.db.models import F, Sum
 from django.apps import apps
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from datetime import date, timedelta
 
@@ -42,12 +41,12 @@ class Consultant(models.Model):
     """A consultant that can manage a lead or be ressource of a mission"""
     name = models.CharField(max_length=50)
     trigramme = models.CharField(max_length=4, unique=True)
-    company = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
+    company = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     productive = models.BooleanField(_("Productive"), default=True)
     active = models.BooleanField(_("Active"), default=True)
-    manager = models.ForeignKey("self", null=True, blank=True, related_name="team_as_manager")
-    staffing_manager = models.ForeignKey("self", null=True, blank=True, related_name="team_as_staffing_manager")
-    profil = models.ForeignKey(ConsultantProfile, verbose_name=_("Profil"))
+    manager = models.ForeignKey("self", null=True, blank=True, related_name="team_as_manager", on_delete=models.SET_NULL)
+    staffing_manager = models.ForeignKey("self", null=True, blank=True, related_name="team_as_staffing_manager", on_delete=models.SET_NULL)
+    profil = models.ForeignKey(ConsultantProfile, verbose_name=_("Profil"), on_delete=models.CASCADE)
     subcontractor = models.BooleanField(_("Subcontractor"), default=False)
     subcontractor_company = models.CharField(max_length=200, null=True, blank=True)
 
@@ -164,6 +163,7 @@ class Consultant(models.Model):
             turnover += charge * rates.get(mission, 0)
         return turnover
 
+    @cacheable("Consultant.getUser%(id)s", 3600)
     def getUser(self):
         """Returns django user behind this consultant
         Current algorithm check only for equal trigramme
@@ -232,7 +232,7 @@ class Consultant(models.Model):
             return False
 
     def get_absolute_url(self):
-        return reverse('people.views.consultant_home', args=[str(self.trigramme)])
+        return reverse('people:consultant_home', args=[str(self.trigramme)])
 
     class Meta:
         ordering = ["name", ]
@@ -257,7 +257,7 @@ class RateObjective(models.Model):
     PROD_RATE is the rate in % (int 0..100) on production days over all but holidays available days"""
     RATE_TYPE= (("DAILY_RATE", _("daily rate")),
                 ("PROD_RATE", _("production rate")))
-    consultant = models.ForeignKey(Consultant)
+    consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
     start_date = models.DateField(_("Starting"))
     rate = models.IntegerField(_("Rate"), null=True)
     rate_type = models.CharField(_("Rate type"), max_length=30, choices=RATE_TYPE)
@@ -267,7 +267,7 @@ class SalesMan(models.Model):
     """A salesman"""
     name = models.CharField(_("Name"), max_length=50)
     trigramme = models.CharField(max_length=4, unique=True)
-    company = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
+    company = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     active = models.BooleanField(_("Active"), default=True)
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)

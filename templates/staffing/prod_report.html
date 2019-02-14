@@ -13,9 +13,9 @@
 
 	<h1>
     <ul class="pager" style="text-align:left">
-    	<li class="pydici-tooltip" title="{% trans 'Previous months' %}"><a href="{% url 'prodreport' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+    	<li class="pydici-tooltip" title="{% trans 'Previous months' %}"><a href="{% url 'staffing:prod_report' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
     	{% trans "Staff production" %}
-    	<li class="pydici-tooltip" title="{% trans 'Next months' %}" ><a href="{% url 'prodreport' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+    	<li class="pydici-tooltip" title="{% trans 'Next months' %}" ><a href="{% url 'staffing:prod_report' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
     </ul>
 	</h1>
 
@@ -35,7 +35,7 @@
                         <li role="separator" class="divider"></li>
                     {% endif %}
                 {% endifchanged %}
-                <li><a href="{% url 'prodreport' year=end_date|date:'Y' month=end_date|date:'m' %}/?{{scope_filter}}">{{ scope_label }}</a></li>
+                <li><a href="{% url 'staffing:prod_report' year=end_date|date:'Y' month=end_date|date:'m' %}/?{{scope_filter}}">{{ scope_label }}</a></li>
               {% endfor %}
           </ul>
         </div>
@@ -89,7 +89,7 @@
         
         <div id="graph_timesheet_rates_bar_content"></div>
         <script type="text/javascript">
-        $('#graph_timesheet_rates_bar_content').load('{% url 'staffing.views.graph_timesheet_rates_bar' %}/{{scope_current_url_filter}}')
+        $('#graph_timesheet_rates_bar_content').load('{% url 'staffing:graph_timesheet_rates_bar' %}/{{scope_current_url_filter}}')
         </script>
     </div>
 </div>
@@ -98,7 +98,7 @@
     <div class="col-lg-12">
         <div id="graph_profile_rates_content"></div>
         <script type="text/javascript">
-        $('#graph_profile_rates_content').load('{% url 'staffing.views.graph_profile_rates' %}/{{scope_current_url_filter}}')
+        $('#graph_profile_rates_content').load('{% url 'staffing:graph_profile_rates' %}/{{scope_current_url_filter}}')
         </script>
     </div>
 </div>
@@ -136,7 +136,7 @@ $(document).ready(function(){
               var staffing_date = $(this).closest('table').find('span').eq($(this).index()-1).attr('title');
               var consultant = $(this).closest('tr').find('span').attr('title');
               if (staffing_date.length == 6) {
-                  var url = '{% url 'staffing.views.pdc_detail' '123456' '19700101' %}'.replace("123456", consultant).replace("19700101", staffing_date);
+                  var url = '{% url 'staffing:pdc_detail' '123456' '19700101' %}'.replace("123456", consultant).replace("19700101", staffing_date);
                   return $.ajax({
                       url: url,
                       dataType: 'html',

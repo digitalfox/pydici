@@ -10,7 +10,7 @@
 
 {% trans "Salesman: " %}{% if obj.salesman %} {{ obj.salesman }} {% else %} {% trans "None" %} {% endif %}
 
-{% trans "Status: " %}{{ obj.get_state_display }} {% if obj.due_date %}(=>  {{ obj.due_date }}){% endif %} / Démarrage prévu : {% if obj.start_date %} {{ obj.start_date }} {% else %} {% trans "To be defined" %} {% endif %}
+{% trans "Status: " %}{{ obj.get_state_display }} {% if obj.due_date %}(=>  {{ obj.due_date }}){% endif %} / {% trans "Start date: " %} {% if obj.start_date %} {{ obj.start_date }} {% else %} {% trans "To be defined" %} {% endif %}
 
 {% trans "Sales (kEuros): " %}{% if obj.sales %} {{ obj.sales }} {% else %} {% trans "Unknown" %} {% endif %}
 

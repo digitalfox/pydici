@@ -2,7 +2,7 @@
 {# context : record (expense object) #}
 
 {% if record.expensePayment %}
-    <a href="{% url 'expense.views.expense_payment_detail' record.expensePayment.id %}">{% trans "Paid" %}</a>
+    <a href="{% url 'expense:expense_payment_detail' record.expensePayment.id %}">{% trans "Paid" %}</a>
 {% else %}
-    {{ record.state }}
+    {{ record.get_state_display }}
 {% endif %}

@@ -7,7 +7,6 @@ Pydici staffing tables
 
 from django.utils.translation import ugettext as _
 from django.template.loader import get_template
-from django.template import Context
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 
@@ -67,7 +66,7 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
             else:
                 return self.ok_sign
         elif column == "archive":
-            return self.archiving_template.render(Context({"row": row}))
+            return self.archiving_template.render(context={"row": row}, request=self.request)
         elif column == "mission_id":
             return row.mission_id()
         else:

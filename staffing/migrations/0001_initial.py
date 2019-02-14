@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('daily_rate', models.IntegerField(verbose_name='Daily rate')),
                 ('bought_daily_rate', models.IntegerField(null=True, verbose_name='Bought daily rate', blank=True)),
-                ('consultant', models.ForeignKey(to='people.Consultant')),
+                ('consultant', models.ForeignKey(to='people.Consultant', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Financial condition',
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('lunch_date', models.DateField(verbose_name='Date')),
                 ('no_ticket', models.BooleanField(verbose_name='No lunch ticket')),
-                ('consultant', models.ForeignKey(to='people.Consultant')),
+                ('consultant', models.ForeignKey(to='people.Consultant', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Lunch ticket',
@@ -63,9 +63,9 @@ class Migration(migrations.Migration):
                 ('update_date', models.DateTimeField(auto_now=True, verbose_name='Updated')),
                 ('archived_date', models.DateTimeField(null=True, verbose_name='Archived date', blank=True)),
                 ('contacts', models.ManyToManyField(to='crm.MissionContact', blank=True)),
-                ('lead', models.ForeignKey(verbose_name='Lead', blank=True, to='leads.Lead', null=True)),
-                ('responsible', models.ForeignKey(related_name='mission_responsible', verbose_name='Responsible', blank=True, to='people.Consultant', null=True)),
-                ('subsidiary', models.ForeignKey(verbose_name='Subsidiary', to='crm.Subsidiary')),
+                ('lead', models.ForeignKey(verbose_name='Lead', blank=True, to='leads.Lead', null=True, on_delete=models.CASCADE)),
+                ('responsible', models.ForeignKey(related_name='mission_responsible', verbose_name='Responsible', blank=True, to='people.Consultant', null=True, on_delete=models.SET_NULL)),
+                ('subsidiary', models.ForeignKey(verbose_name='Subsidiary', to='crm.Subsidiary', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['nature', 'lead__client__organisation__company', 'id', 'description'],
@@ -81,8 +81,8 @@ class Migration(migrations.Migration):
                 ('comment', models.CharField(max_length=500, null=True, verbose_name='Comments', blank=True)),
                 ('update_date', models.DateTimeField(null=True, blank=True)),
                 ('last_user', models.CharField(max_length=60, null=True, blank=True)),
-                ('consultant', models.ForeignKey(to='people.Consultant')),
-                ('mission', models.ForeignKey(to='staffing.Mission')),
+                ('consultant', models.ForeignKey(to='people.Consultant', on_delete=models.CASCADE)),
+                ('mission', models.ForeignKey(to='staffing.Mission', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['staffing_date', 'consultant'],
@@ -95,8 +95,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('working_date', models.DateField(verbose_name='Date')),
                 ('charge', models.FloatField(default=0, verbose_name='Load')),
-                ('consultant', models.ForeignKey(to='people.Consultant')),
-                ('mission', models.ForeignKey(to='staffing.Mission')),
+                ('consultant', models.ForeignKey(to='people.Consultant', on_delete=models.CASCADE)),
+                ('mission', models.ForeignKey(to='staffing.Mission', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['working_date', 'consultant'],
@@ -106,7 +106,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='financialcondition',
             name='mission',
-            field=models.ForeignKey(to='staffing.Mission'),
+            field=models.ForeignKey(to='staffing.Mission', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='timesheet',

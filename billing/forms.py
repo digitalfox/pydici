@@ -10,8 +10,8 @@ from datetime import date, timedelta
 from django.forms import models, ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
-from django.forms.models import BaseInlineFormSet, ModelChoiceField, ChoiceField
-from django.forms.fields import DateField
+from django.forms.models import BaseInlineFormSet, ModelChoiceField
+from django.forms.fields import DateField, TypedChoiceField
 from django.forms.widgets import DateInput
 from django.forms.utils import ValidationError
 from django.utils import formats
@@ -22,7 +22,7 @@ from crispy_forms.bootstrap import TabHolder, Tab
 from crispy_forms.helper import FormHelper
 from django_select2.forms import Select2Widget
 
-from billing.models import ClientBill, SupplierBill, BillDetail
+from billing.models import ClientBill, SupplierBill
 from staffing.models import Mission
 from expense.models import Expense
 from people.models import Consultant
@@ -35,7 +35,7 @@ from core.forms import PydiciCrispyModelForm
 from core.utils import nextMonth
 
 
-class BillingDateChoicesField(ChoiceField):
+class BillingDateChoicesField(TypedChoiceField):
     widget = Select2Widget(attrs={'data-placeholder':_("Select a month...")})
     def __init__(self, *args, **kwargs):
         minDate = kwargs.pop("minDate", date.today() - timedelta(30*11))
@@ -47,7 +47,8 @@ class BillingDateChoicesField(ChoiceField):
             month = nextMonth(month)
 
         kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in months]
-        kwargs["choices"].insert(0, ("", ""))  # Add the empty choice for extra empty choices
+        kwargs["empty_value"] = None
+
         super(BillingDateChoicesField, self).__init__(*args, **kwargs)
 
     def has_changed(self, initial, data):

@@ -44,7 +44,7 @@ class GroupFeature(models.Model):
     """Represents whether a group has access to a certain feature. If Feature
     was a model, this would be the intermediary model between Feature and Group.
     """
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     feature = models.CharField(_("Feature"), max_length=80,
                                choices=_FEATURES_CHOICES)
     class Meta:

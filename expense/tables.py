@@ -6,7 +6,7 @@ Pydici leads tables
 """
 
 from django.utils.translation import ugettext as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_bytes
@@ -20,8 +20,9 @@ from django_tables2.utils import A
 from expense.models import Expense, ExpensePayment
 from people.models import Consultant
 from core.templatetags.pydici_filters import link_to_consultant
-from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round, has_role
+from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
+from expense.utils import expense_state_display, expense_transition_to_state_display, user_expense_perm
 
 
 class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
@@ -33,8 +34,8 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
     date_template = get_template("core/_date_column.html")
     receipt_template = get_template("expense/_receipt_column.html")
     state_template = get_template("expense/_expense_state_column.html")
-    ko_sign = mark_safe("""<span class="glyphicon glyphicon-remove" style="color:red"></span>""")
-    ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"></span>""")
+    ko_sign = mark_safe("""<span class="glyphicon glyphicon-remove" style="color:red"><span class="visuallyhidden">No</span></span>""")
+    ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"><span class="visuallyhidden">Yes</span></span>""")
 
     def get_initial_queryset(self):
         try:
@@ -43,8 +44,9 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         except Consultant.DoesNotExist:
             user_team = []
 
+        expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
         expenses = Expense.objects.all()
-        if not has_role(self.request.user, "expense paymaster"):
+        if not expense_paymaster:
             expenses = expenses.filter(Q(user=self.request.user) | Q(user__in=user_team))
         return expenses.select_related("lead__client__contact", "lead__client__organisation__company", "user")
 
@@ -84,14 +86,14 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         if column == "user":
             return link_to_consultant(row.user)
         elif column == "receipt":
-            return self.receipt_template.render(RequestContext(self.request, {"record": row}))
+            return self.receipt_template.render(context={"record": row}, request=self.request)
         elif column == "lead":
             if row.lead:
                 return u"<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
             else:
                 return u"-"
         elif column in ("creation_date", "expense_date"):
-            return self.date_template.render({"date": getattr(row, column)})
+            return self.date_template.render(context={"date": getattr(row, column)}, request=self.request)
         elif column == "update_date":
             return row.update_date.strftime("%x %X")
         elif column in ("chargeable", "corporate_card"):
@@ -100,7 +102,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
             else:
                 return self.ko_sign
         elif column == "state":
-            return self.state_template.render(RequestContext(self.request, {"record": row}))
+            return self.state_template.render(context={"record": row}, request=self.request)
         elif column == "amount":
             return to_int_or_round(row.amount, 2)
         else:
@@ -110,7 +112,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
 
 class ExpenseTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"))
-    lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads.views.detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
+    lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads:detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
     receipt = tables.TemplateColumn(template_name="expense/_receipt_column.html")
     state = tables.TemplateColumn(template_name="expense/_expense_state_column.html", orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
@@ -136,21 +138,21 @@ class ExpenseWorkflowTable(ExpenseTable):
         result = []
         for transition in self.transitionsData[record.id]:
             result.append("""<a role='button' title='%s' class='btn btn-default btn-xs' href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
-                          % (unicode(transition), reverse("expense.views.update_expense_state", args=[record.id, transition.id]), unicode(transition)[0:2]))
+                          % (expense_transition_to_state_display(transition), reverse("expense:update_expense_state", args=[record.id, transition]), expense_transition_to_state_display(transition)[0:2]))
         if self.expenseEditPerm[record.id]:
             result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>"
                           % (smart_bytes(_("Edit")),
-                             reverse("expense.views.expenses", kwargs={"expense_id": record.id}),
+                             reverse("expense:expenses", kwargs={"expense_id": record.id}),
                              # Translators: Ed is the short term for Edit
                              smart_bytes(_("Ed"))))
             result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
                           (smart_bytes(_("Delete")),
-                           reverse("expense.views.expense_delete",kwargs={"expense_id": record.id}),
+                           reverse("expense:expense_delete",kwargs={"expense_id": record.id}),
                            # Translators: De is the short term for Delete
                            smart_bytes(_("De"))))
         result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
                       (smart_bytes(_("Clone")),
-                      reverse("expense.views.expenses", kwargs={"clone_from": record.id}),
+                      reverse("expense:clone_expense", kwargs={"clone_from": record.id}),
                        # Translators: Cl is the short term for Clone
                       smart_bytes(_("Cl"))))
         return mark_safe(" ".join(result))
@@ -178,9 +180,9 @@ class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
 class ExpensePaymentTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"), orderable=False)
     amount = tables.Column(verbose_name=_("Amount"), orderable=False)
-    id = tables.LinkColumn(viewname="expense.views.expense_payment_detail", args=[A("pk")])
-    detail = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_payment_detail' record.id %}"><img src='{{MEDIA_URL}}pydici/menu/magnifier.png'/></a>""", verbose_name=_("detail"), orderable=False)
-    modify = tables.TemplateColumn("""<a href="{% url 'expense.views.expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>""", verbose_name=_("change"), orderable=False)
+    id = tables.LinkColumn(viewname="expense:expense_payment_detail", args=[A("pk")])
+    detail = tables.TemplateColumn("""<a href="{% url 'expense:expense_payment_detail' record.id %}"><img src='{{MEDIA_URL}}pydici/menu/magnifier.png'/></a>""", verbose_name=_("detail"), orderable=False)
+    modify = tables.TemplateColumn("""<a href="{% url 'expense:expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>""", verbose_name=_("change"), orderable=False)
     payment_date = tables.TemplateColumn("""<span title="{{ record.payment_date|date:"Ymd" }}">{{ record.payment_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
 
     def render_user(self, value):
@@ -201,7 +203,7 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
     order_columns = columns
     max_display_length = 500
     date_template = get_template("core/_date_column.html")
-    modification_template = Template("""<a href="{% url 'expense.views.expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/>""")
+    modification_template = Template("""<a href="{% url 'expense:expense_payments' record.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/>""")
 
     def get_initial_queryset(self):
         try:
@@ -211,7 +213,8 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
             user_team = []
 
         expensePayments = ExpensePayment.objects.all()
-        if not has_role(self.request.user, "expense paymaster"):
+        expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
+        if not expense_paymaster:
             expensePayments = expensePayments.filter(
                 Q(expense__user=self.request.user) | Q(expense__user__in=user_team)).distinct()
         return expensePayments
@@ -236,7 +239,7 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
         if column == "user":
             return link_to_consultant(row.user())
         elif column == "payment_date":
-            return self.date_template.render({"date": row.payment_date})
+            return self.date_template.render(context={"date": row.payment_date}, request=self.request)
         elif column == "amount":
             return to_int_or_round(row.amount(), 2)
         elif column == "modification":

@@ -21,7 +21,7 @@
                         <li role="separator" class="divider"></li>
                     {% endif %}
                 {% endifchanged %}
-                <li><a href="{% url 'staffing.views.fixed_price_missions_report' %}/?{{scope_filter}}">{{ scope_label }}</a></li>
+                <li><a href="{% url 'staffing:fixed_price_missions_report' %}/?{{scope_filter}}">{{ scope_label }}</a></li>
               {% endfor %}
           </ul>
         </div>

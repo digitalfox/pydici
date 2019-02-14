@@ -5,49 +5,44 @@ Pydici expense views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date, timedelta
+from datetime import date
 import json
 from cStringIO import StringIO
 
-import permissions.utils as perm
-import workflows.utils as wf
-from workflows.models import Transition
 from django_tables2 import RequestConfig
 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext as _
-from django.core import urlresolvers
+from django.urls import reverse
 from django.db.models import Q, Count
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
 from expense.forms import ExpenseForm, ExpensePaymentForm
 from expense.models import Expense, ExpensePayment
-from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable, ExpensePaymentTable
-from people.models import Consultant
+from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable
 from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature
 from core.views import tableToCSV
 from core import utils
+from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm, user_expense_team
 
 
 @pydici_non_public
 @pydici_feature("reports")
 def expenses(request, expense_id=None, clone_from=None):
     """Display user expenses and expenses that he can validate"""
-    if not request.user.groups.filter(name="expense_requester").exists():
-        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-        user_team = consultant.userTeam(excludeSelf=False)
-    except Consultant.DoesNotExist:
-        user_team = []
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+
+    if not expense_requester:
+        return HttpResponseRedirect(reverse("core:forbiden"))
+
+    user_team = user_expense_team(request.user)
 
     try:
         if expense_id:
             expense = Expense.objects.get(id=expense_id)
-            if not (perm.has_permission(expense, request.user, "expense_edit")
-                    and (expense.user == request.user or expense.user in user_team)):
+            if not can_edit_expense(expense, request.user):
                 messages.add_message(request, messages.WARNING, _("You are not allowed to edit that expense"))
                 expense_id = None
                 expense = None
@@ -63,12 +58,11 @@ def expenses(request, expense_id=None, clone_from=None):
         if form.is_valid():
             expense = form.save(commit=False)
             if not hasattr(expense, "user"):
-                # Don't update user if defined (case of expense updated by manager or adminstrator)
+                # Don't update user if defined (case of expense updated by manager or administrator)
                 expense.user = request.user
-            expense.creation_date = date.today()
+            expense.state = "REQUESTED"
             expense.save()
-            wf.set_initial_state(expense)  # Start a new workflow for this expense
-            return HttpResponseRedirect(urlresolvers.reverse("expense.views.expenses"))
+            return HttpResponseRedirect(reverse("expense:expenses"))
     else:
         if expense_id:
             form = ExpenseForm(instance=expense)  # A form that edit current expense
@@ -91,28 +85,22 @@ def expenses(request, expense_id=None, clone_from=None):
     else:
         team_expenses = []
 
-    # Paymaster manage all expenses
-    if utils.has_role(request.user, "expense paymaster"):
+    if expense_administrator: # Admin manage all expenses
+        managed_expenses = Expense.objects.filter(workflow_in_progress=True).select_related()
+    elif expense_paymaster: # Paymaster manage all expenses except his own
         managed_expenses = Expense.objects.filter(workflow_in_progress=True).exclude(user=request.user).select_related()
     else:
         managed_expenses = team_expenses
 
     userExpenseTable = UserExpenseWorkflowTable(user_expenses)
     userExpenseTable.transitionsData = dict([(e.id, []) for e in user_expenses])  # Inject expense allowed transitions. Always empty for own expense
-    userExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in user_expenses])  # Inject expense edit permissions
+    userExpenseTable.expenseEditPerm = dict([(e.id, can_edit_expense(e, request.user)) for e in user_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 50}).configure(userExpenseTable)
 
     managedExpenseTable = ManagedExpenseWorkflowTable(managed_expenses)
-    managedExpenseTable.transitionsData = dict([(e.id, e.transitions(request.user)) for e in managed_expenses])  # Inject expense allowed transitions
-    managedExpenseTable.expenseEditPerm = dict([(e.id, perm.has_permission(e, request.user, "expense_edit")) for e in managed_expenses])  # Inject expense edit permissions
+    managedExpenseTable.transitionsData = dict([(e.id, expense_next_states(e, request.user)) for e in managed_expenses])  # Inject expense allowed transitions
+    managedExpenseTable.expenseEditPerm = dict([(e.id, can_edit_expense(e, request.user)) for e in managed_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 100}).configure(managedExpenseTable)
-
-    # Prune every expense not updated since 60 days. For instance, rejected expense.
-    for expense in Expense.objects.filter(workflow_in_progress=True, update_date__lt=(date.today() - timedelta(60))):
-        if wf.get_state(expense).transitions.count() == 0:
-            expense.workflow_in_progress = False
-            expense.save()
-
     return render(request, "expense/expenses.html",
                   {"user_expense_table": userExpenseTable,
                    "managed_expense_table": managedExpenseTable,
@@ -126,12 +114,12 @@ def expenses(request, expense_id=None, clone_from=None):
 def expense_receipt(request, expense_id):
     """Returns expense receipt if authorize to"""
     data = StringIO()
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
     try:
         expense = Expense.objects.get(id=expense_id)
         content_type = expense.receipt_content_type()
         if expense.user == request.user or\
-           utils.has_role(request.user, "expense paymaster") or\
-           utils.has_role(request.user, "expense manager"):
+           expense_manager or expense_paymaster or expense_administrator:
             data = expense.receipt_data()
     except (Expense.DoesNotExist, OSError):
         pass
@@ -144,20 +132,14 @@ def expense_receipt(request, expense_id):
 def expense_delete(request, expense_id):
     """Delete given expense if authorized to"""
     expense = None
-    if not request.user.groups.filter(name="expense_requester").exists():
-        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-        user_team = consultant.userTeam(excludeSelf=False)
-    except Consultant.DoesNotExist:
-        user_team = []
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    if not expense_requester:
+        return HttpResponseRedirect(reverse("core:forbiden"))
 
-    #TODO: factorize this code with expense views above
     try:
         if expense_id:
             expense = Expense.objects.get(id=expense_id)
-            if not (perm.has_permission(expense, request.user, "expense_edit")
-                    and (expense.user == request.user or expense.user in user_team)):
+            if not can_edit_expense(expense, request.user):
                 messages.add_message(request, messages.WARNING, _("You are not allowed to edit that expense"))
                 expense_id = None
                 expense = None
@@ -170,7 +152,7 @@ def expense_delete(request, expense_id):
         messages.add_message(request, messages.INFO, _("Expense %s has been deleted" % expense_id))
 
     # Redirect user to expense main page
-    return redirect(expenses)
+    return redirect("expense:expenses")
 
 
 @pydici_non_public
@@ -180,10 +162,10 @@ def expenses_history(request):
     @param year: year of history. If None, display recent items and year index"""
 
     return render(request, "expense/expense_archive.html",
-                  {"data_url": urlresolvers.reverse('expense_table_DT'),
+                  {"data_url": reverse('expense:expense_table_DT'),
                    "data_options": ''' "pageLength": 25,
                                        "order": [[0, "desc"]],
-                                       "columnDefs": [{ "orderable": false, "targets": [6, 9] },
+                                       "columnDefs": [{ "orderable": false, "targets": [6,] },
                                                       { className: "hidden-xs hidden-sm hidden-md", "targets": [2, 10, 12, 13]},
                                                       { className: "description", "targets": [3]},
                                                       { className: "amount", "targets": [5]}]''',
@@ -223,37 +205,27 @@ def chargeable_expenses(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-def update_expense_state(request, expense_id, transition_id):
+def update_expense_state(request, expense_id, target_state):
     """Do workflow transition for that expense."""
     error = False
     message = ""
 
     try:
         expense = Expense.objects.get(id=expense_id)
-        if expense.user == request.user and not utils.has_role(request.user, "expense administrator"):
-            message =  _("You cannot manage your own expense !")
-            error = True
     except Expense.DoesNotExist:
         message =  _("Expense %s does not exist" % expense_id)
         error = True
 
     if not error:
-        try:
-            transition = Transition.objects.get(id=transition_id)
-        except Transition.DoesNotExist:
-            message = ("Transition %s does not exist" % transition_id)
-            error = True
-
-        if wf.do_transition(expense, transition, request.user):
-            message = _("Successfully update expense")
-
-            # Prune expense in terminal state (no more transition) and without payment (ie paid ith corporate card)
-            # Expense that need to be paid are pruned during payment process.
-            if expense.corporate_card and wf.get_state(expense).transitions.count() == 0:
+        next_states = expense_next_states(expense, request.user)
+        if target_state in next_states:
+            expense.state = target_state
+            if in_terminal_state(expense):
                 expense.workflow_in_progress = False
-                expense.save()
+            expense.save()
+            message = _("Successfully update expense")
         else:
-            message = _("You cannot do this transition")
+            message = ("Transition %s is not allowed" % target_state)
             error = True
 
     response = {"message": message,
@@ -280,13 +252,12 @@ def expense_payments(request, expense_payment_id=None):
     if readOnly:
         expensesToPay = []
     else:
-        expensesToPay = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None)
-        expensesToPay = [expense for expense in expensesToPay if wf.get_state(expense).transitions.count() == 0]
+        expensesToPay = Expense.objects.filter(workflow_in_progress=True, corporate_card=False, expensePayment=None, state="CONTROLLED")
 
     if request.method == "POST":
         if readOnly:
             # A bad user is playing with urls...
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+            return HttpResponseRedirect(reverse("core:forbiden"))
         form = ExpensePaymentForm(request.POST)
         if form.is_valid():
             if expense_payment_id:
@@ -303,7 +274,7 @@ def expense_payments(request, expense_payment_id=None):
                     expense.expensePayment = expensePayment
                     expense.workflow_in_progress = False
                     expense.save()
-            return HttpResponseRedirect(urlresolvers.reverse("expense.views.expense_payments"))
+            return HttpResponseRedirect(reverse("expense:expense_payments"))
         else:
             print "form is not valid"
 
@@ -316,7 +287,7 @@ def expense_payments(request, expense_payment_id=None):
 
     return render(request, "expense/expense_payments.html",
                   {"modify_expense_payment": bool(expense_payment_id),
-                   "data_url": urlresolvers.reverse('expense_payment_table_DT'),
+                   "data_url": reverse('expense:expense_payment_table_DT'),
                    "data_options": ''' "pageLength": 25,
                         "order": [[0, "desc"]],
                         "columnDefs": [{ "orderable": false, "targets": [1, 2, 4] }]''',
@@ -330,19 +301,18 @@ def expense_payments(request, expense_payment_id=None):
 @pydici_feature("management")
 def expense_payment_detail(request, expense_payment_id):
     """Display detail of this expense payment"""
-    if not request.user.groups.filter(name="expense_requester").exists():
-        return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    if not expense_requester:
+        return HttpResponseRedirect(reverse("core:forbiden"))
     try:
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
-        if not (expensePayment.user() == request.user or\
-           utils.has_role(request.user, "expense paymaster") or\
-           utils.has_role(request.user, "expense manager")):
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+        if not (expensePayment.user() == request.user or expense_paymaster or expense_administrator):
+            return HttpResponseRedirect(reverse("core:forbiden"))
 
     except ExpensePayment.DoesNotExist:
         messages.add_message(request, messages.ERROR, _("Expense payment %s does not exist" % expense_payment_id))
-        return redirect(expense_payments)
+        return redirect("expense:expense_payments")
 
     return render(request, "expense/expense_payment_detail.html",
                   {"expense_payment": expensePayment,

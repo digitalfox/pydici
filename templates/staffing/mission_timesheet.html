@@ -75,7 +75,7 @@
 
     </table>
     <br/>
-    <a class="btn btn-default" href="{% url 'staffing.views.mission_timesheet' mission_id=mission.id %}?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
+    <a class="btn btn-default" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
     </div>
     <br/>
     {% if mission.nature == "PROD" and pydici_feature.leads_profitability %}
@@ -85,7 +85,7 @@
                 <table class="table table-hover">
                     <tr><td>{% trans "Sold" %}</td>
                     <td>{% if mission.price %}{{ mission.price }}  k€ {% ifequal mission.billing_mode "TIME_SPENT" %}{% trans "(maximum)" %}{% endifequal %}
-                        {% else %} <a href="{% url 'mission_update' mission.id %}?return_to={% url 'staffing.views.mission_home' mission.id %}#goto_tab-timesheet">{% trans "To be defined" %}</a>
+                        {% else %} <a href="{% url 'staffing:mission_update' mission.id %}?return_to={% url 'staffing:mission_home' mission.id %}#goto_tab-timesheet">{% trans "To be defined" %}</a>
                         {% endif %}</td></tr>
                     {% ifequal mission.billing_mode "FIXED_PRICE" %}
                         <tr><td>{% trans "Margin" %}</td><td>{{ margin }}  k€</td></tr>

@@ -36,10 +36,6 @@ DOCUMENT_PROJECT_INPUT_DIR = u"input"
 TIMESHEET_INPUT_METHOD = "cycle"
 TIMESHEET_DAY_DURATION = 7
 
-# INCWO_LOG_DIR must point to a dir where the `incwoimport` command can write.
-# It defaults to $PYDICI_PREFIX/incwo-log if not set.
-INCWO_LOG_DIR = os.path.join(PYDICI_ROOTDIR, 'incwo-log')
-
 # Telegram integration
 TELEGRAM_IS_ENABLED = False  # Wether to enable or not Telegram notifications
 TELEGRAM_TOKEN = "123123:ABCABC"  # Your Bot Token.

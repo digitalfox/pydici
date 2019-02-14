@@ -12,7 +12,7 @@ from django.utils.translation import ugettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.contrib.admin.models import ContentType
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from datetime import datetime, date, timedelta
 
@@ -38,7 +38,7 @@ class Mission(models.Model):
     BILLING_MODES = (
             (('FIXED_PRICE'), ugettext("Fixed price")),
             (('TIME_SPENT'), ugettext("Time spent")))
-    lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"))
+    lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"), on_delete=models.CASCADE)
     deal_id = models.CharField(_("Mission id"), max_length=100, blank=True)
     description = models.CharField(_("Description"), max_length=30, blank=True, null=True)
     nature = models.CharField(_("Type"), max_length=30, choices=MISSION_NATURE, default="PROD")
@@ -49,9 +49,9 @@ class Mission(models.Model):
     price = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     contacts = models.ManyToManyField(MissionContact, blank=True)
-    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
+    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     archived_date = models.DateTimeField(_("Archived date"), blank=True, null=True)
-    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True)
+    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
 
     def __unicode__(self):
         if self.description and not self.lead:
@@ -316,7 +316,7 @@ class Mission(models.Model):
 
 
     def get_absolute_url(self):
-        return reverse('staffing.views.mission_home', args=[str(self.id)])
+        return reverse('staffing:mission_home', args=[str(self.id)])
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "id", "description"]
@@ -334,8 +334,8 @@ class Holiday(models.Model):
 
 class Staffing(models.Model):
     """The staffing fact forecasting table: charge per month per consultant per mission"""
-    consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to={"active": True})
+    consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
+    mission = models.ForeignKey(Mission, limit_choices_to={"active": True}, on_delete=models.CASCADE)
     staffing_date = models.DateField(_("Date"))
     charge = models.FloatField(_("Load"), default=0)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
@@ -350,7 +350,7 @@ class Staffing(models.Model):
         super(Staffing, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("people.views.consultant_home", args=[str(self.consultant.trigramme)]) + "#tab-staffing"
+        return reverse("people:consultant_home", args=[str(self.consultant.trigramme)]) + "#tab-staffing"
 
     class Meta:
         unique_together = (("consultant", "mission", "staffing_date"),)
@@ -360,8 +360,8 @@ class Staffing(models.Model):
 
 class Timesheet(models.Model):
     """The staffing table: charge per day per consultant per mission"""
-    consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to={"active": True})
+    consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
+    mission = models.ForeignKey(Mission, limit_choices_to={"active": True}, on_delete=models.CASCADE)
     working_date = models.DateField(_("Date"))
     charge = models.FloatField(_("Load"), default=0)
 
@@ -377,7 +377,7 @@ class Timesheet(models.Model):
 class LunchTicket(models.Model):
     """Default is to give a lunck ticket every working day.
     Days without ticket (ie when lunch is paid by company) are tracked"""
-    consultant = models.ForeignKey(Consultant)
+    consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
     lunch_date = models.DateField(_("Date"))
     no_ticket = models.BooleanField(_("No lunch ticket"), default=True)
 
@@ -388,8 +388,8 @@ class LunchTicket(models.Model):
 
 class FinancialCondition(models.Model):
     """Mission financial condition"""
-    consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to={"active": True})
+    consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
+    mission = models.ForeignKey(Mission, limit_choices_to={"active": True}, on_delete=models.CASCADE)
     daily_rate = models.IntegerField(_("Daily rate"))
     bought_daily_rate = models.IntegerField(_("Bought daily rate"), null=True, blank=True)  # For subcontractor only
 

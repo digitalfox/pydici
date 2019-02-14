@@ -8,10 +8,11 @@ Database access layer for pydici CRM module
 from datetime import date, timedelta
 
 from django.db import models
-from django.db.models import Sum, Q, get_model
+from django.db.models import Sum, Q
+from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
-from django.core import urlresolvers
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 
@@ -76,7 +77,7 @@ class Subsidiary(AbstractCompany):
 
 class Company(AbstractCompany):
     """Company"""
-    businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True)
+    businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True, on_delete=models.SET_NULL)
     external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
 
     def sales(self, onlyLastYear=False):
@@ -110,7 +111,7 @@ class Company(AbstractCompany):
 class ClientOrganisation(AbstractAddress):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
-    company = models.ForeignKey(Company, verbose_name=_("Client company"))
+    company = models.ForeignKey(Company, verbose_name=_("Client company"), on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"%s : %s " % (self.company, self.name)
@@ -128,7 +129,7 @@ class ClientOrganisation(AbstractAddress):
             return self.company.billing_address()
 
     def get_absolute_url(self):
-        return urlresolvers.reverse("crm.views.clientOrganisation", args=[self.id, ])
+        return reverse("crm:client_organisation", args=[self.id, ])
 
     class Meta:
         ordering = ["company", "name"]
@@ -162,12 +163,12 @@ class Contact(models.Model):
             return _("None")
         elif companies_count == 1:
             if html:
-                return mark_safe(u"<a href='%s'>%s</a>" % (urlresolvers.reverse("crm.views.company_detail", args=[companies[0].id,]), unicode(companies[0])))
+                return mark_safe(u"<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[companies[0].id,]), unicode(companies[0])))
             else:
                 return companies[0]
         elif companies_count > 1:
             if html:
-                return mark_safe(u", ".join([u"<a href='%s'>%s</a>" % (urlresolvers.reverse("crm.views.company_detail", args=[i.id,]), unicode(i)) for i in companies]))
+                return mark_safe(u", ".join([u"<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[i.id,]), unicode(i)) for i in companies]))
             else:
                 return u", ".join([unicode(i) for i in companies])
     companies.short_description = _("Companies")
@@ -246,7 +247,7 @@ class Contact(models.Model):
             print e
 
     def get_absolute_url(self):
-        return urlresolvers.reverse("contact_detail", args=[self.id, ])
+        return reverse("crm:contact_detail", args=[self.id, ])
 
     class Meta:
         ordering = ["name"]
@@ -255,7 +256,7 @@ class Contact(models.Model):
 class BusinessBroker(models.Model):
     """A business broken: someone that is not a client but an outsider that act
     as a partner to provide some business"""
-    company = models.ForeignKey(Company, verbose_name=_("Broker company"))
+    company = models.ForeignKey(Company, verbose_name=_("Broker company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
 
     def __unicode__(self):
@@ -278,7 +279,7 @@ class BusinessBroker(models.Model):
 
 class Supplier(models.Model):
     """A supplier is defined by a contact and the supplier company where he works at the moment"""
-    company = models.ForeignKey(Company, verbose_name=_("Supplier company"))
+    company = models.ForeignKey(Company, verbose_name=_("Supplier company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
 
     def __unicode__(self):
@@ -306,7 +307,7 @@ class Client(AbstractAddress):
             ("2_STANDARD", ugettext("Standard")),
             ("3_STRATEGIC", ugettext("Strategic")),
                  )
-    organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Company : Organisation"))
+    organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Company : Organisation"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
     expectations = models.CharField(max_length=30, choices=EXPECTATIONS, default=EXPECTATIONS[2][0], verbose_name=_("Expectations"))
     alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
@@ -323,8 +324,8 @@ class Client(AbstractAddress):
     def getFinancialConditions(self):
         """Get financial condition for this client by profil
         @return: ((profil1, avgrate1), (profil2, avgrate2)...)"""
-        FinancialCondition = get_model("staffing", "FinancialCondition")
-        ConsultantProfile = get_model("people", "ConsultantProfile")
+        FinancialCondition = apps.get_model("staffing", "FinancialCondition")
+        ConsultantProfile = apps.get_model("people", "ConsultantProfile")
         data = {}
         rates = []
 
@@ -354,7 +355,7 @@ class Client(AbstractAddress):
     def objectiveMargin(self):
         """Compute margin over budget objective across all mission of this client
         @return: list of (margin in €, margin in % of total turnover) for internal consultant and subcontractor"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         consultantMargin = 0
         subcontractorMargin = 0
 
@@ -376,7 +377,7 @@ class Client(AbstractAddress):
     def fixedPriceMissionMargin(self):
         """Compute total fixed price margin in €  mission for this client. Only finished mission (ie archived) are
         considered"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         margin = 0
         missions = Mission.objects.filter(lead__client=self, active=False,
                                           lead__state = "WON", billing_mode="FIXED_PRICE")
@@ -419,7 +420,7 @@ class Client(AbstractAddress):
             return self.organisation.billing_address()
 
     def get_absolute_url(self):
-        return urlresolvers.reverse("company_detail", args=[self.organisation.company.id, ])
+        return reverse("crm:company_detail", args=[self.organisation.company.id, ])
 
     class Meta:
         ordering = ["organisation", "contact"]
@@ -429,14 +430,14 @@ class Client(AbstractAddress):
 
 class MissionContact(models.Model):
     """Contact encountered during mission"""
-    company = models.ForeignKey(Company, verbose_name=_("company"))
-    contact = models.ForeignKey(Contact, verbose_name=_("Contact"))
+    company = models.ForeignKey(Company, verbose_name=_("company"), on_delete=models.CASCADE)
+    contact = models.ForeignKey(Contact, verbose_name=_("Contact"), on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"%s (%s)" % (self.contact, self.company)
 
     def get_absolute_url(self):
-        return urlresolvers.reverse("contact_detail", args=[self.contact.id, ])
+        return reverse("crm:contact_detail", args=[self.contact.id, ])
 
 
     class Meta:
@@ -458,12 +459,12 @@ class AdministrativeFunction(models.Model):
 
 class AdministrativeContact(models.Model):
     """Administrative contact (team or people) of a company."""
-    company = models.ForeignKey(Company, verbose_name=_("company"))
-    function = models.ForeignKey(AdministrativeFunction, verbose_name=_("Function"))
+    company = models.ForeignKey(Company, verbose_name=_("company"), on_delete=models.CASCADE)
+    function = models.ForeignKey(AdministrativeFunction, verbose_name=_("Function"), on_delete=models.CASCADE)
     default_phone = models.CharField(_("Phone Switchboard"), max_length=30, blank=True, null=True)
     default_mail = models.EmailField(_("Generic email"), max_length=100, blank=True, null=True)
     default_fax = models.CharField(_("Generic fax"), max_length=100, blank=True, null=True)
-    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
+    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"%s (%s)" % (unicode(self.contact), unicode(self.company))

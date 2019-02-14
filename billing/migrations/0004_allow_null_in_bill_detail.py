@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='billdetail',
             name='consultant',
-            field=models.ForeignKey(blank=True, to='people.Consultant', null=True),
+            field=models.ForeignKey(blank=True, to='people.Consultant', null=True, on_delete=models.deletion.CASCADE),
         ),
         migrations.AlterField(
             model_name='billdetail',
