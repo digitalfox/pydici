@@ -19,19 +19,14 @@ body {
 
 /*Global time sheet table styles*/
 
-/*Fix height to view toolbars on hover*/
-.table-pydici-all-timehseets thead {
-    height: 60px;
-}
-
 div.table-pydici-all-timehseets {
     height: 60vh;
     overflow: auto;
 }
 
-/*Fix to see tooltip in header trigrames*/
-div.table-pydici-all-timehseets table{
-    margin-top: 20px;
+/*Fix height to view toolbars on hover*/
+.table-pydici-all-timehseets th {
+    height: 60px;
 }
 
 .sticky-header {
@@ -39,8 +34,8 @@ div.table-pydici-all-timehseets table{
   position: sticky;
   background: white;
   top: 0;
-  height: 60px;
 }
+
 /*END Global time sheet table styles*/
 
 .noborder {
