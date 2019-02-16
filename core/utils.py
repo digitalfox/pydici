@@ -21,8 +21,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
 from django.core.cache import cache
 from django.db.models import Max, Min
-
-import pydici.settings
+from django.conf import settings
 
 from core.models import GroupFeature, Parameter
 
@@ -246,23 +245,23 @@ def sanitizeName(name):
 def getLeadDirs(lead):
     """Get documents directories relative to this lead
     @return: clientDir, leadDir, businessDir, inputDir, deliveryDir"""
-    clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH,
-                             pydici.settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name), code=lead.client.organisation.company.code))
+    clientDir = os.path.join(settings.DOCUMENT_PROJECT_PATH,
+                             settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name), code=lead.client.organisation.company.code))
     if not os.path.exists(clientDir):
         # Look if an alternative path exists with proper client code
-        for path in os.listdir(pydici.settings.DOCUMENT_PROJECT_PATH):
+        for path in os.listdir(settings.DOCUMENT_PROJECT_PATH):
             if isinstance(path, bytes):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 path = path.decode("utf8", "ignore")
             if path.endswith("_%s" % lead.client.organisation.company.code):
-                clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH, path)
+                clientDir = os.path.join(settings.DOCUMENT_PROJECT_PATH, path)
                 break
 
     if not os.path.exists(clientDir):
         os.mkdir(clientDir)
 
     leadDir = os.path.join(clientDir,
-                           pydici.settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
+                           settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
     if not os.path.exists(leadDir):
         # Look if an alternative path exists with proper lead code
         for path in os.listdir(clientDir):
@@ -274,11 +273,11 @@ def getLeadDirs(lead):
                 break
 
     businessDir = os.path.join(leadDir,
-                               pydici.settings.DOCUMENT_PROJECT_BUSINESS_DIR)
+                               settings.DOCUMENT_PROJECT_BUSINESS_DIR)
     inputDir = os.path.join(leadDir,
-                               pydici.settings.DOCUMENT_PROJECT_INPUT_DIR)
+                               settings.DOCUMENT_PROJECT_INPUT_DIR)
     deliveryDir = os.path.join(leadDir,
-                               pydici.settings.DOCUMENT_PROJECT_DELIVERY_DIR)
+                               settings.DOCUMENT_PROJECT_DELIVERY_DIR)
 
     return (clientDir, leadDir, businessDir, inputDir, deliveryDir)
 

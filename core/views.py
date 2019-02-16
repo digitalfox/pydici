@@ -16,6 +16,7 @@ from django.http import HttpResponse
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.core.cache import cache
+from django.conf import settings
 
 from django_select2.views import AutoResponseView
 from taggit.models import Tag
@@ -30,7 +31,6 @@ from expense.models import Expense
 from people.views import consultant_home
 from core.utils import nextMonth, previousMonth
 
-import pydici.settings
 
 
 @login_required
@@ -396,4 +396,4 @@ def forbiden(request):
         # Standard request, use full forbiden page with menu
         template = "core/forbiden.html"
     return render(request, template,
-                  {"admins": pydici.settings.ADMINS, })
+                  {"admins": settings.ADMINS, })

@@ -16,11 +16,11 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q, Sum
 from django.urls import reverse
+from django.conf import settings
 
 from taggit.managers import TaggableManager
 
 from core.utils import compact_text
-import pydici.settings
 from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
 from actionset.models import ActionState
@@ -275,7 +275,7 @@ class Lead(models.Model):
     def getDocURL(self):
         """@return: URL to reach this lead base directory"""
         (clientDir, leadDir, businessDir, inputDir, deliveryDir) = getLeadDirs(self)
-        url = pydici.settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
+        url = settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
         return url
 
     def get_absolute_url(self):

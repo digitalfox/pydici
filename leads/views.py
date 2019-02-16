@@ -22,6 +22,7 @@ from django.db.models import Sum
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 from django.db.models.query import QuerySet
+from django.conf import settings
 
 from taggit.models import Tag
 
@@ -31,7 +32,6 @@ from leads.forms import LeadForm
 from leads.utils import postSaveLead
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
-import pydici.settings
 from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years
 from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
@@ -170,8 +170,8 @@ def lead_documents(request, lead_id):
     lead = Lead.objects.get(id=lead_id)
     documents = []  # List of name/url docs grouped by type
     clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
-    lead_url_dir = pydici.settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
-    lead_url_file = pydici.settings.DOCUMENT_PROJECT_URL_FILE + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
+    lead_url_dir = settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
+    lead_url_file = settings.DOCUMENT_PROJECT_URL_FILE + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
     for directory in (businessDir, inputDir, deliveryDir):
         # Create project tree if at least one directory is missing
         if not os.path.exists(directory):

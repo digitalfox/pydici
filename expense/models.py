@@ -17,10 +17,11 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from leads.models import Lead
 from core.utils import sanitizeName
-import pydici.settings
+
 
 EXPENSE_STATES = (
     ("REQUESTED", _("Requested")),
@@ -52,7 +53,7 @@ class ExpenseStorage(FileSystemStorage):
 # to avoid circular import loop, as utils module import Expense models
 def expense_receipt_path(instance, filename):
     """Format full path of expense receipt"""
-    return join(pydici.settings.PYDICI_ROOTDIR, "data", "expense",
+    return join(settings.PYDICI_ROOTDIR, "data", "expense",
                 strftime("%Y"), strftime("%m"), instance.user.username,
                 "%s_%s" % (strftime("%d-%H%M%S"), sanitizeName(filename)))
 

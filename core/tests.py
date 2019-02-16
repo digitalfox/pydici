@@ -15,7 +15,6 @@ from django.conf import settings
 # Pydici modules
 from core.utils import monthWeekNumber, previousWeek, nextWeek, cumulateList, capitalize, get_parameter
 from core.models import GroupFeature, FEATURES, Parameter
-import pydici.settings
 
 # Python modules used by tests
 from datetime import date
@@ -26,7 +25,7 @@ from subprocess import Popen, PIPE
 
 
 TEST_USERNAME = "sre"
-PREFIX = "/" + pydici.settings.PYDICI_PREFIX
+PREFIX = "/" + settings.PYDICI_PREFIX
 PYDICI_PAGES = ("/",
                 "/search",
                 "/search?q=lala",

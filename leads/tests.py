@@ -9,8 +9,8 @@ from django.test import TestCase
 from django.core import urlresolvers
 from django.test import RequestFactory
 from django.contrib.messages.storage import default_storage
-from django.contrib.auth.models import Group, User
-
+from django.contrib.auth.models import User
+from django.conf import settings
 
 from people.models import Consultant
 from leads.models import Lead
@@ -19,7 +19,7 @@ from crm.models import Subsidiary, BusinessBroker, Client
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME, PREFIX
 from leads import learn as leads_learn
 from leads.utils import postSaveLead
-import pydici.settings
+
 
 
 from urllib.parse import urlsplit
@@ -34,8 +34,8 @@ class LeadModelTest(TestCase):
     def setUp(self):
         setup_test_user_features()
         self.test_user = User.objects.get(username=TEST_USERNAME)
-        if not os.path.exists(pydici.settings.DOCUMENT_PROJECT_PATH):
-            os.makedirs(pydici.settings.DOCUMENT_PROJECT_PATH)
+        if not os.path.exists(settings.DOCUMENT_PROJECT_PATH):
+            os.makedirs(settings.DOCUMENT_PROJECT_PATH)
 
     def test_create_lead(self):
         self.client.force_login(self.test_user)

@@ -17,6 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
+from django.conf import settings
 
 from leads.models import Lead
 from staffing.models import Mission
@@ -25,7 +26,6 @@ from expense.models import Expense
 from crm.models import Supplier
 from billing.utils import compute_bill
 from core.utils import sanitizeName
-import pydici.settings
 
 
 # Custom storage that hook static url to custom view
@@ -33,7 +33,7 @@ import pydici.settings
 
 class BillStorage(FileSystemStorage):
     def __init__(self, nature="client"):
-        super(BillStorage, self).__init__(location=join(pydici.settings.PYDICI_ROOTDIR, "data", "bill", nature))
+        super(BillStorage, self).__init__(location=join(settings.PYDICI_ROOTDIR, "data", "bill", nature))
         self.nature = nature
 
     def url(self, name):
@@ -78,7 +78,7 @@ class AbstractBill(models.Model):
     amount_with_vat = models.DecimalField(_("Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
                                           null=True)
     vat = models.DecimalField(_("VAT (%)"), max_digits=4, decimal_places=2,
-                              default=float(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
+                              default=float(settings.PYDICI_DEFAULT_VAT_RATE))
     expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True})
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
 
@@ -139,7 +139,7 @@ class ClientBill(AbstractBill):
                                  storage=BillStorage(nature="client"), null=True, blank=True)
     anonymize_profile = models.BooleanField(_("Anonymize profile name"), default=False)
     include_timesheet = models.BooleanField(_("Include timesheet"), default=False)
-    lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, default=pydici.settings.LANGUAGE_CODE)
+    lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, default=settings.LANGUAGE_CODE)
 
     def client(self):
         if self.lead.paying_authority:
@@ -229,7 +229,7 @@ class BillDetail(models.Model):
     amount_with_vat = models.DecimalField(_("Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
                                           null=True)
     vat = models.DecimalField(_("VAT (%)"), max_digits=4, decimal_places=2,
-                              default=Decimal(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
+                              default=Decimal(settings.PYDICI_DEFAULT_VAT_RATE))
     label = models.CharField(_("Label"), max_length=200, blank=True, null=True)
 
     def save(self, *args, **kwargs):
