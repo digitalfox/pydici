@@ -150,17 +150,27 @@ class Consultant(models.Model):
         @param startDate: if None, from the creation of earth
         @param endDate : if None, up to today
         @return: turnover in euros"""
-        from staffing.models import Timesheet, FinancialCondition  # Late import to avoid circular reference
+        from staffing.models import Timesheet, FinancialCondition, Mission  # Late import to avoid circular reference
         if startDate is None:
             startDate = date(1977, 2, 18)
         if endDate is None:
             endDate = date.today()
         turnover = 0
         timesheets = Timesheet.objects.filter(consultant=self, working_date__gte=startDate, working_date__lt=endDate, mission__nature="PROD").order_by("mission__id")
-        timesheets = timesheets.values_list("mission").annotate(Sum("charge"))
+        timesheets = timesheets.values_list("mission", "mission__billing_mode").annotate(Sum("charge"))
         rates = dict(FinancialCondition.objects.filter(consultant=self, mission__in=[i[0] for i in timesheets]).values_list("mission", "daily_rate"))
-        for mission, charge in timesheets:
-            turnover += charge * rates.get(mission, 0)
+        for mission_id, billing_mode, charge in timesheets:
+            mission_turnover = charge * rates.get(mission_id, 0)
+            if billing_mode == "FIXED_PRICE":
+                mission = Mission.objects.get(id=mission_id)
+                done_work = mission.done_work_k()[1]
+                price = float(mission.price or 0)
+                if done_work and done_work > price or (not mission.active and done_work < price):
+                    # mission is a fixed price and has been overshoot. Limit turnover to fixed price in proportion to what have been done
+                    # or mission is archived and have margin
+                    mission_turnover = mission_turnover * price / done_work
+            turnover += mission_turnover
+
         return turnover
 
     @cacheable("Consultant.getUser%(id)s", 3600)
