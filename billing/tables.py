@@ -35,6 +35,7 @@ class BillTableDT(BillingRequestMixin, BaseDatatableView):
                             Q(state__icontains=search),
                             Q(lead__deal_id__icontains=search),
                             Q(lead__name__icontains=search),
+                            Q(lead__subsidiary__name__icontains=search),
                             Q(lead__responsible__name__icontains=search),
                             Q(lead__client__organisation__company__name__icontains=search)])
         return filters
@@ -64,13 +65,15 @@ class BillTableDT(BillingRequestMixin, BaseDatatableView):
             return row.get_state_display()
         elif column == "file":
             return mark_safe("""<a href='%s'><span class="glyphicon glyphicon-file"></span></a>""" % row.bill_file_url())
+        elif column == "subsidiary":
+            return str(row.lead.subsidiary)
         else:
             return super(BillTableDT, self).render_column(row, column)
 
 
 class ClientBillInCreationTableDT(BillTableDT):
     """Client Bill tables backend for datatables"""
-    columns = ("bill_id", "lead", "responsible", "creation_date", "state", "amount", "amount_with_vat", "comment")
+    columns = ("bill_id", "subsidiary", "lead", "responsible", "creation_date", "state", "amount", "amount_with_vat", "comment")
     order_columns = columns
 
     def get_initial_queryset(self):
@@ -96,7 +99,7 @@ class ClientBillInCreationTableDT(BillTableDT):
 
 class ClientBillArchiveTableDT(BillTableDT):
     """Client bill archive"""
-    columns = ("bill_id", "lead","creation_date", "state", "amount", "amount_with_vat", "comment", "file")
+    columns = ("bill_id", "subsidiary", "lead","creation_date", "state", "amount", "amount_with_vat", "comment", "file")
     order_columns = columns
     max_display_length = 100
 
@@ -106,7 +109,7 @@ class ClientBillArchiveTableDT(BillTableDT):
 
 class SupplierBillArchiveTableDT(BillTableDT):
     """Supplier bill archive"""
-    columns = ("bill_id", "supplier", "lead","creation_date", "state", "amount", "amount_with_vat", "comment",  "file")
+    columns = ("bill_id", "supplier", "subsidiary", "lead","creation_date", "state", "amount", "amount_with_vat", "comment",  "file")
     order_columns = columns
     max_display_length = 20
 
@@ -121,6 +124,7 @@ class SupplierBillArchiveTableDT(BillTableDT):
                            Q(lead__deal_id__icontains=search) |
                            Q(lead__name__icontains=search) |
                            Q(lead__responsible__name__icontains=search) |
+                           Q(lead__subsidiary__name__icontains=search) |
                            Q(lead__client__organisation__company__name__icontains=search) |
                            Q(supplier__company__name__icontains=search) |
                            Q(supplier__contact__name__icontains=search)
