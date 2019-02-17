@@ -245,6 +245,7 @@ def compute_automatic_staffing(mission, mode, duration, user=None):
 
             month = nextMonth(month)
 
+
 def timesheet_report_data(mission, start=None, end=None, padding=False):
     """Prepare data for timesheet report from start to end.
     Padding align total in the same column"""
@@ -297,3 +298,22 @@ def timesheet_report_data(mission, start=None, end=None, padding=False):
                 data.append(row)
 
     return data
+
+
+def create_next_year_std_missions(current, target, dryrun=True):
+    """Create default set of mission for next year based on current holidays and nonprod missions
+    @current: current suffix
+    @target: target suffix
+    @dryrun: save new mission or just print its"""
+    for m in Mission.objects.exclude(nature="PROD").filter(active=True):
+        if not current in m.description:
+            continue
+        new_mission = Mission(description = m.description.replace(current, target),
+                              subsidiary = m.subsidiary,
+                              nature = m.nature,
+                              billing_mode = "TIME_SPENT",
+                              probability = 100,
+                              probability_auto = False)
+        print("Creating new mission %s" % new_mission)
+        if not dryrun:
+            new_mission.save()

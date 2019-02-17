@@ -346,7 +346,7 @@ def predict_similar(lead):
     leads_ids = cache.get(SIMILARITY_LEADS_IDS_CACHE_KEY)
     scaler = cache.get(SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY)
     similar_leads = []
-    if model is None:
+    if model is None or scaler is None:
         # cannot compute model (ex. not enough data, no scikit...)
         return []
     features, scaler = extract_leads_similarity([lead, ], scaler)
