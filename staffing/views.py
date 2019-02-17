@@ -411,7 +411,7 @@ def pdc_review(request, year=None, month=None):
                 rate.append(100.0 * total[month][indicator] / ndays)
             else:
                 rate.append(100.0 * total[month][indicator] / (ndays - total[month]["holidays"]))
-        rates.append(map(to_int_or_round, rate))
+        rates.append(list(map(to_int_or_round, rate)))
 
     # Format total dict into list
     total = list(total.items())
@@ -420,7 +420,7 @@ def pdc_review(request, year=None, month=None):
     total = [(to_int_or_round(i[1]["prod"]),
             to_int_or_round(i[1]["unprod"]),
             to_int_or_round(i[1]["holidays"]),
-            i[1]["total"] - (to_int_or_round(i[1]["prod"]) + to_int_or_round(i[1]["unprod"]) + to_int_or_round(i[1]["holidays"]))) for i in total]
+            to_int_or_round(i[1]["total"]) - (to_int_or_round(i[1]["prod"]) + to_int_or_round(i[1]["unprod"]) + to_int_or_round(i[1]["holidays"]))) for i in total]
 
     # Order staffing list
     staffing = list(staffing.items())
