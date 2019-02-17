@@ -4,15 +4,15 @@ django-taggit==0.23
 django-taggit-templatetags2==1.6.1
 django-extensions==2.1.4
 django-debug-toolbar==1.11
-django-userswitch
+-e git+https://github.com//harpb/django-userswitch#egg=django-userswitch
 django-crispy-forms==1.7.2
 Django-Select2==5.11.1
 lxml==3.4.2
-python-memcached==1.54
+python-memcached==1.59
 django-datatables-view==1.17.0
 django-background-tasks==1.1.9
-WeasyPrint==0.41
-django-weasyprint==0.1
+WeasyPrint==44
+django-weasyprint==0.5.4
 bleach==3.0.2
 Markdown==2.6.11
 pypdf2==1.26.0

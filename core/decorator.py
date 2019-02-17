@@ -17,7 +17,7 @@ from core.utils import user_has_features
 
 
 def _setify(value):
-    if isinstance(value, (str, unicode)):
+    if isinstance(value, str):
         return set((value,))
     else:
         return set(value)

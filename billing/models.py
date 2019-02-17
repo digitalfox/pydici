@@ -17,6 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
+from django.conf import settings
 
 from leads.models import Lead
 from staffing.models import Mission
@@ -25,7 +26,6 @@ from expense.models import Expense
 from crm.models import Supplier
 from billing.utils import compute_bill
 from core.utils import sanitizeName
-import pydici.settings
 
 
 # Custom storage that hook static url to custom view
@@ -33,7 +33,7 @@ import pydici.settings
 
 class BillStorage(FileSystemStorage):
     def __init__(self, nature="client"):
-        super(BillStorage, self).__init__(location=join(pydici.settings.PYDICI_ROOTDIR, "data", "bill", nature))
+        super(BillStorage, self).__init__(location=join(settings.PYDICI_ROOTDIR, "data", "bill", nature))
         self.nature = nature
 
     def url(self, name):
@@ -74,20 +74,20 @@ class AbstractBill(models.Model):
     payment_date = models.DateField(_("Payment date"), blank=True, null=True)
     previous_year_bill = models.BooleanField(_("Previous year bill"), default=False)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
-    amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
-    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
+    amount = models.DecimalField(_("Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
+    amount_with_vat = models.DecimalField(_("Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
                                           null=True)
-    vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2,
-                              default=float(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
+    vat = models.DecimalField(_("VAT (%)"), max_digits=4, decimal_places=2,
+                              default=float(settings.PYDICI_DEFAULT_VAT_RATE))
     expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True})
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
 
 
-    def __unicode__(self):
+    def __str__(self):
         if self.bill_id:
-            return u"%s (%s)" % (self.bill_id, self.id)
+            return "%s (%s)" % (self.bill_id, self.id)
         else:
-            return unicode(self.id)
+            return str(self.id)
 
     def payment_wait(self):
         if self.payment_date:
@@ -138,13 +138,14 @@ class ClientBill(AbstractBill):
     bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path,
                                  storage=BillStorage(nature="client"), null=True, blank=True)
     anonymize_profile = models.BooleanField(_("Anonymize profile name"), default=False)
-    lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, default=pydici.settings.LANGUAGE_CODE)
+    include_timesheet = models.BooleanField(_("Include timesheet"), default=False)
+    lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, default=settings.LANGUAGE_CODE)
 
     def client(self):
         if self.lead.paying_authority:
-            return u"%s via %s" % (self.lead, self.lead.paying_authority.short_name())
+            return "%s via %s" % (self.lead, self.lead.paying_authority.short_name())
         else:
-            return unicode(self.lead)
+            return str(self.lead)
 
     def taxes(self):
         """Return taxes subtotal grouped by taxe rate like this [[20, 1923.23], [10, 152]]"""
@@ -155,7 +156,7 @@ class ClientBill(AbstractBill):
             if not self.vat in taxes:
                 taxes[self.vat] = 0
             taxes[self.vat] += billexpense.amount_with_vat - billexpense.amount
-        return taxes.items()
+        return list(taxes.items())
 
     def expensesTotalWithTaxes(self):
         """Returns the total sum (with added taxes) of all expenses of this bill"""
@@ -163,11 +164,11 @@ class ClientBill(AbstractBill):
 
     def expensesTotal(self):
         """Returns the total sum (without added taxes) of all expenses of this bill"""
-        return self.billexpense_set.aggregate(Sum("amount")).values()[0] or 0
+        return list(self.billexpense_set.aggregate(Sum("amount")).values())[0] or 0
 
     def prestationsTotal(self):
         """Returns total of this bill without taxes and expenses"""
-        return self.billdetail_set.aggregate(Sum("amount")).values()[0] or 0
+        return list(self.billdetail_set.aggregate(Sum("amount")).values())[0] or 0
 
     def save(self, *args, **kwargs):
         if self.state in ("0_DRAFT", "0_PROPOSED"):
@@ -223,12 +224,12 @@ class BillDetail(models.Model):
     month = models.DateField(null=True)
     consultant = models.ForeignKey(Consultant, null=True, blank=True, on_delete=models.CASCADE)
     quantity = models.FloatField(_("Quantity"))
-    unit_price = models.DecimalField(_(u"Unit price (€)"), max_digits=10, decimal_places=2)
-    amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
-    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
+    unit_price = models.DecimalField(_("Unit price (€)"), max_digits=10, decimal_places=2)
+    amount = models.DecimalField(_("Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
+    amount_with_vat = models.DecimalField(_("Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
                                           null=True)
-    vat = models.DecimalField(_(u"VAT (%)"), max_digits=4, decimal_places=2,
-                              default=Decimal(pydici.settings.PYDICI_DEFAULT_VAT_RATE))
+    vat = models.DecimalField(_("VAT (%)"), max_digits=4, decimal_places=2,
+                              default=Decimal(settings.PYDICI_DEFAULT_VAT_RATE))
     label = models.CharField(_("Label"), max_length=200, blank=True, null=True)
 
     def save(self, *args, **kwargs):
@@ -250,11 +251,11 @@ class BillDetail(models.Model):
 class BillExpense(models.Model):
     """Lines of a client bill that describe what's actually billed for expenses and generic stuff"""
     bill = models.ForeignKey(ClientBill, on_delete=models.CASCADE)
-    expense = models.ForeignKey(Expense, verbose_name=_(u"Expense"), null=True, blank=True, on_delete=models.SET_NULL)
-    expense_date = models.DateField(_(u"Expense date"), null=True)
-    amount = models.DecimalField(_(u"Amount (€ excl tax)"), max_digits=10, decimal_places=2, null=True, blank=True)
-    amount_with_vat = models.DecimalField(_(u"Amount (€ incl tax)"), max_digits=10, decimal_places=2, null=True, blank=True)
-    label = models.CharField(_(u"Description"), max_length=200, blank=True, null=True)
+    expense = models.ForeignKey(Expense, verbose_name=_("Expense"), null=True, blank=True, on_delete=models.SET_NULL)
+    expense_date = models.DateField(_("Expense date"), null=True)
+    amount = models.DecimalField(_("Amount (€ excl tax)"), max_digits=10, decimal_places=2, null=True, blank=True)
+    amount_with_vat = models.DecimalField(_("Amount (€ incl tax)"), max_digits=10, decimal_places=2, null=True, blank=True)
+    label = models.CharField(_("Description"), max_length=200, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.expense:  # use expense data to fill in data if not provided

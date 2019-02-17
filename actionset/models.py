@@ -8,9 +8,12 @@ Database access layer for pydici action set module
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+
+from core.utils import cacheable
 
 
 class ActionSet(models.Model):
@@ -27,7 +30,7 @@ class ActionSet(models.Model):
     trigger = models.CharField(_("Trigger"), max_length=50, choices=ACTIONSET_TRIGGERS, blank=True, null=True)
     active = models.BooleanField(_("Active"), default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def start(self, user, targetObject=None):
@@ -47,8 +50,8 @@ class Action(models.Model):
     description = models.TextField(_("Description"), blank=True)
     actionset = models.ForeignKey(ActionSet, on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return u"%s/%s" % (self.actionset, self.name)
+    def __str__(self):
+        return "%s/%s" % (self.actionset, self.name)
 
 
 class ActionState(models.Model):
@@ -62,15 +65,30 @@ class ActionState(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
-    target_type = models.ForeignKey(ContentType, verbose_name=_(u"Target content type"), blank=True, null=True, on_delete=models.CASCADE)
-    target_id = models.PositiveIntegerField(_(u"Content id"), blank=True, null=True)
+    target_type = models.ForeignKey(ContentType, verbose_name=_("Target content type"), blank=True, null=True, on_delete=models.CASCADE)
+    target_id = models.PositiveIntegerField(_("Content id"), blank=True, null=True)
     target = GenericForeignKey(ct_field="target_type", fk_field="target_id")
 
-    def __unicode__(self):
+    def __str__(self):
         if self.target:
-            return u"%s (%s)" % (self.action, self.target)
+            return "%s (%s)" % (self.action, self.target)
         else:
-            return unicode(self.action)
+            return str(self.action)
+
+    @cacheable("ActionState.short_name__%(id)s", 3600*24)
+    def short_name(self):
+        if self.target:
+            Lead = apps.get_model("leads", "Lead")
+            Mission = apps.get_model("staffing", "Mission")
+            if self.target_type == ContentType.objects.get_for_model(Lead):
+                target_label = self.target.deal_id
+            elif self.target_type == ContentType.objects.get_for_model(Mission):
+                target_label = self.target.mission_id()
+            else:
+                target_label = str(self.target)
+            return "%s (%s)" % (self.action.name, target_label)
+        else:
+            return str(self.action.name)
 
     def delegateForm(self):
         """A user selection Form for action delagation to be used in templates"""

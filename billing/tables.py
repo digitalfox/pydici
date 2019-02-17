@@ -35,13 +35,14 @@ class BillTableDT(BillingRequestMixin, BaseDatatableView):
                             Q(state__icontains=search),
                             Q(lead__deal_id__icontains=search),
                             Q(lead__name__icontains=search),
+                            Q(lead__subsidiary__name__icontains=search),
                             Q(lead__responsible__name__icontains=search),
                             Q(lead__client__organisation__company__name__icontains=search)])
         return filters
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             filters = self.get_filters(search)
             query = Q()
@@ -55,22 +56,24 @@ class BillTableDT(BillingRequestMixin, BaseDatatableView):
             return to_int_or_round(getattr(row, column), 2)
         elif column == "lead":
             if row.lead:
-                return u"<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
+                return "<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
             else:
-                return u"-"
+                return "-"
         elif column in ("creation_date", "due_date", "payment_date"):
             return getattr(row, column).strftime("%d/%m/%y")
         elif column == "state":
             return row.get_state_display()
         elif column == "file":
-            return mark_safe(u"""<a href='%s'><span class="glyphicon glyphicon-file"></span></a>""" % row.bill_file_url())
+            return mark_safe("""<a href='%s'><span class="glyphicon glyphicon-file"></span></a>""" % row.bill_file_url())
+        elif column == "subsidiary":
+            return str(row.lead.subsidiary)
         else:
             return super(BillTableDT, self).render_column(row, column)
 
 
 class ClientBillInCreationTableDT(BillTableDT):
     """Client Bill tables backend for datatables"""
-    columns = ("bill_id", "lead", "responsible", "creation_date", "state", "amount", "amount_with_vat", "comment")
+    columns = ("bill_id", "subsidiary", "lead", "responsible", "creation_date", "state", "amount", "amount_with_vat", "comment")
     order_columns = columns
 
     def get_initial_queryset(self):
@@ -89,14 +92,14 @@ class ClientBillInCreationTableDT(BillTableDT):
             responsibles = ClientBill.objects.filter(id=row.id).values_list("billdetail__mission__responsible__id", "lead__responsible__id")
             responsibles = set(chain(*responsibles))  # flatten it
             responsibles = Consultant.objects.filter(id__in=responsibles)
-            return ", ".join([unicode(c) for c in responsibles])
+            return ", ".join([str(c) for c in responsibles])
         else:
             return super(ClientBillInCreationTableDT, self).render_column(row, column)
 
 
 class ClientBillArchiveTableDT(BillTableDT):
     """Client bill archive"""
-    columns = ("bill_id", "lead","creation_date", "state", "amount", "amount_with_vat", "comment", "file")
+    columns = ("bill_id", "subsidiary", "lead","creation_date", "state", "amount", "amount_with_vat", "comment", "file")
     order_columns = columns
     max_display_length = 100
 
@@ -106,7 +109,7 @@ class ClientBillArchiveTableDT(BillTableDT):
 
 class SupplierBillArchiveTableDT(BillTableDT):
     """Supplier bill archive"""
-    columns = ("bill_id", "supplier", "lead","creation_date", "state", "amount", "amount_with_vat", "comment",  "file")
+    columns = ("bill_id", "supplier", "subsidiary", "lead","creation_date", "state", "amount", "amount_with_vat", "comment",  "file")
     order_columns = columns
     max_display_length = 20
 
@@ -115,12 +118,13 @@ class SupplierBillArchiveTableDT(BillTableDT):
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(Q(bill_id__icontains=search) |
                            Q(lead__deal_id__icontains=search) |
                            Q(lead__name__icontains=search) |
                            Q(lead__responsible__name__icontains=search) |
+                           Q(lead__subsidiary__name__icontains=search) |
                            Q(lead__client__organisation__company__name__icontains=search) |
                            Q(supplier__company__name__icontains=search) |
                            Q(supplier__contact__name__icontains=search)

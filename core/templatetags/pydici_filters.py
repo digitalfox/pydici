@@ -18,10 +18,10 @@ from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.conf import settings
 
 from people.models import Consultant
 from leads.models import Lead
-import pydici.settings
 
 register = template.Library()
 
@@ -49,7 +49,7 @@ def truncate_by_chars(value, arg):
     """ Truncate words if higher than value and use "..."   """
     try:
         limit = int(arg)
-        value = unicode(value)
+        value = str(value)
     except ValueError:
         return value
     if len(value) >= limit:
@@ -132,8 +132,8 @@ def link_to_staffing(value, arg=None):
 @register.filter
 def get_admin_mail(value, arg=None):
     """Config to get admin contact"""
-    if pydici.settings.ADMINS:
-        return mark_safe("<a href='mailto:%s'>%s</a>" % (pydici.settings.ADMINS[0][1],
+    if settings.ADMINS:
+        return mark_safe("<a href='mailto:%s'>%s</a>" % (settings.ADMINS[0][1],
                                                          _("Mail to support")))
 
 
@@ -146,12 +146,12 @@ def pydici_simple_format(value, arg=None):
     #TODO: this may not scale with thousands of leads. It may be splitted in shunk on day.
     for dealId in set(re.findall(r"\b(%s)\b" % "|".join(dealIds), value)):
         value = re.sub(r"\b%s\b" % dealId,
-                       u"<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=dealId).get_absolute_url(), dealId),
+                       "<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=dealId).get_absolute_url(), dealId),
                        value)
 
     for trigramme in set(re.findall(r"\b(%s)\b" % "|".join(trigrammes), value)):
         value = re.sub(r"\b%s\b" % trigramme,
-                       u"<a href=%s>%s</a>" % (Consultant.objects.get(trigramme=trigramme).get_absolute_url(), trigramme),
+                       "<a href=%s>%s</a>" % (Consultant.objects.get(trigramme=trigramme).get_absolute_url(), trigramme),
                        value)
 
     # Authorized tags for markdown (thanks https://github.com/yourcelf/bleach-whitelist/blob/master/bleach_whitelist/bleach_whitelist.py)

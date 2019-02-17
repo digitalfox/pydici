@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import migrations, models
 import billing.models
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('unit_price', models.DecimalField(verbose_name='Unit price (\u20ac)', max_digits=10, decimal_places=2)),
                 ('amount', models.DecimalField(null=True, verbose_name='Amount (\u20ac excl tax)', max_digits=10, decimal_places=2, blank=True)),
                 ('amount_with_vat', models.DecimalField(null=True, verbose_name='Amount (\u20ac incl tax)', max_digits=10, decimal_places=2, blank=True)),
-                ('vat', models.DecimalField(default=b'20.0', verbose_name='VAT (%)', max_digits=4, decimal_places=2)),
+                ('vat', models.DecimalField(default='20.0', verbose_name='VAT (%)', max_digits=4, decimal_places=2)),
                 ('label', models.CharField(max_length=200, null=True, verbose_name='Label', blank=True)),
             ],
             options={
@@ -50,17 +50,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='clientbill',
             name='bill_file',
-            field=models.FileField(upload_to=billing.models.bill_file_path, storage=billing.models.BillStorage(nature=b'client'), max_length=500, blank=True, null=True, verbose_name='File'),
+            field=models.FileField(upload_to=billing.models.bill_file_path, storage=billing.models.BillStorage(nature='client'), max_length=500, blank=True, null=True, verbose_name='File'),
         ),
         migrations.AlterField(
             model_name='clientbill',
             name='state',
-            field=models.CharField(default=b'0_DRAFT', max_length=30, verbose_name='State', choices=[(b'0_DRAFT', 'Draft'), (b'1_SENT', 'Envoy\xe9e'), (b'2_PAID', 'Pay\xe9e'), (b'3_LITIGIOUS', 'En litige'), (b'4_CANCELED', 'Annul\xe9e')]),
+            field=models.CharField(default='0_DRAFT', max_length=30, verbose_name='State', choices=[('0_DRAFT', 'Draft'), ('1_SENT', 'Envoy\xe9e'), ('2_PAID', 'Pay\xe9e'), ('3_LITIGIOUS', 'En litige'), ('4_CANCELED', 'Annul\xe9e')]),
         ),
         migrations.AlterField(
             model_name='clientbill',
             name='vat',
-            field=models.DecimalField(default=b'20.0', verbose_name='VAT (%)', max_digits=4, decimal_places=2),
+            field=models.DecimalField(default='20.0', verbose_name='VAT (%)', max_digits=4, decimal_places=2),
         ),
         migrations.AlterField(
             model_name='supplierbill',
@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='supplierbill',
             name='vat',
-            field=models.DecimalField(default=b'20.0', verbose_name='VAT (%)', max_digits=4, decimal_places=2),
+            field=models.DecimalField(default='20.0', verbose_name='VAT (%)', max_digits=4, decimal_places=2),
         ),
         migrations.AddField(
             model_name='billexpense',

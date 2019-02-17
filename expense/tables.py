@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 from django.urls import reverse
 from django.db.models import Q
 from django.utils.safestring import mark_safe
-from django.utils.encoding import smart_bytes
+from django.utils.encoding import smart_str
 from django.template import Template, RequestContext
 from django.template.loader import get_template
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -73,7 +73,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             filters = self.get_filters(search)
             query = Q()
@@ -89,9 +89,9 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
             return self.receipt_template.render(context={"record": row}, request=self.request)
         elif column == "lead":
             if row.lead:
-                return u"<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
+                return "<a href='{0}'>{1}</a>".format(row.lead.get_absolute_url(), row.lead)
             else:
-                return u"-"
+                return "-"
         elif column in ("creation_date", "expense_date"):
             return self.date_template.render(context={"date": getattr(row, column)}, request=self.request)
         elif column == "update_date":
@@ -141,20 +141,20 @@ class ExpenseWorkflowTable(ExpenseTable):
                           % (expense_transition_to_state_display(transition), reverse("expense:update_expense_state", args=[record.id, transition]), expense_transition_to_state_display(transition)[0:2]))
         if self.expenseEditPerm[record.id]:
             result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>"
-                          % (smart_bytes(_("Edit")),
+                          % (smart_str(_("Edit")),
                              reverse("expense:expenses", kwargs={"expense_id": record.id}),
                              # Translators: Ed is the short term for Edit
-                             smart_bytes(_("Ed"))))
+                             smart_str(_("Ed"))))
             result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
-                          (smart_bytes(_("Delete")),
+                          (smart_str(_("Delete")),
                            reverse("expense:expense_delete",kwargs={"expense_id": record.id}),
                            # Translators: De is the short term for Delete
-                           smart_bytes(_("De"))))
+                           smart_str(_("De"))))
         result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
-                      (smart_bytes(_("Clone")),
+                      (smart_str(_("Clone")),
                       reverse("expense:clone_expense", kwargs={"clone_from": record.id}),
                        # Translators: Cl is the short term for Clone
-                      smart_bytes(_("Cl"))))
+                      smart_str(_("Cl"))))
         return mark_safe(" ".join(result))
 
     class Meta:
@@ -221,7 +221,7 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(Q(expense__comment__icontains=search) |
                            Q(expense__description__icontains=search) |

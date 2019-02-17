@@ -76,7 +76,7 @@ class CrmViewsTest(TestCase):
         data["contact-name"] = "Joe"
         response = self.client.post(view, data=data, follow=True)
         client = self.check_client_popup_response_is_ok(response)
-        self.assertEquals(client.contact.name, "Joe")
+        self.assertEqual(client.contact.name, "Joe")
         client.delete()
 
         # Time to create organisation with existing company
@@ -85,8 +85,8 @@ class CrmViewsTest(TestCase):
         data["organisation-company"] = 1
         response = self.client.post(view, data=data, follow=True)
         client = self.check_client_popup_response_is_ok(response)
-        self.assertEquals(client.organisation.name, "blabla")
-        self.assertEquals(client.organisation.company.id, 1)
+        self.assertEqual(client.organisation.name, "blabla")
+        self.assertEqual(client.organisation.company.id, 1)
         client.delete()
 
         # Incomplete new organisation should fail
@@ -107,9 +107,9 @@ class CrmViewsTest(TestCase):
         data["contact-name"] = "Superman"
         response = self.client.post(view, data=data, follow=True)
         client = self.check_client_popup_response_is_ok(response)
-        self.assertEquals(client.organisation.name, "youpala")
-        self.assertEquals(client.organisation.company.code, "YOU")
-        self.assertEquals(client.contact.name, "Superman")
+        self.assertEqual(client.organisation.name, "youpala")
+        self.assertEqual(client.organisation.company.code, "YOU")
+        self.assertEqual(client.contact.name, "Superman")
 
 
     def check_client_popup_response_is_ok(self, response):

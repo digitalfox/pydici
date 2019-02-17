@@ -85,7 +85,7 @@ class StaffingDateChoicesField(ChoiceField):
         super(StaffingDateChoicesField, self).__init__(*args, **kwargs)
 
     def has_changed(self, initial, data):
-        initial = unicode(initial) if initial is not None else ''
+        initial = str(initial) if initial is not None else ''
         return initial != data
 
 
@@ -180,9 +180,9 @@ class TimesheetForm(forms.Form):
 
                 if day == days[0]:  # Only show label for first day
                     tooltip = _("mission id: %s") % mission.mission_id()
-                    mission_link = unicode(mission)
+                    mission_link = str(mission)
                     if mission.lead_id:
-                        mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), unicode(mission))
+                        mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), str(mission))
                     self.fields[key].label = mark_safe("<span class='pydici-tooltip' title='%s'>%s</span>" % (tooltip, mission_link))
                 else:
                     self.fields[key].label = ""
