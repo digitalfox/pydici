@@ -183,10 +183,7 @@ def lead_documents(request, lead_id):
         dirs = []
         files = []
         for fileName in os.listdir(directory):
-            filePath = os.path.join(directory.encode(sys.getfilesystemencoding()), fileName)
-            if isinstance(fileName, str):
-                # Corner case, files are not encoded with filesystem encoding but another...
-                fileName = fileName.decode("utf8", "ignore")
+            filePath = os.path.join(directory, fileName)
             if os.path.isdir(filePath):
                 dirs.append((fileName + "/", lead_url_dir + "/" + directoryName + "/" + fileName + "/"))
             else:
