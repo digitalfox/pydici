@@ -183,8 +183,8 @@ def lead_documents(request, lead_id):
         dirs = []
         files = []
         for fileName in os.listdir(directory):
-            fileName = fileName.encode('utf-8', 'surrogateescape').decode('utf-8', 'replace')  # fs encoding mixup
             filePath = os.path.join(directory, fileName)
+            fileName = fileName.encode('utf-8', 'surrogateescape').decode('utf-8', 'replace')  # fs encoding mixup
             if os.path.isdir(filePath):
                 dirs.append((fileName + "/", lead_url_dir + "/" + directoryName + "/" + fileName + "/"))
             else:
