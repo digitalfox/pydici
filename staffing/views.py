@@ -1549,7 +1549,7 @@ def graph_profile_rates(request, subsidiary_id=None, team_id=None):
 
 
 @pydici_non_public
-@cache_page(60 * 10)
+@cache_page(60 * 60 * 4)
 def graph_consultant_rates(request, consultant_id):
     """Nice graph of consultant rates"""
     dailyRateData = []  # Consultant daily rate data
@@ -1572,9 +1572,10 @@ def graph_consultant_rates(request, consultant_id):
         if prodRate:
             prodRateData.append(round(100 * prodRate, 1))
             isoProdDates.append(refDate.isoformat())
-        fc = consultant.getFinancialConditions(refDate, next_month)
-        if fc:
-            dailyRateData.append(int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc])))
+        wdays = Timesheet.objects.filter(consultant=consultant, working_date__gte=refDate, working_date__lt=next_month, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"]
+        if wdays:
+            turnover = consultant.getTurnover(refDate, next_month)
+            dailyRateData.append(int(turnover / wdays))
             isoRateDates.append(refDate.isoformat())
         rate = consultant.getRateObjective(refDate, rate_type="DAILY_RATE")
         if rate:
@@ -1586,7 +1587,6 @@ def graph_consultant_rates(request, consultant_id):
             prodRateObj.append(rate.rate)
         else:
             prodRateObj.append(None)
-
 
     graph_data = [
         ["x_daily_rate"] + isoRateDates,
