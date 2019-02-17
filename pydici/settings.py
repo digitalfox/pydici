@@ -15,7 +15,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'pydici.db',
-        'TEST': {'NAME': 'pydici_test.db' },
+        'TEST': {'NAME': '/dev/shm/myproject-djangotestdb.sqlite' },
     }
 }
 
@@ -163,7 +163,7 @@ if DEBUG:
             ))
 
 WSGI_APPLICATION = "pydici.wsgi.application"
-ALLOWED_HOSTS = ("localhost", "127.0.0.1")
+ALLOWED_HOSTS = ("localhost",)
 
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_CONFIG = {"DISABLE_PANELS": "debug_toolbar.panels.redirects.RedirectsPanel",
