@@ -110,12 +110,12 @@ def consultant_detail(request, consultant_id):
         else:
             prod_rate_objective = prod_rate
         if prod_rate > prod_rate_objective:
-            prod_overhead = prod_rate - prod_rate_objective
+            prod_overhead = round(prod_rate - prod_rate_objective, 1)
             prod_missing = 0
             prod_rate -= prod_overhead
         else:
             prod_overhead = 0
-            prod_missing = prod_rate_objective - prod_rate
+            prod_missing = round(prod_rate_objective - prod_rate, 1)
     except Consultant.DoesNotExist:
         raise Http404
     return render(request, "people/consultant_detail.html",
