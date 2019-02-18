@@ -8,7 +8,7 @@ Database access layer for pydici expense module
 from time import strftime
 from os.path import join, dirname, split
 import mimetypes
-from cStringIO import StringIO
+from io import BytesIO
 from base64 import b64encode
 
 from django.db import models
@@ -17,10 +17,11 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from leads.models import Lead
 from core.utils import sanitizeName
-import pydici.settings
+
 
 EXPENSE_STATES = (
     ("REQUESTED", _("Requested")),
@@ -52,16 +53,16 @@ class ExpenseStorage(FileSystemStorage):
 # to avoid circular import loop, as utils module import Expense models
 def expense_receipt_path(instance, filename):
     """Format full path of expense receipt"""
-    return join(pydici.settings.PYDICI_ROOTDIR, "data", "expense",
+    return join(settings.PYDICI_ROOTDIR, "data", "expense",
                 strftime("%Y"), strftime("%m"), instance.user.username,
-                u"%s_%s" % (strftime("%d-%H%M%S"), sanitizeName(filename)))
+                "%s_%s" % (strftime("%d-%H%M%S"), sanitizeName(filename)))
 
 
 class ExpenseCategory(models.Model):
     """Category of an expense."""
     name = models.CharField(_("Name"), max_length=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -110,11 +111,11 @@ class Expense(models.Model):
     expensePayment = models.ForeignKey(ExpensePayment, blank=True, null=True, on_delete=models.SET_NULL)
     state = models.CharField(_("state"), choices=EXPENSE_STATES, default="REQUESTED", max_length=20)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.lead:
-            return u"%s (%s %s %s) - %s € - %s" % (self.description, self.lead, self.lead.deal_id, self.expense_date, self.amount, self.get_state_display())
+            return "%s (%s %s %s) - %s € - %s" % (self.description, self.lead, self.lead.deal_id, self.expense_date, self.amount, self.get_state_display())
         else:
-            return u"%s (%s) - %s € - %s" % (self.description, self.expense_date, self.amount, self.get_state_display())
+            return "%s (%s) - %s € - %s" % (self.description, self.expense_date, self.amount, self.get_state_display())
 
 
     def receipt_data(self):
@@ -122,11 +123,11 @@ class Expense(models.Model):
         response = ""
         if self.receipt:
             content_type = self.receipt_content_type()
-            data = StringIO()
+            data = BytesIO()
             for chunk in self.receipt.chunks():
                 data.write(chunk)
 
-            data = b64encode(data.getvalue())
+            data = b64encode(data.getvalue()).decode()
             if content_type == "application/pdf":
                 response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
             else:

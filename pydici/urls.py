@@ -8,14 +8,14 @@ import os
 
 # Django import
 from django.conf.urls import include, url
+from django.conf import settings
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 import django.views.static
 
 admin.autodiscover()
 
-# Pydici settings
-import pydici.settings
+
 from core.utils import get_parameter
 from core.views import PydiciSelect2View
 
@@ -38,7 +38,7 @@ handler500 = "core.views.internal_error"
 
 pydici_patterns = [url(r'^admin/', admin.site.urls),]
 
-if pydici.settings.DEBUG:
+if settings.DEBUG:
     import debug_toolbar
     pydici_patterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
 
@@ -48,7 +48,7 @@ pydici_patterns.extend([
 
     # Media
     url(r'^media/(?P<path>.*)$', django.views.static.serve,
-            {'document_root': os.path.join(pydici.settings.PYDICI_ROOTDIR, 'media')}),
+            {'document_root': os.path.join(settings.PYDICI_ROOTDIR, 'media')}),
 
     # Feeds
     url(r'^feeds/latest/?$', LatestLeads(), name='latest'),
@@ -76,8 +76,8 @@ pydici_patterns.extend([url("", include((core_urls, "core"), namespace="core")),
 
 
 # Application prefix
-if pydici.settings.PYDICI_PREFIX:
-    pydici_prefix = r'^%s/' % pydici.settings.PYDICI_PREFIX
+if settings.PYDICI_PREFIX:
+    pydici_prefix = r'^%s/' % settings.PYDICI_PREFIX
 else:
     pydici_prefix = ''
 

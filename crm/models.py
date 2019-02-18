@@ -48,8 +48,8 @@ class AbstractCompany(AbstractAddress):
     legal_description = models.TextField("Legal description", blank=True, null=True)
 
 
-    def __unicode__(self):
-        return unicode(self.name)
+    def __str__(self):
+        return str(self.name)
 
 
     def save(self, *args, **kwargs):
@@ -87,7 +87,7 @@ class Company(AbstractCompany):
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():
-            return float(data.aggregate(Sum("amount")).values()[0]) / 1000
+            return float(list(data.aggregate(Sum("amount")).values())[0]) / 1000
         else:
             return 0
 
@@ -98,7 +98,7 @@ class Company(AbstractCompany):
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():
-            return float(data.aggregate(Sum("amount")).values()[0]) / 1000
+            return float(list(data.aggregate(Sum("amount")).values())[0]) / 1000
         else:
             return 0
 
@@ -113,8 +113,8 @@ class ClientOrganisation(AbstractAddress):
     name = models.CharField(_("Organization"), max_length=200)
     company = models.ForeignKey(Company, verbose_name=_("Client company"), on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return u"%s : %s " % (self.company, self.name)
+    def __str__(self):
+        return "%s : %s " % (self.company, self.name)
 
     def main_address(self):
         if self.city:
@@ -148,7 +148,7 @@ class Contact(models.Model):
     contact_points = models.ManyToManyField("people.Consultant", verbose_name="Points of contact", blank=True)
     external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def companies(self, html=False):
@@ -163,14 +163,14 @@ class Contact(models.Model):
             return _("None")
         elif companies_count == 1:
             if html:
-                return mark_safe(u"<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[companies[0].id,]), unicode(companies[0])))
+                return mark_safe("<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[companies[0].id,]), str(companies[0])))
             else:
                 return companies[0]
         elif companies_count > 1:
             if html:
-                return mark_safe(u", ".join([u"<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[i.id,]), unicode(i)) for i in companies]))
+                return mark_safe(", ".join(["<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[i.id,]), str(i)) for i in companies]))
             else:
-                return u", ".join([unicode(i) for i in companies])
+                return ", ".join([str(i) for i in companies])
     companies.short_description = _("Companies")
 
     def companies_html(self):
@@ -186,7 +186,7 @@ class Contact(models.Model):
         missionColor = "#E4C160"
 
         try:
-            me = GNode(unicode(self.id), unicode(self), color="#EEE")
+            me = GNode(str(self.id), str(self), color="#EEE")
             nodes.add(me)
             # Mission relations
             for missionContact in self.missioncontact_set.all():
@@ -198,7 +198,7 @@ class Contact(models.Model):
                     nodes.add(missionNode)
                     edges.append(GEdge(me, missionNode, color=missionColor))
                     for consultant in mission.consultants():
-                        consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
+                        consultantNode = GNode("consultant-%s" % consultant.id, str(consultant))
                         nodes.add(consultantNode)
                         edges.append(GEdge(missionNode, consultantNode, color=missionColor))
             # Business / Lead relations
@@ -206,13 +206,13 @@ class Contact(models.Model):
                 if client.lead_set.count() < 5 :
                     for lead in client.lead_set.all():
                         leadNode = GNode("lead-%s" % lead.id, """<span class="glyphicon-svg glyphicon-euro"></span>
-                                                                 <span class='graph-tooltip' title='%s'><a href='%s'>%s&nbsp;</a></span>""" % (unicode(lead),
+                                                                 <span class='graph-tooltip' title='%s'><a href='%s'>%s&nbsp;</a></span>""" % (str(lead),
                                                                                                                                                lead.get_absolute_url(),
                                                                                                                                                lead.deal_id))
                         nodes.add(leadNode)
                         edges.append(GEdge(me,leadNode, color=leadColor))
                         if lead.responsible:
-                            consultantNode = GNode("consultant-%s" % lead.responsible.id, unicode(lead.responsible))
+                            consultantNode = GNode("consultant-%s" % lead.responsible.id, str(lead.responsible))
                             nodes.add(consultantNode)
                             edges.append(GEdge(leadNode, consultantNode, color=leadColor))
                 else:
@@ -223,28 +223,28 @@ class Contact(models.Model):
                         leads.append(lead)
                         if lead.responsible:
                             responsibles.append(lead.responsible)
-                    leadsId = "-".join([unicode(l.id) for l in leads])
-                    leadsTitle = unicode(client.organisation)
+                    leadsId = "-".join([str(l.id) for l in leads])
+                    leadsTitle = str(client.organisation)
                     leadsLabel = _("%s leads" % len(leads))
                     leadsNode = GNode("leads-%s" % leadsId, """<span class='glyphicon-svg glyphicon-euro'></span>
                                                                <span class='graph-tooltip' title='%s'>&nbsp;%s&nbsp;</span>""" % (leadsTitle, leadsLabel))
                     nodes.add(leadsNode)
                     edges.append(GEdge(me,leadsNode, color=leadColor))
                     for responsible in responsibles:
-                        consultantNode = GNode("consultant-%s" % responsible.id, unicode(responsible))
+                        consultantNode = GNode("consultant-%s" % responsible.id, str(responsible))
                         nodes.add(consultantNode)
                         edges.append(GEdge(leadsNode, consultantNode, color=leadColor))
 
             # Direct contact relation
             for consultant in self.contact_points.all():
-                consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
+                consultantNode = GNode("consultant-%s" % consultant.id, str(consultant))
                 nodes.add(consultantNode)
                 edges.append(GEdge(me, consultantNode, color=directColor))
 
             return """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
 
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
 
     def get_absolute_url(self):
         return reverse("crm:contact_detail", args=[self.id, ])
@@ -259,9 +259,9 @@ class BusinessBroker(models.Model):
     company = models.ForeignKey(Company, verbose_name=_("Broker company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.company:
-            return u"%s (%s)" % (self.company, self.contact)
+            return "%s (%s)" % (self.company, self.contact)
         else:
             return self.contact
 
@@ -282,11 +282,11 @@ class Supplier(models.Model):
     company = models.ForeignKey(Company, verbose_name=_("Supplier company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.contact:
-            return u"%s (%s)" % (self.company, self.contact)
+            return "%s (%s)" % (self.company, self.contact)
         else:
-            return unicode(self.company)
+            return str(self.company)
 
     class Meta:
         ordering = ["company", "contact"]
@@ -315,11 +315,11 @@ class Client(AbstractAddress):
     billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
     billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True, verbose_name=_("Billing contact"), on_delete=models.SET_NULL)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.contact:
-            return u"%s (%s)" % (self.organisation, self.contact)
+            return "%s (%s)" % (self.organisation, self.contact)
         else:
-            return unicode(self.organisation)
+            return str(self.organisation)
 
     def getFinancialConditions(self):
         """Get financial condition for this client by profil
@@ -340,7 +340,7 @@ class Client(AbstractAddress):
             data[fc.consultant.profil].append(fc.daily_rate)
 
         # compute average
-        for profil, profilRates in data.items():
+        for profil, profilRates in list(data.items()):
             if len(profilRates) > 0:
                 avg = sum(profilRates) / len(profilRates)
             else:
@@ -351,7 +351,7 @@ class Client(AbstractAddress):
         rates.sort(key=lambda x: x[0].level)
         return rates
 
-    @cacheable("Client__objectiveMargin__%(id)s", 60)
+    @cacheable("Client.objectiveMargin__%(id)s", 60)
     def objectiveMargin(self):
         """Compute margin over budget objective across all mission of this client
         @return: list of (margin in €, margin in % of total turnover) for internal consultant and subcontractor"""
@@ -360,7 +360,7 @@ class Client(AbstractAddress):
         subcontractorMargin = 0
 
         for mission in Mission.objects.filter(lead__client=self):
-            for consultant, margin in mission.objectiveMargin().items():
+            for consultant, margin in list(mission.objectiveMargin().items()):
                 if consultant.subcontractor:
                     subcontractorMargin += margin
                 else:
@@ -392,7 +392,7 @@ class Client(AbstractAddress):
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():
-            return float(data.aggregate(Sum("amount")).values()[0]) / 1000
+            return float(list(data.aggregate(Sum("amount")).values())[0]) / 1000
         else:
             return 0
 
@@ -433,8 +433,8 @@ class MissionContact(models.Model):
     company = models.ForeignKey(Company, verbose_name=_("company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, verbose_name=_("Contact"), on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return u"%s (%s)" % (self.contact, self.company)
+    def __str__(self):
+        return "%s (%s)" % (self.contact, self.company)
 
     def get_absolute_url(self):
         return reverse("crm:contact_detail", args=[self.contact.id, ])
@@ -450,7 +450,7 @@ class AdministrativeFunction(models.Model):
     """Admin functions in a company (sales, HR, billing etc."""
     name = models.CharField(_("Name"), max_length=200, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -466,8 +466,8 @@ class AdministrativeContact(models.Model):
     default_fax = models.CharField(_("Generic fax"), max_length=100, blank=True, null=True)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return u"%s (%s)" % (unicode(self.contact), unicode(self.company))
+    def __str__(self):
+        return "%s (%s)" % (str(self.contact), str(self.company))
 
     def phone(self):
         """Best phone number to use"""

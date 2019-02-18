@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import taggit.managers
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('external_staffing', models.CharField(max_length=300, verbose_name='External staffing', blank=True)),
                 ('start_date', models.DateField(null=True, verbose_name='Starting', blank=True)),
                 ('due_date', models.DateField(null=True, verbose_name='Due', blank=True)),
-                ('state', models.CharField(default=b'QUALIF', max_length=30, verbose_name='State', db_index=True, choices=[(b'QUALIF', 'En qualif.'), (b'WRITE_OFFER', 'Propal. \xe0 \xe9crire'), (b'OFFER_SENT', 'Propal. envoy\xe9e'), (b'NEGOTIATION', 'En n\xe9go.'), (b'WON', 'Gagn\xe9e'), (b'LOST', 'Perdue'), (b'FORGIVEN', 'Abandonn\xe9e'), (b'SLEEPING', 'En sommeil')])),
+                ('state', models.CharField(default='QUALIF', max_length=30, verbose_name='State', db_index=True, choices=[('QUALIF', 'En qualif.'), ('WRITE_OFFER', 'Propal. \xe0 \xe9crire'), ('OFFER_SENT', 'Propal. envoy\xe9e'), ('NEGOTIATION', 'En n\xe9go.'), ('WON', 'Gagn\xe9e'), ('LOST', 'Perdue'), ('FORGIVEN', 'Abandonn\xe9e'), ('SLEEPING', 'En sommeil')])),
                 ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name='Creation')),
                 ('deal_id', models.CharField(db_index=True, max_length=100, verbose_name='Deal id', blank=True)),
                 ('client_deal_id', models.CharField(max_length=100, verbose_name='Client deal id', blank=True)),
@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
             name='StateProba',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('state', models.CharField(max_length=30, verbose_name='State', choices=[(b'QUALIF', 'En qualif.'), (b'WRITE_OFFER', 'Propal. \xe0 \xe9crire'), (b'OFFER_SENT', 'Propal. envoy\xe9e'), (b'NEGOTIATION', 'En n\xe9go.'), (b'WON', 'Gagn\xe9e'), (b'LOST', 'Perdue'), (b'FORGIVEN', 'Abandonn\xe9e'), (b'SLEEPING', 'En sommeil')])),
+                ('state', models.CharField(max_length=30, verbose_name='State', choices=[('QUALIF', 'En qualif.'), ('WRITE_OFFER', 'Propal. \xe0 \xe9crire'), ('OFFER_SENT', 'Propal. envoy\xe9e'), ('NEGOTIATION', 'En n\xe9go.'), ('WON', 'Gagn\xe9e'), ('LOST', 'Perdue'), ('FORGIVEN', 'Abandonn\xe9e'), ('SLEEPING', 'En sommeil')])),
                 ('score', models.IntegerField(verbose_name='Score')),
                 ('lead', models.ForeignKey(to='leads.Lead', on_delete=models.CASCADE)),
             ],

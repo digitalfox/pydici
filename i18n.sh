@@ -4,6 +4,6 @@
 
 OLD=$PWD
 cd $(dirname $0)
-python manage.py makemessages -a -e ".html,.txt,.py" -i data -i venv -i node_modules
+python manage.py makemessages -a -e ".html,.txt,.py" -i data -i venv -i venv3 -i node_modules
 cd locale && python ../manage.py compilemessages
 cd $OLD

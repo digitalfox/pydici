@@ -29,7 +29,7 @@ class ConsultantProfile(models.Model):
     name = models.CharField(_("Name"), max_length=50, unique=True)
     level = models.IntegerField(_("Level"))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -50,7 +50,7 @@ class Consultant(models.Model):
     subcontractor = models.BooleanField(_("Subcontractor"), default=False)
     subcontractor_company = models.CharField(max_length=200, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def full_name(self):
@@ -150,17 +150,27 @@ class Consultant(models.Model):
         @param startDate: if None, from the creation of earth
         @param endDate : if None, up to today
         @return: turnover in euros"""
-        from staffing.models import Timesheet, FinancialCondition  # Late import to avoid circular reference
+        from staffing.models import Timesheet, FinancialCondition, Mission  # Late import to avoid circular reference
         if startDate is None:
             startDate = date(1977, 2, 18)
         if endDate is None:
             endDate = date.today()
         turnover = 0
         timesheets = Timesheet.objects.filter(consultant=self, working_date__gte=startDate, working_date__lt=endDate, mission__nature="PROD").order_by("mission__id")
-        timesheets = timesheets.values_list("mission").annotate(Sum("charge"))
+        timesheets = timesheets.values_list("mission", "mission__billing_mode").annotate(Sum("charge"))
         rates = dict(FinancialCondition.objects.filter(consultant=self, mission__in=[i[0] for i in timesheets]).values_list("mission", "daily_rate"))
-        for mission, charge in timesheets:
-            turnover += charge * rates.get(mission, 0)
+        for mission_id, billing_mode, charge in timesheets:
+            mission_turnover = charge * rates.get(mission_id, 0)
+            if billing_mode == "FIXED_PRICE":
+                mission = Mission.objects.get(id=mission_id)
+                done_work = mission.done_work_k()[1]
+                price = float(mission.price or 0)
+                if done_work and done_work > price or (not mission.active and done_work < price):
+                    # mission is a fixed price and has been overshoot. Limit turnover to fixed price in proportion to what have been done
+                    # or mission is archived and have margin
+                    mission_turnover = mission_turnover * price / done_work
+            turnover += mission_turnover
+
         return turnover
 
     @cacheable("Consultant.getUser%(id)s", 3600)
@@ -200,7 +210,8 @@ class Consultant(models.Model):
         days = Timesheet.objects.filter(consultant=self,
                                         charge__gt=0,
                                         working_date__gte=today.replace(day=1),
-                                        working_date__lte=today).aggregate(Sum("charge")).values()[0]
+                                        working_date__lte=today).aggregate(Sum("charge"))
+        days = list(days.values())[0]
         return days or 0
 
     def forecasted_days(self):
@@ -211,7 +222,8 @@ class Consultant(models.Model):
         days = Staffing.objects.filter(consultant=self,
                                        charge__gt=0,
                                        staffing_date__gte=today.replace(day=1),
-                                       staffing_date__lte=today).aggregate(Sum("charge")).values()[0]
+                                       staffing_date__lte=today).aggregate(Sum("charge"))
+        days = list(days.values())[0]
         return days or 0
 
     @cacheable(CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY, 6*3600)
@@ -247,7 +259,7 @@ class Consultant(models.Model):
         current_month = date.today().replace(day=1)
         for month, up_to in ((previousMonth(current_month), current_month), (current_month, date.today())):
             wd = working_days(month, holidayDays(month=month),upToToday=True)
-            td = Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values()[0] or 0
+            td = list(Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values())[0] or 0
             result.append(wd - td)
         return result
 
@@ -272,7 +284,7 @@ class SalesMan(models.Model):
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s)" % (self.name, self.company)
 
     def save(self, force_insert=False, force_update=False):

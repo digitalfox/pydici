@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text
 from django import forms
 
 from crispy_forms.layout import Layout, Div, Column, Fieldset, Field
@@ -40,7 +40,7 @@ class LeadChoices(ModelSelect2Widget):
         return Lead.objects.distinct()
 
     def label_from_instance(self, obj):
-        return smart_unicode("%s (%s)" % (unicode(obj), obj.deal_id))
+        return smart_text("%s (%s)" % (str(obj), obj.deal_id))
 
 
 class CurrentLeadChoices(LeadChoices):

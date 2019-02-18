@@ -52,7 +52,7 @@ class BillingDateChoicesField(TypedChoiceField):
         super(BillingDateChoicesField, self).__init__(*args, **kwargs)
 
     def has_changed(self, initial, data):
-        initial = unicode(initial) if initial is not None else ''
+        initial = str(initial) if initial is not None else ''
         return initial != data
 
 
@@ -69,7 +69,7 @@ class ClientBillForm(PydiciCrispyModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(Div(TabHolder(Tab(_("Description"),
                                                       Column("lead", "bill_id", "state", css_class="col-md-6"),
-                                                      Column("comment", "lang", "anonymize_profile", "bill_file", css_class="col-md-6"), ),
+                                                      Column("comment", "lang", "anonymize_profile", "include_timesheet", "bill_file", css_class="col-md-6"), ),
                                                   Tab(_("Amounts"),
                                                       Column("amount", "vat", "amount_with_vat", css_class="col-md-6")),
                                                   Tab(_("Dates"), Column("creation_date", "due_date", "payment_date",
@@ -137,9 +137,10 @@ class BillDetailForm(ModelForm):
 class BillExpenseInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillExpenseInlineFormset, self).add_fields(form, index)
-        #TODO: should use Chargeable expense only
-        form.fields["expense"] = ModelChoiceField(label=_(u"Expense"), required=False, widget=ExpenseChoices, queryset=Expense.objects.filter(lead=self.instance.lead))
-        form.fields["expense_date"] = DateField(label=_(u"Expense date"), required=False, widget=DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
+        qs = Expense.objects.filter(lead=self.instance.lead, chargeable=True)
+        qs_widget = qs.filter(billexpense__isnull=True)  # Don't propose an expense already billed
+        form.fields["expense"] = ModelChoiceField(label=_("Expense"), required=False, widget=ExpenseChoices(queryset=qs_widget), queryset=qs)
+        form.fields["expense_date"] = DateField(label=_("Expense date"), required=False, widget=DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
 
 
     def clean(self):

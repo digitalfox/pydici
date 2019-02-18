@@ -15,7 +15,6 @@ from django.conf import settings
 # Pydici modules
 from core.utils import monthWeekNumber, previousWeek, nextWeek, cumulateList, capitalize, get_parameter
 from core.models import GroupFeature, FEATURES, Parameter
-import pydici.settings
 
 # Python modules used by tests
 from datetime import date
@@ -26,7 +25,7 @@ from subprocess import Popen, PIPE
 
 
 TEST_USERNAME = "sre"
-PREFIX = "/" + pydici.settings.PYDICI_PREFIX
+PREFIX = "/" + settings.PYDICI_PREFIX
 PYDICI_PAGES = ("/",
                 "/search",
                 "/search?q=lala",
@@ -110,9 +109,14 @@ PYDICI_PAGES = ("/",
 PYDICI_AJAX_PAGES = (
                 "/staffing/forecast/consultant/1/",
                 "/staffing/timesheet/consultant/1/",
+                "/staffing/forecast/consultant/1/",
                 "/staffing/timesheet/consultant/1/?csv",
                 "/staffing/timesheet/consultant/1/2010/10",
                 "/staffing/timesheet/consultant/1/2010/10/2",
+                "/staffing/timesheet/mission/1/",
+                "/staffing/timesheet/mission/1/?csv",
+                "/staffing/timesheet/mission/1/?pdf",
+                "/staffing/forecast/mission/1/",
                 "/leads/graph/bar-jqp",
                 "/crm/company/graph/sales",
                 "/crm/company/graph/sales/lastyear",
@@ -131,11 +135,13 @@ class SimpleTest(TestCase):
 
     def test_basic_page(self):
         self.client.force_login(self.test_user)
-        for page in PYDICI_PAGES + PYDICI_AJAX_PAGES:
+        error_msg = "Failed to test url %s (got %s instead of 200"
+        for page in PYDICI_PAGES:
             response = self.client.get(PREFIX + page)
-            self.failUnlessEqual(response.status_code, 200,
-                                 "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
-
+            self.assertEqual(response.status_code, 200, error_msg % (page, response.status_code))
+        for page in PYDICI_AJAX_PAGES:
+            response = self.client.get(PREFIX + page, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+            self.assertEqual(response.status_code, 200, error_msg % (page, response.status_code))
 
     def test_page_with_args(self):
         self.client.force_login(self.test_user)
@@ -144,13 +150,13 @@ class SimpleTest(TestCase):
                             ("/search", {"q": "a+e"})
                             ):
             response = self.client.get(PREFIX + page, args)
-            self.failUnlessEqual(response.status_code, 200,
+            self.assertEqual(response.status_code, 200,
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
 
     def test_redirect(self):
         self.client.force_login(self.test_user)
         response = self.client.get(PREFIX + "/help")
-        self.failUnlessEqual(response.status_code, 301)
+        self.assertEqual(response.status_code, 301)
         for page in ("/staffing/mission/newfromdeal/1/",
                      "/staffing/mission/newfromdeal/2/",
                      "/staffing/forecast/mission/1/",
@@ -162,14 +168,14 @@ class SimpleTest(TestCase):
                      "/people/detail/consultant/1/",
                      ):
             response = self.client.get(PREFIX + page)
-            self.failUnlessEqual(response.status_code, 302)
+            self.assertEqual(response.status_code, 302)
 
     def test_not_found_page(self):
         self.client.force_login(self.test_user)
         for page in (PREFIX + "/leads/234/",
                      PREFIX + "/leads/sendmail/434/"):
             response = self.client.get(page)
-            self.failUnlessEqual(response.status_code, 404,
+            self.assertEqual(response.status_code, 404,
                                  "Failed to test url %s (got %s instead of 404" % (page, response.status_code))
 
     def test_pdc_review(self):
@@ -178,7 +184,7 @@ class SimpleTest(TestCase):
         for arg in ({}, {"projected": None}, {"groupby": "manager"}, {"groupby": "position"},
                     {"n_month": "5"}, {"n_month": "50"}):
             response = self.client.get(url, arg)
-            self.failUnlessEqual(response.status_code, 200,
+            self.assertEqual(response.status_code, 200,
                 "Failed to test pdc_review with arg %s (got %s instead of 200" % (arg, response.status_code))
 
 
@@ -231,11 +237,11 @@ class UtilsTest(TestCase):
         self.assertListEqual(cumulateList([8]), [8])
 
     def test_capitalize(self):
-        data = ((u"coucou", u"Coucou"),
-                (u"état de l'art", u"État De L'Art"),
-                (u"fusion du si", u"Fusion Du Si"),
-                (u"cohérence du SI", u"Cohérence Du SI"),
-                (u"test-and-learn", u"Test-And-Learn"))
+        data = (("coucou", "Coucou"),
+                ("état de l'art", "État De L'Art"),
+                ("fusion du si", "Fusion Du Si"),
+                ("cohérence du SI", "Cohérence Du SI"),
+                ("test-and-learn", "Test-And-Learn"))
         for word, capitalizeddWord in data:
             self.assertEqual(capitalizeddWord, capitalize(word))
 
@@ -244,13 +250,13 @@ class UtilsTest(TestCase):
         self.assertRaises(Exception, get_parameter, "foo")
         p = Parameter(key="testT", value="valueT", type="TEXT", desc="test")
         p.save()
-        self.assertEquals(get_parameter(p.key), p.value)
+        self.assertEqual(get_parameter(p.key), p.value)
         p = Parameter(key="testF", value=0.666, type="FLOAT", desc="test")
         p.save()
-        self.assertEquals(get_parameter(p.key), p.value)
+        self.assertEqual(get_parameter(p.key), p.value)
         p.value=0.777
         p.save()
-        self.assertEquals(get_parameter(p.key), p.value)
+        self.assertEqual(get_parameter(p.key), p.value)
 
 class JsTest(StaticLiveServerTestCase):
     """Test page through fake browser (phantomjs) to check that javascript stuff is going well"""
@@ -292,16 +298,16 @@ def run_casper(test_filename, client, **kwargs):
     else:
         kwargs["log-level"] = "error"
     cmd = ["casperjs", "--web-security=no", "test"]
-    cmd.extend([("--%s=%s" % i) for i in kwargs.iteritems()])
+    cmd.extend([("--%s=%s" % i) for i in kwargs.items()])
     cmd.append(test_filename)
     try:
         p = Popen(cmd, stdout=PIPE, stderr=PIPE, env=env, cwd=os.path.dirname(test_filename))
         out, err = p.communicate()
-    except OSError, e:
-        print "WARNING: casperjs is not installed or properly setup. Skipping JS Tests..."
-        print e
+    except OSError as e:
+        print("WARNING: casperjs is not installed or properly setup. Skipping JS Tests...")
+        print(e)
         return True
     if verbose or p.returncode:
-        sys.stdout.write(out)
-        sys.stderr.write(err)
+        sys.stdout.write(out.decode())
+        sys.stderr.write(err.decode())
     return p.returncode == 0

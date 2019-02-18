@@ -9,7 +9,7 @@ from datetime import date, timedelta
 import mimetypes
 from collections import defaultdict
 import json
-from cStringIO import StringIO
+from io import BytesIO
 
 from django.core.files.base import ContentFile
 from os.path import basename
@@ -20,7 +20,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
 from django.utils import translation
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
-from django.db.models import Sum, Q, F
+from django.db.models import Sum, Q, F, Min, Max
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
@@ -33,8 +33,7 @@ logger = logging.getLogger("weasyprint")
 if not logger.handlers:
     logger.addHandler(logging.NullHandler())
 
-from django_weasyprint import PDFTemplateView
-from django_weasyprint.views import PDFTemplateResponse
+from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
 from PyPDF2 import PdfFileMerger, PdfFileReader
 
 from billing.utils import get_billing_info, create_client_bill_from_timesheet, create_client_bill_from_proportion, bill_pdf_filename
@@ -42,6 +41,7 @@ from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
+from staffing.views import MissionTimesheetReportPdf
 from crm.models import Subsidiary
 from core.utils import get_fiscal_years, get_parameter, user_has_feature
 from crm.models import Company
@@ -176,23 +176,31 @@ class Bill(PydiciNonPublicdMixin, TemplateView):
         return super(Bill, self).dispatch(*args, **kwargs)
 
 
-class ExpensePDFTemplateResponse(PDFTemplateResponse):
+class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
     """TemplateResponse override to merge """
     @property
     def rendered_content(self):
         old_lang = translation.get_language()
         try:
-            target = StringIO()
+            target = BytesIO()
             bill = self.context_data["bill"]
             translation.activate(bill.lang)
-            pdf_content = super(ExpensePDFTemplateResponse, self).rendered_content
-            pdf_stringio = StringIO()
-            pdf_stringio.write(pdf_content)
+            bill_pdf = super(BillAnnexPDFTemplateResponse, self).rendered_content
             merger = PdfFileMerger()
-            merger.append(PdfFileReader(pdf_stringio))
+            merger.append(PdfFileReader(BytesIO(bill_pdf)))
+            # Add expense receipt
             for billExpense in bill.billexpense_set.all():
                 if billExpense.expense and billExpense.expense.receipt_content_type() == "application/pdf":
                     merger.append(PdfFileReader(billExpense.expense.receipt.file))
+            # Add timesheet
+            if bill.include_timesheet:
+                fake_http_request = self._request
+                fake_http_request.method = "GET"
+                for mission in Mission.objects.filter(billdetail__bill=bill).annotate(Min("billdetail__month"), Max("billdetail__month")).distinct():
+                    response = MissionTimesheetReportPdf.as_view()(fake_http_request, mission=mission,
+                                                                   start=mission.billdetail__month__min,
+                                                                   end=mission.billdetail__month__max)
+                    merger.append(BytesIO(response.rendered_content))
             merger.write(target)
             target.seek(0)  # Be kind, rewind
             return target
@@ -201,8 +209,8 @@ class ExpensePDFTemplateResponse(PDFTemplateResponse):
 
 
 
-class BillPdf(Bill, PDFTemplateView):
-    response_class = ExpensePDFTemplateResponse
+class BillPdf(Bill, WeasyTemplateView):
+    response_class = BillAnnexPDFTemplateResponse
 
     def get_filename(self):
         bill = self.get_context_data(**self.kwargs)["bill"]
@@ -230,10 +238,8 @@ def client_bill(request, bill_id=None):
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
         # First, ensure user is allowed to manipulate the bill
         if bill and bill.state not in wip_status and not user_has_feature(request.user, billing_management_feature):
-            print("1")
             return forbiden
         if form.data["state"] not in wip_status and not user_has_feature(request.user, billing_management_feature):
-            print("2")
             return forbiden
         # Now, process form
         if bill and bill.state in wip_status:
@@ -310,7 +316,7 @@ def clientbill_delete(request, bill_id):
         else:
             messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
             redirect_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
-    except Exception, e:
+    except Exception as e:
         print(e)
         messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
 
@@ -390,7 +396,7 @@ def client_bills_in_creation(request):
     """Review client bill in preparation"""
     return render(request, "billing/client_bills_in_creation.html",
                   {"data_url": reverse('billing:client_bills_in_creation_DT'),
-                   "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2] }]  ''',
+                   "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [1, 3] }]  ''',
                    "user": request.user})
 
 
@@ -400,7 +406,7 @@ def client_bills_archive(request):
     """Review all client bill """
     return render(request, "billing/client_bills_archive.html",
                   {"data_url": reverse('billing:client_bills_archive_DT'),
-                   "datatable_options": ''' "order": [[2, "desc"]], "columnDefs": [{ "orderable": false, "targets": [7] }]  ''',
+                   "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [1, 8] }]  ''',
                    "user": request.user})
 
 
@@ -410,7 +416,7 @@ def supplier_bills_archive(request):
     """Review all supplier bill """
     return render(request, "billing/supplier_bills_archive.html",
                   {"data_url": reverse('billing:supplier_bills_archive_DT'),
-                   "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [8] }]  ''',
+                   "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2, 9] }]  ''',
                    "user": request.user})
 
 
@@ -464,23 +470,23 @@ def graph_billing_jqp(request):
         wStaffingData[kdate] += staffing.charge * financialConditions.get(staffing.consultant_id, {}).get(staffing.mission_id, 0) * staffing.mission.probability / 100 / 1000
 
     # Set bottom of each graph. Starts if [0, 0, 0, ...]
-    billKdates = billsData.keys()
+    billKdates = list(billsData.keys())
     billKdates.sort()
     isoBillKdates = [a.isoformat() for a in billKdates]  # List of date as string in ISO format
 
     # Draw a bar for each state
     for state in ClientBill.CLIENT_BILL_STATE:
         ydata = [sum([float(i.amount) / 1000 for i in x if i.state == state[0]]) for x in sortedValues(billsData)]
-        graph_data.append(zip(isoBillKdates, ydata))
+        graph_data.append(list(zip(isoBillKdates, ydata)))
 
     # Sort keys
-    tsKdates = tsData.keys()
+    tsKdates = list(tsData.keys())
     tsKdates.sort()
     isoTsKdates = [a.isoformat() for a in tsKdates]  # List of date as string in ISO format
-    staffingKdates = staffingData.keys()
+    staffingKdates = list(staffingData.keys())
     staffingKdates.sort()
     isoStaffingKdates = [a.isoformat() for a in staffingKdates]  # List of date as string in ISO format
-    wStaffingKdates = staffingData.keys()
+    wStaffingKdates = list(staffingData.keys())
     wStaffingKdates.sort()
     isoWstaffingKdates = [a.isoformat() for a in wStaffingKdates]  # List of date as string in ISO format
 
@@ -490,11 +496,11 @@ def graph_billing_jqp(request):
     wStaffingYData = sortedValues(wStaffingData)
 
     # Draw done work
-    graph_data.append(zip(isoTsKdates, tsYData))
+    graph_data.append(list(zip(isoTsKdates, tsYData)))
 
     # Draw forecasted work
-    graph_data.append(zip(isoStaffingKdates, staffingYData))
-    graph_data.append(zip(isoWstaffingKdates, wStaffingYData))
+    graph_data.append(list(zip(isoStaffingKdates, staffingYData)))
+    graph_data.append(list(zip(isoWstaffingKdates, wStaffingYData)))
 
     return render(request, "billing/graph_billing_jqp.html",
                   {"graph_data": json.dumps(graph_data),
@@ -528,7 +534,7 @@ def graph_yearly_billing(request):
             data[subsidiary.name].append(turnover.get(subsidiary.name, 0))
 
     last_turnover = 0
-    for current_turnover in [sum(i) for i in zip(*data.values())]:  # Total per year
+    for current_turnover in [sum(i) for i in zip(*list(data.values()))]:  # Total per year
         if last_turnover > 0:
             growth.append(round(100 * (current_turnover - last_turnover) / last_turnover, 1))
         else:
@@ -541,7 +547,7 @@ def graph_yearly_billing(request):
     graph_data.append(["x"] + years)  # X (years) axis
 
     # Add turnover per subsidiary
-    for key, value in data.items():
+    for key, value in list(data.items()):
         if sum(value) == 0:
             continue
         value.insert(0, key)

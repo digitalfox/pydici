@@ -29,7 +29,7 @@ class MissionLookup(object):
 
     def format_item(self, mission):
         """ the display of a currently selected object in the area below the search box. html is OK """
-        return unicode(mission)
+        return str(mission)
 
     def get_objects(self, ids):
         """ given a list of ids, return the objects ordered as you would like them on the admin page.

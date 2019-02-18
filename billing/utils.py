@@ -40,7 +40,7 @@ def get_billing_info(timesheet_data):
             [consultant, to_int_or_round(charge, 2), rates[consultant][0], total])
 
     # Sort data
-    billing_data = billing_data.items()
+    billing_data = list(billing_data.items())
     billing_data.sort(key=lambda x: x[0].deal_id)
     return billing_data
 
@@ -103,7 +103,7 @@ def create_client_bill_from_proportion(mission, proportion):
 def bill_pdf_filename(bill):
     """Nice name for generated pdf file"""
     try:
-        filename = u"%s-%s.pdf" % (bill.bill_id, bill.lead.deal_id)
+        filename = "%s-%s.pdf" % (bill.bill_id, bill.lead.deal_id)
     except ValueError:
         # Incomplete bill, we still want to generate the pdf
         filename = "bill.pdf"

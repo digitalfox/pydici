@@ -53,11 +53,11 @@ class Mission(models.Model):
     archived_date = models.DateTimeField(_("Archived date"), blank=True, null=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.description and not self.lead:
-            return unicode(self.description)
+            return str(self.description)
         else:
-            name = unicode(self.lead)
+            name = str(self.lead)
             if self.description:
                 return u"%s/%s" % (name, self.description)
             else:
@@ -76,7 +76,7 @@ class Mission(models.Model):
 
     def full_name(self):
         """Full mission name with deal id"""
-        return u"%s (%s)" % (unicode(self), self.mission_id())
+        return u"%s (%s)" % (str(self), self.mission_id())
 
     def no_more_staffing_since(self, refDate=None):
         """@return: True if at least one staffing is defined after refDate. Zero charge staffing are considered."""
@@ -146,7 +146,7 @@ class Mission(models.Model):
         elif self.deal_id:
             return self.deal_id
         else:
-            return unicode(self.id)
+            return str(self.id)
 
     @cacheable("Mission.done_work%(id)s", 10)
     def done_work(self):
@@ -266,7 +266,7 @@ class Mission(models.Model):
         """Starting date (=oldiest) staffing date of this mission. None if no staffing"""
         start_dates = self.staffing_set.all().aggregate(Min("staffing_date")).values()
         if start_dates:
-            return start_dates[0]
+            return list(start_dates)[0]
         else:
             return None
 
@@ -277,7 +277,7 @@ class Mission(models.Model):
         mission_id = self.mission_id()
         mission_name = self.short_name()
         current_month = date.today().replace(day=1)  # Current month
-        subsidiary = unicode(self.subsidiary)
+        subsidiary = str(self.subsidiary)
         dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
         consultant_rates = self.consultant_rates()
         billing_mode = self.get_billing_mode_display()
@@ -295,7 +295,7 @@ class Mission(models.Model):
         staffingMonths = list(staffings.dates("staffing_date", "month"))
 
         for consultant in self.consultants():
-            consultant_name = unicode(consultant)
+            consultant_name = str(consultant)
             timesheet_data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
             timesheet_data = convertDictKeyToDate(timesheet_data)
             staffing_data = dict(staffings.filter(consultant=consultant).values_list("staffing_date").annotate(Sum("charge")).order_by("staffing_date"))
@@ -342,7 +342,7 @@ class Staffing(models.Model):
     update_date = models.DateTimeField(blank=True, null=True)
     last_user = models.CharField(max_length=60, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s/%s (%s): %s" % (self.staffing_date.month, self.staffing_date.year, self.consultant.trigramme, self.charge)
 
     def save(self, *args, **kwargs):
@@ -365,7 +365,7 @@ class Timesheet(models.Model):
     working_date = models.DateField(_("Date"))
     charge = models.FloatField(_("Load"), default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s: %s" % (self.working_date, self.consultant.trigramme, self.charge)
 
     class Meta:

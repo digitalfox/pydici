@@ -51,7 +51,7 @@ def _init_menu_templates():
             mod = import_module(app + '.menus')
         except ImportError:
             continue
-        for menu_name, template_name in mod.get_menus().items():
+        for menu_name, template_name in list(mod.get_menus().items()):
             _menu_templates[menu_name].append(template_name)
 
 

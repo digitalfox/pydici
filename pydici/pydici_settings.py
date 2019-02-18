@@ -26,11 +26,11 @@ DOCUMENT_PROJECT_PATH = os.path.join(PYDICI_ROOTDIR, 'data/documents')
 DOCUMENT_PROJECT_URL_DIR = "http://localhost:9999/client/"
 # URL for files (may be the same as above)
 DOCUMENT_PROJECT_URL_FILE = "http://localhost:9999/client/"
-DOCUMENT_PROJECT_CLIENT_DIR = u"{name}_{code}"
-DOCUMENT_PROJECT_LEAD_DIR = u"{deal_id}_{name}"
-DOCUMENT_PROJECT_BUSINESS_DIR = u"commerce"
-DOCUMENT_PROJECT_DELIVERY_DIR = u"delivery"
-DOCUMENT_PROJECT_INPUT_DIR = u"input"
+DOCUMENT_PROJECT_CLIENT_DIR = "{name}_{code}"
+DOCUMENT_PROJECT_LEAD_DIR = "{deal_id}_{name}"
+DOCUMENT_PROJECT_BUSINESS_DIR = "commerce"
+DOCUMENT_PROJECT_DELIVERY_DIR = "delivery"
+DOCUMENT_PROJECT_INPUT_DIR = "input"
 
 # can be "cycle" or "keyboard"
 TIMESHEET_INPUT_METHOD = "cycle"

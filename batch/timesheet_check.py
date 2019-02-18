@@ -23,15 +23,12 @@ sys.path.append(PYDICI_DIR)  # Add project path to python path
 # Ensure we are in the good current working directory (pydici home)
 os.chdir(PYDICI_DIR)
 
-import pydici.settings
-
 # Django import
 from django.core import urlresolvers
 from django.core.mail import send_mass_mail
 from django.core.wsgi import get_wsgi_application
 from django.utils.translation import ugettext as _
 from django.template.loader import get_template
-from django.template import Context
 
 # Init and model loading
 application = get_wsgi_application()
