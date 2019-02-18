@@ -19,7 +19,8 @@ from staffing.models import Mission
 from leads.models import StateProba
 from core.utils import send_lead_mail, get_parameter, getLeadDirs
 from pydici.pydici_settings import TELEGRAM_IS_ENABLED, TELEGRAM_CHAT, TELEGRAM_TOKEN, TELEGRAM_STICKERS
-from pydici.pydici_settings import NEXTCLOUD_TAG_IS_ENABLED, NEXTCLOUD_DB_DATABASE, NEXTCLOUD_DB_HOST, NEXTCLOUD_DB_USER, NEXTCLOUD_DB_PWD
+from pydici.pydici_settings import NEXTCLOUD_TAG_IS_ENABLED, NEXTCLOUD_DB_DATABASE, NEXTCLOUD_DB_HOST,\
+    NEXTCLOUD_DB_USER, NEXTCLOUD_DB_PWD, NEXTCLOUD_DB_FILE_STORAGE
 from pydici.pydici_settings import DOCUMENT_PROJECT_LEAD_DIR, DOCUMENT_PROJECT_DELIVERY_DIR, DOCUMENT_PROJECT_BUSINESS_DIR
 
 
@@ -35,8 +36,7 @@ CREATE_TAG = u"INSERT INTO oc_systemtag (name, visibility, editable) VALUES (%s,
 DELETE_TAG = u"DELETE FROM oc_systemtag WHERE name=%s"
 MERGE_FILE_TAGS = u"UPDATE oc_systemtag_object_mapping SET objectid=%s, systemtagid=%s " \
                   u"WHERE objectid=%s AND systemtagid=%s"
-# TODO : remove LIMIT 5
-GET_FILES_ID_BY_DIR = u"SELECT fileid FROM oc_filecache WHERE path LIKE '%{dir}%' AND mimetype <> 2 LIMIT 5"
+GET_FILES_ID_BY_DIR = u"SELECT fileid FROM oc_filecache WHERE path LIKE '%{dir}%' AND mimetype <> 2"
 GET_FILES_ID_BY_TAG = u"SELECT objectid FROM oc_systemtag_object_mapping WHERE systemtagid=%s"
 TAG_FILE = u"INSERT INTO oc_systemtag_object_mapping (objectid, objecttype, systemtagid) VALUES (%(file_id)s, %(object_type)s, %(tag_id)s) " \
            u"ON DUPLICATE KEY UPDATE objectid=objectid"
@@ -165,6 +165,7 @@ def tag_leads_files(leads):
     """Tag all files of given leads.
     Can be called from tag views (when adding tags) or tag batch (for new files or initial sync)"""
     # TODO: make this a background task
+    connection = None
     try:
         connection = connect_to_nextcloud_db()
         cursor = connection.cursor()
@@ -173,7 +174,7 @@ def tag_leads_files(leads):
             # Get all the lead tags
             tags = lead.tags.all().values_list('name', flat=True)
             # Get document directories
-            (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead)
+            (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
             for tag in tags:
                 # Get the tag id in nextcloud database
                 cursor.execute(GET_TAG_ID, (tag, ))
@@ -187,6 +188,8 @@ def tag_leads_files(leads):
                     tag_id = rows[0][0]
 
                 # Find all business files of the lead
+                # TODO : maybe refine the query to include a "storage" where clause in case of external storage use
+                # NEXTCLOUD_DB_FILE_STORAGE
                 cursor.execute(GET_FILES_ID_BY_DIR.format(dir=business_dir))
                 lead_files = cursor.fetchall()
 
@@ -194,7 +197,7 @@ def tag_leads_files(leads):
                 rows = cursor.fetchall()
                 if len(rows) == 0:
                     # Tag doesn't exist, we create it
-                    cursor.execute(create_tag, (DOCUMENT_PROJECT_BUSINESS_DIR, "1", "1"))
+                    cursor.execute(CREATE_TAG, (DOCUMENT_PROJECT_BUSINESS_DIR, "1", "1"))
                     business_tag_id = cursor.lastrowid
                 else:
                     # Tag exists, fetch the first result
@@ -221,7 +224,7 @@ def tag_leads_files(leads):
                 rows = cursor.fetchall()
                 if len(rows) == 0:
                     # Tag doesn't exist, we create it
-                    cursor.execute(create_tag, (DOCUMENT_PROJECT_DELIVERY_DIR, "1", "1"))
+                    cursor.execute(CREATE_TAG, (DOCUMENT_PROJECT_DELIVERY_DIR, "1", "1"))
                     delivery_tag_id = cursor.lastrowid
                 else:
                     # Tag exists, fetch the first result
@@ -250,11 +253,12 @@ def tag_leads_files(leads):
 
 def remove_lead_tag(lead, tag):
     """ Remove tag on given lead"""
+    connection = None
     try:
         connection = connect_to_nextcloud_db()
         cursor = connection.cursor()
 
-        cursor.execute(GET_TAG_ID, (tag, ))
+        cursor.execute(GET_TAG_ID, (tag.name, ))
         rows = cursor.fetchall()
         if len(rows) == 0:
             # Tag doesn't exist, hence we don't do anything
@@ -264,7 +268,7 @@ def remove_lead_tag(lead, tag):
             tag_id = rows[0][0]
 
         # Get document directories
-        (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead)
+        (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
         # Find all files of the lead, except input
         cursor.execute(GET_FILES_ID_BY_DIR.format(dir=business_dir))
         lead_files = cursor.fetchall()
@@ -290,6 +294,7 @@ def remove_lead_tag(lead, tag):
 
 def merge_lead_tag(old_tag, target_tag):
     """Propagate a tag merge on nextcloud tag system"""
+    connection = None
     try:
         connection = connect_to_nextcloud_db()
         cursor = connection.cursor()
@@ -310,6 +315,9 @@ def merge_lead_tag(old_tag, target_tag):
 
         # Delete the previous tag definition
         cursor.execute(DELETE_TAG, (old_tag_id, ))
+
+        # Commit the changes to the database
+        connection.commit()
     finally:
         if connection:
             connection.close()
@@ -317,8 +325,8 @@ def merge_lead_tag(old_tag, target_tag):
 
 def connect_to_nextcloud_db():
     """Create a connexion to nextcloud database"""
-    # TODO: how to put development parameters?
     try:
+        print "Connecting to "+NEXTCLOUD_DB_DATABASE
         connection = mysql.connector.connect(host=NEXTCLOUD_DB_HOST, database=NEXTCLOUD_DB_DATABASE,
                                              user=NEXTCLOUD_DB_USER, password=NEXTCLOUD_DB_PWD)
         return connection

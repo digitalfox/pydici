@@ -5,7 +5,7 @@ Test cases for Lead module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core import urlresolvers
 from django.test import RequestFactory
 from django.contrib.messages.storage import default_storage
@@ -191,37 +191,73 @@ class LeadLearnTestCase(TestCase):
 class LeadNextcloudTagTestCase(TestCase):
     """Test lead tag on nextcloud file"""
     fixtures = PYDICI_FIXTURES
-    CREATE_FILE = u"INSERT INTO oc_filecache (fileid, path, mimetype) VALUES (%s, %s, 6)"
-    GET_FILE_TAGS = u"SELECT objectid, objecttype, systemtagid FROM oc_systemtag_object_mapping " \
-                    u"WHERE objectid = %(file_id)s AND systemtagid = %(tag_id)s"
 
     def setUp(self):
         """Create the nextcloud file tables with init datas"""
-        # TODO
+        from core.utils import getLeadDirs
         from leads.utils import connect_to_nextcloud_db
+        connection = None
         try:
             connection = connect_to_nextcloud_db()
             create_nextcloud_tag_database(connection)
             cursor = connection.cursor()
 
-            # Create test data files
-            files = [
-                {"fileid": 1, "path": "/client/titi"},
-                {"fileid": 2, "path": "/client/tata"},
-                {"fileid": 3, "path": "/client/tutu"},
-            ]
-            cursor.execute(CREATE_FILE, files)
-
+            # Create test data files for the 3 test leads
+            create_file = u"INSERT INTO oc_filecache (fileid, path, name, path_hash, mimetype) VALUES (%s, %s, %s, %s, 6)"
+            for i in range(1, 3):
+                lead = Lead.objects.get(id=i)
+                (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
+                # Create 6 files per lead, 2 in each lead directory
+                # With <file_id> like <lead_id> in first digit, and <file_id> in second digit
+                files = [
+                    (i*10+1, delivery_dir+u"test1.txt", u"test1.txt", i*10+1),
+                    (i*10+2, delivery_dir+u"test2.txt", u"test2.txt", i*10+2),
+                    (i*10+3, business_dir+u"test3.txt", u"test3.txt", i*10+3),
+                    (i*10+4, business_dir+u"test4.txt", u"test4.txt", i*10+4),
+                    (i*10+5, input_dir+u"test5.txt",    u"test5.txt", i*10+5),
+                    (i*10+6, input_dir+u"test6.txt",    u"test6.txt", i*10+6)
+                ]
+                cursor.executemany(create_file, files)
+            connection.commit()
         finally:
             if connection:
                 connection.close()
 
-    def test_tag_and_remote_tag_file(self):
+    def test_tag_and_remove_tag_file(self):
         # TODO
-        from leads.utils import tag_leads_files, remove_lead_tag, merge_lead_tag
-        lead = Lead.objects.get(id=1)
-        tag_leads_files([lead])
-        pass
+        from leads.utils import connect_to_nextcloud_db, tag_leads_files, remove_lead_tag, merge_lead_tag
+        connection = None
+        try:
+            connection = connect_to_nextcloud_db()
+            cursor = connection.cursor()
+
+            lead = Lead.objects.get(id=1)
+            lead.tags.add("A test tag")
+            lead.tags.add("Another tag")
+            # Make it into a clean sorted list
+            lead_tags = list(lead.tags.all().values_list('name', flat=True))
+            lead_tags.sort()
+
+            # The function to be tested
+            tag_leads_files([lead])
+
+            # Test the 6 lead file tags
+            get_file_tag_names = u"SELECT st.name " \
+                                 u"FROM oc_systemtag_object_mapping om " \
+                                 u"INNER JOIN oc_systemtag st ON st.id = om.systemtagid " \
+                                 u"WHERE om.objectid = %s"
+
+            cursor.execute(get_file_tag_names, (11, ))
+            file_tags = cursor.fetchall()
+
+            # Format into a sorted list
+            actual_file_lead_tags = [i[0] for i in file_tags]
+            actual_file_lead_tags.sort()
+
+            self.assertEqual(lead_tags, actual_file_lead_tags)
+        finally:
+            if connection:
+                connection.close()
 
 
 def create_lead():
@@ -245,36 +281,69 @@ def create_lead():
     lead.save()
     return lead
 
-def create_nextcloud_tag_database(connection):
-    """Create the test nextcloud database and the 3 tables used for file tagging"""
-    create_nextcloud_file_table = u"""
-    DROP TABLE IF EXISTS `oc_filecache`;
-    CREATE TABLE `oc_filecache` (
-      `fileid` bigint(20) NOT NULL AUTO_INCREMENT,
-      `storage` bigint(20) NOT NULL DEFAULT '0',
-      `path` varchar(4000) COLLATE utf8_bin DEFAULT NULL,
-      `path_hash` varchar(32) COLLATE utf8_bin NOT NULL DEFAULT '',
-      `parent` bigint(20) NOT NULL DEFAULT '0',
-      `name` varchar(250) COLLATE utf8_bin DEFAULT NULL,
-      `mimetype` bigint(20) NOT NULL DEFAULT '0',
-      `mimepart` bigint(20) NOT NULL DEFAULT '0',
-      `size` bigint(20) NOT NULL DEFAULT '0',
-      `mtime` bigint(20) NOT NULL DEFAULT '0',
-      `storage_mtime` bigint(20) NOT NULL DEFAULT '0',
-      `encrypted` int(11) NOT NULL DEFAULT '0',
-      `unencrypted_size` bigint(20) NOT NULL DEFAULT '0',
-      `etag` varchar(40) COLLATE utf8_bin DEFAULT NULL,
-      `permissions` int(11) DEFAULT '0',
-      `checksum` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-      PRIMARY KEY (`fileid`),
-      UNIQUE KEY `fs_storage_path_hash` (`storage`,`path_hash`),
-      KEY `fs_parent_name_hash` (`parent`,`name`),
-      KEY `fs_storage_mimetype` (`storage`,`mimetype`),
-      KEY `fs_storage_mimepart` (`storage`,`mimepart`),
-      KEY `fs_storage_size` (`storage`,`size`,`fileid`),
-      KEY `fs_mtime` (`mtime`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=341112 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-    """
-    cursor = connection.cursor()
-    cursor.execute(create_nextcloud_file_table)
 
+def create_nextcloud_tag_database(connection):
+    """Create the test nextcloud database and the 3 tables used for file tagging:
+    - oc_filecache: the file index
+    - oc_systemtag: the tag definition
+    - oc_systemtag_object_mapping: the link between file(s) and tag(s)
+    """
+    cursor = None
+    try:
+        cursor = connection.cursor()
+        cursor.execute(u"DROP TABLE IF EXISTS `oc_filecache`;")
+        create_nextcloud_file_table = u"""
+        CREATE TABLE `oc_filecache` (
+          `fileid` bigint(20) NOT NULL AUTO_INCREMENT,
+          `storage` bigint(20) NOT NULL DEFAULT '0',
+          `path` varchar(4000) COLLATE utf8_bin DEFAULT NULL,
+          `path_hash` varchar(32) COLLATE utf8_bin NOT NULL DEFAULT '',
+          `parent` bigint(20) NOT NULL DEFAULT '0',
+          `name` varchar(250) COLLATE utf8_bin DEFAULT NULL,
+          `mimetype` bigint(20) NOT NULL DEFAULT '0',
+          `mimepart` bigint(20) NOT NULL DEFAULT '0',
+          `size` bigint(20) NOT NULL DEFAULT '0',
+          `mtime` bigint(20) NOT NULL DEFAULT '0',
+          `storage_mtime` bigint(20) NOT NULL DEFAULT '0',
+          `encrypted` int(11) NOT NULL DEFAULT '0',
+          `unencrypted_size` bigint(20) NOT NULL DEFAULT '0',
+          `etag` varchar(40) COLLATE utf8_bin DEFAULT NULL,
+          `permissions` int(11) DEFAULT '0',
+          `checksum` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+          PRIMARY KEY (`fileid`),
+          UNIQUE KEY `fs_storage_path_hash` (`storage`,`path_hash`),
+          KEY `fs_parent_name_hash` (`parent`,`name`),
+          KEY `fs_storage_mimetype` (`storage`,`mimetype`),
+          KEY `fs_storage_mimepart` (`storage`,`mimepart`),
+          KEY `fs_storage_size` (`storage`,`size`,`fileid`),
+          KEY `fs_mtime` (`mtime`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=341112 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+        """
+        cursor.execute(create_nextcloud_file_table)
+
+        cursor.execute(u"DROP TABLE IF EXISTS `oc_systemtag`;")
+        create_nextcloud_tag_table = u"""
+        CREATE TABLE `oc_systemtag` (
+          `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+          `name` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT '',
+          `visibility` smallint(6) NOT NULL DEFAULT '1',
+          `editable` smallint(6) NOT NULL DEFAULT '1',
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `tag_ident` (`name`,`visibility`,`editable`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+        """
+        cursor.execute(create_nextcloud_tag_table)
+
+        cursor.execute(u"DROP TABLE IF EXISTS `oc_systemtag_object_mapping`;")
+        create_nextcloud_file_tag_table = u"""
+        CREATE TABLE `oc_systemtag_object_mapping` (
+          `objectid` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT '',
+          `objecttype` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT '',
+          `systemtagid` bigint(20) unsigned NOT NULL DEFAULT '0',
+          UNIQUE KEY `mapping` (`objecttype`,`objectid`,`systemtagid`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+        """
+        cursor.execute(create_nextcloud_file_tag_table)
+    finally:
+        if cursor:
+            cursor.close()

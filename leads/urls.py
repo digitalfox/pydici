@@ -5,7 +5,7 @@
 """
 
 from django.conf.urls import url
-from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT, ClientCompanyLeadTableDT, LeadToBill
+from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT, ClientCompanyLeadTableDT, LeadToBill, TagTableDT
 import leads.views as v
 
 
