@@ -91,8 +91,8 @@ class Mission(models.Model):
     def consultants(self):
         """@return: sorted list of consultants forecasted or that once charge timesheet for this mission"""
         # Do two distinct query and then gather data. It is much much more faster than the left outer join on the two tables in the same query.
-        consultantsIdsFromStaffing = Consultant.objects.filter(staffing__mission=self).values_list("id", flat=True)
-        consultantsIdsFromTimesheet = Consultant.objects.filter(timesheet__mission=self).values_list("id", flat=True)
+        consultantsIdsFromStaffing = Consultant.objects.filter(staffing__mission=self).values_list("id", flat=True).distinct()
+        consultantsIdsFromTimesheet = Consultant.objects.filter(timesheet__mission=self).values_list("id", flat=True).distinct()
         ids = set(list(consultantsIdsFromStaffing) + list(consultantsIdsFromTimesheet))
         return Consultant.objects.filter(id__in=ids).order_by("name")
 
