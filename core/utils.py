@@ -239,7 +239,7 @@ def sampleList(data, maxLength):
 
 def sanitizeName(name):
     """Sanitize given unicode name to simple ascii name"""
-    return unicodedata.normalize('NFKD', name).encode('ascii', 'ignore')
+    return unicodedata.normalize('NFKD', name)
 
 
 def getLeadDirs(lead):
