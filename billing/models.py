@@ -113,9 +113,6 @@ class AbstractBill(models.Model):
     def vat_amount(self):
         return self.amount_with_vat - self.amount
 
-    def get_absolute_url(self):
-        return reverse("billing:client_bill", args=[self.id,])
-
     class Meta:
         abstract = True
         ordering = ["lead__client__organisation__company", "creation_date"]
@@ -170,6 +167,9 @@ class ClientBill(AbstractBill):
         """Returns total of this bill without taxes and expenses"""
         return list(self.billdetail_set.aggregate(Sum("amount")).values())[0] or 0
 
+    def get_absolute_url(self):
+        return reverse("billing:client_bill", args=[self.id,])
+
     def save(self, *args, **kwargs):
         if self.state in ("0_DRAFT", "0_PROPOSED"):
             compute_bill(self)
@@ -211,6 +211,8 @@ class SupplierBill(AbstractBill):
             self.state = "2_PAID"
         super(SupplierBill, self).save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse("admin:billing_supplierbill_change", args=[self.id,])
 
     class Meta:
         verbose_name = _("Supplier Bill")
