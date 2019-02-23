@@ -85,13 +85,20 @@ class ClientBillForm(PydiciCrispyModelForm):
             raise ValidationError(_("Bill amount must be computed from bill detail or defined manually"))
 
 
-class SupplierBillForm(models.ModelForm):
+class SupplierBillForm(PydiciCrispyModelForm):
     class Meta:
         model = SupplierBill
         fields = "__all__"
         widgets = {"lead": LeadChoices,
                    "expenses": ChargeableExpenseMChoices,
                    "supplier": SupplierChoices}
+
+    def __init__(self, *args, **kwargs):
+        super(SupplierBillForm, self).__init__(*args, **kwargs)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(Div(Column("lead", "supplier", "bill_id", "supplier_bill_id", "state", "comment", "bill_file", css_class="col-md-6"),
+                                        Column("creation_date", "due_date", "payment_date", "amount", "vat", "amount_with_vat", "expenses", css_class="col-md-6"),
+                                        css_class="row"))
 
 
 class BillDetailInlineFormset(BaseInlineFormSet):

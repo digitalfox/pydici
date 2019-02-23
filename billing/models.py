@@ -212,7 +212,7 @@ class SupplierBill(AbstractBill):
         super(SupplierBill, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("admin:billing_supplierbill_change", args=[self.id,])
+        return reverse("billing:supplier_bill", args=[self.id,])
 
     class Meta:
         verbose_name = _("Supplier Bill")

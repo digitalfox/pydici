@@ -48,7 +48,7 @@ from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
 from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
-from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper
+from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper, SupplierBillForm
 
 
 @pydici_non_public
@@ -220,6 +220,7 @@ class BillPdf(Bill, WeasyTemplateView):
 @pydici_non_public
 @pydici_feature("billing_request")
 def client_bill(request, bill_id=None):
+    """Add or edit client bill"""
     billDetailFormSet = None
     billExpenseFormSet = None
     billing_management_feature = "billing_management"
@@ -291,7 +292,7 @@ def client_bill(request, bill_id=None):
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
             else:
                 form = ClientBillForm()
-    return render(request, "billing/bill_form.html",
+    return render(request, "billing/client_bill_form.html",
                   {"bill_form": form,
                    "detail_formset": billDetailFormSet,
                    "detail_formset_helper": BillDetailFormSetHelper(),
@@ -316,6 +317,53 @@ def clientbill_delete(request, bill_id):
         else:
             messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
             redirect_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
+    except Exception as e:
+        print(e)
+        messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
+
+    return HttpResponseRedirect(redirect_url)
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def supplier_bill(request, bill_id=None):
+    """Add or edit supplier bill"""
+    if bill_id:
+        try:
+            bill = SupplierBill.objects.get(id=bill_id)
+        except SupplierBill.DoesNotExist:
+            raise Http404
+    else:
+        bill = None
+
+    if request.POST:
+        form = SupplierBillForm(request.POST, request.FILES, instance=bill)
+        if form.is_valid():
+            bill = form.save()
+            return HttpResponseRedirect(reverse_lazy("billing:supplier_bills_archive"))
+    else:
+        form = SupplierBillForm(instance=bill)
+
+    return render(request, "billing/supplier_bill_form.html",
+                  {"bill_form": form,
+                   "bill_id": bill.id if bill else None,
+                   "can_delete": bill.state == "1_RECEIVED" if bill else False,
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def supplierbill_delete(request, bill_id):
+    """Delete supplier in early stage"""
+    redirect_url = reverse("billing:supplier_bills_archive")
+    try:
+        bill = SupplierBill.objects.get(id=bill_id)
+        if bill.state == "1_RECEIVED":
+            bill.delete()
+            messages.add_message(request, messages.INFO, _("Bill removed successfully"))
+        else:
+            messages.add_message(request, messages.WARNING, _("Can't remove a bill in state %s. You may cancel it" % bill.get_state_display()))
+            redirect_url = reverse_lazy("billing:supplier_bill", args=[bill.id, ])
     except Exception as e:
         print(e)
         messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
