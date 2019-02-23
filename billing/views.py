@@ -20,7 +20,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
 from django.utils import translation
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
-from django.db.models import Sum, Q, F, Min, Max
+from django.db.models import Sum, Q, F, Min, Max, Count
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
@@ -73,12 +73,8 @@ def bill_review(request):
     litigious_bills_total_with_vat = sum([bill.amount_with_vat for bill in litigious_bills if bill.amount_with_vat])
 
     # Get leads with done timesheet in past three month that don't have bill yet
-    leadsWithoutBill = []
-    threeMonthAgo = date.today() - timedelta(90)
-    for lead in Lead.objects.filter(state="WON").select_related():
-        if lead.clientbill_set.count() == 0:
-            if Timesheet.objects.filter(mission__lead=lead, working_date__gte=threeMonthAgo).count() != 0:
-                leadsWithoutBill.append(lead)
+    leadsWithoutBill = Lead.objects.filter(state="WON", mission__timesheet__working_date__gte=(date.today() - timedelta(90)))
+    leadsWithoutBill = leadsWithoutBill.annotate(Count("clientbill")).filter(clientbill__count=0)
 
     return render(request, "billing/bill_review.html",
                   {"overdue_bills": overdue_bills,
