@@ -88,6 +88,7 @@ def bill_review(request):
                    "overdue_bills_total_with_vat": overdue_bills_total_with_vat,
                    "litigious_bills_total_with_vat": litigious_bills_total_with_vat,
                    "leads_without_bill": leadsWithoutBill,
+                   "billing_management": user_has_feature(request.user, "billing_management"),
                    "user": request.user})
 
 

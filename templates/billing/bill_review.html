@@ -30,7 +30,7 @@
         <tbody>
         {% for bill in overdue_bills %}
             <tr>
-                {% if pydici_feature.billing_management %}
+                {% if billing_management %}
                     <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
@@ -80,7 +80,7 @@
         <tbody>
         {% for bill in soondue_bills %}
             <tr>
-                {% if pydici_feature.billing_management %}
+                {% if billing_management %}
                     <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
@@ -130,7 +130,7 @@
         <tbody>
         {% for bill in litigious_bills %}
             <tr>
-                {% if pydici_feature.billing_management %}
+                {% if billing_management %}
                     <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
@@ -181,7 +181,7 @@
         <tbody>
         {% for bill in recent_bills %}
             <tr>
-                {% if pydici_feature.billing_management %}
+                {% if billing_management %}
                     <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
                 {% else %}
                     <td>{{ bill }}</td>
