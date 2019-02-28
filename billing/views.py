@@ -634,8 +634,8 @@ def graph_outstanding_billing(request):
         current = next_month
 
     graph_data.append(["x"] + months)
-    graph_data.append(["outstanding"] + outstanding)
-    graph_data.append(["outstanding overdue"] + outstanding_overdue)
+    graph_data.append([_("billing outstanding")] + outstanding)
+    graph_data.append([_("billing outstanding overdue")] + outstanding_overdue)
 
     return render(request, "billing/graph_outstanding_billing.html",
                   {"graph_data": json.dumps(graph_data),

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-28 19:55+0100\n"
-"PO-Revision-Date: 2019-02-28 19:55+0100\n"
+"POT-Creation-Date: 2019-02-28 22:13+0100\n"
+"PO-Revision-Date: 2019-02-28 22:13+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -196,7 +196,7 @@ msgstr "Impossible de déclarer deux fois la même note de frais"
 
 #: billing/models.py:70 expense/models.py:100 leads/models.py:286
 #: staffing/models.py:41 staffing/views.py:1132
-#: templates/billing/bill_review.html:219
+#: templates/billing/bill_review.html:220
 #: templates/billing/bill_review.html:253
 #: templates/billing/bill_review.html:294
 #: templates/billing/client_bills_archive.html:14
@@ -211,9 +211,9 @@ msgstr "Affaire"
 
 #: billing/models.py:71 templates/billing/_lead_billing.html:11
 #: templates/billing/_lead_billing.html:46
-#: templates/billing/bill_review.html:28 templates/billing/bill_review.html:78
-#: templates/billing/bill_review.html:128
-#: templates/billing/bill_review.html:179
+#: templates/billing/bill_review.html:29 templates/billing/bill_review.html:79
+#: templates/billing/bill_review.html:129
+#: templates/billing/bill_review.html:180
 #: templates/billing/bill_review.html:250
 #: templates/billing/bill_review.html:291
 #: templates/billing/client_bills_archive.html:12
@@ -224,7 +224,7 @@ msgstr "N° facture"
 
 #: billing/models.py:72 templates/billing/_lead_billing.html:14
 #: templates/billing/_lead_billing.html:51
-#: templates/billing/bill_review.html:184
+#: templates/billing/bill_review.html:185
 #: templates/billing/bill_review.html:256
 #: templates/billing/bill_review.html:297
 #: templates/billing/client_bills_archive.html:15
@@ -254,9 +254,9 @@ msgid "Previous year bill"
 msgstr "Facture de l'année N-1"
 
 #: billing/models.py:76 expense/models.py:109 staffing/models.py:341
-#: templates/billing/bill_review.html:35 templates/billing/bill_review.html:85
-#: templates/billing/bill_review.html:135
-#: templates/billing/bill_review.html:187
+#: templates/billing/bill_review.html:36 templates/billing/bill_review.html:86
+#: templates/billing/bill_review.html:136
+#: templates/billing/bill_review.html:188
 #: templates/billing/bill_review.html:259
 #: templates/billing/bill_review.html:300
 #: templates/billing/client_bills_archive.html:19
@@ -271,9 +271,9 @@ msgstr "Remarques"
 #: billing/models.py:77 billing/models.py:230 billing/models.py:258
 #: templates/billing/_lead_billing.html:13
 #: templates/billing/_lead_billing.html:50
-#: templates/billing/bill_review.html:31 templates/billing/bill_review.html:81
-#: templates/billing/bill_review.html:131
-#: templates/billing/bill_review.html:182
+#: templates/billing/bill_review.html:32 templates/billing/bill_review.html:82
+#: templates/billing/bill_review.html:132
+#: templates/billing/bill_review.html:183
 #: templates/billing/bill_review.html:254
 #: templates/billing/bill_review.html:295
 #: templates/billing/client_bills_archive.html:17
@@ -333,9 +333,9 @@ msgstr "Anglais"
 #: billing/models.py:135 billing/models.py:198
 #: templates/billing/_lead_billing.html:18
 #: templates/billing/_lead_billing.html:55
-#: templates/billing/bill_review.html:34 templates/billing/bill_review.html:84
-#: templates/billing/bill_review.html:134
-#: templates/billing/bill_review.html:186
+#: templates/billing/bill_review.html:35 templates/billing/bill_review.html:85
+#: templates/billing/bill_review.html:135
+#: templates/billing/bill_review.html:187
 #: templates/billing/bill_review.html:258
 #: templates/billing/bill_review.html:299
 #: templates/billing/client_bills_archive.html:20
@@ -411,6 +411,14 @@ msgstr ""
 #: templates/billing/graph_yearly_billing.html:37
 msgid "growth"
 msgstr "croissance"
+
+#: billing/views.py:637
+msgid "billing outstanding"
+msgstr "encours des factures émises"
+
+#: billing/views.py:638
+msgid "billing outstanding overdue"
+msgstr "encours des factures en retard"
 
 #: core/forms.py:36 expense/forms.py:66 staffing/forms.py:148
 #: templates/billing/client_bill_form.html:29
@@ -550,10 +558,10 @@ msgstr "type"
 
 #: core/views.py:335 core/views.py:353 leads/views.py:454
 #: staffing/models.py:308 staffing/views.py:1254
-#: templates/billing/bill_review.html:29 templates/billing/bill_review.html:79
-#: templates/billing/bill_review.html:129
-#: templates/billing/bill_review.html:180
-#: templates/billing/bill_review.html:218
+#: templates/billing/bill_review.html:30 templates/billing/bill_review.html:80
+#: templates/billing/bill_review.html:130
+#: templates/billing/bill_review.html:181
+#: templates/billing/bill_review.html:219
 #: templates/billing/bill_review.html:251
 #: templates/billing/bill_review.html:292 templates/core/risks.html:40
 #: templates/core/risks.html:46 templates/crm/clientcompany_detail.html:293
@@ -803,9 +811,9 @@ msgid "Billing contact"
 msgstr "Contact facturation"
 
 #: crm/models.py:427 leads/models.py:72 leads/views.py:208
-#: templates/billing/bill_review.html:30 templates/billing/bill_review.html:80
-#: templates/billing/bill_review.html:130
-#: templates/billing/bill_review.html:181
+#: templates/billing/bill_review.html:31 templates/billing/bill_review.html:81
+#: templates/billing/bill_review.html:131
+#: templates/billing/bill_review.html:182
 #: templates/billing/payment_delay.html:13 templates/core/index.html:12
 #: templates/core/index.html:37 templates/core/index.html:61
 #: templates/core/index.html:85
@@ -1051,7 +1059,7 @@ msgid "Commercial"
 msgstr "Commercial"
 
 #: leads/admin.py:24 leads/forms.py:87 leads/views.py:209
-#: staffing/models.py:358 templates/billing/bill_review.html:221
+#: staffing/models.py:358 templates/billing/bill_review.html:222
 #: templates/leads/review.html:30 templates/leads/review.html:65
 msgid "Staffing"
 msgstr "Staffing"
@@ -1092,7 +1100,7 @@ msgstr ""
 "pressentie"
 
 #: leads/forms.py:57 leads/models.py:65 staffing/models.py:54
-#: templates/billing/bill_review.html:220 templates/core/index.html:14
+#: templates/billing/bill_review.html:221 templates/core/index.html:14
 #: templates/core/index.html:39 templates/core/index.html:63
 #: templates/core/index.html:87 templates/leads/lead_detail.html:135
 #: templates/leads/review.html:29 templates/leads/review.html:64
@@ -1310,7 +1318,7 @@ msgstr "affaires.csv"
 msgid "Managed by"
 msgstr "Géré par"
 
-#: leads/views.py:209 templates/billing/bill_review.html:222
+#: leads/views.py:209 templates/billing/bill_review.html:223
 #: templates/core/index.html:16 templates/core/index.html:41
 #: templates/core/index.html:65 templates/core/index.html:89
 #: templates/leads/lead_detail.html:162
@@ -1779,7 +1787,7 @@ msgstr "Montant mission (k€)"
 msgid "Past done days"
 msgstr "Jours réalisés dans le passé"
 
-#: staffing/views.py:1133 templates/billing/bill_review.html:223
+#: staffing/views.py:1133 templates/billing/bill_review.html:224
 #: templates/leads/lead_detail.html:214 templates/staffing/mission.html:161
 #: templates/staffing/mission_timesheet.html:13
 msgid "Done days"
@@ -2035,80 +2043,80 @@ msgstr "Frais"
 msgid "Amount (with VAT)"
 msgstr "Montant (TTC)"
 
-#: templates/billing/bill_review.html:9 templates/core/_pydici_menu.html:116
+#: templates/billing/bill_review.html:10 templates/core/_pydici_menu.html:116
 msgid "Bills review"
 msgstr "Revue des factures"
 
-#: templates/billing/bill_review.html:12
+#: templates/billing/bill_review.html:13
 msgid "Bills to review"
 msgstr "Factures à revoir"
 
-#: templates/billing/bill_review.html:14 templates/billing/bill_review.html:24
+#: templates/billing/bill_review.html:15 templates/billing/bill_review.html:25
 msgid "Overdue client bills"
 msgstr "Factures clients en retard"
 
-#: templates/billing/bill_review.html:15 templates/billing/bill_review.html:74
+#: templates/billing/bill_review.html:16 templates/billing/bill_review.html:75
 msgid "Client bills due soon"
 msgstr "Factures clients bientôt à échéance"
 
-#: templates/billing/bill_review.html:16 templates/billing/bill_review.html:124
+#: templates/billing/bill_review.html:17 templates/billing/bill_review.html:125
 msgid "Litigious client bills"
 msgstr "Factures clients en litige"
 
-#: templates/billing/bill_review.html:17 templates/billing/bill_review.html:175
+#: templates/billing/bill_review.html:18 templates/billing/bill_review.html:176
 msgid "Recently paid client bills"
 msgstr "Factures clients réglées récemment"
 
-#: templates/billing/bill_review.html:18 templates/billing/bill_review.html:214
+#: templates/billing/bill_review.html:19 templates/billing/bill_review.html:215
 msgid "Recent leads without bill"
 msgstr "Affaires récentes sans facture"
 
-#: templates/billing/bill_review.html:19
+#: templates/billing/bill_review.html:20
 msgid "Supplier overdue bills"
 msgstr "Factures fournisseurs en retard de paiement"
 
-#: templates/billing/bill_review.html:20 templates/billing/bill_review.html:287
+#: templates/billing/bill_review.html:21 templates/billing/bill_review.html:287
 msgid "Supplier soon due bills"
 msgstr "Factures fournisseurs à régler prochainement"
 
-#: templates/billing/bill_review.html:32 templates/billing/bill_review.html:82
-#: templates/billing/bill_review.html:132
-#: templates/billing/bill_review.html:183
+#: templates/billing/bill_review.html:33 templates/billing/bill_review.html:83
+#: templates/billing/bill_review.html:133
+#: templates/billing/bill_review.html:184
 #: templates/billing/bill_review.html:255
 #: templates/billing/bill_review.html:296
 msgid "Amount (€ with tax)"
 msgstr "Montant (€ TTC)"
 
-#: templates/billing/bill_review.html:33 templates/billing/bill_review.html:83
-#: templates/billing/bill_review.html:133
+#: templates/billing/bill_review.html:34 templates/billing/bill_review.html:84
+#: templates/billing/bill_review.html:134
 #: templates/billing/bill_review.html:257
 #: templates/billing/bill_review.html:298
 msgid "Wait"
 msgstr "Retard"
 
-#: templates/billing/bill_review.html:55 templates/billing/bill_review.html:105
-#: templates/billing/bill_review.html:155
+#: templates/billing/bill_review.html:56 templates/billing/bill_review.html:106
+#: templates/billing/bill_review.html:156
 msgid "Mark this bill as paid"
 msgstr "Marquer cette facture comme payée"
 
-#: templates/billing/bill_review.html:63
+#: templates/billing/bill_review.html:64
 msgid "Total amount: "
 msgstr "Montant total : "
 
-#: templates/billing/bill_review.html:113
-#: templates/billing/bill_review.html:163
+#: templates/billing/bill_review.html:114
+#: templates/billing/bill_review.html:164
 msgid "Total amount (€ exc. tax.): "
 msgstr "Montant total (€ HT) : "
 
-#: templates/billing/bill_review.html:185
+#: templates/billing/bill_review.html:186
 msgid "Payment delay"
 msgstr "Délai de règlement"
 
-#: templates/billing/bill_review.html:224
+#: templates/billing/bill_review.html:225
 msgid "Done work (€)"
 msgstr "Montant réalisé (€)"
 
-#: templates/billing/bill_review.html:232 templates/core/index.html:25
+#: templates/billing/bill_review.html:233 templates/core/index.html:25
 #: templates/core/index.html:50 templates/core/index.html:74
 #: templates/core/index.html:98 templates/crm/clientcompany_detail.html:347
 #: templates/leads/lead_detail.html:135 templates/leads/lead_detail.html:181
@@ -2175,6 +2183,14 @@ msgstr "Montant prévu"
 #: templates/billing/graph_billing_jqp.html:61
 msgid "Weighted forecasted work"
 msgstr "Montant prévu pondéré"
+
+#: templates/billing/graph_outstanding_billing.html:7
+msgid "Outstanding billing"
+msgstr "En cours de facturation"
+
+#: templates/billing/graph_outstanding_billing.html:34
+msgid "Outstanding amount (€)"
+msgstr "Montant de l'encours de facturation (€)"
 
 #: templates/billing/graph_yearly_billing.html:28
 msgid "turnover (€)"
