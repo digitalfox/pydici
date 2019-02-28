@@ -59,10 +59,12 @@ def bill_review(request):
     wait_warning = timedelta(15)  # wait in days used to warn that a bill is due soon
 
     # Get bills overdue, due soon, litigious and recently paid
-    overdue_bills = ClientBill.objects.filter(state="1_SENT").filter(due_date__lte=today).select_related()
-    soondue_bills = ClientBill.objects.filter(state="1_SENT").filter(due_date__gt=today).filter(due_date__lte=(today + wait_warning)).select_related()
+    overdue_bills = ClientBill.objects.filter(state="1_SENT", due_date__lte=today).select_related()
+    soondue_bills = ClientBill.objects.filter(state="1_SENT", due_date__gt=today, due_date__lte=(today + wait_warning)).select_related()
     recent_bills = ClientBill.objects.filter(state="2_PAID").order_by("-payment_date").select_related()[:20]
     litigious_bills = ClientBill.objects.filter(state="3_LITIGIOUS").select_related()
+    supplier_overdue_bills = SupplierBill.objects.filter(state="1_RECEIVED", due_date__lte=today).select_related()
+    supplier_soondue_bills = SupplierBill.objects.filter(state="1_RECEIVED", due_date__gt=today, due_date__lte=(today + wait_warning)).select_related()
 
     # Compute totals
     soondue_bills_total = soondue_bills.aggregate(Sum("amount"))["amount__sum"]
@@ -73,8 +75,8 @@ def bill_review(request):
     litigious_bills_total_with_vat = sum([bill.amount_with_vat for bill in litigious_bills if bill.amount_with_vat])
 
     # Get leads with done timesheet in past three month that don't have bill yet
-    leadsWithoutBill = Lead.objects.filter(state="WON", mission__timesheet__working_date__gte=(date.today() - timedelta(90)))
-    leadsWithoutBill = leadsWithoutBill.annotate(Count("clientbill")).filter(clientbill__count=0)
+    leads_without_bill = Lead.objects.filter(state="WON", mission__timesheet__working_date__gte=(date.today() - timedelta(90)))
+    leads_without_bill = leads_without_bill.annotate(Count("clientbill")).filter(clientbill__count=0)
 
     return render(request, "billing/bill_review.html",
                   {"overdue_bills": overdue_bills,
@@ -87,7 +89,9 @@ def bill_review(request):
                    "soondue_bills_total_with_vat": soondue_bills_total_with_vat,
                    "overdue_bills_total_with_vat": overdue_bills_total_with_vat,
                    "litigious_bills_total_with_vat": litigious_bills_total_with_vat,
-                   "leads_without_bill": leadsWithoutBill,
+                   "leads_without_bill": leads_without_bill,
+                   "supplier_soondue_bills": supplier_soondue_bills,
+                   "supplier_overdue_bills": supplier_overdue_bills,
                    "billing_management": user_has_feature(request.user, "billing_management"),
                    "user": request.user})
 

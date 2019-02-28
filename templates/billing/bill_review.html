@@ -12,7 +12,7 @@
 
     <br/>
     {% if overdue_bills %}
-    <h1>{% trans "Overdue bills" %}</h1>
+    <h1>{% trans "Overdue client bills" %}</h1>
         <table id="overdue_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
@@ -62,7 +62,7 @@
     {% endif %}
     {% if soondue_bills %}
     <br/><br/>
-    <h1>{% trans "Bills due soon" %}</h1>
+    <h1>{% trans "Client bills due soon" %}</h1>
         <table id="due_soon_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
@@ -112,7 +112,7 @@
     {% endif %}
     {% if litigious_bills %}
         <br/><br/>
-        <h1>{% trans "Litigious bills" %}</h1>
+        <h1>{% trans "Litigious client bills" %}</h1>
         <table id="litigious_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
@@ -163,7 +163,7 @@
     
     {% if recent_bills %}
         <br/><br/>
-        <h1>{% trans "Recently paid bills" %}</h1>
+        <h1>{% trans "Recently paid client bills" %}</h1>
         <table id="recent_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
@@ -231,6 +231,88 @@
         </table>
         {% with "recent_leads" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
     </div>
+    {% endif %}
+    {% if supplier_soondue_bills %}
+        <br/><br/>
+        <h1>{% trans "Supplier soon due bills" %}</h1>
+        <table id="supplier_soondue_bills" class="table table-hover table-striped table-condensed table-bordered">
+        <thead>
+        <tr>
+                <th>{% trans "Bill id" %}</th>
+                <th>{% trans "subsidiary" %}</th>
+                <th>{% trans "Supplier" %}</th>
+                <th>{% trans "Lead" %}</th>
+                <th>{% trans "Amount (€ excl tax)" %}</th>
+                <th>{% trans "Amount (€ with tax)" %}</th>
+                <th>{% trans "Creation date" %}</th>
+                <th>{% trans "Wait" %}</th>
+                <th>{% trans "File" %}</th>
+                <th>{% trans "Comments" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for bill in supplier_soondue_bills %}
+            <tr>
+                {% if billing_management %}
+                    <td><a href="{% url 'billing:supplier_bill' bill.id %}">{{ bill }}</a></td>
+                {% else %}
+                    <td>{{ bill }}</td>
+                {% endif %}
+                <td>{{ bill.lead.subsidiary }}</td>
+                <td>{{ bill.supplier }}</a></td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
+                <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
+                <td>{{ bill.creation_date }}</td>
+                <td>{{ bill.payment_wait }}</td>
+                <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
+                <td>{{ bill.comment }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+        {% with "supplier_soondue_bills" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
+    {% endif %}
+    {% if supplier_overdue_bills %}
+        <br/><br/>
+        <h1>{% trans "Supplier over due bills" %}</h1>
+        <table id="supplier_overdue_bills" class="table table-hover table-striped table-condensed table-bordered">
+        <thead>
+        <tr>
+                <th>{% trans "Bill id" %}</th>
+                <th>{% trans "subsidiary" %}</th>
+                <th>{% trans "Supplier" %}</th>
+                <th>{% trans "Lead" %}</th>
+                <th>{% trans "Amount (€ excl tax)" %}</th>
+                <th>{% trans "Amount (€ with tax)" %}</th>
+                <th>{% trans "Creation date" %}</th>
+                <th>{% trans "Wait" %}</th>
+                <th>{% trans "File" %}</th>
+                <th>{% trans "Comments" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for bill in supplier_overdue_bills %}
+            <tr>
+                {% if billing_management %}
+                    <td><a href="{% url 'billing:supplier_bill' bill.id %}">{{ bill }}</a></td>
+                {% else %}
+                    <td>{{ bill }}</td>
+                {% endif %}
+                <td>{{ bill.lead.subsidiary }}</td>
+                <td>{{ bill.supplier }}</a></td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
+                <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
+                <td>{{ bill.creation_date }}</td>
+                <td>{{ bill.payment_wait }}</td>
+                <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
+                <td>{{ bill.comment }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+        {% with "supplier_overdue_bills" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
     {% endif %}
     
     <div class="row"></div>
