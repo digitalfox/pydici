@@ -34,4 +34,5 @@ billing_urls = [url(r'^bill_review', v.bill_review, name="bill_review"),
                 url(r'^datatable/supplier_bills_archive/data/$', t.SupplierBillArchiveTableDT.as_view(), name='supplier_bills_archive_DT'),
                 url(r'^graph/billing-jqp$', v.graph_billing_jqp, name="graph_billing_jqp"),
                 url(r'^graph/yearly-billing$', v.graph_yearly_billing, name="graph_yearly_billing"),
+                url(r'^graph/outstanding-billing$', v.graph_outstanding_billing, name="graph_outstanding_billing"),
                 ]

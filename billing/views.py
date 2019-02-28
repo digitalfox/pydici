@@ -613,3 +613,31 @@ def graph_yearly_billing(request):
                    "subsidiaries" : json.dumps(labels),
                    "series_colors": COLORS,
                    "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+@cache_page(60 * 60 * 4)
+def graph_outstanding_billing(request):
+    """Graph outstanding billing, including overdue clients bills"""
+    end = nextMonth(date.today())
+    current = (end - timedelta(30) * 24).replace(day=1)
+    months = []
+    outstanding = []
+    outstanding_overdue = []
+    graph_data = []
+    while current < end:
+        months.append(current.isoformat())
+        next_month = nextMonth(current)
+        outstanding.append(float(ClientBill.objects.filter(due_date__lte=next_month, payment_date__gt=next_month).aggregate(Sum("amount"))["amount__sum"] or 0))
+        outstanding_overdue.append(float(ClientBill.objects.filter(due_date__lte=current, payment_date__gt=next_month).aggregate(Sum("amount"))["amount__sum"] or 0))
+        current = next_month
+
+    graph_data.append(["x"] + months)
+    graph_data.append(["outstanding"] + outstanding)
+    graph_data.append(["outstanding overdue"] + outstanding_overdue)
+
+    return render(request, "billing/graph_outstanding_billing.html",
+                  {"graph_data": json.dumps(graph_data),
+                   "series_colors": COLORS,
+                   "user": request.user})
