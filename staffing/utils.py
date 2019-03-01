@@ -222,7 +222,7 @@ def compute_automatic_staffing(mission, mode, duration, user=None):
         if mission.lead:
             start_date = max(current_month, mission.lead.start_date.replace(day=1))
     else:
-        max_staffing = Staffing.objects.filter(mission=mission).aggregate(Max("staffing_date")).values()[0]
+        max_staffing = Staffing.objects.filter(mission=mission).aggregate(Max("staffing_date"))["staffing_date__max"]
         if max_staffing:
             start_date = max(current_month, nextMonth(max_staffing))
 
