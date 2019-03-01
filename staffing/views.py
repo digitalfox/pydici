@@ -1153,16 +1153,16 @@ def detailed_csv_timesheet(request, year=None, month=None):
                 row.extend([0, 0])
             # Past timesheet
             timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
-                                                 working_date__lt=month).aggregate(Sum("charge")).values()[0]
+                                                 working_date__lt=month).aggregate(Sum("charge"))["charge__sum"]
             row.append(formats.number_format(timesheet) if timesheet else 0)
             # Current month timesheet
             timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
                                                  working_date__gte=month,
-                                                 working_date__lt=next_month).aggregate(Sum("charge")).values()[0]
+                                                 working_date__lt=next_month).aggregate(Sum("charge"))["charge__sum"]
             row.append(formats.number_format(timesheet) if timesheet else 0)
             # Forecasted staffing
             forecast = Staffing.objects.filter(mission=mission, consultant=consultant,
-                                               staffing_date__gte=next_month).aggregate(Sum("charge")).values()[0]
+                                               staffing_date__gte=next_month).aggregate(Sum("charge"))["charge__sum"]
             row.append(formats.number_format(forecast) if forecast else 0)
 
             writer.writerow(row)
