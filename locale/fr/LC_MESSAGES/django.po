@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-03 20:33+0100\n"
-"PO-Revision-Date: 2019-03-03 20:33+0100\n"
+"POT-Creation-Date: 2019-03-03 23:49+0100\n"
+"PO-Revision-Date: 2019-03-03 23:49+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -57,7 +57,7 @@ msgid "Name"
 msgstr "Nom"
 
 #: actionset/models.py:29 actionset/models.py:50 billing/admin.py:29
-#: billing/admin.py:43 billing/forms.py:70 billing/models.py:260
+#: billing/admin.py:43 billing/forms.py:70 billing/models.py:261
 #: core/models.py:66 expense/models.py:98 leads/models.py:131
 #: leads/views.py:208 staffing/models.py:43 staffing/models.py:329
 #: templates/billing/bill.html:50 templates/expense/expense_archive.html:18
@@ -88,7 +88,7 @@ msgid "N/A"
 msgstr "N/A"
 
 #: actionset/models.py:63 billing/admin.py:32 billing/admin.py:46
-#: billing/models.py:134 billing/models.py:197 leads/models.py:70
+#: billing/models.py:134 billing/models.py:198 leads/models.py:70
 #: leads/models.py:292 leads/views.py:209
 #: templates/billing/_lead_billing.html:12
 #: templates/billing/_lead_billing.html:49
@@ -179,12 +179,12 @@ msgstr "Il faut définir le mois pour les missions au temps passé"
 msgid "Consultant must be defined for time spent mission"
 msgstr "Il faut définir le consultant pour les missions au temps passé"
 
-#: billing/forms.py:149 billing/models.py:256 expense/models.py:147
+#: billing/forms.py:149 billing/models.py:257 expense/models.py:147
 #: templates/expense/expenses.html:8
 msgid "Expense"
 msgstr "Note de frais"
 
-#: billing/forms.py:150 billing/models.py:257 expense/models.py:103
+#: billing/forms.py:150 billing/models.py:258 expense/models.py:103
 #: templates/expense/expense_archive.html:26
 #: templates/expense/expense_list.html:22
 msgid "Expense date"
@@ -268,7 +268,7 @@ msgstr "Facture de l'année N-1"
 msgid "Comments"
 msgstr "Remarques"
 
-#: billing/models.py:77 billing/models.py:230 billing/models.py:258
+#: billing/models.py:77 billing/models.py:231 billing/models.py:259
 #: templates/billing/_lead_billing.html:13
 #: templates/billing/_lead_billing.html:50
 #: templates/billing/bill_review.html:32 templates/billing/bill_review.html:82
@@ -282,14 +282,14 @@ msgstr "Remarques"
 msgid "Amount (€ excl tax)"
 msgstr "Montant (€ HT)"
 
-#: billing/models.py:78 billing/models.py:231 billing/models.py:259
+#: billing/models.py:78 billing/models.py:232 billing/models.py:260
 #: templates/billing/client_bills_archive.html:18
 #: templates/billing/client_bills_in_creation.html:19
 #: templates/billing/supplier_bills_archive.html:19
 msgid "Amount (€ incl tax)"
 msgstr "Montant (€ TTC)"
 
-#: billing/models.py:80 billing/models.py:233
+#: billing/models.py:80 billing/models.py:234
 msgid "VAT (%)"
 msgstr "TVA (%)"
 
@@ -309,16 +309,16 @@ msgstr "Proposée"
 msgid "Sent"
 msgstr "Envoyée"
 
-#: billing/models.py:126 billing/models.py:194 expense/models.py:32
+#: billing/models.py:126 billing/models.py:195 expense/models.py:32
 #: templates/expense/_expense_state_column.html:5
 msgid "Paid"
 msgstr "Payée"
 
-#: billing/models.py:127 billing/models.py:195
+#: billing/models.py:127 billing/models.py:196
 msgid "Litigious"
 msgstr "En litige"
 
-#: billing/models.py:128 billing/models.py:196
+#: billing/models.py:128 billing/models.py:197
 msgid "Canceled"
 msgstr "Annulée"
 
@@ -330,7 +330,7 @@ msgstr "Français"
 msgid "English"
 msgstr "Anglais"
 
-#: billing/models.py:135 billing/models.py:198
+#: billing/models.py:135 billing/models.py:199
 #: templates/billing/_lead_billing.html:18
 #: templates/billing/_lead_billing.html:55
 #: templates/billing/bill_review.html:35 templates/billing/bill_review.html:85
@@ -363,60 +363,64 @@ msgstr "Facture client"
 msgid "Received"
 msgstr "Reçue"
 
-#: billing/models.py:201 templates/billing/_lead_billing.html:48
+#: billing/models.py:194 expense/models.py:28
+msgid "Validated"
+msgstr "Validée"
+
+#: billing/models.py:202 templates/billing/_lead_billing.html:48
 msgid "Supplier Bill id"
 msgstr "N° de facture fournisseur"
 
-#: billing/models.py:218
+#: billing/models.py:219
 msgid "Supplier Bill"
 msgstr "Facture fournisseur"
 
-#: billing/models.py:228 templates/billing/bill.html:50
+#: billing/models.py:229 templates/billing/bill.html:50
 msgid "Quantity"
 msgstr "Quantité"
 
-#: billing/models.py:229
+#: billing/models.py:230
 msgid "Unit price (€)"
 msgstr "Prix unitaire (€)"
 
-#: billing/models.py:235
+#: billing/models.py:236
 msgid "Label"
 msgstr "Libellé"
 
-#: billing/views.py:317 billing/views.py:364
+#: billing/views.py:341 billing/views.py:388
 msgid "Bill removed successfully"
 msgstr "Facture supprimée avec succès"
 
-#: billing/views.py:319
+#: billing/views.py:343
 msgid "Can't remove a bill that have been sent. You may cancel it"
 msgstr ""
 "Impossible de supprimer une facture envoyée. Vous pouvez par contre "
 "l'annuler."
 
-#: billing/views.py:323 billing/views.py:370
+#: billing/views.py:347 billing/views.py:394
 #, python-format
 msgid "Can't find bill %s"
 msgstr "Impossible de trouver la facture %s"
 
-#: billing/views.py:366
+#: billing/views.py:390
 #, python-format
 msgid "Can't remove a bill in state %s. You may cancel it"
 msgstr ""
 "Impossible de supprimer une facture dans l'état %s. Vous pouvez par contre "
 "l'annuler."
 
-#: billing/views.py:607 billing/views.py:608
+#: billing/views.py:631 billing/views.py:632
 #: templates/billing/graph_yearly_billing.html:14
 #: templates/billing/graph_yearly_billing.html:16
 #: templates/billing/graph_yearly_billing.html:37
 msgid "growth"
 msgstr "croissance"
 
-#: billing/views.py:640
+#: billing/views.py:664
 msgid "billing outstanding"
 msgstr "encours des factures émises"
 
-#: billing/views.py:641
+#: billing/views.py:665
 msgid "billing outstanding overdue"
 msgstr "encours des factures en retard"
 
@@ -895,10 +899,6 @@ msgstr ""
 #: expense/models.py:27
 msgid "Requested"
 msgstr "Demandée"
-
-#: expense/models.py:28
-msgid "Validated"
-msgstr "Validée"
 
 #: expense/models.py:29
 msgid "Rejected"
@@ -1454,15 +1454,19 @@ msgstr "Tout le monde"
 msgid "team %(manager_name)s"
 msgstr "équipe %(manager_name)s"
 
-#: people/utils.py:72
+#: people/utils.py:67
 msgid "Expenses to review"
 msgstr "Notes de frais à valider"
 
-#: people/utils.py:78 templates/billing/bill_review.html:13
+#: people/utils.py:75 templates/billing/bill_review.html:13
 msgid "Bills to review"
 msgstr "Factures à revoir"
 
-#: people/utils.py:93 templates/leads/lead_detail.html:270
+#: people/utils.py:83
+msgid "Supplier bills to review"
+msgstr "Factures fournisseurs à valider"
+
+#: people/utils.py:90 templates/leads/lead_detail.html:270
 #: templates/people/consultant_detail.html:84
 #: templates/people/subcontractor_detail.html:16
 #: templates/staffing/mission.html:216
@@ -2098,21 +2102,24 @@ msgstr "Factures fournisseurs à régler prochainement"
 msgid "Amount (€ with tax)"
 msgstr "Montant (€ TTC)"
 
-#: templates/billing/bill_review.html:34 templates/billing/bill_review.html:84
-#: templates/billing/bill_review.html:134
+#: templates/billing/bill_review.html:34 templates/billing/bill_review.html:134
 #: templates/billing/bill_review.html:257
-#: templates/billing/bill_review.html:298
 msgid "Wait"
 msgstr "Retard"
 
 #: templates/billing/bill_review.html:56 templates/billing/bill_review.html:106
 #: templates/billing/bill_review.html:156
+#: templates/billing/bill_review.html:323
 msgid "Mark this bill as paid"
 msgstr "Marquer cette facture comme payée"
 
 #: templates/billing/bill_review.html:64
 msgid "Total amount: "
 msgstr "Montant total : "
+
+#: templates/billing/bill_review.html:84 templates/billing/bill_review.html:298
+msgid "Deadline"
+msgstr "Échéance"
 
 #: templates/billing/bill_review.html:114
 #: templates/billing/bill_review.html:164
@@ -2142,6 +2149,10 @@ msgstr "À définir"
 #: templates/billing/bill_review.html:246
 msgid "Supplier over due bills"
 msgstr "Factures fournisseurs en retard de paiement"
+
+#: templates/billing/bill_review.html:327
+msgid "Validated this bill for payment"
+msgstr "Valider cette facture pour paiement"
 
 #: templates/billing/client_bill_form.html:13
 msgid "Bill header"
@@ -4078,9 +4089,6 @@ msgstr "Rapport de production"
 
 #~ msgid "Client ref.: "
 #~ msgstr "V/Réf :"
-
-#~ msgid "Client bills review"
-#~ msgstr "Revue des factures clients"
 
 #~ msgid "D"
 #~ msgstr "S"
