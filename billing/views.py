@@ -622,6 +622,7 @@ def graph_outstanding_billing(request):
     """Graph outstanding billing, including overdue clients bills"""
     end = nextMonth(date.today())
     current = (end - timedelta(30) * 24).replace(day=1)
+    today = date.today()
     months = []
     outstanding = []
     outstanding_overdue = []
@@ -629,8 +630,10 @@ def graph_outstanding_billing(request):
     while current < end:
         months.append(current.isoformat())
         next_month = nextMonth(current)
-        outstanding.append(float(ClientBill.objects.filter(due_date__lte=next_month).exclude(payment_date__lt=next_month).aggregate(Sum("amount"))["amount__sum"] or 0))
-        outstanding_overdue.append(float(ClientBill.objects.filter(due_date__lte=current).exclude(payment_date__lt=next_month).aggregate(Sum("amount"))["amount__sum"] or 0))
+        bills = ClientBill.objects.filter(due_date__lte=next_month, state__in=("1_SENT", "2_PAID")).exclude(payment_date__lt=current)
+        overdue_bills = bills.exclude(payment_date__lte=F("due_date")).exclude(payment_date__gt=next_month).exclude(due_date__gt=today)
+        outstanding.append(float(bills.aggregate(Sum("amount"))["amount__sum"] or 0))
+        outstanding_overdue.append(float(overdue_bills.aggregate(Sum("amount"))["amount__sum"] or 0))
         current = next_month
 
     graph_data.append(["x"] + months)
