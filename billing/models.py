@@ -190,10 +190,11 @@ class ClientBill(AbstractBill):
 
 class SupplierBill(AbstractBill):
     SUPPLIER_BILL_STATE = (
-        ('1_RECEIVED', ugettext("Received")),
-        ('2_PAID', ugettext("Paid")),
-        ('3_LITIGIOUS', ugettext("Litigious")),
-        ('4_CANCELED', ugettext("Canceled")),)
+        ('1_RECEIVED', _("Received")),
+        ('1_VALIDATED', _("Validated")),
+        ('2_PAID', _("Paid")),
+        ('3_LITIGIOUS', _("Litigious")),
+        ('4_CANCELED', _("Canceled")),)
     state = models.CharField(_("State"), max_length=30, choices=SUPPLIER_BILL_STATE, default="1_RECEIVED")
     bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path,
                                  storage=BillStorage(nature="supplier"))

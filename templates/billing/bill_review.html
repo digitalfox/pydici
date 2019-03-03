@@ -81,7 +81,7 @@
                 <th>{% trans "Client" %}</th>
                 <th>{% trans "Amount (€ excl tax)" %}</th>
                 <th>{% trans "Amount (€ with tax)" %}</th>
-                <th>{% trans "Wait" %}</th>
+                <th>{% trans "Deadline" %}</th>
                 <th>{% trans "File" %}</th>
                 <th>{% trans "Comments" %}</th>
                 <th></th>
@@ -295,9 +295,10 @@
                 <th>{% trans "Amount (€ excl tax)" %}</th>
                 <th>{% trans "Amount (€ with tax)" %}</th>
                 <th>{% trans "Creation date" %}</th>
-                <th>{% trans "Wait" %}</th>
+                <th>{% trans "Deadline" %}</th>
                 <th>{% trans "File" %}</th>
                 <th>{% trans "Comments" %}</th>
+                <th></th>
         </tr>
         </thead>
         <tbody>
@@ -317,6 +318,16 @@
                 <td>{{ bill.payment_wait }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
                 <td>{{ bill.comment }}</td>
+                <td>{% if bill.state == "1_VALIDATED" %}
+                        {% if pydici_feature.billing_management %}
+                            <a href="{% url 'billing:mark_supplierbill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
+                        {% endif %}
+                    {% else %}
+                        {% if pydici_feature.billing_request and bill.lead.responsible == consultant %}
+                            <a href="{% url 'billing:validate_supplier_bill' bill.id %}">{% trans "Validated this bill for payment" %}</a>
+                        {% endif %}
+                    {% endif %}
+                 </td>
             </tr>
         {% endfor %}
         </tbody>

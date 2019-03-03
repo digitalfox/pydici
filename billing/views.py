@@ -63,8 +63,8 @@ def bill_review(request):
     soondue_bills = ClientBill.objects.filter(state="1_SENT", due_date__gt=today, due_date__lte=(today + wait_warning)).select_related()
     recent_bills = ClientBill.objects.filter(state="2_PAID").order_by("-payment_date").select_related()[:20]
     litigious_bills = ClientBill.objects.filter(state="3_LITIGIOUS").select_related()
-    supplier_overdue_bills = SupplierBill.objects.filter(state="1_RECEIVED", due_date__lte=today).select_related()
-    supplier_soondue_bills = SupplierBill.objects.filter(state="1_RECEIVED", due_date__gt=today, due_date__lte=(today + wait_warning)).select_related()
+    supplier_overdue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__lte=today).select_related()
+    supplier_soondue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__gt=today).select_related()
 
     # Compute totals
     soondue_bills_total = soondue_bills.aggregate(Sum("amount"))["amount__sum"]
@@ -93,6 +93,7 @@ def bill_review(request):
                    "supplier_soondue_bills": supplier_soondue_bills,
                    "supplier_overdue_bills": supplier_overdue_bills,
                    "billing_management": user_has_feature(request.user, "billing_management"),
+                   "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
                    "user": request.user})
 
 
@@ -126,11 +127,34 @@ class BillingRequestMixin(PydiciFeatureMixin):
 
 
 @pydici_non_public
-@pydici_feature("management")
-@permission_required("billing.change_clientbill")
+@pydici_feature("billing_management")
 def mark_bill_paid(request, bill_id):
     """Mark the given bill as paid"""
     bill = ClientBill.objects.get(id=bill_id)
+    bill.state = "2_PAID"
+    bill.save()
+    return HttpResponseRedirect(reverse("billing:bill_review"))
+
+
+@pydici_non_public
+@pydici_feature("management")
+def validate_supplier_bill(request, bill_id):
+    """Mark the given supplier bill as validated"""
+    consultant = Consultant.objects.filter(trigramme__iexact=request.user.username).first()
+    bill = SupplierBill.objects.get(id=bill_id)
+    if consultant == bill.lead.responsible and bill.state == "1_RECEIVED":
+        bill.state = "1_VALIDATED"
+        bill.save()
+        return HttpResponseRedirect(reverse("billing:bill_review"))
+    else:
+        return HttpResponseRedirect(reverse("core:forbiden"))
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def mark_supplierbill_paid(request, bill_id):
+    """Mark the given supplier bill as paid"""
+    bill = SupplierBill.objects.get(id=bill_id)
     bill.state = "2_PAID"
     bill.save()
     return HttpResponseRedirect(reverse("billing:bill_review"))
