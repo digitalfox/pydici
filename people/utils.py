@@ -15,7 +15,7 @@ from django.urls import reverse
 
 from people.models import Consultant
 from crm.models import Subsidiary
-from billing.models import ClientBill
+from billing.models import ClientBill, SupplierBill
 from expense.models import Expense
 from expense.utils import user_expense_team
 
@@ -63,34 +63,40 @@ def compute_consultant_tasks(consultant):
     expenses_count = expenses.count()
     if expenses_count > 0:
         expenses_age = (now - expenses.aggregate(Min("update_date"))["update_date__min"]).days
-        if expenses_age > 10:
-            expenses_priority = 3
-        elif expenses_age > 5:
-            expenses_priority = 2
-        else:
-            expenses_priority = 1
+        expenses_priority = get_task_priority(expenses_age, (5, 10))
         tasks.append((_("Expenses to review"), expenses_count, reverse("expense:expenses")+"#managed_expense_workflow_table", expenses_priority))
 
     # Client bills to reviews
     bills = ClientBill.objects.filter(state="0_DRAFT", billdetail__mission__responsible=consultant).distinct()
     bills_count = bills.count()
     if bills_count > 0:
-        tasks.append((_("Bills to review"), bills_count, reverse("billing:client_bills_in_creation"), 1))
+        bills_age = (now.date() - bills.aggregate(Min("creation_date"))["creation_date__min"]).days
+        bills_priority = get_task_priority(bills_age, (2, 5))
+        tasks.append((_("Bills to review"), bills_count, reverse("billing:client_bills_in_creation"), bills_priority ))
 
     # Supplier bills to reviews
-    # TODO
+    supplier_bills = SupplierBill.objects.filter(state="1_RECEIVED", lead__responsible=consultant)
+    supplier_bills_count = supplier_bills.count()
+    if supplier_bills_count > 0:
+        supplier_bills_age = (now.date() - supplier_bills.aggregate(Min("creation_date"))["creation_date__min"]).days
+        supplier_bills_priority = get_task_priority(supplier_bills_age, (2, 5))
+        tasks.append((_("Supplier bills to review"), supplier_bills_count, reverse("billing:bill_review")+"#supplier_soondue_bills", supplier_bills_priority))
 
     # Actions
     actions = consultant.pending_actions()
     actions_count = actions.count()
-    if actions_count > 20:
-        actions_priority = 3
-    elif actions_count > 10:
-        actions_priority = 2
-    else:
-        actions_priority = 1
     if actions_count:
+        actions_priority = get_task_priority(actions_count, (10, 20))
         tasks.append((_("Pending actions"), actions_count, "#consultant_actions", actions_priority))
 
     return tasks
 
+
+def get_task_priority(value, threshold):
+    """determine task priority according threshold (medium/high)"""
+    if value > threshold[1]:
+        return 3
+    elif value > threshold[0]:
+        return 2
+    else:
+        return 1
