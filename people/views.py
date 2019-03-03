@@ -15,6 +15,7 @@ from crm.models import Company
 from staffing.models import Holiday, Timesheet
 from core.decorator import pydici_non_public
 from core.utils import working_days, previousMonth, nextMonth
+from people.utils import compute_consultant_tasks
 
 
 def _consultant_home(request, consultant):
@@ -141,6 +142,7 @@ def consultant_detail(request, consultant_id):
                    "forecasting_balance": forecasting_balance,
                    "month_turnover": monthTurnover,
                    "turnover_variation": turnoverVariation,
+                   "tasks": compute_consultant_tasks(consultant),
                    "user": request.user})
 
 
@@ -161,3 +163,4 @@ def subcontractor_detail(request, consultant_id):
                    "companies": companies,
                    "leads_as_staffee": leads_as_staffee,
                    "user": request.user})
+

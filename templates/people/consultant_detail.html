@@ -32,6 +32,19 @@
         </div>
     </div>
 
+    {% if tasks %}
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="pydici-block">
+            <h3 class="pydici-block-title">{% trans "Things to do right now !" %}</h3>
+            <ul class="icon-list checkmark">
+            {% for name, count, link, priority in tasks %}
+                <li class="task_priority_{{priority}}"><a href="{{ link }}">{{ name }} {% if count > 1 %}(x{{ count }}){% endif %}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
             {% if consultant.manager %}
@@ -67,7 +80,7 @@
     {% with consultant.pending_actions|slice:":20" as actions %}
         {% if actions %}
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="pydici-block">
+                <div class="pydici-block" id="consultant_actions">
                     <h3 class="pydici-block-title">{% trans "Pending actions" %}</h3>
                         {% include "actionset/_consultant_actions.html" %}
                 </div>
