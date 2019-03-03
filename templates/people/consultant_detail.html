@@ -101,30 +101,7 @@
     </div>
 
 {% endif %}
-
-    <div class="col-md-4 col-sm-6 col-xs-12">
-        <div class="pydici-block">
-            <h3 class="pydici-block-title">{% trans "Clients" %}</h3>
-            <ul class="row icon-list chevron-right">
-            {% for company in companies %}
-                {% if forloop.counter > 12 %}
-                    <div class="collapse collapse-clients">
-                {% endif %}
-                <li class="col-sm-6"><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
-                {% if forloop.counter > 12 %}
-                    </div>
-                {% endif %}
-                {% if forloop.last and forloop.counter > 12 %}
-                    <div class="pydici-more-less" data-toggle="collapse" aria-expanded="false" data-target=".collapse-clients" aria-controls="collapse-clients">
-                        <span class="glyphicon glyphicon-collapse-down"></span>
-                        <span class="glyphicon glyphicon-collapse-up"></span>
-                    </div>
-                {% endif %}
-            {% endfor %}
-            </ul>
-        </div>
-	</div>
-
+    
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
             <h3 class="pydici-block-title">{% trans "Current missions" %}</h3>

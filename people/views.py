@@ -48,7 +48,6 @@ def consultant_detail(request, consultant_id):
         # Identify staled missions that may need new staffing or archiving
         staled_missions = [m for m in missions if m.no_more_staffing_since()]
         # Consultant clients and missions
-        companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
         business_territory = Company.objects.filter(businessOwner=consultant)
         leads_as_responsible = set(consultant.lead_responsible.active())
         leads_as_staffee = consultant.lead_set.active()
@@ -123,7 +122,6 @@ def consultant_detail(request, consultant_id):
                    "staff": staff,
                    "missions": missions,
                    "staled_missions": staled_missions,
-                   "companies": companies,
                    "business_territory": business_territory,
                    "leads_as_responsible": leads_as_responsible,
                    "leads_as_staffee": leads_as_staffee,
