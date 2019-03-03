@@ -196,7 +196,8 @@ class Consultant(models.Model):
 
     def userTeam(self, excludeSelf=True, onlyActive=False):
         """Returns consultant team as list of pydici user"""
-        return [c.getUser() for c in self.team(excludeSelf=excludeSelf, onlyActive=onlyActive)]
+        users = [c.getUser() for c in self.team(excludeSelf=excludeSelf, onlyActive=onlyActive)]
+        return [u for u in users if u is not None]
 
     def pending_actions(self):
         """Returns pending actions"""
