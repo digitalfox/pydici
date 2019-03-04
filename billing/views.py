@@ -644,7 +644,7 @@ def graph_yearly_billing(request):
 @cache_page(60 * 60 * 4)
 def graph_outstanding_billing(request):
     """Graph outstanding billing, including overdue clients bills"""
-    end = nextMonth(date.today())
+    end = nextMonth(date.today() + timedelta(45))
     current = (end - timedelta(30) * 24).replace(day=1)
     today = date.today()
     months = []
