@@ -72,7 +72,6 @@ class AbstractBill(models.Model):
     creation_date = models.DateField(_("Creation date"), default=date.today)
     due_date = models.DateField(_("Due date"), default=default_due_date)
     payment_date = models.DateField(_("Payment date"), blank=True, null=True)
-    previous_year_bill = models.BooleanField(_("Previous year bill"), default=False)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
     amount = models.DecimalField(_("Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
     amount_with_vat = models.DecimalField(_("Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,

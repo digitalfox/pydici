@@ -17,7 +17,7 @@ class BillAdmin(ReturnToAppAdmin):
     list_display = ["id", "bill_id", "lead", "state", "amount", "creation_date", "due_date", "payment_date", "comment"]
     ordering = ("-creation_date",)
     actions = None
-    list_filter = ["state", "creation_date", "due_date", "payment_date", "previous_year_bill"]
+    list_filter = ["state", "creation_date", "due_date", "payment_date"]
     search_fields = ["lead__name", "lead__client__organisation__name", "comment",
                      "lead__paying_authority__contact__name", "lead__paying_authority__company__name",
                      "lead__client__contact__name", "lead__client__organisation__company__name"]
@@ -29,7 +29,7 @@ class ClientBillAdmin(BillAdmin):
                  (_("Description"), {"fields": ["lead", "bill_id", "bill_file"]}),
                  (_("Amounts"), {"fields": ["amount", "vat", "amount_with_vat", ]}),
                  (_("Dates"), {"fields": ["creation_date", "due_date", "payment_date", ]}),
-                 (_("State"), {"fields": ["state", "previous_year_bill", "comment", ]}),
+                 (_("State"), {"fields": ["state", "comment", ]}),
                  (_("Link with expenses"), {"fields": ["expenses", "expenses_with_vat", ]}),
                  ]
 
@@ -43,7 +43,7 @@ class SupplierBillAdmin(BillAdmin):
                  (_("Description"), {"fields": ["supplier", "lead", "bill_id", "supplier_bill_id", "bill_file"]}),
                  (_("Amounts"), {"fields": ["amount", "vat", "amount_with_vat", ]}),
                  (_("Dates"), {"fields": ["creation_date", "due_date", "payment_date", ]}),
-                 (_("State"), {"fields": ["state", "previous_year_bill", "comment", ]}),
+                 (_("State"), {"fields": ["state", "comment", ]}),
                  (_("Link with expenses"), {"fields": ["expenses", "expenses_with_vat", ]}),
                  ]
 

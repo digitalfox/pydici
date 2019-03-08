@@ -73,7 +73,7 @@ class ClientBillForm(PydiciCrispyModelForm):
                                                   Tab(_("Amounts"),
                                                       Column("amount", "vat", "amount_with_vat", css_class="col-md-6")),
                                                   Tab(_("Dates"), Column("creation_date", "due_date", "payment_date",
-                                                                         "previous_year_bill", css_class="col-md-6"), ),
+                                                                         css_class="col-md-6"), ),
                                                   css_class="row")))
 
     def clean_amount(self):
