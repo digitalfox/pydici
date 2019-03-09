@@ -22,6 +22,7 @@
             <button class="btn btn-default active" onclick="turnover_per_month_graph();">{% trans "Turnover per month (graphique)" %}</button>
             <button class="btn btn-default" onclick="turnover_per_month_table();">{% trans "Turnover per month (tableau)" %}</button>
             <button class="btn btn-default" onclick="turnover_per_broker();">{% trans "Turnover per broker" %}</button>
+            <button class="btn btn-default" onclick="turnover_per_client();">{% trans "Turnover per client company" %}</button>
         </div>
 
         <div id="pivotable-output" style="margin: 10px;"></div>
@@ -59,6 +60,12 @@
                 var rows = ["{% trans 'broker' %}", "{% trans 'broker' %}"];
                 var cols = ["{% trans 'subsidiary' %}"];
                 drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"]);
+            }
+
+            function turnover_per_client() {
+                var rows = ["{% trans 'subsidiary' %}"];
+                var cols = ["{% trans 'client company' %}"];;
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"]);
             }
 
             // default
