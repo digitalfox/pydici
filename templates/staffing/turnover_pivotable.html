@@ -11,6 +11,7 @@
 
 {% block content %}
         <h2>{% trans "Turnover pivot table" %}</h2>
+        <p>{% trans "Based on timesheet activity" %}</p>
         <div id="date-selector" class="btn-group" role="group">
             {% for year in years %}
                 <a class="btn btn-default {% ifequal year selected_year %}active{% endifequal %}" href="{% url 'staffing:turnover_pivotable_year' year %}">{{ year }}</a>
