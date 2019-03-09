@@ -33,7 +33,9 @@ class BillTableDT(BillingRequestMixin, BaseDatatableView):
             # search term is not a number
             filters.extend([Q(bill_id__icontains=search),
                             Q(state__icontains=search),
+                            Q(client_deal_id__icontains=search),
                             Q(lead__deal_id__icontains=search),
+                            Q(lead__client_deal_id__icontains=search),
                             Q(lead__name__icontains=search),
                             Q(lead__subsidiary__name__icontains=search),
                             Q(lead__responsible__name__icontains=search),

@@ -137,6 +137,7 @@ class ClientBill(AbstractBill):
     include_timesheet = models.BooleanField(_("Include timesheet"), default=False)
     lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, default=settings.LANGUAGE_CODE)
     client_comment = models.CharField(_("Client comments"), max_length=500, blank=True, null=True)
+    client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
 
     def client(self):
         if self.lead.paying_authority:
@@ -171,6 +172,8 @@ class ClientBill(AbstractBill):
         return reverse("billing:client_bill", args=[self.id,])
 
     def save(self, *args, **kwargs):
+        if self.client_deal_id == "" and self.lead.client_deal_id:
+            self.client_deal_id = self.lead.client_deal_id
         if self.state in ("0_DRAFT", "0_PROPOSED"):
             compute_bill(self)
             # Update creation and due date till bill is not really sent

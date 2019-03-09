@@ -18,7 +18,7 @@
         {{ bill.lead.subsidiary.commercial_name }}<br/>
         {{ bill.lead.subsidiary.billing_address|linebreaksbr }}
         <br/><br/>
-        {% if bill.lead.client_deal_id %}{% trans "Your ref.: " %}{{ bill.lead.client_deal_id }}<br/>{% endif %}
+        {% if bill.client_deal_id %}{% trans "Your ref.: " %}{{ bill.client_deal_id }}<br/>{% endif %}
         {% trans "Our ref.: " %}{{ bill.lead.deal_id }}<br/>
         <br/>
         {% if bill.lead.paying_authority %}
