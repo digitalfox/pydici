@@ -136,6 +136,7 @@ class ClientBill(AbstractBill):
     anonymize_profile = models.BooleanField(_("Anonymize profile name"), default=False)
     include_timesheet = models.BooleanField(_("Include timesheet"), default=False)
     lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, default=settings.LANGUAGE_CODE)
+    client_comment = models.CharField(_("Client comments"), max_length=500, blank=True, null=True)
 
     def client(self):
         if self.lead.paying_authority:

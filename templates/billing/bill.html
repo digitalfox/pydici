@@ -113,8 +113,8 @@
 </table>
 
 <div style="page-break-inside: avoid;">
-    {% if bill.comment %}
-        <div class="alert alert-info" style="display: inline-block"><p>{{ bill.comment}}</p></div>
+    {% if bill.client_comment %}
+        <div class="alert alert-info" style="display: inline-block"><p>{{ bill.client_comment}}</p></div>
     {% endif %}
 
     <p><small>{{  bill.lead.subsidiary.payment_description|linebreaksbr }}</small></p>
