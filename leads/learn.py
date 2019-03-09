@@ -91,8 +91,8 @@ def get_lead_state_data(lead):
     history = lead.get_change_history()
     feature["history_changes"] = history.count()
     if feature["history_changes"] > 1:
-        history_boundaries = list(history.aggregate(Min("action_time"), Max("action_time")).values())
-        feature["history_length"] = (history_boundaries[1] - history_boundaries[0]).days
+        history_boundaries = history.aggregate(Min("action_time"), Max("action_time"))
+        feature["history_length"] = (history_boundaries["action_time__max"] - history_boundaries["action_time__min"]).days
 
     return feature, lead.state
 

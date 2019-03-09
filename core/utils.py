@@ -428,7 +428,9 @@ def get_fiscal_years(queryset, date_field_name):
     if not years:
         return []
 
-    min_boundary, max_boundary = list(queryset.aggregate(Min(date_field_name), Max(date_field_name)).values())
+    boundaries = queryset.aggregate(Min(date_field_name), Max(date_field_name))
+    min_boundary = boundaries[date_field_name + "__min"]
+    max_boundary = boundaries[date_field_name + "__max"]
     month = get_parameter("FISCAL_YEAR_MONTH")
     if min_boundary.month < month:
         years.insert(0, years[0]-1)  # First date year is part of previous year. Let's add it
