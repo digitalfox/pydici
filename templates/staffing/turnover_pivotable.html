@@ -59,13 +59,17 @@
             function turnover_per_broker() {
                 var rows = ["{% trans 'broker' %}", "{% trans 'broker' %}"];
                 var cols = ["{% trans 'subsidiary' %}"];
-                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"]);
+                var options = {};
+                options["rowOrder"] = "value_z_to_a";
+                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
             }
 
             function turnover_per_client() {
                 var rows = ["{% trans 'subsidiary' %}"];
-                var cols = ["{% trans 'client company' %}"];;
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"]);
+                var cols = ["{% trans 'client company' %}"];
+                var options = {};
+                options["colOrder"] = "value_z_to_a";
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
             }
 
             // default
