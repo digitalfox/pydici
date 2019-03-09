@@ -153,21 +153,31 @@ class Mission(models.Model):
         """Compute done work according to timesheet for this mission
         Result is cached for few seconds
         @return: (done work in days, done work in euros)"""
+        return self.done_work_period(None, nextMonth(date.today()))
+
+    def done_work_k(self):
+        """Same as done_work, but with amount in keur"""
+        days, amount = self.done_work()
+        return days, amount / 1000
+
+    def done_work_period(self, start, end):
+        """Compute done work according to timesheet for this mission
+        Result is cached for few seconds
+        @return: (done work in days, done work in euros)"""
         rates = dict([(i.id, j[0]) for i, j in self.consultant_rates().items()])  # switch to consultant id
         days = 0
         amount = 0
-        timesheets = Timesheet.objects.filter(mission=self, working_date__lt=nextMonth(date.today()))
+        timesheets = Timesheet.objects.filter(mission=self)
+        if start:
+            timesheets = timesheets.filter(working_date__gte=start)
+        if end:
+            timesheets = timesheets.filter(working_date__lt=end)
         timesheets = timesheets.values_list("consultant").annotate(Sum("charge")).order_by()
         for consultant_id, charge in timesheets:
             days += charge
             if consultant_id in rates:
                 amount += charge * rates[consultant_id]
         return (days, amount)
-
-    def done_work_k(self):
-        """Same as done_work, but with amount in keur"""
-        days, amount = self.done_work()
-        return days, amount / 1000
 
     @cacheable("Mission.forecasted_work%(id)s", 10)
     def forecasted_work(self):

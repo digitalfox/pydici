@@ -1398,6 +1398,55 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 10)
+def turnover_pivotable(request, year=None):
+    """Turnover analysis (per people and mission) based on timesheet production"""
+    data = []
+    month = int(get_parameter("FISCAL_YEAR_MONTH"))
+    missions = Mission.objects.filter(nature="PROD", lead__state="WON")
+
+    if not missions:
+        return HttpResponse()
+
+    years = get_fiscal_years(missions, "lead__creation_date")
+
+    if year is None and years:
+        year = years[-1]
+    if year != "all":
+        year = int(year)
+        start = date(year, month, 1)
+        end = date(year + 1, month, 1)
+        missions = missions.filter(timesheet__working_date__gte=start, timesheet__working_date__lt=end)
+
+    missions = missions.distinct()
+    missions = missions.select_related("responsible", "lead__client__contact", "lead__client__organisation__company", "subsidiary",
+                         "lead__business_broker__company", "lead__business_broker__contact")
+
+
+    for mission in missions:
+        mission_data = {_("deal id"): mission.deal_id,
+                         _("name"): mission.short_name(),
+                         _("client organisation"): str(mission.lead.client.organisation),
+                         _("client company"): str(mission.lead.client.organisation.company),
+                         _("responsible"): str(mission.responsible),
+                         _("broker"): str(mission.lead.business_broker or _("Direct")),
+                         _("subsidiary"): str(mission.subsidiary)}
+        for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):
+            if year != "all" and (month < start or month >= end):
+                continue  # Skip mission if outside period
+            mission_month_data = mission_data.copy()
+            mission_month_data[_("turnover (€)")] = int(mission.done_work_period(month, nextMonth(month))[1])
+            mission_month_data[_("month")] = month.isoformat()
+            data.append(mission_month_data)
+
+    return render(request, "staffing/turnover_pivotable.html", { "data": json.dumps(data),
+                                                    "derivedAttributes": "{}",
+                                                    "years": years,
+                                                    "selected_year": year})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+@cache_page(60 * 10)
 def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
     @:param subsidiary_id: filter graph on the given subsidiary
