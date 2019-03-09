@@ -56,7 +56,7 @@
             }
 
             function turnover_per_broker() {
-                var rows = ["{% trans 'broker' %}", "{% trans 'apporteur' %}"];
+                var rows = ["{% trans 'broker' %}", "{% trans 'broker' %}"];
                 var cols = ["{% trans 'subsidiary' %}"];
                 drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"]);
             }
