@@ -29,7 +29,16 @@
         {% trans "Our contact: " %}{{ bill.lead.responsible }}<br/>
     </div>
     <div class="col-xs-offset-1 col-xs-6">
-        <div class="well small-margin"><div class="lead small-margin text-uppercase"><strong>{% trans "Bill" %}</strong></div><strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
+        <div class="well small-margin"><div class="lead small-margin text-uppercase">
+            <strong>
+                {% if bill.amount_with_vat > 0 %}
+                    {% trans "Bill" %}
+                {% else %}
+                    {% trans "Credit" %}
+                {% endif %}
+            </strong>
+        </div>
+        <strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
 
         {% if bill.lead.paying_authority %}
             <div class="lead">{{ bill.lead.paying_authority.company }}</div>
@@ -116,9 +125,10 @@
     {% if bill.client_comment %}
         <div class="alert alert-info" style="display: inline-block"><p>{{ bill.client_comment}}</p></div>
     {% endif %}
-
-    <p><small>{{  bill.lead.subsidiary.payment_description|linebreaksbr }}</small></p>
-    <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
+    {% if bill.amount_with_vat > 0 %}
+        <p><small>{{  bill.lead.subsidiary.payment_description|linebreaksbr }}</small></p>
+        <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
+    {% endif %}
 </div>
 
 {% if bill.billexpense_set.count %}
