@@ -12,8 +12,11 @@ body {
     padding: 0px;
 }
 
-
 .table-pydici-extra-condensed thead td {
+    text-align: center
+}
+
+.table-pydici-extra-condensed thead th {
     text-align: center
 }
 
