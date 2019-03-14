@@ -1020,11 +1020,10 @@ def all_timesheet(request, year=None, month=None):
 
     previous_date = (month - timedelta(days=5)).replace(day=1)
     next_date = nextMonth(month)
+    timesheets = Timesheet.objects.filter(working_date__gte=month)
 
     if subsidiary:
-        timesheets = Timesheet.objects.filter(working_date__gte=month, consultant__company=subsidiary)
-    else:
-        timesheets = Timesheet.objects.filter(working_date__gte=month)  # Filter on current month
+        timesheets = timesheets.filter(consultant__company=subsidiary)
 
     timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1))  # Discard next month
     timesheets = timesheets.values("consultant", "mission")  # group by consultant, mission
@@ -1042,15 +1041,15 @@ def all_timesheet(request, year=None, month=None):
         data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet' class='pydici-tooltip' title='%s'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme]),
                                                                                    month.year,
                                                                                    month.month,
-                                                                                   escape(unicode(consultant.name)),
-                                                                                   escape(unicode(consultant.trigramme)))) for consultant in consultants]
+                                                                                   escape(str(consultant.name)),
+                                                                                   escape(str(consultant.trigramme)))) for consultant in consultants]
     data = [[_("Mission")] + data]
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = to_int_or_round(timesheet["sum"], 2)
     for mission in missions:
-        mission_data = escape(unicode(mission))
+        mission_data = escape(str(mission))
         missionUrl = "<a href='%s' class='pydici-tooltip' title='%s'>%s</a>" % (reverse("staffing:mission_home", args=[mission.id, ]),
-                                        escape(unicode(mission.mission_id())),
+                                        escape(str(mission.mission_id())),
                                         (mission_data[:75] + '...' if len(mission_data) > 75 else mission_data))
 
         if "csv" in request.GET:
@@ -1058,7 +1057,6 @@ def all_timesheet(request, year=None, month=None):
             consultantData = [str(mission), mission.mission_id()]
         else:
             # Drill down link
-            # consultantData = [mark_safe(missionUrl), mission.mission_id()]
             consultantData = [mark_safe(missionUrl)]
         for consultant in consultants:
             consultantData.append(charges.get((mission.id, consultant.id), 0))

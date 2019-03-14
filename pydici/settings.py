@@ -163,7 +163,7 @@ if DEBUG:
             ))
 
 WSGI_APPLICATION = "pydici.wsgi.application"
-ALLOWED_HOSTS = ("localhost",)
+ALLOWED_HOSTS = ("localhost", "127.0.0.1")
 
 INTERNAL_IPS = ('127.0.0.1',)
 DEBUG_TOOLBAR_CONFIG = {"DISABLE_PANELS": "debug_toolbar.panels.redirects.RedirectsPanel",

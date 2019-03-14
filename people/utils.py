@@ -65,7 +65,7 @@ def get_subsidiary_from_request(request):
 
     if "subsidiary_id" in request.GET:
         return Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
-    return False
+    return None
 
 def compute_consultant_tasks(consultant):
     """gather all tasks consultant should do
