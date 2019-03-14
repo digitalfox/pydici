@@ -44,7 +44,7 @@ class BillingModelTest(TransactionTestCase):
         client = Client.objects.get(id=1)
         bill = ClientBill()
         self.assertEqual(bill.state, "0_DRAFT")
-        self.assertRaises(IntegrityError, bill.save)  # No lead, no client and no amount
+        self.assertRaises(Exception, bill.save)  # No lead, no client and no amount
         bill.lead = lead
         bill.client = client
         bill.amount = 100

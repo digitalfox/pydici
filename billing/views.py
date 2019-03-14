@@ -20,7 +20,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
 from django.utils import translation
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
-from django.db.models import Sum, Q, F, Min, Max
+from django.db.models import Sum, Q, F, Min, Max, Count
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
@@ -48,7 +48,7 @@ from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
 from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
-from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper
+from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper, SupplierBillForm
 
 
 @pydici_non_public
@@ -59,10 +59,12 @@ def bill_review(request):
     wait_warning = timedelta(15)  # wait in days used to warn that a bill is due soon
 
     # Get bills overdue, due soon, litigious and recently paid
-    overdue_bills = ClientBill.objects.filter(state="1_SENT").filter(due_date__lte=today).select_related()
-    soondue_bills = ClientBill.objects.filter(state="1_SENT").filter(due_date__gt=today).filter(due_date__lte=(today + wait_warning)).select_related()
+    overdue_bills = ClientBill.objects.filter(state="1_SENT", due_date__lte=today).select_related()
+    soondue_bills = ClientBill.objects.filter(state="1_SENT", due_date__gt=today, due_date__lte=(today + wait_warning)).select_related()
     recent_bills = ClientBill.objects.filter(state="2_PAID").order_by("-payment_date").select_related()[:20]
     litigious_bills = ClientBill.objects.filter(state="3_LITIGIOUS").select_related()
+    supplier_overdue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__lte=today).select_related()
+    supplier_soondue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__gt=today).select_related()
 
     # Compute totals
     soondue_bills_total = soondue_bills.aggregate(Sum("amount"))["amount__sum"]
@@ -73,12 +75,8 @@ def bill_review(request):
     litigious_bills_total_with_vat = sum([bill.amount_with_vat for bill in litigious_bills if bill.amount_with_vat])
 
     # Get leads with done timesheet in past three month that don't have bill yet
-    leadsWithoutBill = []
-    threeMonthAgo = date.today() - timedelta(90)
-    for lead in Lead.objects.filter(state="WON").select_related():
-        if lead.clientbill_set.count() == 0:
-            if Timesheet.objects.filter(mission__lead=lead, working_date__gte=threeMonthAgo).count() != 0:
-                leadsWithoutBill.append(lead)
+    leads_without_bill = Lead.objects.filter(state="WON", mission__timesheet__working_date__gte=(date.today() - timedelta(90)))
+    leads_without_bill = leads_without_bill.annotate(Count("clientbill")).filter(clientbill__count=0)
 
     return render(request, "billing/bill_review.html",
                   {"overdue_bills": overdue_bills,
@@ -91,7 +89,11 @@ def bill_review(request):
                    "soondue_bills_total_with_vat": soondue_bills_total_with_vat,
                    "overdue_bills_total_with_vat": overdue_bills_total_with_vat,
                    "litigious_bills_total_with_vat": litigious_bills_total_with_vat,
-                   "leads_without_bill": leadsWithoutBill,
+                   "leads_without_bill": leads_without_bill,
+                   "supplier_soondue_bills": supplier_soondue_bills,
+                   "supplier_overdue_bills": supplier_overdue_bills,
+                   "billing_management": user_has_feature(request.user, "billing_management"),
+                   "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
                    "user": request.user})
 
 
@@ -125,11 +127,34 @@ class BillingRequestMixin(PydiciFeatureMixin):
 
 
 @pydici_non_public
-@pydici_feature("management")
-@permission_required("billing.change_clientbill")
+@pydici_feature("billing_management")
 def mark_bill_paid(request, bill_id):
     """Mark the given bill as paid"""
     bill = ClientBill.objects.get(id=bill_id)
+    bill.state = "2_PAID"
+    bill.save()
+    return HttpResponseRedirect(reverse("billing:bill_review"))
+
+
+@pydici_non_public
+@pydici_feature("management")
+def validate_supplier_bill(request, bill_id):
+    """Mark the given supplier bill as validated"""
+    consultant = Consultant.objects.filter(trigramme__iexact=request.user.username).first()
+    bill = SupplierBill.objects.get(id=bill_id)
+    if consultant == bill.lead.responsible and bill.state == "1_RECEIVED":
+        bill.state = "1_VALIDATED"
+        bill.save()
+        return HttpResponseRedirect(reverse("billing:bill_review"))
+    else:
+        return HttpResponseRedirect(reverse("core:forbiden"))
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def mark_supplierbill_paid(request, bill_id):
+    """Mark the given supplier bill as paid"""
+    bill = SupplierBill.objects.get(id=bill_id)
     bill.state = "2_PAID"
     bill.save()
     return HttpResponseRedirect(reverse("billing:bill_review"))
@@ -220,6 +245,7 @@ class BillPdf(Bill, WeasyTemplateView):
 @pydici_non_public
 @pydici_feature("billing_request")
 def client_bill(request, bill_id=None):
+    """Add or edit client bill"""
     billDetailFormSet = None
     billExpenseFormSet = None
     billing_management_feature = "billing_management"
@@ -291,7 +317,7 @@ def client_bill(request, bill_id=None):
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
             else:
                 form = ClientBillForm()
-    return render(request, "billing/bill_form.html",
+    return render(request, "billing/client_bill_form.html",
                   {"bill_form": form,
                    "detail_formset": billDetailFormSet,
                    "detail_formset_helper": BillDetailFormSetHelper(),
@@ -316,6 +342,53 @@ def clientbill_delete(request, bill_id):
         else:
             messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
             redirect_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
+    except Exception as e:
+        print(e)
+        messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
+
+    return HttpResponseRedirect(redirect_url)
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def supplier_bill(request, bill_id=None):
+    """Add or edit supplier bill"""
+    if bill_id:
+        try:
+            bill = SupplierBill.objects.get(id=bill_id)
+        except SupplierBill.DoesNotExist:
+            raise Http404
+    else:
+        bill = None
+
+    if request.POST:
+        form = SupplierBillForm(request.POST, request.FILES, instance=bill)
+        if form.is_valid():
+            bill = form.save()
+            return HttpResponseRedirect(reverse_lazy("billing:supplier_bills_archive"))
+    else:
+        form = SupplierBillForm(instance=bill)
+
+    return render(request, "billing/supplier_bill_form.html",
+                  {"bill_form": form,
+                   "bill_id": bill.id if bill else None,
+                   "can_delete": bill.state == "1_RECEIVED" if bill else False,
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def supplierbill_delete(request, bill_id):
+    """Delete supplier in early stage"""
+    redirect_url = reverse("billing:supplier_bills_archive")
+    try:
+        bill = SupplierBill.objects.get(id=bill_id)
+        if bill.state == "1_RECEIVED":
+            bill.delete()
+            messages.add_message(request, messages.INFO, _("Bill removed successfully"))
+        else:
+            messages.add_message(request, messages.WARNING, _("Can't remove a bill in state %s. You may cancel it" % bill.get_state_display()))
+            redirect_url = reverse_lazy("billing:supplier_bill", args=[bill.id, ])
     except Exception as e:
         print(e)
         messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
@@ -562,5 +635,36 @@ def graph_yearly_billing(request):
                   {"graph_data": json.dumps(graph_data),
                    "years": years,
                    "subsidiaries" : json.dumps(labels),
+                   "series_colors": COLORS,
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+@cache_page(60 * 60 * 4)
+def graph_outstanding_billing(request):
+    """Graph outstanding billing, including overdue clients bills"""
+    end = nextMonth(date.today() + timedelta(45))
+    current = (end - timedelta(30) * 24).replace(day=1)
+    today = date.today()
+    months = []
+    outstanding = []
+    outstanding_overdue = []
+    graph_data = []
+    while current < end:
+        months.append(current.isoformat())
+        next_month = nextMonth(current)
+        bills = ClientBill.objects.filter(due_date__lte=next_month, state__in=("1_SENT", "2_PAID")).exclude(payment_date__lt=current)
+        overdue_bills = bills.exclude(payment_date__lte=F("due_date")).exclude(payment_date__gt=next_month).exclude(due_date__gt=today)
+        outstanding.append(float(bills.aggregate(Sum("amount"))["amount__sum"] or 0))
+        outstanding_overdue.append(float(overdue_bills.aggregate(Sum("amount"))["amount__sum"] or 0))
+        current = next_month
+
+    graph_data.append(["x"] + months)
+    graph_data.append([_("billing outstanding")] + outstanding)
+    graph_data.append([_("billing outstanding overdue")] + outstanding_overdue)
+
+    return render(request, "billing/graph_outstanding_billing.html",
+                  {"graph_data": json.dumps(graph_data),
                    "series_colors": COLORS,
                    "user": request.user})

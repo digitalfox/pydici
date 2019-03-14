@@ -341,9 +341,9 @@ def company_detail(request, company_id):
     leads = leads.order_by("client", "state", "start_date")
 
     # Statistics on won/lost etc.
-    states = states = dict(Lead.STATES)
-    leads_stat = [list(i.values()) for i in leads.values("state").order_by("state").annotate(Count("state"))]
-    leads_stat = [[mark_safe(states[state]), count] for state, count in leads_stat]  # Use state label
+    states = dict(Lead.STATES)
+    leads_stat = leads.values("state").order_by("state").annotate(count=Count("state"))
+    leads_stat = [[mark_safe(states[s['state']]), s['count']] for s in leads_stat]  # Use state label
 
     # Find consultant that work (=declare timesheet) for this company
     consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct().order_by("company", "subcontractor")

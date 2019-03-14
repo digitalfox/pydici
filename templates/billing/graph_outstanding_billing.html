@@ -1,0 +1,47 @@
+{# Fragment that display outstanding billing graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_c3.htm to load according js/css #}
+{% load i18n %}
+
+
+{% if graph_data %}
+    <center><h3>{% trans "Outstanding billing" %}</h3></center>
+
+    <div id="outstanding_billing_graph"></div>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+
+        chart_outstanding_billing = c3.generate({
+            bindto: '#outstanding_billing_graph',
+                    data: {
+             x: "x",
+             columns: {{ graph_data | safe }},
+             type: 'area-spline',
+        },
+        point: {
+            show: false
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    format: '%Y-%m',
+                    rotate: 45,
+                },
+            },
+            y: {
+                label : {
+                    text: "{% trans 'Outstanding amount (€)' %}",
+                    position: 'outer-middle',
+                },
+            },
+        },
+      });
+
+    }); // End of ready()
+    </script>
+{% else %}
+    <script type="text/javascript">
+        $('#graph_company_lastyear_sales_{{ subsidiary.id }}').remove();
+    </script>
+{% endif %}

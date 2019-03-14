@@ -9,6 +9,7 @@
 .ipynb_checkpoints/
 static/
 venv/
+venv3/
 data/*
 !data/documents/
 data/documents/*

@@ -52,8 +52,8 @@ class PeopleModelTest(TestCase):
 
     def test_user_team(self):
         c = Consultant.objects.get(trigramme="SRE")
-        self.assertEqual(c.userTeam(), [User.objects.get(username="abr"), None])
-        self.assertEqual(c.userTeam(excludeSelf=False), [User.objects.get(username="abr"), None, User.objects.get(username="sre")])
+        self.assertEqual(c.userTeam(), [User.objects.get(username="abr")])
+        self.assertEqual(c.userTeam(excludeSelf=False), [User.objects.get(username="abr"), User.objects.get(username="sre")])
 
     def test_pending_action(self):
         c = Consultant.objects.get(trigramme="SRE")
