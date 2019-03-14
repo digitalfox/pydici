@@ -16,3 +16,4 @@ data/documents/*
 !data/documents/README
 node_modules/
 .DS_Store
+.vscode/*
