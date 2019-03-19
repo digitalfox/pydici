@@ -255,6 +255,7 @@
                 <th>{% trans "Amount (€ with tax)" %}</th>
                 <th>{% trans "Creation date" %}</th>
                 <th>{% trans "Wait" %}</th>
+                <th>{% trans "Expected amount (€ excl tax)" %}</th>
                 <th>{% trans "File" %}</th>
                 <th>{% trans "Comments" %}</th>
                 <th></th>
@@ -275,6 +276,7 @@
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_wait }}</td>
+                <td style="text-align: right">{{ bill.expected_billing|floatformat:-2 }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if bill.state == "1_VALIDATED" %}
@@ -307,6 +309,7 @@
                 <th>{% trans "Amount (€ with tax)" %}</th>
                 <th>{% trans "Creation date" %}</th>
                 <th>{% trans "Deadline" %}</th>
+                <th>{% trans "Expected amount (€ excl tax)" %}</th>
                 <th>{% trans "File" %}</th>
                 <th>{% trans "Comments" %}</th>
                 <th></th>
@@ -327,6 +330,7 @@
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_wait }}</td>
+                <td style="text-align: right">{{ bill.expected_billing|floatformat:-2 }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
                 <td>{{ bill.comment }}</td>
                 <td>{% if bill.state == "1_VALIDATED" %}
