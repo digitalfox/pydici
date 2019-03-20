@@ -1,8 +1,9 @@
 [![Build Status](https://travis-ci.org/digitalfox/pydici.png?branch=master)](https://travis-ci.org/digitalfox/pydici)
 
 Pydici is a software for consulting/IT services company to manage:
-- commercial leads workflow (from business detection to sales)
+- commercial leads workflow (from business detection to sales and simple CRM)
 - workload schedule to forecast people activity
+- operation management: timesheet, margin control, billing
 
 It is written in Python using the Django framework.
 
@@ -75,7 +76,6 @@ Your installation uses South if there is a `south_migrationhistory`
 1. Your installation already uses Django Migration. Run these commands:
 
         ./manage.py migrate
-        ./manage.py createsuperuser
 
 2. Your installation uses South:
 
@@ -123,7 +123,7 @@ If you want to run javascript tests, you need to install node, phantomjs and cas
 ## Migrate data from environment
 On source:
 
-    ./manage.py dumpdata -o dump.json -e contenttypes -e auth.Permission --natural-foreign
+    ./manage.py dumpdata -o dump.json -e contenttypes -e auth.Permission -e admin.LogEntry --natural-foreign
 
 On target:
 

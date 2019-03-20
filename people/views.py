@@ -15,6 +15,7 @@ from crm.models import Company
 from staffing.models import Holiday, Timesheet
 from core.decorator import pydici_non_public
 from core.utils import working_days, previousMonth, nextMonth
+from people.utils import compute_consultant_tasks
 
 
 def _consultant_home(request, consultant):
@@ -48,7 +49,6 @@ def consultant_detail(request, consultant_id):
         # Identify staled missions that may need new staffing or archiving
         staled_missions = [m for m in missions if m.no_more_staffing_since()]
         # Consultant clients and missions
-        companies = Company.objects.filter(clientorganisation__client__lead__mission__timesheet__consultant=consultant).distinct()
         business_territory = Company.objects.filter(businessOwner=consultant)
         leads_as_responsible = set(consultant.lead_responsible.active())
         leads_as_staffee = consultant.lead_set.active()
@@ -110,12 +110,12 @@ def consultant_detail(request, consultant_id):
         else:
             prod_rate_objective = prod_rate
         if prod_rate > prod_rate_objective:
-            prod_overhead = prod_rate - prod_rate_objective
+            prod_overhead = round(prod_rate - prod_rate_objective, 1)
             prod_missing = 0
             prod_rate -= prod_overhead
         else:
             prod_overhead = 0
-            prod_missing = prod_rate_objective - prod_rate
+            prod_missing = round(prod_rate_objective - prod_rate, 1)
     except Consultant.DoesNotExist:
         raise Http404
     return render(request, "people/consultant_detail.html",
@@ -123,7 +123,6 @@ def consultant_detail(request, consultant_id):
                    "staff": staff,
                    "missions": missions,
                    "staled_missions": staled_missions,
-                   "companies": companies,
                    "business_territory": business_territory,
                    "leads_as_responsible": leads_as_responsible,
                    "leads_as_staffee": leads_as_staffee,
@@ -143,6 +142,7 @@ def consultant_detail(request, consultant_id):
                    "forecasting_balance": forecasting_balance,
                    "month_turnover": monthTurnover,
                    "turnover_variation": turnoverVariation,
+                   "tasks": compute_consultant_tasks(consultant),
                    "user": request.user})
 
 
@@ -163,3 +163,4 @@ def subcontractor_detail(request, consultant_id):
                    "companies": companies,
                    "leads_as_staffee": leads_as_staffee,
                    "user": request.user})
+

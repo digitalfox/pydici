@@ -1153,16 +1153,16 @@ def detailed_csv_timesheet(request, year=None, month=None):
                 row.extend([0, 0])
             # Past timesheet
             timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
-                                                 working_date__lt=month).aggregate(Sum("charge")).values()[0]
+                                                 working_date__lt=month).aggregate(Sum("charge"))["charge__sum"]
             row.append(formats.number_format(timesheet) if timesheet else 0)
             # Current month timesheet
             timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
                                                  working_date__gte=month,
-                                                 working_date__lt=next_month).aggregate(Sum("charge")).values()[0]
+                                                 working_date__lt=next_month).aggregate(Sum("charge"))["charge__sum"]
             row.append(formats.number_format(timesheet) if timesheet else 0)
             # Forecasted staffing
             forecast = Staffing.objects.filter(mission=mission, consultant=consultant,
-                                               staffing_date__gte=next_month).aggregate(Sum("charge")).values()[0]
+                                               staffing_date__gte=next_month).aggregate(Sum("charge"))["charge__sum"]
             row.append(formats.number_format(forecast) if forecast else 0)
 
             writer.writerow(row)
@@ -1398,6 +1398,55 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 10)
+def turnover_pivotable(request, year=None):
+    """Turnover analysis (per people and mission) based on timesheet production"""
+    data = []
+    month = int(get_parameter("FISCAL_YEAR_MONTH"))
+    missions = Mission.objects.filter(nature="PROD", lead__state="WON")
+
+    if not missions:
+        return HttpResponse()
+
+    years = get_fiscal_years(missions, "lead__creation_date")
+
+    if year is None and years:
+        year = years[-1]
+    if year != "all":
+        year = int(year)
+        start = date(year, month, 1)
+        end = date(year + 1, month, 1)
+        missions = missions.filter(timesheet__working_date__gte=start, timesheet__working_date__lt=end)
+
+    missions = missions.distinct()
+    missions = missions.select_related("responsible", "lead__client__contact", "lead__client__organisation__company", "subsidiary",
+                         "lead__business_broker__company", "lead__business_broker__contact")
+
+
+    for mission in missions:
+        mission_data = {_("deal id"): mission.deal_id,
+                         _("name"): mission.short_name(),
+                         _("client organisation"): str(mission.lead.client.organisation),
+                         _("client company"): str(mission.lead.client.organisation.company),
+                         _("responsible"): str(mission.responsible),
+                         _("broker"): str(mission.lead.business_broker or _("Direct")),
+                         _("subsidiary"): str(mission.subsidiary)}
+        for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):
+            if year != "all" and (month < start or month >= end):
+                continue  # Skip mission if outside period
+            mission_month_data = mission_data.copy()
+            mission_month_data[_("turnover (€)")] = int(mission.done_work_period(month, nextMonth(month))[1])
+            mission_month_data[_("month")] = month.isoformat()
+            data.append(mission_month_data)
+
+    return render(request, "staffing/turnover_pivotable.html", { "data": json.dumps(data),
+                                                    "derivedAttributes": "{}",
+                                                    "years": years,
+                                                    "selected_year": year})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+@cache_page(60 * 10)
 def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
     @:param subsidiary_id: filter graph on the given subsidiary
@@ -1471,76 +1520,78 @@ def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
 def graph_profile_rates(request, subsidiary_id=None, team_id=None):
     """Sale rate per profil
     @:param subsidiary_id: filter graph on the given subsidiary
-    @:param team_id: filter graph on the given team
-    @todo: per year, with start-end date"""
+    @:param team_id: filter graph on the given team"""
+    #TODO: add start/end timeframe
     graph_data = []
-    avgDailyRate = {}
+    turnover = {}
     nDays = {}
+    avgDailyRate = {}
+    globalDailyRate = []
+    isoTimesheetMonths = []
     timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
     timesheetEndDate = nextMonth(date.today())  # First day of next month
     profils = dict(ConsultantProfile.objects.all().values_list("id", "name"))  # Consultant Profiles
-    financialConditions = {}
 
-    # Create dict per consultant profile
-    for profilId in profils.keys():
-        avgDailyRate[profilId] = {}
-        nDays[profilId] = {}
+    consultants = Consultant.objects.filter(subcontractor=False, productive=True,
+                                            timesheet__working_date__gte=timesheetStartDate,
+                                            timesheet__working_date__lt=timesheetEndDate)
 
     # Filter on scope
     if team_id:
-        timesheets = Timesheet.objects.filter(consultant__staffing_manager_id=team_id)
+        consultants = consultants.filter(staffing_manager_id=team_id)
     elif subsidiary_id:
-        timesheets = Timesheet.objects.filter(consultant__company_id=subsidiary_id)
-    else:
-        timesheets = Timesheet.objects.all()
+        consultants = consultants.filter(company_id=subsidiary_id)
 
-    timesheets = timesheets.filter(consultant__subcontractor=False,
-                                   consultant__productive=True,
-                                   working_date__gt=timesheetStartDate,
-                                   working_date__lt=timesheetEndDate).select_related()
+    consultants = consultants.distinct()
 
-    timesheetMonths = timesheets.dates("working_date", "month")
-    isoTimesheetMonths = [d.isoformat() for d in timesheetMonths]
-    if not timesheetMonths:
+    for profil, profilName in profils.items():
+        nDays[profil] = {}
+        turnover[profil] = {}
+        avgDailyRate[profil] = {}
+
+    month = timesheetStartDate
+    while month < timesheetEndDate:
+        next_month = nextMonth(month)
+        isoTimesheetMonths.append(month.isoformat())
+        monthGlobalNDays = 0
+        monthGlobalTurnover = 0
+        for consultant in consultants:
+            if not month in nDays[consultant.profil_id]:
+                nDays[consultant.profil.id][month] = 0
+            if not month in turnover[consultant.profil_id]:
+                turnover[consultant.profil_id][month] = 0
+            nDays[consultant.profil_id][month] += Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=next_month, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"] or 0
+            turnover[consultant.profil_id][month] += consultant.getTurnover(month, next_month)
+
+        for profil, profilName in profils.items():
+            if profil in nDays:
+                try:
+                    avgDailyRate[profil][month] = round(turnover[profil][month] / nDays[profil][month])
+                    monthGlobalNDays += nDays[profil][month]
+                    monthGlobalTurnover += turnover[profil][month]
+                except (KeyError, ZeroDivisionError):
+                    avgDailyRate[profil][month] = None
+        if monthGlobalNDays > 0 :
+            globalDailyRate.append(round(monthGlobalTurnover / monthGlobalNDays))
+        else:
+            globalDailyRate.append(None)
+        month = next_month
+
+    if not isoTimesheetMonths or set(globalDailyRate) == {None}:
         return HttpResponse('')
+
     graph_data.append(["x"] + isoTimesheetMonths)
-
-    for fc in FinancialCondition.objects.all():
-        financialConditions["%s-%s" % (fc.mission_id, fc.consultant_id)] = fc.daily_rate
-
-    for timesheet in timesheets:
-        month = date(timesheet.working_date.year, timesheet.working_date.month, 1)
-        if not month in avgDailyRate[timesheet.consultant.profil.id]:
-            avgDailyRate[timesheet.consultant.profil.id][month] = 0
-        if not month in nDays[timesheet.consultant.profil.id]:
-            nDays[timesheet.consultant.profil.id][month] = 0
-
-        daily_rate = financialConditions.get("%s-%s" % (timesheet.mission_id, timesheet.consultant_id), 0)
-        if daily_rate > 0:
-            avgDailyRate[timesheet.consultant.profil.id][month] += timesheet.charge * daily_rate
-            nDays[timesheet.consultant.profil.id][month] += timesheet.charge
 
     # Compute per profil
     for profil, profilName in profils.items():
         data = [profilName]
-        for month in timesheetMonths:
-            if month in nDays[profil] and nDays[profil][month] > 0:
-                data.append(int(avgDailyRate[profil][month] / nDays[profil][month]))
-            else:
-                data.append(None)
-        if len(data[1:]) > data[1:].count(None): # Don't consider series only with None
-            graph_data.append(data)
+        month = timesheetStartDate
+        while month < timesheetEndDate:
+            data.append(avgDailyRate[profil][month])
+            month = nextMonth(month)
+        graph_data.append(data)
 
-    # Compute average for company
-    data = [_("Global")]
-    for month in timesheetMonths:
-        rates = sum([avgDailyRate[profil].get(month, 0) for profil in profils.keys()])
-        days = sum([nDays[profil].get(month, 0) for profil in profils.keys()])
-        if days > 0:
-            data.append(int(rates / days))
-        else:
-            data.append(None)
-    graph_data.append(data)
+    graph_data.append([_("Global"), *globalDailyRate ])
 
     return render(request, "staffing/graph_profile_rates.html",
               {"graph_data": json.dumps(graph_data),

@@ -72,7 +72,6 @@ class AbstractBill(models.Model):
     creation_date = models.DateField(_("Creation date"), default=date.today)
     due_date = models.DateField(_("Due date"), default=default_due_date)
     payment_date = models.DateField(_("Payment date"), blank=True, null=True)
-    previous_year_bill = models.BooleanField(_("Previous year bill"), default=False)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
     amount = models.DecimalField(_("Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
     amount_with_vat = models.DecimalField(_("Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
@@ -113,9 +112,6 @@ class AbstractBill(models.Model):
     def vat_amount(self):
         return self.amount_with_vat - self.amount
 
-    def get_absolute_url(self):
-        return reverse("billing:client_bill", args=[self.id,])
-
     class Meta:
         abstract = True
         ordering = ["lead__client__organisation__company", "creation_date"]
@@ -140,6 +136,8 @@ class ClientBill(AbstractBill):
     anonymize_profile = models.BooleanField(_("Anonymize profile name"), default=False)
     include_timesheet = models.BooleanField(_("Include timesheet"), default=False)
     lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, default=settings.LANGUAGE_CODE)
+    client_comment = models.CharField(_("Client comments"), max_length=500, blank=True, null=True)
+    client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
 
     def client(self):
         if self.lead.paying_authority:
@@ -170,7 +168,12 @@ class ClientBill(AbstractBill):
         """Returns total of this bill without taxes and expenses"""
         return list(self.billdetail_set.aggregate(Sum("amount")).values())[0] or 0
 
+    def get_absolute_url(self):
+        return reverse("billing:client_bill", args=[self.id,])
+
     def save(self, *args, **kwargs):
+        if self.client_deal_id == "" and self.lead.client_deal_id:
+            self.client_deal_id = self.lead.client_deal_id
         if self.state in ("0_DRAFT", "0_PROPOSED"):
             compute_bill(self)
             # Update creation and due date till bill is not really sent
@@ -190,10 +193,11 @@ class ClientBill(AbstractBill):
 
 class SupplierBill(AbstractBill):
     SUPPLIER_BILL_STATE = (
-        ('1_RECEIVED', ugettext("Received")),
-        ('2_PAID', ugettext("Paid")),
-        ('3_LITIGIOUS', ugettext("Litigious")),
-        ('4_CANCELED', ugettext("Canceled")),)
+        ('1_RECEIVED', _("Received")),
+        ('1_VALIDATED', _("Validated")),
+        ('2_PAID', _("Paid")),
+        ('3_LITIGIOUS', _("Litigious")),
+        ('4_CANCELED', _("Canceled")),)
     state = models.CharField(_("State"), max_length=30, choices=SUPPLIER_BILL_STATE, default="1_RECEIVED")
     bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path,
                                  storage=BillStorage(nature="supplier"))
@@ -211,6 +215,8 @@ class SupplierBill(AbstractBill):
             self.state = "2_PAID"
         super(SupplierBill, self).save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse("billing:supplier_bill", args=[self.id,])
 
     class Meta:
         verbose_name = _("Supplier Bill")

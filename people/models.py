@@ -16,7 +16,7 @@ from django.urls import reverse
 from datetime import date, timedelta
 
 from core.utils import capitalize, disable_for_loaddata, cacheable, previousMonth, working_days
-from crm.models import Subsidiary
+from crm.models import Subsidiary, Supplier
 from actionset.models import ActionState
 from actionset.utils import launchTrigger
 
@@ -48,7 +48,7 @@ class Consultant(models.Model):
     staffing_manager = models.ForeignKey("self", null=True, blank=True, related_name="team_as_staffing_manager", on_delete=models.SET_NULL)
     profil = models.ForeignKey(ConsultantProfile, verbose_name=_("Profil"), on_delete=models.CASCADE)
     subcontractor = models.BooleanField(_("Subcontractor"), default=False)
-    subcontractor_company = models.CharField(max_length=200, null=True, blank=True)
+    subcontractor_company = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -196,7 +196,8 @@ class Consultant(models.Model):
 
     def userTeam(self, excludeSelf=True, onlyActive=False):
         """Returns consultant team as list of pydici user"""
-        return [c.getUser() for c in self.team(excludeSelf=excludeSelf, onlyActive=onlyActive)]
+        users = [c.getUser() for c in self.team(excludeSelf=excludeSelf, onlyActive=onlyActive)]
+        return [u for u in users if u is not None]
 
     def pending_actions(self):
         """Returns pending actions"""

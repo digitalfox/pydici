@@ -61,6 +61,7 @@ def expenses(request, expense_id=None, clone_from=None):
                 # Don't update user if defined (case of expense updated by manager or administrator)
                 expense.user = request.user
             expense.state = "REQUESTED"
+            expense.workflow_in_progress = True
             expense.save()
             return HttpResponseRedirect(reverse("expense:expenses"))
     else:

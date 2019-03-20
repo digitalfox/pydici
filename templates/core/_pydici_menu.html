@@ -86,8 +86,10 @@
                     <li><a href="{% url 'billing:client_bills_archive' %}">{% trans "All client bills" %}</a></li>
                     <li><a href="{% url 'billing:client_bill' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>
                     <li><a href="{% url 'billing:client_bills_in_creation' %}">{% trans "Client bills in creation" %}</a></li>
-                    {% if perms.billing.change_supplierbill %}<li><a href="{% url 'billing:supplier_bills_archive' %}">{% trans "All supplier bills" %}</a></li>{% endif %}
-                    {% if perms.billing.add_supplierbill %}<li><a href="{% url 'admin:billing_supplierbill_add' %}?return_to={{ request.get_full_path }}">{% trans "New supplier bill" %}</a></li>{% endif %}
+                    {% if pydici_feature.billing_management %}
+                        <li><a href="{% url 'billing:supplier_bills_archive' %}">{% trans "All supplier bills" %}</a></li>
+                        <li><a href="{% url 'billing:supplier_bill' %}">{% trans "New supplier bill" %}</a></li>
+                    {% endif %}
                 {% endif %}
             </ul>
         </li>
@@ -100,6 +102,7 @@
                 <li><a href="{% url 'core:dashboard' %}">{% trans "Management dashboard" %}</a></li>
                 <li><a href="{% url 'staffing:all_timesheet' %}">{% trans "All people timesheet" %}</a></li>
                 <li><a href="{% url 'staffing:prod_report' %}">{% trans "Staff production" %}</a></li>
+                <li><a href="{% url 'staffing:turnover_pivotable' %}">{% trans "Turnover analysis" %}</a></li>
                 <li><a href="{% url 'staffing:fixed_price_missions_report' %}">{% trans "Fixed price missions" %}</a></li>
                 <li><a href="{% url 'staffing:holidays-pivotable' %}">{% trans "Holiday pivot table" %}</a></li>
                 <li><a href="{% url 'staffing:nonprod-pivotable' %}">{% trans "Non productive missions pivot table" %}</a></li>

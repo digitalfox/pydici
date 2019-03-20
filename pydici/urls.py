@@ -38,13 +38,20 @@ handler500 = "core.views.internal_error"
 
 pydici_patterns = [url(r'^admin/', admin.site.urls),]
 
+# Help page
+try:
+    help_page_url = get_parameter("HELP_PAGE")
+except:
+    # Corner case, during initial migration Parameter table does not exist yet
+    help_page_url = ""
+
 if settings.DEBUG:
     import debug_toolbar
     pydici_patterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
 
 pydici_patterns.extend([
     # Direct to template and direct pages
-    url(r'^help', RedirectView.as_view(url=get_parameter("HELP_PAGE"), permanent=True), name='help'),
+    url(r'^help', RedirectView.as_view(url=help_page_url, permanent=True), name='help'),
 
     # Media
     url(r'^media/(?P<path>.*)$', django.views.static.serve,

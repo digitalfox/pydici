@@ -69,11 +69,13 @@ class ClientBillForm(PydiciCrispyModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(Div(TabHolder(Tab(_("Description"),
                                                       Column("lead", "bill_id", "state", css_class="col-md-6"),
-                                                      Column("comment", "lang", "anonymize_profile", "include_timesheet", "bill_file", css_class="col-md-6"), ),
+                                                      Column("comment", "client_comment", "anonymize_profile", "include_timesheet", css_class="col-md-6"), ),
                                                   Tab(_("Amounts"),
                                                       Column("amount", "vat", "amount_with_vat", css_class="col-md-6")),
                                                   Tab(_("Dates"), Column("creation_date", "due_date", "payment_date",
-                                                                         "previous_year_bill", css_class="col-md-6"), ),
+                                                                         css_class="col-md-6"), ),
+                                                  Tab(_("Advanced"), Column("client_deal_id", "lang", "bill_file",
+                                                                         css_class="col-md-6"), ),
                                                   css_class="row")))
 
     def clean_amount(self):
@@ -85,13 +87,20 @@ class ClientBillForm(PydiciCrispyModelForm):
             raise ValidationError(_("Bill amount must be computed from bill detail or defined manually"))
 
 
-class SupplierBillForm(models.ModelForm):
+class SupplierBillForm(PydiciCrispyModelForm):
     class Meta:
         model = SupplierBill
         fields = "__all__"
         widgets = {"lead": LeadChoices,
                    "expenses": ChargeableExpenseMChoices,
                    "supplier": SupplierChoices}
+
+    def __init__(self, *args, **kwargs):
+        super(SupplierBillForm, self).__init__(*args, **kwargs)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(Div(Column("lead", "supplier", "bill_id", "supplier_bill_id", "state", "comment", "bill_file", css_class="col-md-6"),
+                                        Column("creation_date", "due_date", "payment_date", "amount", "vat", "amount_with_vat", "expenses", css_class="col-md-6"),
+                                        css_class="row"))
 
 
 class BillDetailInlineFormset(BaseInlineFormSet):

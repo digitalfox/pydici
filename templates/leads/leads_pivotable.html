@@ -25,7 +25,7 @@
             <button class="btn btn-default" onclick="margin_over_budget();">{% trans "Margin over budget" %}</button>
         </div>
 
-        <div id="pivotable-output" style="margin: 10px;"></div>
+        <div id="pivotable-output" style="margin-top: 10px;"></div>
 
         {% with output as "pivotable-output" %}
             {% include "core/_pivotable_body.html" %}
@@ -59,15 +59,17 @@
             function billing_per_client() {
                 var rows = ["{% trans 'client company' %}"];
                 var cols = ["{% trans 'subsidiary' %}", "{% trans 'responsible' %}"];
-                var inclusions = { {% trans "state" %}: ['{% trans "Won" %}'] };
-                drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "billed (€)" %}'], inclusions);
+                var options = {}
+                options['inclusions'] = { {% trans "state" %}: ['{% trans "Won" %}'] };
+                drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "billed (€)" %}'], options);
             }
 
             function margin_over_budget() {
                 var rows = ["{% trans 'subsidiary' %}"];
                 var cols = ["{% trans 'client company' %}"];
-                var inclusions = { {% trans "state" %}: ['{% trans "Won" %}'] };
-                drawPivot(data, rows, cols, "Horizontal Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "Over budget margin (k€)" %}'], inclusions);
+                var options = {}
+                options['inclusions'] = { {% trans "state" %}: ['{% trans "Won" %}'] };
+                drawPivot(data, rows, cols, "Horizontal Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "Over budget margin (k€)" %}'], options);
             }
 
             // default
