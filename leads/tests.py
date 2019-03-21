@@ -49,7 +49,7 @@ class LeadModelTest(TestCase):
         self.assertEqual(lead.short_description(), "A wonderfull lead th...")
         self.assertEqual(urlresolvers.reverse("leads:detail", args=[4]), PREFIX + "/leads/4/")
 
-        url = "".join(urlsplit(urlresolvers.reverse("leads:detail", args=[4]))[2:])
+        url = "".join(urlsplit(urlresolvers.reverse("leads:detail", args=[lead.id]))[2:])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         context = response.context[-1]
@@ -212,19 +212,20 @@ class LeadNextcloudTagTestCase(TestCase):
             create_nextcloud_tag_database(connection)
 
             # Create test data files for the 3 test leads
-            create_file = "INSERT INTO oc_filecache (fileid, path, name, path_hash, mimetype) VALUES (%s, %s, %s, %s, 6)"
+            create_file = "INSERT INTO oc_filecache (fileid, path, name, path_hash, storage, mimetype) " \
+                          "VALUES (%s, %s, %s, %s, %s, 6)"
             for i in range(1, 3):
                 lead = Lead.objects.get(id=i)
                 (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
                 # Create 6 files per lead, 2 in each lead directory
                 # With <file_id> like <lead_id> in first digit, and <file_id> in second digit
                 files = [
-                    (i*10, delivery_dir+"test1.txt", "test1.txt", i*10),
-                    (i*10+1, delivery_dir+"test2.txt", "test2.txt", i*10+1),
-                    (i*10+2, business_dir+"test3.txt", "test3.txt", i*10+2),
-                    (i*10+3, business_dir+"test4.txt", "test4.txt", i*10+3),
-                    (i*10+4, input_dir+"test5.txt",    "test5.txt", i*10+4),
-                    (i*10+5, input_dir+"test6.txt",    "test6.txt", i*10+5)
+                    (i*10, delivery_dir+"test1.txt", "test1.txt", i*10, settings.NEXTCLOUD_DB_FILE_STORAGE),
+                    (i*10+1, delivery_dir+"test2.txt", "test2.txt", i*10+1, settings.NEXTCLOUD_DB_FILE_STORAGE),
+                    (i*10+2, business_dir+"test3.txt", "test3.txt", i*10+2, settings.NEXTCLOUD_DB_FILE_STORAGE),
+                    (i*10+3, business_dir+"test4.txt", "test4.txt", i*10+3, settings.NEXTCLOUD_DB_FILE_STORAGE),
+                    (i*10+4, input_dir+"test5.txt",    "test5.txt", i*10+4, settings.NEXTCLOUD_DB_FILE_STORAGE),
+                    (i*10+5, input_dir+"test6.txt",    "test6.txt", i*10+5, settings.NEXTCLOUD_DB_FILE_STORAGE)
                 ]
                 cursor.executemany(create_file, files)
             connection.commit()

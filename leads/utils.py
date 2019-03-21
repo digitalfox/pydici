@@ -35,7 +35,7 @@ CREATE_TAG = "INSERT INTO oc_systemtag (name, visibility, editable) VALUES (%s, 
 DELETE_TAG = "DELETE FROM oc_systemtag WHERE name=%s"
 MERGE_FILE_TAGS = "UPDATE oc_systemtag_object_mapping SET objectid=%s, systemtagid=%s " \
                   "WHERE objectid=%s AND systemtagid=%s"
-GET_FILES_ID_BY_DIR = "SELECT fileid FROM oc_filecache WHERE path LIKE '%{dir}%' AND mimetype <> 2"
+GET_FILES_ID_BY_DIR = "SELECT fileid FROM oc_filecache WHERE path LIKE %s AND mimetype <> 2 AND storage=%s"
 GET_FILES_ID_BY_TAG = "SELECT objectid FROM oc_systemtag_object_mapping WHERE systemtagid=%s"
 TAG_FILE = "INSERT INTO oc_systemtag_object_mapping (objectid, objecttype, systemtagid) VALUES (%(file_id)s, %(object_type)s, %(tag_id)s) " \
            "ON DUPLICATE KEY UPDATE objectid=objectid"
@@ -190,7 +190,7 @@ def tag_leads_files(leads_id):
                 # Find all business files of the lead
                 # TODO : maybe refine the query to include a "storage" where clause in case of external storage use
 
-                cursor.execute(GET_FILES_ID_BY_DIR.format(dir=business_dir))
+                cursor.execute(GET_FILES_ID_BY_DIR, (business_dir+'%', settings.NEXTCLOUD_DB_FILE_STORAGE))
                 lead_files = cursor.fetchall()
 
                 cursor.execute(GET_TAG_ID, (settings.DOCUMENT_PROJECT_BUSINESS_DIR, ))
@@ -218,7 +218,7 @@ def tag_leads_files(leads_id):
                 cursor.executemany(TAG_FILE, data_file_mapping)
 
                 # Doing the same for delivery files
-                cursor.execute(GET_FILES_ID_BY_DIR.format(dir=delivery_dir))
+                cursor.execute(GET_FILES_ID_BY_DIR, (delivery_dir+'%', settings.NEXTCLOUD_DB_FILE_STORAGE))
                 lead_files = cursor.fetchall()
 
                 cursor.execute(GET_TAG_ID, (settings.DOCUMENT_PROJECT_DELIVERY_DIR, ))
@@ -276,9 +276,9 @@ def remove_lead_tag(lead_id, tag_id):
         # Get document directories
         (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
         # Find all files of the lead, except input
-        cursor.execute(GET_FILES_ID_BY_DIR.format(dir=business_dir))
+        cursor.execute(GET_FILES_ID_BY_DIR, (business_dir+'%', settings.NEXTCLOUD_DB_FILE_STORAGE))
         lead_files = cursor.fetchall()
-        cursor.execute(GET_FILES_ID_BY_DIR.format(dir=delivery_dir))
+        cursor.execute(GET_FILES_ID_BY_DIR, (delivery_dir+'%', settings.NEXTCLOUD_DB_FILE_STORAGE))
         lead_files.extend(cursor.fetchall())
 
         data_file_mapping = []

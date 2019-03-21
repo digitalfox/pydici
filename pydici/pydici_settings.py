@@ -51,12 +51,10 @@ TELEGRAM_STICKERS = {
 # Nextcloud document tag integration
 
 NEXTCLOUD_TAG_IS_ENABLED = True # Wether to enable or not Nextcloud tag add/remove by Pydici
-# Choose the "this file is a reference" tag
-NEXTCLOUD_REFERENCE_TAG = "Référence"
 NEXTCLOUD_DB_DATABASE = "nextcloud"
 # Filter on a nextcloud particular storage
 # if empty: every storage will be used
-NEXTCLOUD_DB_FILE_STORAGE = "1"
+NEXTCLOUD_DB_FILE_STORAGE = 1
 NEXTCLOUD_DB_HOST = "localhost"
 NEXTCLOUD_DB_USER= "root"
 NEXTCLOUD_DB_PWD = ""
