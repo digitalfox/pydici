@@ -163,7 +163,6 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
 def tag_leads_files(leads_id):
     """Tag all files of given leads.
     Can be called from tag views (when adding tags) or tag batch (for new files or initial sync)"""
-    # TODO: make this a background task
     connection = None
     try:
         connection = connect_to_nextcloud_db()
@@ -175,6 +174,7 @@ def tag_leads_files(leads_id):
             tags = lead.tags.all().values_list('name', flat=True)
             # Get document directories
             (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
+            tag_id_list = []
             for tag in tags:
                 # Get the tag id in nextcloud database
                 cursor.execute(GET_TAG_ID, (tag, ))
@@ -186,69 +186,42 @@ def tag_leads_files(leads_id):
                 else:
                     # Tag exists, fetch the first result
                     tag_id = rows[0][0]
+                tag_id_list.append(tag_id)
 
-                # Find all business files of the lead
-                # TODO : maybe refine the query to include a "storage" where clause in case of external storage use
+            data_file_mapping = []
+            for (directory_tag_name, directory) in ((settings.DOCUMENT_PROJECT_BUSINESS_DIR, business_dir),
+                                                    (settings.DOCUMENT_PROJECT_DELIVERY_DIR, delivery_dir)):
+                cursor.execute(GET_FILES_ID_BY_DIR, (directory+'%', settings.NEXTCLOUD_DB_FILE_STORAGE))
+                files = cursor.fetchall()
 
-                cursor.execute(GET_FILES_ID_BY_DIR, (business_dir+'%', settings.NEXTCLOUD_DB_FILE_STORAGE))
-                lead_files = cursor.fetchall()
-
-                cursor.execute(GET_TAG_ID, (settings.DOCUMENT_PROJECT_BUSINESS_DIR, ))
+                cursor.execute(GET_TAG_ID, (directory_tag_name, ))
                 rows = cursor.fetchall()
                 if len(rows) == 0:
                     # Tag doesn't exist, we create it
-                    cursor.execute(CREATE_TAG, (settings.DOCUMENT_PROJECT_BUSINESS_DIR, "1", "1"))
-                    business_tag_id = cursor.lastrowid
+                    cursor.execute(CREATE_TAG, (directory_tag_name, "1", "1"))
+                    directory_tag_id = cursor.lastrowid
                 else:
                     # Tag exists, fetch the first result
-                    business_tag_id = rows[0][0]
+                    directory_tag_id = rows[0][0]
 
-                data_file_mapping = []
-                for lead_file in lead_files:
+                for file_id in files:
                     data_file_mapping.append({
-                        'file_id': lead_file[0],
+                        'file_id': file_id[0],
                         'object_type': 'files',
-                        'tag_id': business_tag_id
+                        'tag_id': directory_tag_id
                     })
-                    data_file_mapping.append({
-                        'file_id': lead_file[0],
-                        'object_type': 'files',
-                        'tag_id': tag_id
-                    })
-                cursor.executemany(TAG_FILE, data_file_mapping)
+                    for tag_id in tag_id_list:
+                        data_file_mapping.append({
+                            'file_id': file_id[0],
+                            'object_type': 'files',
+                            'tag_id': tag_id
+                        })
+            cursor.executemany(TAG_FILE, data_file_mapping)
 
-                # Doing the same for delivery files
-                cursor.execute(GET_FILES_ID_BY_DIR, (delivery_dir+'%', settings.NEXTCLOUD_DB_FILE_STORAGE))
-                lead_files = cursor.fetchall()
-
-                cursor.execute(GET_TAG_ID, (settings.DOCUMENT_PROJECT_DELIVERY_DIR, ))
-                rows = cursor.fetchall()
-                if len(rows) == 0:
-                    # Tag doesn't exist, we create it
-                    cursor.execute(CREATE_TAG, (settings.DOCUMENT_PROJECT_DELIVERY_DIR, "1", "1"))
-                    delivery_tag_id = cursor.lastrowid
-                else:
-                    # Tag exists, fetch the first result
-                    delivery_tag_id = rows[0][0]
-
-                data_file_mapping = []
-                for lead_file in lead_files:
-                    data_file_mapping.append({
-                        'file_id': lead_file[0],
-                        'object_type': 'files',
-                        'tag_id': delivery_tag_id
-                    })
-                    data_file_mapping.append({
-                        'file_id': lead_file[0],
-                        'object_type': 'files',
-                        'tag_id': tag_id
-                    })
-                cursor.executemany(TAG_FILE, data_file_mapping)
-
-                # Commit the changes to the database
-                connection.commit()
+        # Commit the changes to the database
+        connection.commit()
     except Exception as e:
-        raise(e)
+        raise e
     finally:
         if connection:
             connection.close()
