@@ -30,7 +30,7 @@ from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
-from leads.utils import tag_leads_files, remove_lead_tag
+from leads.utils import tag_leads_files, remove_lead_tag, merge_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
 from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years
@@ -299,7 +299,7 @@ def add_tag(request):
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity()  # update lead similarity model in background
-        tag_leads_files.now([lead.id])  # Update lead tags from lead files # TODO: remove now
+        tag_leads_files([lead.id])  # Update lead tags from lead files
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
         answer["tag_url"] = reverse("leads:tag", args=[tag.id, ])
         answer["tag_remove_url"] = reverse("leads:remove_tag", args=[tag.id, lead.id])
@@ -323,7 +323,7 @@ def remove_tag(request, tag_id, lead_id):
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity()  # update lead similarity model in background
-        remove_lead_tag.now(lead.id, tag.id)  # Remove the lead tag from the lead files # TODO: remove now
+        remove_lead_tag(lead.id, tag.id)  # Remove the lead tag from the lead files
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         answer["error"] = True
     return HttpResponse(json.dumps(answer), content_type="application/json")
@@ -343,6 +343,7 @@ def manage_tags(request):
             target_tag = tags[0]
             for tag in tags[1:]:
                 TaggedItem.objects.filter(tag=tag).update(tag=target_tag)
+                merge_lead_tag(target_tag.name, tag.name)
                 tag.delete()
 
     return render(request, "leads/manage_tags.html",

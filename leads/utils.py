@@ -273,7 +273,7 @@ def remove_lead_tag(lead_id, tag_id):
 
 
 @background
-def merge_lead_tag(old_tag, target_tag):
+def merge_lead_tag(target_tag_name, old_tag_name):
     """Propagate a tag merge on nextcloud tag system"""
     connection = None
     try:
@@ -281,16 +281,16 @@ def merge_lead_tag(old_tag, target_tag):
         cursor = connection.cursor()
 
         # Get tag id from nextcloud definition table
-        cursor.execute(GET_TAG_ID, (old_tag, ))
+        cursor.execute(GET_TAG_ID, (old_tag_name, ))
         old_tag_id = cursor.fetchall()[0][0]
-        cursor.execute(GET_TAG_ID, (target_tag, ))
+        cursor.execute(GET_TAG_ID, (target_tag_name, ))
         target_tag_id = cursor.fetchall()[0][0]
 
         # Get all files with the previous tag to merge, and replace it with the target tag
         cursor.execute(GET_FILES_ID_BY_TAG, (old_tag_id, ))
         files_to_merge = []
         for file_id in cursor.fetchall():
-            files_to_merge.append( (file_id, target_tag_id, file_id, old_tag_id) )
+            files_to_merge.append( (file_id[0], target_tag_id, file_id[0], old_tag_id) )
         # Merge existing tag link if it exists
         cursor.executemany(MERGE_FILE_TAGS, files_to_merge)
 

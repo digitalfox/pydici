@@ -298,16 +298,19 @@ class LeadNextcloudTagTestCase(TestCase):
                 self.assertEqual(expected_tag, collect_file_tags(connection, 10+i))
 
             # Test we didn't impact lead 2
-            expected_tags2 = [
-                ["A test tag", settings.DOCUMENT_PROJECT_DELIVERY_DIR],
-                ["A test tag", settings.DOCUMENT_PROJECT_DELIVERY_DIR],
-                ["A test tag", settings.DOCUMENT_PROJECT_BUSINESS_DIR],
-                ["A test tag", settings.DOCUMENT_PROJECT_BUSINESS_DIR],
-                [],
-                []
-            ]
             for i, expected_tag in enumerate(expected_tags2):
                 self.assertEqual(expected_tag, collect_file_tags(connection, 20+i))
+
+            # Test the merge of the two tags
+            merge_lead_tag.now("A test tag", "Another tag")
+
+            # Test that lead 1 has "A test tag" rather than "Another tag" (as lead 2 in fact...)
+            for i, expected_tag in enumerate(expected_tags2):
+                self.assertEqual(expected_tag, collect_file_tags(connection, 10 + i))
+
+            # Test we didn't impact lead 2
+            for i, expected_tag in enumerate(expected_tags2):
+                self.assertEqual(expected_tag, collect_file_tags(connection, 20 + i))
         finally:
             if connection:
                 connection.close()
