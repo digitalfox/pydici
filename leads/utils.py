@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.contrib.admin.models import LogEntry, ADDITION, ContentType
 from django.utils.encoding import force_text
 from django.urls import reverse
+from django.conf import settings
 
 from background_task import background
 from taggit.models import Tag
@@ -20,16 +21,12 @@ from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_si
 from staffing.models import Mission
 from leads.models import StateProba, Lead
 from core.utils import send_lead_mail, get_parameter, getLeadDirs
-from pydici.pydici_settings import TELEGRAM_IS_ENABLED, TELEGRAM_CHAT, TELEGRAM_TOKEN, TELEGRAM_STICKERS
-from pydici.pydici_settings import NEXTCLOUD_TAG_IS_ENABLED, NEXTCLOUD_DB_DATABASE, NEXTCLOUD_DB_HOST,\
-    NEXTCLOUD_DB_USER, NEXTCLOUD_DB_PWD, NEXTCLOUD_DB_FILE_STORAGE
-from pydici.pydici_settings import DOCUMENT_PROJECT_LEAD_DIR, DOCUMENT_PROJECT_DELIVERY_DIR, DOCUMENT_PROJECT_BUSINESS_DIR
 
 
-if TELEGRAM_IS_ENABLED:
+if settings.TELEGRAM_IS_ENABLED:
     import telegram
 
-if NEXTCLOUD_TAG_IS_ENABLED:
+if settings.NEXTCLOUD_TAG_IS_ENABLED:
     import mysql.connector
 
 # Nextcloud database queries
@@ -87,14 +84,14 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
         except Exception as e:
             messages.add_message(request, messages.ERROR, ugettext("Failed to send mail: %s") % e)
 
-    if TELEGRAM_IS_ENABLED:
+    if settings.TELEGRAM_IS_ENABLED:
         try:
-            bot = telegram.bot.Bot(token=TELEGRAM_TOKEN)
+            bot = telegram.bot.Bot(token=settings.TELEGRAM_TOKEN)
             sticker = None
             url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
             if created:
                 msg = ugettext("New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
-                sticker = TELEGRAM_STICKERS.get("happy")
+                sticker = settings.TELEGRAM_STICKERS.get("happy")
                 chat_group = "new_leads"
             elif state_changed:
                 # Only notify when lead state changed to avoid useless spam
@@ -104,15 +101,15 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
                     change = ""
                 msg = ugettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
                 if lead.state == "WON":
-                    sticker = TELEGRAM_STICKERS.get("happy")
+                    sticker = settings.TELEGRAM_STICKERS.get("happy")
                 elif lead.state in ("LOST", "FORGIVEN"):
-                    sticker = TELEGRAM_STICKERS.get("sad")
+                    sticker = settings.TELEGRAM_STICKERS.get("sad")
                 chat_group = "leads_update"
             else:
                 # No notification
                 chat_group = ""
 
-            for chat_id in TELEGRAM_CHAT.get(chat_group, []):
+            for chat_id in settings.TELEGRAM_CHAT.get(chat_group, []):
                 bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
                 if sticker:
                     bot.sendSticker(chat_id=chat_id, sticker=sticker)
@@ -196,11 +193,11 @@ def tag_leads_files(leads_id):
                 cursor.execute(GET_FILES_ID_BY_DIR.format(dir=business_dir))
                 lead_files = cursor.fetchall()
 
-                cursor.execute(GET_TAG_ID, (DOCUMENT_PROJECT_BUSINESS_DIR, ))
+                cursor.execute(GET_TAG_ID, (settings.DOCUMENT_PROJECT_BUSINESS_DIR, ))
                 rows = cursor.fetchall()
                 if len(rows) == 0:
                     # Tag doesn't exist, we create it
-                    cursor.execute(CREATE_TAG, (DOCUMENT_PROJECT_BUSINESS_DIR, "1", "1"))
+                    cursor.execute(CREATE_TAG, (settings.DOCUMENT_PROJECT_BUSINESS_DIR, "1", "1"))
                     business_tag_id = cursor.lastrowid
                 else:
                     # Tag exists, fetch the first result
@@ -224,11 +221,11 @@ def tag_leads_files(leads_id):
                 cursor.execute(GET_FILES_ID_BY_DIR.format(dir=delivery_dir))
                 lead_files = cursor.fetchall()
 
-                cursor.execute(GET_TAG_ID, (DOCUMENT_PROJECT_DELIVERY_DIR, ))
+                cursor.execute(GET_TAG_ID, (settings.DOCUMENT_PROJECT_DELIVERY_DIR, ))
                 rows = cursor.fetchall()
                 if len(rows) == 0:
                     # Tag doesn't exist, we create it
-                    cursor.execute(CREATE_TAG, (DOCUMENT_PROJECT_DELIVERY_DIR, "1", "1"))
+                    cursor.execute(CREATE_TAG, (settings.DOCUMENT_PROJECT_DELIVERY_DIR, "1", "1"))
                     delivery_tag_id = cursor.lastrowid
                 else:
                     # Tag exists, fetch the first result
@@ -339,9 +336,8 @@ def merge_lead_tag(old_tag, target_tag):
 def connect_to_nextcloud_db():
     """Create a connexion to nextcloud database"""
     try:
-        print("Connecting to "+NEXTCLOUD_DB_DATABASE)
-        connection = mysql.connector.connect(host=NEXTCLOUD_DB_HOST, database=NEXTCLOUD_DB_DATABASE,
-                                             user=NEXTCLOUD_DB_USER, password=NEXTCLOUD_DB_PWD)
+        connection = mysql.connector.connect(host=settings.NEXTCLOUD_DB_HOST, database=settings.NEXTCLOUD_DB_DATABASE,
+                                             user=settings.NEXTCLOUD_DB_USER, password=settings.NEXTCLOUD_DB_PWD)
         return connection
     except mysql.connector.Error as e:
         raise e

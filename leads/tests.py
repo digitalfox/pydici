@@ -188,7 +188,7 @@ class LeadLearnTestCase(TestCase):
         self.assertEqual(mission.probability, 100)
 
 
-# TODO: @override_settings(NEXTCLOUD_DB_DATABASE="nextcloud_test")
+@override_settings(NEXTCLOUD_DB_DATABASE="nextcloud_test")
 class LeadNextcloudTagTestCase(TestCase):
     """Test lead tag on nextcloud file"""
     fixtures = PYDICI_FIXTURES
