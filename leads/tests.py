@@ -12,6 +12,8 @@ from django.contrib.messages.storage import default_storage
 from django.contrib.auth.models import User
 from django.conf import settings
 
+from taggit.models import Tag
+
 from people.models import Consultant
 from leads.models import Lead
 from staffing.models import Mission
@@ -19,8 +21,6 @@ from crm.models import Subsidiary, BusinessBroker, Client
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME, PREFIX
 from leads import learn as leads_learn
 from leads.utils import postSaveLead
-
-
 
 from urllib.parse import urlsplit
 import os.path
@@ -188,6 +188,7 @@ class LeadLearnTestCase(TestCase):
         self.assertEqual(mission.probability, 100)
 
 
+# TODO: @override_settings(NEXTCLOUD_DB_DATABASE="nextcloud_test")
 class LeadNextcloudTagTestCase(TestCase):
     """Test lead tag on nextcloud file"""
     fixtures = PYDICI_FIXTURES
@@ -199,23 +200,31 @@ class LeadNextcloudTagTestCase(TestCase):
         connection = None
         try:
             connection = connect_to_nextcloud_db()
-            create_nextcloud_tag_database(connection)
             cursor = connection.cursor()
 
+            # Verify that the table is not full first... just to "safely" drop table
+            cursor.execute("SELECT COUNT(*) FROM oc_filecache")
+            file_count = cursor.fetchall()
+            if file_count[0][0] > 20:
+                self.fail("Appears that test database contains lots of file, aborting for safety")
+            # It's okay, it seems we are not in the production database, we can proceed
+
+            create_nextcloud_tag_database(connection)
+
             # Create test data files for the 3 test leads
-            create_file = u"INSERT INTO oc_filecache (fileid, path, name, path_hash, mimetype) VALUES (%s, %s, %s, %s, 6)"
+            create_file = "INSERT INTO oc_filecache (fileid, path, name, path_hash, mimetype) VALUES (%s, %s, %s, %s, 6)"
             for i in range(1, 3):
                 lead = Lead.objects.get(id=i)
                 (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
                 # Create 6 files per lead, 2 in each lead directory
                 # With <file_id> like <lead_id> in first digit, and <file_id> in second digit
                 files = [
-                    (i*10+1, delivery_dir+u"test1.txt", u"test1.txt", i*10+1),
-                    (i*10+2, delivery_dir+u"test2.txt", u"test2.txt", i*10+2),
-                    (i*10+3, business_dir+u"test3.txt", u"test3.txt", i*10+3),
-                    (i*10+4, business_dir+u"test4.txt", u"test4.txt", i*10+4),
-                    (i*10+5, input_dir+u"test5.txt",    u"test5.txt", i*10+5),
-                    (i*10+6, input_dir+u"test6.txt",    u"test6.txt", i*10+6)
+                    (i*10, delivery_dir+"test1.txt", "test1.txt", i*10),
+                    (i*10+1, delivery_dir+"test2.txt", "test2.txt", i*10+1),
+                    (i*10+2, business_dir+"test3.txt", "test3.txt", i*10+2),
+                    (i*10+3, business_dir+"test4.txt", "test4.txt", i*10+3),
+                    (i*10+4, input_dir+"test5.txt",    "test5.txt", i*10+4),
+                    (i*10+5, input_dir+"test6.txt",    "test6.txt", i*10+5)
                 ]
                 cursor.executemany(create_file, files)
             connection.commit()
@@ -224,37 +233,80 @@ class LeadNextcloudTagTestCase(TestCase):
                 connection.close()
 
     def test_tag_and_remove_tag_file(self):
-        # TODO
         from leads.utils import connect_to_nextcloud_db, tag_leads_files, remove_lead_tag, merge_lead_tag
         connection = None
         try:
             connection = connect_to_nextcloud_db()
             cursor = connection.cursor()
+            cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED")
+            cursor.close()
 
-            lead = Lead.objects.get(id=1)
-            lead.tags.add("A test tag")
-            lead.tags.add("Another tag")
-            # Make it into a clean sorted list
-            lead_tags = list(lead.tags.all().values_list('name', flat=True))
-            lead_tags.sort()
+            lead1 = Lead.objects.get(id=1)
+            lead1.tags.add("A test tag")
+            lead1.tags.add("Another tag")
+            tag1 = Tag.objects.get(name="A test tag")
+            tag2 = Tag.objects.get(name="Another tag")
+            # Tag another lead for non impact test
+            lead2 = Lead.objects.get(id=2)
+            lead2.tags.add("A test tag")
 
             # The function to be tested
-            tag_leads_files([lead])
+            tag_leads_files.now([lead1.id, lead2.id])
 
-            # Test the 6 lead file tags
-            get_file_tag_names = u"SELECT st.name " \
-                                 u"FROM oc_systemtag_object_mapping om " \
-                                 u"INNER JOIN oc_systemtag st ON st.id = om.systemtagid " \
-                                 u"WHERE om.objectid = %s"
+            # Test the 6 lead file tags of lead 1
+            expected_tags1 = [
+                ["A test tag", "Another tag", settings.DOCUMENT_PROJECT_DELIVERY_DIR],
+                ["A test tag", "Another tag", settings.DOCUMENT_PROJECT_DELIVERY_DIR],
+                ["A test tag", "Another tag", settings.DOCUMENT_PROJECT_BUSINESS_DIR],
+                ["A test tag", "Another tag", settings.DOCUMENT_PROJECT_BUSINESS_DIR],
+                [],
+                []
+            ]
+            for i, expected_tag in enumerate(expected_tags1):
+                self.assertEqual(expected_tag, collect_file_tags(connection, 10+i))
 
-            cursor.execute(get_file_tag_names, (11, ))
-            file_tags = cursor.fetchall()
+            # Test the 6 lead file tags of lead 2
+            expected_tags2 = [
+                ["A test tag", settings.DOCUMENT_PROJECT_DELIVERY_DIR],
+                ["A test tag", settings.DOCUMENT_PROJECT_DELIVERY_DIR],
+                ["A test tag", settings.DOCUMENT_PROJECT_BUSINESS_DIR],
+                ["A test tag", settings.DOCUMENT_PROJECT_BUSINESS_DIR],
+                [],
+                []
+            ]
+            for i, expected_tag in enumerate(expected_tags2):
+                self.assertEqual(expected_tag, collect_file_tags(connection, 20+i))
 
-            # Format into a sorted list
-            actual_file_lead_tags = [i[0] for i in file_tags]
-            actual_file_lead_tags.sort()
+            # Also test that the third lead doesn't have file tags
+            for i in range(6):
+                self.assertListEqual(collect_file_tags(connection, 30+i), [])
 
-            self.assertEqual(lead_tags, actual_file_lead_tags)
+            # Now remove a tag
+            remove_lead_tag.now(lead1.id, tag1.id)
+
+            # Test that it is actually removed on lead 1
+            expected_tags1 = [
+                ["Another tag", settings.DOCUMENT_PROJECT_DELIVERY_DIR],
+                ["Another tag", settings.DOCUMENT_PROJECT_DELIVERY_DIR],
+                ["Another tag", settings.DOCUMENT_PROJECT_BUSINESS_DIR],
+                ["Another tag", settings.DOCUMENT_PROJECT_BUSINESS_DIR],
+                [],
+                []
+            ]
+            for i, expected_tag in enumerate(expected_tags1):
+                self.assertEqual(expected_tag, collect_file_tags(connection, 10+i))
+
+            # Test we didn't impact lead 2
+            expected_tags2 = [
+                ["A test tag", settings.DOCUMENT_PROJECT_DELIVERY_DIR],
+                ["A test tag", settings.DOCUMENT_PROJECT_DELIVERY_DIR],
+                ["A test tag", settings.DOCUMENT_PROJECT_BUSINESS_DIR],
+                ["A test tag", settings.DOCUMENT_PROJECT_BUSINESS_DIR],
+                [],
+                []
+            ]
+            for i, expected_tag in enumerate(expected_tags2):
+                self.assertEqual(expected_tag, collect_file_tags(connection, 20+i))
         finally:
             if connection:
                 connection.close()
@@ -291,8 +343,8 @@ def create_nextcloud_tag_database(connection):
     cursor = None
     try:
         cursor = connection.cursor()
-        cursor.execute(u"DROP TABLE IF EXISTS `oc_filecache`;")
-        create_nextcloud_file_table = u"""
+        cursor.execute("DROP TABLE IF EXISTS `oc_filecache`;")
+        create_nextcloud_file_table = """
         CREATE TABLE `oc_filecache` (
           `fileid` bigint(20) NOT NULL AUTO_INCREMENT,
           `storage` bigint(20) NOT NULL DEFAULT '0',
@@ -321,8 +373,8 @@ def create_nextcloud_tag_database(connection):
         """
         cursor.execute(create_nextcloud_file_table)
 
-        cursor.execute(u"DROP TABLE IF EXISTS `oc_systemtag`;")
-        create_nextcloud_tag_table = u"""
+        cursor.execute("DROP TABLE IF EXISTS `oc_systemtag`;")
+        create_nextcloud_tag_table = """
         CREATE TABLE `oc_systemtag` (
           `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
           `name` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT '',
@@ -334,8 +386,8 @@ def create_nextcloud_tag_database(connection):
         """
         cursor.execute(create_nextcloud_tag_table)
 
-        cursor.execute(u"DROP TABLE IF EXISTS `oc_systemtag_object_mapping`;")
-        create_nextcloud_file_tag_table = u"""
+        cursor.execute("DROP TABLE IF EXISTS `oc_systemtag_object_mapping`;")
+        create_nextcloud_file_tag_table = """
         CREATE TABLE `oc_systemtag_object_mapping` (
           `objectid` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT '',
           `objecttype` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT '',
@@ -344,6 +396,25 @@ def create_nextcloud_tag_database(connection):
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
         """
         cursor.execute(create_nextcloud_file_tag_table)
+        connection.commit()
     finally:
         if cursor:
             cursor.close()
+
+
+def collect_file_tags(connection, file_id):
+    """"Collect file tags and return them formatted in a sorted list"""
+    get_file_tag_names = "SELECT st.name " \
+                         "FROM oc_systemtag_object_mapping om " \
+                         "INNER JOIN oc_systemtag st ON st.id = om.systemtagid " \
+                         "WHERE om.objectid = %s"
+    cursor = connection.cursor()
+    cursor.execute(get_file_tag_names, (file_id,))
+
+    file_tags = cursor.fetchall()
+
+    # Format into a sorted list
+    actual_file_lead_tags = [j[0] for j in file_tags]
+    actual_file_lead_tags.sort()
+    cursor.close()
+    return actual_file_lead_tags

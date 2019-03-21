@@ -13,9 +13,12 @@ from django.contrib.admin.models import LogEntry, ADDITION, ContentType
 from django.utils.encoding import force_text
 from django.urls import reverse
 
+from background_task import background
+from taggit.models import Tag
+
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from staffing.models import Mission
-from leads.models import StateProba
+from leads.models import StateProba, Lead
 from core.utils import send_lead_mail, get_parameter, getLeadDirs
 from pydici.pydici_settings import TELEGRAM_IS_ENABLED, TELEGRAM_CHAT, TELEGRAM_TOKEN, TELEGRAM_STICKERS
 from pydici.pydici_settings import NEXTCLOUD_TAG_IS_ENABLED, NEXTCLOUD_DB_DATABASE, NEXTCLOUD_DB_HOST,\
@@ -30,17 +33,16 @@ if NEXTCLOUD_TAG_IS_ENABLED:
     import mysql.connector
 
 # Nextcloud database queries
-GET_TAG_ID = u"SELECT id FROM oc_systemtag WHERE name=%s"
-CREATE_TAG = u"INSERT INTO oc_systemtag (name, visibility, editable) VALUES (%s, %s, %s)"
-DELETE_TAG = u"DELETE FROM oc_systemtag WHERE name=%s"
-MERGE_FILE_TAGS = u"UPDATE oc_systemtag_object_mapping SET objectid=%s, systemtagid=%s " \
-                  u"WHERE objectid=%s AND systemtagid=%s"
-GET_FILES_ID_BY_DIR = u"SELECT fileid FROM oc_filecache WHERE path LIKE '%{dir}%' AND mimetype <> 2"
-GET_FILES_ID_BY_TAG = u"SELECT objectid FROM oc_systemtag_object_mapping WHERE systemtagid=%s"
-TAG_FILE = u"INSERT INTO oc_systemtag_object_mapping (objectid, objecttype, systemtagid) VALUES (%(file_id)s, %(object_type)s, %(tag_id)s) " \
-           u"ON DUPLICATE KEY UPDATE objectid=objectid"
-UNTAG_FILE = u"DELETE FROM oc_systemtag_object_mapping WHERE objectid=%(file_id)s AND objecttype=%(object_type)s AND systemtagid=%(tag_id)s"
-
+GET_TAG_ID = "SELECT id FROM oc_systemtag WHERE name=%s"
+CREATE_TAG = "INSERT INTO oc_systemtag (name, visibility, editable) VALUES (%s, %s, %s)"
+DELETE_TAG = "DELETE FROM oc_systemtag WHERE name=%s"
+MERGE_FILE_TAGS = "UPDATE oc_systemtag_object_mapping SET objectid=%s, systemtagid=%s " \
+                  "WHERE objectid=%s AND systemtagid=%s"
+GET_FILES_ID_BY_DIR = "SELECT fileid FROM oc_filecache WHERE path LIKE '%{dir}%' AND mimetype <> 2"
+GET_FILES_ID_BY_TAG = "SELECT objectid FROM oc_systemtag_object_mapping WHERE systemtagid=%s"
+TAG_FILE = "INSERT INTO oc_systemtag_object_mapping (objectid, objecttype, systemtagid) VALUES (%(file_id)s, %(object_type)s, %(tag_id)s) " \
+           "ON DUPLICATE KEY UPDATE objectid=objectid"
+UNTAG_FILE = "DELETE FROM oc_systemtag_object_mapping WHERE objectid=%(file_id)s AND objecttype=%(object_type)s AND systemtagid=%(tag_id)s"
 
 def create_default_mission(lead):
     mission = Mission(lead=lead)
@@ -160,7 +162,8 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             messages.add_message(request, messages.INFO, ugettext("According mission has been archived"))
 
 
-def tag_leads_files(leads):
+@background
+def tag_leads_files(leads_id):
     """Tag all files of given leads.
     Can be called from tag views (when adding tags) or tag batch (for new files or initial sync)"""
     # TODO: make this a background task
@@ -169,7 +172,8 @@ def tag_leads_files(leads):
         connection = connect_to_nextcloud_db()
         cursor = connection.cursor()
 
-        for lead in leads:
+        for lead_id in leads_id:
+            lead = Lead.objects.get(id=lead_id)
             # Get all the lead tags
             tags = lead.tags.all().values_list('name', flat=True)
             # Get document directories
@@ -188,7 +192,7 @@ def tag_leads_files(leads):
 
                 # Find all business files of the lead
                 # TODO : maybe refine the query to include a "storage" where clause in case of external storage use
-                # NEXTCLOUD_DB_FILE_STORAGE
+
                 cursor.execute(GET_FILES_ID_BY_DIR.format(dir=business_dir))
                 lead_files = cursor.fetchall()
 
@@ -206,14 +210,15 @@ def tag_leads_files(leads):
                 for lead_file in lead_files:
                     data_file_mapping.append({
                         'file_id': lead_file[0],
-                        'object_type': '"files"',
+                        'object_type': 'files',
                         'tag_id': business_tag_id
                     })
                     data_file_mapping.append({
                         'file_id': lead_file[0],
-                        'object_type': '"files"',
+                        'object_type': 'files',
                         'tag_id': tag_id
                     })
+                cursor.executemany(TAG_FILE, data_file_mapping)
 
                 # Doing the same for delivery files
                 cursor.execute(GET_FILES_ID_BY_DIR.format(dir=delivery_dir))
@@ -233,38 +238,43 @@ def tag_leads_files(leads):
                 for lead_file in lead_files:
                     data_file_mapping.append({
                         'file_id': lead_file[0],
-                        'object_type': '"files"',
+                        'object_type': 'files',
                         'tag_id': delivery_tag_id
                     })
                     data_file_mapping.append({
                         'file_id': lead_file[0],
-                        'object_type': '"files"',
+                        'object_type': 'files',
                         'tag_id': tag_id
                     })
                 cursor.executemany(TAG_FILE, data_file_mapping)
 
                 # Commit the changes to the database
                 connection.commit()
+    except Exception as e:
+        raise(e)
     finally:
         if connection:
             connection.close()
 
 
-def remove_lead_tag(lead, tag):
+@background
+def remove_lead_tag(lead_id, tag_id):
     """ Remove tag on given lead"""
     connection = None
     try:
+        lead = Lead.objects.get(id=lead_id)
+        tag_name = Tag.objects.get(id=tag_id).name
         connection = connect_to_nextcloud_db()
         cursor = connection.cursor()
 
-        cursor.execute(GET_TAG_ID, (tag.name, ))
+        cursor.execute(GET_TAG_ID, (tag_name, ))
         rows = cursor.fetchall()
         if len(rows) == 0:
             # Tag doesn't exist, hence we don't do anything
             return
         else:
             # Tag exists, fetch the first result
-            tag_id = rows[0][0]
+            nextcloud_tag_id = rows[0][0]
 
         # Get document directories
         (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
@@ -278,19 +288,21 @@ def remove_lead_tag(lead, tag):
         for lead_file in lead_files:
             data_file_mapping.append({
                 'file_id': lead_file[0],
-                'object_type': '"files"',
-                'tag_id': tag_id
+                'object_type': 'files',
+                'tag_id': nextcloud_tag_id
             })
-
         cursor.executemany(UNTAG_FILE, data_file_mapping)
 
         # Commit the changes to the database
         connection.commit()
+    except Exception as e:
+        raise e
     finally:
         if connection:
             connection.close()
 
 
+@background
 def merge_lead_tag(old_tag, target_tag):
     """Propagate a tag merge on nextcloud tag system"""
     connection = None
@@ -317,6 +329,8 @@ def merge_lead_tag(old_tag, target_tag):
 
         # Commit the changes to the database
         connection.commit()
+    except Exception as e:
+        raise e
     finally:
         if connection:
             connection.close()
@@ -325,9 +339,9 @@ def merge_lead_tag(old_tag, target_tag):
 def connect_to_nextcloud_db():
     """Create a connexion to nextcloud database"""
     try:
-        print "Connecting to "+NEXTCLOUD_DB_DATABASE
+        print("Connecting to "+NEXTCLOUD_DB_DATABASE)
         connection = mysql.connector.connect(host=NEXTCLOUD_DB_HOST, database=NEXTCLOUD_DB_DATABASE,
                                              user=NEXTCLOUD_DB_USER, password=NEXTCLOUD_DB_PWD)
         return connection
     except mysql.connector.Error as e:
-        print "Error on mySQL connection" + e.msg
+        raise e

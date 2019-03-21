@@ -263,14 +263,14 @@ def getLeadDirs(lead, with_prefix=True):
         os.mkdir(client_dir)
 
     if with_prefix:
-        client_dir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH, client_dir)
+        client_dir = os.path.join(settings.DOCUMENT_PROJECT_PATH, client_dir)
 
     lead_dir = os.path.join(client_dir,
                             settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
     if not os.path.exists(lead_dir):
         # Look if an alternative path exists with proper lead code
         for path in os.listdir(client_dir):
-            if isinstance(path, str):
+            if isinstance(path, bytes):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 path = path.decode("utf8", "ignore")
             if path.startswith(lead.deal_id):

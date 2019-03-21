@@ -299,7 +299,7 @@ def add_tag(request):
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity()  # update lead similarity model in background
-        tag_leads_files([lead])  # Update lead tags from lead files
+        tag_leads_files.now([lead.id])  # Update lead tags from lead files # TODO: remove now
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
         answer["tag_url"] = reverse("leads:tag", args=[tag.id, ])
         answer["tag_remove_url"] = reverse("leads:remove_tag", args=[tag.id, lead.id])
@@ -323,7 +323,7 @@ def remove_tag(request, tag_id, lead_id):
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity()  # update lead similarity model in background
-        remove_lead_tag(lead, tag)  # Remove the lead tag from the lead files
+        remove_lead_tag.now(lead.id, tag.id)  # Remove the lead tag from the lead files # TODO: remove now
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         answer["error"] = True
     return HttpResponse(json.dumps(answer), content_type="application/json")
