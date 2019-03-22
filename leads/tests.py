@@ -195,6 +195,8 @@ class LeadNextcloudTagTestCase(TestCase):
 
     def setUp(self):
         """Create the nextcloud file tables with init datas"""
+        if not settings.NEXTCLOUD_TAG_IS_ENABLED:
+            return
         from core.utils import getLeadDirs
         from leads.utils import connect_to_nextcloud_db
         connection = None
@@ -234,6 +236,8 @@ class LeadNextcloudTagTestCase(TestCase):
                 connection.close()
 
     def test_tag_and_remove_tag_file(self):
+        if not settings.NEXTCLOUD_TAG_IS_ENABLED:
+            return
         from leads.utils import connect_to_nextcloud_db, tag_leads_files, remove_lead_tag, merge_lead_tag
         connection = None
         try:
