@@ -200,6 +200,9 @@ class LeadNextcloudTagTestCase(TestCase):
         from core.utils import getLeadDirs
         from leads.utils import connect_to_nextcloud_db
         connection = None
+
+        create_nextcloud_test_db()  # Create test db, if needed
+
         try:
             connection = connect_to_nextcloud_db()
             cursor = connection.cursor()
@@ -210,7 +213,6 @@ class LeadNextcloudTagTestCase(TestCase):
                 file_count = cursor.fetchall()
                 if file_count[0][0] > 20:
                     self.fail("Appears that test database contains lots of file, aborting for safety")
-
             except:
                 pass  # Table does not exist yet.
             # It's okay, it seems we are not in the production database, we can proceed
@@ -431,3 +433,14 @@ def collect_file_tags(connection, file_id):
     actual_file_lead_tags.sort()
     cursor.close()
     return actual_file_lead_tags
+
+
+def create_nextcloud_test_db():
+    """Create if needed, test database for nextcloud"""
+    import mysql
+    connection = mysql.connector.connect(host=settings.NEXTCLOUD_DB_HOST,
+                                         user=settings.NEXTCLOUD_DB_USER, password=settings.NEXTCLOUD_DB_PWD)
+    cursor = connection.cursor()
+    cursor.execute("""create database if not exists %s""" % settings.NEXTCLOUD_DB_DATABASE)
+    cursor.close()
+    connection.close()
