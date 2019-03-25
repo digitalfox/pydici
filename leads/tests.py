@@ -205,11 +205,16 @@ class LeadNextcloudTagTestCase(TestCase):
             cursor = connection.cursor()
 
             # Verify that the table is not full first... just to "safely" drop table
-            cursor.execute("SELECT COUNT(*) FROM oc_filecache")
-            file_count = cursor.fetchall()
-            if file_count[0][0] > 20:
-                self.fail("Appears that test database contains lots of file, aborting for safety")
+            try:
+                cursor.execute("SELECT COUNT(*) FROM oc_filecache")
+                file_count = cursor.fetchall()
+                if file_count[0][0] > 20:
+                    self.fail("Appears that test database contains lots of file, aborting for safety")
+
+            except:
+                pass  # Table does not exist yet.
             # It's okay, it seems we are not in the production database, we can proceed
+
 
             create_nextcloud_tag_database(connection)
 

@@ -50,7 +50,7 @@ TELEGRAM_STICKERS = {
 
 # Nextcloud document tag integration
 
-NEXTCLOUD_TAG_IS_ENABLED = False # Wether to enable or not Nextcloud tag add/remove by Pydici
+NEXTCLOUD_TAG_IS_ENABLED = True # Wether to enable or not Nextcloud tag add/remove by Pydici
 # Nextcloud DB connection settings
 NEXTCLOUD_DB_DATABASE = "nextcloud"
 NEXTCLOUD_DB_HOST = "localhost"

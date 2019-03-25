@@ -6,9 +6,13 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install -r requirements-sklearn.txt
+  - pip install -r requirements-nextcloudtag.txt
 
 script:
   - python manage.py test
+
+services:
+  - mysql
 
 notifications:
   email: 
