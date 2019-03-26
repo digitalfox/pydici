@@ -259,11 +259,11 @@ def getLeadDirs(lead, with_prefix=True):
                 client_dir = path
                 break
 
-    if not os.path.exists(client_dir):
-        os.mkdir(client_dir)
-
     if with_prefix:
         client_dir = os.path.join(settings.DOCUMENT_PROJECT_PATH, client_dir)
+
+    if not os.path.exists(client_dir):
+        os.makedirs(client_dir, exist_ok=True)
 
     lead_dir = os.path.join(client_dir,
                             settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
