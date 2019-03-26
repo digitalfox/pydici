@@ -20,7 +20,7 @@ from django.urls import reverse
 from django.conf import settings
 
 from leads.models import Lead
-from staffing.models import Mission
+from staffing.models import Mission, Timesheet
 from people.models import Consultant
 from expense.models import Expense
 from crm.models import Supplier
@@ -203,6 +203,23 @@ class SupplierBill(AbstractBill):
                                  storage=BillStorage(nature="supplier"))
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     supplier_bill_id = models.CharField(_("Supplier Bill id"), max_length=200)
+
+    def expected_billing(self):
+        """Expected billing amount for supplier / lead of this bill"""
+        total_expected = 0
+        already_paid = SupplierBill.objects.filter(supplier=self.supplier, lead=self.lead,
+                                                   state__in=("1_VALIDATED", "2_PAID"))
+        already_paid = already_paid.aggregate(Sum("amount"))["amount__sum"]
+
+        for mission in self.lead.mission_set.all():
+            rates = dict([(i.id, j[1]) for i, j in mission.consultant_rates().items()])  # switch to consultant id
+            timesheets = Timesheet.objects.filter(mission=mission)
+            for consultant in mission.consultants().filter(subcontractor=True, subcontractor_company=self.supplier):
+                days = timesheets.filter(consultant=consultant).aggregate(Sum("charge"))["charge__sum"]
+                total_expected += days * rates[consultant.id]
+
+        return total_expected - float(already_paid)
+
 
     def save(self, *args, **kwargs):
         # Save it first to define pk and allow browsing relationship
