@@ -20,7 +20,7 @@ from staffing.models import Mission
 from crm.models import Subsidiary, BusinessBroker, Client
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME, PREFIX
 from leads import learn as leads_learn
-from leads.utils import postSaveLead
+from leads.utils import postSaveLead, getLeadDirs, connect_to_nextcloud_db
 
 from urllib.parse import urlsplit
 import os.path
@@ -197,8 +197,9 @@ class LeadNextcloudTagTestCase(TestCase):
         """Create the nextcloud file tables with init datas"""
         if not settings.NEXTCLOUD_TAG_IS_ENABLED:
             return
-        from core.utils import getLeadDirs
-        from leads.utils import connect_to_nextcloud_db
+        if not os.path.exists(settings.DOCUMENT_PROJECT_PATH):
+            os.makedirs(settings.DOCUMENT_PROJECT_PATH)
+
         connection = None
 
         create_nextcloud_test_db()  # Create test db, if needed
