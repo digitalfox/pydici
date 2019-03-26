@@ -7,7 +7,6 @@ django-debug-toolbar==1.11
 -e git+https://github.com//harpb/django-userswitch#egg=django-userswitch
 django-crispy-forms==1.7.2
 Django-Select2==5.11.1
-lxml==3.4.2
 python-memcached==1.59
 django-datatables-view==1.17.0
 django-background-tasks==1.1.9
