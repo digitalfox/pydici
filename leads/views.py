@@ -350,7 +350,7 @@ def manage_tags(request):
                 tag.delete()
 
     return render(request, "leads/manage_tags.html",
-                  {"data_url": urlresolvers.reverse('leads:tag_table_DT'),
+                  {"data_url": reverse('leads:tag_table_DT'),
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
                                                              "order": [[1, "asc"]] ''',
                    "user": request.user})

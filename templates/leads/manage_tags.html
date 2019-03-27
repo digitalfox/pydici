@@ -37,7 +37,7 @@
         $('#tag_table input:checked').each(function() {
             selected.push($(this).attr('id'));
         });
-        $('#merge_button').attr('href', '{% url 'leads.views.manage_tags' %}?tags_to_merge='+selected.join(','));
+        $('#merge_button').attr('href', '{% url 'leads:manage_tags' %}?tags_to_merge='+selected.join(','));
     }
 
 </script>
