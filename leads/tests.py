@@ -246,13 +246,12 @@ class LeadNextcloudTagTestCase(TestCase):
     def test_tag_and_remove_tag_file(self):
         if not settings.NEXTCLOUD_TAG_IS_ENABLED:
             return
-        from leads.utils import connect_to_nextcloud_db, tag_leads_files, remove_lead_tag, merge_lead_tag
+        from leads.utils import connect_to_nextcloud_db, tag_leads_files, remove_lead_tag, merge_lead_tag, GET_TAG_ID
         connection = None
         try:
             connection = connect_to_nextcloud_db()
             cursor = connection.cursor()
             cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED")
-            cursor.close()
 
             lead1 = Lead.objects.get(id=1)
             lead1.tags.add("A test tag")
@@ -323,6 +322,12 @@ class LeadNextcloudTagTestCase(TestCase):
             # Test we didn't impact lead 2
             for i, expected_tag in enumerate(expected_tags2):
                 self.assertEqual(expected_tag, collect_file_tags(connection, 20 + i))
+
+            # Test that lead old lead tag is removed
+            cursor.execute(GET_TAG_ID, ("Another tag", ))
+            self.assertEqual(len(cursor.fetchall()), 0)
+
+            cursor.close()
         finally:
             if connection:
                 connection.close()
