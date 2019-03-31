@@ -215,8 +215,8 @@ class SupplierBill(AbstractBill):
             rates = dict([(i.id, j[1]) for i, j in mission.consultant_rates().items()])  # switch to consultant id
             timesheets = Timesheet.objects.filter(mission=mission)
             for consultant in mission.consultants().filter(subcontractor=True, subcontractor_company=self.supplier):
-                days = timesheets.filter(consultant=consultant).aggregate(Sum("charge"))["charge__sum"]
-                total_expected += days * rates[consultant.id]
+                days = timesheets.filter(consultant=consultant).aggregate(Sum("charge"))["charge__sum"] or 0
+                total_expected += days * rates.get(consultant.id, 0)
 
         return total_expected - float(already_paid)
 
