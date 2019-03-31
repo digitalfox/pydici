@@ -32,7 +32,7 @@ if settings.NEXTCLOUD_TAG_IS_ENABLED:
 # Nextcloud database queries
 GET_TAG_ID = "SELECT id FROM oc_systemtag WHERE name=%s"
 CREATE_TAG = "INSERT INTO oc_systemtag (name, visibility, editable) VALUES (%s, %s, %s)"
-DELETE_TAG = "DELETE FROM oc_systemtag WHERE name=%s"
+DELETE_TAG = "DELETE FROM oc_systemtag WHERE id=%s"
 MERGE_FILE_TAGS = "UPDATE oc_systemtag_object_mapping SET objectid=%s, systemtagid=%s " \
                   "WHERE objectid=%s AND systemtagid=%s"
 GET_FILES_ID_BY_DIR = "SELECT fileid FROM oc_filecache WHERE path LIKE %s AND mimetype <> 2 AND storage=%s"
@@ -295,6 +295,7 @@ def merge_lead_tag(target_tag_name, old_tag_name):
         cursor.executemany(MERGE_FILE_TAGS, files_to_merge)
 
         # Delete the previous tag definition
+        # TODO: Check that there is no more taggued files (example: in other nextcloud storage)
         cursor.execute(DELETE_TAG, (old_tag_id, ))
 
         # Commit the changes to the database
