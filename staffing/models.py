@@ -6,7 +6,7 @@ Database access layer for pydici staffing module
 """
 
 from django.db import models, connections
-from django.db.models import Sum, Min
+from django.db.models import Sum, Min, F
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.db.models.signals import post_save
@@ -160,7 +160,7 @@ class Mission(models.Model):
         days, amount = self.done_work()
         return days, amount / 1000
 
-    def done_work_period(self, start, end):
+    def done_work_period(self, start, end, include_internal_subcontractor=True, include_external_subcontractor=True):
         """Compute done work according to timesheet for this mission
         Result is cached for few seconds
         @return: (done work in days, done work in euros)"""
@@ -172,6 +172,10 @@ class Mission(models.Model):
             timesheets = timesheets.filter(working_date__gte=start)
         if end:
             timesheets = timesheets.filter(working_date__lt=end)
+        if not include_external_subcontractor:
+            timesheets = timesheets.filter(consultant__subcontractor=False)
+        if not include_internal_subcontractor:
+            timesheets = timesheets.filter(consultant__company=F("mission__subsidiary"))
         timesheets = timesheets.values_list("consultant").annotate(Sum("charge")).order_by()
         for consultant_id, charge in timesheets:
             days += charge
