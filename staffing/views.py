@@ -1435,7 +1435,19 @@ def turnover_pivotable(request, year=None):
             if year != "all" and (month < start or month >= end):
                 continue  # Skip mission if outside period
             mission_month_data = mission_data.copy()
-            mission_month_data[_("turnover (€)")] = int(mission.done_work_period(month, nextMonth(month))[1])
+            own_turnover = int(mission.done_work_period(month, nextMonth(month),
+                                                                           include_external_subcontractor=False,
+                                                                           include_internal_subcontractor=False)[1])
+            turnover_with_external_subcontractor = int(mission.done_work_period(month, nextMonth(month),
+                                                                           include_external_subcontractor=True,
+                                                                           include_internal_subcontractor=False)[1])
+            turnover_with_internal_subcontractor = int(mission.done_work_period(month, nextMonth(month),
+                                                                           include_external_subcontractor=False,
+                                                                           include_internal_subcontractor=True)[1])
+            mission_month_data[_("turnover (€)")] = turnover_with_external_subcontractor + turnover_with_internal_subcontractor - own_turnover
+            mission_month_data[_("external subcontractor turnover (€)")] = turnover_with_external_subcontractor - own_turnover
+            mission_month_data[_("internal subcontractor turnover (€)")] = turnover_with_internal_subcontractor - own_turnover
+            mission_month_data[_("own turnover (€)")] = own_turnover
             mission_month_data[_("month")] = month.isoformat()
             data.append(mission_month_data)
 
