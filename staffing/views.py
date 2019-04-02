@@ -1407,6 +1407,8 @@ def turnover_pivotable(request, year=None):
     if not missions:
         return HttpResponse()
 
+    subsidiaries = Subsidiary.objects.all()
+
     years = get_fiscal_years(missions, "lead__creation_date")
 
     if year is None and years:
@@ -1423,7 +1425,7 @@ def turnover_pivotable(request, year=None):
 
 
     for mission in missions:
-        mission_data = {_("deal id"): mission.deal_id,
+        mission_data = {_("deal id"): mission.lead.deal_id,
                          _("name"): mission.short_name(),
                          _("client organisation"): str(mission.lead.client.organisation),
                          _("client company"): str(mission.lead.client.organisation.company),
@@ -1435,21 +1437,31 @@ def turnover_pivotable(request, year=None):
             if year != "all" and (month < start or month >= end):
                 continue  # Skip mission if outside period
             mission_month_data = mission_data.copy()
-            own_turnover = int(mission.done_work_period(month, nextMonth(month),
-                                                                           include_external_subcontractor=False,
+            next_month = nextMonth(month)
+            own_turnover = int(mission.done_work_period(month, next_month, include_external_subcontractor=False,
                                                                            include_internal_subcontractor=False)[1])
-            turnover_with_external_subcontractor = int(mission.done_work_period(month, nextMonth(month),
-                                                                           include_external_subcontractor=True,
-                                                                           include_internal_subcontractor=False)[1])
-            turnover_with_internal_subcontractor = int(mission.done_work_period(month, nextMonth(month),
-                                                                           include_external_subcontractor=False,
-                                                                           include_internal_subcontractor=True)[1])
+            turnover_with_external_subcontractor = int(mission.done_work_period(month, next_month,
+                                                                                include_external_subcontractor=True,
+                                                                                include_internal_subcontractor=False)[1])
+            turnover_with_internal_subcontractor = int(mission.done_work_period(month, next_month,
+                                                                                include_external_subcontractor=False,
+                                                                                include_internal_subcontractor=True)[1])
             mission_month_data[_("turnover (€)")] = turnover_with_external_subcontractor + turnover_with_internal_subcontractor - own_turnover
             mission_month_data[_("external subcontractor turnover (€)")] = turnover_with_external_subcontractor - own_turnover
             mission_month_data[_("internal subcontractor turnover (€)")] = turnover_with_internal_subcontractor - own_turnover
             mission_month_data[_("own turnover (€)")] = own_turnover
             mission_month_data[_("month")] = month.isoformat()
             data.append(mission_month_data)
+            # Handle internal subcontractor for this mission
+            for subsidiary in subsidiaries.exclude(id=mission.subsidiary_id):
+                subsidiary_month_data = mission_data.copy()
+                subsidiary_month_data[_("subsidiary")] = str(subsidiary)
+                subsidiary_month_data[_("month")] = month.isoformat()
+                subsidiary_turnover = int(mission.done_work_period(month, next_month, include_external_subcontractor=False,
+                                                                   filter_on_subsidiary=subsidiary)[1])
+                if subsidiary_turnover > 0:
+                    subsidiary_month_data[_("own turnover (€)")] = subsidiary_turnover
+                    data.append(subsidiary_month_data)
 
     return render(request, "staffing/turnover_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": "{}",

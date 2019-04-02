@@ -54,13 +54,13 @@
             function turnover_per_month_graph() {
                 var rows = ["{% trans 'subsidiary' %}"];
                 var cols = ["{% trans 'month' %}"];;
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"]);
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'own turnover (€)' %}"]);
             }
 
             function turnover_per_month_table() {
                 var rows = ["{% trans 'subsidiary' %}"];
                 var cols = ["{% trans 'month' %}"];;
-                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"]);
+                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'own turnover (€)' %}"]);
             }
 
             function turnover_per_broker() {
@@ -68,7 +68,7 @@
                 var cols = ["{% trans 'subsidiary' %}"];
                 var options = {};
                 options["rowOrder"] = "value_z_to_a";
-                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
+                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'own turnover (€)' %}"], options);
             }
 
             function turnover_per_client() {
@@ -76,13 +76,13 @@
                 var cols = ["{% trans 'client company' %}"];
                 var options = {};
                 options["colOrder"] = "value_z_to_a";
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'own turnover (€)' %}"], options);
             }
 
             function turnover_per_billing_mode() {
                 var rows = ["{% trans 'billing mode' %}"];
                 var cols = ["{% trans 'subsidiary' %}"];
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"]);
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'own turnover (€)' %}"]);
             }
 
             // default
