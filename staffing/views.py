@@ -1428,6 +1428,7 @@ def turnover_pivotable(request, year=None):
                          _("client organisation"): str(mission.lead.client.organisation),
                          _("client company"): str(mission.lead.client.organisation.company),
                          _("responsible"): str(mission.responsible),
+                         _("billing mode"): mission.get_billing_mode_display(),
                          _("broker"): str(mission.lead.business_broker or _("Direct")),
                          _("subsidiary"): str(mission.subsidiary)}
         for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):

@@ -12,18 +12,24 @@
 {% block content %}
         <h2>{% trans "Turnover pivot table" %}</h2>
         <p>{% trans "Based on timesheet activity" %}</p>
-        <div id="date-selector" class="btn-group" role="group">
-            {% for year in years %}
-                <a class="btn btn-default {% ifequal year selected_year %}active{% endifequal %}" href="{% url 'staffing:turnover_pivotable_year' year %}">{{ year }}</a>
-            {% endfor %}
-                <a class="btn btn-default {% ifequal 'all' selected_year %}active{% endifequal %}" href="{% url 'staffing:turnover_pivotable_all' %}">{% trans "All" %}</a>
-        </div>
 
-        <div id="type-selector" class="btn-group" role="group">
-            <button class="btn btn-default active" onclick="turnover_per_month_graph();">{% trans "Turnover per month (graphique)" %}</button>
-            <button class="btn btn-default" onclick="turnover_per_month_table();">{% trans "Turnover per month (tableau)" %}</button>
-            <button class="btn btn-default" onclick="turnover_per_broker();">{% trans "Turnover per broker" %}</button>
-            <button class="btn btn-default" onclick="turnover_per_client();">{% trans "Turnover per client company" %}</button>
+        <div class="row">
+            <div id="date-selector" class="btn-group" role="group">
+                {% for year in years %}
+                    <a class="btn btn-default {% ifequal year selected_year %}active{% endifequal %}" href="{% url 'staffing:turnover_pivotable_year' year %}">{{ year }}</a>
+                {% endfor %}
+                    <a class="btn btn-default {% ifequal 'all' selected_year %}active{% endifequal %}" href="{% url 'staffing:turnover_pivotable_all' %}">{% trans "All" %}</a>
+            </div>
+        </div>
+        <div class="row">&nbsp;</div>
+        <div class="row">
+            <div id="type-selector" class="btn-group" role="group">
+                <button class="btn btn-default active" onclick="turnover_per_month_graph();">{% trans "Turnover per month (graphique)" %}</button>
+                <button class="btn btn-default" onclick="turnover_per_month_table();">{% trans "Turnover per month (tableau)" %}</button>
+                <button class="btn btn-default" onclick="turnover_per_broker();">{% trans "Turnover per broker" %}</button>
+                <button class="btn btn-default" onclick="turnover_per_client();">{% trans "Turnover per client company" %}</button>
+                <button class="btn btn-default" onclick="turnover_per_billing_mode();">{% trans "Turnover per billing mode" %}</button>
+            </div>
         </div>
 
         <div id="pivotable-output" style="margin-top: 10px;"></div>
@@ -71,6 +77,12 @@
                 var options = {};
                 options["colOrder"] = "value_z_to_a";
                 drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
+            }
+
+            function turnover_per_billing_mode() {
+                var rows = ["{% trans 'billing mode' %}"];
+                var cols = ["{% trans 'subsidiary' %}"];
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"]);
             }
 
             // default
