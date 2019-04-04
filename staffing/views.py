@@ -1397,7 +1397,7 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 
 @pydici_non_public
 @pydici_feature("reports")
-@cache_page(60 * 10)
+@cache_page(60 * 60 * 10)
 def turnover_pivotable(request, year=None):
     """Turnover analysis (per people and mission) based on timesheet production"""
     data = []
