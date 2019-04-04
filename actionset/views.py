@@ -31,7 +31,7 @@ def update_action_state(request, action_state_id, state):
         return error
     if state == "DELEGUATE" and "username" in request.GET:
         try:
-            user = User.objects.get(username=request.GET["username"])
+            user = User.objects.get(id=request.GET["username"])
         except User.DoesNotExist:
             return error
         actionState.user = user

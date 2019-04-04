@@ -63,9 +63,9 @@
 // Function call URL for deleguate
 function call_deleguate_action(url, action_id) {
     var username = "";
-    var selected = $("#deleguate_user_"+ action_id).children()
+    var selected = $("#deleguate_user_"+ action_id).select2('data')
     if (selected.length == 1) {
-        username = selected[0].text;
+        username = selected[0]["id"]
     }
     $.get(url + '?username=' + username, process_update_action_state);
 };
@@ -98,7 +98,7 @@ $(document).ready(function(){
     limit_action_list();
     
     // Fix focus issue of select2 inside a bootstrap modal
-    //$.fn.modal.Constructor.prototype.enforceFocus = function() {};
+    $.fn.modal.Constructor.prototype.enforceFocus = function() {};
 
     // Call select2
     $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100px"});
