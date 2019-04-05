@@ -58,6 +58,9 @@ def compute_consultant_tasks(consultant):
     now = datetime.now()
     user = consultant.getUser()
 
+    if not user:
+        return tasks
+
     # Expenses to reviews
     expenses = Expense.objects.filter(user__in=user_expense_team(user), workflow_in_progress=True, state="REQUESTED")
     expenses_count = expenses.count()
