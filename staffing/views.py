@@ -1021,11 +1021,11 @@ def all_timesheet(request, year=None, month=None):
     previous_date = (month - timedelta(days=5)).replace(day=1)
     next_date = nextMonth(month)
     timesheets = Timesheet.objects.filter(working_date__gte=month)
+    timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1))  # Discard next month
 
     if subsidiary:
         timesheets = timesheets.filter(consultant__company=subsidiary)
 
-    timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1))  # Discard next month
     timesheets = timesheets.values("consultant", "mission")  # group by consultant, mission
     timesheets = timesheets.annotate(sum=Sum('charge')).order_by("mission", "consultant")  # Sum and clean order by (else, group by won't work because of default ordering)
     consultants = list(set([i["consultant"] for i in timesheets]))
