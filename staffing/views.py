@@ -1101,7 +1101,7 @@ def all_csv_timesheet(request, charges, month):
     writer = csv.writer(response, delimiter=';')
 
     # Header
-    writer.writerow(month)
+    writer.writerow([month])
     for charge in charges:
         row = []
         for i in charge:
