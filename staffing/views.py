@@ -1054,7 +1054,7 @@ def all_timesheet(request, year=None, month=None):
 
         if "csv" in request.GET:
             # Simple mission name
-            consultantData = [str(mission), mission.mission_id()]
+            consultantData = [mission.full_name()]
         else:
             # Drill down link
             consultantData = [mark_safe(missionUrl)]
