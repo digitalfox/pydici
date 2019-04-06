@@ -47,3 +47,15 @@ TELEGRAM_STICKERS = {
                         "happy": "BQADBAADQAADyIsGAAGMQCvHaYLU_AI",
                         "sad": "BQADBAADFQADyIsGAAEO_vKI0MR5bAI",
                     }
+
+# Nextcloud document tag integration
+
+NEXTCLOUD_TAG_IS_ENABLED = True # Wether to enable or not Nextcloud tag add/remove by Pydici
+# Nextcloud DB connection settings
+NEXTCLOUD_DB_DATABASE = "nextcloud"
+NEXTCLOUD_DB_HOST = "localhost"
+NEXTCLOUD_DB_USER= "root"
+NEXTCLOUD_DB_PWD = ""
+# Filter on a nextcloud particular storage. Get it with "SELECT * FROM oc_storages" and using the one that
+# is used for the file to be taggued
+NEXTCLOUD_DB_FILE_STORAGE = 1

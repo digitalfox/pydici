@@ -5,7 +5,7 @@
 """
 
 from django.conf.urls import url
-from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT, ClientCompanyLeadTableDT, LeadToBill
+from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT, ClientCompanyLeadTableDT, LeadToBill, TagTableDT
 import leads.views as v
 
 
@@ -15,6 +15,7 @@ leads_urls = [url(r'^review', v.review, name="review"),
               url(r'^tags/(?P<lead_id>\d+)$', v.tags, name="tags"),
               url(r'^tag/add$', v.add_tag, name="add_tag"),
               url(r'^tag/remove/(?P<tag_id>\d+)/(?P<lead_id>\d+)$', v.remove_tag, name="remove_tag"),
+              url(r'^tag/manage$', v.manage_tags, name="manage_tags"),
               url(r'^(?P<lead_id>\d+)/$', v.detail, name="detail"),
               url(r'^leads$', v.leads, name="leads"),
               url(r'^lead$', v.lead, name="lead"),
@@ -34,4 +35,5 @@ leads_urls = [url(r'^review', v.review, name="review"),
               url(r'^datatable/recent-archived-lead/data/$', RecentArchivedLeadTableDT.as_view(), name='recent_archived_lead_table_DT'),
               url(r'^datatable/clientcompany-lead/(?P<clientcompany_id>\d+)/data/$', ClientCompanyLeadTableDT.as_view(), name='client_company_lead_table_DT'),
               url(r'^datatable/leads-to-bill/data/$', LeadToBill.as_view(), name='leads_to_bill_table_DT'),
+              url(r'^datatable/all-tags/data/$', TagTableDT.as_view(), name='tag_table_DT'),
               ]

@@ -6,7 +6,7 @@ Database access layer for pydici staffing module
 """
 
 from django.db import models, connections
-from django.db.models import Sum, Min
+from django.db.models import Sum, Min, F
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.db.models.signals import post_save
@@ -160,9 +160,15 @@ class Mission(models.Model):
         days, amount = self.done_work()
         return days, amount / 1000
 
-    def done_work_period(self, start, end):
+    def done_work_period(self, start, end, include_internal_subcontractor=True,
+                         include_external_subcontractor=True,
+                         filter_on_subsidiary=None):
         """Compute done work according to timesheet for this mission
-        Result is cached for few seconds
+        @start: starting date (included)
+        @end: ending date (excluded)
+        @include_internal_subcontractor: to include (default) or not internal (other subsidiaries) consultants
+        @include_external_subcontractor: to include (default) or not external subcontractor
+        @filter_on_subsidiary: filter done work on consultant subsidiary. None (default) is all.
         @return: (done work in days, done work in euros)"""
         rates = dict([(i.id, j[0]) for i, j in self.consultant_rates().items()])  # switch to consultant id
         days = 0
@@ -172,6 +178,12 @@ class Mission(models.Model):
             timesheets = timesheets.filter(working_date__gte=start)
         if end:
             timesheets = timesheets.filter(working_date__lt=end)
+        if not include_external_subcontractor:
+            timesheets = timesheets.filter(consultant__subcontractor=False)
+        if not include_internal_subcontractor:
+            timesheets = timesheets.filter(consultant__company=F("mission__subsidiary"))
+        if filter_on_subsidiary:
+            timesheets = timesheets.filter(consultant__company=filter_on_subsidiary)
         timesheets = timesheets.values_list("consultant").annotate(Sum("charge")).order_by()
         for consultant_id, charge in timesheets:
             days += charge

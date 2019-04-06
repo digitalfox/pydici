@@ -242,44 +242,49 @@ def sanitizeName(name):
     return unicodedata.normalize('NFKD', name)
 
 
-def getLeadDirs(lead):
+def getLeadDirs(lead, with_prefix=True):
     """Get documents directories relative to this lead
-    @return: clientDir, leadDir, businessDir, inputDir, deliveryDir"""
-    clientDir = os.path.join(settings.DOCUMENT_PROJECT_PATH,
-                             settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name), code=lead.client.organisation.company.code))
-    if not os.path.exists(clientDir):
+    @return: client_dir, lead_dir, business_dir, input_dir, delivery_dir"""
+
+    # Compose the path without the prefix, useful for nextcloud for instance
+    client_dir = os.path.join(settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name),
+                                                                          code=lead.client.organisation.company.code))
+    if not os.path.exists(client_dir):
         # Look if an alternative path exists with proper client code
         for path in os.listdir(settings.DOCUMENT_PROJECT_PATH):
             if isinstance(path, bytes):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 path = path.decode("utf8", "ignore")
             if path.endswith("_%s" % lead.client.organisation.company.code):
-                clientDir = os.path.join(settings.DOCUMENT_PROJECT_PATH, path)
+                client_dir = path
                 break
 
-    if not os.path.exists(clientDir):
-        os.mkdir(clientDir)
+    if with_prefix:
+        client_dir = os.path.join(settings.DOCUMENT_PROJECT_PATH, client_dir)
 
-    leadDir = os.path.join(clientDir,
-                           settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
-    if not os.path.exists(leadDir):
+    if not os.path.exists(client_dir):
+        os.makedirs(client_dir, exist_ok=True)
+
+    lead_dir = os.path.join(client_dir,
+                            settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
+    if not os.path.exists(lead_dir):
         # Look if an alternative path exists with proper lead code
-        for path in os.listdir(clientDir):
+        for path in os.listdir(client_dir):
             if isinstance(path, bytes):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 path = path.decode("utf8", "ignore")
             if path.startswith(lead.deal_id):
-                leadDir = os.path.join(clientDir, path)
+                lead_dir = os.path.join(client_dir, path)
                 break
 
-    businessDir = os.path.join(leadDir,
-                               settings.DOCUMENT_PROJECT_BUSINESS_DIR)
-    inputDir = os.path.join(leadDir,
-                               settings.DOCUMENT_PROJECT_INPUT_DIR)
-    deliveryDir = os.path.join(leadDir,
-                               settings.DOCUMENT_PROJECT_DELIVERY_DIR)
+    business_dir = os.path.join(lead_dir,
+                                settings.DOCUMENT_PROJECT_BUSINESS_DIR)
+    input_dir = os.path.join(lead_dir,
+                             settings.DOCUMENT_PROJECT_INPUT_DIR)
+    delivery_dir = os.path.join(lead_dir,
+                                settings.DOCUMENT_PROJECT_DELIVERY_DIR)
 
-    return (clientDir, leadDir, businessDir, inputDir, deliveryDir)
+    return (client_dir, lead_dir, business_dir, input_dir, delivery_dir)
 
 
 def createProjectTree(lead):
