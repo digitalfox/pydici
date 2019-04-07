@@ -399,7 +399,7 @@ def pdc_review(request, year=None, month=None):
         company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
         client_list = ", ".join(["<a href='%s'>%s</a>" %
                                 (reverse("crm:company_detail", args=[c.id]), str(c)) for c in company])
-        client_list = "<div class='hidden-xs hidden-sm'>%s</div>" % client_list
+        client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
         staffing[consultant].append([client_list])
 
     # Compute indicator rates
