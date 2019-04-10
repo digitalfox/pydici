@@ -9,6 +9,7 @@ from datetime import date, timedelta, datetime
 import csv
 import json
 from itertools import zip_longest
+import codecs
 
 from django.core.cache import cache
 from django.shortcuts import render, redirect
@@ -781,6 +782,8 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
     # This "view" is never called directly but only through consultant_timesheet view
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
 
     # Header
@@ -984,6 +987,8 @@ def mission_csv_timesheet(request, mission, consultants):
     # This "view" is never called directly but only through consultant_timesheet view
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s.csv" % mission.mission_id()
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
     for line in timesheet_report_data(mission, padding=True):
         writer.writerow(line)
@@ -1098,6 +1103,8 @@ def all_timesheet(request, year=None, month=None):
 def all_csv_timesheet(request, charges, month):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
 
     # Header
@@ -1119,6 +1126,8 @@ def detailed_csv_timesheet(request, year=None, month=None):
     Intended for accounting third party system or spreadsheet analysis"""
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
 
     if year and month:

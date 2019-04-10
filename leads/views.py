@@ -9,7 +9,7 @@ import csv
 from datetime import datetime, timedelta, date
 import json
 import os
-import sys
+import codecs
 from collections import defaultdict
 
 
@@ -205,6 +205,8 @@ def lead_documents(request, lead_id):
 def csv_export(request, target):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("leads.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
     writer.writerow([_("Name"), _("Client"), _("Description"), _("Managed by"), _("Salesman"), _("Starting"),
                                 _("State"), _("Due date"), _("Staffing"), _("Sales (k€)"), _("Creation"),
