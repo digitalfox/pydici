@@ -376,7 +376,7 @@ def tableToCSV(table, filename="data.csv"):
     writer.writerow(header)
     for row in table.rows:
         row = [strip_tags(str(cell)) for column, cell in list(row.items())]
-        row = [i.replace("\u2714", _("No")).replace("\u2718", _("Yes")) for i in row]
+        row = [i.replace("\u2714", _("Yes")).replace("\u2718", _("No")) for i in row]
         writer.writerow(row)
     return response
 
