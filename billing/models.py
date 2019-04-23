@@ -209,7 +209,7 @@ class SupplierBill(AbstractBill):
         total_expected = 0
         already_paid = SupplierBill.objects.filter(supplier=self.supplier, lead=self.lead,
                                                    state__in=("1_VALIDATED", "2_PAID"))
-        already_paid = already_paid.aggregate(Sum("amount"))["amount__sum"]
+        already_paid = already_paid.aggregate(Sum("amount"))["amount__sum"] or 0
 
         for mission in self.lead.mission_set.all():
             rates = dict([(i.id, j[1]) for i, j in mission.consultant_rates().items()])  # switch to consultant id
