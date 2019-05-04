@@ -41,7 +41,7 @@
         <strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
 
         {% if bill.lead.paying_authority %}
-            <div class="lead">{{ bill.lead.paying_authority.company }}</div>
+            <div class="lead">{{ bill.lead.paying_authority.billing_name|default:bill.lead.paying_authority.company }}</div>
             {{ bill.lead.paying_authority.company.billing_address|linebreaksbr }}
         {% else %}
             <div class="lead">

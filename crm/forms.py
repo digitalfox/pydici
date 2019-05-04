@@ -233,6 +233,7 @@ class BusinessBrokerForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(BusinessBrokerForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column(FieldWithButtons("contact", HTML("<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:contact_create"))),
+                                               "billing_name",
                                                css_class="col-md-6"),
                                         Column(FieldWithButtons("company", HTML("<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:company"))),
                                                css_class="col-md-6"),

@@ -258,6 +258,7 @@ class BusinessBroker(models.Model):
     as a partner to provide some business"""
     company = models.ForeignKey(Company, verbose_name=_("Broker company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
+    billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
 
     def __str__(self):
         if self.company:
