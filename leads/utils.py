@@ -35,7 +35,9 @@ CREATE_TAG = "INSERT INTO oc_systemtag (name, visibility, editable) VALUES (%s, 
 DELETE_TAG = "DELETE FROM oc_systemtag WHERE id=%s"
 MERGE_FILE_TAGS = "UPDATE oc_systemtag_object_mapping SET objectid=%s, systemtagid=%s " \
                   "WHERE objectid=%s AND systemtagid=%s"
-GET_FILES_ID_BY_DIR = "SELECT fileid FROM oc_filecache WHERE path LIKE %s AND mimetype <> 2 AND storage=%s"
+GET_FILES_ID_BY_DIR = "SELECT fc.fileid FROM oc_filecache fc " \
+                      "INNER JOIN oc_mimetypes mt ON fc.mimetype = mt.id " \
+                      "WHERE fc.path LIKE %s AND mt.mimetype NOT IN (%s) AND fc.storage=%s"
 GET_FILES_ID_BY_TAG = "SELECT objectid FROM oc_systemtag_object_mapping WHERE systemtagid=%s"
 TAG_FILE = "INSERT INTO oc_systemtag_object_mapping (objectid, objecttype, systemtagid) VALUES (%(file_id)s, %(object_type)s, %(tag_id)s) " \
            "ON DUPLICATE KEY UPDATE objectid=objectid"
@@ -191,7 +193,9 @@ def tag_leads_files(leads_id):
             data_file_mapping = []
             for (directory_tag_name, directory) in ((settings.DOCUMENT_PROJECT_BUSINESS_DIR, business_dir),
                                                     (settings.DOCUMENT_PROJECT_DELIVERY_DIR, delivery_dir)):
-                cursor.execute(GET_FILES_ID_BY_DIR, (directory+'%', settings.NEXTCLOUD_DB_FILE_STORAGE))
+                cursor.execute(GET_FILES_ID_BY_DIR, (directory+'%',
+                                                     ",".join(settings.NEXTCLOUD_DB_EXCLUDE_TYPES),
+                                                     settings.NEXTCLOUD_DB_FILE_STORAGE))
                 files = cursor.fetchall()
 
                 cursor.execute(GET_TAG_ID, (directory_tag_name, ))
@@ -217,9 +221,8 @@ def tag_leads_files(leads_id):
                             'tag_id': tag_id
                         })
             cursor.executemany(TAG_FILE, data_file_mapping)
-
-        # Commit the changes to the database
-        connection.commit()
+            # Commit the changes to the database for each lead
+            connection.commit()
     except Exception as e:
         raise e
     finally:
@@ -249,9 +252,13 @@ def remove_lead_tag(lead_id, tag_id):
         # Get document directories
         (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
         # Find all files of the lead, except input
-        cursor.execute(GET_FILES_ID_BY_DIR, (business_dir+'%', settings.NEXTCLOUD_DB_FILE_STORAGE))
+        cursor.execute(GET_FILES_ID_BY_DIR, (business_dir+'%',
+                                             ",".join(settings.NEXTCLOUD_DB_EXCLUDE_TYPES),
+                                             settings.NEXTCLOUD_DB_FILE_STORAGE))
         lead_files = cursor.fetchall()
-        cursor.execute(GET_FILES_ID_BY_DIR, (delivery_dir+'%', settings.NEXTCLOUD_DB_FILE_STORAGE))
+        cursor.execute(GET_FILES_ID_BY_DIR, (delivery_dir+'%',
+                                             ",".join(settings.NEXTCLOUD_DB_EXCLUDE_TYPES),
+                                             settings.NEXTCLOUD_DB_FILE_STORAGE))
         lead_files.extend(cursor.fetchall())
 
         data_file_mapping = []
