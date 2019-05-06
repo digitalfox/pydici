@@ -530,6 +530,9 @@ def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_
             legacy_bill_data[_("type")] = _("service bill")
             legacy_bill_data[_("consultant")] = "-"
             legacy_bill_data[_("mission")] = "-"
+            mission = lead.mission_set.first()
+            if mission:  # default to billing mode of first mission. Not 100% accurate...
+                legacy_bill_data[_("billing mode")] = mission.get_billing_mode_display()
             data.append(legacy_bill_data)
         # Add chargeable expense
         expenses = Expense.objects.filter(lead=lead, chargeable=True)
@@ -540,6 +543,7 @@ def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_
                 expense_data = lead_data.copy()
                 expense_data[_("month")] = month.isoformat()
                 expense_data[_("type")] = label
+                expense_data[_("billing mode")] = _("chargeable")
                 expense_data[_("amount")] = float(amount) * way
                 data.append(expense_data)
         # Add new-style client bills and done work per mission
