@@ -10,76 +10,69 @@
 {% block title %}{% trans "Client billing control pivot table" %}{% endblock %}
 
 {% block content %}
-        <h2>{% trans "Client billing control pivot table" %}</h2>
-        <p>{% trans "Based on timesheet activity and clients bills" %}</p>
 
-        <div class="row col-md-12">
-            <div id="type-selector" class="btn-group" role="group">
-                <button class="btn btn-default active" onclick="balance_per_month_table();">{% trans "Balance per month (table)" %}</button>
-                <button class="btn btn-default" onclick="balance_per_month_bargraph();">{% trans "Balance per month (bargraph)" %}</button>
-                <button class="btn btn-default" onclick="balance_per_client();">{% trans "Balance per client" %}</button>
-                <button class="btn btn-default" onclick="balance_per_billing_mode();">{% trans "Balance per billing mode" %}</button>
-            </div>
-        </div>
+<h3>{% trans "Client billing control pivot table" %}</h3>
+<p>{% trans "Based on timesheet activity and clients bills" %}</p>
 
-        <div class="row"></div>
+<div class="row col-md-12">
+    <div id="type-selector" class="btn-group" role="group">
+        <button class="btn btn-default active" onclick="balance_per_month_table();">{% trans "Balance per month (table)" %}</button>
+        <button class="btn btn-default" onclick="balance_per_month_bargraph();">{% trans "Balance per month (bargraph)" %}</button>
+        <button class="btn btn-default" onclick="balance_per_client();">{% trans "Balance per client" %}</button>
+        <button class="btn btn-default" onclick="balance_per_billing_mode();">{% trans "Balance per billing mode" %}</button>
+    </div>
+</div>
 
-        <div id="pivotable-output" style="margin-top: 10px;"></div>
+<div class="row"></div>
 
-        {% with output as "pivotable-output" %}
-            {% include "core/_pivotable_body.html" %}
-        {% endwith %}
+<div id="pivotable-output" style="margin-top: 10px;"></div>
 
-        <script type="text/javascript">
+{% with output as "pivotable-output" %}
+    {% include "core/_pivotable_body.html" %}
+{% endwith %}
 
-            // Active state switcher
-            $(document).ready(function() {
-                $('#type-selector button').on("click", function() {
-                    $(this).addClass('active').siblings().removeClass('active');
-                 });
-            });
+<script type="text/javascript">
 
-            // Share data for all pivot tables
-            var data = {{ data|safe }};
+    // Active state switcher
+    $(document).ready(function() {
+        $('#type-selector button').on("click", function() {
+            $(this).addClass('active').siblings().removeClass('active');
+         });
+    });
 
-            // Preset definition
-            function balance_per_month_table() {
-                var rows = ["{% trans 'month' %}"];
-                var cols = ["{% trans 'subsidiary' %}", "{% trans 'type' %}"];
-                drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ["{% trans 'amount' %}"]);
-            }
+    // Share data for all pivot tables
+    var data = {{ data|safe }};
 
-            function balance_per_month_bargraph() {
-                var rows = ["{% trans 'subsidiary' %}"];
-                var cols = ["{% trans 'month' %}"];;
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ["{% trans 'amount' %}"]);
-            }
+    // Preset definition
+    function balance_per_month_table() {
+        var rows = ["{% trans 'month' %}"];
+        var cols = ["{% trans 'subsidiary' %}", "{% trans 'type' %}"];
+        drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ["{% trans 'amount' %}"]);
+    }
 
-            function turnover_per_broker() {
-                var rows = ["{% trans 'broker' %}", "{% trans 'broker' %}"];
-                var cols = ["{% trans 'subsidiary' %}"];
-                var options = {};
-                options["rowOrder"] = "value_z_to_a";
-                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'own turnover (€)' %}"], options);
-            }
+    function balance_per_month_bargraph() {
+        var rows = ["{% trans 'subsidiary' %}"];
+        var cols = ["{% trans 'month' %}"];;
+        drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ["{% trans 'amount' %}"]);
+    }
 
-            function balance_per_client() {
-                var rows = ["{% trans 'subsidiary' %}"];
-                var cols = ["{% trans 'client company' %}"];
-                var options = {};
-                options["colOrder"] = "value_z_to_a";
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'amount' %}"], options);
-            }
+    function balance_per_client() {
+        var rows = ["{% trans 'subsidiary' %}"];
+        var cols = ["{% trans 'client company' %}"];
+        var options = {};
+        options["colOrder"] = "value_z_to_a";
+        drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'amount' %}"], options);
+    }
 
-            function balance_per_billing_mode() {
-                var rows = ["{% trans 'billing mode' %}"];
-                var cols = ["{% trans 'subsidiary' %}"];
-                drawPivot(data, rows, cols, "Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'amount' %}"]);
-            }
+    function balance_per_billing_mode() {
+        var rows = ["{% trans 'billing mode' %}"];
+        var cols = ["{% trans 'subsidiary' %}"];
+        drawPivot(data, rows, cols, "Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'amount' %}"]);
+    }
 
-            // default
-            balance_per_month_table();
+    // default
+    balance_per_month_table();
 
-        </script>
+</script>
 
 {% endblock %}

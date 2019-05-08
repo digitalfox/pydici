@@ -35,6 +35,7 @@ from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
 from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years
 from core.decorator import pydici_non_public, pydici_feature
+from billing.utils import get_client_billing_control_pivotable_data
 from people.models import Consultant
 
 
@@ -103,6 +104,7 @@ def detail(request, lead_id):
                    "completion_url": reverse("leads:tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
                    "similar_leads": predict_similar(lead),
+                   "client_billing_control_data": get_client_billing_control_pivotable_data(filter_on_lead=lead),
                    "user": request.user})
 
 @pydici_non_public

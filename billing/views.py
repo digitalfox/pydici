@@ -21,13 +21,11 @@ from django.utils.translation import ugettext as _
 from django.utils import translation
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
 from django.db.models import Sum, Q, F, Min, Max, Count
-from django.db.models.functions import TruncMonth
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import permission_required
 
 # Silent weasyprint logger
 logger = logging.getLogger("weasyprint")
@@ -37,14 +35,14 @@ if not logger.handlers:
 from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
 from PyPDF2 import PdfFileMerger, PdfFileReader
 
-from billing.utils import get_billing_info, create_client_bill_from_timesheet, create_client_bill_from_proportion, bill_pdf_filename
+from billing.utils import get_billing_info, create_client_bill_from_timesheet, create_client_bill_from_proportion, \
+    bill_pdf_filename, get_client_billing_control_pivotable_data
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
 from staffing.views import MissionTimesheetReportPdf
 from crm.models import Subsidiary
-from expense.models import Expense
 from core.utils import get_fiscal_years, get_parameter, user_has_feature
 from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth
@@ -497,99 +495,14 @@ def supplier_bills_archive(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-#@cache_page(60 * 10)
 def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_on_company=None, filter_on_lead=None):
     """Check lead/mission billing."""
-    data = []
-    bill_state = ("1_SENT", "2_PAID")  # Only consider clients bills in those status
-    leads = Lead.objects.all()
-
-    if filter_on_subsidiary:
-        leads = leads.filter(subsidiary=filter_on_subsidiary)
-    if filter_on_company:
-        leads = leads.filter(client__organisation__company=filter_on_company)
-    if filter_on_lead:
-        leads = leads.filter(id=filter_on_lead.id)
-
-    leads = leads.filter(mission__active=True).distinct()
-    leads = leads.select_related("client__organisation__company",
-                         "business_broker__company", "subsidiary")
-
-    for lead in leads:
-        lead_data = {_("deal id"): lead.deal_id,
-                     _("client organisation"): str(lead.client.organisation),
-                     _("client company"): str(lead.client.organisation.company),
-                     _("broker"): str(lead.business_broker or _("Direct")),
-                     _("subsidiary") :str(lead.subsidiary)}
-        # Add legacy bills non related to specific mission (ie. not using pydici billing, just header and pdf payload)
-        legacy_bills = ClientBill.objects.filter(lead=lead, state__in=bill_state).annotate(Count("billdetail")).filter(billdetail__count=0)
-        for legacy_bill in legacy_bills:
-            legacy_bill_data = lead_data.copy()
-            legacy_bill_data[_("amount")] = - float(legacy_bill.amount or 0)
-            legacy_bill_data[_("month")] = legacy_bill.creation_date.replace(day=1).isoformat()
-            legacy_bill_data[_("type")] = _("service bill")
-            legacy_bill_data[_("consultant")] = "-"
-            legacy_bill_data[_("mission")] = "-"
-            mission = lead.mission_set.first()
-            if mission:  # default to billing mode of first mission. Not 100% accurate...
-                legacy_bill_data[_("billing mode")] = mission.get_billing_mode_display()
-            data.append(legacy_bill_data)
-        # Add chargeable expense
-        expenses = Expense.objects.filter(lead=lead, chargeable=True)
-        bill_expenses = BillExpense.objects.filter(bill__lead=lead).exclude(expense_date=None)
-        for qs, label, way in ((expenses, _("expense"), 1), (bill_expenses, _("expense bill"), -1)):
-            qs = qs.annotate(month=TruncMonth("expense_date")).order_by("month").values("month")
-            for month, amount in qs.annotate(Sum("amount")).values_list("month", "amount__sum"):
-                expense_data = lead_data.copy()
-                expense_data[_("month")] = month.isoformat()
-                expense_data[_("type")] = label
-                expense_data[_("billing mode")] = _("chargeable")
-                expense_data[_("amount")] = float(amount) * way
-                data.append(expense_data)
-        # Add new-style client bills and done work per mission
-        for mission in lead.mission_set.all().select_related("responsible"):
-            mission_data = lead_data.copy()
-            mission_data[_("mission")] = mission.short_name()
-            mission_data[_("responsible")] = str(mission.responsible or mission.lead.responsible)
-            mission_data[_("billing mode")] = mission.get_billing_mode_display()
-            # Add fixed price bills
-            if mission.billing_mode == "FIXED_PRICE":
-                for billDetail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state):
-                    mission_fixed_price_data = mission_data.copy()
-                    mission_fixed_price_data[_("consultant")] = "-"
-                    mission_fixed_price_data[_("month")] = billDetail.bill.creation_date.replace(day=1).isoformat()
-                    mission_fixed_price_data[_("type")] = _("service bill")
-                    mission_fixed_price_data[_("amount")] = -float(billDetail.amount or 0)
-                    data.append((mission_fixed_price_data))
-            # Add done work and time spent bills
-            consultants = Consultant.objects.filter(timesheet__mission=mission).distinct()
-            for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):
-                next_month = nextMonth(month)
-                for consultant in consultants:
-                    mission_month_consultant_data = mission_data.copy()
-                    turnover = float(mission.done_work_period(month, next_month, include_external_subcontractor=True,
-                                                            include_internal_subcontractor=True,
-                                                            filter_on_consultant=consultant)[1])
-                    mission_month_consultant_data[_("consultant")] = str(consultant)
-                    mission_month_consultant_data[_("month")] = month.isoformat()
-                    mission_month_consultant_data[_("amount")] = turnover
-                    mission_month_consultant_data[_("type")] = _("done work")
-                    data.append(mission_month_consultant_data)
-                    if mission.billing_mode == "TIME_SPENT":
-                        # Add bills for time spent mission
-                        mission_month_consultant_data = mission_month_consultant_data.copy()
-                        billed = BillDetail.objects.filter(mission=mission, consultant=consultant,
-                                                           month=month, bill__state__in=bill_state)
-                        billed = float(billed.aggregate(Sum("amount"))["amount__sum"] or 0)
-                        mission_month_consultant_data[_("amount")] = -billed
-                        mission_month_consultant_data[_("type")] = _("service bill")
-                        data.append(mission_month_consultant_data)
-            # Add fixed price price billing
-            #TODO: just do it
-
-
-    return render(request, "billing/client_billing_control_pivotable.html", {"data": json.dumps(data),
-                                                                "derivedAttributes": "{}"})
+    data = get_client_billing_control_pivotable_data(filter_on_subsidiary=filter_on_subsidiary,
+                                                     filter_on_company=filter_on_company,
+                                                     filter_on_lead=filter_on_lead)
+    return render(request, "billing/client_billing_control_pivotable.html",
+                  {"data": data,
+                   "derivedAttributes": "{}"})
 
 
 @pydici_non_public

@@ -3,6 +3,32 @@
 
 {% load i18n %}
 
+    {% with data=client_billing_control_data %}
+
+    <div class="row">&nbsp;</div>
+
+    <div class="row">
+        <h3 class="col-md-6">{% trans "Client billing control" %}</h3>
+    </div>
+
+    <div id="pivotable-output" style="margin-top: 10px;"></div>
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            var lang = {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %};
+            $("#pivotable-output").pivot({{ data|safe }},
+                    { rows: ["{% trans 'consultant' %}", "{% trans 'type' %}"],
+                      cols: ["{% trans 'month' %}"],
+                      renderer: $.pivotUtilities.renderers.Table,
+                      aggregator: $.pivotUtilities.aggregators.Sum(["{% trans 'amount' %}"]) },
+                      lang);
+    });
+
+    </script>
+
+    {% endwith %}
+
     <h3>{% trans "Clients bills" %}</h3>
     {% with lead.clientbill_set.all as client_bills %}
     {% if client_bills %}

@@ -7,12 +7,18 @@ appropriate to live in Billing models or view
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+import json
+
 from django.apps import apps
-from django.db.models import Sum
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncMonth
+from django.utils.translation import ugettext as _
 
 from staffing.models import Mission
 from people.models import Consultant
 from core.utils import to_int_or_round, nextMonth
+from leads.models import Lead
+from expense.models import Expense
 
 
 def get_billing_info(timesheet_data):
@@ -108,3 +114,98 @@ def bill_pdf_filename(bill):
         # Incomplete bill, we still want to generate the pdf
         filename = "bill.pdf"
     return filename
+
+
+def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_on_company=None, filter_on_lead=None):
+    """Compute pivotable to check lead/mission billing."""
+    # local import to avoid circurlar weirdness
+    ClientBill = apps.get_model("billing", "ClientBill")
+    BillDetail = apps.get_model("billing", "BillDetail")
+    BillExpense = apps.get_model("billing", "BillExpense")
+
+    data = []
+    bill_state = ("1_SENT", "2_PAID")  # Only consider clients bills in those status
+    leads = Lead.objects.all()
+
+    if filter_on_subsidiary:
+        leads = leads.filter(subsidiary=filter_on_subsidiary)
+    if filter_on_company:
+        leads = leads.filter(client__organisation__company=filter_on_company)
+    if filter_on_lead:
+        leads = leads.filter(id=filter_on_lead.id)
+
+    leads = leads.filter(mission__active=True).distinct()
+    leads = leads.select_related("client__organisation__company",
+                         "business_broker__company", "subsidiary")
+
+    for lead in leads:
+        lead_data = {_("deal id"): lead.deal_id,
+                     _("client organisation"): str(lead.client.organisation),
+                     _("client company"): str(lead.client.organisation.company),
+                     _("broker"): str(lead.business_broker or _("Direct")),
+                     _("subsidiary") :str(lead.subsidiary)}
+        # Add legacy bills non related to specific mission (ie. not using pydici billing, just header and pdf payload)
+        legacy_bills = ClientBill.objects.filter(lead=lead, state__in=bill_state).annotate(Count("billdetail")).filter(billdetail__count=0)
+        for legacy_bill in legacy_bills:
+            legacy_bill_data = lead_data.copy()
+            legacy_bill_data[_("amount")] = - float(legacy_bill.amount or 0)
+            legacy_bill_data[_("month")] = legacy_bill.creation_date.replace(day=1).isoformat()
+            legacy_bill_data[_("type")] = _("service bill")
+            legacy_bill_data[_("consultant")] = "-"
+            legacy_bill_data[_("mission")] = "-"
+            mission = lead.mission_set.first()
+            if mission:  # default to billing mode of first mission. Not 100% accurate...
+                legacy_bill_data[_("billing mode")] = mission.get_billing_mode_display()
+            data.append(legacy_bill_data)
+        # Add chargeable expense
+        expenses = Expense.objects.filter(lead=lead, chargeable=True)
+        bill_expenses = BillExpense.objects.filter(bill__lead=lead).exclude(expense_date=None)
+        for qs, label, way in ((expenses, _("expense"), 1), (bill_expenses, _("expense bill"), -1)):
+            qs = qs.annotate(month=TruncMonth("expense_date")).order_by("month").values("month")
+            for month, amount in qs.annotate(Sum("amount")).values_list("month", "amount__sum"):
+                expense_data = lead_data.copy()
+                expense_data[_("month")] = month.isoformat()
+                expense_data[_("type")] = label
+                expense_data[_("billing mode")] = _("chargeable")
+                expense_data[_("amount")] = float(amount) * way
+                data.append(expense_data)
+        # Add new-style client bills and done work per mission
+        for mission in lead.mission_set.all().select_related("responsible"):
+            mission_data = lead_data.copy()
+            mission_data[_("mission")] = mission.short_name()
+            mission_data[_("responsible")] = str(mission.responsible or mission.lead.responsible)
+            mission_data[_("billing mode")] = mission.get_billing_mode_display()
+            # Add fixed price bills
+            if mission.billing_mode == "FIXED_PRICE":
+                for billDetail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state):
+                    mission_fixed_price_data = mission_data.copy()
+                    mission_fixed_price_data[_("consultant")] = "-"
+                    mission_fixed_price_data[_("month")] = billDetail.bill.creation_date.replace(day=1).isoformat()
+                    mission_fixed_price_data[_("type")] = _("service bill")
+                    mission_fixed_price_data[_("amount")] = -float(billDetail.amount or 0)
+                    data.append((mission_fixed_price_data))
+            # Add done work and time spent bills
+            consultants = Consultant.objects.filter(timesheet__mission=mission).distinct()
+            for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):
+                next_month = nextMonth(month)
+                for consultant in consultants:
+                    mission_month_consultant_data = mission_data.copy()
+                    turnover = float(mission.done_work_period(month, next_month, include_external_subcontractor=True,
+                                                            include_internal_subcontractor=True,
+                                                            filter_on_consultant=consultant)[1])
+                    mission_month_consultant_data[_("consultant")] = str(consultant)
+                    mission_month_consultant_data[_("month")] = month.isoformat()
+                    mission_month_consultant_data[_("amount")] = turnover
+                    mission_month_consultant_data[_("type")] = _("done work")
+                    data.append(mission_month_consultant_data)
+                    if mission.billing_mode == "TIME_SPENT":
+                        # Add bills for time spent mission
+                        mission_month_consultant_data = mission_month_consultant_data.copy()
+                        billed = BillDetail.objects.filter(mission=mission, consultant=consultant,
+                                                           month=month, bill__state__in=bill_state)
+                        billed = float(billed.aggregate(Sum("amount"))["amount__sum"] or 0)
+                        mission_month_consultant_data[_("amount")] = -billed
+                        mission_month_consultant_data[_("type")] = _("service bill")
+                        data.append(mission_month_consultant_data)
+
+    return json.dumps(data)
