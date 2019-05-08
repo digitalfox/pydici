@@ -14,17 +14,15 @@ from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
 from django.utils.translation import ugettext as _
 
-from staffing.models import Mission
-from people.models import Consultant
 from core.utils import to_int_or_round, nextMonth
-from leads.models import Lead
-from expense.models import Expense
 
 
 def get_billing_info(timesheet_data):
     """compute billing information from this timesheet data
     @:param timesheet_data: value queryset with mission, consultant and charge in days
     @:return billing information as a tuple (lead, (lead total, (mission total, billing data)) """
+    Mission = apps.get_model("staffing", "Mission")
+    Consultant = apps.get_model("people", "Consultant")
     billing_data = {}
     for mission_id, consultant_id, charge in timesheet_data:
         mission = Mission.objects.select_related("lead").get(id=mission_id)
@@ -81,6 +79,7 @@ def create_client_bill_from_timesheet(mission, month):
     """Create (and return) a bill and bill detail for given mission from timesheet of given month"""
     ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
+    Consultant = apps.get_model("people", "Consultant")
     bill = ClientBill(lead=mission.lead)
     bill.save()
     rates = mission.consultant_rates()
@@ -116,12 +115,16 @@ def bill_pdf_filename(bill):
     return filename
 
 
-def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_on_company=None, filter_on_lead=None):
+def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_on_company=None,
+                                              filter_on_lead=None, only_active=False):
     """Compute pivotable to check lead/mission billing."""
     # local import to avoid circurlar weirdness
     ClientBill = apps.get_model("billing", "ClientBill")
     BillDetail = apps.get_model("billing", "BillDetail")
     BillExpense = apps.get_model("billing", "BillExpense")
+    Lead = apps.get_model("leads", "Lead")
+    Expense = apps.get_model("expense", "Expense")
+    Consultant = apps.get_model("people", "Consultant")
 
     data = []
     bill_state = ("1_SENT", "2_PAID")  # Only consider clients bills in those status
@@ -134,7 +137,9 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
     if filter_on_lead:
         leads = leads.filter(id=filter_on_lead.id)
 
-    leads = leads.filter(mission__active=True).distinct()
+    if only_active:
+        leads = leads.filter(mission__active=True).distinct()
+
     leads = leads.select_related("client__organisation__company",
                          "business_broker__company", "subsidiary")
 

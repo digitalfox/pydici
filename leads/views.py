@@ -104,7 +104,6 @@ def detail(request, lead_id):
                    "completion_url": reverse("leads:tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
                    "similar_leads": predict_similar(lead),
-                   "client_billing_control_data": get_client_billing_control_pivotable_data(filter_on_lead=lead),
                    "user": request.user})
 
 @pydici_non_public

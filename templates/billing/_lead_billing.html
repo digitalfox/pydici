@@ -3,7 +3,7 @@
 
 {% load i18n %}
 
-    {% with data=client_billing_control_data %}
+    {% with data=lead.billing_control_data %}
 
     <div class="row">&nbsp;</div>
 
@@ -11,13 +11,13 @@
         <h3 class="col-md-6">{% trans "Client billing control" %}</h3>
     </div>
 
-    <div id="pivotable-output" style="margin-top: 10px;"></div>
+    <div id="pivotable-output-{{ lead.id }}" style="margin-top: 10px;"></div>
 
     <script type="text/javascript">
 
         $(document).ready(function() {
             var lang = {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %};
-            $("#pivotable-output").pivot({{ data|safe }},
+            $("#pivotable-output-{{ lead.id }}").pivot({{ data|safe }},
                     { rows: ["{% trans 'consultant' %}", "{% trans 'type' %}"],
                       cols: ["{% trans 'month' %}"],
                       renderer: $.pivotUtilities.renderers.Table,

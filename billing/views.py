@@ -499,7 +499,8 @@ def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_
     """Check lead/mission billing."""
     data = get_client_billing_control_pivotable_data(filter_on_subsidiary=filter_on_subsidiary,
                                                      filter_on_company=filter_on_company,
-                                                     filter_on_lead=filter_on_lead)
+                                                     filter_on_lead=filter_on_lead,
+                                                     only_active=True)
     return render(request, "billing/client_billing_control_pivotable.html",
                   {"data": data,
                    "derivedAttributes": "{}"})
