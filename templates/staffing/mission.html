@@ -45,7 +45,7 @@
             <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' mission.lead.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
         {% endif %}
         <li role="presentation"><a data-toggle="tab" href="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
-        {% if mission.lead %}<li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>{% endif %}
+        {% if mission.lead %}<li><a data-toggle="tab" href="#tab-billing" data-tab-url="{% url 'billing:lead_billing' mission.lead.id %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>{% endif %}
     </ul>
 </div>
 
@@ -195,14 +195,7 @@
 
     <div id="tab-reporting" class="tab-pane fade"></div>
     
-    <div id="tab-billing" class="tab-pane fade">
-    <br/>
-	    {% if mission.lead %}
-	        {% with mission.lead as lead %}
-	            {% include "billing/_lead_billing.html" %}
-	        {% endwith %}
-	    {% endif %}
-    </div>
+    <div id="tab-billing" class="tab-pane fade"></div>
 
     <div id="tab-actions" class="tab-pane fade">
     <br/>

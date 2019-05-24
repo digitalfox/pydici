@@ -492,6 +492,13 @@ def supplier_bills_archive(request):
                    "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2, 9] }]  ''',
                    "user": request.user})
 
+@pydici_non_public
+@pydici_feature("reports")
+def lead_billing(request, lead_id):
+    """lead / mission billing tab that display billing control and client/supplier bill list"""
+    lead = Lead.objects.get(id=lead_id)
+    return render(request, "billing/_lead_billing.html",
+                  {"lead": lead})
 
 @pydici_non_public
 @pydici_feature("reports")

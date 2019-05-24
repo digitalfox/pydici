@@ -40,7 +40,7 @@
     <ul class="nav nav-tabs" id="lead-tabs">
         <li class="active"><a data-toggle="tab" href="#tab-description"><span class="glyphicon glyphicon-home"> {% trans "Description" %}</a></li>
         <li><a data-toggle="tab"href="#tab-missions"><span class="glyphicon glyphicon-list"> {% trans "Missions" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-billing" data-tab-url="{% url 'billing:lead_billing' lead.id %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
         <li><a data-toggle="tab" href="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}</a></li>
         <li><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads:lead_documents' lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
         <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' lead.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
@@ -256,9 +256,7 @@
     </div> {# end of tab missions #}
 
 
-    <div id="tab-billing" class="tab-pane fade">
-        {% include "billing/_lead_billing.html" %}
-    </div>
+    <div id="tab-billing" class="tab-pane fade"></div>
 
     <div id="tab-actions" class="tab-pane fade">
         <h2>{% trans "Pending actions" %}</h2>
