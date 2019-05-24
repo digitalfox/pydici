@@ -2,6 +2,7 @@
 {# Context/Argument: lead object #}
 
 {% load i18n %}
+{% load l10n %}
 
     {% with data=lead.billing_control_data %}
 
@@ -62,6 +63,10 @@
     {% endif %}
     {% endwith %}
 
+    {% if pydici_feature.billing_request %}
+            <a class="btn btn-default" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
+    {% endif %}
+
     <h3>{% trans "Suppliers bills" %}</h3>
     {% with lead.supplierbill_set.all as supplier_bills %}
     {% if supplier_bills %}
@@ -97,3 +102,8 @@
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
     {% endwith %}
+
+    {% if perms.billing.add_supplierbill %}
+            <a class="btn btn-default" href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
+    {% endif %}
+

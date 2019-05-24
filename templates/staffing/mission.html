@@ -199,13 +199,7 @@
     <br/>
 	    {% if mission.lead %}
 	        {% with mission.lead as lead %}
-	        {% include "billing/_lead_billing.html" %}
-            {% if pydici_feature.billing_request %}
-                <a class="btn btn-default" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
-            {% endif %}
-            {% if perms.billing.add_supplierbill %}
-                <a class="btn btn-default" href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
-            {% endif %}
+	            {% include "billing/_lead_billing.html" %}
 	        {% endwith %}
 	    {% endif %}
     </div>
