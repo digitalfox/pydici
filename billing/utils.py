@@ -155,7 +155,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
             legacy_bill_data = lead_data.copy()
             legacy_bill_data[_("amount")] = - float(legacy_bill.amount or 0)
             legacy_bill_data[_("month")] = legacy_bill.creation_date.replace(day=1).isoformat()
-            legacy_bill_data[_("type")] = _("service bill")
+            legacy_bill_data[_("type")] = _("Service bill")
             legacy_bill_data[_("consultant")] = "-"
             legacy_bill_data[_("mission")] = "-"
             mission = lead.mission_set.first()
@@ -165,13 +165,13 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
         # Add chargeable expense
         expenses = Expense.objects.filter(lead=lead, chargeable=True)
         bill_expenses = BillExpense.objects.filter(bill__lead=lead).exclude(expense_date=None)
-        for qs, label, way in ((expenses, _("expense"), 1), (bill_expenses, _("expense bill"), -1)):
+        for qs, label, way in ((expenses, _("Expense"), 1), (bill_expenses, _("Expense bill"), -1)):
             qs = qs.annotate(month=TruncMonth("expense_date")).order_by("month").values("month")
             for month, amount in qs.annotate(Sum("amount")).values_list("month", "amount__sum"):
                 expense_data = lead_data.copy()
                 expense_data[_("month")] = month.isoformat()
                 expense_data[_("type")] = label
-                expense_data[_("billing mode")] = _("chargeable")
+                expense_data[_("billing mode")] = _("Chargeable expense")
                 expense_data[_("amount")] = float(amount) * way
                 data.append(expense_data)
         # Add new-style client bills and done work per mission
@@ -186,7 +186,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                     mission_fixed_price_data = mission_data.copy()
                     mission_fixed_price_data[_("consultant")] = "-"
                     mission_fixed_price_data[_("month")] = billDetail.bill.creation_date.replace(day=1).isoformat()
-                    mission_fixed_price_data[_("type")] = _("service bill")
+                    mission_fixed_price_data[_("type")] = _("Service bill")
                     mission_fixed_price_data[_("amount")] = -float(billDetail.amount or 0)
                     data.append((mission_fixed_price_data))
             # Add done work and time spent bills
@@ -201,7 +201,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                     mission_month_consultant_data[_("consultant")] = str(consultant)
                     mission_month_consultant_data[_("month")] = month.isoformat()
                     mission_month_consultant_data[_("amount")] = turnover
-                    mission_month_consultant_data[_("type")] = _("done work")
+                    mission_month_consultant_data[_("type")] = _("Done work")
                     data.append(mission_month_consultant_data)
                     if mission.billing_mode == "TIME_SPENT":
                         # Add bills for time spent mission
@@ -210,7 +210,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                                                            month=month, bill__state__in=bill_state)
                         billed = float(billed.aggregate(Sum("amount"))["amount__sum"] or 0)
                         mission_month_consultant_data[_("amount")] = -billed
-                        mission_month_consultant_data[_("type")] = _("service bill")
+                        mission_month_consultant_data[_("type")] = _("Service bill")
                         data.append(mission_month_consultant_data)
 
     return json.dumps(data)
