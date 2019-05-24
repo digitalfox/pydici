@@ -104,6 +104,6 @@
     {% endwith %}
 
     {% if perms.billing.add_supplierbill %}
-            <a class="btn btn-default" href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
+            <a class="btn btn-default" href="{% url 'billing:supplier_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
     {% endif %}
 
