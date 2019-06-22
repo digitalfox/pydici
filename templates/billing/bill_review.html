@@ -29,6 +29,7 @@
                 <th>{% trans "Bill id" %}</th>
                 <th>{% trans "subsidiary" %}</th>
                 <th>{% trans "Client" %}</th>
+                <th>{% trans "Responsible" %}</th>
                 <th>{% trans "Amount (€ excl tax)" %}</th>
                 <th>{% trans "Amount (€ with tax)" %}</th>
                 <th>{% trans "Wait" %}</th>
@@ -47,6 +48,7 @@
                 {% endif %}
                 <td>{{ bill.lead.subsidiary }}</td>
                 <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
+                <td>{{ bill.lead.responsible }}</td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
@@ -251,6 +253,7 @@
                 <th>{% trans "subsidiary" %}</th>
                 <th>{% trans "Supplier" %}</th>
                 <th>{% trans "Lead" %}</th>
+                <th>{% trans "Responsible" %}</th>
                 <th>{% trans "Amount (€ excl tax)" %}</th>
                 <th>{% trans "Amount (€ with tax)" %}</th>
                 <th>{% trans "Creation date" %}</th>
@@ -272,13 +275,14 @@
                 <td>{{ bill.lead.subsidiary }}</td>
                 <td>{{ bill.supplier }}</a></td>
                 <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td>{{ bill.lead.responsible }}</td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td style="text-align: right">{{ bill.expected_billing|floatformat:-2 }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
-                <td>{{ bill.comment }}</td>
+                <td>{{ bill.comment|default:"" }}</td>
                 <td>{% if bill.state == "1_VALIDATED" %}
                         {% if pydici_feature.billing_management %}
                             <a href="{% url 'billing:mark_supplierbill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
@@ -305,6 +309,7 @@
                 <th>{% trans "subsidiary" %}</th>
                 <th>{% trans "Supplier" %}</th>
                 <th>{% trans "Lead" %}</th>
+                <th>{% trans "Responsible" %}</th>
                 <th>{% trans "Amount (€ excl tax)" %}</th>
                 <th>{% trans "Amount (€ with tax)" %}</th>
                 <th>{% trans "Creation date" %}</th>
@@ -326,13 +331,14 @@
                 <td>{{ bill.lead.subsidiary }}</td>
                 <td>{{ bill.supplier }}</a></td>
                 <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.lead }}</a></td>
+                <td>{{ bill.lead.responsible }}</td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td style="text-align: right">{{ bill.expected_billing|floatformat:-2 }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
-                <td>{{ bill.comment }}</td>
+                <td>{{ bill.comment|default:"" }}</td>
                 <td>{% if bill.state == "1_VALIDATED" %}
                         {% if pydici_feature.billing_management %}
                             <a href="{% url 'billing:mark_supplierbill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
