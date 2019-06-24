@@ -212,7 +212,7 @@ def consultant_staffing(request, consultant_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def mass_staffing(request):
     """Massive staffing form"""
-    staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime")]
+    staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=24)]
     now = datetime.now().replace(microsecond=0)  # Remove useless microsecond that pollute form validation in callback
     if request.method == 'POST':  # If the form has been submitted...
         form = MassStaffingForm(request.POST, staffing_dates=staffing_dates)
