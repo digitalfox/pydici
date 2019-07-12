@@ -426,7 +426,8 @@ def get_parameter(key):
         cache.set(Parameter.PARAMETER_CACHE_KEY % key, value, 3600*24)
     return value
 
-def get_fiscal_years(queryset, date_field_name):
+
+def get_fiscal_years_from_qs(queryset, date_field_name):
     """Extract fiscal years of items in query set.
     :return list of fiscal years as int"""
     years = [y.year for y in queryset.dates(date_field_name, "year", order="ASC")]
@@ -443,3 +444,12 @@ def get_fiscal_years(queryset, date_field_name):
         years.pop()  # Last date year is in fact part of previous fiscal year. Let's remove it
 
     return [int(y) for y in years]
+
+
+def get_fiscal_year(d):
+    """Extract fiscal year as int from date / datetime object"""
+    month = get_parameter("FISCAL_YEAR_MONTH")
+    if d.month < month:
+        return d.year - 1
+    else:
+        return d.year

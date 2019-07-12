@@ -43,7 +43,7 @@ from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
 from staffing.views import MissionTimesheetReportPdf
 from crm.models import Subsidiary
-from core.utils import get_fiscal_years, get_parameter, user_has_feature
+from core.utils import get_fiscal_years_from_qs, get_parameter, user_has_feature
 from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
@@ -609,7 +609,7 @@ def graph_billing_jqp(request):
 def graph_yearly_billing(request):
     """Fiscal year billing per subsidiary"""
     bills = ClientBill.objects.filter(state__in=("1_SENT", "2_PAID"))
-    years = get_fiscal_years(bills, "creation_date")
+    years = get_fiscal_years_from_qs(bills, "creation_date")
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
     data = {}
     graph_data = []
