@@ -89,7 +89,7 @@ def create_client_bill_from_timesheet(mission, month):
         consultant = Consultant.objects.get(id=i["consultant"])
         billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
         billDetail.save()
-    compute_bill(bill)  # update bill amount according to its details
+    bill.save()  # save again to update bill amount according to its details
     return bill
 
 
@@ -101,7 +101,7 @@ def create_client_bill_from_proportion(mission, proportion):
     bill.save()
     billDetail = BillDetail(bill=bill, mission=mission, quantity=proportion, unit_price=mission.price*1000)
     billDetail.save()
-    compute_bill(bill)  # update bill amount according to its details
+    bill.save()  # save again to update bill amount according to its details
     return bill
 
 
