@@ -299,9 +299,13 @@ def client_bill(request, bill_id=None):
                 billDetailFormSet = BillDetailFormSet(instance=bill)
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
         else:
-            # Still no bill, let's create it with its detail if at least mission has been provided
+            # Still no bill, let's create it with its detail if at least mission or lead has been provided
+            if request.GET.get("lead"):
+                lead = Lead.objects.get(id=request.GET.get("lead"))
+                mission = lead.mission_set.first()  # take the first
             if request.GET.get("mission"):
                 mission = Mission.objects.get(id=request.GET.get("mission"))
+            if mission:
                 if mission.billing_mode == "TIME_SPENT":
                     if request.GET.get("month") and request.GET.get("year"):
                         month = date(int(request.GET.get("year")), int(request.GET.get("month")), 1)
