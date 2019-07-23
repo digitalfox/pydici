@@ -8,11 +8,14 @@ appropriate to live in Billing models or view
 """
 
 import json
+from os import path
+import os
 
 from django.apps import apps
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
 from django.utils.translation import ugettext as _
+from django.conf import settings
 
 from core.utils import to_int_or_round, nextMonth
 
@@ -214,3 +217,38 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                         data.append(mission_month_consultant_data)
 
     return json.dumps(data)
+
+def switch_bill_id(nature, dry_run=True):
+    """Rename bill files/directories using technical bill.id instead of bill.bill_id"""
+    base_location = path.join(settings.PYDICI_ROOTDIR, "data", "bill", nature)
+    print(base_location)
+    if nature == "supplier":
+        Bill = apps.get_model("billing", "supplierbill")
+        funct_id = "supplier_bill_id"
+    else:
+        Bill = apps.get_model("billing", "clientbill")
+        funct_id = "bill_id"
+
+
+    for bill in Bill.objects.all():
+        bill_id = getattr(bill, funct_id)
+        print("=" * 10)
+        print("Bill (f=%s, t=%s)" % (bill_id , bill.id))
+        if bill.bill_file:
+            bill_path = path.join(base_location, bill.bill_file.name)
+            if path.exists(bill_path):
+                print("current file %s" % bill_path)
+                bill_dir = path.abspath(path.dirname((bill_path)))
+                if len(os.listdir(bill_dir)) != 1:
+                    print("WARNING, more than one file for this bill in path %s" % bill_dir)
+                new_bill_dir = path.abspath(path.join(bill_dir, path.pardir, str(bill.id)))
+                print("would rename %s to %s" % (bill_dir, new_bill_dir))
+                if not dry_run:
+                    os.rename(bill_dir, new_bill_dir)
+                    bill.bill_file.name = path.join(new_bill_dir, path.basename(bill_path))
+                    bill.save()
+            else:
+                print("WARNING, bill file does not exist (did you already moved it ? %s" % bill_path)
+        else:
+            print("WARNING, no file for this bill")
+
