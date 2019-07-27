@@ -1,13 +1,18 @@
 language: python
 
 python:
-  - "2.7"
+  - "3.6"
 
 install:
   - pip install -r requirements.txt
+  - pip install -r requirements-sklearn.txt
+  - pip install -r requirements-nextcloudtag.txt
 
 script:
-  - python manage.py test core
+  - python manage.py test
+
+services:
+  - mysql
 
 notifications:
   email: 

@@ -13,7 +13,7 @@
 
         </div>
 
-        <div id="pivotable-output" style="margin: 10px;"></div>
+        <div id="pivotable-output" style="margin-top: 10px;"></div>
 
         {% with output as "pivotable-output" %}
             {% include "core/_pivotable_body.html" %}
@@ -34,7 +34,7 @@
 
             // Active state switcher
             $(document).ready(function() {
-                $('#type-selector button').click(function() {
+                $('#type-selector button').on("click", function() {
                     $(this).addClass('active').siblings().removeClass('active');
                  });
             });
@@ -74,7 +74,7 @@
                     if (!isNaN(toDate.getTime())) {
                         param += "&end=" + yyyymmdd(toDate);
                     }
-                    $('#tab-reporting').load("{% url 'leads.views.lead_pivotable' lead.id %}?"+param);
+                    $('#tab-reporting').load("{% url 'leads:lead_pivotable' lead.id %}?"+param);
             });
 
 

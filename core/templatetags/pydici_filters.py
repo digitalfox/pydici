@@ -8,19 +8,20 @@ Pydici custom filters
 import re
 
 import markdown
+from markdown.extensions.sane_lists import SaneListExtension
 import bleach
 
 from django import template
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.conf import settings
 
 from people.models import Consultant
 from leads.models import Lead
-import pydici.settings
 
 register = template.Library()
 
@@ -48,7 +49,7 @@ def truncate_by_chars(value, arg):
     """ Truncate words if higher than value and use "..."   """
     try:
         limit = int(arg)
-        value = unicode(value)
+        value = str(value)
     except ValueError:
         return value
     if len(value) >= limit:
@@ -88,7 +89,7 @@ def link_to_consultant(value, arg=None):
         if consultant.subcontractor or arg == "nolink":
             result = escape(name)
         else:
-            result = "<a href='%s'>%s</a>" % (reverse("people.views.consultant_home", args=[consultant.trigramme, ]),
+            result = "<a href='%s'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme, ]),
                                         escape(name))
         result = mark_safe(result)
         cache.set("link_to_consultant_%s" % value, result, 180)
@@ -108,7 +109,7 @@ def link_to_timesheet(value, arg=None):
     @param value: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
-        url = "<a href='%s#tab-timesheet'>%s</a>" % (reverse("people.views.consultant_home", args=[c.trigramme, ]),
+        url = "<a href='%s#tab-timesheet'>%s</a>" % (reverse("people:consultant_home", args=[c.trigramme, ]),
                                         escape(_("My timesheet")))
         return mark_safe(url)
     except Consultant.DoesNotExist:
@@ -121,7 +122,7 @@ def link_to_staffing(value, arg=None):
     @param arg: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
-        url = "<a href='%s#tab-staffing'>%s</a>" % (reverse("people.views.consultant_home", args=[c.trigramme, ]),
+        url = "<a href='%s#tab-staffing'>%s</a>" % (reverse("people:consultant_home", args=[c.trigramme, ]),
                                         escape(_("My staffing")))
         return mark_safe(url)
     except Consultant.DoesNotExist:
@@ -131,8 +132,8 @@ def link_to_staffing(value, arg=None):
 @register.filter
 def get_admin_mail(value, arg=None):
     """Config to get admin contact"""
-    if pydici.settings.ADMINS:
-        return mark_safe("<a href='mailto:%s'>%s</a>" % (pydici.settings.ADMINS[0][1],
+    if settings.ADMINS:
+        return mark_safe("<a href='mailto:%s'>%s</a>" % (settings.ADMINS[0][1],
                                                          _("Mail to support")))
 
 
@@ -142,24 +143,21 @@ def pydici_simple_format(value, arg=None):
     dealIds = [i[0] for i in Lead.objects.exclude(deal_id="").values_list("deal_id")]
     trigrammes = [i[0] for i in Consultant.objects.values_list("trigramme")]
 
-    result = []
-    for line in value.split("\n"):
-        newline = []
-        for word in line.split():
-            if word in dealIds:
-                word = u"<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=word).get_absolute_url(), word)
-            if word in trigrammes:
-                word = u"<a href='%s'>%s</a>" % (Consultant.objects.get(trigramme=word).get_absolute_url(), word)
-            newline.append(word)
-        result.append(" ".join(newline))
+    #TODO: this may not scale with thousands of leads. It may be splitted in shunk on day.
+    for dealId in set(re.findall(r"\b(%s)\b" % "|".join(dealIds), value)):
+        value = re.sub(r"\b%s\b" % dealId,
+                       "<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=dealId).get_absolute_url(), dealId),
+                       value)
 
-    result = "\n".join(result)
+    for trigramme in set(re.findall(r"\b(%s)\b" % "|".join(trigrammes), value)):
+        value = re.sub(r"\b%s\b" % trigramme,
+                       "<a href=%s>%s</a>" % (Consultant.objects.get(trigramme=trigramme).get_absolute_url(), trigramme),
+                       value)
 
     # Authorized tags for markdown (thanks https://github.com/yourcelf/bleach-whitelist/blob/master/bleach_whitelist/bleach_whitelist.py)
     markdown_tags = ["h1", "h2", "h3", "h4", "h5", "h6", "b", "i", "strong", "em", "tt", "p", "br",
                      "span", "div", "blockquote", "code", "hr","ul", "ol", "li", "dd", "dt", "img","a"]
     markdown_attrs = {"img": ["src", "alt", "title"],  "a": ["href", "alt", "title"] }
+    value = bleach.clean(markdown.markdown(value, tab_length=2, extensions=[SaneListExtension(),]), tags=markdown_tags, attributes=markdown_attrs)
 
-    result = bleach.clean(markdown.markdown(result), tags=markdown_tags, attributes=markdown_attrs)
-
-    return mark_safe(result)
+    return mark_safe(value)

@@ -5,19 +5,22 @@
    <script type="text/javascript">
                 var lang = {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %};
 
-                function drawPivot(data, rows, cols, rendererName, aggregatorName, vals, inclusions) {
+                function drawPivot(data, rows, cols, rendererName, aggregatorName, vals, options) {
                     var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.c3_renderers);
+                    if (typeof options == "undefined") { var options = {}; }
                     $("#pivotable-output").pivotUI(
                         data,
                         {
                             rows: rows,
                             cols: cols,
                             renderers: renderers,
-                            derivedAttributes: {{ derivedAttributes|safe }},
+                            {% if derivedAttributes %}derivedAttributes: {{ derivedAttributes|safe }}, {% endif %}
                             rendererName: rendererName,
                             aggregatorName: aggregatorName,
                             vals: vals,
-                            inclusions: inclusions
+                            inclusions: options['inclusions'] || '',
+                            rowOrder: options['rowOrder'] || 'key_a_to_z',
+                            colOrder: options['colOrder'] || 'key_a_to_z'
                         },
                         true,
                         lang

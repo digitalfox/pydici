@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import datetime
@@ -30,10 +30,10 @@ class Migration(migrations.Migration):
                 ('amount_with_vat', models.DecimalField(null=True, verbose_name='Amount (\u20ac incl tax)', max_digits=10, decimal_places=2, blank=True)),
                 ('vat', models.DecimalField(default=Decimal('20.0'), verbose_name='VAT (%)', max_digits=4, decimal_places=2)),
                 ('expenses_with_vat', models.BooleanField(default=True, verbose_name='Charge expense with VAT')),
-                ('state', models.CharField(default=b'1_SENT', max_length=30, verbose_name='State', choices=[(b'1_SENT', 'Envoy\xe9e'), (b'2_PAID', 'Pay\xe9e'), (b'3_LITIGIOUS', 'En litige'), (b'4_CANCELED', 'Annul\xe9e')])),
-                ('bill_file', models.FileField(storage=billing.models.BillStorage(nature=b'client'), upload_to=billing.models.bill_file_path, max_length=500, verbose_name='File')),
+                ('state', models.CharField(default='1_SENT', max_length=30, verbose_name='State', choices=[('1_SENT', 'Envoy\xe9e'), ('2_PAID', 'Pay\xe9e'), ('3_LITIGIOUS', 'En litige'), ('4_CANCELED', 'Annul\xe9e')])),
+                ('bill_file', models.FileField(storage=billing.models.BillStorage(nature='client'), upload_to=billing.models.bill_file_path, max_length=500, verbose_name='File')),
                 ('expenses', models.ManyToManyField(to='expense.Expense', blank=True)),
-                ('lead', models.ForeignKey(verbose_name='Lead', to='leads.Lead')),
+                ('lead', models.ForeignKey(verbose_name='Lead', to='leads.Lead', on_delete=models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'Client Bill',
@@ -53,12 +53,12 @@ class Migration(migrations.Migration):
                 ('amount_with_vat', models.DecimalField(null=True, verbose_name='Amount (\u20ac incl tax)', max_digits=10, decimal_places=2, blank=True)),
                 ('vat', models.DecimalField(default=Decimal('20.0'), verbose_name='VAT (%)', max_digits=4, decimal_places=2)),
                 ('expenses_with_vat', models.BooleanField(default=True, verbose_name='Charge expense with VAT')),
-                ('state', models.CharField(default=b'1_RECEIVED', max_length=30, verbose_name='State', choices=[(b'1_RECEIVED', 'Re\xe7ue'), (b'2_PAID', 'Pay\xe9e'), (b'3_LITIGIOUS', 'En litige'), (b'4_CANCELED', 'Annul\xe9e')])),
-                ('bill_file', models.FileField(storage=billing.models.BillStorage(nature=b'supplier'), upload_to=billing.models.bill_file_path, max_length=500, verbose_name='File')),
+                ('state', models.CharField(default='1_RECEIVED', max_length=30, verbose_name='State', choices=[('1_RECEIVED', 'Re\xe7ue'), ('2_PAID', 'Pay\xe9e'), ('3_LITIGIOUS', 'En litige'), ('4_CANCELED', 'Annul\xe9e')])),
+                ('bill_file', models.FileField(storage=billing.models.BillStorage(nature='supplier'), upload_to=billing.models.bill_file_path, max_length=500, verbose_name='File')),
                 ('supplier_bill_id', models.CharField(max_length=200, verbose_name='Supplier Bill id')),
                 ('expenses', models.ManyToManyField(to='expense.Expense', blank=True)),
-                ('lead', models.ForeignKey(verbose_name='Lead', to='leads.Lead')),
-                ('supplier', models.ForeignKey(to='crm.Supplier')),
+                ('lead', models.ForeignKey(verbose_name='Lead', to='leads.Lead', on_delete=models.deletion.CASCADE)),
+                ('supplier', models.ForeignKey(to='crm.Supplier', on_delete=models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'Supplier Bill',

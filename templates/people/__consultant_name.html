@@ -2,7 +2,7 @@
 {% load cache %}
 {# context: consultant #}
 {# tab: tab anchor name #}
-<a href="{% url 'people.views.consultant_home' consultant.trigramme %}{{ tab }}">{{ consultant }}</a><span title="{{consultant.id}}"></span>
+<a href="{% url 'people:consultant_home' consultant.trigramme %}{{ tab }}">{{ consultant }}</a><span title="{{consultant.id}}"></span>
 {% cache 60 consultant consultant.id %}
 {% if consultant.is_in_holidays %}<span class="pydici-tooltip glyphicon glyphicon-sunglasses" title="{% trans 'on holidays !' %}"></span>{% endif %}
 {% if not consultant.subcontractor and consultant.active %}

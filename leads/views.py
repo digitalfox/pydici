@@ -9,12 +9,12 @@ import csv
 from datetime import datetime, timedelta, date
 import json
 import os
-import sys
+import codecs
 from collections import defaultdict
 
 
 from django.shortcuts import render
-from django.core import urlresolvers
+from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
@@ -22,18 +22,20 @@ from django.db.models import Sum
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 from django.db.models.query import QuerySet
+from django.conf import settings
 
-from taggit.models import Tag
+from taggit.models import Tag, TaggedItem
 
 from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
+from leads.utils import tag_leads_files, remove_lead_tag, merge_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
-import pydici.settings
-from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years
+from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years_from_qs
 from core.decorator import pydici_non_public, pydici_feature
+from billing.utils import get_client_billing_control_pivotable_data
 from people.models import Consultant
 
 
@@ -97,9 +99,9 @@ def detail(request, lead_id):
                    "active_rank": rank + 1,
                    "next_lead": next_lead,
                    "previous_lead": previous_lead,
-                   "link_root": urlresolvers.reverse("index"),
+                   "link_root": reverse("core:index"),
                    "action_list": lead.get_change_history(),
-                   "completion_url": urlresolvers.reverse("leads.views.tags", args=[lead.id, ]),
+                   "completion_url": reverse("leads:tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
                    "similar_leads": predict_similar(lead),
                    "user": request.user})
@@ -130,7 +132,7 @@ def lead(request, lead_id=None):
             created = True
         if form.is_valid():
             changed_fields = form.changed_data
-            for field_name, field in form.fields.items():
+            for field_name, field in list(form.fields.items()):
                 if field_name in changed_fields and field_name not in blacklist_fields:
                     if field_name == "state":
                         state_changed = True
@@ -140,14 +142,14 @@ def lead(request, lead_id=None):
                             # Don't consider description field as changed if content is the same
                             continue
                     if isinstance(value, (list, QuerySet)):
-                        value = ", ".join([unicode(i) for i in value])
+                        value = ", ".join([str(i) for i in value])
                     else:
                         value = force_text(value)
                     value = value if len(value)<=max_length else value[0:max_length-3]+'...'
                     updated_fields.append("%s: %s" % (force_text(field.label or field_name), value))
             lead = form.save()
             postSaveLead(request, lead, updated_fields, created=created, state_changed=state_changed)
-            return HttpResponseRedirect(urlresolvers.reverse("leads.views.detail", args=[lead.id]))
+            return HttpResponseRedirect(reverse("leads:detail", args=[lead.id]))
     else:
         if lead:
             form = LeadForm(instance=lead)  # A form that edit current lead
@@ -170,8 +172,8 @@ def lead_documents(request, lead_id):
     lead = Lead.objects.get(id=lead_id)
     documents = []  # List of name/url docs grouped by type
     clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
-    lead_url_dir = pydici.settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
-    lead_url_file = pydici.settings.DOCUMENT_PROJECT_URL_FILE + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
+    lead_url_dir = settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
+    lead_url_file = settings.DOCUMENT_PROJECT_URL_FILE + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
     for directory in (businessDir, inputDir, deliveryDir):
         # Create project tree if at least one directory is missing
         if not os.path.exists(directory):
@@ -179,18 +181,16 @@ def lead_documents(request, lead_id):
             break
 
     for directory in (businessDir, inputDir, deliveryDir):
-        directoryName = directory.split(u"/")[-1]
+        directoryName = directory.split("/")[-1]
         dirs = []
         files = []
         for fileName in os.listdir(directory):
-            filePath = os.path.join(directory.encode(sys.getfilesystemencoding()), fileName)
-            if isinstance(fileName, str):
-                # Corner case, files are not encoded with filesystem encoding but another...
-                fileName = fileName.decode("utf8", "ignore")
+            filePath = os.path.join(directory, fileName)
+            fileName = fileName.encode('utf-8', 'surrogateescape').decode('utf-8', 'replace')  # fs encoding mixup
             if os.path.isdir(filePath):
-                dirs.append((fileName + u"/", lead_url_dir + u"/" + directoryName + u"/" + fileName + u"/"))
+                dirs.append((fileName + "/", lead_url_dir + "/" + directoryName + "/" + fileName + "/"))
             else:
-                files.append((fileName, lead_url_file  + u"/" + directoryName + u"/" + fileName))
+                files.append((fileName, lead_url_file  + "/" + directoryName + "/" + fileName))
         dirs.sort(key=lambda x: x[0])
         files.sort(key=lambda x: x[0])
         documents.append([directoryName, dirs + files])
@@ -206,12 +206,12 @@ def lead_documents(request, lead_id):
 def csv_export(request, target):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("leads.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
-    writer.writerow([i.encode("ISO-8859-15") for i in [_("Name"), _("Client"), _("Description"),
-                                                       _("Managed by"), _("Salesman"), _("Starting"),
-                                                       _("State"), _("Due date"), _("Staffing"),
-                                                       _(u"Sales (k€)"), _("Creation"),
-                                                       _("Updated")]])
+    writer.writerow([_("Name"), _("Client"), _("Description"), _("Managed by"), _("Salesman"), _("Starting"),
+                                _("State"), _("Due date"), _("Staffing"), _("Sales (k€)"), _("Creation"),
+                                _("Updated")])
     if target != "all":
         leads = Lead.objects.active()
     else:
@@ -220,7 +220,6 @@ def csv_export(request, target):
         state = lead.get_state_display()
         row = [lead.name, lead.client, lead.description, lead.responsible, lead.salesman, lead.start_date, state,
                          lead.due_date, lead.staffing_list(), lead.sales, lead.creation_date, lead.update_date]
-        row = [unicode(x).encode("ISO-8859-15", "ignore") for x in row]
         writer.writerow(row)
     return response
 
@@ -236,19 +235,19 @@ def mail_lead(request, lead_id=0):
         send_lead_mail(lead)
         return HttpResponse(_("Lead %(id)s was sent to %(mail)s !") % {"id": lead_id,
                                                                        "mail": get_parameter("LEAD_MAIL_TO")})
-    except Exception, e:
+    except Exception as e:
         return HttpResponse(_("Failed to send mail: %s") % e)
 
 @pydici_non_public
 @pydici_feature("leads")
 def review(request):
     return render(request, "leads/review.html",
-                  {"active_data_url": urlresolvers.reverse('active_lead_table_DT'),
+                  {"active_data_url": reverse('leads:active_lead_table_DT'),
                    "active_data_options": ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
                                                              { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11,12]}],
                                                "pageLength": 25,
                                                "order": [[9, "asc"]] ''',
-                   "recent_archived_data_url": urlresolvers.reverse('recent_archived_lead_table_DT'),
+                   "recent_archived_data_url": reverse('leads:recent_archived_lead_table_DT'),
                    "recent_archived_data_options" : ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
                                                                        { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}],
                                                          "order": [[9, "asc"]] ''',
@@ -260,7 +259,17 @@ def review(request):
 def leads(request):
     """All leads page"""
     return render(request, "leads/leads.html",
-                  {"data_url" : urlresolvers.reverse('lead_table_DT'),
+                  {"data_url" : reverse('leads:lead_table_DT'),
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def leads_to_bill(request):
+    """All leads page"""
+    return render(request, "leads/leads_to_bill.html",
+                  {"data_url" : reverse('leads:leads_to_bill_table_DT'),
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [7,] }] ''',
                    "user": request.user})
 
 
@@ -293,9 +302,11 @@ def add_tag(request):
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity()  # update lead similarity model in background
+        if settings.NEXTCLOUD_TAG_IS_ENABLED:
+            tag_leads_files([lead.id])  # Update lead tags from lead files
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
-        answer["tag_url"] = urlresolvers.reverse("leads.views.tag", args=[tag.id, ])
-        answer["tag_remove_url"] = urlresolvers.reverse("leads.views.remove_tag", args=[tag.id, lead.id])
+        answer["tag_url"] = reverse("leads:tag", args=[tag.id, ])
+        answer["tag_remove_url"] = reverse("leads:remove_tag", args=[tag.id, lead.id])
         answer["tag_name"] = tag.name
         answer["id"] = tag.id
     return HttpResponse(json.dumps(answer), content_type="application/json")
@@ -316,9 +327,36 @@ def remove_tag(request, tag_id, lead_id):
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity()  # update lead similarity model in background
+        if settings.NEXTCLOUD_TAG_IS_ENABLED:
+            remove_lead_tag(lead.id, tag.id)  # Remove the lead tag from the lead files
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         answer["error"] = True
     return HttpResponse(json.dumps(answer), content_type="application/json")
+
+
+@pydici_non_public
+@pydici_feature("leads")
+@permission_required("leads.change_lead")
+def manage_tags(request):
+    """Manage (rename, merge, remove) tags"""
+    tags_to_merge = request.GET.get("tags_to_merge", None)
+    if tags_to_merge:
+        tags = []
+        for tag_id in tags_to_merge.split(","):
+            tags.append(Tag.objects.get(id=tag_id.split("-")[1]))
+        if tags and len(tags)>1 :
+            target_tag = tags[0]
+            for tag in tags[1:]:
+                TaggedItem.objects.filter(tag=tag).update(tag=target_tag)
+                if settings.NEXTCLOUD_TAG_IS_ENABLED:
+                    merge_lead_tag(target_tag.name, tag.name)
+                tag.delete()
+
+    return render(request, "leads/manage_tags.html",
+                  {"data_url": reverse('leads:tag_table_DT'),
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
+                                                             "order": [[1, "asc"]] ''',
+                   "user": request.user})
 
 
 @pydici_non_public
@@ -349,7 +387,7 @@ def graph_bar_jqp(request):
     if not data:
         return HttpResponse('')
 
-    kdates = data.keys()
+    kdates = list(data.keys())
     kdates.sort()
     isoKdates = [a.isoformat() for a in kdates]  # List of date as string in ISO format
 
@@ -357,13 +395,13 @@ def graph_bar_jqp(request):
     for state in Lead.STATES:
         ydata = [len([i for i in x if i.state == state[0]]) for x in sortedValues(data)]
         ydata_detailed = [["%s (%s)" % (i.name, i.deal_id) for i in x if i.state == state[0]] for x in sortedValues(data)]
-        graph_data.append(zip(isoKdates, ydata, ydata_detailed))
+        graph_data.append(list(zip(isoKdates, ydata, ydata_detailed)))
 
     # Draw lead amount by month
     yAllLead = [float(sum([i.sales for i in x if i.sales])) for x in sortedValues(data)]
     yWonLead = [float(sum([i.sales for i in x if (i.sales and i.state == "WON")])) for x in sortedValues(data)]
-    graph_data.append(zip(isoKdates, yAllLead))
-    graph_data.append(zip(isoKdates, yWonLead))
+    graph_data.append(list(zip(isoKdates, yAllLead)))
+    graph_data.append(list(zip(isoKdates, yWonLead)))
     if kdates:
         min_date = (kdates[0] - timedelta(30)).isoformat()
     else:
@@ -417,13 +455,13 @@ def leads_pivotable(request, year=None):
     """Pivot table for all leads of given year"""
     data = []
     leads = Lead.objects.passive()
-    derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _("sales"))
+    derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _("sales (k€)"))
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
     if not leads:
         return HttpResponse()
 
-    years = get_fiscal_years(leads, "creation_date")
+    years = get_fiscal_years_from_qs(leads, "creation_date")
 
     if year is None and years:
         year = years[-1]
@@ -437,15 +475,16 @@ def leads_pivotable(request, year=None):
     for lead in leads:
         data.append({_("deal id"): lead.deal_id,
                      _("name"): lead.name,
-                     _("client organisation"): unicode(lead.client.organisation),
-                     _("client company"): unicode(lead.client.organisation.company),
-                     _(u"sales (k€)"): int(lead.sales or 0),
+                     _("client organisation"): str(lead.client.organisation),
+                     _("client company"): str(lead.client.organisation.company),
+                     _("sales (k€)"): int(lead.sales or 0),
                      _("date"): lead.creation_date.strftime("%Y-%m"),
-                     _("responsible"): unicode(lead.responsible),
-                     _("broker"): unicode(lead.business_broker),
+                     _("responsible"): str(lead.responsible),
+                     _("broker"): str(lead.business_broker),
                      _("state"): lead.get_state_display(),
-                     _(u"billed (€)"): int(lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values()[0] or 0),
-                     _("subsidiary"): unicode(lead.subsidiary)})
+                     _("billed (€)"): int(list(lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0),
+                     _("Over budget margin (k€)"): lead.margin(),
+                     _("subsidiary"): str(lead.subsidiary)})
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
                                                     "years": years,

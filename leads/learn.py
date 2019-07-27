@@ -9,7 +9,7 @@ Module that handle predictive thing about leads
 from datetime import datetime, date, timedelta
 import re
 import zlib
-import cPickle
+import pickle
 from background_task import background
 
 HAVE_SCIKIT = True
@@ -37,7 +37,7 @@ from billing.models import ClientBill
 
 
 STATES= { "WON": 1, "LOST": 2, "FORGIVEN": 3}
-INV_STATES = dict([(v, k) for k, v in STATES.items()])
+INV_STATES = dict([(v, k) for k, v in list(STATES.items())])
 
 TAG_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_TAGS_MODEL"
 STATE_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_STATE_MODEL"
@@ -45,7 +45,7 @@ SIMILARITY_MODEL_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_MODEL"
 SIMILARITY_LEADS_IDS_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_LEADS_IDS"
 SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_SALES_SCALER"
 
-FR_STOP_WORDS = """alors au aucuns aussi autre avant avec avoir bon car ce cela ces ceux chaque ci comme comment
+FR_STOP_WORDS = """alors au aucun aussi autre avant avec avoir bon car ce cela ces ceux chaque ci comme comment
  dans des du dedans dehors depuis devrait doit donc dos début elle elles en encore essai est et eu fait faites fois
  font hors ici il ils je juste la le les leur là ma maintenant mais mes mine moins mon mot même ni nommés notre nous
  ou où par parce pas peut peu plupart pour pourquoi quand que quel quelle quelles quels qui sa sans ses seulement
@@ -58,28 +58,28 @@ FR_STOP_WORDS = """alors au aucuns aussi autre avant avec avoir bon car ce cela 
 def get_lead_state_data(lead):
     """Get features and target of given lead. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
     feature = {}
-    feature["responsible"] = unicode(lead.responsible)
+    feature["responsible"] = str(lead.responsible)
     if lead.responsible:
-        feature["responsible_subsidiary"] = unicode(lead.responsible.company)
-        feature["responsible_manager"] = unicode(lead.responsible.manager)
-        feature["responsible_profil"] = unicode(lead.responsible.profil)
-    feature["subsidiary"] = unicode(lead.subsidiary)
-    feature["client_orga"] = unicode(lead.client.organisation)
-    feature["client_company"] = unicode(lead.client.organisation.company)
+        feature["responsible_subsidiary"] = str(lead.responsible.company)
+        feature["responsible_manager"] = str(lead.responsible.manager)
+        feature["responsible_profil"] = str(lead.responsible.profil)
+    feature["subsidiary"] = str(lead.subsidiary)
+    feature["client_orga"] = str(lead.client.organisation)
+    feature["client_company"] = str(lead.client.organisation.company)
     bills = ClientBill.objects.filter(lead__client__organisation__company=lead.client.organisation.company)
-    feature["client_company_last_year_sales"] = float(bills.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360))).aggregate(Sum("amount")).values()[0] or 0)
-    feature["client_company_last_three_year_sales"] = float(bills.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360*3))).aggregate(Sum("amount")).values()[0] or 0)
-    feature["client_contact"] = unicode(lead.client.contact)
-    feature["client_company_business_owner"] = unicode(lead.client.organisation.company.businessOwner)
+    feature["client_company_last_year_sales"] = float(list(bills.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360))).aggregate(Sum("amount")).values())[0] or 0)
+    feature["client_company_last_three_year_sales"] = float(list(bills.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360*3))).aggregate(Sum("amount")).values())[0] or 0)
+    feature["client_contact"] = str(lead.client.contact)
+    feature["client_company_business_owner"] = str(lead.client.organisation.company.businessOwner)
     if lead.start_date:
         feature["lifetime"] = (lead.start_date - lead.creation_date.date()).days
     feature["sales"] = float(lead.sales or 0)
     if lead.business_broker:
-        feature["broker"] = unicode(lead.business_broker)
-        feature["broker_company"] = unicode(lead.business_broker.company)
+        feature["broker"] = str(lead.business_broker)
+        feature["broker_company"] = str(lead.business_broker.company)
     if lead.paying_authority:
-        feature["paying_authority"] = unicode(lead.paying_authority)
-        feature["paying_authority_company"] = unicode(lead.paying_authority.company)
+        feature["paying_authority"] = str(lead.paying_authority)
+        feature["paying_authority_company"] = str(lead.paying_authority.company)
     client_leads = lead.client.lead_set.all().order_by("creation_date")
     feature["lead_client_rank"] = list(client_leads).index(lead)
     feature["leads_last_year"] = client_leads.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360))).count()
@@ -91,8 +91,8 @@ def get_lead_state_data(lead):
     history = lead.get_change_history()
     feature["history_changes"] = history.count()
     if feature["history_changes"] > 1:
-        history_boundaries = history.aggregate(Min("action_time"), Max("action_time")).values()
-        feature["history_length"] = (history_boundaries[1] - history_boundaries[0]).days
+        history_boundaries = history.aggregate(Min("action_time"), Max("action_time"))
+        feature["history_length"] = (history_boundaries["action_time__max"] - history_boundaries["action_time__min"]).days
 
     return feature, lead.state
 
@@ -110,15 +110,15 @@ def extract_leads_state(leads):
             feature, target = get_lead_state_data(lead)
             features.append(feature)
             targets.append(target)
-        except Exception, e:
-            print "Cannot process lead %s (%s)" % (lead.id, e)
+        except Exception as e:
+            print("Cannot process lead %s (%s)" % (lead.id, e))
     return (features, targets)
 
 
 def get_lead_similarity_data(lead):
     """Get features of given lead to compute its similarity with others. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
     feature = {}
-    feature["subsidiary"] = unicode(lead.subsidiary)
+    feature["subsidiary"] = str(lead.subsidiary)
     feature["sales"] = float(lead.sales or 0)
     for tag in lead.tags.all():
         feature["tag_%s" % tag.slug] = "yes"
@@ -150,9 +150,9 @@ def processTarget(targets):
 
 def get_lead_tag_data(lead):
     """Extract lead data needed to predict tag"""
-    return " ".join([unicode(lead.client.organisation), unicode(lead.responsible),
-                                      unicode(lead.subsidiary), unicode(lead.name),
-                                      unicode(lead.staffing_list()), unicode(lead.description)])
+    return " ".join([str(lead.client.organisation), str(lead.responsible),
+                                      str(lead.subsidiary), str(lead.name),
+                                      str(lead.staffing_list()), str(lead.description)])
 
 
 def extract_leads_tag(leads, include_leads=False):
@@ -167,9 +167,9 @@ def extract_leads_tag(leads, include_leads=False):
     for lead in leads:
         for tag in lead.tags.all():
             used_leads.append(lead)
-            targets.append(unicode(tag))
+            targets.append(str(tag))
             if include_leads:
-                features.append(u"%s %s" % (lead.id, get_lead_tag_data(lead)))
+                features.append("%s %s" % (lead.id, get_lead_tag_data(lead)))
             else:
                 features.append(get_lead_tag_data(lead))
     return (features, targets)
@@ -187,7 +187,7 @@ def get_state_model():
 
 def get_tag_model():
         model = Pipeline([("vect", TfidfVectorizer(stop_words=FR_STOP_WORDS.split(), min_df=2, sublinear_tf=False)),
-                           ("clf", SGDClassifier(loss="log", penalty="l1"))])
+                           ("clf", SGDClassifier(loss="log", penalty="l1", max_iter=1000, tol=0.01))])
         return model
 
 
@@ -199,39 +199,39 @@ def get_similarity_model():
 ############# Model evaluation ##########################
 def test_state_model():
     """Test state model accuracy"""
-    leads = Lead.objects.filter(state__in=STATES.keys())
+    leads = Lead.objects.filter(state__in=list(STATES.keys()))
     features, targets = extract_leads_state(leads)
     model = get_state_model()
     model.fit(features, processTarget(targets))
-    scores = cross_val_score(model, features, processTarget(targets))
-    print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+    scores = cross_val_score(model, features, processTarget(targets), cv=3)
+    print(("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2)))
     return scores.mean()
 
 
 def eval_state_model(model=None):
     """Display confusion matrix and classif report state model"""
-    target_names = STATES.items()
+    target_names = list(STATES.items())
     target_names.sort(key=lambda x: x[1])
     target_names = [i[0] for i in target_names]
-    leads = Lead.objects.filter(state__in=STATES.keys())
+    leads = Lead.objects.filter(state__in=list(STATES.keys()))
     features, targets = extract_leads_state(leads)
     X_train, X_test, y_train, y_test = train_test_split(features, processTarget(targets), test_size=0.3)
     if model is None:
         model = get_state_model()
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
-    print confusion_matrix(y_test, y_pred)
-    print classification_report(y_test, y_pred, target_names=target_names)
+    print(confusion_matrix(y_test, y_pred))
+    print(classification_report(y_test, y_pred))
     feature_names = model.named_steps["vect"].get_feature_names()
     coef = model.named_steps["clf"].feature_importances_
     max_coef = max(coef)
     coef = [round(i*100/max_coef) for i in coef]
-    top = zip(feature_names, coef)
-    top.sort(cmp=lambda x, y: cmp(x[1], y[1]), reverse=True)
+    top = list(zip(feature_names, coef))
+    top.sort(key=lambda x: x[1], reverse=True)
     for i, j in top[:30]:
-        print "%s\t\t=> %s" % (i, j)
-    m = cPickle.dumps(model)
-    print "size %s - compressed %s" % (len(m) / (1024 * 1024), len(zlib.compress(m)) / (1024 * 1024))
+        print("%s\t\t=> %s" % (i, j))
+    m = pickle.dumps(model)
+    print("size %s - compressed %s" % (len(m) / (1024 * 1024), len(zlib.compress(m)) / (1024 * 1024)))
     return model
 
 
@@ -241,10 +241,10 @@ def test_tag_model():
     test_features, test_targets = extract_leads_tag(leads, include_leads=True)
     model = get_tag_model()
     model.fit(test_features, test_targets)
-    scores = cross_val_score(model, test_features, test_targets, scoring=score_tag_lead)
-    m = cPickle.dumps(model)
-    print "size %s - compressed %s" % (len(m)/(1024*1024), len(zlib.compress(m))/(1024*1024))
-    print("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+    scores = cross_val_score(model, test_features, test_targets, scoring=score_tag_lead, cv=3)
+    m = pickle.dumps(model)
+    print("size %s - compressed %s" % (len(m)/(1024*1024), len(zlib.compress(m))/(1024*1024)))
+    print(("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2)))
     return scores.mean()
 
 
@@ -262,7 +262,7 @@ def gridCV_tag_model():
     features, targets = extract_leads_tag(learn_leads, include_leads=True)
     model = get_tag_model()
     model.fit(features, targets)
-    g=GridSearchCV(model, parameters, verbose=2, n_jobs=1, scoring=score_tag_lead)
+    g=GridSearchCV(model, parameters, verbose=2, n_jobs=1, scoring=score_tag_lead, cv=3)
     g.fit(features, targets)
     return g
 
@@ -276,10 +276,10 @@ def gridCV_state_model():
                  'clf__min_samples_leaf': (2, 3, 5, 8),
                  'clf__class_weight': ("balanced", "balanced_subsample", None)
                 }
-    learn_leads = Lead.objects.filter(state__in=STATES.keys())
+    learn_leads = Lead.objects.filter(state__in=list(STATES.keys()))
     features, targets = extract_leads_state(learn_leads)
     model = get_state_model()
-    g=GridSearchCV(model, parameters, verbose=1, n_jobs=6)
+    g=GridSearchCV(model, parameters, verbose=1, n_jobs=6, cv=3)
     g.fit(features, processTarget(targets))
     eval_state_model(g.best_estimator_)
     return g
@@ -297,10 +297,10 @@ def score_tag_lead(model, X, y):
             lead_id = lead_id_match.match(features).group(1)
             lead = leads[int(lead_id)]
             predict = model.predict([features])[0]
-            if unicode(predict).lower() in [unicode(t).lower() for t in lead.tags.all()]:
+            if str(predict).lower() in [str(t).lower() for t in lead.tags.all()]:
                 ok +=1
-        except Exception, e:
-            print "Failed to score lead %s: %s" % (lead_id, e)
+        except Exception as e:
+            print("Failed to score lead %s: %s" % (lead_id, e))
 
     return ok / len(X)
 
@@ -324,13 +324,13 @@ def predict_tags(lead):
         return []
     features = get_lead_tag_data(lead)
     scores = model.predict_proba([features,])
-    proba = zip(model.classes_, scores[0])
+    proba = list(zip(model.classes_, scores[0]))
     proba.sort(key=lambda x: x[1])
     best_proba = []
     for i in range(3):
         try:
             tag, score = proba.pop()
-            tag = Tag.objects.get(name=unicode(tag))
+            tag = Tag.objects.get(name=str(tag))
             best_proba.append(tag)
         except IndexError:
             break  # No more tag for this lead
@@ -346,7 +346,7 @@ def predict_similar(lead):
     leads_ids = cache.get(SIMILARITY_LEADS_IDS_CACHE_KEY)
     scaler = cache.get(SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY)
     similar_leads = []
-    if model is None:
+    if model is None or scaler is None:
         # cannot compute model (ex. not enough data, no scikit...)
         return []
     features, scaler = extract_leads_similarity([lead, ], scaler)
@@ -373,13 +373,13 @@ def compute_leads_state(relearn=True, leads_id=None):
     if leads_id:
         current_leads = Lead.objects.filter(id__in=leads_id)
     else:
-        current_leads = Lead.objects.exclude(state__in=STATES.keys())
+        current_leads = Lead.objects.exclude(state__in=list(STATES.keys()))
 
     current_features, current_targets = extract_leads_state(current_leads)
 
     model = cache.get(STATE_MODEL_CACHE_KEY)
     if relearn or model is None:
-        learn_leads = Lead.objects.filter(state__in=STATES.keys())
+        learn_leads = Lead.objects.filter(state__in=list(STATES.keys()))
         if learn_leads.count() < 5:
             # Cannot learn anything with so few data
             return
@@ -389,7 +389,7 @@ def compute_leads_state(relearn=True, leads_id=None):
         cache.set(STATE_MODEL_CACHE_KEY, model, 3600*24)
 
     for lead, score in zip(current_leads, predict_state(model, current_features)):
-        for state, proba in score.items():
+        for state, proba in list(score.items()):
             s, created = StateProba.objects.get_or_create(lead=lead, state=state, defaults={"score":0})
             s.score = proba
             s.save()
@@ -415,9 +415,9 @@ def compute_leads_tags():
         features, targets = extract_leads_tag(learn_leads)
         model = get_tag_model()
         model.fit(features, targets)
-        cache.set(TAG_MODEL_CACHE_KEY, zlib.compress(cPickle.dumps(model)), 3600*24*7)
+        cache.set(TAG_MODEL_CACHE_KEY, zlib.compress(pickle.dumps(model)), 3600*24*7)
     else:
-        model = cPickle.loads(zlib.decompress(model))
+        model = pickle.loads(zlib.decompress(model))
 
     return model
 

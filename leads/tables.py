@@ -5,13 +5,15 @@ Pydici leads tables
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.utils.translation import ugettext as _
 from django.db.models import Q
 from django.template.loader import get_template
+from django.core.urlresolvers import reverse
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from taggit.models import Tag
 
 from datetime import datetime, timedelta
+
 
 from leads.models import Lead
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
@@ -38,9 +40,9 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
             if row.responsible:
                 return self.consultantTemplate.render({"consultant": row.responsible})
             else:
-                return u"-"
+                return "-"
         elif column == "client":
-            return u"<a href='{0}'>{1}</a>".format(row.client.get_absolute_url(), row.client)
+            return "<a href='{0}'>{1}</a>".format(row.client.get_absolute_url(), row.client)
         elif column == "sales":
             if row.sales:
                 return round(float(row.sales),3)
@@ -57,7 +59,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(Q(name__icontains=search) |
                            Q(description__icontains=search) |
@@ -75,7 +77,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
 class ActiveLeadTableDT(LeadTableDT):
     columns = ["client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba", "creation_date", "due_date", "start_date", "update_date"]
     order_columns = columns
-    dateTemplate = get_template("leads/_date_column.html")
+    dateTemplate = get_template("core/_date_column.html")
     pydici_feature = "leads"
 
     def get_initial_queryset(self):
@@ -98,4 +100,54 @@ class RecentArchivedLeadTableDT(ActiveLeadTableDT):
                                                             Q(state="SLEEPING"))
         qs = qs.order_by("state", "-update_date").select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
         return qs
+
+
+class TagTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
+    """Tag tables backend for datatables"""
+    pydici_feature = set(["leads_list_all", "leads"])
+    columns = ["select", "name",]
+    order_columns = columns
+
+    def render_column(self, row, column):
+        if column == "name":
+            return u"<a href='{0}'>{1}</a>".format(reverse("leads:tag", args=[row.id,]), row.name)
+        elif column == "select":
+            return u"<input id='tag-%s' type='checkbox'onclick='gather_tags_to_merge()' />" % row.id
+
+    def get_initial_queryset(self):
+        return Tag.objects.all()
+
+    def filter_queryset(self, qs):
+        search = self.request.GET.get(u'search[value]', None)
+        filters = None
+        for word in search.split():
+            filter = Q(name__icontains=word)
+            if not filters:
+                filters = filter
+            else:
+                filters |= filter
+        if filters:
+            qs = qs.filter(filters)
+        return qs
+
+
+class ClientCompanyLeadTableDT(LeadTableDT):
+    def get_initial_queryset(self):
+        return Lead.objects.filter(client__organisation__company__id=self.kwargs["clientcompany_id"]).select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+
+
+class LeadToBill(LeadTableDT):
+        """Track missing bills"""
+        columns = ("client", "name", "deal_id", "subsidiary", "responsible", "creation_date", "sales", "to_be_billed")
+        order_columns = columns
+        max_display_length = 100
+
+        def get_initial_queryset(self):
+            return Lead.objects.filter(state="WON", mission__active=True).distinct()
+
+        def render_column(self, row, column):
+            if column == "to_be_billed":
+                return round(row.still_to_be_billed()/1000, 3)
+            else:
+                return super(LeadToBill, self).render_column(row, column)
 

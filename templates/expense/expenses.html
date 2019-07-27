@@ -1,7 +1,6 @@
 {% extends "core/pydici.html" %}
 
 {% load i18n %}
-{% load permissions_tags %}
 {% load pydici_filters %}
 {% load render_table from django_tables2 %}
 {% load crispy_forms_tags %}
@@ -51,27 +50,11 @@
 
 <br/><hr/>
 
-    <a href="{% url 'expense.views.expenses_history' %}" class="btn btn-default">{% trans "Expenses history" %}</a>
+    <a href="{% url 'expense:expenses_history' %}" class="btn btn-default">{% trans "Expenses history" %}</a>
 
 {% include "core/_datepicker.html" %}
 
-
-<!-- Modal for receipt image or pdf -->
-<div class="modal fade" id="expenseModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-        <h4 class="modal-title" id="expenseModalLabel">Modal title</h4>
-      </div>
-      <div class="modal-body expense-receipt">
-        ...
-      </div>
-    </div>
-  </div>
-</div>
-
-
+{% include "expense/_expense_receipt_modal.html" %}
 
 <script type="text/JavaScript">
 // Function that process ajax callback
@@ -87,17 +70,6 @@
         }
     };
 
-$(document).ready(function(){
-    // Fill modal with content from link href
-    $("#expenseModal").on("show.bs.modal", function(e) {
-        var link = $(e.relatedTarget);
-        var desc = link.closest("tr").find(".description").html() + " - " + link.closest("tr").find(".amount").html();
-        $(this).find("#expenseModalLabel").html(desc);
-        $(this).find(".modal-body").load(link.attr("href"));
-    });
-});
-
 </script>
-
 
 {% endblock %}

@@ -15,16 +15,17 @@ from django.contrib.admin.models import LogEntry, ContentType
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q, Sum
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+from django.conf import settings
 
 from taggit.managers import TaggableManager
 
 from core.utils import compact_text
-import pydici.settings
 from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
 from actionset.models import ActionState
 from actionset.utils import launchTrigger
+from billing.utils import get_client_billing_control_pivotable_data
 from core.utils import createProjectTree, disable_for_loaddata, getLeadDirs, cacheable
 
 
@@ -56,19 +57,20 @@ class Lead(models.Model):
            )
     name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)
+    administrative_notes = models.TextField(_("Administrative notes"), blank=True)
     action = models.CharField(_("Action"), max_length=2000, blank=True, null=True)
-    sales = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
-    salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"))
+    sales = models.DecimalField(_("Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
+    salesman = models.ForeignKey(SalesMan, blank=True, null=True, verbose_name=_("Salesman"), on_delete=models.SET_NULL)
     staffing = models.ManyToManyField(Consultant, blank=True, limit_choices_to={"active": True, "productive": True})
     external_staffing = models.CharField(_("External staffing"), max_length=300, blank=True)
-    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True)
-    business_broker = models.ForeignKey(BusinessBroker, related_name="%(class)s_broker", verbose_name=_("Business broker"), blank=True, null=True)
-    paying_authority = models.ForeignKey(BusinessBroker, related_name="%(class)s_paying", verbose_name=_("Paying authority"), blank=True, null=True)
+    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
+    business_broker = models.ForeignKey(BusinessBroker, related_name="%(class)s_broker", verbose_name=_("Business broker"), blank=True, null=True, on_delete=models.SET_NULL)
+    paying_authority = models.ForeignKey(BusinessBroker, related_name="%(class)s_paying", verbose_name=_("Paying authority"), blank=True, null=True, on_delete=models.SET_NULL)
     start_date = models.DateField(_("Starting"), blank=True, null=True)
     due_date = models.DateField(_("Due"), blank=True, null=True)
     state = models.CharField(_("State"), max_length=30, choices=STATES, default=STATES[0][0])
     state.db_index = True
-    client = models.ForeignKey(Client, verbose_name=_("Client"))
+    client = models.ForeignKey(Client, verbose_name=_("Client"), on_delete=models.CASCADE)
     creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
     deal_id = models.CharField(_("Deal id"), max_length=100, blank=True)
     client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
@@ -76,20 +78,21 @@ class Lead(models.Model):
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     send_email = models.BooleanField(_("Send lead by email"), default=True)
     tags = TaggableManager(blank=True)
-    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
+    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     external_id = models.CharField(max_length=200, default=None, blank=True, null=True, unique=True)
 
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
 
-    @cacheable("Lead.__unicode__%(id)s", 3)
-    def __unicode__(self):
-        return u"%s - %s" % (self.client.organisation, self.name)
+    @cacheable("Lead.__str__%(id)s", 3)
+    def __str__(self):
+        return "%s - %s" % (self.client.organisation, self.name)
 
     def save(self, force_insert=False, force_update=False):
         self.description = compact_text(self.description)
+        self.administrative_notes= compact_text(self.administrative_notes)
         if self.deal_id == "":
             # First, client company code
-            deal_id = unicode(self.client.organisation.company.code)
+            deal_id = str(self.client.organisation.company.code)
             # Then, year in two digits
             deal_id += date.today().strftime("%y")
             # Then, next id available for this prefix
@@ -111,7 +114,7 @@ class Lead(models.Model):
     def staffing_list(self):
         staffing = ""
         if self.staffing:
-            staffing += ", ".join([x["trigramme"] for x in self.staffing.values()])
+            staffing += ", ".join([x["trigramme"] for x in list(self.staffing.values())])
         if self.external_staffing:
             staffing += ", (%s)" % self.external_staffing
         return staffing
@@ -192,10 +195,21 @@ class Lead(models.Model):
         @see: for per consultant, look at marginObjectives()"""
         return sum(self.objectiveMargin(startDate, endDate).values())
 
+    def margin(self):
+        """Compute sum of missions margin. For timespent mission, only objective margin is computed, for fixed price, we also consider
+        price minus total work done and forecasted work
+        @:return: margin in k€"""
+        margin = 0
+        for mission in self.mission_set.all():
+            margin += sum(mission.objectiveMargin().values()) / 1000
+            if mission.billing_mode == "FIXED_PRICE":
+                margin += mission.margin(mode="target")
+        return margin
+
     @cacheable("Lead.__billed__%(id)s", 3)
     def billed(self):
         """Total amount billed for this lead"""
-        return self.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values()[0] or 0
+        return list(self.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0
 
     @cacheable("Lead.__still_to_be_billed__%(id)s", 3)
     def still_to_be_billed(self):
@@ -208,7 +222,7 @@ class Lead(models.Model):
                 # TODO: sum as well subcontractor bills for fixed priced mission
                 if mission.price:
                     to_bill += float(mission.price * 1000)
-        to_bill += float(self.expense_set.filter(chargeable=True).aggregate(Sum("amount")).values()[0] or 0)
+        to_bill += float(list(self.expense_set.filter(chargeable=True).aggregate(Sum("amount")).values())[0] or 0)
         return to_bill - float(self.billed())
 
     def actions(self):
@@ -219,6 +233,9 @@ class Lead(models.Model):
                                                     target_type=ContentType.objects.get(app_label="staffing", model="mission")))
 
         return actionStates.select_related()
+
+    def billing_control_data(self):
+        return  get_client_billing_control_pivotable_data(filter_on_lead=self)
 
     def pending_actions(self):
         """returns pending actions for this lead and its missions"""
@@ -262,11 +279,11 @@ class Lead(models.Model):
     def getDocURL(self):
         """@return: URL to reach this lead base directory"""
         (clientDir, leadDir, businessDir, inputDir, deliveryDir) = getLeadDirs(self)
-        url = pydici.settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(pydici.settings.DOCUMENT_PROJECT_PATH):]
+        url = settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
         return url
 
     def get_absolute_url(self):
-        return reverse('leads.views.detail', args=[str(self.id)])
+        return reverse('leads:detail', args=[str(self.id)])
 
     class Meta:
         ordering = ["client__organisation__company__name", "name"]
@@ -275,7 +292,7 @@ class Lead(models.Model):
 
 class StateProba(models.Model):
     """Lead state probability"""
-    lead = models.ForeignKey(Lead)
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE)
     state = models.CharField(_("State"), max_length=30, choices=Lead.STATES)
     score = models.IntegerField(_("Score"))
 

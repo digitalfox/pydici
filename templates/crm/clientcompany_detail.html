@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<h1><a href="{% url 'crm.views.company' company.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ company }}</a> ({{ company.code }})</h1>
+<h1><a href="{% url 'crm:company' company.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ company }}</a> ({{ company.code }})</h1>
 {% if company.web %}{{ company.web|urlize }}<br/><br/>{% endif %}
 
 
@@ -26,12 +26,13 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="company-tabs">
         <li class="active"><a data-toggle="tab" href="#tab-dashboard"><span class="glyphicon glyphicon-home"></span> {% trans "Dashboard" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-structure"><span class="glyphicon glyphicon-equalizer"></span> {% trans "Structure" %}</a></li>
         <li><a data-toggle="tab" href="#tab-leads"><span class="glyphicon glyphicon-list"></span> {% trans "Leads" %}</a></li>
         <li><a data-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"></span> {% trans "Consultants" %}</a></li>
         <li><a data-toggle="tab" href="#tab-contacts"><span class="glyphicon glyphicon-envelope"></span> {% trans "Client contacts" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-rates-margin" data-tab-url="{% url 'company_rates_margin' company.id %}"><span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Rates and margin" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-billing" data-tab-url="{% url 'company_billing' company.id %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'crm.views.company_pivotable' company.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-rates-margin" data-tab-url="{% url 'crm:company_rates_margin' company.id %}"><span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Rates and margin" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-billing" data-tab-url="{% url 'crm:company_billing' company.id %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'crm:company_pivotable' company.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
         <li><a data-toggle="tab" href="#tab-all-companies"><span class="glyphicon glyphicon-folder-open"></span> {% trans "All companies list" %}</a></li>
     </ul>
 </div>
@@ -171,7 +172,7 @@
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div id="leads_won_rate"></div>
                 <p>&nbsp;</p>
-                <h3><div class="text-center">{% trans "Overall won lead rate: " %}{{ overall_won_rate }}&nbsp;%</div></h3>
+                <h3><div class="text-center">{% trans "Overall won lead rate: " %}{{ overall_won_rate|floatformat:-1 }}&nbsp;%</div></h3>
                 <script type="text/javascript">
                     $(document).ready(function() {
                         // Display gauge of lead won rate
@@ -258,58 +259,84 @@
                 <div id="graph_company_business_activity_content"></div>
                 <script type="text/javascript">
                 $(document).ready(function() {
-                    $('#graph_company_business_activity_content').load('{% url 'graph_company_business_activity' company.id %}');
+                    $('#graph_company_business_activity_content').load('{% url 'crm:graph_company_business_activity' company.id %}');
                 });
                 </script>
             </div>
         </div>
     </div> <!-- end of dashboard tab -->
+    <div id="tab-structure" class="tab-pane fade in">
+        <h2>{% trans "Company structure" %}</h2>
+        <div class="row">
+            <ul class="list-group">
+            {% for clientorganisation in company.clientorganisation_set.all %}
+                <div class="col-sm-12 col-md-6 col-lg-4" style="margin-top:20px">
+                <li class="list-group-item disabled"><a href="{% url 'crm:client_organisation_change' clientorganisation.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ clientorganisation }}</a> {% include "crm/_client_picto.html" %}</li>
+                {% for client in clientorganisation.client_set.all %}
+                    <li class="list-group-item"><a href="{% url 'crm:client_change' client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ client.contact|default_if_none:_("undefined") }}</a> {% include "crm/_client_picto.html" %}</li>
+                {% endfor %}
+                </div>
+            {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+
+
+
     <div id="tab-leads" class="tab-pane fade in">
         <h2>{% trans "Current active missions" %}</h2>
-        <div class="row">
-        <ul class="list-group">
-        {% for clientorganisation in company.clientorganisation_set.all %}
-            {% for client in clientorganisation.client_set.all %}
-                {% with client.getActiveMissions as activeMissions %}
-                    {% if activeMissions %}
-                        <div class="col-sm-12 col-md-6 col-lg-4" style="margin-top:20px">
-                        <li class="list-group-item disabled"><a href="{% url 'client_change' client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ client }}</a> {% include "crm/_client_picto.html" %}</li>
+        <table id="mission_table" class="table table-striped table-hover table-condensed table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>{% trans "name" %}</th>
+				<th>{% trans "subsidiary" %}</th>
+				<th>{% trans "responsible" %}</th>
+				<th>{% trans "nature" %}</th>
+                <th>{% trans "Mission id" %}</th>
+				<th>{% trans "amount (k€)" %}</th>
+                <th>{% trans "Forecast in future" %}</th>
+                <th>{% trans "Up to date forecast" %}</th>
+                <th>{% trans "Archiving" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        </table>
 
-                            {% for mission in activeMissions %}
-                                <li class="list-group-item"><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission.short_name }}</a></li>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                {% endwith %}
-            {% endfor %}
-        {% endfor %}
-        </ul>
-        </div>
+        {% with "mission_table" as table_id %}
+            {% with mission_data_url as data_url %}
+                {% include "core/_datatables.html" %}
+            {% endwith %}
+        {% endwith %}
+
+
+
+
         <h2>{% trans "Leads" %}</h2>
-        <div class="row">
-        <ul class="list-group">
-        {% regroup leads by client as client_list %}
-        {% for client in client_list %}
-            <div class="col-sm-12 col-md-6 col-lg-4" style="margin-top:20px">
-                {% for lead in client.list %}
-                    {% if forloop.counter0 == 0 or forloop.counter0 == 5 or forloop.counter0 == 10 or forloop.counter0 == 15 or forloop.counter0 == 20 or forloop.counter0 == 25 or forloop.counter0 == 30 or forloop.counter0 == 35 %}
-                        {% if forloop.counter0 > 0 %}
-                            </div><div class="col-sm-12 col-md-6 col-lg-4" style="margin-top:20px">
-                        {% endif %}
-                        <li class="list-group-item disabled"><a href="{% url 'client_change' client.grouper.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ client.grouper }}</a>
-                        {% with client.grouper as client %}{% include "crm/_client_picto.html" %}{% endwith %}
+        <table id="lead_table" class="table table-striped table-hover table-condensed table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>{% trans "client" %}</th>
+                <th>{% trans "name" %}</th>
+                <th>{% trans "deal id" %}</th>
+                <th>{% trans "subsidiary" %}</th>
+                <th>{% trans "responsible" %}</th>
+                <th>{% trans "amount (k€)" %}</th>
+                <th>{% trans "status" %}</th>
+                <th>{% trans "creation date" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        </table>
 
-                        {% if forloop.counter0 > 0 %}
-                            ...
-                        {% endif %}
-                        </li>
-                    {% endif %}
-                    <li class="list-group-item"><a href="{% url 'leads.views.detail' lead.id %}">{{ lead.name }} ({{ lead.deal_id }})</a> - {{ lead.start_date|date:"F Y" }} ({{ lead.get_state_display }})</li>
-                {% endfor %}
-            </div>
-        {% endfor %}
-        </ul>
-        </div>
+        {% with "lead_table" as table_id %}
+            {% with lead_data_url as data_url %}
+                {% include "core/_datatables.html" %}
+            {% endwith %}
+        {% endwith %}
+
     </div>
     
     <div id="tab-consultants" class="tab-pane fade">
@@ -317,7 +344,7 @@
         <h2>{% trans "Business owner for this company:" %}</h2>
             <ul>
                 <li>{% if company.businessOwner %}{% with consultant=company.businessOwner %}{% include "people/__consultant_name.html" %}{% endwith %}
-                    {% else %} <a href="{% url 'crm.views.company' company.id %}">{% trans "To be defined" %}</a>
+                    {% else %} <a href="{% url 'crm:company' company.id %}">{% trans "To be defined" %}</a>
                     {% endif %}</li>
             </ul>
         <h2>{% trans "Consultants that work for this company:" %}</h2>
@@ -374,7 +401,7 @@
                     <td>
                     {% if admincontact.contact %}
                         {% if pydici_feature.contacts_write %}
-                            <a rel=external href="{% url 'contact_update' admincontact.contact.id %}?return_to={{ request.get_full_path }}">
+                            <a rel=external href="{% url 'crm:contact_update' admincontact.contact.id %}?return_to={{ request.get_full_path }}">
                             {{ admincontact.contact.name }}
                             </a>
                         {% else %}
@@ -396,7 +423,7 @@
              {% include "core/_datatables-dj-tables.html" %}
         {% endwith %}
         {% if pydici_feature.contacts_write %}
-        <br/><a class="btn btn-default" href="{% url 'administrative_contact_add' %}?company={{ company.id|safe }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
+        <br/><a class="btn btn-default" href="{% url 'crm:administrative_contact_add' %}?company={{ company.id|safe }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
         {% endif %}
     </div>
 

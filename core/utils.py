@@ -15,17 +15,13 @@ from functools import wraps
 import json
 from decimal import Decimal
 
-import permissions.utils as perm
-
 from django.template.loader import get_template
-from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
-from django.core import urlresolvers
+from django.urls import reverse
 from django.core.cache import cache
 from django.db.models import Max, Min
-
-import pydici.settings
+from django.conf import settings
 
 from core.models import GroupFeature, Parameter
 
@@ -46,12 +42,12 @@ def send_lead_mail(lead, request, fromAddr=None, fromName=""):
     """
     if not fromAddr:
         fromAddr = get_parameter("MAIL_FROM")
-    url = get_parameter("HOST") + urlresolvers.reverse("leads.views.lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
-    subject = u"[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
-    msgText = get_template("leads/lead_mail.txt").render(RequestContext(request, {"obj": lead,
-                                                                                  "lead_url": url}))
-    msgHtml = get_template("leads/lead_mail.html").render(RequestContext(request, {"obj": lead,
-                                                                                   "lead_url": url}))
+    url = get_parameter("HOST") + reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
+    subject = "[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
+    msgText = get_template("leads/lead_mail.txt").render(request=request, context={"obj": lead,
+                                                                                  "lead_url": url})
+    msgHtml = get_template("leads/lead_mail.html").render(request=request, context={"obj": lead,
+                                                                                   "lead_url": url})
     msg = EmailMultiAlternatives(subject, msgText, fromAddr, [get_parameter("LEAD_MAIL_TO"), ])
     msg.attach_alternative(msgHtml, "text/html")
     msg.send()
@@ -64,7 +60,7 @@ def capitalize(sentence):
     @return:Capitalize each word or sub-word (separated by dash or quote) of the sentence
     """
     result = []
-    for sep in (u" ", u"'", u"-"):
+    for sep in (" ", "'", "-"):
         for word in sentence.split(sep):
             if word:
                 if word.upper() != word:
@@ -79,7 +75,7 @@ def compact_text(text):
     """Compact text by removing extra space and extra lines. BTW, it also squash carriage returns.
     @param text: text to compact
     @return: compacted text"""
-    EXTRA_SPACE = re.compile("[ ]+")
+    EXTRA_SPACE = re.compile("[ ]+(?![\*\-])")
     EXTRA_NLINE = re.compile("\n\s*\n+")
     text = text.replace("\r", "")
     text = EXTRA_SPACE.sub(" ", text)
@@ -95,7 +91,7 @@ def to_int_or_round(x, precision=1):
     @param x: object to be converted"""
     if isinstance(x, (list, tuple)):
         # Recurse
-        return map(to_int_or_round, x)
+        return list(map(to_int_or_round, x))
     if isinstance(x, (float, Decimal)):
         if (int(x) - x) == 0:
             return int(x)
@@ -225,7 +221,7 @@ def monthWeekNumber(cDate):
 
 def sortedValues(data):
     """Sorted value of a dict according to his keys"""
-    items = data.items()
+    items = list(data.items())
     items.sort(key=lambda x: x[0])
     return [x[1] for x in items]
 
@@ -243,47 +239,52 @@ def sampleList(data, maxLength):
 
 def sanitizeName(name):
     """Sanitize given unicode name to simple ascii name"""
-    return unicodedata.normalize('NFKD', name).encode('ascii', 'ignore')
+    return unicodedata.normalize('NFKD', name)
 
 
-def getLeadDirs(lead):
+def getLeadDirs(lead, with_prefix=True):
     """Get documents directories relative to this lead
-    @return: clientDir, leadDir, businessDir, inputDir, deliveryDir"""
-    clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH,
-                             pydici.settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name), code=lead.client.organisation.company.code))
-    if not os.path.exists(clientDir):
+    @return: client_dir, lead_dir, business_dir, input_dir, delivery_dir"""
+
+    # Compose the path without the prefix, useful for nextcloud for instance
+    client_dir = os.path.join(settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name),
+                                                                          code=lead.client.organisation.company.code))
+    if not os.path.exists(client_dir):
         # Look if an alternative path exists with proper client code
-        for path in os.listdir(pydici.settings.DOCUMENT_PROJECT_PATH):
-            if isinstance(path, str):
+        for path in os.listdir(settings.DOCUMENT_PROJECT_PATH):
+            if isinstance(path, bytes):
                 # Corner case, files are not encoded with filesystem encoding but another...
                 path = path.decode("utf8", "ignore")
-            if path.endswith(u"_%s" % lead.client.organisation.company.code):
-                clientDir = os.path.join(pydici.settings.DOCUMENT_PROJECT_PATH, path)
+            if path.endswith("_%s" % lead.client.organisation.company.code):
+                client_dir = path
                 break
 
-    if not os.path.exists(clientDir):
-        os.mkdir(clientDir)
+    if with_prefix:
+        client_dir = os.path.join(settings.DOCUMENT_PROJECT_PATH, client_dir)
 
-    leadDir = os.path.join(clientDir,
-                           pydici.settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
-    if not os.path.exists(leadDir):
+    if not os.path.exists(client_dir):
+        os.makedirs(client_dir, exist_ok=True)
+
+    lead_dir = os.path.join(client_dir,
+                            settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
+    if not os.path.exists(lead_dir):
         # Look if an alternative path exists with proper lead code
-        for path in os.listdir(clientDir):
-            if isinstance(path, str):
-            # Corner case, files are not encoded with filesystem encoding but another...
+        for path in os.listdir(client_dir):
+            if isinstance(path, bytes):
+                # Corner case, files are not encoded with filesystem encoding but another...
                 path = path.decode("utf8", "ignore")
             if path.startswith(lead.deal_id):
-                leadDir = os.path.join(clientDir, path)
+                lead_dir = os.path.join(client_dir, path)
                 break
 
-    businessDir = os.path.join(leadDir,
-                               pydici.settings.DOCUMENT_PROJECT_BUSINESS_DIR)
-    inputDir = os.path.join(leadDir,
-                               pydici.settings.DOCUMENT_PROJECT_INPUT_DIR)
-    deliveryDir = os.path.join(leadDir,
-                               pydici.settings.DOCUMENT_PROJECT_DELIVERY_DIR)
+    business_dir = os.path.join(lead_dir,
+                                settings.DOCUMENT_PROJECT_BUSINESS_DIR)
+    input_dir = os.path.join(lead_dir,
+                             settings.DOCUMENT_PROJECT_INPUT_DIR)
+    delivery_dir = os.path.join(lead_dir,
+                                settings.DOCUMENT_PROJECT_DELIVERY_DIR)
 
-    return (clientDir, leadDir, businessDir, inputDir, deliveryDir)
+    return (client_dir, lead_dir, business_dir, input_dir, delivery_dir)
 
 
 def createProjectTree(lead):
@@ -326,10 +327,10 @@ def convertDictKeyToDate(data):
     This is used to convert dict from queryset for sqlite3 that don't support properly date trunc functions
     and mysql that use datetime or date dependings on version...
     If data is empty or if key is already, date, return as is"""
-    if data and isinstance(data.keys()[0], unicode):
-        return dict((datetime.strptime(k, "%Y-%m-%d").date(), v) for k, v in data.items())
-    elif data and isinstance(data.keys()[0], datetime):
-        return dict((k.date(), v) for k, v in data.items())
+    if data and isinstance(list(data.keys())[0], str):
+        return dict((datetime.strptime(k, "%Y-%m-%d").date(), v) for k, v in list(data.items()))
+    elif data and isinstance(list(data.keys())[0], datetime):
+        return dict((k.date(), v) for k, v in list(data.items()))
     else:
         return data
 
@@ -368,7 +369,7 @@ class GNodes(object):
             self._nodes[node.id_] = node
 
     def dump(self):
-        return json.dumps([node.data() for node in self._nodes.values()])
+        return json.dumps([node.data() for node in list(self._nodes.values())])
 
 
 class GEdge(object):
@@ -383,14 +384,6 @@ class GEdges(list):
     """A list of CEdges that can be dumped in json"""
     def dump(self):
         return json.dumps([{"u": edge.source.id_, "v": edge.target.id_, "value": { "style": "stroke: %s;" % edge.color}} for edge in self])
-
-
-def has_role(user, role):
-    if isinstance(role, str):
-        role = perm.Role.objects.get(name=role)
-
-    roles = perm.get_roles(user)
-    return role in roles
 
 
 def _get_user_features(user):
@@ -433,14 +426,17 @@ def get_parameter(key):
         cache.set(Parameter.PARAMETER_CACHE_KEY % key, value, 3600*24)
     return value
 
-def get_fiscal_years(queryset, date_field_name):
+
+def get_fiscal_years_from_qs(queryset, date_field_name):
     """Extract fiscal years of items in query set.
     :return list of fiscal years as int"""
     years = [y.year for y in queryset.dates(date_field_name, "year", order="ASC")]
     if not years:
         return []
 
-    min_boundary, max_boundary = queryset.aggregate(Min(date_field_name), Max(date_field_name)).values()
+    boundaries = queryset.aggregate(Min(date_field_name), Max(date_field_name))
+    min_boundary = boundaries[date_field_name + "__min"]
+    max_boundary = boundaries[date_field_name + "__max"]
     month = get_parameter("FISCAL_YEAR_MONTH")
     if min_boundary.month < month:
         years.insert(0, years[0]-1)  # First date year is part of previous year. Let's add it
@@ -448,3 +444,12 @@ def get_fiscal_years(queryset, date_field_name):
         years.pop()  # Last date year is in fact part of previous fiscal year. Let's remove it
 
     return [int(y) for y in years]
+
+
+def get_fiscal_year(d):
+    """Extract fiscal year as int from date / datetime object"""
+    month = get_parameter("FISCAL_YEAR_MONTH")
+    if d.month < month:
+        return d.year - 1
+    else:
+        return d.year

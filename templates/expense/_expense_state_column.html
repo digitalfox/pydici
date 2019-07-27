@@ -1,0 +1,8 @@
+{% load i18n %}
+{# context : record (expense object) #}
+
+{% if record.expensePayment %}
+    <a href="{% url 'expense:expense_payment_detail' record.expensePayment.id %}">{% trans "Paid" %}</a>
+{% else %}
+    {{ record.get_state_display }}
+{% endif %}

@@ -32,6 +32,19 @@
         </div>
     </div>
 
+    {% if tasks %}
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="pydici-block">
+            <h3 class="pydici-block-title">{% trans "Things to do right now !" %}</h3>
+            <ul class="icon-list checkmark">
+            {% for name, count, link, priority in tasks %}
+                <li class="task_priority_{{priority}}"><a href="{{ link }}">{{ name }} {% if count > 1 %}(x{{ count }}){% endif %}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
             {% if consultant.manager %}
@@ -56,7 +69,7 @@
                 <h3 class="pydici-block-title">{% trans "Staled missions (to be updated or archived)" %}</h3>
                 <ul class="row icon-list chevron-right">
                 {% for mission in staled_missions %}
-                    <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></li>
+                    <li><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></li>
                 {% endfor %}
                 </ul>
         </div>
@@ -67,7 +80,7 @@
     {% with consultant.pending_actions|slice:":20" as actions %}
         {% if actions %}
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="pydici-block">
+                <div class="pydici-block" id="consultant_actions">
                     <h3 class="pydici-block-title">{% trans "Pending actions" %}</h3>
                         {% include "actionset/_consultant_actions.html" %}
                 </div>
@@ -85,7 +98,7 @@
                 {% if forloop.counter > 12 %}
                     <div class="collapse collapse-business-territory">
                 {% endif %}
-                <li class="col-sm-6"><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
+                <li class="col-sm-6"><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
                 {% if forloop.counter > 12 %}
                     </div>
                 {% endif %}
@@ -101,36 +114,13 @@
     </div>
 
 {% endif %}
-
-    <div class="col-md-4 col-sm-6 col-xs-12">
-        <div class="pydici-block">
-            <h3 class="pydici-block-title">{% trans "Clients" %}</h3>
-            <ul class="row icon-list chevron-right">
-            {% for company in companies %}
-                {% if forloop.counter > 12 %}
-                    <div class="collapse collapse-clients">
-                {% endif %}
-                <li class="col-sm-6"><a href="{% url 'crm.views.company_detail' company.id %}">{{ company }}</a></li>
-                {% if forloop.counter > 12 %}
-                    </div>
-                {% endif %}
-                {% if forloop.last and forloop.counter > 12 %}
-                    <div class="pydici-more-less" data-toggle="collapse" aria-expanded="false" data-target=".collapse-clients" aria-controls="collapse-clients">
-                        <span class="glyphicon glyphicon-collapse-down"></span>
-                        <span class="glyphicon glyphicon-collapse-up"></span>
-                    </div>
-                {% endif %}
-            {% endfor %}
-            </ul>
-        </div>
-	</div>
-
+    
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
             <h3 class="pydici-block-title">{% trans "Current missions" %}</h3>
             <ul class="row icon-list chevron-right">
             {% for mission in missions %}
-                <li><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></li>
+                <li><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -142,7 +132,7 @@
                     <h3 class="pydici-block-title">{% trans "Current leads as responsible" %}</h3>
                     <ul class="row icon-list chevron-right">
                     {% for lead in leads_as_responsible %}
-                        <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
+                        <li><a href="{% url 'leads:detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
                     {% endfor %}
                     </ul>
             </div>
@@ -155,7 +145,7 @@
                     <h3 class="pydici-block-title">{% trans "Current leads as resource" %}</h3>
                     <ul class="icon-list chevron-right">
                     {% for lead in leads_as_staffee %}
-                        <li><a href="{% url 'leads.views.detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
+                        <li><a href="{% url 'leads:detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
                     {% endfor %}
                     </ul>
             </div>
@@ -168,7 +158,7 @@
     <div id="consultant_rate_graph_content" class="col-lg-12"></div>
     <script type="text/javascript">
     $(document).ready(function() {
-        $('#consultant_rate_graph_content').load("{% url 'staffing.views.graph_consultant_rates' consultant.id %}")
+        $('#consultant_rate_graph_content').load("{% url 'staffing:graph_consultant_rates' consultant.id %}")
      });
     </script>
 </div>

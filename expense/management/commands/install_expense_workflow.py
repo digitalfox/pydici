@@ -12,14 +12,14 @@ class Command(BaseCommand):
     help = 'Install default workflow'
 
     def handle(self, *args, **options):
-        permission_expense_management = Permission.objects.create(name=u'expense management', codename=u'expense_management')
-        permission_expense_control = Permission.objects.create(name=u'expense control', codename=u'expense_control')
-        permission_expense_edit = Permission.objects.create(name=u'expense edit', codename=u'expense_edit')
+        permission_expense_management = Permission.objects.create(name='expense management', codename='expense_management')
+        permission_expense_control = Permission.objects.create(name='expense control', codename='expense_control')
+        permission_expense_edit = Permission.objects.create(name='expense edit', codename='expense_edit')
 
         # Roles
-        role_manager = Role.objects.create(name=u'expense manager')
-        role_owner = Role.objects.create(name=u'expense owner')
-        role_paymaster = Role.objects.create(name=u'expense paymaster')
+        role_manager = Role.objects.create(name='expense manager')
+        role_owner = Role.objects.create(name='expense owner')
+        role_paymaster = Role.objects.create(name='expense paymaster')
 
         # Roles <=> group relationship
         PrincipalRoleRelation.objects.create(role=role_owner,
@@ -30,7 +30,7 @@ class Command(BaseCommand):
                                              group=Group.objects.get(name="expense_paymaster"))
 
         # Create the expense the workflow
-        expense_workflow = Workflow.objects.create(name=u"expense")
+        expense_workflow = Workflow.objects.create(name="expense")
 
         # Set default workflow for "expense" objects
         WorkflowModelRelation.objects.create(content_type=ContentType.objects.get(app_label="expense", model="expense"),
@@ -42,11 +42,11 @@ class Command(BaseCommand):
                                                       permission=permission)
 
         # States
-        state_requested = State.objects.create(name=u'requested', workflow=expense_workflow)
-        state_validated = State.objects.create(name=u'validated', workflow=expense_workflow)
-        state_rejected = State.objects.create(name=u'rejected', workflow=expense_workflow)
-        state_needs_information = State.objects.create(name=u'needs information', workflow=expense_workflow)
-        state_paid = State.objects.create(name=u'paid', workflow=expense_workflow)
+        state_requested = State.objects.create(name='requested', workflow=expense_workflow)
+        state_validated = State.objects.create(name='validated', workflow=expense_workflow)
+        state_rejected = State.objects.create(name='rejected', workflow=expense_workflow)
+        state_needs_information = State.objects.create(name='needs information', workflow=expense_workflow)
+        state_paid = State.objects.create(name='paid', workflow=expense_workflow)
 
         # Start by requested state
         expense_workflow.initial_state = state_requested
@@ -70,28 +70,28 @@ class Command(BaseCommand):
                                                role=role_paymaster)
 
         # Workflow transitions between states
-        transition_validate = Transition.objects.create(name=u'validate',
+        transition_validate = Transition.objects.create(name='validate',
                                                            workflow=expense_workflow,
                                                            destination=state_validated,
-                                                           condition=u'',
+                                                           condition='',
                                                            permission=permission_expense_management)
 
-        transition_ask_information = Transition.objects.create(name=u'ask information',
+        transition_ask_information = Transition.objects.create(name='ask information',
                                                            workflow=expense_workflow,
                                                            destination=state_needs_information,
-                                                           condition=u'',
+                                                           condition='',
                                                            permission=permission_expense_control)
 
-        transition_reject = Transition.objects.create(name=u'reject',
+        transition_reject = Transition.objects.create(name='reject',
                                                            workflow=expense_workflow,
                                                            destination=state_rejected,
-                                                           condition=u'',
+                                                           condition='',
                                                            permission=permission_expense_management)
 
-        transition_control = Transition.objects.create(name=u'control',
+        transition_control = Transition.objects.create(name='control',
                                                            workflow=expense_workflow,
                                                            destination=state_paid,
-                                                           condition=u'',
+                                                           condition='',
                                                            permission=permission_expense_control)
 
         # Add transition allowed from each state

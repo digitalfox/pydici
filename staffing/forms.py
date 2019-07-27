@@ -11,7 +11,6 @@ from decimal import Decimal
 
 from django import forms
 from django.conf import settings
-from django.core import urlresolvers
 from django.forms.models import BaseInlineFormSet
 from django.forms import ChoiceField, ModelChoiceField
 from django.utils.translation import ugettext as _
@@ -51,6 +50,27 @@ class MissionMChoices(ModelSelect2MultipleWidget):
         return Mission.objects.filter(active=True)
 
 
+class LeadMissionChoices(ModelSelect2Widget):
+    model = Mission
+    search_fields = MissionChoices.search_fields
+
+    def __init__(self, *args, **kwargs):
+        self.lead = kwargs.pop("lead", None)
+        super(LeadMissionChoices, self).__init__(*args, **kwargs)
+
+    def label_from_instance(self, mission):
+        if mission.description:
+            return "%s (%s)" % (mission.mission_id(), mission.description)
+        else:
+            return mission.mission_id()
+
+    def get_queryset(self):
+        if self.lead:
+            return Mission.objects.filter(lead=self.lead)
+        else:
+            return Mission.objects.all()
+
+
 class StaffingDateChoicesField(ChoiceField):
     widget = Select2Widget(attrs={'data-placeholder':_("Select a month...")})
     def __init__(self, *args, **kwargs):
@@ -65,7 +85,7 @@ class StaffingDateChoicesField(ChoiceField):
         super(StaffingDateChoicesField, self).__init__(*args, **kwargs)
 
     def has_changed(self, initial, data):
-        initial = unicode(initial) if initial is not None else ''
+        initial = str(initial) if initial is not None else ''
         return initial != data
 
 
@@ -160,9 +180,9 @@ class TimesheetForm(forms.Form):
 
                 if day == days[0]:  # Only show label for first day
                     tooltip = _("mission id: %s") % mission.mission_id()
-                    mission_link = unicode(mission)
+                    mission_link = str(mission)
                     if mission.lead_id:
-                        mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), unicode(mission))
+                        mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), str(mission))
                     self.fields[key].label = mark_safe("<span class='pydici-tooltip' title='%s'>%s</span>" % (tooltip, mission_link))
                 else:
                     self.fields[key].label = ""
@@ -271,6 +291,12 @@ class MissionContactsForm(forms.ModelForm):
         widgets = { "contacts": MissionContactMChoices }
 
 
+class MissionAutomaticStaffingForm(forms.Form):
+    """Form to create automatically staffing for given mission"""
+    duration = forms.ChoiceField(choices=zip(range(1, 13), range(1, 13)))
+    mode = forms.ChoiceField(choices=(("after", _("after current staffing")), ("replace", _("replace current staffing"))))
+
+
 class CycleTimesheetField(forms.ChoiceField):
     widget = forms.widgets.TextInput
     # The font used to display timesheet symbols map them to number
@@ -303,7 +329,6 @@ class CycleTimesheetField(forms.ChoiceField):
         return self.TS_VALUES_R.get(value, None)
 
     def validate(self, value):
-        print(value)
         if value in self.TS_VALUES.keys():
             return True
 

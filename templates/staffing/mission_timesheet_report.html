@@ -1,0 +1,45 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block pydici-menu %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block pydici_rss %}{% endblock %}
+
+{% block extracss %}
+    <link href="{{ MEDIA_URL }}css/pydici-pdf.css" rel="stylesheet">
+    <style type="text/css">
+      @page { size: A4 landscape; }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-xs-2">
+        <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ mission.subsidiary.code}}.png"/><br/><br/>
+    </div>
+    <div class="col-xs-8">
+        <h3>{{ mission.full_name }}</h3>
+    </div>
+</div>
+
+
+<div class="row">
+    <table class="table table-striped table-pydici-extra-condensed">
+    {% for line in timesheet_data %}
+        {% if line|length < 2 %}
+            <tr><td class="noborder">&nbsp;</td></tr>
+            <tr><td class="noborder"><strong>{{ line.0 }}</strong></td></tr>
+        {% else %}
+            <tr>
+            {% for item in line %}
+                <td>{{ item }}</td>
+            {% endfor %}
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

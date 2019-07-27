@@ -22,12 +22,11 @@ class ContactTableDT(ThirdPartyMixin, BaseDatatableView):
 
 
     def get_initial_queryset(self):
-        #TODO: declare explicit join with select_related()
         return Contact.objects.all()
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(Q(name__icontains=search) |
                            Q(function__icontains=search) |
@@ -40,9 +39,7 @@ class ContactTableDT(ThirdPartyMixin, BaseDatatableView):
         return qs
 
     def render_column(self, row, column):
-        if column == "pk":
-            return u"<a href='{0}'>{1}</a>".format(row.get_absolute_url(), unicode(row))
-        elif column == "companies":
+        if column == "companies":
             return row.companies(html=True)
         else:
             return super(ContactTableDT, self).render_column(row, column)

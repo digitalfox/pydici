@@ -31,8 +31,7 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
     ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"></span>""")
 
     def get_initial_queryset(self):
-        #TODO: declare explicit join with select_related()
-        return Mission.objects.all()
+        return Mission.objects.all().select_related("lead__client__organisation__company", "subsidiary")
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
@@ -55,7 +54,7 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
 
     def render_column(self, row, column):
         if column == "pk":
-            return u"<a href='{0}'>{1}</a>".format(row.get_absolute_url(), unicode(row))
+            return u"<a href='{0}'>{1}</a>".format(row.get_absolute_url(), str(row))
         elif column == "no_forecast":
             if row.no_more_staffing_since():
                 return self.ko_sign
@@ -67,14 +66,19 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
             else:
                 return self.ok_sign
         elif column == "archive":
-            return self.archiving_template.render({"row": row})
+            return self.archiving_template.render(context={"row": row}, request=self.request)
         elif column == "mission_id":
             return row.mission_id()
         else:
             return super(MissionsTableDT, self).render_column(row, column)
 
+
 class ActiveMissionsTableDT(MissionsTableDT):
     """Active missions table backend for datatables"""
     def get_initial_queryset(self):
-        # TODO: declare explicit join with select_related()
-        return Mission.objects.filter(active=True)
+        return Mission.objects.filter(active=True).select_related("lead__client__organisation__company", "subsidiary")
+
+
+class ClientCompanyActiveMissionsTablesDT(MissionsTableDT):
+    def get_initial_queryset(self):
+        return Mission.objects.filter(active=True, lead__client__organisation__company__id=self.kwargs["clientcompany_id"]).select_related("lead__client__organisation__company", "subsidiary")

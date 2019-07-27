@@ -8,7 +8,7 @@
 <ul class="more-items icon-list checkmark">
 {% for action in actions %}
     <div id="action_{{ action.id|unlocalize }}">
-        <li><a href="#" data-toggle="modal" data-target="#action_tooltip_{{ action.id|unlocalize }}">{{ action.action }}</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#action_tooltip_{{ action.id|unlocalize }}">{{ action.short_name }}</a></li>
     </div>
     <div id="action_tooltip_{{ action.id|unlocalize }}" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -32,27 +32,26 @@
                         {% ifequal request.user action.user %}
                         <div>
                             <button type="button" class="btn btn-default"
-                              onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DONE' %}',
+                              onClick="$.get('{% url 'actionset:update_action_state' action.id|unlocalize 'DONE' %}',
                                               process_update_action_state);">
                               {% trans "Mark as done" %}</button>
                            
                            <button type="button" class="btn btn-default" 
-                              onClick="$.get('{% url 'actionset.views.update_action_state' action.id|unlocalize 'NA' %}',
+                              onClick="$.get('{% url 'actionset:update_action_state' action.id|unlocalize 'NA' %}',
                                               process_update_action_state);">
                               {% trans "N/A" %}</button>
                            
                            <button type="button" class="btn btn-default" 
-                              onClick="call_deleguate_action('{% url 'actionset.views.update_action_state' action.id|unlocalize 'DELEGUATE' %}', '{{ action.id|unlocalize }}');">
+                              onClick="call_deleguate_action('{% url 'actionset:update_action_state' action.id|unlocalize 'DELEGUATE' %}', '{{ action.id|unlocalize }}');">
                               {% trans "Delegate to: " %}</button>
                            {% for field in action.delegateForm %}<div class="force_child_span_inline">{{ field }}</div>{% endfor %}
                            
-                         <div/>
+                         </div>
                          {% endifequal %}
                     </div>
                 </div>
             </div>
       </div>
-    
 {% empty %}
     {% trans "No pending action" %}
 {% endfor %}
@@ -64,9 +63,9 @@
 // Function call URL for deleguate
 function call_deleguate_action(url, action_id) {
     var username = "";
-    var selected = $("#deleguate_user_"+ action_id).children()
+    var selected = $("#deleguate_user_"+ action_id).select2('data')
     if (selected.length == 1) {
-        username = selected[0].text;
+        username = selected[0]["id"]
     }
     $.get(url + '?username=' + username, process_update_action_state);
 };
@@ -99,7 +98,7 @@ $(document).ready(function(){
     limit_action_list();
     
     // Fix focus issue of select2 inside a bootstrap modal
-    //$.fn.modal.Constructor.prototype.enforceFocus = function() {};
+    $.fn.modal.Constructor.prototype.enforceFocus = function() {};
 
     // Call select2
     $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100px"});

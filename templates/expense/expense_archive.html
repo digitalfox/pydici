@@ -1,20 +1,46 @@
 {% extends "core/pydici.html" %}
 
 {% load i18n %}
-{% load render_table from django_tables2 %}
 
 {% block title %}{% trans "Expenses history" %}{% endblock %}
 
 {% block content %}
 
-<h1>{% trans "Expenses archive" %}</h1>
-    <div class="table-responsive col-lg-12">
-        {% render_table expense_table %}
-        {% with '"bSort" : false,' as datatable_options %}
-            {% with "expense_table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
-        {% endwith %}
+    <div class="row">
+        <div class="col-lg-12">
+            <h2>{% trans "Expenses archive" %}</h2>
+            <table id="expense_archive" class="table table-striped table-bordered table-condensed" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>{% trans "#" %}</th>
+                        <th>{% trans "Consultant" %}</th>
+                        <th>{% trans "Category" %}</th>
+                        <th>{% trans "Description" %}</th>
+                        <th>{% trans "Lead" %}</th>
+                        <th>{% trans "Amount" %}</th>
+                        <th>{% trans "Receipt" %}</th>
+                        <th>{% trans "Chargeable" %}</th>
+                        <th>{% trans "Corporate card" %}</th>
+                        <th>{% trans "State" %}</th>
+                        <th>{% trans "Creation date" %}</th>
+                        <th>{% trans "Expense date" %}</th>
+                        <th>{% trans "Update date" %}</th>
+                        <th>{% trans "Comment" %}</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            {% with "expense_archive" as table_id %}
+                {% with data_url as data_url %}
+                    {% with  data_options as datatable_options %}
+                        {% include "core/_datatables.html" %}
+                    {% endwith %}
+                {% endwith %}
+            {% endwith %}
+        </div>
     </div>
 
-<br/>
-<a href="{% url 'expense.views.expenses_history' %}?csv" class="btn btn-default">{% trans "Export expenses in a spreadsheet" %}</a>
+
+{% include "expense/_expense_receipt_modal.html" %}
+
 {% endblock %}

@@ -7,15 +7,17 @@
 import os
 
 # Django import
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
+from django.conf import settings
 from django.contrib import admin
 from django.views.generic.base import RedirectView
+import django.views.static
 
 admin.autodiscover()
 
-# Pydici settings
-import pydici.settings
+
 from core.utils import get_parameter
+from core.views import PydiciSelect2View
 
 # Feeds definition
 from leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
@@ -30,25 +32,30 @@ from actionset.urls import actionset_urls
 from expense.urls import expense_urls
 from leads.urls import leads_urls
 from core.urls import core_urls
-from batch.incwo.urls import incwo_urls
-
 
 # Overide internal server error view
 handler500 = "core.views.internal_error"
 
-pydici_patterns = patterns('', (r'^admin/', include(admin.site.urls)))
+pydici_patterns = [url(r'^admin/', admin.site.urls),]
 
-if pydici.settings.DEBUG:
+# Help page
+try:
+    help_page_url = get_parameter("HELP_PAGE")
+except:
+    # Corner case, during initial migration Parameter table does not exist yet
+    help_page_url = ""
+
+if settings.DEBUG:
     import debug_toolbar
-    pydici_patterns += patterns('', url(r'^__debug__/', include(debug_toolbar.urls)),)
+    pydici_patterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
 
-pydici_patterns += patterns('',
+pydici_patterns.extend([
     # Direct to template and direct pages
-    url(r'^help', RedirectView.as_view(url=get_parameter("HELP_PAGE"), permanent=True), name='help'),
+    url(r'^help', RedirectView.as_view(url=help_page_url, permanent=True), name='help'),
 
     # Media
-    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-            {'document_root': os.path.join(pydici.settings.PYDICI_ROOTDIR, 'media')}),
+    url(r'^media/(?P<path>.*)$', django.views.static.serve,
+            {'document_root': os.path.join(settings.PYDICI_ROOTDIR, 'media')}),
 
     # Feeds
     url(r'^feeds/latest/?$', LatestLeads(), name='latest'),
@@ -58,28 +65,28 @@ pydici_patterns += patterns('',
     url(r'^feeds/latestStaffing/?$', LatestStaffing(), name='latestStaffing'),
     url(r'^feeds/myLatestStaffing/?$', MyLatestStaffing(), name='myLatestStaffing'),
     url(r'^feeds/archivedMission/?$', ArchivedMission(), name='archivedMission'),
-)
+    ])
 
+# Add select2 url
+pydici_patterns.append(url(r"^select2/auto.json$", PydiciSelect2View.as_view(), name="django_select2-json"))
 
 # Include pydici modules URLs
-pydici_patterns += patterns("",
-                            ("", include(core_urls)),
-                            ("people/", include(people_urls)),
-                            ("crm/", include(crm_urls)),
-                            ("staffing/", include(staffing_urls)),
-                            ("billing/", include(billing_urls)),
-                            ("actionset/", include(actionset_urls)),
-                            ("expense/", include(expense_urls)),
-                            ("leads/", include(leads_urls)),
-                            ("incwo/", include(incwo_urls)),
-                            )
+pydici_patterns.extend([url("", include((core_urls, "core"), namespace="core")),
+                        url("people/", include((people_urls, "people"), namespace="people")),
+                        url("crm/", include((crm_urls, "crm"), namespace="crm")),
+                        url("staffing/", include((staffing_urls, "staffing"), namespace="staffing")),
+                        url("billing/", include((billing_urls, "billing"), namespace="billing")),
+                        url("actionset/", include((actionset_urls, "actionset"), namespace="actionset")),
+                        url("expense/", include((expense_urls, "expense"), namespace="expense")),
+                        url("leads/", include((leads_urls, "lead"), namespace="leads"))
+                        ])
 
 
 # Application prefix
-if pydici.settings.PYDICI_PREFIX:
-    pydici_prefix = r'^%s/' % pydici.settings.PYDICI_PREFIX
+if settings.PYDICI_PREFIX:
+    pydici_prefix = r'^%s/' % settings.PYDICI_PREFIX
 else:
     pydici_prefix = ''
 
 # Define URL patterns
-urlpatterns = patterns('', (pydici_prefix, include(pydici_patterns)))
+urlpatterns = [url(pydici_prefix, include(pydici_patterns))]

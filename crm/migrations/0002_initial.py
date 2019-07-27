@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import django.db.models.deletion
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(unique=True, max_length=3, verbose_name='Code')),
                 ('web', models.URLField(null=True, blank=True)),
                 ('external_id', models.CharField(default=None, max_length=200, unique=True, null=True, blank=True)),
-                ('businessOwner', models.ForeignKey(related_name='company_business_owner', verbose_name='Business owner', to='people.Consultant', null=True)),
+                ('businessOwner', models.ForeignKey(related_name='company_business_owner', verbose_name='Business owner', to='people.Consultant', null=True, on_delete=models.SET_NULL)),
             ],
             options={
                 'ordering': ['name'],
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('fax', models.CharField(max_length=30, verbose_name='Fax', blank=True)),
                 ('function', models.CharField(max_length=200, verbose_name='Function', blank=True)),
                 ('external_id', models.CharField(default=None, max_length=200, unique=True, null=True, blank=True)),
-                ('contact_points', models.ManyToManyField(to='people.Consultant', verbose_name=b'Points of contact', blank=True)),
+                ('contact_points', models.ManyToManyField(to='people.Consultant', verbose_name='Points of contact', blank=True)),
             ],
             options={
                 'ordering': ['name'],
@@ -82,8 +82,8 @@ class Migration(migrations.Migration):
             name='Client',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('expectations', models.CharField(default=b'3_FLAT', max_length=30, verbose_name='Expectations', choices=[(b'1_NONE', 'Aucun(e)'), (b'2_DECREASING', 'D\xe9croissance'), (b'3_FLAT', 'Inchang\xe9e'), (b'4_INCREASING', 'Croissance')])),
-                ('alignment', models.CharField(default=b'2_STANDARD', max_length=30, verbose_name='Strategic alignment', choices=[(b'1_RESTRAIN', '\xc0 restreindre'), (b'2_STANDARD', 'Standard'), (b'3_STRATEGIC', 'Strat\xe9gique')])),
+                ('expectations', models.CharField(default='3_FLAT', max_length=30, verbose_name='Expectations', choices=[('1_NONE', 'Aucun(e)'), ('2_DECREASING', 'D\xe9croissance'), ('3_FLAT', 'Inchang\xe9e'), ('4_INCREASING', 'Croissance')])),
+                ('alignment', models.CharField(default='2_STANDARD', max_length=30, verbose_name='Strategic alignment', choices=[('1_RESTRAIN', '\xc0 restreindre'), ('2_STANDARD', 'Standard'), ('3_STRATEGIC', 'Strat\xe9gique')])),
                 ('active', models.BooleanField(default=True, verbose_name='Active')),
             ],
             options={
@@ -106,8 +106,8 @@ class Migration(migrations.Migration):
             name='MissionContact',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('company', models.ForeignKey(verbose_name='company', to='crm.Company')),
-                ('contact', models.ForeignKey(verbose_name='Contact', to='crm.Contact')),
+                ('company', models.ForeignKey(verbose_name='company', to='crm.Company', on_delete=models.CASCADE)),
+                ('contact', models.ForeignKey(verbose_name='Contact', to='crm.Contact', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['company', 'contact'],
@@ -118,8 +118,8 @@ class Migration(migrations.Migration):
             name='Supplier',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('company', models.ForeignKey(verbose_name='Supplier company', to='crm.Company')),
-                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, verbose_name='Contact', blank=True, to='crm.Contact', null=True)),
+                ('company', models.ForeignKey(verbose_name='Supplier company', to='crm.Company', on_delete=models.CASCADE)),
+                ('contact', models.ForeignKey(on_delete=models.SET_NULL, verbose_name='Contact', blank=True, to='crm.Contact', null=True)),
             ],
             options={
                 'ordering': ['company', 'contact'],
@@ -129,7 +129,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='clientorganisation',
             name='company',
-            field=models.ForeignKey(verbose_name='Client company', to='crm.Company'),
+            field=models.ForeignKey(verbose_name='Client company', to='crm.Company', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='client',
@@ -139,12 +139,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='client',
             name='organisation',
-            field=models.ForeignKey(verbose_name='Company : Organisation', to='crm.ClientOrganisation'),
+            field=models.ForeignKey(verbose_name='Company : Organisation', to='crm.ClientOrganisation', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='businessbroker',
             name='company',
-            field=models.ForeignKey(verbose_name='Broker company', to='crm.Company'),
+            field=models.ForeignKey(verbose_name='Broker company', to='crm.Company', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='businessbroker',
@@ -154,17 +154,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='administrativecontact',
             name='company',
-            field=models.ForeignKey(verbose_name='company', to='crm.Company'),
+            field=models.ForeignKey(verbose_name='company', to='crm.Company', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='administrativecontact',
             name='contact',
-            field=models.ForeignKey(verbose_name='Contact', blank=True, to='crm.Contact', null=True),
+            field=models.ForeignKey(verbose_name='Contact', blank=True, to='crm.Contact', null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='administrativecontact',
             name='function',
-            field=models.ForeignKey(verbose_name='Function', to='crm.AdministrativeFunction'),
+            field=models.ForeignKey(verbose_name='Function', to='crm.AdministrativeFunction', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='supplier',

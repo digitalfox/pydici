@@ -8,10 +8,11 @@ Database access layer for pydici CRM module
 from datetime import date, timedelta
 
 from django.db import models
-from django.db.models import Sum, Q, get_model
+from django.db.models import Sum, Q
+from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
-from django.core import urlresolvers
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 
@@ -20,14 +21,45 @@ from core.utils import GEdge, GEdges, GNode, GNodes, cacheable
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
 
-class AbstractCompany(models.Model):
+class AbstractAddress(models.Model):
+    street = models.TextField(_("Street"), blank=True, null=True)
+    city = models.CharField(_("City"), max_length=200, blank=True, null=True)
+    zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
+    country = models.CharField(_("Country"), max_length=50, blank=True, null=True)
+    billing_street = models.TextField(_("Street"), blank=True, null=True)
+    billing_city = models.CharField(_("City"), max_length=200, blank=True, null=True)
+    billing_zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
+    billing_country = models.CharField(_("Country"), max_length=50, blank=True, null=True)
+
+    def main_address(self):
+        return "%s\n%s %s\n%s" % (self.street, self.zipcode, self.city, self.country)
+
+    def billing_address(self):
+        return "%s\n%s %s\n%s" % (self.billing_street, self.billing_zipcode, self.billing_city, self.billing_country)
+
+    class Meta:
+        abstract = True
+
+class AbstractCompany(AbstractAddress):
     """Abstract Company base class for subsidiary, client/supplier/broker/.. company"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
     code = models.CharField(_("Code"), max_length=3, unique=True)
     web = models.URLField(blank=True, null=True)
+    legal_description = models.TextField("Legal description", blank=True, null=True)
 
-    def __unicode__(self):
-        return unicode(self.name)
+
+    def __str__(self):
+        return str(self.name)
+
+
+    def save(self, *args, **kwargs):
+        # If billing addresse is not defined, use main address
+        if not (self.billing_street and self.billing_city and self.billing_zipcode and self.billing_country):
+            self.billing_street = self.street
+            self.billing_city = self.city
+            self.billing_zipcode = self.zipcode
+            self.billing_country = self.country
+        super(AbstractCompany, self).save(*args, **kwargs)
 
     class Meta:
         abstract = True
@@ -35,6 +67,8 @@ class AbstractCompany(models.Model):
 
 class Subsidiary(AbstractCompany):
     """Internal company / organisation unit"""
+    payment_description = models.TextField(_("Payment condition description"), blank=True, null=True)
+    commercial_name = models.CharField(_("Commercial name"), max_length=200)
     class Meta:
         verbose_name = _("Subsidiary")
         verbose_name_plural = _("Subsidiaries")
@@ -43,7 +77,7 @@ class Subsidiary(AbstractCompany):
 
 class Company(AbstractCompany):
     """Company"""
-    businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True)
+    businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True, on_delete=models.SET_NULL)
     external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
 
     def sales(self, onlyLastYear=False):
@@ -53,7 +87,7 @@ class Company(AbstractCompany):
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():
-            return float(data.aggregate(Sum("amount")).values()[0]) / 1000
+            return float(list(data.aggregate(Sum("amount")).values())[0]) / 1000
         else:
             return 0
 
@@ -64,7 +98,7 @@ class Company(AbstractCompany):
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():
-            return float(data.aggregate(Sum("amount")).values()[0]) / 1000
+            return float(list(data.aggregate(Sum("amount")).values())[0]) / 1000
         else:
             return 0
 
@@ -74,13 +108,28 @@ class Company(AbstractCompany):
         ordering = ["name", ]
 
 
-class ClientOrganisation(models.Model):
+class ClientOrganisation(AbstractAddress):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
-    company = models.ForeignKey(Company, verbose_name=_("Client company"))
+    company = models.ForeignKey(Company, verbose_name=_("Client company"), on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return u"%s : %s " % (self.company, self.name)
+    def __str__(self):
+        return "%s : %s " % (self.company, self.name)
+
+    def main_address(self):
+        if self.city:
+            return super(ClientOrganisation, self).main_address()
+        else:
+            return self.company.main_address()
+
+    def billing_address(self):
+        if self.billing_city:
+            return super(ClientOrganisation, self).billing_address()
+        else:
+            return self.company.billing_address()
+
+    def get_absolute_url(self):
+        return reverse("crm:client_organisation", args=[self.id, ])
 
     class Meta:
         ordering = ["company", "name"]
@@ -99,7 +148,7 @@ class Contact(models.Model):
     contact_points = models.ManyToManyField("people.Consultant", verbose_name="Points of contact", blank=True)
     external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def companies(self, html=False):
@@ -114,14 +163,14 @@ class Contact(models.Model):
             return _("None")
         elif companies_count == 1:
             if html:
-                return mark_safe(u"<a href='%s'>%s</a>" % (urlresolvers.reverse("crm.views.company_detail", args=[companies[0].id,]), unicode(companies[0])))
+                return mark_safe("<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[companies[0].id,]), str(companies[0])))
             else:
                 return companies[0]
         elif companies_count > 1:
             if html:
-                return mark_safe(u", ".join([u"<a href='%s'>%s</a>" % (urlresolvers.reverse("crm.views.company_detail", args=[i.id,]), unicode(i)) for i in companies]))
+                return mark_safe(", ".join(["<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[i.id,]), str(i)) for i in companies]))
             else:
-                return u", ".join([unicode(i) for i in companies])
+                return ", ".join([str(i) for i in companies])
     companies.short_description = _("Companies")
 
     def companies_html(self):
@@ -137,7 +186,7 @@ class Contact(models.Model):
         missionColor = "#E4C160"
 
         try:
-            me = GNode(unicode(self.id), unicode(self), color="#EEE")
+            me = GNode(str(self.id), str(self), color="#EEE")
             nodes.add(me)
             # Mission relations
             for missionContact in self.missioncontact_set.all():
@@ -149,7 +198,7 @@ class Contact(models.Model):
                     nodes.add(missionNode)
                     edges.append(GEdge(me, missionNode, color=missionColor))
                     for consultant in mission.consultants():
-                        consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
+                        consultantNode = GNode("consultant-%s" % consultant.id, str(consultant))
                         nodes.add(consultantNode)
                         edges.append(GEdge(missionNode, consultantNode, color=missionColor))
             # Business / Lead relations
@@ -157,13 +206,13 @@ class Contact(models.Model):
                 if client.lead_set.count() < 5 :
                     for lead in client.lead_set.all():
                         leadNode = GNode("lead-%s" % lead.id, """<span class="glyphicon-svg glyphicon-euro"></span>
-                                                                 <span class='graph-tooltip' title='%s'><a href='%s'>%s&nbsp;</a></span>""" % (unicode(lead),
+                                                                 <span class='graph-tooltip' title='%s'><a href='%s'>%s&nbsp;</a></span>""" % (str(lead),
                                                                                                                                                lead.get_absolute_url(),
                                                                                                                                                lead.deal_id))
                         nodes.add(leadNode)
                         edges.append(GEdge(me,leadNode, color=leadColor))
                         if lead.responsible:
-                            consultantNode = GNode("consultant-%s" % lead.responsible.id, unicode(lead.responsible))
+                            consultantNode = GNode("consultant-%s" % lead.responsible.id, str(lead.responsible))
                             nodes.add(consultantNode)
                             edges.append(GEdge(leadNode, consultantNode, color=leadColor))
                 else:
@@ -174,31 +223,31 @@ class Contact(models.Model):
                         leads.append(lead)
                         if lead.responsible:
                             responsibles.append(lead.responsible)
-                    leadsId = "-".join([unicode(l.id) for l in leads])
-                    leadsTitle = unicode(client.organisation)
+                    leadsId = "-".join([str(l.id) for l in leads])
+                    leadsTitle = str(client.organisation)
                     leadsLabel = _("%s leads" % len(leads))
                     leadsNode = GNode("leads-%s" % leadsId, """<span class='glyphicon-svg glyphicon-euro'></span>
                                                                <span class='graph-tooltip' title='%s'>&nbsp;%s&nbsp;</span>""" % (leadsTitle, leadsLabel))
                     nodes.add(leadsNode)
                     edges.append(GEdge(me,leadsNode, color=leadColor))
                     for responsible in responsibles:
-                        consultantNode = GNode("consultant-%s" % responsible.id, unicode(responsible))
+                        consultantNode = GNode("consultant-%s" % responsible.id, str(responsible))
                         nodes.add(consultantNode)
                         edges.append(GEdge(leadsNode, consultantNode, color=leadColor))
 
             # Direct contact relation
             for consultant in self.contact_points.all():
-                consultantNode = GNode("consultant-%s" % consultant.id, unicode(consultant))
+                consultantNode = GNode("consultant-%s" % consultant.id, str(consultant))
                 nodes.add(consultantNode)
                 edges.append(GEdge(me, consultantNode, color=directColor))
 
             return """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
 
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
 
     def get_absolute_url(self):
-        return urlresolvers.reverse("contact_detail", args=[self.id, ])
+        return reverse("crm:contact_detail", args=[self.id, ])
 
     class Meta:
         ordering = ["name"]
@@ -207,12 +256,13 @@ class Contact(models.Model):
 class BusinessBroker(models.Model):
     """A business broken: someone that is not a client but an outsider that act
     as a partner to provide some business"""
-    company = models.ForeignKey(Company, verbose_name=_("Broker company"))
+    company = models.ForeignKey(Company, verbose_name=_("Broker company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
+    billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
 
-    def __unicode__(self):
+    def __str__(self):
         if self.company:
-            return u"%s (%s)" % (self.company, self.contact)
+            return "%s (%s)" % (self.company, self.contact)
         else:
             return self.contact
 
@@ -230,14 +280,14 @@ class BusinessBroker(models.Model):
 
 class Supplier(models.Model):
     """A supplier is defined by a contact and the supplier company where he works at the moment"""
-    company = models.ForeignKey(Company, verbose_name=_("Supplier company"))
+    company = models.ForeignKey(Company, verbose_name=_("Supplier company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.contact:
-            return u"%s (%s)" % (self.company, self.contact)
+            return "%s (%s)" % (self.company, self.contact)
         else:
-            return unicode(self.company)
+            return str(self.company)
 
     class Meta:
         ordering = ["company", "contact"]
@@ -245,7 +295,7 @@ class Supplier(models.Model):
         unique_together = (("company", "contact",))
 
 
-class Client(models.Model):
+class Client(AbstractAddress):
     """A client is defined by a contact and the organisation where he works at the moment"""
     EXPECTATIONS = (
             ('1_NONE', ugettext("None")),
@@ -258,23 +308,25 @@ class Client(models.Model):
             ("2_STANDARD", ugettext("Standard")),
             ("3_STRATEGIC", ugettext("Strategic")),
                  )
-    organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Company : Organisation"))
+    organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Company : Organisation"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
     expectations = models.CharField(max_length=30, choices=EXPECTATIONS, default=EXPECTATIONS[2][0], verbose_name=_("Expectations"))
     alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
     active = models.BooleanField(_("Active"), default=True)
+    billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
+    billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True, verbose_name=_("Billing contact"), on_delete=models.SET_NULL)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.contact:
-            return u"%s (%s)" % (self.organisation, self.contact)
+            return "%s (%s)" % (self.organisation, self.contact)
         else:
-            return unicode(self.organisation)
+            return str(self.organisation)
 
     def getFinancialConditions(self):
         """Get financial condition for this client by profil
         @return: ((profil1, avgrate1), (profil2, avgrate2)...)"""
-        FinancialCondition = get_model("staffing", "FinancialCondition")
-        ConsultantProfile = get_model("people", "ConsultantProfile")
+        FinancialCondition = apps.get_model("staffing", "FinancialCondition")
+        ConsultantProfile = apps.get_model("people", "ConsultantProfile")
         data = {}
         rates = []
 
@@ -289,7 +341,7 @@ class Client(models.Model):
             data[fc.consultant.profil].append(fc.daily_rate)
 
         # compute average
-        for profil, profilRates in data.items():
+        for profil, profilRates in list(data.items()):
             if len(profilRates) > 0:
                 avg = sum(profilRates) / len(profilRates)
             else:
@@ -300,16 +352,16 @@ class Client(models.Model):
         rates.sort(key=lambda x: x[0].level)
         return rates
 
-    @cacheable("Client__objectiveMargin__%(id)s", 60)
+    @cacheable("Client.objectiveMargin__%(id)s", 60)
     def objectiveMargin(self):
         """Compute margin over budget objective across all mission of this client
         @return: list of (margin in €, margin in % of total turnover) for internal consultant and subcontractor"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         consultantMargin = 0
         subcontractorMargin = 0
 
         for mission in Mission.objects.filter(lead__client=self):
-            for consultant, margin in mission.objectiveMargin().items():
+            for consultant, margin in list(mission.objectiveMargin().items()):
                 if consultant.subcontractor:
                     subcontractorMargin += margin
                 else:
@@ -326,7 +378,7 @@ class Client(models.Model):
     def fixedPriceMissionMargin(self):
         """Compute total fixed price margin in €  mission for this client. Only finished mission (ie archived) are
         considered"""
-        Mission = get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
+        Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         margin = 0
         missions = Mission.objects.filter(lead__client=self, active=False,
                                           lead__state = "WON", billing_mode="FIXED_PRICE")
@@ -341,7 +393,7 @@ class Client(models.Model):
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():
-            return float(data.aggregate(Sum("amount")).values()[0]) / 1000
+            return float(list(data.aggregate(Sum("amount")).values())[0]) / 1000
         else:
             return 0
 
@@ -356,8 +408,20 @@ class Client(models.Model):
             missions.extend(lead.mission_set.filter(active=True))
         return missions
 
+    def main_address(self):
+        if self.city:
+            return super(Client, self).main_address()
+        else:
+            return self.organisation.main_address()
+
+    def billing_address(self):
+        if self.billing_city:
+            return super(Client, self).billing_address()
+        else:
+            return self.organisation.billing_address()
+
     def get_absolute_url(self):
-        return urlresolvers.reverse("company_detail", args=[self.organisation.company.id, ])
+        return reverse("crm:company_detail", args=[self.organisation.company.id, ])
 
     class Meta:
         ordering = ["organisation", "contact"]
@@ -367,14 +431,14 @@ class Client(models.Model):
 
 class MissionContact(models.Model):
     """Contact encountered during mission"""
-    company = models.ForeignKey(Company, verbose_name=_("company"))
-    contact = models.ForeignKey(Contact, verbose_name=_("Contact"))
+    company = models.ForeignKey(Company, verbose_name=_("company"), on_delete=models.CASCADE)
+    contact = models.ForeignKey(Contact, verbose_name=_("Contact"), on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return u"%s (%s)" % (self.contact, self.company)
+    def __str__(self):
+        return "%s (%s)" % (self.contact, self.company)
 
     def get_absolute_url(self):
-        return urlresolvers.reverse("contact_detail", args=[self.contact.id, ])
+        return reverse("crm:contact_detail", args=[self.contact.id, ])
 
 
     class Meta:
@@ -387,7 +451,7 @@ class AdministrativeFunction(models.Model):
     """Admin functions in a company (sales, HR, billing etc."""
     name = models.CharField(_("Name"), max_length=200, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -396,12 +460,15 @@ class AdministrativeFunction(models.Model):
 
 class AdministrativeContact(models.Model):
     """Administrative contact (team or people) of a company."""
-    company = models.ForeignKey(Company, verbose_name=_("company"))
-    function = models.ForeignKey(AdministrativeFunction, verbose_name=_("Function"))
+    company = models.ForeignKey(Company, verbose_name=_("company"), on_delete=models.CASCADE)
+    function = models.ForeignKey(AdministrativeFunction, verbose_name=_("Function"), on_delete=models.CASCADE)
     default_phone = models.CharField(_("Phone Switchboard"), max_length=30, blank=True, null=True)
     default_mail = models.EmailField(_("Generic email"), max_length=100, blank=True, null=True)
     default_fax = models.CharField(_("Generic fax"), max_length=100, blank=True, null=True)
-    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"))
+    contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s (%s)" % (str(self.contact), str(self.company))
 
     def phone(self):
         """Best phone number to use"""

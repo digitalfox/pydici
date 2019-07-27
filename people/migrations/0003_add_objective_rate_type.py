@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='rateobjective',
             name='rate_type',
-            field=models.CharField(default='DAILY_RATE', max_length=30, verbose_name='Rate type', choices=[(b'DAILY_RATE', 'daily rate'), (b'PROD_RATE', 'production rate')]),
+            field=models.CharField(default='DAILY_RATE', max_length=30, verbose_name='Rate type', choices=[('DAILY_RATE', 'daily rate'), ('PROD_RATE', 'production rate')]),
             preserve_default=False,
         ),
     ]

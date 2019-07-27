@@ -24,7 +24,10 @@ class UserChoices(ModelSelect2Widget):
     search_fields = ["username__icontains", "first_name__icontains", "last_name__icontains"]
 
     def get_queryset(self):
-        return User.objects.filter(is_active=True)
+        return User.objects.filter(is_active=True).order_by("username")
+
+    def label_from_instance(self, user):
+        return user.get_full_name()
 
 
 class TagChoices(ModelSelect2Widget):

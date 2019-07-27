@@ -15,8 +15,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
-from django.core.urlresolvers import reverse
 from django.core.cache import cache
+from django.conf import settings
 
 from django_select2.views import AutoResponseView
 from taggit.models import Tag
@@ -31,7 +31,6 @@ from expense.models import Expense
 from people.views import consultant_home
 from core.utils import nextMonth, previousMonth
 
-import pydici.settings
 
 
 @login_required
@@ -166,7 +165,7 @@ def dashboard(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-def financialControl(request, start_date=None, end_date=None):
+def financial_control(request, start_date=None, end_date=None):
     """Financial control extraction. This view is intented to be processed by
     a spreadsheet or a financial package software"""
     if end_date is None:
@@ -188,15 +187,15 @@ def financialControl(request, start_date=None, end_date=None):
 
     # Header
     header = ["FiscalYear", "Month", "Type", "Nature", "Archived",
-              "MissionSubsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
-              "Lead", "DealId", "LeadPrice", "LeadResponsible", "LeadResponsibleTrigramme", "LeadTeam",
+              "Subsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
+              "Lead", "DealId", "LeadPrice", "Billed", "LeadResponsible", "LeadResponsibleTrigramme", "LeadTeam",
               "Mission", "MissionId", "BillingMode", "MissionPrice",
               "TotalQuantityInDays", "TotalQuantityInEuros",
               "ConsultantSubsidiary", "ConsultantTeam", "Trigramme", "Consultant", "Subcontractor", "CrossBilling",
               "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros",
               "StartDate", "EndDate"]
 
-    writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in header])
+    writer.writerow(header)
 
     timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=nextMonth(end_date))
     staffings = Staffing.objects.filter(staffing_date__gte=start_date, staffing_date__lt=nextMonth(end_date))
@@ -217,14 +216,15 @@ def financialControl(request, start_date=None, end_date=None):
         missionRow.append("timesheet")
         missionRow.append(mission.nature)
         missionRow.append(not mission.active)
-        missionRow.append(mission.subsidiary)
         if mission.lead:
+            missionRow.append(mission.lead.subsidiary)
             missionRow.append(mission.lead.client.organisation.company.name)
             missionRow.append(mission.lead.client.organisation.company.code)
             missionRow.append(mission.lead.client.organisation.name)
             missionRow.append(mission.lead.name)
             missionRow.append(mission.lead.deal_id)
             missionRow.append(mission.lead.sales or 0)
+            missionRow.append(list(mission.lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID"), creation_date__lt=end_date, creation_date__gte=start_date).aggregate(Sum("amount")).values())[0] or 0)
             if mission.lead.responsible:
                 missionRow.append(mission.lead.responsible.name)
                 missionRow.append(mission.lead.responsible.trigramme)
@@ -232,7 +232,7 @@ def financialControl(request, start_date=None, end_date=None):
             else:
                 missionRow.extend(["", "", ""])
         else:
-            missionRow.extend(["", "", "", "", "", 0, "", "", ""])
+            missionRow.extend([mission.subsidiary, "", "", "", "", "", 0, 0, "", "", ""])
         missionRow.append(mission.description or "")
         missionRow.append(mission.mission_id())
         missionRow.append(mission.billing_mode or "")
@@ -257,7 +257,10 @@ def financialControl(request, start_date=None, end_date=None):
             consultantRow.append(consultant.trigramme)
             consultantRow.append(consultant.name)
             consultantRow.append(consultant.subcontractor)
-            consultantRow.append(mission.subsidiary != consultant.company)
+            if mission.lead:
+                consultantRow.append(mission.lead.subsidiary != consultant.company)
+            else:
+                consultantRow.append(mission.subsidiary != consultant.company)
             consultantRow.append(rateObjective)
             consultantRow.append(daily_rate or 0)
             consultantRow.append(bought_daily_rate or 0)
@@ -270,7 +273,7 @@ def financialControl(request, start_date=None, end_date=None):
                 row.append((quantity * daily_rate) if (quantity > 0 and daily_rate > 0) else 0)
                 row.append(days["min_date"] or "")
                 row.append(days["max_date"] or "")
-                writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
+                writer.writerow(row)
 
     archivedMissions = Mission.objects.filter(active=False, archived_date__gte=start_date, archived_date__lt=end_date)
     archivedMissions = archivedMissions.filter(lead__state="WON")
@@ -280,7 +283,7 @@ def financialControl(request, start_date=None, end_date=None):
             # Mission has already been processed for this period
             continue
         missionRow = createMissionRow(mission, start_date, end_date)
-        writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in missionRow])
+        writer.writerow(missionRow)
 
     for expense in Expense.objects.filter(expense_date__gte=start_date, expense_date__lt=nextMonth(end_date), chargeable=False).select_related():
         row = []
@@ -311,14 +314,14 @@ def financialControl(request, start_date=None, end_date=None):
             row.extend(["", "", "", "", "", ""])
         row.extend(["", "", "", "", ""])
         row.append(expense.amount)  # TODO: compute pseudo HT amount
-        writer.writerow([unicode(i).encode("ISO-8859-15", "ignore") for i in row])
+        writer.writerow(row)
 
     return response
 
 
 @pydici_non_public
 @pydici_feature("reports")
-def riskReporting(request):
+def risk_reporting(request):
     """Risk reporting synthesis"""
     data = []
     today = datetime.date.today()
@@ -329,12 +332,12 @@ def riskReporting(request):
         else:
             data_type = _("sent bills")
         data.append({_("type"): data_type,
-                     _("subsidiary"): unicode(bill.lead.subsidiary),
+                     _("subsidiary"): str(bill.lead.subsidiary),
                      _("deal_id"): bill.lead.deal_id,
                      _("deal"): bill.lead.name,
                      _("amount"): int(bill.amount),
-                     _("company"): unicode(bill.lead.client.organisation.company),
-                     _("client"): unicode(bill.lead.client),
+                     _("company"): str(bill.lead.client.organisation.company),
+                     _("client"): str(bill.lead.client),
                      })
 
     # Leads with done works beyond sent or paid bills
@@ -347,12 +350,12 @@ def riskReporting(request):
         billed = float(ClientBill.objects.filter(lead=lead).filter(Q(state="1_SENT") | Q(state="2_PAID")).aggregate(amount=Sum("amount"))["amount"] or 0)
         if billed < done_a:
             data.append({_("type"): _("work without bill"),
-                         _("subsidiary"): unicode(lead.subsidiary),
+                         _("subsidiary"): str(lead.subsidiary),
                          _("deal_id"): lead.deal_id,
                          _("deal"): lead.name,
                          _("amount"): int(done_a - billed),
-                         _("company"): unicode(lead.client.organisation.company),
-                         _("client"): unicode(lead.client),
+                         _("company"): str(lead.client.organisation.company),
+                         _("client"): str(lead.client),
                          })
 
     return render(request, "core/risks.html", { "data": json.dumps(data),
@@ -370,11 +373,11 @@ def tableToCSV(table, filename="data.csv"):
     response["Content-Disposition"] = "attachment; filename=%s" % filename
     writer = csv.writer(response, delimiter=';')
     header = [column.header for column in table.columns]
-    writer.writerow([h.encode("iso8859-1") for h in header])
+    writer.writerow(header)
     for row in table.rows:
-        row = [strip_tags(unicode(cell)) for column, cell in row.items()]
-        row = [i.replace(u"\u2714", _("No")).replace(u"\u2718", _("Yes")) for i in row]
-        writer.writerow([item.encode("iso8859-1", "ignore") for item in row])
+        row = [strip_tags(str(cell)) for column, cell in list(row.items())]
+        row = [i.replace("\u2714", _("Yes")).replace("\u2718", _("No")) for i in row]
+        writer.writerow(row)
     return response
 
 
@@ -393,4 +396,4 @@ def forbiden(request):
         # Standard request, use full forbiden page with menu
         template = "core/forbiden.html"
     return render(request, template,
-                  {"admins": pydici.settings.ADMINS, })
+                  {"admins": settings.ADMINS, })

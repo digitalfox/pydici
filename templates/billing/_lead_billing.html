@@ -2,6 +2,31 @@
 {# Context/Argument: lead object #}
 
 {% load i18n %}
+{% load l10n %}
+
+    {% with data=lead.billing_control_data %}
+
+    <div class="row">
+        <h3 class="col-md-6">{% trans "Client billing control" %}</h3>
+    </div>
+
+    <div id="pivotable-output-{{ lead.id }}" style="margin-top: 10px;"></div>
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            var lang = {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %};
+            $("#pivotable-output-{{ lead.id }}").pivot({{ data|safe }},
+                    { rows: ["{% trans 'consultant' %}", "{% trans 'type' %}"],
+                      cols: ["{% trans 'month' %}"],
+                      renderer: $.pivotUtilities.renderers.Table,
+                      aggregator: $.pivotUtilities.aggregators.Sum(["{% trans 'amount' %}"]) },
+                      lang);
+    });
+
+    </script>
+
+    {% endwith %}
 
     <h3>{% trans "Clients bills" %}</h3>
     {% with lead.clientbill_set.all as client_bills %}
@@ -19,7 +44,7 @@
         </tr>
             {% for bill in client_bills %}
                 <tr>
-                    <td><a href="{% url 'admin:billing_clientbill_change' bill.id %}">{{ bill }}</a></td>
+                    <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
                     <td>{{ bill.get_state_display }}</td>
                     <td>{{ bill.amount|floatformat:-2 }}</td>
                     <td>{{ bill.creation_date }}</td>
@@ -36,10 +61,11 @@
     {% else %}
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
-    {% if perms.billing.add_clientbill %}
-        <a class="btn btn-default" href="{% url 'admin:billing_clientbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
-    {% endif %}
     {% endwith %}
+
+    {% if pydici_feature.billing_request %}
+            <a class="btn btn-default" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
+    {% endif %}
 
     <h3>{% trans "Suppliers bills" %}</h3>
     {% with lead.supplierbill_set.all as supplier_bills %}
@@ -75,7 +101,9 @@
     {% else %}
             <p>{% trans "No bill yet" %}</p>
     {% endif %}
-    {% if perms.billing.add_supplierbill %}
-        <a class="btn btn-default" href="{% url 'admin:billing_supplierbill_add' %}?lead={{ lead.id }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
-    {% endif %}
     {% endwith %}
+
+    {% if perms.billing.add_supplierbill %}
+            <a class="btn btn-default" href="{% url 'billing:supplier_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
+    {% endif %}
+

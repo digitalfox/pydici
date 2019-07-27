@@ -8,23 +8,29 @@ Pydici staffing views. Http request are processed here.
 from datetime import date, timedelta, datetime
 import csv
 import json
+from itertools import zip_longest
+import codecs
 
+from django.core.cache import cache
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
-from django.core import urlresolvers
+from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q, Max
 from django.db import connections
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
 from django.views.decorators.cache import cache_page, cache_control
+from django.utils.decorators import method_decorator
 from django.views.generic.edit import UpdateView
 from django.contrib import messages
 from django.conf import settings
 from django.template.loader import get_template
+
+from django_weasyprint import WeasyTemplateView
 
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from people.models import Consultant, Subsidiary
@@ -33,11 +39,13 @@ from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, get_fiscal_years
+    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, \
+    get_fiscal_years_from_qs, get_fiscal_year
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
-    sortMissions, holidayDays, staffingDates, time_string_for_day_percent
-from staffing.forms import MissionForm
+    sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
+    timesheet_report_data
+from staffing.forms import MissionForm, MissionAutomaticStaffingForm
 from people.utils import getScopes
 
 TIMESTRING_FORMATTER = {
@@ -99,9 +107,9 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
 def missions(request, onlyActive=True):
     """List of missions"""
     if onlyActive:
-        data_url = urlresolvers.reverse('active_mission_table_DT')
+        data_url = reverse('staffing:active_mission_table_DT')
     else:
-        data_url = urlresolvers.reverse('all_mission_table_DT')
+        data_url = reverse('staffing:all_mission_table_DT')
     return render(request, "staffing/missions.html",
                   {"all": not onlyActive,
                    "data_url": data_url,
@@ -122,8 +130,8 @@ def mission_home(request, mission_id):
 
 @pydici_non_public
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def mission_staffing(request, mission_id):
-    """Edit mission staffing"""
+def mission_staffing(request, mission_id, form_mode="manual"):
+    """Edit mission staffing. form_mode determine if staffing is done manually (manual) or automatically (automatic)"""
     if (request.user.has_perm("staffing.add_staffing") and
         request.user.has_perm("staffing.change_staffing") and
         request.user.has_perm("staffing.delete_staffing")):
@@ -133,7 +141,7 @@ def mission_staffing(request, mission_id):
 
     if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # This view should only be accessed by ajax request. Redirect lost users
-        return redirect(mission_home, mission_id)
+        return redirect("staffing:mission_home", mission_id)
 
     StaffingFormSet = inlineformset_factory(Mission, Staffing,
                                             formset=MissionStaffingInlineFormset,
@@ -142,17 +150,27 @@ def mission_staffing(request, mission_id):
     if request.method == "POST":
         if readOnly:
             # Readonly users should never go here !
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
-        formset = StaffingFormSet(request.POST, instance=mission)
-        if formset.is_valid():
-            saveFormsetAndLog(formset, request)
-            formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
-    else:
-        formset = StaffingFormSet(instance=mission)  # An unbound form
+            return HttpResponseRedirect(reverse("core:forbiden"))
+        if form_mode=="manual":
+            formset = StaffingFormSet(request.POST, instance=mission)
+            if formset.is_valid():
+                saveFormsetAndLog(formset, request)
+        else:
+            form = MissionAutomaticStaffingForm(request.POST)
+            if form.is_valid():
+                compute_automatic_staffing(mission, form.cleaned_data["mode"], int(form.cleaned_data["duration"]), user=request.user)
+
+    formset = StaffingFormSet(instance=mission)  # An unbound form
+
+    # flush mission cache
+    cache.delete("Mission.forecasted_work%s" % mission.id )
+    cache.delete("Mission.done_work%s" % mission.id)
 
     return render(request, 'staffing/mission_staffing.html',
                   {"formset": formset,
                    "mission": mission,
+                   "margin": mission.margin(mode="target"),
+                   "automatic_staffing_form": MissionAutomaticStaffingForm(),
                    "read_only": readOnly,
                    "staffing_dates": staffingDates(),
                    "user": request.user})
@@ -170,7 +188,7 @@ def consultant_staffing(request, consultant_id):
             request.user.has_perm("staffing.delete_staffing")):
         # Only forbid access if the user try to edit someone else staffing
         if request.user.username.upper() != consultant.trigramme:
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+            return HttpResponseRedirect(reverse("core:forbiden"))
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
                                           formset=ConsultantStaffingInlineFormset, fields="__all__")
@@ -195,7 +213,7 @@ def consultant_staffing(request, consultant_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def mass_staffing(request):
     """Massive staffing form"""
-    staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime")]
+    staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=24)]
     now = datetime.now().replace(microsecond=0)  # Remove useless microsecond that pollute form validation in callback
     if request.method == 'POST':  # If the form has been submitted...
         form = MassStaffingForm(request.POST, staffing_dates=staffing_dates)
@@ -220,11 +238,11 @@ def mass_staffing(request):
                         staffing.charge = form.cleaned_data["charge"]
                         staffing.comment = form.cleaned_data["comment"]
                         staffing.update_date = now
-                        staffing.last_user = unicode(request.user)
+                        staffing.last_user = str(request.user)
                         staffing.save()
             # Redirect to self to display a new unbound form
             messages.add_message(request, messages.INFO, _("Staffing has been updated"))
-            return HttpResponseRedirect(urlresolvers.reverse("staffing.views.mass_staffing"))
+            return HttpResponseRedirect(reverse("staffing:mass_staffing"))
     else:
         # An unbound form
         form = MassStaffingForm(staffing_dates=staffing_dates)
@@ -372,7 +390,7 @@ def pdc_review(request, year=None, month=None):
             unprod_round = to_int_or_round(unprod)
             holidays_round = to_int_or_round(holidays)
             available = available_month[month] - (prod + unprod + holidays)
-            available_displayed = available_month[month] - (prod_round + unprod_round + holidays_round)
+            available_displayed = to_int_or_round(available_month[month] - (prod_round + unprod_round + holidays_round))
             staffing[consultant].append([prod_round, unprod_round, holidays_round, available_displayed])
             total[month]["prod"] += prod
             total[month]["unprod"] += unprod
@@ -382,7 +400,7 @@ def pdc_review(request, year=None, month=None):
         # Add client synthesis to staffing dict
         company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
         client_list = ", ".join(["<a href='%s'>%s</a>" %
-                                (urlresolvers.reverse("crm.views.company_detail", args=[c.id]), unicode(c)) for c in company])
+                                (reverse("crm:company_detail", args=[c.id]), str(c)) for c in company])
         client_list = "<div class='hidden-xs hidden-sm'>%s</div>" % client_list
         staffing[consultant].append([client_list])
 
@@ -395,24 +413,24 @@ def pdc_review(request, year=None, month=None):
                 rate.append(100.0 * total[month][indicator] / ndays)
             else:
                 rate.append(100.0 * total[month][indicator] / (ndays - total[month]["holidays"]))
-        rates.append(map(to_int_or_round, rate))
+        rates.append(list(map(to_int_or_round, rate)))
 
     # Format total dict into list
-    total = total.items()
-    total.sort(cmp=lambda x, y: cmp(x[0], y[0]))  # Sort according date
+    total = list(total.items())
+    total.sort(key=lambda x: x[0])  # Sort according date
     # Remove date, and transform dict into ordered list:
     total = [(to_int_or_round(i[1]["prod"]),
             to_int_or_round(i[1]["unprod"]),
             to_int_or_round(i[1]["holidays"]),
-            i[1]["total"] - (to_int_or_round(i[1]["prod"]) + to_int_or_round(i[1]["unprod"]) + to_int_or_round(i[1]["holidays"]))) for i in total]
+            to_int_or_round(i[1]["total"] - (to_int_or_round(i[1]["prod"]) + to_int_or_round(i[1]["unprod"]) + to_int_or_round(i[1]["holidays"])))) for i in total]
 
     # Order staffing list
-    staffing = staffing.items()
-    staffing.sort(cmp=lambda x, y: cmp(x[0].name, y[0].name))  # Sort by name
+    staffing = list(staffing.items())
+    staffing.sort(key=lambda x: x[0].name)  # Sort by name
     if groupby == "manager":
-        staffing.sort(cmp=lambda x, y: cmp(unicode(x[0].staffing_manager), unicode(y[0].staffing_manager)))  # Sort by staffing manager
+        staffing.sort(key=lambda x: str(x[0].staffing_manager))  # Sort by staffing manager
     else:
-        staffing.sort(cmp=lambda x, y: cmp(x[0].profil.level, y[0].profil.level))  # Sort by level
+        staffing.sort(key=lambda x: x[0].profil.level)  # Sort by level
 
     scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
     if team:
@@ -676,7 +694,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         previous_week = 0
         next_week = 0
 
-    notAllowed = HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+    notAllowed = HttpResponseRedirect(reverse("core:forbiden"))
 
     consultant = Consultant.objects.get(id=consultant_id)
 
@@ -714,7 +732,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         if readOnly:
             # We should never go here as validate button is not displayed when read only...
             # This is just a security control
-            return HttpResponseRedirect(urlresolvers.reverse("forbiden"))
+            return HttpResponseRedirect(reverse("core:forbiden"))
         form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
         if form.is_valid():  # All validation rules pass
@@ -759,26 +777,29 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                    "is_current_month": month == date.today().replace(day=1),
                    "user": request.user})
 
+
 def consultant_csv_timesheet(request, consultant, days, month, missions):
     """@return: csv timesheet for a given consultant"""
     # This "view" is never called directly but only through consultant_timesheet view
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
 
     # Header
-    writer.writerow([("%s - %s" % (unicode(consultant), month)).encode("ISO-8859-15", "replace"), ])
+    writer.writerow(["%s - %s" % (consultant, month), ])
 
     # Days
     writer.writerow(["", ""] + [d.day for d in days])
-    writer.writerow([_("Mission").encode("ISO-8859-15", "replace"), _("Deal id").encode("ISO-8859-15", "replace")]
+    writer.writerow([_("Mission"), _("Deal id")]
                      + [_(d.strftime("%a")) for d in days] + [_("total")])
 
     timestring_formatter = TIMESTRING_FORMATTER[settings.TIMESHEET_INPUT_METHOD]
 
     for mission in missions:
         total = 0
-        row = [i.encode("ISO-8859-15", "replace") for i in [unicode(mission), mission.mission_id()]]
+        row = [mission, mission.mission_id()]
         timesheets = Timesheet.objects.select_related().filter(consultant=consultant).filter(mission=mission)
         for day in days:
             try:
@@ -804,10 +825,12 @@ def mission_timesheet(request, mission_id):
 
     if "csv" in request.GET:
         return mission_csv_timesheet(request, mission, consultants)
+    if "pdf" in request.GET:
+        return MissionTimesheetReportPdf.as_view()(request, mission=mission)
 
     if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # This view should only be accessed by ajax request. Redirect lost users
-        return redirect(mission_home, mission_id)
+        return redirect("staffing:mission_home", mission_id)
 
     # Gather timesheet (Only consider timesheet up to current month)
     timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
@@ -859,8 +882,8 @@ def mission_timesheet(request, mission_id):
         # We don't compute the average rate for total (k€) columns, hence the [:-1]
         valuedTimesheet = [days * rate / 1000 for days in  timesheet[:-1]]
         valuedStaffing = [days * rate / 1000 for days in staffing[:-1]]
-        timesheetTotalAmount = map(lambda t, v: (t + v) if t else v, timesheetTotalAmount, valuedTimesheet)
-        staffingTotalAmount = map(lambda t, v: (t + v) if t else v, staffingTotalAmount, valuedStaffing)
+        timesheetTotalAmount = [sum(x) for x in zip_longest(timesheetTotalAmount, valuedTimesheet, fillvalue=0)]
+        staffingTotalAmount = [sum(x) for x in zip_longest(staffingTotalAmount, valuedStaffing, fillvalue=0)]
 
     # Compute total per month
     timesheetTotal = [timesheet for consultant, timesheet, staffing, estimated in missionData]
@@ -871,8 +894,8 @@ def mission_timesheet(request, mission_id):
     staffingTotal = [sum(t) for t in staffingTotal]
 
     # average = total 1000 * rate / number of billed days
-    timesheetAverageRate = map(lambda t, d: (1000 * t / d) if d else 0, timesheetTotalAmount, timesheetTotal[:-1])
-    staffingAverageRate = map(lambda t, d: (1000 * t / d) if d else 0, staffingTotalAmount, staffingTotal[:-1])
+    timesheetAverageRate = list(map(lambda t, d: (1000 * t / d) if d else 0, timesheetTotalAmount, timesheetTotal[:-1]))
+    staffingAverageRate = list(map(lambda t, d: (1000 * t / d) if d else 0, staffingTotalAmount, staffingTotal[:-1]))
 
     # Total estimated (timesheet + staffing)
     if timesheetTotal and staffingTotal:
@@ -896,11 +919,18 @@ def mission_timesheet(request, mission_id):
         currentUnused = 0
         forecastedUnused = 0
 
+    # pad to 8 values
+    padded_mission_data = []
+    for consultant, timesheet, staffing, estimated in missionData:
+        padded_mission_data.append((consultant, timesheet, staffing, estimated, None, None, None, None))
+    missionData = padded_mission_data
+
+    # add total
     missionData.append((None, timesheetTotal, staffingTotal, estimatedTotal,
                         timesheetTotalAmount[:-1], staffingTotalAmount[:-1],  # We remove last one not to  display total twice
                         timesheetAverageRate, staffingAverageRate))
 
-    missionData = map(to_int_or_round, missionData)
+    missionData = list(map(to_int_or_round, missionData))
 
     objectiveMargin = mission.objectiveMargin(endDate=nextMonth(current_month))
 
@@ -951,56 +981,37 @@ def mission_timesheet(request, mission_id):
                    "user": request.user})
 
 
+@pydici_non_public
+@pydici_feature("reports")
 def mission_csv_timesheet(request, mission, consultants):
     """@return: csv timesheet for a given mission"""
     # This "view" is never called directly but only through consultant_timesheet view
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s.csv" % mission.mission_id()
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
-    timesheets = Timesheet.objects.select_related().filter(mission=mission)
-    months = timesheets.dates("working_date", "month")
+    for line in timesheet_report_data(mission, padding=True):
+        writer.writerow(line)
 
-    for month in months:
-        days = daysOfMonth(month)
-        next_month = nextMonth(month)
-        padding = 31 - len(days)  # Padding for month with less than 31 days to align total column
-        # Header
-        writer.writerow([("%s - %s" % (mission.full_name(), formats.date_format(month, format="YEAR_MONTH_FORMAT"))).encode("ISO-8859-15", "replace"), ])
-
-        # Days
-        writer.writerow(["", ] + [d.day for d in days])
-        dayHeader = [_("Consultants").encode("ISO-8859-15", "replace")] + [_(d.strftime("%a")) for d in days]
-        if padding:
-            dayHeader.extend([""] * padding)
-        dayHeader.append(_("total"))
-        writer.writerow(dayHeader)
-
-        for consultant in consultants:
-            total = 0
-            row = [unicode(consultant).encode("ISO-8859-15", "replace"), ]
-            consultant_timesheets = {}
-            for timesheet in timesheets.filter(consultant_id=consultant.id,
-                                               working_date__gte=month,
-                                               working_date__lt=next_month):
-                consultant_timesheets[timesheet.working_date] = timesheet.charge
-            for day in days:
-                try:
-                    charge = consultant_timesheets.get(day)
-                    if charge:
-                        row.append(formats.number_format(charge))
-                        total += charge
-                    else:
-                        row.append("")
-                except Timesheet.DoesNotExist:
-                    row.append("")
-            if padding:
-                row.extend([""] * padding)
-            row.append(formats.number_format(total))
-            if total > 0:
-                writer.writerow(row)
-        writer.writerow([""])
     return response
 
+class MissionTimesheetReportPdf(PydiciNonPublicdMixin, WeasyTemplateView):
+    template_name = 'staffing/mission_timesheet_report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(MissionTimesheetReportPdf, self).get_context_data(**kwargs)
+        self.mission = self.kwargs["mission"]
+        context["mission"] = self.mission
+        context["timesheet_data"] = timesheet_report_data(self.mission, padding=True,
+                                                          start=self.kwargs.get("start"),
+                                                          end=self.kwargs.get("end"))
+        return context
+
+
+    @method_decorator(pydici_feature("reports"))
+    def dispatch(self, *args, **kwargs):
+        return super(MissionTimesheetReportPdf, self).dispatch(*args, **kwargs)
 
 @pydici_non_public
 @pydici_feature("reports")
@@ -1027,19 +1038,19 @@ def all_timesheet(request, year=None, month=None):
         data = list(consultants)
     else:
         # drill down link
-        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (urlresolvers.reverse("people.views.consultant_home", args=[consultant.trigramme]),
+        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme]),
                                                                                    month.year,
                                                                                    month.month,
-                                                                                   escape(unicode(consultant)))) for consultant in consultants]
+                                                                                   escape(str(consultant)))) for consultant in consultants]
     data = [[_("Mission"), _("Mission id")] + data]
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = to_int_or_round(timesheet["sum"], 2)
     for mission in missions:
-        missionUrl = "<a href='%s'>%s</a>" % (urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]),
-                                        escape(unicode(mission)))
+        missionUrl = "<a href='%s'>%s</a>" % (reverse("staffing:mission_home", args=[mission.id, ]),
+                                        escape(str(mission)))
         if "csv" in request.GET:
             # Simple mission name
-            consultantData = [unicode(mission), mission.mission_id()]
+            consultantData = [str(mission), mission.mission_id()]
         else:
             # Drill down link
             consultantData = [mark_safe(missionUrl), mission.mission_id()]
@@ -1093,17 +1104,17 @@ def all_timesheet(request, year=None, month=None):
 def all_csv_timesheet(request, charges, month):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
 
     # Header
-    writer.writerow([unicode(month).encode("ISO-8859-15", "replace"), ])
+    writer.writerow([month])
     for charge in charges:
         row = []
         for i in charge:
             if isinstance(i, float):
                 i = formats.number_format(i)
-            else:
-                i = unicode(i).encode("ISO-8859-15", "replace")
             row.append(i)
         writer.writerow(row)
     return response
@@ -1116,6 +1127,8 @@ def detailed_csv_timesheet(request, year=None, month=None):
     Intended for accounting third party system or spreadsheet analysis"""
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
 
     if year and month:
@@ -1128,8 +1141,8 @@ def detailed_csv_timesheet(request, year=None, month=None):
     # Header
     header = [_("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
               _("Consultant"), _("Daily rate"), _("Bought daily rate"), _("Past done days"), _("Done days"), _("Days to be done")]
-    writer.writerow([unicode(month).encode("ISO-8859-15", "replace"), ])
-    writer.writerow([unicode(i).encode("ISO-8859-15", "replace") for i in header])
+    writer.writerow([month,])
+    writer.writerow(header)
 
     missions = Mission.objects.filter(Q(timesheet__working_date__gte=month, timesheet__working_date__lt=next_month) |
                                       Q(staffing__staffing_date__gte=month, staffing__staffing_date__lt=next_month))
@@ -1150,19 +1163,19 @@ def detailed_csv_timesheet(request, year=None, month=None):
                 row.extend([0, 0])
             # Past timesheet
             timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
-                                                 working_date__lt=month).aggregate(Sum("charge")).values()[0]
+                                                 working_date__lt=month).aggregate(Sum("charge"))["charge__sum"]
             row.append(formats.number_format(timesheet) if timesheet else 0)
             # Current month timesheet
             timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
                                                  working_date__gte=month,
-                                                 working_date__lt=next_month).aggregate(Sum("charge")).values()[0]
+                                                 working_date__lt=next_month).aggregate(Sum("charge"))["charge__sum"]
             row.append(formats.number_format(timesheet) if timesheet else 0)
             # Forecasted staffing
             forecast = Staffing.objects.filter(mission=mission, consultant=consultant,
-                                               staffing_date__gte=next_month).aggregate(Sum("charge")).values()[0]
+                                               staffing_date__gte=next_month).aggregate(Sum("charge"))["charge__sum"]
             row.append(formats.number_format(forecast) if forecast else 0)
 
-            writer.writerow([unicode(i).encode("ISO-8859-15", "replace") for i in row])
+            writer.writerow(row)
 
     return response
 
@@ -1222,7 +1235,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
 
     timesheets = Timesheet.objects.filter(mission__nature=nature, working_date__lte=date.today())
 
-    years = get_fiscal_years(timesheets, "working_date")
+    years = get_fiscal_years_from_qs(timesheets, "working_date")
 
     if not years:
         return HttpResponse()
@@ -1295,7 +1308,7 @@ def create_new_mission_from_lead(request, lead_id):
 
     # Redirect user to change page of the mission
     # in order to type description and deal id
-    return HttpResponseRedirect(urlresolvers.reverse("mission_update", args=[mission.id, ]) + "?return_to=" + lead.get_absolute_url() + "#goto_tab-missions")
+    return HttpResponseRedirect(reverse("staffing:mission_update", args=[mission.id, ]) + "?return_to=" + lead.get_absolute_url() + "#goto_tab-missions")
 
 
 @pydici_non_public
@@ -1371,7 +1384,7 @@ def mission_contacts(request, mission_id):
         form = MissionContactsForm(request.POST, instance=mission)
         if form.is_valid():
             form.save()
-        return HttpResponseRedirect(urlresolvers.reverse("staffing.views.mission_home", args=[mission.id, ]))
+        return HttpResponseRedirect(reverse("staffing:mission_home", args=[mission.id, ]))
 
     # Unbound form
     form = MissionContactsForm(instance=mission)
@@ -1389,7 +1402,85 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
     form_class = MissionForm
 
     def get_success_url(self):
-        return self.request.GET.get('return_to', False) or urlresolvers.reverse_lazy("mission_home", args=[self.object.id, ])
+        return self.request.GET.get('return_to', False) or reverse_lazy("staffing:mission_home", args=[self.object.id, ])
+
+
+@pydici_non_public
+@pydici_feature("reports")
+@cache_page(60 * 60 * 10)
+def turnover_pivotable(request, year=None):
+    """Turnover analysis (per people and mission) based on timesheet production"""
+    data = []
+    month = int(get_parameter("FISCAL_YEAR_MONTH"))
+    missions = Mission.objects.filter(nature="PROD", lead__state="WON")
+
+    if not missions:
+        return HttpResponse()
+
+    subsidiaries = Subsidiary.objects.all()
+
+    years = get_fiscal_years_from_qs(missions, "lead__creation_date")
+
+    if year is None and years:
+        year = years[-1]
+    if year != "all":
+        year = int(year)
+        start = date(year, month, 1)
+        end = date(year + 1, month, 1)
+        end = min(end, date.today())
+        missions = missions.filter(timesheet__working_date__gte=start, timesheet__working_date__lt=end)
+
+    missions = missions.distinct()
+    missions = missions.select_related("responsible", "lead__client__contact", "lead__client__organisation__company", "subsidiary",
+                         "lead__business_broker__company", "lead__business_broker__contact")
+
+
+    for mission in missions:
+        mission_data = {_("deal id"): mission.lead.deal_id,
+                         _("name"): mission.short_name(),
+                         _("client organisation"): str(mission.lead.client.organisation),
+                         _("client company"): str(mission.lead.client.organisation.company),
+                         _("responsible"): str(mission.responsible),
+                         _("billing mode"): mission.get_billing_mode_display(),
+                         _("broker"): str(mission.lead.business_broker or _("Direct")),
+                         _("subsidiary"): str(mission.subsidiary)}
+        for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):
+            fiscal_year = get_fiscal_year(month)
+            if year != "all" and (month < start or month >= end):
+                continue  # Skip mission if outside period
+            mission_month_data = mission_data.copy()
+            next_month = nextMonth(month)
+            own_turnover = int(mission.done_work_period(month, next_month, include_external_subcontractor=False,
+                                                                           include_internal_subcontractor=False)[1])
+            turnover_with_external_subcontractor = int(mission.done_work_period(month, next_month,
+                                                                                include_external_subcontractor=True,
+                                                                                include_internal_subcontractor=False)[1])
+            turnover_with_internal_subcontractor = int(mission.done_work_period(month, next_month,
+                                                                                include_external_subcontractor=False,
+                                                                                include_internal_subcontractor=True)[1])
+            mission_month_data[_("turnover (€)")] = turnover_with_external_subcontractor + turnover_with_internal_subcontractor - own_turnover
+            mission_month_data[_("external subcontractor turnover (€)")] = turnover_with_external_subcontractor - own_turnover
+            mission_month_data[_("internal subcontractor turnover (€)")] = turnover_with_internal_subcontractor - own_turnover
+            mission_month_data[_("own turnover (€)")] = own_turnover
+            mission_month_data[_("month")] = month.isoformat()
+            mission_month_data[_("fiscal year")] = fiscal_year
+            data.append(mission_month_data)
+            # Handle internal subcontractor for this mission
+            for subsidiary in subsidiaries.exclude(id=mission.subsidiary_id):
+                subsidiary_month_data = mission_data.copy()
+                subsidiary_month_data[_("subsidiary")] = str(subsidiary)
+                subsidiary_month_data[_("month")] = month.isoformat()
+                subsidiary_month_data[_("fiscal year")] = fiscal_year
+                subsidiary_turnover = int(mission.done_work_period(month, next_month, include_external_subcontractor=False,
+                                                                   filter_on_subsidiary=subsidiary)[1])
+                if subsidiary_turnover > 0:
+                    subsidiary_month_data[_("own turnover (€)")] = subsidiary_turnover
+                    data.append(subsidiary_month_data)
+
+    return render(request, "staffing/turnover_pivotable.html", { "data": json.dumps(data),
+                                                    "derivedAttributes": "{}",
+                                                    "years": years,
+                                                    "selected_year": year})
 
 
 @pydici_non_public
@@ -1468,76 +1559,78 @@ def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
 def graph_profile_rates(request, subsidiary_id=None, team_id=None):
     """Sale rate per profil
     @:param subsidiary_id: filter graph on the given subsidiary
-    @:param team_id: filter graph on the given team
-    @todo: per year, with start-end date"""
+    @:param team_id: filter graph on the given team"""
+    #TODO: add start/end timeframe
     graph_data = []
-    avgDailyRate = {}
+    turnover = {}
     nDays = {}
+    avgDailyRate = {}
+    globalDailyRate = []
+    isoTimesheetMonths = []
     timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
     timesheetEndDate = nextMonth(date.today())  # First day of next month
     profils = dict(ConsultantProfile.objects.all().values_list("id", "name"))  # Consultant Profiles
-    financialConditions = {}
 
-    # Create dict per consultant profile
-    for profilId in profils.keys():
-        avgDailyRate[profilId] = {}
-        nDays[profilId] = {}
+    consultants = Consultant.objects.filter(subcontractor=False, productive=True,
+                                            timesheet__working_date__gte=timesheetStartDate,
+                                            timesheet__working_date__lt=timesheetEndDate)
 
     # Filter on scope
     if team_id:
-        timesheets = Timesheet.objects.filter(consultant__staffing_manager_id=team_id)
+        consultants = consultants.filter(staffing_manager_id=team_id)
     elif subsidiary_id:
-        timesheets = Timesheet.objects.filter(consultant__company_id=subsidiary_id)
-    else:
-        timesheets = Timesheet.objects.all()
+        consultants = consultants.filter(company_id=subsidiary_id)
 
-    timesheets = timesheets.filter(consultant__subcontractor=False,
-                                   consultant__productive=True,
-                                   working_date__gt=timesheetStartDate,
-                                   working_date__lt=timesheetEndDate).select_related()
+    consultants = consultants.distinct()
 
-    timesheetMonths = timesheets.dates("working_date", "month")
-    isoTimesheetMonths = [d.isoformat() for d in timesheetMonths]
-    if not timesheetMonths:
+    for profil, profilName in profils.items():
+        nDays[profil] = {}
+        turnover[profil] = {}
+        avgDailyRate[profil] = {}
+
+    month = timesheetStartDate
+    while month < timesheetEndDate:
+        next_month = nextMonth(month)
+        isoTimesheetMonths.append(month.isoformat())
+        monthGlobalNDays = 0
+        monthGlobalTurnover = 0
+        for consultant in consultants:
+            if not month in nDays[consultant.profil_id]:
+                nDays[consultant.profil.id][month] = 0
+            if not month in turnover[consultant.profil_id]:
+                turnover[consultant.profil_id][month] = 0
+            nDays[consultant.profil_id][month] += Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=next_month, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"] or 0
+            turnover[consultant.profil_id][month] += consultant.getTurnover(month, next_month)
+
+        for profil, profilName in profils.items():
+            if profil in nDays:
+                try:
+                    avgDailyRate[profil][month] = round(turnover[profil][month] / nDays[profil][month])
+                    monthGlobalNDays += nDays[profil][month]
+                    monthGlobalTurnover += turnover[profil][month]
+                except (KeyError, ZeroDivisionError):
+                    avgDailyRate[profil][month] = None
+        if monthGlobalNDays > 0 :
+            globalDailyRate.append(round(monthGlobalTurnover / monthGlobalNDays))
+        else:
+            globalDailyRate.append(None)
+        month = next_month
+
+    if not isoTimesheetMonths or set(globalDailyRate) == {None}:
         return HttpResponse('')
+
     graph_data.append(["x"] + isoTimesheetMonths)
-
-    for fc in FinancialCondition.objects.all():
-        financialConditions["%s-%s" % (fc.mission_id, fc.consultant_id)] = fc.daily_rate
-
-    for timesheet in timesheets:
-        month = date(timesheet.working_date.year, timesheet.working_date.month, 1)
-        if not month in avgDailyRate[timesheet.consultant.profil.id]:
-            avgDailyRate[timesheet.consultant.profil.id][month] = 0
-        if not month in nDays[timesheet.consultant.profil.id]:
-            nDays[timesheet.consultant.profil.id][month] = 0
-
-        daily_rate = financialConditions.get("%s-%s" % (timesheet.mission_id, timesheet.consultant_id), 0)
-        if daily_rate > 0:
-            avgDailyRate[timesheet.consultant.profil.id][month] += timesheet.charge * daily_rate
-            nDays[timesheet.consultant.profil.id][month] += timesheet.charge
 
     # Compute per profil
     for profil, profilName in profils.items():
         data = [profilName]
-        for month in timesheetMonths:
-            if month in nDays[profil] and nDays[profil][month] > 0:
-                data.append(int(avgDailyRate[profil][month] / nDays[profil][month]))
-            else:
-                data.append(None)
-        if len(data[1:]) > data[1:].count(None): # Don't consider series only with None
-            graph_data.append(data)
+        month = timesheetStartDate
+        while month < timesheetEndDate:
+            data.append(avgDailyRate[profil][month])
+            month = nextMonth(month)
+        graph_data.append(data)
 
-    # Compute average for company
-    data = [_("Global")]
-    for month in timesheetMonths:
-        rates = sum([avgDailyRate[profil].get(month, 0) for profil in profils.keys()])
-        days = sum([nDays[profil].get(month, 0) for profil in profils.keys()])
-        if days > 0:
-            data.append(int(rates / days))
-        else:
-            data.append(None)
-    graph_data.append(data)
+    graph_data.append([_("Global"), *globalDailyRate ])
 
     return render(request, "staffing/graph_profile_rates.html",
               {"graph_data": json.dumps(graph_data),
@@ -1546,7 +1639,7 @@ def graph_profile_rates(request, subsidiary_id=None, team_id=None):
 
 
 @pydici_non_public
-@cache_page(60 * 10)
+@cache_page(60 * 60 * 4)
 def graph_consultant_rates(request, consultant_id):
     """Nice graph of consultant rates"""
     dailyRateData = []  # Consultant daily rate data
@@ -1569,9 +1662,10 @@ def graph_consultant_rates(request, consultant_id):
         if prodRate:
             prodRateData.append(round(100 * prodRate, 1))
             isoProdDates.append(refDate.isoformat())
-        fc = consultant.getFinancialConditions(refDate, next_month)
-        if fc:
-            dailyRateData.append(int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc])))
+        wdays = Timesheet.objects.filter(consultant=consultant, working_date__gte=refDate, working_date__lt=next_month, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"]
+        if wdays:
+            turnover = consultant.getTurnover(refDate, next_month)
+            dailyRateData.append(int(turnover / wdays))
             isoRateDates.append(refDate.isoformat())
         rate = consultant.getRateObjective(refDate, rate_type="DAILY_RATE")
         if rate:
@@ -1583,7 +1677,6 @@ def graph_consultant_rates(request, consultant_id):
             prodRateObj.append(rate.rate)
         else:
             prodRateObj.append(None)
-
 
     graph_data = [
         ["x_daily_rate"] + isoRateDates,

@@ -6,13 +6,13 @@ Database access layer for pydici staffing module
 """
 
 from django.db import models, connections
-from django.db.models import Sum, Min
+from django.db.models import Sum, Min, F
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.contrib.admin.models import ContentType
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from datetime import datetime, date, timedelta
 
@@ -38,7 +38,7 @@ class Mission(models.Model):
     BILLING_MODES = (
             (('FIXED_PRICE'), ugettext("Fixed price")),
             (('TIME_SPENT'), ugettext("Time spent")))
-    lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"))
+    lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"), on_delete=models.CASCADE)
     deal_id = models.CharField(_("Mission id"), max_length=100, blank=True)
     description = models.CharField(_("Description"), max_length=30, blank=True, null=True)
     nature = models.CharField(_("Type"), max_length=30, choices=MISSION_NATURE, default="PROD")
@@ -49,15 +49,15 @@ class Mission(models.Model):
     price = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     contacts = models.ManyToManyField(MissionContact, blank=True)
-    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"))
+    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     archived_date = models.DateTimeField(_("Archived date"), blank=True, null=True)
-    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True)
+    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.description and not self.lead:
-            return unicode(self.description)
+            return str(self.description)
         else:
-            name = unicode(self.lead)
+            name = str(self.lead)
             if self.description:
                 return u"%s/%s" % (name, self.description)
             else:
@@ -76,7 +76,7 @@ class Mission(models.Model):
 
     def full_name(self):
         """Full mission name with deal id"""
-        return u"%s (%s)" % (unicode(self), self.mission_id())
+        return u"%s (%s)" % (str(self), self.mission_id())
 
     def no_more_staffing_since(self, refDate=None):
         """@return: True if at least one staffing is defined after refDate. Zero charge staffing are considered."""
@@ -91,8 +91,8 @@ class Mission(models.Model):
     def consultants(self):
         """@return: sorted list of consultants forecasted or that once charge timesheet for this mission"""
         # Do two distinct query and then gather data. It is much much more faster than the left outer join on the two tables in the same query.
-        consultantsIdsFromStaffing = Consultant.objects.filter(staffing__mission=self).values_list("id", flat=True)
-        consultantsIdsFromTimesheet = Consultant.objects.filter(timesheet__mission=self).values_list("id", flat=True)
+        consultantsIdsFromStaffing = Consultant.objects.filter(staffing__mission=self).values_list("id", flat=True).distinct()
+        consultantsIdsFromTimesheet = Consultant.objects.filter(timesheet__mission=self).values_list("id", flat=True).distinct()
         ids = set(list(consultantsIdsFromStaffing) + list(consultantsIdsFromTimesheet))
         return Consultant.objects.filter(id__in=ids).order_by("name")
 
@@ -146,28 +146,54 @@ class Mission(models.Model):
         elif self.deal_id:
             return self.deal_id
         else:
-            return unicode(self.id)
+            return str(self.id)
 
     @cacheable("Mission.done_work%(id)s", 10)
     def done_work(self):
         """Compute done work according to timesheet for this mission
         Result is cached for few seconds
         @return: (done work in days, done work in euros)"""
+        return self.done_work_period(None, nextMonth(date.today()))
+
+    def done_work_k(self):
+        """Same as done_work, but with amount in keur"""
+        days, amount = self.done_work()
+        return days, amount / 1000
+
+    def done_work_period(self, start, end, include_internal_subcontractor=True,
+                         include_external_subcontractor=True,
+                         filter_on_subsidiary=None,
+                         filter_on_consultant=None):
+        """Compute done work according to timesheet for this mission
+        @start: starting date (included)
+        @end: ending date (excluded)
+        @include_internal_subcontractor: to include (default) or not internal (other subsidiaries) consultants
+        @include_external_subcontractor: to include (default) or not external subcontractor
+        @filter_on_subsidiary: filter done work on consultant subsidiary. None (default) is all.
+        @filter_on_consultant: filter done work only on given consultant. None (default) is all.
+        @return: (done work in days, done work in euros)"""
         rates = dict([(i.id, j[0]) for i, j in self.consultant_rates().items()])  # switch to consultant id
         days = 0
         amount = 0
-        timesheets = Timesheet.objects.filter(mission=self, working_date__lt=nextMonth(date.today()))
+        timesheets = Timesheet.objects.filter(mission=self)
+        if start:
+            timesheets = timesheets.filter(working_date__gte=start)
+        if end:
+            timesheets = timesheets.filter(working_date__lt=end)
+        if not include_external_subcontractor:
+            timesheets = timesheets.filter(consultant__subcontractor=False)
+        if not include_internal_subcontractor:
+            timesheets = timesheets.filter(consultant__company=F("mission__subsidiary"))
+        if filter_on_subsidiary:
+            timesheets = timesheets.filter(consultant__company=filter_on_subsidiary)
+        if filter_on_consultant:
+            timesheets = timesheets.filter(consultant=filter_on_consultant)
         timesheets = timesheets.values_list("consultant").annotate(Sum("charge")).order_by()
         for consultant_id, charge in timesheets:
             days += charge
             if consultant_id in rates:
                 amount += charge * rates[consultant_id]
         return (days, amount)
-
-    def done_work_k(self):
-        """Same as done_work, but with amount in keur"""
-        days, amount = self.done_work()
-        return days, amount / 1000
 
     @cacheable("Mission.forecasted_work%(id)s", 10)
     def forecasted_work(self):
@@ -266,7 +292,7 @@ class Mission(models.Model):
         """Starting date (=oldiest) staffing date of this mission. None if no staffing"""
         start_dates = self.staffing_set.all().aggregate(Min("staffing_date")).values()
         if start_dates:
-            return start_dates[0]
+            return list(start_dates)[0]
         else:
             return None
 
@@ -277,7 +303,7 @@ class Mission(models.Model):
         mission_id = self.mission_id()
         mission_name = self.short_name()
         current_month = date.today().replace(day=1)  # Current month
-        subsidiary = unicode(self.subsidiary)
+        subsidiary = str(self.subsidiary)
         dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
         consultant_rates = self.consultant_rates()
         billing_mode = self.get_billing_mode_display()
@@ -295,7 +321,7 @@ class Mission(models.Model):
         staffingMonths = list(staffings.dates("staffing_date", "month"))
 
         for consultant in self.consultants():
-            consultant_name = unicode(consultant)
+            consultant_name = str(consultant)
             timesheet_data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
             timesheet_data = convertDictKeyToDate(timesheet_data)
             staffing_data = dict(staffings.filter(consultant=consultant).values_list("staffing_date").annotate(Sum("charge")).order_by("staffing_date"))
@@ -316,7 +342,7 @@ class Mission(models.Model):
 
 
     def get_absolute_url(self):
-        return reverse('staffing.views.mission_home', args=[str(self.id)])
+        return reverse('staffing:mission_home', args=[str(self.id)])
 
     class Meta:
         ordering = ["nature", "lead__client__organisation__company", "id", "description"]
@@ -334,15 +360,15 @@ class Holiday(models.Model):
 
 class Staffing(models.Model):
     """The staffing fact forecasting table: charge per month per consultant per mission"""
-    consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to={"active": True})
+    consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
+    mission = models.ForeignKey(Mission, limit_choices_to={"active": True}, on_delete=models.CASCADE)
     staffing_date = models.DateField(_("Date"))
     charge = models.FloatField(_("Load"), default=0)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
     last_user = models.CharField(max_length=60, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s/%s (%s): %s" % (self.staffing_date.month, self.staffing_date.year, self.consultant.trigramme, self.charge)
 
     def save(self, *args, **kwargs):
@@ -350,7 +376,7 @@ class Staffing(models.Model):
         super(Staffing, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("people.views.consultant_home", args=[str(self.consultant.trigramme)]) + "#tab-staffing"
+        return reverse("people:consultant_home", args=[str(self.consultant.trigramme)]) + "#tab-staffing"
 
     class Meta:
         unique_together = (("consultant", "mission", "staffing_date"),)
@@ -360,12 +386,12 @@ class Staffing(models.Model):
 
 class Timesheet(models.Model):
     """The staffing table: charge per day per consultant per mission"""
-    consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to={"active": True})
+    consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
+    mission = models.ForeignKey(Mission, limit_choices_to={"active": True}, on_delete=models.CASCADE)
     working_date = models.DateField(_("Date"))
     charge = models.FloatField(_("Load"), default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s: %s" % (self.working_date, self.consultant.trigramme, self.charge)
 
     class Meta:
@@ -377,7 +403,7 @@ class Timesheet(models.Model):
 class LunchTicket(models.Model):
     """Default is to give a lunck ticket every working day.
     Days without ticket (ie when lunch is paid by company) are tracked"""
-    consultant = models.ForeignKey(Consultant)
+    consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
     lunch_date = models.DateField(_("Date"))
     no_ticket = models.BooleanField(_("No lunch ticket"), default=True)
 
@@ -388,8 +414,8 @@ class LunchTicket(models.Model):
 
 class FinancialCondition(models.Model):
     """Mission financial condition"""
-    consultant = models.ForeignKey(Consultant)
-    mission = models.ForeignKey(Mission, limit_choices_to={"active": True})
+    consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
+    mission = models.ForeignKey(Mission, limit_choices_to={"active": True}, on_delete=models.CASCADE)
     daily_rate = models.IntegerField(_("Daily rate"))
     bought_daily_rate = models.IntegerField(_("Bought daily rate"), null=True, blank=True)  # For subcontractor only
 

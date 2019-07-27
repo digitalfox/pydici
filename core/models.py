@@ -33,6 +33,8 @@ _FEATURES_CHOICES = (
     ("staffing_mass", _("Staffing, mass edit: Access to mass staffing features")),
     ("timesheet_all", _("Timesheet, all: Access to all timesheets of all users")),
     ("timesheet_current_month", _("Timesheet, current month: Access to current month timesheets of all users")),
+    ("billing_management", _("Manage bills, allow to mark bills sent, paid etc.")),
+    ("billing_request", _("Create bills and proposed them to billing team ")),
 )
 
 FEATURES = set([x[0] for x in _FEATURES_CHOICES])
@@ -42,14 +44,14 @@ class GroupFeature(models.Model):
     """Represents whether a group has access to a certain feature. If Feature
     was a model, this would be the intermediary model between Feature and Group.
     """
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     feature = models.CharField(_("Feature"), max_length=80,
                                choices=_FEATURES_CHOICES)
     class Meta:
         unique_together = (('group', 'feature'))
 
-    def __unicode__(self):
-        return unicode(self.group) + '-' + unicode(self.feature)
+    def __str__(self):
+        return str(self.group) + '-' + str(self.feature)
 
 
 class Parameter(models.Model):

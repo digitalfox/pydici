@@ -1,7 +1,7 @@
 {# This template fragments can be included to display contact item in a table #}
 {# Context : contact object #}
    <tr>
-       <td><a rel=external href="{% url 'contact_detail' contact.id %}?return_to={% if mission %}{% url 'staffing.views.mission_home' mission.id %}#tab-contacts{% else %}{{ request.get_full_path }}{% endif %}">{{ contact.name }}</a></td>
+       <td><a rel=external href="{% url 'crm:contact_detail' contact.id %}?return_to={% if mission %}{% url 'staffing:mission_home' mission.id %}#tab-contacts{% else %}{{ request.get_full_path }}{% endif %}">{{ contact.name }}</a></td>
        <td>{{ contact.companies }}</td>
        <td>{{ contact.function }}</td>
        <td>{{ contact.email|urlize }}</td>

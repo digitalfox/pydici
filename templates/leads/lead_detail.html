@@ -1,6 +1,7 @@
 {% extends "core/pydici.html" %}
 
 {% load i18n %}
+{% load l10n %}
 {% load pydici_filters %}
 
 {% block title %}{{ lead }}{% endblock %}
@@ -21,28 +22,28 @@
     {% if active_count %}
     <ul class="pager" style="text-align:left">
 	    {% if previous_lead %}
-	        <li><a href="{% url 'leads.views.detail' previous_lead.id %}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+	        <li><a href="{% url 'leads:detail' previous_lead.id|unlocalize %}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
 	    {% endif %}
 	    {{ active_rank }} / {{ active_count }}
 	    {% if next_lead %}
-	        <li><a href="{% url 'leads.views.detail' next_lead.id %}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+	        <li><a href="{% url 'leads:detail' next_lead.id|unlocalize %}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
 	    {% endif %}
     </ul>
     {% endif %}
 
-    <h2><a href="{% url 'crm.views.company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a>
+    <h2><a href="{% url 'crm:company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a>
         {% with lead.client as client %}{% include "crm/_client_picto.html" %}{% endwith %}
-        - <a href="{% url 'leads.views.lead' lead.id %}" class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
+        - <a href="{% url 'leads:lead' lead.id|unlocalize %}" class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
 <div>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="lead-tabs">
-        <li class="active"><a data-toggle="tab" href="#tab-description"><span class="glyphicon glyphicon-home"> {% trans "Description" %}</a></li>
-        <li><a data-toggle="tab"href="#tab-missions"><span class="glyphicon glyphicon-list"> {% trans "Missions" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-billing"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
+        <li class="active"><a data-toggle="tab" href="#tab-description"><span class="glyphicon glyphicon-home"></span> {% trans "Description" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-missions"><span class="glyphicon glyphicon-list"></span> {% trans "Missions" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-billing" data-tab-url="{% url 'billing:lead_billing' lead.id|unlocalize %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
         <li><a data-toggle="tab" href="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads.views.lead_documents' lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads.views.lead_pivotable' lead.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads:lead_documents' lead.id|unlocalize %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>
+        <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' lead.id|unlocalize %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
         <li><a data-toggle="tab" href="#tab-history"><span class="glyphicon glyphicon-film"></span> {% trans "History" %}</a></li>
     </ul>
 </div>
@@ -53,14 +54,14 @@
             <div class="tag_banner alert alert-info">
         	    {% for tag in lead.tags.all %}
         	    <div id="tag_{{ tag.id }}" style="display:inline">
-        	    	<a href="{% url 'leads.views.tag' tag.id %}">{{ tag }}</a>
-        	    	<a class='tagrlink' href='javascript:;' onClick="$.get('{% url 'leads.views.remove_tag' tag.id lead.id %}', hide_tag);"><span class="glyphicon glyphicon-remove-circle"></span></a>&nbsp;
+        	    	<a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a>
+        	    	<a class='tagrlink' href='javascript:;' onClick="$.get('{% url 'leads:remove_tag' tag.id|unlocalize lead.id|unlocalize %}', hide_tag);"><span class="glyphicon glyphicon-remove-circle"></span></a>&nbsp;
                 </div>
         	    {% endfor %}
         	    <div id="newtags" style="display:inline"></div>
                 {% if perms.leads.change_lead %}
             	    <form id="tag_form" style="display:inline">
-            	        <input type="text", id="newtag", value="", maxlength="100" onclick="this.value='';"/>
+            	        <input type="text" id="newtag" value="" maxlength="100" onclick="this.value='';"/>
             	    </form>
             	    <br/>
             	    <div id="suggested">
@@ -117,7 +118,7 @@
             <table class="table table-hover table-striped table-condensed">
                 <tr>
                     <th>{% trans "Contact" %}</th>
-                    <td>{% if lead.client.contact %}<a href="{% url 'contact_detail' lead.client.contact.id %}">{{ lead.client.contact }}</a> {% else %}{% trans "Unknown" context "client" %} {% endif %} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}</td>
+                    <td>{% if lead.client.contact %}<a href="{% url 'crm:contact_detail' lead.client.contact.id %}">{{ lead.client.contact }}</a> {% else %}{% trans "Unknown" context "client" %} {% endif %} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}</td>
                 </tr>
                 <tr>
                     <th>{% trans "Deal id" %}</th><td>{{ lead.deal_id }}</td>
@@ -149,7 +150,7 @@
                     </tr>
                 {% endif %}
                 <tr>
-                    <th>{% trans "Due date" %}</th><td><span {% if lead.is_late %}style='color:red'{% endif %}>{{ lead.due_date|default_if_none:_("Unknown date") }}</span></td>
+                    <th>{% trans "Due date" %}</th><td><span {% if lead.is_late %} style='color:red'{% endif %}>{{ lead.due_date|default_if_none:_("Unknown date") }}</span></td>
                 </tr>
                 <tr>
                     <th>{% trans "Start date" %}</th><td>{{ lead.start_date|default_if_none:_("Unknown date") }}</td>
@@ -177,7 +178,7 @@
                 <table class="table table-hover table-striped table-condensed">
                     <tr><th>{% trans "Sold" %}</th>
                     <td>{% if lead.sales %}{{ lead.sales }} k€
-                        {% else %} <a href="{% url 'leads.views.lead' lead.id %}">{% trans "To be defined" %}</a>
+                        {% else %} <a href="{% url 'leads:lead' lead.id|unlocalize %}">{% trans "To be defined" %}</a>
                         {% endif %}</td></tr>
                     <tr><th>{% trans "Unused" %}</th><td>{{ lead.unused }} k€</td></tr>
                     <tr><th>{% trans "Margin over rate objective" %}</th><td>{{ lead.totalObjectiveMargin }} €</td></tr>
@@ -189,9 +190,15 @@
                 <h2>{% trans "Similar leads" %}</h2>
                 <table class="table table-hover table-striped table-condensed">
                     {% for similar_lead in similar_leads %}
-                        <tr><td><a href="{% url 'leads.views.detail' similar_lead.id %}", title='{{ similar_lead.description }}'>{{ similar_lead }}</a></td></tr>
+                        <tr><td><a href="{% url 'leads:detail' similar_lead.id|unlocalize %}" title='{{ similar_lead.description }}'>{{ similar_lead }}</a></td></tr>
                     {% endfor %}
                 </table>
+            </div>
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                {% if lead.administrative_notes %}
+                    <h2>{% trans "Administrative notes" %}</h2>
+                    <div class='well'>{{ lead.administrative_notes|pydici_simple_format }}</div>
+                {% endif %}
             </div>
         </div>
     </div> {# End of description tab #}
@@ -211,7 +218,7 @@
         </tr>
         {% for mission in lead.mission_set.all %}
         <tr>
-            <td><a href="{% url 'staffing.views.mission_home' mission.id %}">{{ mission }}</a></td>
+            <td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></td>
             <td>{{ mission.mission_id }}</td>
             <td>{{ mission.done_work_k.0 }}</td>
             <td>{{ mission.done_work_k.1|floatformat }}</td>
@@ -221,6 +228,14 @@
         {% endfor %}
         {% ifnotequal lead.mission_set.count 1 %}
     	    <tr>
+    	        <th>{% trans "Unused" %}</th>
+    	        <th></th>
+    	        <th></th>
+    	        <th></th>
+    	        <th>{{ lead.unused }}</th>
+    	        <th></th>
+    	    </tr>
+            <tr>
     	        <th>{% trans "Total" %}</th>
     	        <th></th>
     	        <th>{{ lead.done_work_k.0 }}</th>
@@ -232,7 +247,7 @@
         </table>
         </div>
         {% if perms.staffing.add_mission %}
-            <a class="btn btn-default" href="{% url 'staffing.views.create_new_mission_from_lead' lead.id %}">{% trans "Create a new mission for this lead" %}</a>
+            <a class="btn btn-default" href="{% url 'staffing:create_new_mission_from_lead' lead.id|unlocalize %}">{% trans "Create a new mission for this lead" %}</a>
         {% endif %}
     {% else %}
         <br/>
@@ -241,9 +256,7 @@
     </div> {# end of tab missions #}
 
 
-    <div id="tab-billing" class="tab-pane fade">
-        {% include "billing/_lead_billing.html" %}
-    </div>
+    <div id="tab-billing" class="tab-pane fade"></div>
 
     <div id="tab-actions" class="tab-pane fade">
         <h2>{% trans "Pending actions" %}</h2>
@@ -307,8 +320,8 @@ $(document).ready(function() {
         e.preventDefault();
         // send requests
         if ($("#newtag").val()) {
-	        $.post("{% url 'leads.views.add_tag' %}",
-	                { tag : $("#newtag").val(), lead_id : {{lead.id}} },
+	        $.post("{% url 'leads:add_tag' %}",
+	                { tag : $("#newtag").val(), lead_id : {{lead.id|unlocalize }} },
 	                function(data) {
 	                    if (data.tag_created) {
 	                        // Add new tag on list
@@ -324,11 +337,11 @@ $(document).ready(function() {
     });
 
     // Connect suggested tag to ajax request
-    $("#suggested a").click(function(e){
+    $("#suggested a").on("click", function(e){
         e.preventDefault();
         // send requests
-        $.post("{% url 'leads.views.add_tag' %}",
-                { tag : $(this).text(), lead_id : {{lead.id}} },
+        $.post("{% url 'leads:add_tag' %}",
+                { tag : $(this).text(), lead_id : {{lead.id|unlocalize}} },
                 function(data) {
 	                // Add new tag on list
 		var remove_link = "<a href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "')\"><span class=\"glyphicon glyphicon-remove-circle\"></span></a>";
@@ -355,12 +368,12 @@ function doc_keyUp(e) {
      * 80 : p*/
     {% if next_lead %}
      if ((39 == e.keyCode) || (78 == e.keyCode)) {
-         window.location.href = "{% url 'leads.views.detail' next_lead.id %}";
+         window.location.href = "{% url 'leads:detail' next_lead.id|unlocalize %}";
      }
     {% endif %}
     {% if previous_lead %}
      if ((37 == e.keyCode) || (80 == e.keyCode)) {
-         window.location.href = "{% url 'leads.views.detail' previous_lead.id %}";
+         window.location.href = "{% url 'leads:detail' previous_lead.id|unlocalize %}";
      }
     {% endif %}
 }

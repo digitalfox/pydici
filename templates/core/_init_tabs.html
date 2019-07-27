@@ -19,7 +19,7 @@ $(document).ready(function() {
     }
 
     // Bind click on tab event
-    $("#{{ tabs }} a" ).click(function (e) {
+    $("#{{ tabs }} a" ).on("click", function (e) {
        e.preventDefault();
        href = this.hash;
        displayBsTab($(this), href);
@@ -32,12 +32,14 @@ $(document).ready(function() {
         if (!url.match('#')) {
             // No hash, so we load first tab
             $('a[data-toggle="tab"]:first').trigger("shown.bs.tab");
-            $('#tab-home').load($('.active a').attr("data-tab-url"),function(result){
-                $('tab-content').find('.active a').tab('show');
-            });
+            if ($('.active a').attr("data-tab-url")) {
+                $('#tab-home').load($('.active a').attr("data-tab-url"),function(result){
+                    $('tab-content').find('.active a').tab('show');
+                });
+            }
         }else {
             var activeTab = $('[href=\\' + location.hash.replace(tabprefix,"") + ']');
-            activeTab.click();
+            activeTab.trigger("click");
         }
      };
 

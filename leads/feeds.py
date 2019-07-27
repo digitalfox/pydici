@@ -9,7 +9,7 @@ from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import ugettext as _
 
 from leads.models import Consultant, Lead
-from django.core import urlresolvers
+from django.urls import reverse
 
 
 class LeadFeed(Feed):
@@ -18,7 +18,7 @@ class LeadFeed(Feed):
     title_template = "leads/feed_title.txt"
 
     def link(self):
-        return urlresolvers.reverse("core.views.index")
+        return reverse("core:index")
 
     def item_pubdate(self, item):
         return item.update_date

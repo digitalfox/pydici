@@ -1,0 +1,32 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "All client bills" %}{% endblock %}
+
+{% block content %}
+
+<table id="clientbills_table" class="table table-striped table-hover table-condensed table-bordered" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th>{% trans "Bill id" %}</th>
+        <th>{% trans "Subsidiary" %}</th>
+        <th>{% trans "Lead" %}</th>
+        <th>{% trans "Creation date" %}</th>
+        <th>{% trans "State" %}</th>
+        <th>{% trans "Amount (€ excl tax)" %}</th>
+        <th>{% trans "Amount (€ incl tax)" %}</th>
+        <th>{% trans "Comments" %}</th>
+        <th>{% trans "File" %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+
+{% with "clientbills_table" as table_id %}
+    {% include "core/_datatables.html" %}
+{% endwith %}
+
+{% endblock %}

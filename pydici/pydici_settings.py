@@ -26,19 +26,15 @@ DOCUMENT_PROJECT_PATH = os.path.join(PYDICI_ROOTDIR, 'data/documents')
 DOCUMENT_PROJECT_URL_DIR = "http://localhost:9999/client/"
 # URL for files (may be the same as above)
 DOCUMENT_PROJECT_URL_FILE = "http://localhost:9999/client/"
-DOCUMENT_PROJECT_CLIENT_DIR = u"{name}_{code}"
-DOCUMENT_PROJECT_LEAD_DIR = u"{deal_id}_{name}"
-DOCUMENT_PROJECT_BUSINESS_DIR = u"commerce"
-DOCUMENT_PROJECT_DELIVERY_DIR = u"delivery"
-DOCUMENT_PROJECT_INPUT_DIR = u"input"
+DOCUMENT_PROJECT_CLIENT_DIR = "{name}_{code}"
+DOCUMENT_PROJECT_LEAD_DIR = "{deal_id}_{name}"
+DOCUMENT_PROJECT_BUSINESS_DIR = "commerce"
+DOCUMENT_PROJECT_DELIVERY_DIR = "delivery"
+DOCUMENT_PROJECT_INPUT_DIR = "input"
 
 # can be "cycle" or "keyboard"
 TIMESHEET_INPUT_METHOD = "cycle"
 TIMESHEET_DAY_DURATION = 7
-
-# INCWO_LOG_DIR must point to a dir where the `incwoimport` command can write.
-# It defaults to $PYDICI_PREFIX/incwo-log if not set.
-INCWO_LOG_DIR = os.path.join(PYDICI_ROOTDIR, 'incwo-log')
 
 # Telegram integration
 TELEGRAM_IS_ENABLED = False  # Wether to enable or not Telegram notifications
@@ -51,3 +47,17 @@ TELEGRAM_STICKERS = {
                         "happy": "BQADBAADQAADyIsGAAGMQCvHaYLU_AI",
                         "sad": "BQADBAADFQADyIsGAAEO_vKI0MR5bAI",
                     }
+
+# Nextcloud document tag integration
+
+NEXTCLOUD_TAG_IS_ENABLED = True # Wether to enable or not Nextcloud tag add/remove by Pydici
+# Nextcloud DB connection settings
+NEXTCLOUD_DB_DATABASE = "nextcloud"
+NEXTCLOUD_DB_HOST = "localhost"
+NEXTCLOUD_DB_USER= "root"
+NEXTCLOUD_DB_PWD = ""
+# Filter on a nextcloud particular storage. Get it with "SELECT * FROM oc_storages" and using the one that
+# is used for the file to be taggued
+NEXTCLOUD_DB_FILE_STORAGE = 1
+# Don't tag file of those types to prevent tag clutter in search
+NEXTCLOUD_DB_EXCLUDE_TYPES = ["httpd/unix-directory", "application/octet-stream"]
