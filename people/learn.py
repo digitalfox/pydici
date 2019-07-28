@@ -75,7 +75,7 @@ def consultant_cumulated_experience(consultant):
 def get_similarity_model():
     model = Pipeline([("vect", DictVectorizer(sparse=False)),
                       ("scaler", QuantileTransformer()),
-                      ("neigh", NearestNeighbors(n_neighbors=5, metric="cosine", algorithm="brute"))])
+                      ("neigh", NearestNeighbors(n_neighbors=5, metric="cosine", algorithm="auto"))])
 
     return model
 
