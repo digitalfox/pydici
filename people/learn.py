@@ -16,8 +16,7 @@ try:
     from sklearn.feature_extraction import DictVectorizer
     from sklearn.neighbors import NearestNeighbors
     from sklearn.pipeline import Pipeline
-    from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
-    from sklearn.impute import SimpleImputer
+    from sklearn.preprocessing import QuantileTransformer
 except ImportError:
     HAVE_SCIKIT = False
 
@@ -75,8 +74,7 @@ def consultant_cumulated_experience(consultant):
 ############# Model definition ##########################
 def get_similarity_model():
     model = Pipeline([("vect", DictVectorizer(sparse=False)),
-                      #("imputer", SimpleImputer(missing_values=0)),
-                      ("scaler", MaxAbsScaler()),
+                      ("scaler", QuantileTransformer()),
                       ("neigh", NearestNeighbors(n_neighbors=5, metric="cosine", algorithm="brute"))])
 
     return model

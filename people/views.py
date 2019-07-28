@@ -176,14 +176,16 @@ def similar_consultant(request):
             consultant = form.cleaned_data["consultant"]
             tags = form.cleaned_data["tags"]
             daily_rate = form.cleaned_data["daily_rate"]
+            experience = form.cleaned_data["experience"]
             if consultant:
                 result = predict_similar_consultant(form.cleaned_data["consultant"])
             if tags:
                 features = {tag.name: 1 for tag in tags}
-                features["avg_daily_rate"] = daily_rate
+                features["avg_daily_rate"] = float(daily_rate)
+                features["experience"] = float(experience)
                 result = predict_similar(features)
                 # Clean form in case user submited both consultant and tags
-                form = SimilarConsultantForm(initial={"tags": tags, "daily_rate": daily_rate})
+                form = SimilarConsultantForm(initial={"tags": tags, "daily_rate": daily_rate, "experience": experience})
 
     else:
         form = SimilarConsultantForm() # An unbound form
