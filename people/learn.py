@@ -16,7 +16,8 @@ try:
     from sklearn.feature_extraction import DictVectorizer
     from sklearn.neighbors import NearestNeighbors
     from sklearn.pipeline import Pipeline
-    from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, Imputer
+    from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
+    from sklearn.impute import SimpleImputer
 except ImportError:
     HAVE_SCIKIT = False
 
@@ -45,22 +46,22 @@ def consultant_cumulated_experience(consultant):
         weight = (today - end_date).days/30
         if weight < 1:
             weight = 1
-        weight = sqrt(weight)
+        weight = sqrt(sqrt(weight))
         weighted_charge = float(charge / weight)  # Knowledge decrease with time...
         if consultant == lead.responsible or (consultant.id,) in lead.mission_set.all().values_list("responsible"):
             weighted_charge *= 2  # It count twice when you managed the lead or mission
         for tag in lead.tags.all():
             features[tag.name] = features.get(tag.name, 0) + weighted_charge
 
-    features[u"Profil"] = float(consultant.profil.level)
+    features["Profil"] = float(consultant.profil.level)
     features[consultant.company.name] = 1.0
     features[consultant.manager.trigramme] = 1.0
     experience = Timesheet.objects.filter(consultant=consultant, mission__nature="PROD").aggregate(Min("working_date"),
                                                                                       Max("working_date"))
     if experience["working_date__max"] and experience["working_date__min"]:
-        features[u"experience"] = (experience["working_date__max"] - experience["working_date__min"]).days
+        features["experience"] = (experience["working_date__max"] - experience["working_date__min"]).days
     else:
-        features[u"experience"] = 0
+        features["experience"] = 0
 
     fc = consultant.getFinancialConditions(today - timedelta(365), today)
     days = sum(d for r, d in fc)
@@ -74,7 +75,7 @@ def consultant_cumulated_experience(consultant):
 ############# Model definition ##########################
 def get_similarity_model():
     model = Pipeline([("vect", DictVectorizer(sparse=False)),
-                      #("imputer", Imputer(missing_values=0)),
+                      #("imputer", SimpleImputer(missing_values=0)),
                       ("scaler", MaxAbsScaler()),
                       ("neigh", NearestNeighbors(n_neighbors=5, metric="cosine", algorithm="brute"))])
 
@@ -105,7 +106,6 @@ def predict_similar(features, scale=False):
         X = scaler.transform(X)
     indices = neigh.kneighbors(X, return_distance=True)
 
-    similar_consultants = []
     try:
         similar_consultants_ids = [consultants_ids[indice] for indice in indices[1][0]]
         for distance, consultant_rank in zip(indices[0][0], similar_consultants_ids):
