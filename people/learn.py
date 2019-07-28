@@ -35,7 +35,7 @@ SIMILARITY_THRESHOLD = 0.05 # below that, result are filtered
 
 ############# Features extraction ##########################
 
-def consultant_cumulated_experience(consultant):
+def consultant_cumulated_experience(consultant, only_tag=False):
     features = dict()
     timesheets = Timesheet.objects.filter(consultant=consultant, mission__nature="PROD").order_by("mission__id")
     timesheets = timesheets.values_list("mission__lead").annotate(Sum("charge"), Max("working_date"))
@@ -52,22 +52,24 @@ def consultant_cumulated_experience(consultant):
         for tag in lead.tags.all():
             features[tag.name] = features.get(tag.name, 0) + weighted_charge
 
-    features["Profil"] = float(consultant.profil.level)
-    features[consultant.company.name] = 1.0
-    features[consultant.manager.trigramme] = 1.0
-    experience = Timesheet.objects.filter(consultant=consultant, mission__nature="PROD").aggregate(Min("working_date"),
+    if not only_tag:
+        features["Profil"] = float(consultant.profil.level)
+        features[consultant.company.name] = 1.0
+        features[consultant.manager.trigramme] = 1.0
+        experience = Timesheet.objects.filter(consultant=consultant, mission__nature="PROD").aggregate(Min("working_date"),
                                                                                       Max("working_date"))
-    if experience["working_date__max"] and experience["working_date__min"]:
-        features["experience"] = (experience["working_date__max"] - experience["working_date__min"]).days
-    else:
-        features["experience"] = 0
+        if experience["working_date__max"] and experience["working_date__min"]:
+            features["experience"] = (experience["working_date__max"] - experience["working_date__min"]).days
+        else:
+            features["experience"] = 0
 
-    fc = consultant.getFinancialConditions(today - timedelta(365), today)
-    days = sum(d for r, d in fc)
-    if days:
-        features["avg_daily_rate"] = sum([r * d for r, d in fc]) / days / 1000
-    else:
-        features["avg_daily_rate"] = 0
+        fc = consultant.getFinancialConditions(today - timedelta(365), today)
+        days = sum(d for r, d in fc)
+        if days:
+            features["avg_daily_rate"] = sum([r * d for r, d in fc]) / days / 1000
+        else:
+            features["avg_daily_rate"] = 0
+
     return features
 
 

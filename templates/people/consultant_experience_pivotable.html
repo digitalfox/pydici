@@ -1,0 +1,50 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block extrajs %}
+    {% include "core/_c3.html" %}
+    {% include "core/_pivotable_header.html" %}
+{% endblock %}
+
+{% block title %}{% trans "Consultant cumulated experience pivot table" %}{% endblock %}
+
+{% block content %}
+        <h2>{% trans "Consultant cumulated experience" %}</h2>
+        <div id="type-selector" class="btn-group" role="group">
+            <button class="btn btn-default active" onclick="tag_per_consultant();">{% trans "Tag per consultant" %}</button>
+        </div>
+
+        <div id="pivotable-output" style="margin-top: 10px;"></div>
+
+        {% with output as "pivotable-output" %}
+            {% include "core/_pivotable_body.html" %}
+        {% endwith %}
+
+        <script type="text/javascript">
+
+            // Active state switcher
+            $(document).ready(function() {
+                $('#type-selector button').on("click", function() {
+                    $(this).addClass('active').siblings().removeClass('active');
+                 });
+            });
+
+            // Share data for all pivot tables
+            var data = {{ data|safe }};
+
+            // Preset definition
+            function tag_per_consultant() {
+                var rows = ["{% trans 'tag' %}"];
+                var cols = ["{% trans 'consultant' %}"];
+                options = {"colOrder": "value_z_to_a", "rowOrder": "value_z_to_a"};
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ['{% trans "value" %}'], options);
+            }
+
+            // default
+            tag_per_consultant();
+        </script>
+
+
+
+{% endblock %}

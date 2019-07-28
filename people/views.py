@@ -6,15 +6,17 @@ Pydici people views. Http request are processed here.
 """
 
 from datetime import date
+import json
 
 from django.shortcuts import render, redirect
 from django.http import Http404
+from django.views.decorators.cache import cache_page
 
 from people.models import Consultant
-from people.learn import predict_similar, predict_similar_consultant
+from people.learn import predict_similar, predict_similar_consultant, consultant_cumulated_experience
 from crm.models import Company
 from staffing.models import Holiday, Timesheet
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, pydici_feature
 from core.utils import working_days, previousMonth, nextMonth
 from people.forms import SimilarConsultantForm
 from people.utils import compute_consultant_tasks
@@ -194,3 +196,23 @@ def similar_consultant(request):
                   {"form": form,
                    "result": result,
                    "user": request.user})
+
+@pydici_non_public
+@pydici_feature("reports")
+@cache_page(60 * 60 * 4)
+def consultant_experience_pivotable(request):
+    """Display consultant experience on a pivottable"""
+    data = []
+    for consultant in Consultant.objects.filter(active=True, productive=True, subcontractor=False):
+        exp  = consultant_cumulated_experience(consultant, only_tag=True)
+        trigramme = consultant.trigramme
+        subsidiary = consultant.company.name
+        for tag, value in exp.items():
+            data.append({"consultant": trigramme,
+                         "subsidiary": subsidiary,
+                         "tag": tag,
+                         "value": value})
+
+    return render(request, "people/consultant_experience_pivotable.html",
+                  {"data": json.dumps(data),
+                   "derivedAttributes": "{}"})

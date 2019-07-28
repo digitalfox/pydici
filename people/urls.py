@@ -13,4 +13,5 @@ people_urls = [url(r'^home/consultant/(?P<consultant_id>\d+)/$', v.consultant_ho
                url(r'^detail/consultant/(?P<consultant_id>\d+)/$', v.consultant_detail, name="consultant_detail"),
                url(r'^detail/subcontractor/(?P<consultant_id>\d+)/$', v.subcontractor_detail, name="subcontractor_detail"),
                url(r'^similar_consultant/$', v.similar_consultant, name="similar_consultant"),
+               url(r'^consultant_experience_pivotable/$', v.consultant_experience_pivotable, name="consultant_experience_pivotable"),
                ]
