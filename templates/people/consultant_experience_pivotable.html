@@ -12,7 +12,8 @@
 {% block content %}
         <h2>{% trans "Consultant cumulated experience" %}</h2>
         <div id="type-selector" class="btn-group" role="group">
-            <button class="btn btn-default active" onclick="tag_per_consultant();">{% trans "Tag per consultant" %}</button>
+            <button class="btn btn-default active" onclick="stackbar_per_consultant();">{% trans "Stackbar" %}</button>
+            <button class="btn btn-default" onclick="heatmap();">{% trans "Heatmap" %}</button>
         </div>
 
         <div id="pivotable-output" style="margin-top: 10px;"></div>
@@ -34,7 +35,14 @@
             var data = {{ data|safe }};
 
             // Preset definition
-            function tag_per_consultant() {
+            function heatmap() {
+                var rows = ["{% trans 'tag' %}"];
+                var cols = ["{% trans 'consultant' %}"];
+                options = {"colOrder": "value_z_to_a", "rowOrder": "value_z_to_a"};
+                drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "value" %}'], options);
+            }
+
+            function stackbar_per_consultant() {
                 var rows = ["{% trans 'tag' %}"];
                 var cols = ["{% trans 'consultant' %}"];
                 options = {"colOrder": "value_z_to_a", "rowOrder": "value_z_to_a"};
@@ -42,7 +50,7 @@
             }
 
             // default
-            tag_per_consultant();
+            stackbar_per_consultant();
         </script>
 
 
