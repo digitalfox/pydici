@@ -390,7 +390,7 @@
                 <th>{% trans "Company" %}</th>
                 <th>{% trans "Function" %}</th>
                 <th>{% trans "Email" %}</th>
-                <th>{% trans "Standard phone" %}</th>
+                <th>{% trans "Phone Switchboard" %}</th>
                 <th>{% trans "Mobile phone" %}</th>
                 <th>{% trans "Fax" %}</th>
             </tr>
@@ -401,7 +401,7 @@
                     <td>
                     {% if admincontact.contact %}
                         {% if pydici_feature.contacts_write %}
-                            <a rel=external href="{% url 'crm:contact_update' admincontact.contact.id %}?return_to={{ request.get_full_path }}">
+                            <a rel=external href="{% url 'crm:administrative_contact_update' admincontact.id %}?return_to={{ request.get_full_path }}">
                             {{ admincontact.contact.name }}
                             </a>
                         {% else %}
