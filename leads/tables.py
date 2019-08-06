@@ -93,12 +93,13 @@ class ActiveLeadTableDT(LeadTableDT):
 class RecentArchivedLeadTableDT(ActiveLeadTableDT):
     columns = ["client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba",
                "creation_date", "start_date", "update_date"]
+    order_columns = columns
     def get_initial_queryset(self):
         today = datetime.today()
         delay = timedelta(days=40)
         qs = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
                                                             Q(state="SLEEPING"))
-        qs = qs.order_by("state", "-update_date").select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+        qs = qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
         return qs
 
 
