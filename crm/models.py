@@ -472,14 +472,17 @@ class AdministrativeContact(models.Model):
 
     def phone(self):
         """Best phone number to use"""
+        # Default to phone switch board
+        if self.default_phone:
+            return self.default_phone
         if self.contact:
             # Use contact phone if defined
             if self.contact.mobile_phone:
                 return self.contact.mobile_phone
             elif self.contact.phone:
                 return self.contact.phone
-        # Default to phone switch board
-        return self.default_phone
+        # Bad luck...
+        return ""
 
     def email(self):
         """Best email address to use"""
