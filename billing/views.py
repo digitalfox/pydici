@@ -10,6 +10,7 @@ import mimetypes
 from collections import defaultdict
 import json
 from io import BytesIO
+import os
 
 from django.core.files.base import ContentFile
 from os.path import basename
@@ -282,15 +283,20 @@ def client_bill(request, bill_id=None):
                 success_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
             else:
                 success_url = request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
-                if not bill.bill_file:
-                    fake_http_request = request
-                    fake_http_request.method = "GET"
-                    response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
-                    pdf = response.rendered_content.read()
-                    filename = bill_pdf_filename(bill)
-                    content = ContentFile(pdf, name=filename)
-                    bill.bill_file.save(filename, content)
-                    bill.save()
+                if bill.bill_file:
+                    messages.add_message(request, messages.WARNING, _("A new bill is generated and replace the previous one"))
+                    os.remove(bill.bill_file.path)
+                else:
+                    messages.add_message(request, messages.INFO,
+                                         _("A new bill file has been generated"))
+                fake_http_request = request
+                fake_http_request.method = "GET"
+                response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
+                pdf = response.rendered_content.read()
+                filename = bill_pdf_filename(bill)
+                content = ContentFile(pdf, name=filename)
+                bill.bill_file.save(filename, content)
+                bill.save()
             return HttpResponseRedirect(success_url)
     else:
         if bill:
