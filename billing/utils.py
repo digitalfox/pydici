@@ -218,37 +218,42 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
 
     return json.dumps(data)
 
-def switch_bill_id(nature, dry_run=True):
+def switch_bill_id(nature, dry_run=True, verbose=True):
     """Rename bill files/directories using technical bill.id instead of bill.bill_id"""
     base_location = path.join(settings.PYDICI_ROOTDIR, "data", "bill", nature)
-    print(base_location)
+
     if nature == "supplier":
         Bill = apps.get_model("billing", "supplierbill")
+        bills = Bill.objects.all()
         funct_id = "supplier_bill_id"
-    else:
+    elif nature == "client":
         Bill = apps.get_model("billing", "clientbill")
+        bills = Bill.objects.exclude(state__in=("0_DRAFT", "0_PROPOSED"))
         funct_id = "bill_id"
+    else:
+        print("Nature must be 'client' or 'supplier'")
+        return
 
-
-    for bill in Bill.objects.all():
+    for bill in bills:
         bill_id = getattr(bill, funct_id)
-        print("=" * 10)
-        print("Bill (f=%s, t=%s)" % (bill_id , bill.id))
+        if verbose:
+            print("=" * 10)
+            print("Functionnal id is %s -- Technical id is %s" % (bill_id , bill.id))
         if bill.bill_file:
             bill_path = path.join(base_location, bill.bill_file.name)
             if path.exists(bill_path):
-                print("current file %s" % bill_path)
                 bill_dir = path.abspath(path.dirname((bill_path)))
-                if len(os.listdir(bill_dir)) != 1:
+                if verbose and len(os.listdir(bill_dir)) != 1:
                     print("WARNING, more than one file for this bill in path %s" % bill_dir)
                 new_bill_dir = path.abspath(path.join(bill_dir, path.pardir, str(bill.id)))
-                print("would rename %s to %s" % (bill_dir, new_bill_dir))
+                print("About to rename %s to %s" % (bill_dir, new_bill_dir))
                 if not dry_run:
                     os.rename(bill_dir, new_bill_dir)
                     bill.bill_file.name = path.join(new_bill_dir, path.basename(bill_path))
                     bill.save()
             else:
-                print("WARNING, bill file does not exist (did you already moved it ? %s" % bill_path)
-        else:
+                if verbose:
+                    print("WARNING, bill file does not exist (did you already moved it ? %s" % bill_path)
+        elif verbose:
             print("WARNING, no file for this bill")
 
