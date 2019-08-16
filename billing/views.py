@@ -300,6 +300,7 @@ def client_bill(request, bill_id=None):
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
         else:
             # Still no bill, let's create it with its detail if at least mission or lead has been provided
+            mission = None
             if request.GET.get("lead"):
                 lead = Lead.objects.get(id=request.GET.get("lead"))
                 mission = lead.mission_set.first()  # take the first
