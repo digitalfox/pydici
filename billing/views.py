@@ -12,7 +12,6 @@ import json
 from io import BytesIO
 import os
 
-from django.core.files.base import ContentFile
 from os.path import basename
 import logging
 
@@ -20,7 +19,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
 from django.utils import translation
-from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.db.models import Sum, Q, F, Min, Max, Count
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
@@ -37,7 +36,7 @@ from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
 from PyPDF2 import PdfFileMerger, PdfFileReader
 
 from billing.utils import get_billing_info, create_client_bill_from_timesheet, create_client_bill_from_proportion, \
-    bill_pdf_filename, get_client_billing_control_pivotable_data
+    bill_pdf_filename, get_client_billing_control_pivotable_data, generate_bill_pdf
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
@@ -234,7 +233,6 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
             translation.activate(old_lang)
 
 
-
 class BillPdf(Bill, WeasyTemplateView):
     response_class = BillAnnexPDFTemplateResponse
 
@@ -284,22 +282,23 @@ def client_bill(request, bill_id=None):
             else:
                 success_url = request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
                 if bill.bill_file:
-                    messages.add_message(request, messages.WARNING, _("A new bill is generated and replace the previous one"))
-                    os.remove(bill.bill_file.path)
+                    if form.changed_data == ["state"] and billDetailFormSet is None and billExpenseFormSet is None:
+                        # only state has change. No need to regenerate bill file.
+                        messages.add_message(request, messages.INFO, _("Bill state has beed updated"))
+                    else:
+                        # bill file exist but authorized admin change it. Let's generate again bill file
+                        messages.add_message(request, messages.WARNING, _("A new bill is generated and replace the previous one"))
+                        if os.path.exists(bill.bill_file.path):
+                            os.remove(bill.bill_file.path)
+                        generate_bill_pdf(bill, request)
                 else:
-                    messages.add_message(request, messages.INFO,
-                                         _("A new bill file has been generated"))
-                fake_http_request = request
-                fake_http_request.method = "GET"
-                response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
-                pdf = response.rendered_content.read()
-                filename = bill_pdf_filename(bill)
-                content = ContentFile(pdf, name=filename)
-                bill.bill_file.save(filename, content)
-                bill.save()
+                    # Bill file still not exist. Let's create it
+                    messages.add_message(request, messages.INFO, _("A new bill file has been generated"))
+                    generate_bill_pdf(bill, request)
             return HttpResponseRedirect(success_url)
     else:
         if bill:
+            # Create a form to edit the given bill
             form = ClientBillForm(instance=bill)
             if bill.state in wip_status:
                 billDetailFormSet = BillDetailFormSet(instance=bill)
@@ -327,6 +326,7 @@ def client_bill(request, bill_id=None):
                 billDetailFormSet = BillDetailFormSet(instance=bill)
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
             else:
+                # Simple virgin new form
                 form = ClientBillForm()
     return render(request, "billing/client_bill_form.html",
                   {"bill_form": form,

@@ -16,6 +16,7 @@ from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
 from django.utils.translation import ugettext as _
 from django.conf import settings
+from django.core.files.base import ContentFile
 
 from core.utils import to_int_or_round, nextMonth
 
@@ -217,6 +218,19 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                         data.append(mission_month_consultant_data)
 
     return json.dumps(data)
+
+
+def generate_bill_pdf(bill, request):
+    """Generate bill pdf file and update bill object with file path"""
+    from billing.views import BillPdf  # Local to avoid circular import
+    fake_http_request = request
+    fake_http_request.method = "GET"
+    response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
+    pdf = response.rendered_content.read()
+    filename = bill_pdf_filename(bill)
+    content = ContentFile(pdf, name=filename)
+    bill.bill_file.save(filename, content)
+    bill.save()
 
 def switch_bill_id(nature, dry_run=True, verbose=True):
     """Rename bill files/directories using technical bill.id instead of bill.bill_id"""
