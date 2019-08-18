@@ -12,7 +12,7 @@ import json
 from django.shortcuts import render
 from django.db.models import Q, Sum, Min, Max
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.core.cache import cache
@@ -62,6 +62,20 @@ def search(request):
     consultants = companies = contacts = leads = missions = bills = tags = None
     max_record = 50
     more_record = False # Wether we have more records
+
+    if len(words) == 1:
+        word = words[0]
+        # Try to find perfect match
+        try:
+            lead = Lead.objects.get(deal_id=word)
+            return HttpResponseRedirect(lead.get_absolute_url())
+        except Lead.DoesNotExist:
+            pass
+        try:
+            consultant = Consultant.objects.get(trigramme=word)
+            return HttpResponseRedirect(consultant.get_absolute_url())
+        except Consultant.DoesNotExist:
+            pass
 
     if words:
         # Consultant
