@@ -49,8 +49,8 @@
                     <td>{{ bill.amount|floatformat:-2 }}</td>
                     <td>{{ bill.creation_date }}</td>
                     <td>{{ bill.due_date }}</td>
-                    <td>{{ bill.payment_date }}</td>
-                    <td>{{ bill.comment }}</td>
+                    <td>{{ bill.payment_date|default_if_none:"" }}</td>
+                    <td>{{ bill.comment|default_if_none:"" }}</td>
                     <td><a href='{{ bill.bill_file_url }}'><span class="glyphicon glyphicon-file"></span></a></td>
                 </tr>
             {% endfor %}
@@ -92,8 +92,8 @@
                     <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
                     <td>{{ bill.creation_date }}</td>
                     <td>{{ bill.due_date }}</td>
-                    <td>{{ bill.payment_date }}</td>
-                    <td>{{ bill.comment }}</td>
+                    <td>{{ bill.payment_date|default_if_none:"" }}</td>
+                    <td>{{ bill.comment|default_if_none:"" }}</td>
                     <td><a href='{{ bill.bill_file_url }}'><span class="glyphicon glyphicon-file"></span></a></td>
                 </tr>
             {% endfor %}

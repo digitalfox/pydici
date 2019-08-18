@@ -152,7 +152,9 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                      _("client organisation"): str(lead.client.organisation),
                      _("client company"): str(lead.client.organisation.company),
                      _("broker"): str(lead.business_broker or _("Direct")),
-                     _("subsidiary") :str(lead.subsidiary)}
+                     _("subsidiary") :str(lead.subsidiary),
+                     _("responsible"): str(lead.responsible),
+                     _("consultant"): "-"}
         # Add legacy bills non related to specific mission (ie. not using pydici billing, just header and pdf payload)
         legacy_bills = ClientBill.objects.filter(lead=lead, state__in=bill_state).annotate(Count("billdetail")).filter(billdetail__count=0)
         for legacy_bill in legacy_bills:
@@ -160,7 +162,6 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
             legacy_bill_data[_("amount")] = - float(legacy_bill.amount or 0)
             legacy_bill_data[_("month")] = legacy_bill.creation_date.replace(day=1).isoformat()
             legacy_bill_data[_("type")] = _("Service bill")
-            legacy_bill_data[_("consultant")] = "-"
             legacy_bill_data[_("mission")] = "-"
             mission = lead.mission_set.first()
             if mission:  # default to billing mode of first mission. Not 100% accurate...
@@ -188,7 +189,6 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
             if mission.billing_mode == "FIXED_PRICE":
                 for billDetail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state):
                     mission_fixed_price_data = mission_data.copy()
-                    mission_fixed_price_data[_("consultant")] = "-"
                     mission_fixed_price_data[_("month")] = billDetail.bill.creation_date.replace(day=1).isoformat()
                     mission_fixed_price_data[_("type")] = _("Service bill")
                     mission_fixed_price_data[_("amount")] = -float(billDetail.amount or 0)
@@ -234,6 +234,7 @@ def generate_bill_pdf(bill, request):
 
 def switch_bill_id(nature, dry_run=True, verbose=True):
     """Rename bill files/directories using technical bill.id instead of bill.bill_id"""
+    #TODO: onetime script. Could be removed in short future.
     base_location = path.join(settings.PYDICI_ROOTDIR, "data", "bill", nature)
 
     if nature == "supplier":
