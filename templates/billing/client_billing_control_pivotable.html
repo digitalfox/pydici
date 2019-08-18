@@ -1,0 +1,78 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block extrajs %}
+    {% include "core/_c3.html" %}
+    {% include "core/_pivotable_header.html" %}
+{% endblock %}
+
+{% block title %}{% trans "Client billing control pivot table" %}{% endblock %}
+
+{% block content %}
+
+<h3>{% trans "Client billing control pivot table" %}</h3>
+<p>{% trans "Based on timesheet activity and clients bills" %}</p>
+
+<div class="row col-md-12">
+    <div id="type-selector" class="btn-group" role="group">
+        <button class="btn btn-default active" onclick="balance_per_month_table();">{% trans "Balance per month (table)" %}</button>
+        <button class="btn btn-default" onclick="balance_per_month_bargraph();">{% trans "Balance per month (bargraph)" %}</button>
+        <button class="btn btn-default" onclick="balance_per_client();">{% trans "Balance per client" %}</button>
+        <button class="btn btn-default" onclick="balance_per_billing_mode();">{% trans "Balance per billing mode" %}</button>
+    </div>
+</div>
+
+<div class="row"></div>
+
+<div id="pivotable-output" style="margin-top: 10px;"></div>
+
+{% with output as "pivotable-output" %}
+    {% include "core/_pivotable_body.html" %}
+{% endwith %}
+
+<script type="text/javascript">
+
+    // Active state switcher
+    $(document).ready(function() {
+        $('#type-selector button').on("click", function() {
+            $(this).addClass('active').siblings().removeClass('active');
+         });
+    });
+
+    // Share data for all pivot tables
+    var data = {{ data|safe }};
+
+    // Preset definition
+    function balance_per_month_table() {
+        var rows = ["{% trans 'month' %}"];
+        var cols = ["{% trans 'subsidiary' %}", "{% trans 'type' %}"];
+        drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ["{% trans 'amount' %}"]);
+    }
+
+    function balance_per_month_bargraph() {
+        var rows = ["{% trans 'subsidiary' %}"];
+        var cols = ["{% trans 'month' %}"];;
+        drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ["{% trans 'amount' %}"]);
+    }
+
+    function balance_per_client() {
+        var rows = ["{% trans 'subsidiary' %}"];
+        var cols = ["{% trans 'client company' %}"];
+        var options = {};
+        options["colOrder"] = "value_z_to_a";
+        drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'amount' %}"], options);
+    }
+
+    function balance_per_billing_mode() {
+        var rows = ["{% trans 'billing mode' %}"];
+        var cols = ["{% trans 'subsidiary' %}"];
+        drawPivot(data, rows, cols, "Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'amount' %}"]);
+    }
+
+    // default
+    balance_per_month_table();
+
+</script>
+
+{% endblock %}

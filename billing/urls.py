@@ -11,6 +11,7 @@ import billing.tables as t
 
 
 billing_urls = [url(r'^bill_review', v.bill_review, name="bill_review"),
+                url(r'^client_billing_control$', v.client_billing_control_pivotable, name='client_billing_control_pivotable'),
                 url(r'^bill_delay', v.bill_payment_delay, name="bill_payment_delay"),
                 url(r'^bill/(?P<bill_id>\d+)/mark_bill_paid$', v.mark_bill_paid, name="mark_bill_paid"),
                 url(r'^file/(?P<nature>.+)/(?P<bill_id>\d+)$', v.bill_file, name="bill_file"),
@@ -31,6 +32,7 @@ billing_urls = [url(r'^bill_review', v.bill_review, name="bill_review"),
                 url(r'^pre_billing/mine$', v.pre_billing, {"mine": True, }, name="pre_billing"),
                 url(r'^pre_billing/(?P<year>\d+)/(?P<month>\d+)/$', v.pre_billing, {"mine": False, }, name="pre_billing"),
                 url(r'^pre_billing/(?P<year>\d+)/(?P<month>\d+)/mine$', v.pre_billing, {"mine": True, }, name="pre_billing"),
+                url(r'lead_blling/(?P<lead_id>\d+)$', v.lead_billing, name="lead_billing"),
                 url(r'^datatable/client_bills_in_creation/data/$', t.ClientBillInCreationTableDT.as_view(), name='client_bills_in_creation_DT'),
                 url(r'^datatable/client_bills_archive/data/$', t.ClientBillArchiveTableDT.as_view(), name='client_bills_archive_DT'),
                 url(r'^datatable/supplier_bills_archive/data/$', t.SupplierBillArchiveTableDT.as_view(), name='supplier_bills_archive_DT'),

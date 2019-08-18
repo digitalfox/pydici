@@ -9,6 +9,7 @@ from datetime import date, timedelta, datetime
 import csv
 import json
 from itertools import zip_longest
+import codecs
 
 from django.core.cache import cache
 from django.shortcuts import render, redirect
@@ -38,7 +39,8 @@ from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, get_fiscal_years
+    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, \
+    get_fiscal_years_from_qs, get_fiscal_year
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
@@ -211,7 +213,7 @@ def consultant_staffing(request, consultant_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def mass_staffing(request):
     """Massive staffing form"""
-    staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime")]
+    staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=24)]
     now = datetime.now().replace(microsecond=0)  # Remove useless microsecond that pollute form validation in callback
     if request.method == 'POST':  # If the form has been submitted...
         form = MassStaffingForm(request.POST, staffing_dates=staffing_dates)
@@ -781,6 +783,8 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
     # This "view" is never called directly but only through consultant_timesheet view
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
 
     # Header
@@ -984,6 +988,8 @@ def mission_csv_timesheet(request, mission, consultants):
     # This "view" is never called directly but only through consultant_timesheet view
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s.csv" % mission.mission_id()
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
     for line in timesheet_report_data(mission, padding=True):
         writer.writerow(line)
@@ -1098,6 +1104,8 @@ def all_timesheet(request, year=None, month=None):
 def all_csv_timesheet(request, charges, month):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
 
     # Header
@@ -1119,6 +1127,8 @@ def detailed_csv_timesheet(request, year=None, month=None):
     Intended for accounting third party system or spreadsheet analysis"""
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("timesheet.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
 
     if year and month:
@@ -1225,7 +1235,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
 
     timesheets = Timesheet.objects.filter(mission__nature=nature, working_date__lte=date.today())
 
-    years = get_fiscal_years(timesheets, "working_date")
+    years = get_fiscal_years_from_qs(timesheets, "working_date")
 
     if not years:
         return HttpResponse()
@@ -1409,7 +1419,7 @@ def turnover_pivotable(request, year=None):
 
     subsidiaries = Subsidiary.objects.all()
 
-    years = get_fiscal_years(missions, "lead__creation_date")
+    years = get_fiscal_years_from_qs(missions, "lead__creation_date")
 
     if year is None and years:
         year = years[-1]
@@ -1435,6 +1445,7 @@ def turnover_pivotable(request, year=None):
                          _("broker"): str(mission.lead.business_broker or _("Direct")),
                          _("subsidiary"): str(mission.subsidiary)}
         for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):
+            fiscal_year = get_fiscal_year(month)
             if year != "all" and (month < start or month >= end):
                 continue  # Skip mission if outside period
             mission_month_data = mission_data.copy()
@@ -1452,12 +1463,14 @@ def turnover_pivotable(request, year=None):
             mission_month_data[_("internal subcontractor turnover (€)")] = turnover_with_internal_subcontractor - own_turnover
             mission_month_data[_("own turnover (€)")] = own_turnover
             mission_month_data[_("month")] = month.isoformat()
+            mission_month_data[_("fiscal year")] = fiscal_year
             data.append(mission_month_data)
             # Handle internal subcontractor for this mission
             for subsidiary in subsidiaries.exclude(id=mission.subsidiary_id):
                 subsidiary_month_data = mission_data.copy()
                 subsidiary_month_data[_("subsidiary")] = str(subsidiary)
                 subsidiary_month_data[_("month")] = month.isoformat()
+                subsidiary_month_data[_("fiscal year")] = fiscal_year
                 subsidiary_turnover = int(mission.done_work_period(month, next_month, include_external_subcontractor=False,
                                                                    filter_on_subsidiary=subsidiary)[1])
                 if subsidiary_turnover > 0:

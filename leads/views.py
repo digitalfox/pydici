@@ -9,7 +9,7 @@ import csv
 from datetime import datetime, timedelta, date
 import json
 import os
-import sys
+import codecs
 from collections import defaultdict
 
 
@@ -33,8 +33,9 @@ from leads.utils import postSaveLead
 from leads.utils import tag_leads_files, remove_lead_tag, merge_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
-from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years
+from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years_from_qs
 from core.decorator import pydici_non_public, pydici_feature
+from billing.utils import get_client_billing_control_pivotable_data
 from people.models import Consultant
 
 
@@ -205,6 +206,8 @@ def lead_documents(request, lead_id):
 def csv_export(request, target):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=%s" % _("leads.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
     writer = csv.writer(response, delimiter=';')
     writer.writerow([_("Name"), _("Client"), _("Description"), _("Managed by"), _("Salesman"), _("Starting"),
                                 _("State"), _("Due date"), _("Staffing"), _("Sales (k€)"), _("Creation"),
@@ -458,7 +461,7 @@ def leads_pivotable(request, year=None):
     if not leads:
         return HttpResponse()
 
-    years = get_fiscal_years(leads, "creation_date")
+    years = get_fiscal_years_from_qs(leads, "creation_date")
 
     if year is None and years:
         year = years[-1]

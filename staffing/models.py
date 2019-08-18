@@ -162,13 +162,15 @@ class Mission(models.Model):
 
     def done_work_period(self, start, end, include_internal_subcontractor=True,
                          include_external_subcontractor=True,
-                         filter_on_subsidiary=None):
+                         filter_on_subsidiary=None,
+                         filter_on_consultant=None):
         """Compute done work according to timesheet for this mission
         @start: starting date (included)
         @end: ending date (excluded)
         @include_internal_subcontractor: to include (default) or not internal (other subsidiaries) consultants
         @include_external_subcontractor: to include (default) or not external subcontractor
         @filter_on_subsidiary: filter done work on consultant subsidiary. None (default) is all.
+        @filter_on_consultant: filter done work only on given consultant. None (default) is all.
         @return: (done work in days, done work in euros)"""
         rates = dict([(i.id, j[0]) for i, j in self.consultant_rates().items()])  # switch to consultant id
         days = 0
@@ -184,6 +186,8 @@ class Mission(models.Model):
             timesheets = timesheets.filter(consultant__company=F("mission__subsidiary"))
         if filter_on_subsidiary:
             timesheets = timesheets.filter(consultant__company=filter_on_subsidiary)
+        if filter_on_consultant:
+            timesheets = timesheets.filter(consultant=filter_on_consultant)
         timesheets = timesheets.values_list("consultant").annotate(Sum("charge")).order_by()
         for consultant_id, charge in timesheets:
             days += charge

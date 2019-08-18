@@ -40,11 +40,9 @@ class BillStorage(FileSystemStorage):
         try:
             bill_id = os.path.split(dirname(name))[1]
             if self.nature == "client":
-                bill = ClientBill.objects.get(bill_id=bill_id)
-                return reverse("billing:bill_file", kwargs={"bill_id": bill.id, "nature": "client"})
+                return reverse("billing:bill_file", kwargs={"bill_id": bill_id, "nature": "client"})
             else:
-                bill = SupplierBill.objects.get(bill_id=bill_id)
-                return reverse("billing:bill_file", kwargs={"bill_id": bill.id, "nature": "supplier"})
+                return reverse("billing:bill_file", kwargs={"bill_id": bill_id, "nature": "supplier"})
         except Exception:
             # Don't display URL if Bill does not exist or path is invalid
             return ""
@@ -55,7 +53,7 @@ class BillStorage(FileSystemStorage):
 def bill_file_path(instance, filename):
     """Format relative path to Storage of bill"""
     return join(strftime("%Y"), strftime("%m"),
-                instance.bill_id, sanitizeName(filename))
+                str(instance.id), sanitizeName(filename))
 
 
 def default_due_date():
@@ -209,7 +207,7 @@ class SupplierBill(AbstractBill):
         total_expected = 0
         already_paid = SupplierBill.objects.filter(supplier=self.supplier, lead=self.lead,
                                                    state__in=("1_VALIDATED", "2_PAID"))
-        already_paid = already_paid.aggregate(Sum("amount"))["amount__sum"]
+        already_paid = already_paid.aggregate(Sum("amount"))["amount__sum"] or 0
 
         for mission in self.lead.mission_set.all():
             rates = dict([(i.id, j[1]) for i, j in mission.consultant_rates().items()])  # switch to consultant id

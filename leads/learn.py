@@ -129,8 +129,6 @@ def extract_leads_similarity(leads, normalizer):
     """Extract leads features for similarity learning"""
     features = []
     sales = []
-    if isinstance(leads, QuerySet):
-        leads = leads.select_related("subsidiary").prefetch_related("tags")
     for lead in leads:
         d = get_lead_similarity_data(lead)
         sales.append([d["sales"],])
@@ -431,16 +429,13 @@ def compute_lead_similarity():
 
     model = cache.get(SIMILARITY_MODEL_CACHE_KEY)
     if model is None:
-        leads = Lead.objects.all()
+        leads = Lead.objects.all().select_related("subsidiary")
         if leads.count() < 5:
             # Cannot learn anything with so few data
             return
-        learn_features = []
         scaler = MinMaxScaler()
         learn_features, scaler = extract_leads_similarity(leads, scaler)
         features, scaler = extract_leads_similarity(leads, scaler)
-        #for lead in leads:
-        #    learn_features.append(get_lead_similarity_data(lead))
         model = get_similarity_model()
         model.fit(learn_features)
         cache.set(SIMILARITY_MODEL_CACHE_KEY, model, 3600 * 24 * 7)

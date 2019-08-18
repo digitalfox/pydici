@@ -59,3 +59,5 @@ NEXTCLOUD_DB_PWD = ""
 # Filter on a nextcloud particular storage. Get it with "SELECT * FROM oc_storages" and using the one that
 # is used for the file to be taggued
 NEXTCLOUD_DB_FILE_STORAGE = 1
+# Don't tag file of those types to prevent tag clutter in search
+NEXTCLOUD_DB_EXCLUDE_TYPES = ["httpd/unix-directory", "application/octet-stream"]

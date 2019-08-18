@@ -14,7 +14,7 @@
                             rows: rows,
                             cols: cols,
                             renderers: renderers,
-                            derivedAttributes: {{ derivedAttributes|safe }},
+                            {% if derivedAttributes %}derivedAttributes: {{ derivedAttributes|safe }}, {% endif %}
                             rendererName: rendererName,
                             aggregatorName: aggregatorName,
                             vals: vals,

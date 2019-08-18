@@ -258,6 +258,7 @@ class BusinessBroker(models.Model):
     as a partner to provide some business"""
     company = models.ForeignKey(Company, verbose_name=_("Broker company"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)
+    billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
 
     def __str__(self):
         if self.company:
@@ -471,14 +472,17 @@ class AdministrativeContact(models.Model):
 
     def phone(self):
         """Best phone number to use"""
+        # Default to phone switch board
+        if self.default_phone:
+            return self.default_phone
         if self.contact:
             # Use contact phone if defined
             if self.contact.mobile_phone:
                 return self.contact.mobile_phone
             elif self.contact.phone:
                 return self.contact.phone
-        # Default to phone switch board
-        return self.default_phone
+        # Bad luck...
+        return ""
 
     def email(self):
         """Best email address to use"""

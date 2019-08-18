@@ -417,6 +417,45 @@ def create_nextcloud_tag_database(connection):
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
         """
         cursor.execute(create_nextcloud_file_tag_table)
+
+        cursor.execute("DROP TABLE IF EXISTS `oc_mimetypes`;")
+        create_nextcloud_mimetypes_table = """
+        CREATE TABLE `oc_mimetypes`(
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `mimetype` varchar(255) COLLATE utf8_bin NOT NULL DEFAULT '',
+            PRIMARY KEY(`id`),
+            UNIQUE KEY `mimetype_id_index`(`mimetype`)
+        ) ENGINE = InnoDB AUTO_INCREMENT = 65 DEFAULT CHARSET = utf8 COLLATE = utf8_bin;
+        """
+        cursor.execute(create_nextcloud_mimetypes_table)
+
+        create_mimetypes_data = """
+        INSERT INTO `oc_mimetypes`
+        VALUES (3, 'application'), (29, 'application/font-sfnt'), (43, 'application/font-woff'),
+               (51, 'application/gpx+xml'), (47, 'application/illustrator'), (55, 'application/internet-shortcut'),
+               (13, 'application/javascript'), (4, 'application/json'), (34, 'application/msword'), 
+               (14, 'application/octet-stream'), (8, 'application/pdf'), (54, 'application/vnd.garmin.tcx+xml'), 
+               (52, 'application/vnd.google-earth.kml+xml'), (53, 'application/vnd.google-earth.kmz'), 
+               (31, 'application/vnd.ms-excel'), (58, 'application/vnd.ms-excel.sheet.macroEnabled.12'), 
+               (42, 'application/vnd.ms-fontobject'), (39, 'application/vnd.ms-powerpoint'), 
+               (7, 'application/vnd.oasis.opendocument.text'), 
+               (23, 'application/vnd.openxmlformats-officedocument.presentationml.presentation'), 
+               (62, 'application/vnd.openxmlformats-officedocument.presentationml.template'), 
+               (19, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'), 
+               (24, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), 
+               (60, 'application/x-7z-compressed'), (36, 'application/x-gimp'), (15, 'application/x-gzip'), 
+               (38, 'application/x-iwork-keynote-sffkey'), (21, 'application/x-iwork-pages-sffpages'), 
+               (40, 'application/x-photoshop'), (35, 'application/x-php'), (44, 'application/x-shockwave-flash'), 
+               (22, 'application/x-tex'), (63, 'application/xml'), (33, 'application/zip'), (45, 'audio'), 
+               (56, 'audio/mpegurl'), (46, 'audio/wav'), (57, 'audio/x-scpls'), (1, 'httpd'), (2, 'httpd/unix-directory'), 
+               (11, 'image'), (25, 'image/bmp'), (30, 'image/gif'), (12, 'image/jpeg'), (18, 'image/png'), 
+               (17, 'image/svg+xml'), (50, 'image/x-dcraw'), (5, 'text'), (16, 'text/css'), (27, 'text/html'), 
+               (20, 'text/markdown'), (6, 'text/plain'), (37, 'text/rtf'), (32, 'text/x-c++src'), (26, 'text/x-h'), 
+               (28, 'text/x-shellscript'), (9, 'video'), (10, 'video/mp4'), (41, 'video/mpeg'), (49, 'video/quicktime'), 
+               (48, 'video/x-msvideo');
+        """
+        cursor.execute(create_mimetypes_data)
+        
         connection.commit()
     finally:
         if cursor:
