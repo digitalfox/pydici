@@ -260,6 +260,10 @@ def switch_bill_id(nature, dry_run=True, verbose=True):
                 if verbose and len(os.listdir(bill_dir)) != 1:
                     print("WARNING, more than one file for this bill in path %s" % bill_dir)
                 new_bill_dir = path.abspath(path.join(bill_dir, path.pardir, str(bill.id)))
+                if nature == "supplier":
+                    # Weird case, functionnal supplier id overlap technical one for the same month. Sic.
+                    # Tmp path will be removed in second loop
+                    new_bill_dir = new_bill_dir +"-tmp"
                 print("About to rename %s to %s" % (bill_dir, new_bill_dir))
                 if not dry_run:
                     os.rename(bill_dir, new_bill_dir)
@@ -270,4 +274,18 @@ def switch_bill_id(nature, dry_run=True, verbose=True):
                     print("WARNING, bill file does not exist (did you already moved it ? %s" % bill_path)
         elif verbose:
             print("WARNING, no file for this bill")
+
+    if nature == "supplier":
+        # remove -tmp suffix used to avoid clash between tech & funct id
+        for bill in bills:
+            if bill.bill_file:
+                bill_path = path.join(base_location, bill.bill_file.name)
+                bill_dir = path.abspath(path.dirname((bill_path)))
+                new_bill_dir = path.abspath(path.join(bill_dir, path.pardir, str(bill.id)))
+                print("About to rename %s to %s" % (bill_dir, new_bill_dir))
+                if not dry_run:
+                    os.rename(bill_dir, new_bill_dir)
+                    bill.bill_file.name = path.join(new_bill_dir, path.basename(bill_path))
+                    bill.save()
+
 
