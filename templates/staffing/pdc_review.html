@@ -111,11 +111,9 @@
             <td>
                 {% with tab="#tab-staffing" %}{% include "people/__consultant_name.html" %}{% endwith %}
             </td>
-            {% autoescape off %}
             {% for charge in charges %}
-                <td class='pdc-tooltip' style="cursor: help; border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td style='cursor: help' class='charge pdc-tooltip'>" }}</td>
+                <td class='pdc-tooltip' style="cursor: help; border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td style=' cursor: help' class='charge pdc-tooltip'>" }}</td>
             {% endfor %}
-            {% endautoescape %}
         </tr>
     {% endfor %}
     <tr>

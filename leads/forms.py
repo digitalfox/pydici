@@ -12,7 +12,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_text
 from django import forms
 
-from crispy_forms.layout import Layout, Div, Column, Fieldset, Field
+from crispy_forms.layout import Layout, Div, Column, Fieldset, Field, HTML
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, StrictButton, FieldWithButtons
 from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
@@ -67,8 +67,8 @@ class LeadForm(PydiciCrispyModelForm):
         clientPopupUrl = reverse("crm:client_organisation_company_popup")
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"),
                                                   Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-12"),
-                                                  Column(FieldWithButtons("client", StrictButton(
-                                                      "<a href='%s' data-remote='false' data-toggle='modal' data-target='#clientModal'><span class='glyphicon glyphicon-plus'></span></a>" % clientPopupUrl)),
+                                                  Column(FieldWithButtons("client", HTML(
+                                                      "<a role='button' class='btn btn-default' href='%s' data-remote='false' data-toggle='modal' data-target='#clientModal'><span class='glyphicon glyphicon-plus'></span></a>" % clientPopupUrl)),
                                                          css_class="col-md-6"),
                                                   Column("subsidiary", css_class="col-md-6"),
                                                   Column("description", css_class="col-md-6"),
@@ -81,9 +81,9 @@ class LeadForm(PydiciCrispyModelForm):
                                                                                       Field("client_deal_id", placeholder=_("Internal client reference")), "state", css_class='col-md-6'))),
                                               Tab(_("Commercial"), Div(Column(AppendedText("sales", "k€"), "salesman", css_class='col-md-6'),
                                                                        Column(FieldWithButtons("business_broker",
-                                                                                           StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create"))),
+                                                                                           HTML("<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create"))),
                                                                               FieldWithButtons("paying_authority",
-                                                                                           StrictButton("<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create"))), css_class='col-md-6'))),
+                                                                                           HTML("<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create"))), css_class='col-md-6'))),
                                               Tab(_("Staffing"), Div(Field("staffing", placeholder=_("People that could contribute...")),
                                                                      Field("external_staffing", placeholder=_("People outside company that could contribute...")),
                                                                      css_class="col-md-6"))),

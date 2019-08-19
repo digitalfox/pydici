@@ -131,7 +131,7 @@ class Expense(models.Model):
             if content_type == "application/pdf":
                 response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
             else:
-                response = "<img src='data:%s;base64,%s'>" % (content_type, data)
+                response = "<img src='data:%s;base64,%s' class='receipt'>" % (content_type, data)
 
         return response
 

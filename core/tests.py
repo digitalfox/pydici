@@ -185,7 +185,7 @@ class SimpleTest(TestCase):
     def test_pdc_review(self):
         self.client.force_login(self.test_user)
         url = PREFIX + "/staffing/pdcreview/2009/07"
-        for arg in ({}, {"projected": None}, {"groupby": "manager"}, {"groupby": "position"},
+        for arg in ({}, {"projected": ""}, {"groupby": "manager"}, {"groupby": "position"},
                     {"n_month": "5"}, {"n_month": "50"}):
             response = self.client.get(url, arg)
             self.assertEqual(response.status_code, 200,

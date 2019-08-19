@@ -25,6 +25,7 @@ from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
 from actionset.models import ActionState
 from actionset.utils import launchTrigger
+from billing.utils import get_client_billing_control_pivotable_data
 from core.utils import createProjectTree, disable_for_loaddata, getLeadDirs, cacheable
 
 
@@ -232,6 +233,9 @@ class Lead(models.Model):
                                                     target_type=ContentType.objects.get(app_label="staffing", model="mission")))
 
         return actionStates.select_related()
+
+    def billing_control_data(self):
+        return  get_client_billing_control_pivotable_data(filter_on_lead=self)
 
     def pending_actions(self):
         """returns pending actions for this lead and its missions"""

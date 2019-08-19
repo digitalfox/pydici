@@ -10,8 +10,8 @@ import mimetypes
 from collections import defaultdict
 import json
 from io import BytesIO
+import os
 
-from django.core.files.base import ContentFile
 from os.path import basename
 import logging
 
@@ -19,14 +19,13 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
 from django.utils import translation
-from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRequest
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.db.models import Sum, Q, F, Min, Max, Count
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import permission_required
 
 # Silent weasyprint logger
 logger = logging.getLogger("weasyprint")
@@ -36,14 +35,15 @@ if not logger.handlers:
 from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
 from PyPDF2 import PdfFileMerger, PdfFileReader
 
-from billing.utils import get_billing_info, create_client_bill_from_timesheet, create_client_bill_from_proportion, bill_pdf_filename
+from billing.utils import get_billing_info, create_client_bill_from_timesheet, create_client_bill_from_proportion, \
+    bill_pdf_filename, get_client_billing_control_pivotable_data, generate_bill_pdf
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
 from staffing.views import MissionTimesheetReportPdf
 from crm.models import Subsidiary
-from core.utils import get_fiscal_years, get_parameter, user_has_feature
+from core.utils import get_fiscal_years_from_qs, get_parameter, user_has_feature
 from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
@@ -233,7 +233,6 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
             translation.activate(old_lang)
 
 
-
 class BillPdf(Bill, WeasyTemplateView):
     response_class = BillAnnexPDFTemplateResponse
 
@@ -282,26 +281,37 @@ def client_bill(request, bill_id=None):
                 success_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
             else:
                 success_url = request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
-                if not bill.bill_file:
-                    fake_http_request = request
-                    fake_http_request.method = "GET"
-                    response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
-                    pdf = response.rendered_content.read()
-                    filename = bill_pdf_filename(bill)
-                    content = ContentFile(pdf, name=filename)
-                    bill.bill_file.save(filename, content)
-                    bill.save()
+                if bill.bill_file:
+                    if form.changed_data == ["state"] and billDetailFormSet is None and billExpenseFormSet is None:
+                        # only state has change. No need to regenerate bill file.
+                        messages.add_message(request, messages.INFO, _("Bill state has beed updated"))
+                    else:
+                        # bill file exist but authorized admin change it. Let's generate again bill file
+                        messages.add_message(request, messages.WARNING, _("A new bill is generated and replace the previous one"))
+                        if os.path.exists(bill.bill_file.path):
+                            os.remove(bill.bill_file.path)
+                        generate_bill_pdf(bill, request)
+                else:
+                    # Bill file still not exist. Let's create it
+                    messages.add_message(request, messages.INFO, _("A new bill file has been generated"))
+                    generate_bill_pdf(bill, request)
             return HttpResponseRedirect(success_url)
     else:
         if bill:
+            # Create a form to edit the given bill
             form = ClientBillForm(instance=bill)
             if bill.state in wip_status:
                 billDetailFormSet = BillDetailFormSet(instance=bill)
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
         else:
-            # Still no bill, let's create it with its detail if at least mission has been provided
+            # Still no bill, let's create it with its detail if at least mission or lead has been provided
+            mission = None
+            if request.GET.get("lead"):
+                lead = Lead.objects.get(id=request.GET.get("lead"))
+                mission = lead.mission_set.first()  # take the first
             if request.GET.get("mission"):
                 mission = Mission.objects.get(id=request.GET.get("mission"))
+            if mission:
                 if mission.billing_mode == "TIME_SPENT":
                     if request.GET.get("month") and request.GET.get("year"):
                         month = date(int(request.GET.get("year")), int(request.GET.get("month")), 1)
@@ -316,6 +326,7 @@ def client_bill(request, bill_id=None):
                 billDetailFormSet = BillDetailFormSet(instance=bill)
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
             else:
+                # Simple virgin new form
                 form = ClientBillForm()
     return render(request, "billing/client_bill_form.html",
                   {"bill_form": form,
@@ -492,6 +503,26 @@ def supplier_bills_archive(request):
                    "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2, 9] }]  ''',
                    "user": request.user})
 
+@pydici_non_public
+@pydici_feature("reports")
+def lead_billing(request, lead_id):
+    """lead / mission billing tab that display billing control and client/supplier bill list"""
+    lead = Lead.objects.get(id=lead_id)
+    return render(request, "billing/_lead_billing.html",
+                  {"lead": lead})
+
+@pydici_non_public
+@pydici_feature("reports")
+def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_on_company=None, filter_on_lead=None):
+    """Check lead/mission billing."""
+    data = get_client_billing_control_pivotable_data(filter_on_subsidiary=filter_on_subsidiary,
+                                                     filter_on_company=filter_on_company,
+                                                     filter_on_lead=filter_on_lead,
+                                                     only_active=True)
+    return render(request, "billing/client_billing_control_pivotable.html",
+                  {"data": data,
+                   "derivedAttributes": "{}"})
+
 
 @pydici_non_public
 @pydici_feature("reports")
@@ -589,7 +620,7 @@ def graph_billing_jqp(request):
 def graph_yearly_billing(request):
     """Fiscal year billing per subsidiary"""
     bills = ClientBill.objects.filter(state__in=("1_SENT", "2_PAID"))
-    years = get_fiscal_years(bills, "creation_date")
+    years = get_fiscal_years_from_qs(bills, "creation_date")
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
     data = {}
     graph_data = []
