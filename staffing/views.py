@@ -173,6 +173,7 @@ def mission_staffing(request, mission_id, form_mode="manual"):
                    "automatic_staffing_form": MissionAutomaticStaffingForm(),
                    "read_only": readOnly,
                    "staffing_dates": staffingDates(),
+                   "current_month": datetime.today().strftime("%Y%m"),
                    "user": request.user})
 
 
@@ -205,6 +206,7 @@ def consultant_staffing(request, consultant_id):
                   {"formset": formset,
                    "consultant": consultant,
                    "staffing_dates": staffingDates(),
+                   "current_month": datetime.today().strftime("%Y%m"),
                    "user": request.user})
 
 
