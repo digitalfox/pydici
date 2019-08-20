@@ -34,8 +34,13 @@
            {% for form in formset.forms %}
                 {% with year_month=form.initial.staffing_date|date:'Ym' %}
                    {% ifchanged form.initial.staffing_date %}
-                   {% if form.initial.staffing_date %}
-                           <tr><th style="backround-color:white" colspan=8><a onclick="$('.{{year_month}}').toggle('fast');">{{ form.initial.staffing_date|date:"F Y" }}</a></th></tr>
+                        {% if form.initial.staffing_date %}
+                           <tr><th style="backround-color:white" colspan=8>
+                                <a href="#" onclick="$('.{{year_month}}').toggle('fast');">
+                                    <span class="glyphicon glyphicon-menu-right"></span>
+                                    {{ form.initial.staffing_date|date:"F Y" }}
+                                </a>
+                            </th></tr>
                        {% else %}
                            <tr><th style="backround-color:white" colspan=8>{% trans "New staffing:" %}</th></tr>
                        {% endif %}
