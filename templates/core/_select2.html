@@ -4,13 +4,6 @@
 $(document).ready(function() {
         $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100%"});
 
-        // Workaround select2 bug. See https://github.com/select2/select2/issues/4384
-        $('select').on(
-              'select2:close',
-               function () {
-                    $(this).focus();
-               }
-        );
 });
 </script>
 
