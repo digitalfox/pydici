@@ -180,7 +180,5 @@ if DEBUG:
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = not DEBUG
-SELECT2_JS = '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js'
-SELECT2_CSS = '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css'
 SELECT2_CACHE_BACKEND = 'select2'
 TAGGIT_LIMIT = 200
