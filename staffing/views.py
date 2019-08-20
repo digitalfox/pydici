@@ -159,8 +159,8 @@ def mission_staffing(request, mission_id, form_mode="manual"):
             form = MissionAutomaticStaffingForm(request.POST)
             if form.is_valid():
                 compute_automatic_staffing(mission, form.cleaned_data["mode"], int(form.cleaned_data["duration"]), user=request.user)
-
-    formset = StaffingFormSet(instance=mission)  # An unbound form
+    else:
+        formset = StaffingFormSet(instance=mission)  # An unbound form
 
     # flush mission cache
     cache.delete("Mission.forecasted_work%s" % mission.id )
