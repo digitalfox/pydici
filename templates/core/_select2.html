@@ -1,9 +1,10 @@
 {# Load select2 with appropriate parameters #}
 
 <script type="text/javascript">
-$(document).ready(function() {
+
+{% if not direct %}$(document).ready(function() {   {% endif %}
         $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "100%"});
 
-});
+{% if not direct %}  }); {% endif %}
 </script>
 
