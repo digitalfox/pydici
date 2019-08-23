@@ -58,10 +58,10 @@
                 <li><a href="{% url 'crm:contact_list' %}">{% trans "Contact address directory" %}</a></li>
                 <li><a href="{% url 'crm:client' %}">{% trans "New client" %}</a></li>
                 {% if pydici_feature.contacts_write %}
-                <li><a href="{% url 'crm:mission_contact_create' %}?return_to={{ request.get_full_path }}">{% trans "New mission contact" %}</a></li>
-                <li><a href="{% url 'crm:businessbroker_create' %}?return_to={{ request.get_full_path }}">{% trans "New business broker" %}</a></li>
-                <li><a href="{% url 'crm:administrative_contact_add' %}?return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></li>
-                <li><a href="{% url 'crm:supplier_create' %}?return_to={{ request.get_full_path }}">{% trans "New supplier" %}</a></li>
+                <li><a href="{% url 'crm:mission_contact_create' %}">{% trans "New mission contact" %}</a></li>
+                <li><a href="{% url 'crm:businessbroker_create' %}">{% trans "New business broker" %}</a></li>
+                <li><a href="{% url 'crm:administrative_contact_add' %}">{% trans "New administrative contact" %}</a></li>
+                <li><a href="{% url 'crm:supplier_create' %}">{% trans "New supplier" %}</a></li>
                 {% endif %}
             </ul>
         </li>
