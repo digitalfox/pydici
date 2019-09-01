@@ -19,7 +19,7 @@ from crispy_forms.bootstrap import AppendedText, FieldWithButtons, StrictButton,
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, AdministrativeContact
 from people.forms import ConsultantChoices, ConsultantMChoices
 from core.utils import capitalize
-from core.forms import PydiciCrispyModelForm
+from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 
 
 def getAddressColumn(showBanner=True):
@@ -38,7 +38,7 @@ def getAddressColumn(showBanner=True):
     return col
 
 
-class ClientChoices(ModelSelect2Widget):
+class ClientChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = Client
     search_fields = ["organisation__name__icontains", "organisation__company__name__icontains", "contact__name__icontains"]
 
@@ -52,7 +52,7 @@ class ClientChoices(ModelSelect2Widget):
             return smart_text(ugettext("%s (inactive)" % obj))
 
 
-class ThirdPartyChoices(ModelSelect2Widget):
+class ThirdPartyChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
      """Common field for all models based on couple (company, contact)"""
      search_fields = ["contact__name__icontains", "company__name__icontains"]
 
@@ -69,32 +69,32 @@ class MissionContactChoices(ThirdPartyChoices):
     model = MissionContact
 
 
-class MissionContactMChoices(ModelSelect2MultipleWidget):
+class MissionContactMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
     model = MissionContact
     search_fields = ThirdPartyChoices.search_fields
 
 
-class ContactChoices(ModelSelect2Widget):
+class ContactChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = Contact
     search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
                      "client__organisation__name__icontains"]
 
 
-class ContactMChoices(ModelSelect2MultipleWidget):
+class ContactMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
     model = Contact
     search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
                      "client__organisation__name__icontains"]
 
-class BillingContactChoice(ModelSelect2Widget):
+class BillingContactChoice(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = AdministrativeContact
     search_fields = ["contact__name__icontains", "contact__email__icontains", "function__name__icontains", "company__name__icontains"]
 
-class ClientOrganisationChoices(ModelSelect2Widget):
+class ClientOrganisationChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = ClientOrganisation
     search_fields = ["name__icontains", "company__name__icontains", "company__code__icontains"]
 
 
-class CompanyChoices(ModelSelect2Widget):
+class CompanyChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = Company
     search_fields = ["name__icontains", "code__icontains"]
 

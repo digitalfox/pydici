@@ -11,10 +11,11 @@ from django.core.exceptions import ValidationError
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 
+from core.forms import PydiciSelect2WidgetMixin
 from people.models import Consultant, SalesMan
 
 
-class ConsultantChoices(ModelSelect2Widget):
+class ConsultantChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = Consultant
     search_fields = ['name__icontains', 'trigramme__icontains']
 
@@ -22,7 +23,7 @@ class ConsultantChoices(ModelSelect2Widget):
         return Consultant.objects.filter(active=True)
 
 
-class ConsultantMChoices(ModelSelect2MultipleWidget):
+class ConsultantMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
     model = Consultant
     search_fields = ConsultantChoices.search_fields
 
@@ -30,7 +31,7 @@ class ConsultantMChoices(ModelSelect2MultipleWidget):
         return Consultant.objects.filter(active=True)
 
 
-class SalesManChoices(ModelSelect2Widget):
+class SalesManChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = SalesMan
     search_fields = ['name__icontains', 'trigramme__icontains']
 

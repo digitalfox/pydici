@@ -15,9 +15,7 @@ import django.views.static
 
 admin.autodiscover()
 
-
 from core.utils import get_parameter
-from core.views import PydiciSelect2View
 
 # Feeds definition
 from leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
@@ -32,6 +30,8 @@ from actionset.urls import actionset_urls
 from expense.urls import expense_urls
 from leads.urls import leads_urls
 from core.urls import core_urls
+
+from core.views import PydiciSelect2View
 
 # Overide internal server error view
 handler500 = "core.views.internal_error"
@@ -68,7 +68,7 @@ pydici_patterns.extend([
     ])
 
 # Add select2 url
-pydici_patterns.append(url(r"^select2/auto.json$", PydiciSelect2View.as_view(), name="django_select2-json"))
+pydici_patterns.append(url(r"^select2/auto.json$", PydiciSelect2View.as_view(), name="pydici-select2-view"))
 
 # Include pydici modules URLs
 pydici_patterns.extend([url("", include((core_urls, "core"), namespace="core")),

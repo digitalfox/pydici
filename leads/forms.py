@@ -23,10 +23,10 @@ from people.models import Consultant, SalesMan
 from crm.models import Client, BusinessBroker
 from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
 from crm.forms import ClientChoices, BusinessBrokerChoices
-from core.forms import PydiciCrispyModelForm
+from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 
 
-class LeadChoices(ModelSelect2Widget):
+class LeadChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = Lead
     search_fields = ["name__icontains", "description__icontains", "action__icontains",
                      "responsible__name__icontains", "responsible__trigramme__icontains",

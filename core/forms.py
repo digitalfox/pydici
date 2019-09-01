@@ -14,11 +14,23 @@ from crispy_forms.layout import Submit
 from django_select2.forms import ModelSelect2Widget
 
 
+class PydiciSelect2WidgetMixin(object):
+    """widget mixin to add security and default attributes"""
+    def __init__(self, *args, **kwargs):
+        kwargs['data_view'] = 'pydici-select2-view'
+        super(PydiciSelect2WidgetMixin, self).__init__(*args, **kwargs)
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        """Set select2's attributes."""
+        default_attrs = {"data-minimum-input-length": 0 }
+        attrs = super().build_attrs(default_attrs, extra_attrs=extra_attrs)
+        return attrs
+
 class SearchForm(forms.Form):
     search = forms.CharField(max_length=100)
 
 
-class UserChoices(ModelSelect2Widget):
+class UserChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = User
     search_fields = ["username__icontains", "first_name__icontains", "last_name__icontains"]
 
