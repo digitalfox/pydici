@@ -83,20 +83,20 @@ class PeopleModelTest(TestCase):
         mission.billing_mode = "TIME_SPENT"
         mission.save()
         # In time spent, turnover is what we did
-        self.assertEqual(c1.getTurnover(), 20*2000)
+        self.assertEqual(c1.getTurnover(endDate=next_month), 20*2000)
         mission.billing_mode = "FIXED_PRICE"
         mission.save()
         # In fixed price, turnover is limited by price in proportion of all work
-        self.assertEqual(c1.getTurnover(), 20 * 2000 * mission.price * 1000 / done_work )
-        self.assertEqual(c1.getTurnover() + c2.getTurnover(), mission.price * 1000)
+        self.assertEqual(c1.getTurnover(endDate=next_month), 20 * 2000 * mission.price * 1000 / done_work )
+        self.assertEqual(c1.getTurnover(endDate=next_month) + c2.getTurnover(endDate=next_month), mission.price * 1000)
         # Let add some margin by changing mission price.
         mission.price = 60
         mission.save()
-        self.assertEqual(c1.getTurnover(), 20 * 2000) # like in time spent
-        self.assertEqual(c1.getTurnover() + c2.getTurnover(), done_work )
+        self.assertEqual(c1.getTurnover(endDate=next_month), 20 * 2000) # like in time spent
+        self.assertEqual(c1.getTurnover(endDate=next_month) + c2.getTurnover(endDate=next_month), done_work )
         # Let archive mission to validate margin
         mission.active = False
         mission.save()
-        self.assertEqual(c1.getTurnover(), 20 * 2000 * mission.price * 1000 / done_work)  # like in time spent
-        self.assertEqual(c1.getTurnover() + c2.getTurnover(), mission.price * 1000)
+        self.assertEqual(c1.getTurnover(endDate=next_month), 20 * 2000 * mission.price * 1000 / done_work)  # like in time spent
+        self.assertEqual(c1.getTurnover(endDate=next_month) + c2.getTurnover(endDate=next_month), mission.price * 1000)
 
