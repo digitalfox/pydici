@@ -125,7 +125,7 @@ def user_expense_team(user):
         consultant = Consultant.objects.get(trigramme__iexact=user.username)
         user_team = cache.get(EXPENSE_USER_TEAM_CACHE_KEY % consultant.id)
         if not user_team:
-            user_team = consultant.userTeam(excludeSelf=False)
+            user_team = consultant.user_team(exclude_self=False)
             cache.set(EXPENSE_USER_TEAM_CACHE_KEY % consultant.id, user_team, 3600)
     except Consultant.DoesNotExist:
         user_team = []

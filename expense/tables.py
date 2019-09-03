@@ -40,7 +40,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
     def get_initial_queryset(self):
         try:
             consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
-            user_team = consultant.userTeam()
+            user_team = consultant.user_team()
         except Consultant.DoesNotExist:
             user_team = []
 
@@ -208,7 +208,7 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
     def get_initial_queryset(self):
         try:
             consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
-            user_team = consultant.userTeam()
+            user_team = consultant.user_team()
         except Consultant.DoesNotExist:
             user_team = []
 

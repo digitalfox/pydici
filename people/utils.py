@@ -72,7 +72,7 @@ def compute_consultant_tasks(consultant):
     @:return: list of (task_name, count, link, priority(1-3))"""
     tasks = []
     now = datetime.now()
-    user = consultant.getUser()
+    user = consultant.get_user()
 
     if not user:
         return tasks

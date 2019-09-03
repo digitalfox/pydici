@@ -309,7 +309,7 @@ def leadSignalHandler(sender, **kwargs):
         client.active = False
         client.save()
     if lead.responsible:
-        targetUser = lead.responsible.getUser()
+        targetUser = lead.responsible.get_user()
     if not targetUser:
         # Default to admin
         targetUser = User.objects.filter(is_superuser=True)[0]

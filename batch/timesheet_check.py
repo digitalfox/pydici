@@ -76,11 +76,11 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
             if not warnSurbooking and not incompleteDays:
                 continue  # Don't cry if user only have surbooking issue
 
-            user = consultant.getUser()
+            user = consultant.get_user()
             if user and user.email:
                 recipients.append(user.email)
             if consultant.manager:
-                managerUser = consultant.manager.getUser()
+                managerUser = consultant.manager.get_user()
                 if managerUser and managerUser.email:
                     recipients.append(managerUser.email)
 

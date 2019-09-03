@@ -141,7 +141,7 @@
 	            <td>{% include "people/__consultant_name.html" %}</td>
 	            <td align="right"><div id="sold-{{ mission.id|unlocalize }}-{{ consultant.id|unlocalize }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
 	            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id|unlocalize }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>{% endif %}</td>
-                <td align="right">{{ consultant.getRateObjective.rate }}</td>
+                <td align="right">{{ consultant.get_rate_objective.rate }}</td>
 	        </tr>
 	    {% endfor %}
 	    </table>

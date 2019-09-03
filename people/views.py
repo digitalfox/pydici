@@ -42,7 +42,7 @@ def consultant_detail(request, consultant_id):
         return redirect("people:consultant_home_by_id", consultant_id)
     try:
         consultant = Consultant.objects.get(id=consultant_id)
-        staff = consultant.team(onlyActive=True)
+        staff = consultant.team(only_active=True)
         month = date.today().replace(day=1)
         # Compute consultant current mission based on forecast
         missions = consultant.active_missions().filter(nature="PROD").filter(lead__state="WON")
@@ -70,12 +70,12 @@ def consultant_detail(request, consultant_id):
             overhead = 0
             missing = forecasting_balance
         # Turnover
-        monthTurnover = consultant.getTurnover(month)
+        monthTurnover = consultant.get_turnover(month)
         lastMonthTurnover = None
         day = date.today().day
         while lastMonthTurnover is None:
             try:
-                lastMonthTurnover = consultant.getTurnover(previousMonth(month), previousMonth(month).replace(day=day))  # Turnover for last month up to the same day
+                lastMonthTurnover = consultant.get_turnover(previousMonth(month), previousMonth(month).replace(day=day))  # Turnover for last month up to the same day
             except ValueError:
                 # Corner case, last month has fewer days than current one. Go back one day and try again till it works.
                 lastMonthTurnover = None
@@ -85,12 +85,12 @@ def consultant_detail(request, consultant_id):
         else:
             turnoverVariation = 100
         # Daily rate
-        fc = consultant.getFinancialConditions(month, nextMonth(month))
+        fc = consultant.get_financial_conditions(month, nextMonth(month))
         if fc:
             daily_rate = int(sum([rate * days for rate, days in fc]) / sum([days for rate, days in fc]))
         else:
             daily_rate = 0
-        daily_rate_objective = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE")
+        daily_rate_objective = consultant.get_rate_objective(working_date=month, rate_type="DAILY_RATE")
         if daily_rate_objective:
             daily_rate_objective = daily_rate_objective.rate
         else:
@@ -103,8 +103,8 @@ def consultant_detail(request, consultant_id):
             daily_overhead = 0
             daily_missing = daily_rate_objective - daily_rate
         # Production rate
-        prod_rate = round(100 * consultant.getProductionRate(month, nextMonth(month)), 1)
-        prod_rate_objective = consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE")
+        prod_rate = round(100 * consultant.get_production_rate(month, nextMonth(month)), 1)
+        prod_rate_objective = consultant.get_rate_objective(working_date=month, rate_type="PROD_RATE")
         if prod_rate_objective:
             prod_rate_objective = prod_rate_objective.rate
         else:

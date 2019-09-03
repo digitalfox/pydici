@@ -34,7 +34,7 @@ def getAddressColumn(showBanner=True):
                            Tab(_("Billing address"), "billing_street",
                                Div(Column("billing_city", css_class="col-md-6"), Column("billing_zipcode", css_class="col-md-6"), css_class="row"),
                                "billing_country"),),
-                               css_class="col-md-6")
+                            css_class="col-md-6")
     return col
 
 
@@ -85,9 +85,11 @@ class ContactMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
     search_fields = ["name__icontains", "email__icontains", "function__icontains", "client__organisation__company__name__icontains",
                      "client__organisation__name__icontains"]
 
+
 class BillingContactChoice(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = AdministrativeContact
     search_fields = ["contact__name__icontains", "contact__email__icontains", "function__name__icontains", "company__name__icontains"]
+
 
 class ClientOrganisationChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = ClientOrganisation

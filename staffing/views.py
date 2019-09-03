@@ -551,12 +551,13 @@ def prod_report(request, year=None, month=None):
             consultant_days = dict(timesheets.values_list("mission__nature").order_by("mission__nature").annotate(Sum("charge")))
 
             try:
-                daily_rate_obj = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
-                prod_rate_obj = float(consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE").rate) / 100
+                daily_rate_obj = consultant.get_rate_objective(working_date=month, rate_type="DAILY_RATE").rate
+                prod_rate_obj = float(
+                    consultant.get_rate_objective(working_date=month, rate_type="PROD_RATE").rate) / 100
                 forecast = int(daily_rate_obj * prod_rate_obj * (month_days - consultant_days.get("HOLIDAYS",0)))
             except AttributeError:
                 prod_rate_obj = daily_rate_obj = forecast = 0 # At least one rate objective is missing
-            turnover = int(consultant.getTurnover(month, upperBound))
+            turnover = int(consultant.get_turnover(month, upperBound))
             try:
                 prod_rate = consultant_days.get("PROD", 0) / (consultant_days.get("PROD", 0) + consultant_days.get("NONPROD", 0))
             except ZeroDivisionError:
@@ -1619,7 +1620,7 @@ def graph_profile_rates(request, subsidiary_id=None, team_id=None):
             if not month in turnover[consultant.profil_id]:
                 turnover[consultant.profil_id][month] = 0
             nDays[consultant.profil_id][month] += Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=next_month, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"] or 0
-            turnover[consultant.profil_id][month] += consultant.getTurnover(month, next_month)
+            turnover[consultant.profil_id][month] += consultant.get_turnover(month, next_month)
 
         for profil, profilName in profils.items():
             if profil in nDays:
@@ -1677,21 +1678,21 @@ def graph_consultant_rates(request, consultant_id):
     # Avg daily rate / month and objective rate
     for refDate in kdates:
         next_month = nextMonth(refDate)
-        prodRate = consultant.getProductionRate(refDate, next_month)
+        prodRate = consultant.get_production_rate(refDate, next_month)
         if prodRate:
             prodRateData.append(round(100 * prodRate, 1))
             isoProdDates.append(refDate.isoformat())
         wdays = Timesheet.objects.filter(consultant=consultant, working_date__gte=refDate, working_date__lt=next_month, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"]
         if wdays:
-            turnover = consultant.getTurnover(refDate, next_month)
+            turnover = consultant.get_turnover(refDate, next_month)
             dailyRateData.append(int(turnover / wdays))
             isoRateDates.append(refDate.isoformat())
-        rate = consultant.getRateObjective(refDate, rate_type="DAILY_RATE")
+        rate = consultant.get_rate_objective(working_date=refDate, rate_type="DAILY_RATE")
         if rate:
             dailyRateObj.append(rate.rate)
         else:
             dailyRateObj.append(None)
-        rate = consultant.getRateObjective(refDate, rate_type="PROD_RATE")
+        rate = consultant.get_rate_objective(working_date=refDate, rate_type="PROD_RATE")
         if rate:
             prodRateObj.append(rate.rate)
         else:

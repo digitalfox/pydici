@@ -264,7 +264,7 @@ class Mission(models.Model):
                         result[consultant] += n_days * (consultant_rates[consultant][0] - consultant_rates[consultant][1])
                 else:
                     # Compute objective margin on rate objective for this period
-                    objectiveRate = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE")
+                    objectiveRate = consultant.get_rate_objective(working_date=month, rate_type="DAILY_RATE")
                     if objectiveRate:
                         result[consultant] += n_days * (consultant_rates[consultant][0] - objectiveRate.rate)
         return result
@@ -431,11 +431,11 @@ def missionSignalHandler(sender, **kwargs):
     mission = kwargs["instance"]
     targetUser = None
     if mission.lead and mission.lead.responsible:
-        targetUser = mission.lead.responsible.getUser()
+        targetUser = mission.lead.responsible.get_user()
     else:
         # try to pick up one of staffee
         for consultant in mission.consultants():
-            targetUser = consultant.getUser()
+            targetUser = consultant.get_user()
             if targetUser:
                 break
     if not targetUser:
