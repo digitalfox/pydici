@@ -45,7 +45,7 @@
                            <tr><th style="backround-color:white" colspan=8>{% trans "New staffing:" %}</th></tr>
                        {% endif %}
                    {% endifchanged%}
-                   <tr class="{%cycle 'row1' 'row2' %} {% if year_month < current_month and not form.errors %}collapse{% endif%} {{ year_month }}" %}>
+                   <tr class="{%cycle 'row1' 'row2' %} {% if form.initial.staffing_date and year_month < current_month and not form.errors %}collapse{% endif%} {{ year_month }}" %}>
                    {% for field in form %}
                       {% ifequal field.label "Last user" %}
                             {{ field.as_hidden }}

@@ -155,6 +155,7 @@ def mission_staffing(request, mission_id, form_mode="manual"):
             formset = StaffingFormSet(request.POST, instance=mission)
             if formset.is_valid():
                 saveFormsetAndLog(formset, request)
+                formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
         else:
             form = MissionAutomaticStaffingForm(request.POST)
             if form.is_valid():
