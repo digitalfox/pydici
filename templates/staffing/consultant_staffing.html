@@ -21,8 +21,8 @@
                    {% ifchanged form.initial.staffing_date %}
                        {% if form.initial.staffing_date %}
                             <tr><th style="backround-color:white" colspan=8>
-                                <a href="#" onclick="$('.{{year_month}}').toggle('fast');">
-                                    <span class="glyphicon glyphicon-menu-right"></span>
+                                <a href="#" onclick="$('.{{year_month}}').toggle('fast'); $(this).children().toggleClass('rotate90');">
+                                    <span class="glyphicon glyphicon-menu-right {% if year_month <= current_month or form.errors %}rotate90{% endif %}"></span>
                                     {{ form.initial.staffing_date|date:"F Y" }}
                                 </a>
                             </th></tr>

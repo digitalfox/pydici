@@ -467,3 +467,8 @@ div.ui-tooltip {
     background-color: #f2dede;
     border-color: #ebccd1;
 }
+
+/* text rotation */
+.rotate90 {
+ transform: rotate(90deg);
+ }
