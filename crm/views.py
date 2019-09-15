@@ -240,7 +240,7 @@ def client_organisation_company_popup(request):
                     if clientForm.is_valid():
                         client = clientForm.save(commit=False)
 
-        # If everything is allright, save the client and create response
+        # If everything is alright, save the client and create response
         if client:
             # Add contact if defined
             if contact:
@@ -430,7 +430,7 @@ def company_billing(request, company_id):
     leads = leads.select_related().prefetch_related("clientbill_set", "supplierbill_set")
     return render(request, "crm/_clientcompany_billing.html",
                             {"company": company,
-                            "leads": leads})
+                             "leads": leads})
 
 
 @pydici_non_public
@@ -466,12 +466,11 @@ def company_pivotable(request, company_id=None):
 
     derivedAttributes = []
 
-    return render(request, "crm/company_pivotable.html", { "data": json.dumps(data),
+    return render(request, "crm/company_pivotable.html", {"data": json.dumps(data),
                                                           "derivedAttributes": derivedAttributes,
                                                           "company": company,
                                                           "startDate": startDate,
-                                                          "endDate": endDate
-                                                          })
+                                                          "endDate": endDate })
 
 
 @pydici_non_public
