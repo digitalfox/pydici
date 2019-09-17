@@ -1689,15 +1689,11 @@ def graph_consultant_rates(request, consultant_id):
             dailyRateData.append(int(turnover / wdays))
             isoRateDates.append(refDate.isoformat())
         rate = consultant.get_rate_objective(working_date=refDate, rate_type="DAILY_RATE")
-        if rate:
+        if rate and wdays:
             dailyRateObj.append(rate.rate)
-        else:
-            dailyRateObj.append(None)
         rate = consultant.get_rate_objective(working_date=refDate, rate_type="PROD_RATE")
-        if rate:
+        if rate and wdays:
             prodRateObj.append(rate.rate)
-        else:
-            prodRateObj.append(None)
 
     graph_data = [
         ["x_daily_rate"] + isoRateDates,
