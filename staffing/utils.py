@@ -156,8 +156,8 @@ def sortMissions(missions):
             print("Unknown mission nature (%s). Cannot sort") % mission.nature
 
     # Sort each list
-    holidaysMissions.sort(key=lambda x: x.description)
-    nonProdMissions.sort(key=lambda x: x.description)
+    holidaysMissions.sort(key=lambda x: str(x.description))
+    nonProdMissions.sort(key=lambda x: str(x.description))
     prodMissions.sort(key=lambda x: str(x))
 
     return prodMissions + nonProdMissions + holidaysMissions
