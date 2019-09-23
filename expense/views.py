@@ -11,7 +11,7 @@ from io import BytesIO
 
 from django_tables2 import RequestConfig
 
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext as _
 from django.urls import reverse
 from django.db.models import Q, Count
@@ -26,6 +26,33 @@ from core.decorator import pydici_non_public, pydici_feature
 from core.views import tableToCSV
 from core import utils
 from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm, user_expense_team
+
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def expense(request, expense_id):
+    """Display one expense"""
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+
+    if not expense_requester:
+        return HttpResponseRedirect(reverse("core:forbiden"))
+
+    user_team = user_expense_team(request.user)
+
+    try:
+        expense = Expense.objects.get(id=expense_id)
+    except Expense.DoesNotExist:
+        raise Http404
+
+    if not (expense_administrator or expense_paymaster):
+        if not expense.user == request.user or expense.user not in user_team:
+            return HttpResponseRedirect(reverse("core:forbiden"))
+
+    return render(request, "expense/expense.html",
+                  {"expense": expense,
+                   "can_edit": can_edit_expense(expense, request.user),
+                   "user": request.user})
 
 
 @pydici_non_public

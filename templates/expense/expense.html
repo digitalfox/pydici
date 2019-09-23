@@ -1,0 +1,95 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load pydici_filters %}
+{% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Expense" %}{% endblock %}
+
+
+{% block content %}
+
+<h2>
+    {% blocktrans with id=expense.id %}Expense n° {{ id }}{% endblocktrans %}
+    {% if can_edit %}<a href="{% url 'expense:expenses' expense.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>{% endif %}
+</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-hover table-striped table-condensed">
+            <tr>
+                <th>{% trans "Description" %}</th>
+                <td>{{ expense.description }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Consultant" %}</th>
+                <td>{{ expense.user.username|link_to_consultant }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Category" %}</th>
+                <td>{{ expense.category }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Amount" %}</th>
+                <td>{{ expense.amount }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "VAT (€)" %}</th>
+                <td>{{ expense.vat }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Creation date" %}</th>
+                <td>{{ expense.creation_date }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Expense date" %}</th>
+                <td>{{ expense.expense_date }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Update date" %}</th>
+                <td>{{ expense.update_date }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Corporate card" %}</th>
+                <td>{% if expense.corporate_card %}
+                        <span class="glyphicon glyphicon-ok" style="color:green"><span class="visuallyhidden">Yes</span></span>
+                    {% else %}
+                        <span class="glyphicon glyphicon-remove" style="color:red"><span class="visuallyhidden">No</span></span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>{% trans "Chargeable" %}</th>
+                <td>{% include "expense/_expense_chargeable.html" %}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Lead" %}</th>
+                <td>{{ expense.lead|default_if_none:'' }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "State" %}</th>
+                <td>{{ expense.get_state_display }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Comment" %}</th>
+                <td>{{ expense.comment }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Payment" %}</th>
+                <td>{% if expense.expensePayment %}
+                        <a href="{% url 'expense:expense_payment_detail' expense.expensePayment.id %}">n°{{ expense.expensePayment.id }}</a>
+                    {% else %}
+                        {% trans "No" %}
+                    {% endif %}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <div class="expense-receipt">
+            {{ expense.receipt_data|safe }}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
