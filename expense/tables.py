@@ -28,7 +28,7 @@ from expense.utils import expense_state_display, expense_transition_to_state_dis
 class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
     """Expense table backend for datatable"""
     pydici_feature = set(["reports"])
-    columns = ["pk", "user", "category", "description", "lead", "amount", "receipt", "chargeable", "corporate_card", "state", "creation_date", "expense_date", "update_date", "comment"]
+    columns = ["pk", "user", "category", "description", "lead", "amount","vat", "receipt", "chargeable", "corporate_card", "state", "creation_date", "expense_date", "update_date", "comment"]
     order_columns = columns
     max_display_length = 500
     date_template = get_template("core/_date_column.html")
@@ -56,7 +56,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         try:
             # Just try to cast to see if we have a number but use str for filter to allow proper casting by django himself
             float(search)
-            filters = [Q(amount=search),]
+            filters = [Q(amount=search),Q(vat=search)]
 
         except ValueError:
             # search term is not a number
