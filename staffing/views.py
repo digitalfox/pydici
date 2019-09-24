@@ -1345,10 +1345,11 @@ def mission_consultant_rate(request):
         consultant = Consultant.objects.get(id=consultant_id)
         condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
                                                                       defaults={"daily_rate": 0})
+        value = request.POST["value"].replace(" ", "")
         if sold == "sold":
-            condition.daily_rate = request.POST["value"].replace(" ", "")
+            condition.daily_rate = value
         else:
-            condition.bought_daily_rate = request.POST["value"].replace(" ", "")
+            condition.bought_daily_rate = value
         condition.save()
         return HttpResponse(request.POST["value"])
     except (Mission.DoesNotExist, Consultant.DoesNotExist):

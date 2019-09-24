@@ -1,9 +1,14 @@
 {% extends "core/pydici.html" %}
 
 {% load i18n %}
+{% load l10n %}
 {% load pydici_filters %}
 {% load render_table from django_tables2 %}
 {% load crispy_forms_tags %}
+
+{% block extrajs %}
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jeditable.mini.js"></script>
+{% endblock %}
 
 {% block title %}{% trans "Expense" %}{% endblock %}
 
@@ -36,7 +41,7 @@
             </tr>
             <tr>
                 <th>{% trans "VAT (€)" %}</th>
-                <td>{{ expense.vat }}</td>
+                <td><div id="{{ expense.id|unlocalize }}" {% if can_edit_vat %}class="jeditable-vat"{% endif %}>{{ expense.vat }}</div></td>
             </tr>
             <tr>
                 <th>{% trans "Creation date" %}</th>
@@ -91,5 +96,24 @@
         </div>
     </div>
 </div>
+
+
+{% if can_edit_vat %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $(".jeditable-vat").editable("{% url 'expense:update_expense_vat' %}", {
+            indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
+            tooltip   : "{% trans 'click to edit...' %}",
+            event     : "click",
+            style     : "inherit",
+            data: function(value, settings) {
+                /* remove unbreakable space */
+                var retval = value.replace(/&nbsp;/gi, '');
+                return retval;
+              }
+        });
+    });
+    </script>
+{% endif %}
 
 {% endblock %}

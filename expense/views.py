@@ -8,10 +8,11 @@ Pydici expense views. Http request are processed here.
 from datetime import date
 import json
 from io import BytesIO
+import decimal
 
 from django_tables2 import RequestConfig
 
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
 from django.utils.translation import ugettext as _
 from django.urls import reverse
 from django.db.models import Q, Count
@@ -46,12 +47,13 @@ def expense(request, expense_id):
         raise Http404
 
     if not (expense_administrator or expense_paymaster):
-        if not expense.user == request.user or expense.user not in user_team:
+        if not (expense.user == request.user or expense.user in user_team):
             return HttpResponseRedirect(reverse("core:forbiden"))
 
     return render(request, "expense/expense.html",
                   {"expense": expense,
                    "can_edit": can_edit_expense(expense, request.user),
+                   "can_edit_vat": expense_administrator or expense_paymaster,
                    "user": request.user})
 
 
@@ -262,6 +264,31 @@ def update_expense_state(request, expense_id, target_state):
 
     return HttpResponse(json.dumps(response), content_type="application/json")
 
+
+@pydici_non_public
+@pydici_feature("management")
+def update_expense_vat(request):
+    """Update expense VAT."""
+
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+
+    if not (expense_administrator or expense_paymaster):
+        return HttpResponseForbidden()
+
+    message = ""
+    try:
+        expense_id = request.POST["id"]
+        value = request.POST["value"].replace(",", ".")
+        expense = Expense.objects.get(id=expense_id)
+        expense.vat = decimal.Decimal(value)
+        expense.save()
+        message = value
+    except Expense.DoesNotExist:
+        message =  _("Expense %s does not exist" % expense_id)
+    except (ValueError, decimal.InvalidOperation):
+        message = _("Incorrect value")
+
+    return HttpResponse(message)
 
 @pydici_non_public
 @pydici_feature("management")
