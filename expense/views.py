@@ -191,6 +191,8 @@ def expenses_history(request):
     """Display expense history.
     @param year: year of history. If None, display recent items and year index"""
 
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+
     return render(request, "expense/expense_archive.html",
                   {"data_url": reverse('expense:expense_table_DT'),
                    "data_options": ''' "pageLength": 25,
@@ -198,7 +200,9 @@ def expenses_history(request):
                                        "columnDefs": [{ "orderable": false, "targets": [6,] },
                                                       { className: "hidden-xs hidden-sm hidden-md", "targets": [2, 10, 12, 13]},
                                                       { className: "description", "targets": [3]},
-                                                      { className: "amount", "targets": [5]}]''',
+                                                      { className: "amount", "targets": [5]}],
+                                       "fnDrawCallback": function( oSettings ) {make_vat_editable(); }''',
+                   "can_edit_vat": expense_administrator or expense_paymaster,
                    "user": request.user})
 
 

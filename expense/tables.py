@@ -105,6 +105,8 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
             return self.state_template.render(context={"record": row}, request=self.request)
         elif column == "amount":
             return to_int_or_round(row.amount, 2)
+        elif column == "vat":
+            return """<div id="{0}" class="jeditable-vat">{1}</div>""".format(row.id, row.vat)
         else:
             return super(ExpenseTableDT, self).render_column(row, column)
 
