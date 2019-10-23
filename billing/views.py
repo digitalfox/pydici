@@ -285,8 +285,11 @@ def client_bill(request, bill_id=None):
                     if form.changed_data == ["state"] and billDetailFormSet is None and billExpenseFormSet is None:
                         # only state has change. No need to regenerate bill file.
                         messages.add_message(request, messages.INFO, _("Bill state has beed updated"))
+                    elif "bill_file" in form.changed_data:
+                        # a file has been provided by user himself. We must not generate a file and overwrite it.
+                        messages.add_message(request, messages.WARNING, _("Using custom user file tu replace current bill"))
                     else:
-                        # bill file exist but authorized admin change it. Let's generate again bill file
+                        # bill file exist but authorized admin change information and do not provide custom file. Let's generate again bill file
                         messages.add_message(request, messages.WARNING, _("A new bill is generated and replace the previous one"))
                         if os.path.exists(bill.bill_file.path):
                             os.remove(bill.bill_file.path)
