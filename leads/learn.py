@@ -160,16 +160,15 @@ def extract_leads_tag(leads, include_leads=False):
     targets = []
     used_leads = []
     if isinstance(leads, QuerySet):
-        leads = leads.prefetch_related("tags")
         leads = leads.select_related("responsible", "client__organisation", "subsidiary")
     for lead in leads:
+        lead_info = get_lead_tag_data(lead)
         for tag in lead.tags.all():
-            used_leads.append(lead)
             targets.append(str(tag))
             if include_leads:
-                features.append("%s %s" % (lead.id, get_lead_tag_data(lead)))
+                features.append("%s %s" % (lead.id, lead_info))
             else:
-                features.append(get_lead_tag_data(lead))
+                features.append(lead_info)
     return (features, targets)
 
 ############# Model definition ##########################
