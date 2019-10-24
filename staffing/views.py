@@ -91,6 +91,13 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
     if user_consultant.subcontractor:
         return TIMESHEET_ACCESS_NOT_ALLOWED
 
+    # A user with timesheet_subcontractor can managed subcontractor  timesheet
+    if consultant.subcontractor and user_has_feature(user, "timesheet_subcontractor"):
+        if ontime_editing :
+            return TIMESHEET_ACCESS_READ_WRITE
+        else:
+            return TIMESHEET_ACCESS_READ_ONLY
+
     if user_has_feature(user, "timesheet_all"):
         return TIMESHEET_ACCESS_READ_ONLY
 
