@@ -120,13 +120,14 @@ class ExpenseTable(tables.Table):
     state = tables.TemplateColumn(template_name="expense/_expense_state_column.html", orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
     update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title attr is just used to have an easy to parse hidden value for sorting
+    vat = tables.TemplateColumn("""{% load l10n %}<div id="{{record.id|unlocalize}}" class="jeditable-vat">{{record.vat}}</div>""")
 
     def render_user(self, value):
         return link_to_consultant(value)
 
     class Meta:
         model = Expense
-        sequence = ("id", "user", "description", "lead", "amount", "chargeable", "corporate_card", "receipt", "state", "expense_date", "update_date", "comment")
+        sequence = ("id", "user", "description", "lead", "amount", "vat", "chargeable", "corporate_card", "receipt", "state", "expense_date", "update_date", "comment")
         fields = sequence
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "expense_table"}
         orderable = False

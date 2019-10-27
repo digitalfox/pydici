@@ -1,6 +1,7 @@
 {% extends "core/pydici.html" %}
 
 {% load i18n %}
+{% load l10n %}
 
 {% block title %}{% trans "Expenses history" %}{% endblock %}
 
@@ -51,7 +52,6 @@
 
 
 {% include "expense/_make_vat_editable.html" %}
-
 
 
 {% endblock %}

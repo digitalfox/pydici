@@ -298,8 +298,11 @@ def update_expense_vat(request):
 @pydici_feature("management")
 def expense_payments(request, expense_payment_id=None):
     readOnly = False
-    if not request.user.groups.filter(name="expense_paymaster").exists() and not request.user.is_superuser:
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+
+    if not (expense_paymaster or expense_administrator):
         readOnly = True
+
     try:
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
@@ -352,6 +355,7 @@ def expense_payments(request, expense_payment_id=None):
                         "columnDefs": [{ "orderable": false, "targets": [1, 2, 4] }]''',
                    "expense_to_pay_table": ExpenseTable(expensesToPay),
                    "read_only": readOnly,
+                   "can_edit_vat": expense_administrator or expense_paymaster,
                    "form": form,
                    "user": request.user})
 
@@ -376,4 +380,5 @@ def expense_payment_detail(request, expense_payment_id):
     return render(request, "expense/expense_payment_detail.html",
                   {"expense_payment": expensePayment,
                    "expense_table": ExpenseTable(expensePayment.expense_set.all()),
+                   "can_edit_vat": expense_administrator or expense_paymaster,
                    "user": request.user})
