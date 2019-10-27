@@ -215,6 +215,10 @@ def compute_automatic_staffing(mission, mode, duration, user=None):
     start_date = current_month
     total = 0
 
+    if not mission.consultants():
+        # no consultant, no staffing. Come on.
+        return
+
     if mode=="replace":
         mission.staffing_set.all().delete()
         cache.delete("Mission.forecasted_work%s" % mission.id)
