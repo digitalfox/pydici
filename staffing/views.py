@@ -167,6 +167,7 @@ def mission_staffing(request, mission_id, form_mode="manual"):
             form = MissionAutomaticStaffingForm(request.POST)
             if form.is_valid():
                 compute_automatic_staffing(mission, form.cleaned_data["mode"], int(form.cleaned_data["duration"]), user=request.user)
+                formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
     else:
         formset = StaffingFormSet(instance=mission)  # An unbound form
 
