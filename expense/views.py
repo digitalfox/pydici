@@ -30,8 +30,8 @@ from expense.utils import expense_next_states, can_edit_expense, in_terminal_sta
 
 
 
-@pydici_non_public
-@pydici_feature("reports")
+@pydici_subcontractor
+@pydici_feature("expense")
 def expense(request, expense_id):
     """Display one expense"""
     expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
@@ -58,6 +58,7 @@ def expense(request, expense_id):
 
 
 @pydici_subcontractor
+@pydici_feature("expense")
 def expenses(request, expense_id=None, clone_from=None):
     """Display user expenses and expenses that he can validate"""
     expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
@@ -143,8 +144,8 @@ def expenses(request, expense_id=None, clone_from=None):
                    "user": request.user})
 
 
-@pydici_non_public
-@pydici_feature("management")
+@pydici_subcontractor
+@pydici_feature("expense")
 def expense_receipt(request, expense_id):
     """Returns expense receipt if authorize to"""
     data = BytesIO()
@@ -161,8 +162,8 @@ def expense_receipt(request, expense_id):
     return HttpResponse(data)
 
 
-@pydici_non_public
-@pydici_feature("reports")
+@pydici_subcontractor
+@pydici_feature("expense")
 def expense_delete(request, expense_id):
     """Delete given expense if authorized to"""
     expense = None

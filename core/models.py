@@ -36,6 +36,7 @@ _FEATURES_CHOICES = (
     ("timesheet_subcontractor", _("Timesheet management of subcontractor")),
     ("billing_management", _("Manage bills, allow to mark bills sent, paid etc.")),
     ("billing_request", _("Create bills and proposed them to billing team ")),
+    ("expense", _("Expense request and management")),
 )
 
 FEATURES = set([x[0] for x in _FEATURES_CHOICES])
