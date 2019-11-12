@@ -8,7 +8,8 @@ Pydici people views. Http request are processed here.
 from datetime import date
 
 from django.shortcuts import render, redirect
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
+from django.urls import reverse
 
 from people.models import Consultant
 from crm.models import Company
@@ -19,6 +20,11 @@ from people.utils import compute_consultant_tasks
 
 
 def _consultant_home(request, consultant):
+    if not request.user.is_staff:
+        if consultant.trigramme.lower() != request.user.username.lower():
+            # subcontactor cannot see other people page
+            return HttpResponseRedirect(reverse("core:forbiden"))
+
     return render(request, 'people/consultant.html',
                   {"consultant": consultant,
                    "user": request.user})

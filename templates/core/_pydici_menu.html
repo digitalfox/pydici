@@ -157,6 +157,23 @@
         {% endif %}
         {% endif %} {# /user.is_staff and pydici_feature.menubar #}
 
+        {# Simple menu for subcontractor (non staff) #}
+        {% if not user.is_staff %}
+            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Management" %}<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    {% with user.username|link_to_timesheet as link %}
+                        {% if link %}<li>{{ link }}</li>{% endif %}
+                    {% endwith %}
+                    <li><a href="{% url 'expense:expenses' %}">{% trans "Expenses" %}</a></li>
+                </ul>
+            </li>
+            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Help" %}<span class="caret"></span></a>
+                <ul class="dropdown-menu keep-open" role="menu">
+                    <li>{{ foo|get_admin_mail }}</li>
+                </ul>
+            </li>
+        {% endif %}
+        {# End of subcontractor menu #}
         </div><!--/.navbar-collapse -->
 
         </div><!-- containter-->
