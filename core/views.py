@@ -21,7 +21,7 @@ from django.conf import settings
 from django_select2.views import AutoResponseView
 from taggit.models import Tag
 
-from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
+from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciSubcontractordMixin
 from leads.models import Lead
 from people.models import Consultant
 from crm.models import Company, Contact, Subsidiary
@@ -377,7 +377,11 @@ def risk_reporting(request):
 
 
 class PydiciSelect2View(PydiciNonPublicdMixin, AutoResponseView):
-    """Overload default select2 view that is used to get data through ajax calls to limit it to login users"""
+    """Overload default select2 view that is used to get data through ajax calls to limit it to internal users"""
+    pass
+
+class PydiciSelect2SubcontractorView(PydiciSubcontractordMixin, AutoResponseView):
+    """Select2 endpoint Overload default select2 view that is used to get data through ajax calls to limit it to internal users and subcontractor"""
     pass
 
 

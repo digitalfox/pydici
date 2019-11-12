@@ -11,6 +11,7 @@ from django.contrib.auth.views import redirect_to_login
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
+from django.apps import apps
 
 
 from core.utils import user_has_features
@@ -39,6 +40,23 @@ class PydiciNonPublicdMixin(object):
     @method_decorator(pydici_non_public)
     def dispatch(self, request, *args, **kwargs):
         return super(PydiciNonPublicdMixin, self).dispatch(request, *args, **kwargs)
+
+
+def pydici_subcontractor(function=None):
+    """
+    Decorator for views that restrict access to subcontractor users or internal users. It relies on consultant subcontractor flag
+    """
+    Consultant = apps.get_model("people", "Consultant")
+    actual_decorator = user_passes_test(lambda u: Consultant.objects.get(trigramme__iexact=u.username).subcontractor or u.is_staff, login_url=None)
+    if function:
+        return actual_decorator(function)
+    return actual_decorator
+
+
+class PydiciSubcontractordMixin(object):
+    @method_decorator(pydici_subcontractor())
+    def dispatch(self, request, *args, **kwargs):
+        return super(PydiciSubcontractordMixin, self).dispatch(request, *args, **kwargs)
 
 
 def pydici_feature(features, login_url=None):

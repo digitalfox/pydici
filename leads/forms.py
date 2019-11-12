@@ -49,6 +49,23 @@ class CurrentLeadChoices(LeadChoices):
         return (Lead.objects.filter(mission__active=True) | Lead.objects.active()).distinct()
 
 
+class SubcontractorLeadChoices(CurrentLeadChoices):
+    """Dedicated  class to allow subcontractor to select leads limited to its scope"""
+    model = Lead
+    search_fields = LeadChoices.search_fields
+    subcontractor = None
+
+    def __init__(self, *args, **kwargs):
+        self.subcontractor = kwargs.pop("subcontractor", None)
+        super(SubcontractorLeadChoices, self).__init__(*args, **kwargs)
+        self.data_view =  "pydici-select2-view-subcontractor"  # override to use subcontractor endpoint for widget completion
+
+    def get_queryset(self):
+        qs = super(CurrentLeadChoices, self).get_queryset()
+        qs = qs.filter(mission__staffing__consultant = self.subcontractor)
+        return qs.distinct()
+
+
 class LeadForm(PydiciCrispyModelForm):
     class Meta:
         model = Lead

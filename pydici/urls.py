@@ -31,7 +31,7 @@ from expense.urls import expense_urls
 from leads.urls import leads_urls
 from core.urls import core_urls
 
-from core.views import PydiciSelect2View
+from core.views import PydiciSelect2View, PydiciSelect2SubcontractorView
 
 # Overide internal server error view
 handler500 = "core.views.internal_error"
@@ -69,6 +69,8 @@ pydici_patterns.extend([
 
 # Add select2 url
 pydici_patterns.append(url(r"^select2/auto.json$", PydiciSelect2View.as_view(), name="pydici-select2-view"))
+pydici_patterns.append(url(r"^select2/subcontractor/auto.json$", PydiciSelect2SubcontractorView.as_view(), name="pydici-select2-view-subcontractor"))
+
 
 # Include pydici modules URLs
 pydici_patterns.extend([url("", include((core_urls, "core"), namespace="core")),

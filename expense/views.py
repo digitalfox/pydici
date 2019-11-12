@@ -23,9 +23,9 @@ from expense.forms import ExpenseForm, ExpensePaymentForm
 from expense.models import Expense, ExpensePayment
 from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable
 from leads.models import Lead
-from core.decorator import pydici_non_public, pydici_feature
+from people.models import Consultant
+from core.decorator import pydici_non_public, pydici_feature, pydici_subcontractor
 from core.views import tableToCSV
-from core import utils
 from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm, user_expense_team
 
 
@@ -57,8 +57,7 @@ def expense(request, expense_id):
                    "user": request.user})
 
 
-@pydici_non_public
-@pydici_feature("reports")
+@pydici_subcontractor
 def expenses(request, expense_id=None, clone_from=None):
     """Display user expenses and expenses that he can validate"""
     expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
@@ -67,6 +66,11 @@ def expenses(request, expense_id=None, clone_from=None):
         return HttpResponseRedirect(reverse("core:forbiden"))
 
     user_team = user_expense_team(request.user)
+
+    consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+    subcontractor = None
+    if consultant.subcontractor:
+        subcontractor = consultant
 
     try:
         if expense_id:
@@ -81,9 +85,9 @@ def expenses(request, expense_id=None, clone_from=None):
 
     if request.method == "POST":
         if expense_id:
-            form = ExpenseForm(request.POST, request.FILES, instance=expense)
+            form = ExpenseForm(request.POST, request.FILES, instance=expense, subcontractor=subcontractor)
         else:
-            form = ExpenseForm(request.POST, request.FILES)
+            form = ExpenseForm(request.POST, request.FILES, subcontractor=subcontractor)
         if form.is_valid():
             expense = form.save(commit=False)
             if not hasattr(expense, "user"):
@@ -95,17 +99,17 @@ def expenses(request, expense_id=None, clone_from=None):
             return HttpResponseRedirect(reverse("expense:expenses"))
     else:
         if expense_id:
-            form = ExpenseForm(instance=expense)  # A form that edit current expense
+            form = ExpenseForm(instance=expense, subcontractor=subcontractor)  # A form that edit current expense
         elif clone_from:
             try:
                 expense = Expense.objects.get(id=clone_from)
                 expense.pk = None  # Null pk so it will generate a new fresh object during form submit
                 expense.receipt = None  # Never duplicate the receipt, a new one need to be provided
-                form = ExpenseForm(instance=expense)  # A form with the new cloned expense (not saved)
+                form = ExpenseForm(instance=expense, subcontractor=subcontractor)  # A form with the new cloned expense (not saved)
             except Expense.DoesNotExist:
                 form = ExpenseForm(initial={"expense_date": date.today()})  # An unbound form
         else:
-            form = ExpenseForm(initial={"expense_date": date.today()})  # An unbound form
+            form = ExpenseForm(initial={"expense_date": date.today()}, subcontractor=subcontractor)  # An unbound form
 
     # Get user expenses
     user_expenses = Expense.objects.filter(user=request.user, workflow_in_progress=True).select_related()

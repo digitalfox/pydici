@@ -17,7 +17,8 @@ from crispy_forms.layout import Submit, Layout, Div, Column, Field
 from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
 
 from expense.models import Expense
-from leads.forms import CurrentLeadChoices
+from leads.models import Lead
+from leads.forms import CurrentLeadChoices, SubcontractorLeadChoices
 from core.forms import PydiciCrispyForm, PydiciSelect2WidgetMixin
 
 
@@ -57,14 +58,20 @@ class ExpenseForm(forms.ModelForm):
         fields = ("description", "lead", "chargeable", "amount", "category", "receipt", "expense_date", "corporate_card", "comment")
         widgets = {"description": TextInput(attrs={"size": 40}),  # Increase default size
                    "comment": Textarea(attrs={'cols': 17, 'rows': 2}),  # Reduce height and increase width
-                   "lead": CurrentLeadChoices}
+                   }
 
 
     def __init__(self, *args, **kwargs):
+        subcontractor = kwargs.pop("subcontractor")
         super(ExpenseForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-default"
+        if subcontractor:
+            self.fields["lead"] = forms.ModelChoiceField(widget=SubcontractorLeadChoices(subcontractor=subcontractor), queryset=Lead.objects.all())
+        else:
+            self.fields["lead"] = forms.ModelChoiceField(widget=CurrentLeadChoices, queryset=Lead.objects.all())
+
         self.helper.layout = Layout(Div(Column("description", "category", "amount", Field("expense_date", css_class="datepicker"), css_class='col-md-6'),
                                         Column("lead", "chargeable", "corporate_card", "receipt", "comment", css_class='col-md-6'),
                                         css_class='row'),
