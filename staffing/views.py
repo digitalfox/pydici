@@ -539,7 +539,7 @@ def prod_report(request, year=None, month=None):
     if subsidiary:
         consultants = consultants.filter(company=subsidiary)
 
-    holidays_days = Holiday.objects.filter(day__gte=start_date, day__lte=end_date).values_list("day", flat=True)
+    holidays_days = Holiday.objects.filter(day__gte=start_date, day__lte=nextMonth(end_date)).values_list("day", flat=True)
     data = []
     totalDone = {}
     totalForecasted = {}
