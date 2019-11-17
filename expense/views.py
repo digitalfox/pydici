@@ -190,8 +190,8 @@ def expense_delete(request, expense_id):
     return redirect("expense:expenses")
 
 
-@pydici_non_public
-@pydici_feature("reports")
+@pydici_subcontractor
+@pydici_feature("expense")
 def expenses_history(request):
     """Display expense history.
     @param year: year of history. If None, display recent items and year index"""
