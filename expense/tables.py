@@ -22,13 +22,14 @@ from people.models import Consultant
 from core.templatetags.pydici_filters import link_to_consultant
 from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin, PydiciSubcontractordMixin
-from expense.utils import expense_state_display, expense_transition_to_state_display, user_expense_perm
+from expense.utils import expense_transition_to_state_display, user_expense_perm
 
 
 class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatableView):
     """Expense table backend for datatable"""
-    pydici_feature = set(["expense"])
-    columns = ["pk", "user", "category", "description", "lead", "amount","vat", "receipt", "chargeable", "corporate_card", "state", "creation_date", "expense_date", "update_date", "comment"]
+    pydici_feature = {"expense"}
+    columns = ["pk", "user", "category", "description", "lead", "amount", "vat", "receipt", "chargeable",
+               "corporate_card", "state", "creation_date", "expense_date", "update_date", "comment"]
     order_columns = columns
     max_display_length = 500
     date_template = get_template("core/_date_column.html")
@@ -56,7 +57,7 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
         try:
             # Just try to cast to see if we have a number but use str for filter to allow proper casting by django himself
             float(search)
-            filters = [Q(amount=search),Q(vat=search)]
+            filters = [Q(amount=search), Q(vat=search)]
 
         except ValueError:
             # search term is not a number
@@ -77,8 +78,8 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
         if search:
             filters = self.get_filters(search)
             query = Q()
-            for filter in filters:
-                query |= filter
+            for f in filters:
+                query |= f
             qs = qs.filter(query).distinct()
         return qs
 
@@ -109,7 +110,6 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
             return """<div id="{0}" class="jeditable-vat">{1}</div>""".format(row.id, row.vat)
         else:
             return super(ExpenseTableDT, self).render_column(row, column)
-
 
 
 class ExpenseTable(tables.Table):
@@ -150,14 +150,14 @@ class ExpenseWorkflowTable(ExpenseTable):
                              smart_str(_("Ed"))))
             result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
                           (smart_str(_("Delete")),
-                           reverse("expense:expense_delete",kwargs={"expense_id": record.id}),
+                           reverse("expense:expense_delete", kwargs={"expense_id": record.id}),
                            # Translators: De is the short term for Delete
                            smart_str(_("De"))))
         result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
                       (smart_str(_("Clone")),
-                      reverse("expense:clone_expense", kwargs={"clone_from": record.id}),
+                       reverse("expense:clone_expense", kwargs={"clone_from": record.id}),
                        # Translators: Cl is the short term for Clone
-                      smart_str(_("Cl"))))
+                       smart_str(_("Cl"))))
         return mark_safe(" ".join(result))
 
     class Meta:
@@ -249,4 +249,3 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
             return self.modification_template.render(RequestContext(self.request, {"record": row}))
         else:
             return super(ExpensePaymentTableDT, self).render_column(row, column)
-

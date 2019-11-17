@@ -29,7 +29,6 @@ from core.views import tableToCSV
 from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm, user_expense_team
 
 
-
 @pydici_subcontractor
 @pydici_feature("expense")
 def expense(request, expense_id):
@@ -193,8 +192,7 @@ def expense_delete(request, expense_id):
 @pydici_subcontractor
 @pydici_feature("expense")
 def expenses_history(request):
-    """Display expense history.
-    @param year: year of history. If None, display recent items and year index"""
+    """Display expense history"""
 
     expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
 
@@ -219,6 +217,7 @@ def lead_expenses(request, lead_id):
         expenses = Expense.objects.filter(lead=lead).select_related().prefetch_related("clientbill_set")
     except Lead.DoesNotExist:
         expenses = []
+        lead = None
     if "csv" in request.GET:
         expenseTable = ExpenseTable(expenses, orderable=True)
         RequestConfig(request, paginate={"per_page": 50}).configure(expenseTable)
@@ -252,7 +251,7 @@ def update_expense_state(request, expense_id, target_state):
     try:
         expense = Expense.objects.get(id=expense_id)
     except Expense.DoesNotExist:
-        message =  _("Expense %s does not exist" % expense_id)
+        message = _("Expense %s does not exist" % expense_id)
         error = True
 
     if not error:
@@ -284,7 +283,6 @@ def update_expense_vat(request):
     if not (expense_administrator or expense_paymaster):
         return HttpResponseForbidden()
 
-    message = ""
     try:
         expense_id = request.POST["id"]
         value = request.POST["value"].replace(",", ".")
@@ -293,11 +291,12 @@ def update_expense_vat(request):
         expense.save()
         message = value
     except Expense.DoesNotExist:
-        message =  _("Expense %s does not exist" % expense_id)
+        message = _("Expense %s does not exist" % expense_id)
     except (ValueError, decimal.InvalidOperation):
         message = _("Incorrect value")
 
     return HttpResponse(message)
+
 
 @pydici_non_public
 @pydici_feature("management")

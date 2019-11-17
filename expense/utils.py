@@ -99,11 +99,6 @@ def in_terminal_state(expense):
         return False
 
 
-def expense_state_display(state):
-    d = dict(EXPENSE_STATES)
-    return d.get(state, "??")
-
-
 def expense_transition_to_state_display(state):
     d = dict(EXPENSE_TRANSITION_TO_STATES)
     return d.get(state, "??")
