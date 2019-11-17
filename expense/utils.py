@@ -111,6 +111,7 @@ def expense_transition_to_state_display(state):
 
 def user_expense_perm(user):
     """compute user perm and returns expense_administrator, expense_manager, expense_paymaster, expense_requester"""
+    #TODO: migrate this to features instead of group link
     expense_administrator = user.is_superuser or user.groups.filter(name="expense_administrator").exists()
     expense_manager = expense_administrator or user.groups.filter(name="expense_manager").exists()
     expense_paymaster = expense_administrator or user.groups.filter(name="expense_paymaster").exists()
