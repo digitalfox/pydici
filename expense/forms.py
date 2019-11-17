@@ -69,6 +69,9 @@ class ExpenseForm(forms.ModelForm):
         submit.field_classes = "btn btn-default"
         if subcontractor:
             self.fields["lead"] = forms.ModelChoiceField(widget=SubcontractorLeadChoices(subcontractor=subcontractor), queryset=Lead.objects.all())
+            # Subcontractor expense are not refunded directly like payroll but through supplier bill. That's similar to a payroll with a corporate card.
+            self.fields["corporate_card"].initial = True
+            self.fields["corporate_card"].disabled = True
         else:
             self.fields["lead"] = forms.ModelChoiceField(widget=CurrentLeadChoices, queryset=Lead.objects.all())
 
