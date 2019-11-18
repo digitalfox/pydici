@@ -73,7 +73,7 @@ class ExpenseForm(forms.ModelForm):
             self.fields["corporate_card"].initial = True
             self.fields["corporate_card"].disabled = True
         else:
-            self.fields["lead"] = forms.ModelChoiceField(widget=CurrentLeadChoices, queryset=Lead.objects.all())
+            self.fields["lead"] = forms.ModelChoiceField(widget=CurrentLeadChoices, queryset=Lead.objects.all(), required=False)
 
         self.helper.layout = Layout(Div(Column("description", "category", "amount", Field("expense_date", css_class="datepicker"), css_class='col-md-6'),
                                         Column("lead", "chargeable", "corporate_card", "receipt", "comment", css_class='col-md-6'),
