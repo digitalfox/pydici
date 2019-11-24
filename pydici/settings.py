@@ -82,7 +82,7 @@ ADMIN_MEDIA_PREFIX = '/media/'
 SECRET_KEY = '-)^_522$p_b6ckz_94&o_en4th6ug&gxpe$!@f^6fjim0j=_)p'
 
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -90,7 +90,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 if DEBUG:
-    MIDDLEWARE_CLASSES.extend(['userswitch.middleware.UserSwitchMiddleware',
+    MIDDLEWARE.extend(['userswitch.middleware.UserSwitchMiddleware',
                                'debug_toolbar.middleware.DebugToolbarMiddleware'])
 
 ROOT_URLCONF = 'pydici.urls'
@@ -180,7 +180,5 @@ if DEBUG:
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = not DEBUG
-SELECT2_JS = '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js'
-SELECT2_CSS = '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css'
 SELECT2_CACHE_BACKEND = 'select2'
 TAGGIT_LIMIT = 200

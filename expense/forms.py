@@ -17,11 +17,12 @@ from crispy_forms.layout import Submit, Layout, Div, Column, Field
 from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
 
 from expense.models import Expense
-from leads.forms import CurrentLeadChoices
-from core.forms import PydiciCrispyForm
+from leads.models import Lead
+from leads.forms import CurrentLeadChoices, SubcontractorLeadChoices
+from core.forms import PydiciCrispyForm, PydiciSelect2WidgetMixin
 
 
-class ExpenseChoices(ModelSelect2Widget):
+class ExpenseChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     #TODO: factorize this
     model = Expense
     search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains",
@@ -29,7 +30,7 @@ class ExpenseChoices(ModelSelect2Widget):
                      "lead__client__organisation__company__name__icontains",
                      "lead__client__organisation__company__code__icontains"]
 
-class ExpenseMChoices(ModelSelect2MultipleWidget):
+class ExpenseMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
     model = Expense
     search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains",
                      "lead__name__icontains", "lead__deal_id__icontains", "lead__client__organisation__name",
@@ -57,14 +58,23 @@ class ExpenseForm(forms.ModelForm):
         fields = ("description", "lead", "chargeable", "amount", "category", "receipt", "expense_date", "corporate_card", "comment")
         widgets = {"description": TextInput(attrs={"size": 40}),  # Increase default size
                    "comment": Textarea(attrs={'cols': 17, 'rows': 2}),  # Reduce height and increase width
-                   "lead": CurrentLeadChoices}
+                   }
 
 
     def __init__(self, *args, **kwargs):
+        subcontractor = kwargs.pop("subcontractor")
         super(ExpenseForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-default"
+        if subcontractor:
+            self.fields["lead"] = forms.ModelChoiceField(label=_("Lead"), widget=SubcontractorLeadChoices(subcontractor=subcontractor), queryset=Lead.objects.all())
+            # Subcontractor expense are not refunded directly like payroll but through supplier bill. That's similar to a payroll with a corporate card.
+            self.fields["corporate_card"].initial = True
+            self.fields["corporate_card"].disabled = True
+        else:
+            self.fields["lead"] = forms.ModelChoiceField(label=_("Lead"), widget=CurrentLeadChoices, queryset=Lead.objects.all(), required=False)
+
         self.helper.layout = Layout(Div(Column("description", "category", "amount", Field("expense_date", css_class="datepicker"), css_class='col-md-6'),
                                         Column("lead", "chargeable", "corporate_card", "receipt", "comment", css_class='col-md-6'),
                                         css_class='row'),

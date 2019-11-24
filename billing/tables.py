@@ -18,7 +18,7 @@ from billing.models import ClientBill, SupplierBill
 from people.models import Consultant
 from leads.models import Lead
 
-class BillTableDT(BillingRequestMixin, BaseDatatableView):
+class BillTableDT(PydiciNonPublicdMixin, BillingRequestMixin, BaseDatatableView):
     """Base bill table backend for datatables"""
 
     def get_filters(self, search):

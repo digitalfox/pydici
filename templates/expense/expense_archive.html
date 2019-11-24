@@ -1,8 +1,14 @@
 {% extends "core/pydici.html" %}
 
 {% load i18n %}
+{% load l10n %}
 
 {% block title %}{% trans "Expenses history" %}{% endblock %}
+
+{% block extrajs %}
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jeditable.mini.js"></script>
+{% endblock %}
+
 
 {% block content %}
 
@@ -18,6 +24,7 @@
                         <th>{% trans "Description" %}</th>
                         <th>{% trans "Lead" %}</th>
                         <th>{% trans "Amount" %}</th>
+                        <th>{% trans "VAT (€)" %}</th>
                         <th>{% trans "Receipt" %}</th>
                         <th>{% trans "Chargeable" %}</th>
                         <th>{% trans "Corporate card" %}</th>
@@ -42,5 +49,9 @@
 
 
 {% include "expense/_expense_receipt_modal.html" %}
+
+
+{% include "expense/_make_vat_editable.html" %}
+
 
 {% endblock %}

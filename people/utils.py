@@ -19,13 +19,18 @@ from billing.models import ClientBill, SupplierBill
 from expense.models import Expense
 from expense.utils import user_expense_team
 
-def getScopes(subsidiary, team, target="all"):
+
+def get_scopes(subsidiary, team, target="all"):
     """Define scopes than can be used to filter data. Either team, subsidiary or everybody (default). Format is (type, filter, label) where type is "team_id" or "subsidiary_id".
+    @:param
+    @:param team
     @:param target: all (default), subsidiary or team
+    @:param include_team: True (default), include team in scope
     @:return: scopes, scope_current_filter, scope_current_url_filter"""
 
     # Gather scopes
     scopes = [(None, "all", _(u"Everybody")), ]
+
     if target in ("all", "subsidiary"):
         for s in Subsidiary.objects.filter(consultant__active=True, consultant__subcontractor=False,
                                            consultant__productive=True).annotate(num=Count('consultant')).filter(num__gt=0):
@@ -51,12 +56,23 @@ def getScopes(subsidiary, team, target="all"):
     return scopes, scope_current_filter, scope_current_url_filter
 
 
+def get_subsidiary_from_request(request):
+    """ Check if Retrieves a subsidiary by given id
+    :param id: subsidiary_id
+    :param request
+    :return: found subsidiary otherwise none
+    """
+
+    if "subsidiary_id" in request.GET:
+        return Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
+    return None
+
 def compute_consultant_tasks(consultant):
     """gather all tasks consultant should do
     @:return: list of (task_name, count, link, priority(1-3))"""
     tasks = []
     now = datetime.now()
-    user = consultant.getUser()
+    user = consultant.get_user()
 
     if not user:
         return tasks

@@ -8,10 +8,11 @@ Pydici expense views. Http request are processed here.
 from datetime import date
 import json
 from io import BytesIO
+import decimal
 
 from django_tables2 import RequestConfig
 
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
 from django.utils.translation import ugettext as _
 from django.urls import reverse
 from django.db.models import Q, Count
@@ -22,14 +23,41 @@ from expense.forms import ExpenseForm, ExpensePaymentForm
 from expense.models import Expense, ExpensePayment
 from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable
 from leads.models import Lead
-from core.decorator import pydici_non_public, pydici_feature
+from people.models import Consultant
+from core.decorator import pydici_non_public, pydici_feature, pydici_subcontractor
 from core.views import tableToCSV
-from core import utils
 from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm, user_expense_team
 
 
-@pydici_non_public
-@pydici_feature("reports")
+@pydici_subcontractor
+@pydici_feature("expense")
+def expense(request, expense_id):
+    """Display one expense"""
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+
+    if not expense_requester:
+        return HttpResponseRedirect(reverse("core:forbiden"))
+
+    user_team = user_expense_team(request.user)
+
+    try:
+        expense = Expense.objects.get(id=expense_id)
+    except Expense.DoesNotExist:
+        raise Http404
+
+    if not (expense_administrator or expense_paymaster):
+        if not (expense.user == request.user or expense.user in user_team):
+            return HttpResponseRedirect(reverse("core:forbiden"))
+
+    return render(request, "expense/expense.html",
+                  {"expense": expense,
+                   "can_edit": can_edit_expense(expense, request.user),
+                   "can_edit_vat": expense_administrator or expense_paymaster,
+                   "user": request.user})
+
+
+@pydici_subcontractor
+@pydici_feature("expense")
 def expenses(request, expense_id=None, clone_from=None):
     """Display user expenses and expenses that he can validate"""
     expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
@@ -38,6 +66,11 @@ def expenses(request, expense_id=None, clone_from=None):
         return HttpResponseRedirect(reverse("core:forbiden"))
 
     user_team = user_expense_team(request.user)
+
+    consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+    subcontractor = None
+    if consultant.subcontractor:
+        subcontractor = consultant
 
     try:
         if expense_id:
@@ -52,9 +85,9 @@ def expenses(request, expense_id=None, clone_from=None):
 
     if request.method == "POST":
         if expense_id:
-            form = ExpenseForm(request.POST, request.FILES, instance=expense)
+            form = ExpenseForm(request.POST, request.FILES, instance=expense, subcontractor=subcontractor)
         else:
-            form = ExpenseForm(request.POST, request.FILES)
+            form = ExpenseForm(request.POST, request.FILES, subcontractor=subcontractor)
         if form.is_valid():
             expense = form.save(commit=False)
             if not hasattr(expense, "user"):
@@ -66,17 +99,17 @@ def expenses(request, expense_id=None, clone_from=None):
             return HttpResponseRedirect(reverse("expense:expenses"))
     else:
         if expense_id:
-            form = ExpenseForm(instance=expense)  # A form that edit current expense
+            form = ExpenseForm(instance=expense, subcontractor=subcontractor)  # A form that edit current expense
         elif clone_from:
             try:
                 expense = Expense.objects.get(id=clone_from)
                 expense.pk = None  # Null pk so it will generate a new fresh object during form submit
                 expense.receipt = None  # Never duplicate the receipt, a new one need to be provided
-                form = ExpenseForm(instance=expense)  # A form with the new cloned expense (not saved)
+                form = ExpenseForm(instance=expense, subcontractor=subcontractor)  # A form with the new cloned expense (not saved)
             except Expense.DoesNotExist:
                 form = ExpenseForm(initial={"expense_date": date.today()})  # An unbound form
         else:
-            form = ExpenseForm(initial={"expense_date": date.today()})  # An unbound form
+            form = ExpenseForm(initial={"expense_date": date.today()}, subcontractor=subcontractor)  # An unbound form
 
     # Get user expenses
     user_expenses = Expense.objects.filter(user=request.user, workflow_in_progress=True).select_related()
@@ -110,8 +143,8 @@ def expenses(request, expense_id=None, clone_from=None):
                    "user": request.user})
 
 
-@pydici_non_public
-@pydici_feature("management")
+@pydici_subcontractor
+@pydici_feature("expense")
 def expense_receipt(request, expense_id):
     """Returns expense receipt if authorize to"""
     data = BytesIO()
@@ -128,8 +161,8 @@ def expense_receipt(request, expense_id):
     return HttpResponse(data)
 
 
-@pydici_non_public
-@pydici_feature("reports")
+@pydici_subcontractor
+@pydici_feature("expense")
 def expense_delete(request, expense_id):
     """Delete given expense if authorized to"""
     expense = None
@@ -156,11 +189,12 @@ def expense_delete(request, expense_id):
     return redirect("expense:expenses")
 
 
-@pydici_non_public
-@pydici_feature("reports")
+@pydici_subcontractor
+@pydici_feature("expense")
 def expenses_history(request):
-    """Display expense history.
-    @param year: year of history. If None, display recent items and year index"""
+    """Display expense history"""
+
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
 
     return render(request, "expense/expense_archive.html",
                   {"data_url": reverse('expense:expense_table_DT'),
@@ -169,7 +203,9 @@ def expenses_history(request):
                                        "columnDefs": [{ "orderable": false, "targets": [6,] },
                                                       { className: "hidden-xs hidden-sm hidden-md", "targets": [2, 10, 12, 13]},
                                                       { className: "description", "targets": [3]},
-                                                      { className: "amount", "targets": [5]}]''',
+                                                      { className: "amount", "targets": [5]}],
+                                       "fnDrawCallback": function( oSettings ) {make_vat_editable(); }''',
+                   "can_edit_vat": expense_administrator or expense_paymaster,
                    "user": request.user})
 
 
@@ -181,6 +217,7 @@ def lead_expenses(request, lead_id):
         expenses = Expense.objects.filter(lead=lead).select_related().prefetch_related("clientbill_set")
     except Lead.DoesNotExist:
         expenses = []
+        lead = None
     if "csv" in request.GET:
         expenseTable = ExpenseTable(expenses, orderable=True)
         RequestConfig(request, paginate={"per_page": 50}).configure(expenseTable)
@@ -214,7 +251,7 @@ def update_expense_state(request, expense_id, target_state):
     try:
         expense = Expense.objects.get(id=expense_id)
     except Expense.DoesNotExist:
-        message =  _("Expense %s does not exist" % expense_id)
+        message = _("Expense %s does not exist" % expense_id)
         error = True
 
     if not error:
@@ -238,10 +275,38 @@ def update_expense_state(request, expense_id, target_state):
 
 @pydici_non_public
 @pydici_feature("management")
+def update_expense_vat(request):
+    """Update expense VAT."""
+
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+
+    if not (expense_administrator or expense_paymaster):
+        return HttpResponseForbidden()
+
+    try:
+        expense_id = request.POST["id"]
+        value = request.POST["value"].replace(",", ".")
+        expense = Expense.objects.get(id=expense_id)
+        expense.vat = decimal.Decimal(value)
+        expense.save()
+        message = value
+    except Expense.DoesNotExist:
+        message = _("Expense %s does not exist" % expense_id)
+    except (ValueError, decimal.InvalidOperation):
+        message = _("Incorrect value")
+
+    return HttpResponse(message)
+
+
+@pydici_non_public
+@pydici_feature("management")
 def expense_payments(request, expense_payment_id=None):
     readOnly = False
-    if not request.user.groups.filter(name="expense_paymaster").exists() and not request.user.is_superuser:
+    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+
+    if not (expense_paymaster or expense_administrator):
         readOnly = True
+
     try:
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
@@ -294,6 +359,7 @@ def expense_payments(request, expense_payment_id=None):
                         "columnDefs": [{ "orderable": false, "targets": [1, 2, 4] }]''',
                    "expense_to_pay_table": ExpenseTable(expensesToPay),
                    "read_only": readOnly,
+                   "can_edit_vat": expense_administrator or expense_paymaster,
                    "form": form,
                    "user": request.user})
 
@@ -318,4 +384,5 @@ def expense_payment_detail(request, expense_payment_id):
     return render(request, "expense/expense_payment_detail.html",
                   {"expense_payment": expensePayment,
                    "expense_table": ExpenseTable(expensePayment.expense_set.all()),
+                   "can_edit_vat": expense_administrator or expense_paymaster,
                    "user": request.user})

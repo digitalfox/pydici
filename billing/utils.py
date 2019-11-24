@@ -8,11 +8,15 @@ appropriate to live in Billing models or view
 """
 
 import json
+from os import path
+import os
 
 from django.apps import apps
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
 from django.utils.translation import ugettext as _
+from django.conf import settings
+from django.core.files.base import ContentFile
 
 from core.utils import to_int_or_round, nextMonth
 
@@ -148,7 +152,9 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                      _("client organisation"): str(lead.client.organisation),
                      _("client company"): str(lead.client.organisation.company),
                      _("broker"): str(lead.business_broker or _("Direct")),
-                     _("subsidiary") :str(lead.subsidiary)}
+                     _("subsidiary") :str(lead.subsidiary),
+                     _("responsible"): str(lead.responsible),
+                     _("consultant"): "-"}
         # Add legacy bills non related to specific mission (ie. not using pydici billing, just header and pdf payload)
         legacy_bills = ClientBill.objects.filter(lead=lead, state__in=bill_state).annotate(Count("billdetail")).filter(billdetail__count=0)
         for legacy_bill in legacy_bills:
@@ -156,7 +162,6 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
             legacy_bill_data[_("amount")] = - float(legacy_bill.amount or 0)
             legacy_bill_data[_("month")] = legacy_bill.creation_date.replace(day=1).isoformat()
             legacy_bill_data[_("type")] = _("Service bill")
-            legacy_bill_data[_("consultant")] = "-"
             legacy_bill_data[_("mission")] = "-"
             mission = lead.mission_set.first()
             if mission:  # default to billing mode of first mission. Not 100% accurate...
@@ -184,7 +189,6 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
             if mission.billing_mode == "FIXED_PRICE":
                 for billDetail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state):
                     mission_fixed_price_data = mission_data.copy()
-                    mission_fixed_price_data[_("consultant")] = "-"
                     mission_fixed_price_data[_("month")] = billDetail.bill.creation_date.replace(day=1).isoformat()
                     mission_fixed_price_data[_("type")] = _("Service bill")
                     mission_fixed_price_data[_("amount")] = -float(billDetail.amount or 0)
@@ -214,3 +218,75 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                         data.append(mission_month_consultant_data)
 
     return json.dumps(data)
+
+
+def generate_bill_pdf(bill, request):
+    """Generate bill pdf file and update bill object with file path"""
+    from billing.views import BillPdf  # Local to avoid circular import
+    fake_http_request = request
+    fake_http_request.method = "GET"
+    response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
+    pdf = response.rendered_content.read()
+    filename = bill_pdf_filename(bill)
+    content = ContentFile(pdf, name=filename)
+    bill.bill_file.save(filename, content)
+    bill.save()
+
+def switch_bill_id(nature, dry_run=True, verbose=True):
+    """Rename bill files/directories using technical bill.id instead of bill.bill_id"""
+    #TODO: onetime script. Could be removed in short future.
+    base_location = path.join(settings.PYDICI_ROOTDIR, "data", "bill", nature)
+
+    if nature == "supplier":
+        Bill = apps.get_model("billing", "supplierbill")
+        bills = Bill.objects.all()
+        funct_id = "supplier_bill_id"
+    elif nature == "client":
+        Bill = apps.get_model("billing", "clientbill")
+        bills = Bill.objects.exclude(state__in=("0_DRAFT", "0_PROPOSED"))
+        funct_id = "bill_id"
+    else:
+        print("Nature must be 'client' or 'supplier'")
+        return
+
+    for bill in bills:
+        bill_id = getattr(bill, funct_id)
+        if verbose:
+            print("=" * 10)
+            print("Functionnal id is %s -- Technical id is %s" % (bill_id , bill.id))
+        if bill.bill_file:
+            bill_path = path.join(base_location, bill.bill_file.name)
+            if path.exists(bill_path):
+                bill_dir = path.abspath(path.dirname((bill_path)))
+                if verbose and len(os.listdir(bill_dir)) != 1:
+                    print("WARNING, more than one file for this bill in path %s" % bill_dir)
+                new_bill_dir = path.abspath(path.join(bill_dir, path.pardir, str(bill.id)))
+                if nature == "supplier":
+                    # Weird case, functionnal supplier id overlap technical one for the same month. Sic.
+                    # Tmp path will be removed in second loop
+                    new_bill_dir = new_bill_dir +"-tmp"
+                print("About to rename %s to %s" % (bill_dir, new_bill_dir))
+                if not dry_run:
+                    os.rename(bill_dir, new_bill_dir)
+                    bill.bill_file.name = path.join(new_bill_dir, path.basename(bill_path))
+                    bill.save()
+            else:
+                if verbose:
+                    print("WARNING, bill file does not exist (did you already moved it ? %s" % bill_path)
+        elif verbose:
+            print("WARNING, no file for this bill")
+
+    if nature == "supplier":
+        # remove -tmp suffix used to avoid clash between tech & funct id
+        for bill in bills:
+            if bill.bill_file:
+                bill_path = path.join(base_location, bill.bill_file.name)
+                bill_dir = path.abspath(path.dirname((bill_path)))
+                new_bill_dir = path.abspath(path.join(bill_dir, path.pardir, str(bill.id)))
+                print("About to rename %s to %s" % (bill_dir, new_bill_dir))
+                if not dry_run:
+                    os.rename(bill_dir, new_bill_dir)
+                    bill.bill_file.name = path.join(new_bill_dir, path.basename(bill_path))
+                    bill.save()
+
+

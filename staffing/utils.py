@@ -156,8 +156,8 @@ def sortMissions(missions):
             print("Unknown mission nature (%s). Cannot sort") % mission.nature
 
     # Sort each list
-    holidaysMissions.sort(key=lambda x: x.description)
-    nonProdMissions.sort(key=lambda x: x.description)
+    holidaysMissions.sort(key=lambda x: str(x.description))
+    nonProdMissions.sort(key=lambda x: str(x.description))
     prodMissions.sort(key=lambda x: str(x))
 
     return prodMissions + nonProdMissions + holidaysMissions
@@ -214,6 +214,10 @@ def compute_automatic_staffing(mission, mode, duration, user=None):
     current_month = date.today().replace(day=1)
     start_date = current_month
     total = 0
+
+    if not mission.consultants():
+        # no consultant, no staffing. Come on.
+        return
 
     if mode=="replace":
         mission.staffing_set.all().delete()

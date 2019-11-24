@@ -27,14 +27,14 @@ from django.utils import formats
 
 from staffing.models import Mission, FinancialCondition
 from people.models import Consultant
-from core.forms import PydiciCrispyModelForm
+from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
 from staffing.utils import staffingDates, time_string_for_day_percent, day_percent_for_time_string
 from leads.forms import LeadChoices
 
 
-class MissionChoices(ModelSelect2Widget):
+class MissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = Mission.objects
     search_fields = ["deal_id__icontains", "description__icontains", "lead__name__icontains", "lead__deal_id__icontains",
                      "lead__client__organisation__name__icontains", "lead__client__organisation__company__name__icontains"]
@@ -42,7 +42,7 @@ class MissionChoices(ModelSelect2Widget):
     def get_queryset(self):
         return Mission.objects.filter(active=True)
 
-class MissionMChoices(ModelSelect2MultipleWidget):
+class MissionMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
     model = Mission
     search_fields = MissionChoices.search_fields
 
@@ -50,7 +50,7 @@ class MissionMChoices(ModelSelect2MultipleWidget):
         return Mission.objects.filter(active=True)
 
 
-class LeadMissionChoices(ModelSelect2Widget):
+class LeadMissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = Mission
     search_fields = MissionChoices.search_fields
 

@@ -5,6 +5,10 @@
 {% load render_table from django_tables2 %}
 {% load crispy_forms_tags %}
 
+{% block extrajs %}
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jeditable.mini.js"></script>
+{% endblock %}
+
 {% block title %}{% trans "Expenses payments" %}{% endblock %}
 
 {% block content %}
@@ -62,5 +66,15 @@
 <a href="{% url 'expense:expenses_history' %}">{% trans "Expenses history" %}</a>
 
 {% include "core/_datepicker.html" %}
+
+{% if can_edit_vat %}
+    {% include "expense/_make_vat_editable.html" %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        make_vat_editable();
+        });
+    </script>
+{% endif %}
+
 
 {% endblock %}

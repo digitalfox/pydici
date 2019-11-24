@@ -14,7 +14,7 @@ from crm.views import ThirdPartyMixin
 from crm.models import Contact
 
 
-class ContactTableDT(ThirdPartyMixin, BaseDatatableView):
+class ContactTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
     """Contact tables backend for datatables"""
     columns = ("name", "companies", "function", "email", "phone", "mobile_phone", "fax")
     order_columns = columns

@@ -10,6 +10,7 @@ from os.path import join, dirname, split
 import mimetypes
 from io import BytesIO
 from base64 import b64encode
+from decimal import Decimal
 
 from django.db import models
 from django.core.files.storage import FileSystemStorage
@@ -103,6 +104,7 @@ class Expense(models.Model):
     expense_date = models.DateField(_("Expense date"))
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     amount = models.DecimalField(_("Amount"), max_digits=7, decimal_places=2)
+    vat = models.DecimalField(_("VAT (€)"), max_digits=7, decimal_places=2, default=Decimal("0"))
     category = models.ForeignKey(ExpenseCategory, verbose_name=_("Category"), on_delete=models.CASCADE)
     receipt = models.FileField(_("Receipt"), max_length=500, upload_to=expense_receipt_path, storage=ExpenseStorage(), null=True, blank=True)
     corporate_card = models.BooleanField(_("Paid with corporate card"), default=False)
@@ -141,7 +143,7 @@ class Expense(models.Model):
 
 
     def get_absolute_url(self):
-        return reverse('expense:expenses', args=[str(self.id)])
+        return reverse('expense:expense', args=[str(self.id)])
 
     class Meta:
         verbose_name = _("Expense")

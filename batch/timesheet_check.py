@@ -24,7 +24,7 @@ sys.path.append(PYDICI_DIR)  # Add project path to python path
 os.chdir(PYDICI_DIR)
 
 # Django import
-from django.core import urlresolvers
+from django.urls import reverse
 from django.core.mail import send_mass_mail
 from django.core.wsgi import get_wsgi_application
 from django.utils.translation import ugettext as _
@@ -39,11 +39,11 @@ from people.models import Consultant
 from staffing.utils import gatherTimesheetData
 
 
-def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
+def warn_for_imcomplete_timesheet(warn_surbooking=False, days=None, month=None):
     """Warn users and admin for incomplete timesheet after due date
-    @param warnSurbooking: Warn for surbooking days (default is false)
+    @param warn_surbooking: Warn for surbooking days (default is false)
     @param day: only check n first days. If none, check all month"""
-    emailTemplate = get_template("batch/timesheet_warning_email.txt")
+    email_template = get_template("batch/timesheet_warning_email.txt")
     if month == "current":
         nextMonth = (date.today().replace(day=1) + timedelta(days=40)).replace(day=1)
         currentMonth = date.today().replace(day=1)
@@ -61,8 +61,8 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
             # No check needed. Skip it
             continue
         missions = consultant.timesheet_missions(month=currentMonth)
-        timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, currentMonth)
-        url = get_parameter("HOST") + urlresolvers.reverse("people:consultant_home", args=[consultant.trigramme])
+        timesheet_data, timesheet_total, warning = gatherTimesheetData(consultant, missions, currentMonth)
+        url = get_parameter("HOST") + reverse("people:consultant_home", args=[consultant.trigramme])
         url += "?year=%s;month=%s" % (currentMonth.year, currentMonth.month)
         url += "#tab-timesheet"
 
@@ -71,23 +71,23 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
             warning = warning[:days]
         warning = [i for i in warning if i]  # Remove None
         if sum(warning) > 0:
-            surbookingDays = warning.count(1)
-            incompleteDays = warning.count(2)
-            if not warnSurbooking and not incompleteDays:
+            surbooking_days = warning.count(1)
+            incomplete_days = warning.count(2)
+            if not warn_surbooking and not incomplete_days:
                 continue  # Don't cry if user only have surbooking issue
 
-            user = consultant.getUser()
+            user = consultant.get_user()
             if user and user.email:
                 recipients.append(user.email)
             if consultant.manager:
-                managerUser = consultant.manager.getUser()
+                managerUser = consultant.manager.get_user()
                 if managerUser and managerUser.email:
                     recipients.append(managerUser.email)
 
             if recipients:
-                msgText = emailTemplate.render(context={"month": currentMonth,
-                                                        "surbooking_days": surbookingDays,
-                                                        "incomplete_days": incompleteDays,
+                msgText = email_template.render(context={"month": currentMonth,
+                                                        "surbooking_days": surbooking_days,
+                                                        "incomplete_days": incomplete_days,
                                                         "consultant": consultant,
                                                         "days": days,
                                                         "url": url})
@@ -102,12 +102,12 @@ def warnForImcompleteTimesheet(warnSurbooking=False, days=None, month=None):
     send_mass_mail(mails, fail_silently=False)
 
 
-def parseOptions():
+def parse_options():
     """Command line option parsing"""
     parser = OptionParser()
 
     # Pages generation
-    parser.add_option("-w", "--warnSurbooking", dest="warnSurbooking",
+    parser.add_option("-w", "--warnSurbooking", dest="warn_surbooking",
                       action="store_true", default=False,
                       help="Warn even if user has only surbooking issue")
     parser.add_option("-d", "--days", dest="days", type="int", default=None,
@@ -117,8 +117,7 @@ def parseOptions():
                       help="Month to check: current or last.")
     return parser.parse_args()
 
+
 if __name__ == "__main__":
-    (options, args) = parseOptions()
-    warnForImcompleteTimesheet(warnSurbooking=options.warnSurbooking,
-                               days=options.days,
-                               month=options.month)
+    (options, args) = parse_options()
+    warn_for_imcomplete_timesheet(warn_surbooking=options.warn_surbooking, days=options.days, month=options.month)

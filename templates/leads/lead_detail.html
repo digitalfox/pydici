@@ -53,7 +53,7 @@
         <div class="row">
             <div class="tag_banner alert alert-info">
         	    {% for tag in lead.tags.all %}
-        	    <div id="tag_{{ tag.id }}" style="display:inline">
+        	    <div id="tag_{{ tag.id|unlocalize }}" style="display:inline">
         	    	<a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a>
         	    	<a class='tagrlink' href='javascript:;' onClick="$.get('{% url 'leads:remove_tag' tag.id|unlocalize lead.id|unlocalize %}', hide_tag);"><span class="glyphicon glyphicon-remove-circle"></span></a>&nbsp;
                 </div>

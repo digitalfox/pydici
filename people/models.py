@@ -56,10 +56,10 @@ class Consultant(models.Model):
     def full_name(self):
         return u"%s (%s)" % (self.name, self.trigramme)
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, *args, **kwargs):
         self.name = capitalize(self.name)
         self.trigramme = self.trigramme.upper()
-        super(Consultant, self).save(force_insert, force_update)
+        super(Consultant, self).save(*args, **kwargs)
 
     def active_missions(self):
         """Returns consultant active missions based on forecast staffing"""
@@ -84,10 +84,10 @@ class Consultant(models.Model):
             month = month.replace(day=1)
         else:
             month = date.today().replace(day=1)
-        nextMonth = (month + timedelta(40)).replace(day=1)
+        next_month = (month + timedelta(40)).replace(day=1)
 
         missions = Mission.objects.filter(active=True)
-        missions = missions.filter(staffing__staffing_date__gte=month, staffing__staffing_date__lt=nextMonth, staffing__consultant=self)
+        missions = missions.filter(staffing__staffing_date__gte=month, staffing__staffing_date__lt=next_month, staffing__consultant=self)
         missions = missions.distinct()
         return missions
 
@@ -104,59 +104,59 @@ class Consultant(models.Model):
         missions = missions.distinct()
         return missions
 
-    def getFinancialConditions(self, startDate, endDate):
+    def get_financial_conditions(self, start_date, end_date):
         """Get consultant's financial condition between startDate (included) and enDate (excluded)
         @return: ((rate1, #days), (rate2, #days)...)"""
         from staffing.models import FinancialCondition
         fc = FinancialCondition.objects.filter(consultant=self,
                                                consultant__timesheet__charge__gt=0,  # exclude null charge
-                                               consultant__timesheet__working_date__gte=startDate,
-                                               consultant__timesheet__working_date__lt=endDate,
+                                               consultant__timesheet__working_date__gte=start_date,
+                                               consultant__timesheet__working_date__lt=end_date,
                                                consultant__timesheet=F("mission__timesheet"))  # Join to avoid duplicate entries
         fc = fc.values("daily_rate").annotate(Sum("consultant__timesheet__charge"))  # nb days at this rate group by timesheet
         fc = fc.values_list("daily_rate", "consultant__timesheet__charge__sum")
         fc = fc.order_by("daily_rate")
         return fc
 
-    def getRateObjective(self, workingDate=None, rate_type="DAILY_RATE"):
+    def get_rate_objective(self, working_date=None, rate_type="DAILY_RATE"):
         """Get the consultant rate objective for given date. rate_type can be DAILY_RATE (default) or PROD_RATE"""
         rate_types = dict(RateObjective.RATE_TYPE).keys()
         if rate_type not in rate_types:
             raise ValueError("rate_type must be one of %s" % ", ".join(rate_types))
-        if not workingDate:
-            workingDate = date.today()
-        rates = self.rateobjective_set.filter(start_date__lte=workingDate, rate_type=rate_type).order_by("-start_date")
+        if not working_date:
+            working_date = date.today()
+        rates = self.rateobjective_set.filter(start_date__lte=working_date, rate_type=rate_type).order_by("-start_date")
         if rates:
             return rates[0]
 
-    def getProductionRate(self, startDate, endDate):
+    def get_production_rate(self, start_date, end_date):
         """Get consultant production rate between startDate (included) and enDate (excluded)"""
         Timesheet = apps.get_model("staffing", "Timesheet")
         timesheets = Timesheet.objects.filter(consultant=self,
                                               charge__gt=0,
-                                              working_date__gte=startDate,
-                                              working_date__lt=endDate)
+                                              working_date__gte=start_date,
+                                              working_date__lt=end_date)
         days = dict(timesheets.values_list("mission__nature").order_by("mission__nature").annotate(Sum("charge")))
-        prodDays = days.get("PROD", 0)
-        nonProdDays = days.get("NONPROD", 0)
-        if (prodDays + nonProdDays) > 0:
-            return prodDays / (prodDays + nonProdDays)
+        prod_days = days.get("PROD", 0)
+        non_prod_days = days.get("NONPROD", 0)
+        if (prod_days + non_prod_days) > 0:
+            return prod_days / (prod_days + non_prod_days)
         else:
             return 0
 
-    def getTurnover(self, startDate=None, endDate=None):
+    def get_turnover(self, start_date=None, end_date=None):
         """Get consultant turnover in euros of done missions according to timesheet and rates between startDate (included) and enDate (excluded). Only PROD missions are considered.
         Fixed price mission margin (profit or loss) are not considered.
-        @param startDate: if None, from the creation of earth
-        @param endDate : if None, up to today
+        @param start_date: if None, from the creation of earth
+        @param end_date : if None, up to today
         @return: turnover in euros"""
         from staffing.models import Timesheet, FinancialCondition, Mission  # Late import to avoid circular reference
-        if startDate is None:
-            startDate = date(1977, 2, 18)
-        if endDate is None:
-            endDate = date.today()
+        if start_date is None:
+            start_date = date(1977, 2, 18)
+        if end_date is None:
+            end_date = date.today()
         turnover = 0
-        timesheets = Timesheet.objects.filter(consultant=self, working_date__gte=startDate, working_date__lt=endDate, mission__nature="PROD").order_by("mission__id")
+        timesheets = Timesheet.objects.filter(consultant=self, working_date__gte=start_date, working_date__lt=end_date, mission__nature="PROD").order_by("mission__id")
         timesheets = timesheets.values_list("mission", "mission__billing_mode").annotate(Sum("charge"))
         rates = dict(FinancialCondition.objects.filter(consultant=self, mission__in=[i[0] for i in timesheets]).values_list("mission", "daily_rate"))
         for mission_id, billing_mode, charge in timesheets:
@@ -173,8 +173,8 @@ class Consultant(models.Model):
 
         return turnover
 
-    @cacheable("Consultant.getUser%(id)s", 3600)
-    def getUser(self):
+    @cacheable("Consultant.get_user%(id)s", 3600)
+    def get_user(self):
         """Returns django user behind this consultant
         Current algorithm check only for equal trigramme
         First match is returned"""
@@ -182,26 +182,26 @@ class Consultant(models.Model):
         if users.count() >= 1:
             return users[0]
 
-    def team(self, excludeSelf=True, onlyActive=False, staffing=False):
+    def team(self, exclude_self=True, only_active=False, staffing=False):
         """Returns Consultant team as a list of consultant"""
         if staffing:
             team = self.team_as_staffing_manager.all()
         else:
             team = self.team_as_manager.all()
-        if excludeSelf:
+        if exclude_self:
             team = team.exclude(id=self.id)
-        if onlyActive:
+        if only_active:
             team = team.filter(active=True)
         return team
 
-    def userTeam(self, excludeSelf=True, onlyActive=False):
+    def user_team(self, exclude_self=True, only_active=False):
         """Returns consultant team as list of pydici user"""
-        users = [c.getUser() for c in self.team(excludeSelf=excludeSelf, onlyActive=onlyActive)]
+        users = [c.get_user() for c in self.team(exclude_self=exclude_self, only_active=only_active)]
         return [u for u in users if u is not None]
 
     def pending_actions(self):
         """Returns pending actions"""
-        return ActionState.objects.filter(user=self.getUser(), state="TO_BE_DONE").select_related().prefetch_related("target")
+        return ActionState.objects.filter(user=self.get_user(), state="TO_BE_DONE").select_related().prefetch_related("target")
 
     def done_days(self):
         """Returns numbers of days worked up to today (according his timesheet) for current month"""
@@ -235,7 +235,7 @@ class Consultant(models.Model):
         working_date = date.today()
         holidays = Holiday.objects.filter(day__gte=working_date)
         day = timedelta(1)
-        while working_date.weekday() in (5,6) or working_date in holidays:
+        while working_date.weekday() in (5, 6) or working_date in holidays:
             # Go to next open day
             working_date += day
 
@@ -259,17 +259,18 @@ class Consultant(models.Model):
         result = []
         current_month = date.today().replace(day=1)
         for month, up_to in ((previousMonth(current_month), current_month), (current_month, date.today())):
-            wd = working_days(month, holidayDays(month=month),upToToday=True)
+            wd = working_days(month, holidayDays(month=month), upToToday=True)
             td = list(Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values())[0] or 0
             result.append(wd - td)
         return result
+
 
 class RateObjective(models.Model):
     """Consultant rates objective
     DAILY_RATE is the rate in € for each sold days
     PROD_RATE is the rate in % (int 0..100) on production days over all but holidays available days"""
-    RATE_TYPE= (("DAILY_RATE", _("daily rate")),
-                ("PROD_RATE", _("production rate")))
+    RATE_TYPE = (("DAILY_RATE", _("daily rate")),
+                 ("PROD_RATE", _("production rate")))
     consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
     start_date = models.DateField(_("Starting"))
     rate = models.IntegerField(_("Rate"), null=True)
@@ -288,10 +289,10 @@ class SalesMan(models.Model):
     def __str__(self):
         return "%s (%s)" % (self.name, self.company)
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, *args, **kwargs):
         self.name = capitalize(self.name)
         self.trigramme = self.trigramme.upper()
-        super(SalesMan, self).save(force_insert, force_update)
+        super(SalesMan, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ["name", ]
@@ -300,17 +301,18 @@ class SalesMan(models.Model):
 
 
 # Signal handling to throw actionset
+# noinspection PyUnusedLocal
 @disable_for_loaddata
-def consultantSignalHandler(sender, **kwargs):
+def consultant_signal_handler(sender, **kwargs):
     """Signal handler for new consultant"""
 
-    if  not kwargs.get("created", False):
+    if not kwargs.get("created", False):
         return
 
     consultant = kwargs["instance"]
     targetUser = None
     if consultant.manager:
-        targetUser = consultant.manager.getUser()
+        targetUser = consultant.manager.get_user()
 
     if not targetUser:
         # Default to admin
@@ -318,5 +320,6 @@ def consultantSignalHandler(sender, **kwargs):
 
     launchTrigger("NEW_CONSULTANT", [targetUser, ], consultant)
 
+
 # Signal connection to throw actionset
-post_save.connect(consultantSignalHandler, sender=Consultant)
+post_save.connect(consultant_signal_handler, sender=Consultant)

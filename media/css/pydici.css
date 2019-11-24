@@ -15,9 +15,30 @@ body {
 .table-pydici-extra-condensed thead td {
     text-align: center
 }
+
 .table-pydici-extra-condensed thead th {
     text-align: center
 }
+
+/*Global time sheet table styles*/
+
+div.table-pydici-all-timehseets {
+    height: 60vh;
+    overflow: auto;
+}
+
+/*Fix height to view toolbars on hover*/
+.table-pydici-all-timehseets th {
+    height: 60px;
+}
+
+.sticky-header {
+  position: -webkit-sticky;
+  position: sticky;
+  background: white;
+  top: 0;
+}
+/*END Global time sheet table styles*/
 
 .noborder {
     border: none !important;
@@ -266,7 +287,7 @@ td ul.errorlist li { margin:0 !important; }
 }
 
 /* jeditable clickable field - need to look like a link */
-.jeditable-rate, .jeditable-mission-update { color: #883915; text-decoration:none; cursor:pointer; display:inline}
+.jeditable-vat, .jeditable-rate, .jeditable-mission-update { color: #883915; text-decoration:none; cursor:pointer; display:inline}
 
 
 /* jqplot */
@@ -446,3 +467,8 @@ div.ui-tooltip {
     background-color: #f2dede;
     border-color: #ebccd1;
 }
+
+/* text rotation */
+.rotate90 {
+ transform: rotate(90deg);
+ }

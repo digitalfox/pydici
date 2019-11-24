@@ -6,7 +6,7 @@ Test cases for Lead module
 """
 
 from django.test import TestCase, override_settings
-from django.core import urlresolvers
+from django.urls import reverse
 from django.test import RequestFactory
 from django.contrib.messages.storage import default_storage
 from django.contrib.auth.models import User
@@ -47,9 +47,9 @@ class LeadModelTest(TestCase):
         self.assertEqual(len(lead.update_date_strf()), 14)
         self.assertEqual(lead.staffing_list(), "SRE, (JCF)")
         self.assertEqual(lead.short_description(), "A wonderfull lead th...")
-        self.assertEqual(urlresolvers.reverse("leads:detail", args=[4]), PREFIX + "/leads/4/")
+        self.assertEqual(reverse("leads:detail", args=[4]), PREFIX + "/leads/4/")
 
-        url = "".join(urlsplit(urlresolvers.reverse("leads:detail", args=[lead.id]))[2:])
+        url = "".join(urlsplit(reverse("leads:detail", args=[lead.id]))[2:])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         context = response.context[-1]

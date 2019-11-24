@@ -63,25 +63,32 @@ def get_lead_state_data(lead):
         feature["responsible_subsidiary"] = str(lead.responsible.company)
         feature["responsible_manager"] = str(lead.responsible.manager)
         feature["responsible_profil"] = str(lead.responsible.profil)
+        feature["responsible_team_size"] = lead.responsible.team().count()
+        feature["responsible_is_company_business_owner"] = int(lead.client.organisation.company.businessOwner == lead.responsible)
     feature["subsidiary"] = str(lead.subsidiary)
     feature["client_orga"] = str(lead.client.organisation)
     feature["client_company"] = str(lead.client.organisation.company)
     bills = ClientBill.objects.filter(lead__client__organisation__company=lead.client.organisation.company)
     feature["client_company_last_year_sales"] = float(list(bills.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360))).aggregate(Sum("amount")).values())[0] or 0)
+    feature["client_company_last_year_no_sales"] = int(feature["client_company_last_year_sales"] == 0)
     feature["client_company_last_three_year_sales"] = float(list(bills.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360*3))).aggregate(Sum("amount")).values())[0] or 0)
     feature["client_contact"] = str(lead.client.contact)
+    feature["no_client_contact"] = int(lead.client.contact == None)
+    feature["client_contact_count"] = Lead.objects.filter(client__contact = lead.client.contact, creation_date__lt=lead.creation_date).count()
     feature["client_company_business_owner"] = str(lead.client.organisation.company.businessOwner)
     if lead.start_date:
-        feature["lifetime"] = (lead.start_date - lead.creation_date.date()).days
+        feature["lifetime"] = max(0, (lead.start_date - lead.creation_date.date()).days)
     feature["sales"] = float(lead.sales or 0)
     if lead.business_broker:
-        feature["broker"] = str(lead.business_broker)
         feature["broker_company"] = str(lead.business_broker.company)
+        feature["broker_count"] = Lead.objects.filter(business_broker = lead.business_broker, creation_date__lt=lead.creation_date).count()
+        feature["broker_first_lead"] = int(feature["broker_count"] == 0)
     if lead.paying_authority:
-        feature["paying_authority"] = str(lead.paying_authority)
+        feature["paying_authority_count"] = Lead.objects.filter(paying_authority = lead.paying_authority, creation_date__lt=lead.creation_date).count()
         feature["paying_authority_company"] = str(lead.paying_authority.company)
     client_leads = lead.client.lead_set.all().order_by("creation_date")
     feature["lead_client_rank"] = list(client_leads).index(lead)
+    feature["first_lead"] = int(feature["lead_client_rank"] == 0)
     feature["leads_last_year"] = client_leads.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360))).count()
     feature["leads_last_three_year"] = client_leads.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360*3))).count()
     for staf in lead.staffing.all():
@@ -129,8 +136,6 @@ def extract_leads_similarity(leads, normalizer):
     """Extract leads features for similarity learning"""
     features = []
     sales = []
-    if isinstance(leads, QuerySet):
-        leads = leads.select_related("subsidiary").prefetch_related("tags")
     for lead in leads:
         d = get_lead_similarity_data(lead)
         sales.append([d["sales"],])
@@ -162,25 +167,24 @@ def extract_leads_tag(leads, include_leads=False):
     targets = []
     used_leads = []
     if isinstance(leads, QuerySet):
-        leads = leads.prefetch_related("tags")
         leads = leads.select_related("responsible", "client__organisation", "subsidiary")
     for lead in leads:
+        lead_info = get_lead_tag_data(lead)
         for tag in lead.tags.all():
-            used_leads.append(lead)
             targets.append(str(tag))
             if include_leads:
-                features.append("%s %s" % (lead.id, get_lead_tag_data(lead)))
+                features.append("%s %s" % (lead.id, lead_info))
             else:
-                features.append(get_lead_tag_data(lead))
+                features.append(lead_info)
     return (features, targets)
 
 ############# Model definition ##########################
 def get_state_model():
     model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(max_features="sqrt",
-                                                                                 min_samples_split=5,
-                                                                                 min_samples_leaf=2,
+                                                                                 min_samples_split=10,
+                                                                                 min_samples_leaf=3,
                                                                                  criterion='entropy',
-                                                                                 n_estimators= 50,
+                                                                                 n_estimators= 300,
                                                                                  class_weight="balanced"))])
     return model
 
@@ -270,16 +274,15 @@ def gridCV_tag_model():
 def gridCV_state_model():
     """Perform a grid search cross validation to find best parameters"""
     parameters= {
-                 'clf__n_estimators': (20, 50, 80),
                  'clf__criterion': ("gini", "entropy"),
-                 'clf__min_samples_split': (2, 3, 5, 8),
-                 'clf__min_samples_leaf': (2, 3, 5, 8),
-                 'clf__class_weight': ("balanced", "balanced_subsample", None)
+                 'clf__min_samples_split': (2, 3, 5, 8, 10, 12),
+                 'clf__min_samples_leaf': (1, 2, 3, 5),
+                 'clf__class_weight': ("balanced", "balanced_subsample")
                 }
     learn_leads = Lead.objects.filter(state__in=list(STATES.keys()))
     features, targets = extract_leads_state(learn_leads)
     model = get_state_model()
-    g=GridSearchCV(model, parameters, verbose=1, n_jobs=6, cv=3)
+    g=GridSearchCV(model, parameters, verbose=1, n_jobs=6, cv=3, scoring="f1_macro")
     g.fit(features, processTarget(targets))
     eval_state_model(g.best_estimator_)
     return g
@@ -431,16 +434,13 @@ def compute_lead_similarity():
 
     model = cache.get(SIMILARITY_MODEL_CACHE_KEY)
     if model is None:
-        leads = Lead.objects.all()
+        leads = Lead.objects.all().select_related("subsidiary")
         if leads.count() < 5:
             # Cannot learn anything with so few data
             return
-        learn_features = []
         scaler = MinMaxScaler()
         learn_features, scaler = extract_leads_similarity(leads, scaler)
         features, scaler = extract_leads_similarity(leads, scaler)
-        #for lead in leads:
-        #    learn_features.append(get_lead_similarity_data(lead))
         model = get_similarity_model()
         model.fit(learn_features)
         cache.set(SIMILARITY_MODEL_CACHE_KEY, model, 3600 * 24 * 7)

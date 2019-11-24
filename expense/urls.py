@@ -10,10 +10,12 @@ import expense.views as v
 
 
 expense_urls = [url(r'^$', v.expenses, name="expenses"),
-                url(r'^(?P<expense_id>\d+)$', v.expenses, name="expenses"),
+                url(r'^(?P<expense_id>\d+)$', v.expense, name="expense"),
                 url(r'^(?P<expense_id>\d+)/receipt$', v.expense_receipt, name="expense_receipt"),
                 url(r'^(?P<expense_id>\d+)/delete$', v.expense_delete, name="expense_delete"),
+                url(r'^(?P<expense_id>\d+)/change$', v.expenses, name="expenses"),
                 url(r'^(?P<expense_id>\d+)/(?P<target_state>\w+)', v.update_expense_state, name="update_expense_state"),
+                url(r'^expense_vat', v.update_expense_vat, name="update_expense_vat"),
                 url(r'^clone/(?P<clone_from>\d+)$', v.expenses, name="clone_expense"),
                 url(r'^mission/(?P<lead_id>\d+)$', v.lead_expenses, name="lead_expenses"),
                 url(r'^history/?$', v.expenses_history, name="expenses_history"),

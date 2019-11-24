@@ -59,10 +59,10 @@
                 <li><a href="{% url 'crm:contact_list' %}">{% trans "Contact address directory" %}</a></li>
                 <li><a href="{% url 'crm:client' %}">{% trans "New client" %}</a></li>
                 {% if pydici_feature.contacts_write %}
-                <li><a href="{% url 'crm:mission_contact_create' %}?return_to={{ request.get_full_path }}">{% trans "New mission contact" %}</a></li>
-                <li><a href="{% url 'crm:businessbroker_create' %}?return_to={{ request.get_full_path }}">{% trans "New business broker" %}</a></li>
-                <li><a href="{% url 'crm:administrative_contact_add' %}?return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></li>
-                <li><a href="{% url 'crm:supplier_create' %}?return_to={{ request.get_full_path }}">{% trans "New supplier" %}</a></li>
+                <li><a href="{% url 'crm:mission_contact_create' %}">{% trans "New mission contact" %}</a></li>
+                <li><a href="{% url 'crm:businessbroker_create' %}">{% trans "New business broker" %}</a></li>
+                <li><a href="{% url 'crm:administrative_contact_add' %}">{% trans "New administrative contact" %}</a></li>
+                <li><a href="{% url 'crm:supplier_create' %}">{% trans "New supplier" %}</a></li>
                 {% endif %}
             </ul>
         </li>
@@ -159,6 +159,23 @@
         {% endif %}
         {% endif %} {# /user.is_staff and pydici_feature.menubar #}
 
+        {# Simple menu for subcontractor (non staff) #}
+        {% if not user.is_staff %}
+            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Management" %}<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    {% with user.username|link_to_timesheet as link %}
+                        {% if link %}<li>{{ link }}</li>{% endif %}
+                    {% endwith %}
+                    <li><a href="{% url 'expense:expenses' %}">{% trans "Expenses" %}</a></li>
+                </ul>
+            </li>
+            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Help" %}<span class="caret"></span></a>
+                <ul class="dropdown-menu keep-open" role="menu">
+                    <li>{{ foo|get_admin_mail }}</li>
+                </ul>
+            </li>
+        {% endif %}
+        {# End of subcontractor menu #}
         </div><!--/.navbar-collapse -->
 
         </div><!-- containter-->

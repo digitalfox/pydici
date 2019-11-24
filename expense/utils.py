@@ -99,11 +99,6 @@ def in_terminal_state(expense):
         return False
 
 
-def expense_state_display(state):
-    d = dict(EXPENSE_STATES)
-    return d.get(state, "??")
-
-
 def expense_transition_to_state_display(state):
     d = dict(EXPENSE_TRANSITION_TO_STATES)
     return d.get(state, "??")
@@ -111,6 +106,7 @@ def expense_transition_to_state_display(state):
 
 def user_expense_perm(user):
     """compute user perm and returns expense_administrator, expense_manager, expense_paymaster, expense_requester"""
+    #TODO: migrate this to features instead of group link
     expense_administrator = user.is_superuser or user.groups.filter(name="expense_administrator").exists()
     expense_manager = expense_administrator or user.groups.filter(name="expense_manager").exists()
     expense_paymaster = expense_administrator or user.groups.filter(name="expense_paymaster").exists()
@@ -125,7 +121,7 @@ def user_expense_team(user):
         consultant = Consultant.objects.get(trigramme__iexact=user.username)
         user_team = cache.get(EXPENSE_USER_TEAM_CACHE_KEY % consultant.id)
         if not user_team:
-            user_team = consultant.userTeam(excludeSelf=False)
+            user_team = consultant.user_team(exclude_self=False)
             cache.set(EXPENSE_USER_TEAM_CACHE_KEY % consultant.id, user_team, 3600)
     except Consultant.DoesNotExist:
         user_team = []

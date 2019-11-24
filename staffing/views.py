@@ -46,7 +46,7 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
     timesheet_report_data
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm
-from people.utils import getScopes
+from people.utils import get_scopes, get_subsidiary_from_request
 
 TIMESTRING_FORMATTER = {
     'cycle': formats.number_format,
@@ -90,6 +90,13 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
     # User is accessing the timesheet of another user
     if user_consultant.subcontractor:
         return TIMESHEET_ACCESS_NOT_ALLOWED
+
+    # A user with timesheet_subcontractor can managed subcontractor  timesheet
+    if consultant.subcontractor and user_has_feature(user, "timesheet_subcontractor"):
+        if ontime_editing :
+            return TIMESHEET_ACCESS_READ_WRITE
+        else:
+            return TIMESHEET_ACCESS_READ_ONLY
 
     if user_has_feature(user, "timesheet_all"):
         return TIMESHEET_ACCESS_READ_ONLY
@@ -155,12 +162,14 @@ def mission_staffing(request, mission_id, form_mode="manual"):
             formset = StaffingFormSet(request.POST, instance=mission)
             if formset.is_valid():
                 saveFormsetAndLog(formset, request)
+                formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
         else:
             form = MissionAutomaticStaffingForm(request.POST)
             if form.is_valid():
                 compute_automatic_staffing(mission, form.cleaned_data["mode"], int(form.cleaned_data["duration"]), user=request.user)
-
-    formset = StaffingFormSet(instance=mission)  # An unbound form
+                formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
+    else:
+        formset = StaffingFormSet(instance=mission)  # An unbound form
 
     # flush mission cache
     cache.delete("Mission.forecasted_work%s" % mission.id )
@@ -173,6 +182,7 @@ def mission_staffing(request, mission_id, form_mode="manual"):
                    "automatic_staffing_form": MissionAutomaticStaffingForm(),
                    "read_only": readOnly,
                    "staffing_dates": staffingDates(),
+                   "current_month": datetime.today().strftime("%Y%m"),
                    "user": request.user})
 
 
@@ -205,6 +215,7 @@ def consultant_staffing(request, consultant_id):
                   {"formset": formset,
                    "consultant": consultant,
                    "staffing_dates": staffingDates(),
+                   "current_month": datetime.today().strftime("%Y%m"),
                    "user": request.user})
 
 
@@ -401,7 +412,7 @@ def pdc_review(request, year=None, month=None):
         company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
         client_list = ", ".join(["<a href='%s'>%s</a>" %
                                 (reverse("crm:company_detail", args=[c.id]), str(c)) for c in company])
-        client_list = "<div class='hidden-xs hidden-sm'>%s</div>" % client_list
+        client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
         staffing[consultant].append([client_list])
 
     # Compute indicator rates
@@ -432,7 +443,7 @@ def pdc_review(request, year=None, month=None):
     else:
         staffing.sort(key=lambda x: x[0].profil.level)  # Sort by level
 
-    scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
+    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team)
     if team:
         team_name = _(u"team %(manager_name)s") % {"manager_name": team}
     else:
@@ -486,7 +497,7 @@ def prod_report(request, year=None, month=None):
     #TODO: extract that in CSV as well
 
     team = None
-    subsidiary = None
+    subsidiary = get_subsidiary_from_request(request)
     months = []
     n_month = 5
     tooltip_template = get_template("staffing/_consultant_prod_tooltip.html")
@@ -519,8 +530,6 @@ def prod_report(request, year=None, month=None):
     # Get team and subsidiary
     if "team_id" in request.GET:
         team = Consultant.objects.get(id=int(request.GET["team_id"]))
-    if "subsidiary_id" in request.GET:
-        subsidiary = Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
 
     # Filter on scope
     consultants = Consultant.objects.filter(productive=True).filter(active=True).filter(
@@ -530,7 +539,7 @@ def prod_report(request, year=None, month=None):
     if subsidiary:
         consultants = consultants.filter(company=subsidiary)
 
-    holidays_days = Holiday.objects.filter(day__gte=start_date, day__lte=end_date).values_list("day", flat=True)
+    holidays_days = Holiday.objects.filter(day__gte=start_date, day__lte=nextMonth(end_date)).values_list("day", flat=True)
     data = []
     totalDone = {}
     totalForecasted = {}
@@ -551,12 +560,13 @@ def prod_report(request, year=None, month=None):
             consultant_days = dict(timesheets.values_list("mission__nature").order_by("mission__nature").annotate(Sum("charge")))
 
             try:
-                daily_rate_obj = consultant.getRateObjective(workingDate=month, rate_type="DAILY_RATE").rate
-                prod_rate_obj = float(consultant.getRateObjective(workingDate=month, rate_type="PROD_RATE").rate) / 100
+                daily_rate_obj = consultant.get_rate_objective(working_date=month, rate_type="DAILY_RATE").rate
+                prod_rate_obj = float(
+                    consultant.get_rate_objective(working_date=month, rate_type="PROD_RATE").rate) / 100
                 forecast = int(daily_rate_obj * prod_rate_obj * (month_days - consultant_days.get("HOLIDAYS",0)))
             except AttributeError:
                 prod_rate_obj = daily_rate_obj = forecast = 0 # At least one rate objective is missing
-            turnover = int(consultant.getTurnover(month, upperBound))
+            turnover = int(consultant.get_turnover(month, upperBound))
             try:
                 prod_rate = consultant_days.get("PROD", 0) / (consultant_days.get("PROD", 0) + consultant_days.get("NONPROD", 0))
             except ZeroDivisionError:
@@ -598,7 +608,7 @@ def prod_report(request, year=None, month=None):
     data.append([None, totalData])
 
     # Get scopes
-    scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, team)
+    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team)
     if team:
         team_name = _(u"team %(manager_name)s") % {"manager_name": team}
     else:
@@ -637,7 +647,7 @@ def fixed_price_missions_report(request):
         data.append((mission, round(mission.done_work_k()[1],1), current_margin, target_margin))
 
     # Get scopes
-    scopes, scope_current_filter, scope_current_url_filter = getScopes(subsidiary, None, target="subsidiary")
+    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, None, target="subsidiary")
 
     return render(request, "staffing/fixed_price_report.html",
                   {"data": data,
@@ -1016,6 +1026,11 @@ class MissionTimesheetReportPdf(PydiciNonPublicdMixin, WeasyTemplateView):
 @pydici_non_public
 @pydici_feature("reports")
 def all_timesheet(request, year=None, month=None):
+
+    # var for filtering
+    subsidiary = get_subsidiary_from_request(request)
+    timesheets = None
+
     if year and month:
         month = date(int(year), int(month), 1)
     else:
@@ -1023,9 +1038,12 @@ def all_timesheet(request, year=None, month=None):
 
     previous_date = (month - timedelta(days=5)).replace(day=1)
     next_date = nextMonth(month)
-
-    timesheets = Timesheet.objects.filter(working_date__gte=month)  # Filter on current month
+    timesheets = Timesheet.objects.filter(working_date__gte=month)
     timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1))  # Discard next month
+
+    if subsidiary:
+        timesheets = timesheets.filter(consultant__company=subsidiary)
+
     timesheets = timesheets.values("consultant", "mission")  # group by consultant, mission
     timesheets = timesheets.annotate(sum=Sum('charge')).order_by("mission", "consultant")  # Sum and clean order by (else, group by won't work because of default ordering)
     consultants = list(set([i["consultant"] for i in timesheets]))
@@ -1033,27 +1051,31 @@ def all_timesheet(request, year=None, month=None):
     consultants = Consultant.objects.filter(id__in=consultants).order_by("name")
     missions = sortMissions(Mission.objects.filter(id__in=missions))
     charges = {}
+
     if "csv" in request.GET:
         # Simple consultant list
         data = list(consultants)
     else:
-        # drill down link
-        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme]),
+        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet' class='pydici-tooltip' title='%s'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme]),
                                                                                    month.year,
                                                                                    month.month,
-                                                                                   escape(str(consultant)))) for consultant in consultants]
-    data = [[_("Mission"), _("Mission id")] + data]
+                                                                                   escape(str(consultant.name)),
+                                                                                   escape(str(consultant.trigramme)))) for consultant in consultants]
+    data = [[_("Mission")] + data]
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = to_int_or_round(timesheet["sum"], 2)
     for mission in missions:
-        missionUrl = "<a href='%s'>%s</a>" % (reverse("staffing:mission_home", args=[mission.id, ]),
-                                        escape(str(mission)))
+        mission_data = escape(str(mission))
+        missionUrl = "<a href='%s' class='pydici-tooltip' title='%s'>%s</a>" % (reverse("staffing:mission_home", args=[mission.id, ]),
+                                        escape(str(mission.mission_id())),
+                                        (mission_data[:75] + '...' if len(mission_data) > 75 else mission_data))
+
         if "csv" in request.GET:
             # Simple mission name
-            consultantData = [str(mission), mission.mission_id()]
+            consultantData = [mission.full_name()]
         else:
             # Drill down link
-            consultantData = [mark_safe(missionUrl), mission.mission_id()]
+            consultantData = [mark_safe(missionUrl)]
         for consultant in consultants:
             consultantData.append(charges.get((mission.id, consultant.id), 0))
         data.append(consultantData)
@@ -1061,10 +1083,10 @@ def all_timesheet(request, year=None, month=None):
 
     # Compute total per consultant
     if len(charges) > 1:
-        total = [i[2:] for i in charges[1:]]
+        total = [i[1:] for i in charges[1:]]
         total = zip(*total)  # [ [1, 2, 3], [4, 5, 6]... ] => [ [1, 4], [2, 5], [4, 6]...]
         total = [sum(t) for t in total]
-        charges.append([_("Total"), ""] + total)
+        charges.append([_("Total")] + total)
     else:
         # Set charges to None to allow proper message on template
         charges = None
@@ -1077,7 +1099,7 @@ def all_timesheet(request, year=None, month=None):
         ticketData.append(lunchTickets.count())
 
     if charges:
-        charges.append([_("Days without lunch ticket"), ""] + ticketData)
+        charges.append([_("Days without lunch ticket")] + ticketData)
 
     #          , Cons1, Cons2, Cons3
     # Mission 1, M1/C1, M1/C2, M1/C3
@@ -1088,6 +1110,10 @@ def all_timesheet(request, year=None, month=None):
         # Return CSV timesheet
         return all_csv_timesheet(request, charges, month)
     else:
+
+        # Get scopes
+        scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, None, target="subsidiary")
+
         # Return html page
         return render(request, "staffing/all_timesheet.html",
                       {"user": request.user,
@@ -1096,8 +1122,11 @@ def all_timesheet(request, year=None, month=None):
                        "month": month,
                        "consultants": consultants,
                        "missions": missions,
-                       "charges": charges})
-
+                       "charges": charges,
+                       "scope": subsidiary or _(u"Everybody"),
+                       "scope_current_filter": scope_current_filter,
+                       "scope_current_url_filter": scope_current_url_filter,
+                       "scopes": scopes})
 
 @pydici_non_public
 @pydici_feature("reports")
@@ -1324,10 +1353,11 @@ def mission_consultant_rate(request):
         consultant = Consultant.objects.get(id=consultant_id)
         condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
                                                                       defaults={"daily_rate": 0})
+        value = request.POST["value"].replace(" ", "")
         if sold == "sold":
-            condition.daily_rate = request.POST["value"].replace(" ", "")
+            condition.daily_rate = value
         else:
-            condition.bought_daily_rate = request.POST["value"].replace(" ", "")
+            condition.bought_daily_rate = value
         condition.save()
         return HttpResponse(request.POST["value"])
     except (Mission.DoesNotExist, Consultant.DoesNotExist):
@@ -1600,7 +1630,7 @@ def graph_profile_rates(request, subsidiary_id=None, team_id=None):
             if not month in turnover[consultant.profil_id]:
                 turnover[consultant.profil_id][month] = 0
             nDays[consultant.profil_id][month] += Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=next_month, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"] or 0
-            turnover[consultant.profil_id][month] += consultant.getTurnover(month, next_month)
+            turnover[consultant.profil_id][month] += consultant.get_turnover(month, next_month)
 
         for profil, profilName in profils.items():
             if profil in nDays:
@@ -1658,25 +1688,21 @@ def graph_consultant_rates(request, consultant_id):
     # Avg daily rate / month and objective rate
     for refDate in kdates:
         next_month = nextMonth(refDate)
-        prodRate = consultant.getProductionRate(refDate, next_month)
+        prodRate = consultant.get_production_rate(refDate, next_month)
         if prodRate:
             prodRateData.append(round(100 * prodRate, 1))
             isoProdDates.append(refDate.isoformat())
         wdays = Timesheet.objects.filter(consultant=consultant, working_date__gte=refDate, working_date__lt=next_month, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"]
         if wdays:
-            turnover = consultant.getTurnover(refDate, next_month)
+            turnover = consultant.get_turnover(refDate, next_month)
             dailyRateData.append(int(turnover / wdays))
             isoRateDates.append(refDate.isoformat())
-        rate = consultant.getRateObjective(refDate, rate_type="DAILY_RATE")
-        if rate:
+        rate = consultant.get_rate_objective(working_date=refDate, rate_type="DAILY_RATE")
+        if rate and wdays:
             dailyRateObj.append(rate.rate)
-        else:
-            dailyRateObj.append(None)
-        rate = consultant.getRateObjective(refDate, rate_type="PROD_RATE")
-        if rate:
+        rate = consultant.get_rate_objective(working_date=refDate, rate_type="PROD_RATE")
+        if rate and wdays:
             prodRateObj.append(rate.rate)
-        else:
-            prodRateObj.append(None)
 
     graph_data = [
         ["x_daily_rate"] + isoRateDates,

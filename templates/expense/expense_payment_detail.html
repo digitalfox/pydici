@@ -4,6 +4,10 @@
 {% load pydici_filters %}
 {% load render_table from django_tables2 %}
 
+{% block extrajs %}
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jeditable.mini.js"></script>
+{% endblock %}
+
 {% block extrastyle %}
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/pydici.css" />
     <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}tables2/css/screen.css" />
@@ -20,6 +24,15 @@
     
 <br/><hr/><br/>
 <h4>{% trans "Total: " %} {{ expense_payment.amount }} €</h4>
+{% endif %}
+
+{% if can_edit_vat %}
+    {% include "expense/_make_vat_editable.html" %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        make_vat_editable();
+        });
+    </script>
 {% endif %}
 
 

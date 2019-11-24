@@ -21,14 +21,15 @@ from expense.models import Expense, ExpensePayment
 from people.models import Consultant
 from core.templatetags.pydici_filters import link_to_consultant
 from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round
-from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
-from expense.utils import expense_state_display, expense_transition_to_state_display, user_expense_perm
+from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin, PydiciSubcontractordMixin
+from expense.utils import expense_transition_to_state_display, user_expense_perm
 
 
-class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
+class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatableView):
     """Expense table backend for datatable"""
-    pydici_feature = set(["reports"])
-    columns = ["pk", "user", "category", "description", "lead", "amount", "receipt", "chargeable", "corporate_card", "state", "creation_date", "expense_date", "update_date", "comment"]
+    pydici_feature = {"expense"}
+    columns = ["pk", "user", "category", "description", "lead", "amount", "vat", "receipt", "chargeable",
+               "corporate_card", "state", "creation_date", "expense_date", "update_date", "comment"]
     order_columns = columns
     max_display_length = 500
     date_template = get_template("core/_date_column.html")
@@ -40,7 +41,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
     def get_initial_queryset(self):
         try:
             consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
-            user_team = consultant.userTeam()
+            user_team = consultant.user_team()
         except Consultant.DoesNotExist:
             user_team = []
 
@@ -56,7 +57,7 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         try:
             # Just try to cast to see if we have a number but use str for filter to allow proper casting by django himself
             float(search)
-            filters = [Q(amount=search),]
+            filters = [Q(amount=search), Q(vat=search)]
 
         except ValueError:
             # search term is not a number
@@ -77,8 +78,8 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
         if search:
             filters = self.get_filters(search)
             query = Q()
-            for filter in filters:
-                query |= filter
+            for f in filters:
+                query |= f
             qs = qs.filter(query).distinct()
         return qs
 
@@ -105,26 +106,28 @@ class ExpenseTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVie
             return self.state_template.render(context={"record": row}, request=self.request)
         elif column == "amount":
             return to_int_or_round(row.amount, 2)
+        elif column == "vat":
+            return """<div id="{0}" class="jeditable-vat">{1}</div>""".format(row.id, row.vat)
         else:
             return super(ExpenseTableDT, self).render_column(row, column)
 
 
-
 class ExpenseTable(tables.Table):
+    id = tables.TemplateColumn("""<a href="{{ record.get_absolute_url }}">{{ record.id }}</a>""", verbose_name="#")
     user = tables.Column(verbose_name=_("Consultant"))
     lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads:detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
     receipt = tables.TemplateColumn(template_name="expense/_receipt_column.html")
     state = tables.TemplateColumn(template_name="expense/_expense_state_column.html", orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
     update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title attr is just used to have an easy to parse hidden value for sorting
-
+    vat = tables.TemplateColumn("""{% load l10n %}<div id="{{record.id|unlocalize}}" class="jeditable-vat">{{record.vat}}</div>""")
 
     def render_user(self, value):
         return link_to_consultant(value)
 
     class Meta:
         model = Expense
-        sequence = ("user", "description", "lead", "amount", "chargeable", "corporate_card", "receipt", "state", "expense_date", "update_date", "comment")
+        sequence = ("id", "user", "description", "lead", "amount", "vat", "chargeable", "corporate_card", "receipt", "state", "expense_date", "update_date", "comment")
         fields = sequence
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "expense_table"}
         orderable = False
@@ -147,18 +150,18 @@ class ExpenseWorkflowTable(ExpenseTable):
                              smart_str(_("Ed"))))
             result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
                           (smart_str(_("Delete")),
-                           reverse("expense:expense_delete",kwargs={"expense_id": record.id}),
+                           reverse("expense:expense_delete", kwargs={"expense_id": record.id}),
                            # Translators: De is the short term for Delete
                            smart_str(_("De"))))
         result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
                       (smart_str(_("Clone")),
-                      reverse("expense:clone_expense", kwargs={"clone_from": record.id}),
+                       reverse("expense:clone_expense", kwargs={"clone_from": record.id}),
                        # Translators: Cl is the short term for Clone
-                      smart_str(_("Cl"))))
+                       smart_str(_("Cl"))))
         return mark_safe(" ".join(result))
 
     class Meta:
-        sequence = ("user", "description", "lead", "amount", "chargeable", "corporate_card", "receipt", "state", "transitions", "expense_date", "update_date", "comment")
+        sequence = ("id", "user", "description", "lead", "amount", "chargeable", "corporate_card", "receipt", "state", "transitions", "expense_date", "update_date", "comment")
         fields = sequence
 
 
@@ -208,7 +211,7 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
     def get_initial_queryset(self):
         try:
             consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
-            user_team = consultant.userTeam()
+            user_team = consultant.user_team()
         except Consultant.DoesNotExist:
             user_team = []
 
@@ -246,4 +249,3 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
             return self.modification_template.render(RequestContext(self.request, {"record": row}))
         else:
             return super(ExpensePaymentTableDT, self).render_column(row, column)
-

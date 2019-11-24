@@ -12,11 +12,11 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 
 from crm.models import Subsidiary
-from people.models import Consultant, ConsultantProfile, RateObjective
+from people.models import Consultant, ConsultantProfile
 from staffing.models import Mission, Timesheet, FinancialCondition
 from leads.models import Lead
 from core.utils import nextMonth, previousMonth
-from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
+from core.tests import PYDICI_FIXTURES
 
 
 class PeopleModelTest(TestCase):
@@ -36,24 +36,24 @@ class PeopleModelTest(TestCase):
         c = Consultant.objects.get(trigramme="SRE")
         self.assertEqual(list(c.active_missions()), list(Mission.objects.filter(id=1)))
 
-    def test_getUser(self):
+    def test_get_user(self):
         c = Consultant.objects.get(trigramme="SRE")
         u = User.objects.get(username="sre")
-        self.assertEqual(c.getUser(), u)
+        self.assertEqual(c.get_user(), u)
         c = Consultant.objects.get(trigramme="GBA")
-        self.assertEqual(c.getUser(), None)
+        self.assertEqual(c.get_user(), None)
 
     def test_team(self):
         c = Consultant.objects.get(trigramme="SRE")
         self.assertEqual(list(c.team().order_by("id").values_list("id", flat=True)), [3, 5])
-        self.assertEqual(list(c.team(excludeSelf=False).order_by("id").values_list("id", flat=True)), [1, 3, 5])
-        self.assertEqual(list(c.team(excludeSelf=False, onlyActive=True).order_by("id").values_list("id", flat=True)), [1, 5])
-        self.assertEqual(list(c.team(onlyActive=True).order_by("id").values_list("id", flat=True)), [5, ])
+        self.assertEqual(list(c.team(exclude_self=False).order_by("id").values_list("id", flat=True)), [1, 3, 5])
+        self.assertEqual(list(c.team(exclude_self=False, only_active=True).order_by("id").values_list("id", flat=True)), [1, 5])
+        self.assertEqual(list(c.team(only_active=True).order_by("id").values_list("id", flat=True)), [5, ])
 
     def test_user_team(self):
         c = Consultant.objects.get(trigramme="SRE")
-        self.assertEqual(c.userTeam(), [User.objects.get(username="abr")])
-        self.assertEqual(c.userTeam(excludeSelf=False), [User.objects.get(username="abr"), User.objects.get(username="sre")])
+        self.assertEqual(c.user_team(), [User.objects.get(username="abr")])
+        self.assertEqual(c.user_team(exclude_self=False), [User.objects.get(username="abr"), User.objects.get(username="sre")])
 
     def test_pending_action(self):
         c = Consultant.objects.get(trigramme="SRE")
@@ -83,20 +83,20 @@ class PeopleModelTest(TestCase):
         mission.billing_mode = "TIME_SPENT"
         mission.save()
         # In time spent, turnover is what we did
-        self.assertEqual(c1.getTurnover(), 20*2000)
+        self.assertEqual(c1.get_turnover(end_date=next_month), 20 * 2000)
         mission.billing_mode = "FIXED_PRICE"
         mission.save()
         # In fixed price, turnover is limited by price in proportion of all work
-        self.assertEqual(c1.getTurnover(), 20 * 2000 * mission.price * 1000 / done_work )
-        self.assertEqual(c1.getTurnover() + c2.getTurnover(), mission.price * 1000)
+        self.assertEqual(c1.get_turnover(end_date=next_month), 20 * 2000 * mission.price * 1000 / done_work)
+        self.assertEqual(c1.get_turnover(end_date=next_month) + c2.get_turnover(end_date=next_month), mission.price * 1000)
         # Let add some margin by changing mission price.
         mission.price = 60
         mission.save()
-        self.assertEqual(c1.getTurnover(), 20 * 2000) # like in time spent
-        self.assertEqual(c1.getTurnover() + c2.getTurnover(), done_work )
+        self.assertEqual(c1.get_turnover(end_date=next_month), 20 * 2000) # like in time spent
+        self.assertEqual(c1.get_turnover(end_date=next_month) + c2.get_turnover(end_date=next_month), done_work)
         # Let archive mission to validate margin
         mission.active = False
         mission.save()
-        self.assertEqual(c1.getTurnover(), 20 * 2000 * mission.price * 1000 / done_work)  # like in time spent
-        self.assertEqual(c1.getTurnover() + c2.getTurnover(), mission.price * 1000)
+        self.assertEqual(c1.get_turnover(end_date=next_month), 20 * 2000 * mission.price * 1000 / done_work)  # like in time spent
+        self.assertEqual(c1.get_turnover(end_date=next_month) + c2.get_turnover(end_date=next_month), mission.price * 1000)
 

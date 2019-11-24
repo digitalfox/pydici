@@ -6,7 +6,7 @@ Test cases for CRM module
 """
 
 from django.test import TestCase
-from django.core import urlresolvers
+from django.urls import reverse
 from django.contrib.auth.models import Group, User
 
 from crm.models import Client, Subsidiary
@@ -26,7 +26,7 @@ class CrmViewsTest(TestCase):
 
     def test_client_all_in_one(self):
         self.client.force_login(self.test_user)
-        view = urlresolvers.reverse("crm:client_organisation_company_popup")
+        view = reverse("crm:client_organisation_company_popup")
         error_tag = "form-group has-error"
 
         # Initial data

@@ -12,7 +12,7 @@ import json
 from django.shortcuts import render
 from django.db.models import Q, Sum, Min, Max
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.core.cache import cache
@@ -21,7 +21,7 @@ from django.conf import settings
 from django_select2.views import AutoResponseView
 from taggit.models import Tag
 
-from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
+from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciSubcontractordMixin
 from leads.models import Lead
 from people.models import Consultant
 from crm.models import Company, Contact, Subsidiary
@@ -62,6 +62,20 @@ def search(request):
     consultants = companies = contacts = leads = missions = bills = tags = None
     max_record = 50
     more_record = False # Wether we have more records
+
+    if len(words) == 1:
+        word = words[0]
+        # Try to find perfect match
+        try:
+            lead = Lead.objects.get(deal_id=word)
+            return HttpResponseRedirect(lead.get_absolute_url())
+        except Lead.DoesNotExist:
+            pass
+        try:
+            consultant = Consultant.objects.get(trigramme=word)
+            return HttpResponseRedirect(consultant.get_absolute_url())
+        except Consultant.DoesNotExist:
+            pass
 
     if words:
         # Consultant
@@ -245,7 +259,7 @@ def financial_control(request, start_date=None, end_date=None):
         for consultant in mission.consultants().select_related().prefetch_related("staffing_manager"):
             consultantRow = missionRow[:]  # copy
             daily_rate, bought_daily_rate = financialConditions.get("%s-%s" % (mission.id, consultant.id), [0, 0])
-            rateObjective = consultant.getRateObjective(end_date, rate_type="DAILY_RATE")
+            rateObjective = consultant.get_rate_objective(working_date=end_date, rate_type="DAILY_RATE")
             if rateObjective:
                 rateObjective = rateObjective.rate
             else:
@@ -363,7 +377,11 @@ def risk_reporting(request):
 
 
 class PydiciSelect2View(PydiciNonPublicdMixin, AutoResponseView):
-    """Overload default select2 view that is used to get data through ajax calls to limit it to login users"""
+    """Overload default select2 view that is used to get data through ajax calls to limit it to internal users"""
+    pass
+
+class PydiciSelect2SubcontractorView(PydiciSubcontractordMixin, AutoResponseView):
+    """Select2 endpoint Overload default select2 view that is used to get data through ajax calls to limit it to internal users and subcontractor"""
     pass
 
 
