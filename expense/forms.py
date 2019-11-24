@@ -68,12 +68,12 @@ class ExpenseForm(forms.ModelForm):
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-default"
         if subcontractor:
-            self.fields["lead"] = forms.ModelChoiceField(widget=SubcontractorLeadChoices(subcontractor=subcontractor), queryset=Lead.objects.all())
+            self.fields["lead"] = forms.ModelChoiceField(label=_("Lead"), widget=SubcontractorLeadChoices(subcontractor=subcontractor), queryset=Lead.objects.all())
             # Subcontractor expense are not refunded directly like payroll but through supplier bill. That's similar to a payroll with a corporate card.
             self.fields["corporate_card"].initial = True
             self.fields["corporate_card"].disabled = True
         else:
-            self.fields["lead"] = forms.ModelChoiceField(widget=CurrentLeadChoices, queryset=Lead.objects.all(), required=False)
+            self.fields["lead"] = forms.ModelChoiceField(label=_("Lead"), widget=CurrentLeadChoices, queryset=Lead.objects.all(), required=False)
 
         self.helper.layout = Layout(Div(Column("description", "category", "amount", Field("expense_date", css_class="datepicker"), css_class='col-md-6'),
                                         Column("lead", "chargeable", "corporate_card", "receipt", "comment", css_class='col-md-6'),
