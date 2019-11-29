@@ -17,9 +17,10 @@
         $(document).ready(function() {
             var lang = {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %};
             $("#pivotable-output-{{ lead.id|unlocalize }}").pivot({{ data|safe }},
-                    { rows: ["{% trans 'consultant' %}", "{% trans 'type' %}"],
+                    { rows: ["{% trans 'type' %}", "{% trans 'consultant' %}"],
                       cols: ["{% trans 'month' %}"],
                       renderer: $.pivotUtilities.renderers.Table,
+                      sorters: {"type": $.pivotUtilities.sortAs(['{% trans "Done work" %}', '{% trans "Service bill" %}',  '{% trans "Expense" %}', '{% trans "Expense bill" %}', ])},
                       aggregator: $.pivotUtilities.aggregators.Sum(["{% trans 'amount' %}"]) },
                       lang);
     });
