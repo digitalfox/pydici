@@ -13,6 +13,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext as _
+from django.db.models import Count
 
 from people.models import Consultant
 from crm.models import Company
@@ -192,7 +193,9 @@ def graph_people_count(request, subsidiary_id=None, team_id=None):
     consultants = Consultant.objects.filter(subcontractor=False, productive=True)
     subcontractors = Consultant.objects.filter(subcontractor=True, productive=True)
 
-    subsidiaries = Subsidiary.objects.all()
+    subsidiaries = Subsidiary.objects.filter(mission__nature="PROD")
+    subsidiaries = subsidiaries.annotate(Count("mission__timesheet__consultant"))
+    subsidiaries = subsidiaries.filter(mission__timesheet__consultant__count__gt=0)
 
     if subsidiary_id:
         subsidiaries = subsidiaries.filter(subsidiary_id=subsidiary_id)
@@ -219,7 +222,8 @@ def graph_people_count(request, subsidiary_id=None, team_id=None):
                                                                     timesheet__working_date__lt=next_month).distinct().count())
             subcontractors_count[subsidiary].append(subcontractors.filter(timesheet__working_date__gte=month,
                                                                           timesheet__working_date__lt=next_month,
-                                                                          timesheet__mission__subsidiary=subsidiary).distinct().count())
+                                                                          timesheet__mission__subsidiary=subsidiary,
+                                                                          timesheet__mission__nature="PROD").distinct().count())
 
         month = next_month
 
