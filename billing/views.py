@@ -529,7 +529,7 @@ def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_
 
 @pydici_non_public
 @pydici_feature("reports")
-@cache_page(60 * 10)
+@cache_page(60 * 60 * 24)
 def graph_billing_jqp(request):
     """Nice graph bar of incomming cash from bills
     @todo: per year, with start-end date"""
@@ -538,7 +538,7 @@ def graph_billing_jqp(request):
     staffingData = {}  # Staffing forecasted work graph data
     wStaffingData = {}  # Weighted Staffing forecasted work graph data
     today = date.today()
-    start_date = today - timedelta(24 * 30)  # Screen data about 24 month before today
+    start_date = today - timedelta(3 * 365)  # last three years
     end_date = today + timedelta(6 * 30)  # No more than 6 month forecasted
     graph_data = []  # Data that will be returned to jqplot
 

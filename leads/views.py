@@ -371,7 +371,7 @@ def tags(request, lead_id):
 
 @pydici_non_public
 @pydici_feature("leads")
-@cache_page(60 * 10)
+@cache_page(60 * 60 * 24)
 def graph_bar_jqp(request):
     """Nice graph bar of lead state during time using jqplot
     @todo: per year, with start-end date"""
@@ -379,7 +379,7 @@ def graph_bar_jqp(request):
     graph_data = []  # Data that will be returned to jqplot
 
     # Gathering data
-    for lead in Lead.objects.filter(creation_date__gt=date.today() - timedelta(2 * 365)):
+    for lead in Lead.objects.filter(creation_date__gt=date.today() - timedelta(3 * 365)):
         # Using first day of each month as key date
         kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
         data[kdate].append(lead)

@@ -1515,7 +1515,7 @@ def turnover_pivotable(request, year=None):
 
 @pydici_non_public
 @pydici_feature("reports")
-@cache_page(60 * 10)
+@cache_page(60 * 60 * 24)
 def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
     @:param subsidiary_id: filter graph on the given subsidiary
@@ -1534,7 +1534,7 @@ def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
         data[nature] = {}
 
     # Compute date data
-    timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
+    timesheetStartDate = (date.today() - 3 * timedelta(365)).replace(day=1)  # Last three years
     timesheetEndDate = nextMonth(date.today())  # First day of next month
 
     # Filter on scope
@@ -1585,7 +1585,7 @@ def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
 
 
 @pydici_non_public
-@cache_page(60 * 10)
+@cache_page(60 * 60 * 24)
 def graph_profile_rates(request, subsidiary_id=None, team_id=None):
     """Sale rate per profil
     @:param subsidiary_id: filter graph on the given subsidiary
@@ -1597,7 +1597,7 @@ def graph_profile_rates(request, subsidiary_id=None, team_id=None):
     avgDailyRate = {}
     globalDailyRate = []
     isoTimesheetMonths = []
-    timesheetStartDate = (date.today() - timedelta(365)).replace(day=1)  # Last year, begin of the month
+    timesheetStartDate = (date.today() - 3 * timedelta(365)).replace(day=1)  # Last three years
     timesheetEndDate = nextMonth(date.today())  # First day of next month
     profils = dict(ConsultantProfile.objects.all().values_list("id", "name"))  # Consultant Profiles
 
