@@ -5,18 +5,22 @@ Pydici people views. Http request are processed here.
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date
+from datetime import date, timedelta
+import json
 
 from django.shortcuts import render, redirect
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
+from django.views.decorators.cache import cache_page
+from django.utils.translation import ugettext as _
 
 from people.models import Consultant
 from crm.models import Company
 from staffing.models import Holiday, Timesheet
 from core.decorator import pydici_non_public
-from core.utils import working_days, previousMonth, nextMonth
+from core.utils import working_days, previousMonth, nextMonth, COLORS
 from people.utils import compute_consultant_tasks
+from crm.models import Subsidiary
 
 
 def _consultant_home(request, consultant):
@@ -170,3 +174,65 @@ def subcontractor_detail(request, consultant_id):
                    "leads_as_staffee": leads_as_staffee,
                    "user": request.user})
 
+
+@pydici_non_public
+@cache_page(60 * 60 * 24)
+def graph_people_count(request, subsidiary_id=None, team_id=None):
+    """Active people count
+    @:param subsidiary_id: filter graph on the given subsidiary
+    @:param team_id: filter graph on the given team"""
+    #TODO: add start/end timeframe
+    graph_data = []
+    iso_months = []
+    start_date = (date.today() - 3 * timedelta(365)).replace(day=1)  # Last three years
+    end_date = date.today().replace(day=1)
+    consultants_count = {}
+    subcontractors_count = {}
+
+    consultants = Consultant.objects.filter(subcontractor=False, productive=True)
+    subcontractors = Consultant.objects.filter(subcontractor=True, productive=True)
+
+    subsidiaries = Subsidiary.objects.all()
+
+    if subsidiary_id:
+        subsidiaries = subsidiaries.filter(subsidiary_id=subsidiary_id)
+
+    for subsidiary in subsidiaries:
+        consultants_count[subsidiary] = []
+        subcontractors_count[subsidiary] = []
+
+    # Filter on scope
+    if team_id:
+        consultants = consultants.filter(staffing_manager_id=team_id)
+        subcontractors = subcontractors.filter(staffing_manageid=0)  # Don't consider subcontractors for team counting
+    elif subsidiary_id:
+        consultants = consultants.filter(company_id=subsidiary_id)
+        subcontractors = subcontractors.filter(timesheet__mission__subsidiar__id=subsidiary_id)
+
+    month = start_date
+    while month < end_date:
+        next_month = nextMonth(month)
+        iso_months.append(month.isoformat())
+        for subsidiary in subsidiaries:
+            consultants_count[subsidiary].append(consultants.filter(company=subsidiary,
+                                                                    timesheet__working_date__gte=month,
+                                                                    timesheet__working_date__lt=next_month).distinct().count())
+            subcontractors_count[subsidiary].append(subcontractors.filter(timesheet__working_date__gte=month,
+                                                                          timesheet__working_date__lt=next_month,
+                                                                          timesheet__mission__subsidiary=subsidiary).distinct().count())
+
+        month = next_month
+
+    if not iso_months or set(consultants_count) == {None}:
+        return HttpResponse('')
+
+    graph_data.append(["x"] + iso_months)
+    for subsidiary in subsidiaries:
+        graph_data.append([_("consultants %s" % subsidiary)] + consultants_count[subsidiary])
+        graph_data.append([_("subcontractors %s" % subsidiary)] + subcontractors_count[subsidiary])
+
+    return render(request, "people/graph_people_count.html",
+              {"graph_data": json.dumps(graph_data),
+               "series_colors": COLORS,
+               "subsidiaries": subsidiaries,
+               "user": request.user})

@@ -35,7 +35,6 @@ from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
 from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years_from_qs
 from core.decorator import pydici_non_public, pydici_feature
-from billing.utils import get_client_billing_control_pivotable_data
 from people.models import Consultant
 
 

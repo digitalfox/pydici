@@ -12,4 +12,7 @@ people_urls = [url(r'^home/consultant/(?P<consultant_id>\d+)/$', v.consultant_ho
                url(r'^home/consultant/(?P<consultant_trigramme>[a-zA-Z]{3})/$', v.consultant_home, name="consultant_home"),
                url(r'^detail/consultant/(?P<consultant_id>\d+)/$', v.consultant_detail, name="consultant_detail"),
                url(r'^detail/subcontractor/(?P<consultant_id>\d+)/$', v.subcontractor_detail, name="subcontractor_detail"),
+               url(r'^graph/people-count/?$', v.graph_people_count, name="graph_people_count"),
+               url(r'^graph/people-count/subsidiary/(?P<subsidiary_id>\d+)$', v.graph_people_count,name="graph_people_count"),
+               url(r'^graph/people-count/team/(?P<team_id>\d+)$', v.graph_people_count, name="graph_people_count"),
                ]

@@ -65,6 +65,16 @@ $('#graph_bar_jqp').load('{% url 'leads:graph_bar_jqp' %}')
 
 <br/>
 
+<center><h1>{% trans "People count" %}</h1></center>
+<div id="people_count_graph_content" class="col-lg-12"></div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#people_count_graph_content').load("{% url 'people:graph_people_count' %}")
+ });
+</script>
+
+<br/>
+
     <center><h1>{% trans "Billing per subsidiary per year" %}</h1></center>
     <div id="yearly_billing_graph_content" class="col-lg-12"></div>
     <script type="text/javascript">
