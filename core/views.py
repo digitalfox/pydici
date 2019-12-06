@@ -203,7 +203,7 @@ def financial_control(request, start_date=None, end_date=None):
     header = ["FiscalYear", "Month", "Type", "Nature", "Archived",
               "Subsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
               "Lead", "DealId", "LeadPrice", "Billed", "LeadResponsible", "LeadResponsibleTrigramme", "LeadTeam",
-              "Mission", "MissionId", "AnalyticCode", "BillingMode", "MissionPrice",
+              "Mission", "MissionId", "AnalyticCode", "AnalyticDescription", "BillingMode", "MissionPrice",
               "TotalQuantityInDays", "TotalQuantityInEuros",
               "ConsultantSubsidiary", "ConsultantTeam", "Trigramme", "Consultant", "Subcontractor", "CrossBilling",
               "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros",
@@ -250,6 +250,7 @@ def financial_control(request, start_date=None, end_date=None):
         missionRow.append(mission.description or "")
         missionRow.append(mission.mission_id())
         missionRow.append(mission.mission_analytic_code())
+        missionRow.append(mission.analytic_code.description if mission.analytic_code else "")
         missionRow.append(mission.billing_mode or "")
         missionRow.append(mission.price or 0)
         missionRow.extend(mission.done_work())
