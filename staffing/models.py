@@ -62,7 +62,7 @@ class Mission(models.Model):
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     archived_date = models.DateTimeField(_("Archived date"), blank=True, null=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
-    analytic_code = models.ForeignKey(AnalyticCode, blank=True, null=True, on_delete=models.SET_NULL)
+    analytic_code = models.ForeignKey(AnalyticCode, verbose_name=_("analytic code"), blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         if self.description and not self.lead:
@@ -158,6 +158,13 @@ class Mission(models.Model):
             return self.deal_id
         else:
             return str(self.id)
+
+    def mission_analytic_code(self):
+        """get analytic code of this mission. Mission id is used if not defined"""
+        if self.analytic_code:
+            return self.analytic_code.code
+        else:
+            return self.mission_id()
 
     @cacheable("Mission.done_work%(id)s", 10)
     def done_work(self):
@@ -350,7 +357,6 @@ class Mission(models.Model):
                              ugettext("forecast (days)"): staffing_data.get(month, 0),
                              ugettext("forecast (keur)"): staffing_data.get(month, 0) * consultant_rates[consultant][0] / 1000})
         return data
-
 
     def get_absolute_url(self):
         return reverse('staffing:mission_home', args=[str(self.id)])

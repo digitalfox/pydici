@@ -92,9 +92,11 @@
                     <tr>
                         <th>{% trans "Responsible" %}</th><td>{% if mission.responsible %}{% with consultant=mission.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}{% endif %}</td>
                     </tr>
-
                     <tr>
                         <th>{% trans "Mission id" %}</th><td>{{ mission.mission_id }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans "Analytic code" %}</th><td>{{ mission.mission_analytic_code }}</td>
                     </tr>
                     {% if mission.lead %}
                         {% if mission.lead.client_deal_id %}

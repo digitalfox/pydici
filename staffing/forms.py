@@ -223,7 +223,8 @@ class MissionForm(PydiciCrispyModelForm):
         super(MissionForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column(Field("description", placeholder=_("Name of this mission. Leave blank when leads has only one mission")),
                                                AppendedText("price", "k€"), "billing_mode", "nature", "probability", "probability_auto", "active", css_class="col-md-6"),
-                                        Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "subsidiary", "responsible", "contacts",
+                                        Column(Field("deal_id", placeholder=_("Leave blank to auto generate")),
+                                               "analytic_code", "subsidiary", "responsible", "contacts",
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)

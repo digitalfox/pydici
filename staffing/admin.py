@@ -19,7 +19,7 @@ class AnalyticCodeAdmin(ReturnToAppAdmin):
 
 
 class MissionAdmin(ReturnToAppAdmin):
-    list_display = ("lead", "description", "nature", "probability", "mission_id", "subsidiary", "active", "update_date")
+    list_display = ("lead", "description", "nature", "probability", "mission_id", "subsidiary", "active", "analytic_code", "update_date")
     list_display_links = ["lead", "description"]
     search_fields = ("lead__name", "description", "deal_id", "lead__client__organisation__company__name",
                      "lead__client__contact__name")
@@ -29,7 +29,7 @@ class MissionAdmin(ReturnToAppAdmin):
 
     actions = None
 
-    fields = ("lead", "description", "nature", "probability", "deal_id", "subsidiary", "active")
+    fields = ("lead", "description", "nature", "probability", "deal_id", "subsidiary", "analytic_code", "active")
 
     form = MissionAdminForm
 
