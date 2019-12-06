@@ -24,7 +24,7 @@ from actionset.models import ActionState
 from core.utils import disable_for_loaddata, cacheable, convertDictKeyToDate, nextMonth
 
 class AnalyticCode(models.Model):
-    code = models.CharField(max_length=100)
+    code = models.CharField(max_length=100, unique=True)
     description = models.CharField(_("Description"), max_length=100, blank=True, null=True)
 
     def __str__(self):
