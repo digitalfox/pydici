@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-17 16:51+0100\n"
-"PO-Revision-Date: 2019-11-17 16:51+0100\n"
+"POT-Creation-Date: 2019-12-06 18:35+0100\n"
+"PO-Revision-Date: 2019-12-06 17:55+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 19.08.3\n"
+"X-Generator: Lokalize 19.11.90\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: actionset/admin.py:34
@@ -48,7 +48,7 @@ msgstr "Quand un consultant est créé"
 
 #: actionset/models.py:28 actionset/models.py:49 crm/models.py:45
 #: crm/models.py:142 crm/models.py:452 expense/models.py:64 leads/models.py:58
-#: leads/views.py:212 people/models.py:29 people/models.py:282
+#: leads/views.py:211 people/models.py:29 people/models.py:282
 #: templates/crm/clientcompany_detail.html:389
 #: templates/leads/manage_tags.html:22 templates/leads/review.html:26
 #: templates/leads/review.html:61 templates/people/consultant.html:49
@@ -60,9 +60,9 @@ msgstr "Nom"
 #: actionset/models.py:29 actionset/models.py:50 billing/admin.py:29
 #: billing/admin.py:43 billing/forms.py:70 billing/models.py:279
 #: core/models.py:68 expense/models.py:99 leads/models.py:132
-#: leads/views.py:212 staffing/models.py:43 staffing/models.py:355
-#: templates/billing/bill.html:59 templates/expense/expense.html:27
-#: templates/expense/expense_archive.html:24
+#: leads/views.py:211 staffing/models.py:28 staffing/models.py:53
+#: staffing/models.py:372 templates/billing/bill.html:59
+#: templates/expense/expense.html:27 templates/expense/expense_archive.html:24
 #: templates/expense/expense_list.html:15 templates/leads/lead_detail.html:41
 #: templates/staffing/mission.html:34
 msgid "Description"
@@ -73,7 +73,7 @@ msgid "Trigger"
 msgstr "Déclencheur"
 
 #: actionset/models.py:31 crm/models.py:315 people/models.py:46
-#: people/models.py:285 staffing/models.py:46
+#: people/models.py:285 staffing/models.py:56
 msgid "Active"
 msgstr "Active"
 
@@ -91,9 +91,9 @@ msgstr "N/A"
 
 #: actionset/models.py:63 billing/admin.py:32 billing/admin.py:46
 #: billing/models.py:131 billing/models.py:199 leads/models.py:71
-#: leads/models.py:296 leads/views.py:213
-#: templates/billing/_lead_billing.html:37
-#: templates/billing/_lead_billing.html:78
+#: leads/models.py:296 leads/views.py:212
+#: templates/billing/_lead_billing.html:38
+#: templates/billing/_lead_billing.html:79
 #: templates/billing/client_bills_archive.html:16
 #: templates/billing/client_bills_in_creation.html:17
 #: templates/billing/supplier_bills_archive.html:17
@@ -102,12 +102,12 @@ msgstr "N/A"
 msgid "State"
 msgstr "État"
 
-#: actionset/models.py:66 leads/models.py:74 leads/views.py:213
+#: actionset/models.py:66 leads/models.py:74 leads/views.py:212
 msgid "Creation"
 msgstr "Création"
 
 #: actionset/models.py:67 expense/models.py:105 leads/models.py:78
-#: leads/models.py:124 leads/views.py:214 staffing/models.py:50
+#: leads/models.py:124 leads/views.py:213 staffing/models.py:60
 #: templates/core/index.html:18 templates/core/index.html:43
 #: templates/core/index.html:67 templates/core/index.html:91
 msgid "Updated"
@@ -186,8 +186,8 @@ msgid "Consultant must be defined for time spent mission"
 msgstr "Il faut définir le consultant pour les missions au temps passé"
 
 #: billing/forms.py:151 billing/models.py:275 billing/utils.py:173
-#: expense/models.py:149 templates/expense/expense.html:13
-#: templates/expense/expenses.html:8
+#: expense/models.py:149 templates/billing/_lead_billing.html:23
+#: templates/expense/expense.html:13 templates/expense/expenses.html:8
 msgid "Expense"
 msgstr "Note de frais"
 
@@ -201,9 +201,9 @@ msgstr "Date de dépense"
 msgid "Cannot declare twice the same expense"
 msgstr "Impossible de déclarer deux fois la même note de frais"
 
-#: billing/models.py:68 expense/models.py:101 leads/models.py:290
-#: staffing/models.py:41 staffing/views.py:1171
-#: templates/billing/bill_review.html:222
+#: billing/models.py:68 expense/forms.py:71 expense/forms.py:76
+#: expense/models.py:101 leads/models.py:290 staffing/models.py:51
+#: staffing/views.py:1171 templates/billing/bill_review.html:222
 #: templates/billing/bill_review.html:255
 #: templates/billing/bill_review.html:311
 #: templates/billing/client_bills_archive.html:14
@@ -216,8 +216,8 @@ msgstr "Impossible de déclarer deux fois la même note de frais"
 msgid "Lead"
 msgstr "Affaire"
 
-#: billing/models.py:69 templates/billing/_lead_billing.html:36
-#: templates/billing/_lead_billing.html:75
+#: billing/models.py:69 templates/billing/_lead_billing.html:37
+#: templates/billing/_lead_billing.html:76
 #: templates/billing/bill_review.html:29 templates/billing/bill_review.html:81
 #: templates/billing/bill_review.html:131
 #: templates/billing/bill_review.html:182
@@ -229,8 +229,8 @@ msgstr "Affaire"
 msgid "Bill id"
 msgstr "N° facture"
 
-#: billing/models.py:70 templates/billing/_lead_billing.html:39
-#: templates/billing/_lead_billing.html:80
+#: billing/models.py:70 templates/billing/_lead_billing.html:40
+#: templates/billing/_lead_billing.html:81
 #: templates/billing/bill_review.html:187
 #: templates/billing/bill_review.html:259
 #: templates/billing/bill_review.html:315
@@ -242,21 +242,21 @@ msgstr "N° facture"
 msgid "Creation date"
 msgstr "Date de création"
 
-#: billing/models.py:71 leads/views.py:213
-#: templates/billing/_lead_billing.html:40
-#: templates/billing/_lead_billing.html:81 templates/leads/lead_detail.html:153
+#: billing/models.py:71 leads/views.py:212
+#: templates/billing/_lead_billing.html:41
+#: templates/billing/_lead_billing.html:82 templates/leads/lead_detail.html:153
 #: templates/leads/review.html:35
 msgid "Due date"
 msgstr "Date d'échéance"
 
 #: billing/models.py:72 expense/models.py:76
-#: templates/billing/_lead_billing.html:41
-#: templates/billing/_lead_billing.html:82
+#: templates/billing/_lead_billing.html:42
+#: templates/billing/_lead_billing.html:83
 #: templates/expense/expense_payments.html:48
 msgid "Payment date"
 msgstr "Date de paiement"
 
-#: billing/models.py:73 expense/models.py:111 staffing/models.py:367
+#: billing/models.py:73 expense/models.py:111 staffing/models.py:384
 #: templates/billing/bill_review.html:37 templates/billing/bill_review.html:88
 #: templates/billing/bill_review.html:138
 #: templates/billing/bill_review.html:190
@@ -272,8 +272,8 @@ msgid "Comments"
 msgstr "Remarques"
 
 #: billing/models.py:74 billing/models.py:249 billing/models.py:277
-#: templates/billing/_lead_billing.html:38
-#: templates/billing/_lead_billing.html:79
+#: templates/billing/_lead_billing.html:39
+#: templates/billing/_lead_billing.html:80
 #: templates/billing/bill_review.html:33 templates/billing/bill_review.html:84
 #: templates/billing/bill_review.html:134
 #: templates/billing/bill_review.html:185
@@ -334,8 +334,8 @@ msgid "English"
 msgstr "Anglais"
 
 #: billing/models.py:132 billing/models.py:200
-#: templates/billing/_lead_billing.html:43
-#: templates/billing/_lead_billing.html:84
+#: templates/billing/_lead_billing.html:44
+#: templates/billing/_lead_billing.html:85
 #: templates/billing/bill_review.html:36 templates/billing/bill_review.html:87
 #: templates/billing/bill_review.html:137
 #: templates/billing/bill_review.html:189
@@ -379,7 +379,7 @@ msgstr "Reçue"
 msgid "Validated"
 msgstr "Validée"
 
-#: billing/models.py:203 templates/billing/_lead_billing.html:77
+#: billing/models.py:203 templates/billing/_lead_billing.html:78
 msgid "Supplier Bill id"
 msgstr "N° de facture fournisseur"
 
@@ -399,18 +399,18 @@ msgstr "Prix unitaire (€)"
 msgid "Label"
 msgstr "Libellé"
 
-#: billing/utils.py:151 leads/views.py:476 staffing/views.py:1469
+#: billing/utils.py:151 leads/views.py:475 staffing/views.py:1469
 #: templates/crm/clientcompany_detail.html:322
 #: templates/expense/expense_list.html:16 templates/leads/leads.html:16
 #: templates/leads/leads_to_bill.html:17
 msgid "deal id"
 msgstr "N° affaire"
 
-#: billing/utils.py:152 leads/views.py:478 staffing/views.py:1471
+#: billing/utils.py:152 leads/views.py:477 staffing/views.py:1471
 msgid "client organisation"
 msgstr "département"
 
-#: billing/utils.py:153 leads/views.py:479 staffing/views.py:1472
+#: billing/utils.py:153 leads/views.py:478 staffing/views.py:1472
 #: templates/billing/client_billing_control_pivotable.html:61
 #: templates/leads/leads_pivotable.html:60
 #: templates/leads/leads_pivotable.html:69
@@ -418,7 +418,7 @@ msgstr "département"
 msgid "client company"
 msgstr "entreprise"
 
-#: billing/utils.py:154 leads/views.py:483 staffing/views.py:1475
+#: billing/utils.py:154 leads/views.py:482 staffing/views.py:1475
 #: templates/staffing/turnover_pivotable.html:67
 msgid "broker"
 msgstr "apporteur"
@@ -427,8 +427,8 @@ msgstr "apporteur"
 msgid "Direct"
 msgstr "Direct"
 
-#: billing/utils.py:155 core/views.py:349 core/views.py:367 leads/views.py:487
-#: staffing/models.py:334 staffing/views.py:1293 staffing/views.py:1476
+#: billing/utils.py:155 core/views.py:350 core/views.py:368 leads/views.py:486
+#: staffing/models.py:352 staffing/views.py:1293 staffing/views.py:1476
 #: staffing/views.py:1501 templates/billing/bill_review.html:30
 #: templates/billing/bill_review.html:82 templates/billing/bill_review.html:132
 #: templates/billing/bill_review.html:183
@@ -456,7 +456,7 @@ msgstr "Direct"
 msgid "subsidiary"
 msgstr "filiale"
 
-#: billing/utils.py:156 billing/utils.py:186 leads/views.py:482
+#: billing/utils.py:156 billing/utils.py:186 leads/views.py:481
 #: staffing/views.py:1473 templates/crm/clientcompany_detail.html:294
 #: templates/crm/clientcompany_detail.html:324 templates/leads/leads.html:18
 #: templates/leads/leads_pivotable.html:54
@@ -465,7 +465,7 @@ msgstr "filiale"
 msgid "responsible"
 msgstr "responsable"
 
-#: billing/utils.py:157 billing/utils.py:205 staffing/models.py:333
+#: billing/utils.py:157 billing/utils.py:205 staffing/models.py:351
 #: staffing/views.py:1292 templates/billing/_lead_billing.html:20
 #: templates/billing/pre_billing.html:43 templates/billing/pre_billing.html:102
 #: templates/leads/lead_pivotable.html:47
@@ -476,8 +476,8 @@ msgid "consultant"
 msgstr "consultant"
 
 #: billing/utils.py:162 billing/utils.py:180 billing/utils.py:194
-#: billing/utils.py:207 billing/utils.py:216 core/views.py:352
-#: core/views.py:370 templates/billing/_lead_billing.html:23
+#: billing/utils.py:207 billing/utils.py:216 core/views.py:353
+#: core/views.py:371 templates/billing/_lead_billing.html:24
 #: templates/billing/client_billing_control_pivotable.html:50
 #: templates/billing/client_billing_control_pivotable.html:56
 #: templates/billing/client_billing_control_pivotable.html:64
@@ -498,8 +498,8 @@ msgid "month"
 msgstr "Mois"
 
 #: billing/utils.py:164 billing/utils.py:178 billing/utils.py:193
-#: billing/utils.py:208 billing/utils.py:217 core/views.py:348
-#: core/views.py:366 staffing/views.py:1291
+#: billing/utils.py:208 billing/utils.py:217 core/views.py:349
+#: core/views.py:367 staffing/views.py:1291
 #: templates/billing/_lead_billing.html:20
 #: templates/billing/client_billing_control_pivotable.html:49
 #: templates/core/risks.html:40 templates/core/risks.html:47
@@ -510,6 +510,7 @@ msgid "type"
 msgstr "type"
 
 #: billing/utils.py:164 billing/utils.py:193 billing/utils.py:217
+#: templates/billing/_lead_billing.html:23
 msgid "Service bill"
 msgstr "Facture prestation"
 
@@ -518,13 +519,13 @@ msgid "mission"
 msgstr "mission"
 
 #: billing/utils.py:168 billing/utils.py:179 billing/utils.py:187
-#: staffing/models.py:335 staffing/views.py:1474
+#: staffing/models.py:353 staffing/views.py:1474
 #: templates/billing/client_billing_control_pivotable.html:68
 #: templates/staffing/turnover_pivotable.html:83
 msgid "billing mode"
 msgstr "mode de facturation"
 
-#: billing/utils.py:173
+#: billing/utils.py:173 templates/billing/_lead_billing.html:23
 msgid "Expense bill"
 msgstr "Facture de frais"
 
@@ -532,7 +533,8 @@ msgstr "Facture de frais"
 msgid "Chargeable expense"
 msgstr "Frais refacturables"
 
-#: billing/utils.py:208 templates/billing/graph_billing_jqp.html:39
+#: billing/utils.py:208 templates/billing/_lead_billing.html:23
+#: templates/billing/graph_billing_jqp.html:39
 msgid "Done work"
 msgstr "Montant réalisé"
 
@@ -702,7 +704,7 @@ msgstr "Clé"
 msgid "Value"
 msgstr "Valeur"
 
-#: core/models.py:67 staffing/models.py:44 templates/staffing/mission.html:87
+#: core/models.py:67 staffing/models.py:54 templates/staffing/mission.html:87
 msgid "Type"
 msgstr "Type"
 
@@ -718,44 +720,44 @@ msgstr "Mon staffing"
 msgid "Mail to support"
 msgstr "Courriel au support"
 
-#: core/views.py:345
+#: core/views.py:346
 msgid "overdue bills"
 msgstr "factures en retard"
 
-#: core/views.py:347
+#: core/views.py:348
 msgid "sent bills"
 msgstr "factures envoyées"
 
-#: core/views.py:350 core/views.py:368
+#: core/views.py:351 core/views.py:369
 msgid "deal_id"
 msgstr "n° d'affaire"
 
-#: core/views.py:351 core/views.py:369
+#: core/views.py:352 core/views.py:370
 msgid "deal"
 msgstr "affaire"
 
-#: core/views.py:353 core/views.py:371 crm/models.py:434 crm/models.py:463
+#: core/views.py:354 core/views.py:372 crm/models.py:434 crm/models.py:463
 #: templates/core/risks.html:41 templates/crm/_contact_list.html:10
 #: templates/crm/contact_list.html:13
 msgid "company"
 msgstr "société"
 
-#: core/views.py:354 core/views.py:372 crm/views.py:464
+#: core/views.py:355 core/views.py:373 crm/views.py:464
 #: templates/crm/clientcompany_detail.html:320
 #: templates/crm/company_pivotable.html:47 templates/leads/leads.html:14
 #: templates/leads/leads_to_bill.html:15
 msgid "client"
 msgstr "client"
 
-#: core/views.py:366
+#: core/views.py:367
 msgid "work without bill"
 msgstr "Temps passé sans facture"
 
-#: core/views.py:397 templates/core/delete.html:15
+#: core/views.py:398 templates/core/delete.html:15
 msgid "Yes"
 msgstr "Oui"
 
-#: core/views.py:397 templates/core/delete.html:17
+#: core/views.py:398 templates/core/delete.html:17
 #: templates/expense/expense.html:88
 msgid "No"
 msgstr "Non"
@@ -831,7 +833,7 @@ msgid "Commercial name"
 msgstr "Nom commercial"
 
 #: crm/models.py:73 leads/models.py:81 people/models.py:44 people/models.py:284
-#: staffing/models.py:52 templates/billing/client_bills_archive.html:13
+#: staffing/models.py:62 templates/billing/client_bills_archive.html:13
 #: templates/billing/client_bills_in_creation.html:13
 #: templates/billing/supplier_bills_archive.html:14
 #: templates/leads/lead_detail.html:132 templates/leads/review.html:28
@@ -908,7 +910,7 @@ msgstr "Apporteur d'affaires"
 msgid "Supplier company"
 msgstr "Société du fournisseur"
 
-#: crm/models.py:294 templates/billing/_lead_billing.html:76
+#: crm/models.py:294 templates/billing/_lead_billing.html:77
 #: templates/billing/bill_review.html:254
 #: templates/billing/bill_review.html:310
 #: templates/billing/supplier_bills_archive.html:13
@@ -955,7 +957,7 @@ msgstr "Alignement stratégique"
 msgid "Billing contact"
 msgstr "Contact facturation"
 
-#: crm/models.py:428 leads/models.py:73 leads/views.py:212
+#: crm/models.py:428 leads/models.py:73 leads/views.py:211
 #: templates/billing/bill_review.html:31 templates/billing/bill_review.html:83
 #: templates/billing/bill_review.html:133
 #: templates/billing/bill_review.html:184
@@ -1093,8 +1095,8 @@ msgstr "Remboursements de frais"
 msgid "Chargeable"
 msgstr "Refacturable"
 
-#: expense/models.py:103 staffing/models.py:354 staffing/models.py:365
-#: staffing/models.py:391 staffing/models.py:407
+#: expense/models.py:103 staffing/models.py:371 staffing/models.py:382
+#: staffing/models.py:408 staffing/models.py:424
 #: templates/billing/bill.html:140
 msgid "Date"
 msgstr "Date"
@@ -1125,7 +1127,7 @@ msgstr "Justificatif"
 msgid "Paid with corporate card"
 msgstr "Payé avec la carte société"
 
-#: expense/models.py:114 leads/views.py:484
+#: expense/models.py:114 leads/views.py:483
 #: templates/leads/leads_pivotable.html:48
 #: templates/leads/leads_pivotable.html:63
 #: templates/leads/leads_pivotable.html:71
@@ -1136,7 +1138,7 @@ msgstr "état"
 #: staffing/views.py:1172 templates/billing/bill.html:141
 #: templates/expense/expense.html:31 templates/expense/expense_archive.html:22
 #: templates/expense/expense_payments.html:46
-#: templates/staffing/mission.html:134
+#: templates/staffing/mission.html:136
 #: templates/staffing/mission_staffing.html:25
 msgid "Consultant"
 msgstr "Consultant"
@@ -1176,30 +1178,30 @@ msgstr "détail"
 msgid "change"
 msgstr "modifier"
 
-#: expense/views.py:80 expense/views.py:178
+#: expense/views.py:79 expense/views.py:177
 msgid "You are not allowed to edit that expense"
 msgstr "Vous n'êtes pas autorisé à modifier cette note de frais"
 
-#: expense/views.py:84 expense/views.py:182 expense/views.py:255
-#: expense/views.py:296
+#: expense/views.py:83 expense/views.py:181 expense/views.py:254
+#: expense/views.py:294
 #, python-format
 msgid "Expense %s does not exist"
 msgstr "La note de frais %s n'existe pas"
 
-#: expense/views.py:187
+#: expense/views.py:186
 #, python-format
 msgid "Expense %s has been deleted"
 msgstr "La note de frais %s a été supprimée"
 
-#: expense/views.py:265
+#: expense/views.py:264
 msgid "Successfully update expense"
 msgstr "Note de frais mise à jour avec succès"
 
-#: expense/views.py:298 staffing/views.py:1366
+#: expense/views.py:296 staffing/views.py:1366
 msgid "Incorrect value"
 msgstr "Valeur incorrecte"
 
-#: expense/views.py:315 expense/views.py:382
+#: expense/views.py:314 expense/views.py:381
 #, python-format
 msgid "Expense payment %s does not exist"
 msgstr "Le remboursement de frais %s n'existe pas"
@@ -1212,8 +1214,8 @@ msgstr "État et suivi"
 msgid "Commercial"
 msgstr "Commercial"
 
-#: leads/admin.py:24 leads/forms.py:104 leads/views.py:213
-#: staffing/models.py:384 templates/billing/bill_review.html:224
+#: leads/admin.py:24 leads/forms.py:104 leads/views.py:212
+#: staffing/models.py:401 templates/billing/bill_review.html:224
 #: templates/leads/review.html:30 templates/leads/review.html:65
 msgid "Staffing"
 msgstr "Staffing"
@@ -1253,7 +1255,7 @@ msgstr ""
 "Les dernières affaires actives dont je suis responsable ou ressource "
 "pressentie"
 
-#: leads/forms.py:74 leads/models.py:66 staffing/models.py:54
+#: leads/forms.py:74 leads/models.py:66 staffing/models.py:64
 #: templates/billing/bill_review.html:32 templates/billing/bill_review.html:223
 #: templates/billing/bill_review.html:256
 #: templates/billing/bill_review.html:312 templates/core/index.html:14
@@ -1265,7 +1267,7 @@ msgstr ""
 msgid "Responsible"
 msgstr "Responsable"
 
-#: leads/forms.py:75 leads/models.py:63 leads/views.py:212 people/models.py:299
+#: leads/forms.py:75 leads/models.py:63 leads/views.py:211 people/models.py:299
 #: templates/core/index.html:15 templates/core/index.html:40
 #: templates/core/index.html:64 templates/core/index.html:88
 #: templates/leads/lead_detail.html:139
@@ -1375,7 +1377,7 @@ msgid "Sleeping"
 msgstr "En sommeil"
 
 #: leads/models.py:60 templates/leads/lead_detail.html:199
-#: templates/staffing/mission.html:119
+#: templates/staffing/mission.html:121
 msgid "Administrative notes"
 msgstr "Commentaires administratifs"
 
@@ -1384,7 +1386,7 @@ msgstr "Commentaires administratifs"
 msgid "Action"
 msgstr "Action"
 
-#: leads/models.py:62 staffing/models.py:49
+#: leads/models.py:62 staffing/models.py:59
 msgid "Price (k€)"
 msgstr "Montant (k€)"
 
@@ -1392,7 +1394,7 @@ msgstr "Montant (k€)"
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:69 leads/views.py:212 people/models.py:275
+#: leads/models.py:69 leads/views.py:211 people/models.py:275
 msgid "Starting"
 msgstr "Démarrage"
 
@@ -1418,7 +1420,7 @@ msgstr "Score"
 msgid "Lead sent to business mailing list"
 msgstr "Affaire envoyée à la liste de diffusion de suivi des affaires"
 
-#: leads/utils.py:87 leads/views.py:239
+#: leads/utils.py:87 leads/views.py:238
 #, python-format
 msgid "Failed to send mail: %s"
 msgstr "Échec lors de l'envoi du courriel : %s"
@@ -1462,35 +1464,35 @@ msgstr "La probabilité de la mission a été mise à 100 %"
 msgid "According mission has been archived"
 msgstr "La mission correspondante a été archivée"
 
-#: leads/views.py:208
+#: leads/views.py:207
 msgid "leads.csv"
 msgstr "affaires.csv"
 
-#: leads/views.py:212
+#: leads/views.py:211
 msgid "Managed by"
 msgstr "Géré par"
 
-#: leads/views.py:213 templates/billing/bill_review.html:225
+#: leads/views.py:212 templates/billing/bill_review.html:225
 #: templates/core/index.html:16 templates/core/index.html:41
 #: templates/core/index.html:65 templates/core/index.html:89
 #: templates/leads/lead_detail.html:162
 msgid "Sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/views.py:236
+#: leads/views.py:235
 #, python-format
 msgid "Lead %(id)s was sent to %(mail)s !"
 msgstr "L'affaire %(id)s a été envoyée à %(mail)s !"
 
-#: leads/views.py:458 templates/leads/leads_pivotable.html:55
+#: leads/views.py:457 templates/leads/leads_pivotable.html:55
 msgid "sales (interval)"
 msgstr "prix (interval)"
 
-#: leads/views.py:458 leads/views.py:480
+#: leads/views.py:457 leads/views.py:479
 msgid "sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/views.py:477 staffing/views.py:1470 templates/crm/_contact_list.html:9
+#: leads/views.py:476 staffing/views.py:1470 templates/crm/_contact_list.html:9
 #: templates/crm/clientcompany_detail.html:292
 #: templates/crm/clientcompany_detail.html:321
 #: templates/crm/contact_detail.html:20 templates/crm/contact_list.html:12
@@ -1499,7 +1501,7 @@ msgstr "C.A. (k€)"
 msgid "name"
 msgstr "nom"
 
-#: leads/views.py:481 staffing/models.py:336
+#: leads/views.py:480 staffing/models.py:354
 #: templates/crm/company_pivotable.html:48
 #: templates/crm/company_pivotable.html:54
 #: templates/leads/lead_pivotable.html:48
@@ -1507,11 +1509,11 @@ msgstr "nom"
 msgid "date"
 msgstr "date"
 
-#: leads/views.py:485 templates/leads/leads_pivotable.html:64
+#: leads/views.py:484 templates/leads/leads_pivotable.html:64
 msgid "billed (€)"
 msgstr "facturé (€)"
 
-#: leads/views.py:486 templates/leads/leads_pivotable.html:72
+#: leads/views.py:485 templates/leads/leads_pivotable.html:72
 msgid "Over budget margin (k€)"
 msgstr "Marge au delà du budget (k€)"
 
@@ -1532,7 +1534,7 @@ msgstr "Niveau"
 msgid "Consultant profile"
 msgstr "Profil du consultant"
 
-#: people/models.py:45 staffing/models.py:29
+#: people/models.py:45 staffing/models.py:39
 msgid "Productive"
 msgstr "Productif"
 
@@ -1594,9 +1596,19 @@ msgstr "Factures fournisseurs à valider"
 #: people/utils.py:109 templates/leads/lead_detail.html:262
 #: templates/people/consultant_detail.html:84
 #: templates/people/subcontractor_detail.html:16
-#: templates/staffing/mission.html:203
+#: templates/staffing/mission.html:205
 msgid "Pending actions"
 msgstr "Actions en attente"
+
+#: people/views.py:235
+#, python-format
+msgid "consultants %s"
+msgstr "consultants %s"
+
+#: people/views.py:236
+#, python-format
+msgid "subcontractors %s"
+msgstr "sous-traitant %s"
 
 #: staffing/feeds.py:36
 msgid "Latest staffing update"
@@ -1628,8 +1640,8 @@ msgstr "Choisir un consultant pour ajouter une prévision..."
 msgid "Charge"
 msgstr "Charge"
 
-#: staffing/forms.py:143 templates/billing/_lead_billing.html:42
-#: templates/billing/_lead_billing.html:83 templates/expense/expense.html:80
+#: staffing/forms.py:143 templates/billing/_lead_billing.html:43
+#: templates/billing/_lead_billing.html:84 templates/expense/expense.html:80
 #: templates/expense/expense_archive.html:35
 msgid "Comment"
 msgstr "Remarques"
@@ -1656,155 +1668,159 @@ msgid "Name of this mission. Leave blank when leads has only one mission"
 msgstr ""
 "Nom de cette mission. Laissez vide pour les affaires avec une seule mission"
 
-#: staffing/forms.py:238
+#: staffing/forms.py:239
 msgid "Cannot add price to mission without lead"
 msgstr "Impossible d'ajouter un montant à une mission sans affaire"
 
-#: staffing/forms.py:241
+#: staffing/forms.py:242
 msgid "Mission's lead has no sales price. Define lead sales price."
 msgstr ""
 "L'affaire de cette mission n'a pas de prix de vente. Il faut en définir un "
 "au préalable."
 
-#: staffing/forms.py:250
+#: staffing/forms.py:251
 #, python-format
 msgid "Only %s k€ are remaining on this lead. Define a lower price"
 msgstr ""
 "Il ne reste que %s k€ sur cette affaire. Choisissez un montant plus faible"
 
-#: staffing/forms.py:275
+#: staffing/forms.py:276
 msgid "Bought daily rate must be positive and lower than daily rate"
 msgstr ""
 "Le taux journalier d'achat doit être positif et inférieur au taux journalier "
 "moyen"
 
-#: staffing/forms.py:277
+#: staffing/forms.py:278
 msgid "Bought daily rate must be defined for subcontractor"
 msgstr "Le taux journalier d'achat doit être défini pour les sous-traitants"
 
-#: staffing/forms.py:280
+#: staffing/forms.py:281
 msgid "Bought daily rate must be only be defined for subcontractor"
 msgstr ""
 "Le taux journalier d'achat doit être défini uniquement pour les sous-"
 "traitants"
 
-#: staffing/forms.py:297
+#: staffing/forms.py:298
 msgid "after current staffing"
 msgstr "après les prévisions existantes"
 
-#: staffing/forms.py:297
+#: staffing/forms.py:298
 msgid "replace current staffing"
 msgstr "à la place des prévisions existantes"
 
-#: staffing/models.py:30
+#: staffing/models.py:40
 msgid "Unproductive"
 msgstr "Non productif"
 
-#: staffing/models.py:31
+#: staffing/models.py:41
 msgid "Holidays"
 msgstr "Congés"
 
-#: staffing/models.py:33
+#: staffing/models.py:43
 msgid "Null (0 %)"
 msgstr "Null (0 %)"
 
-#: staffing/models.py:34
+#: staffing/models.py:44
 msgid "Low (25 %)"
 msgstr "Faible (25 %)"
 
-#: staffing/models.py:35
+#: staffing/models.py:45
 msgid "Normal (50 %)"
 msgstr "Moyenne (50 %)"
 
-#: staffing/models.py:36
+#: staffing/models.py:46
 msgid "High (75 %)"
 msgstr "Haute (75 %)"
 
-#: staffing/models.py:37
+#: staffing/models.py:47
 msgid "Certain (100 %)"
 msgstr "Certaine (100 %)"
 
-#: staffing/models.py:39 templates/billing/bill.html:84
+#: staffing/models.py:49 templates/billing/bill.html:84
 msgid "Fixed price"
 msgstr "Forfait"
 
-#: staffing/models.py:40
+#: staffing/models.py:50
 msgid "Time spent"
 msgstr "Temps passé"
 
-#: staffing/models.py:42 staffing/views.py:1171
+#: staffing/models.py:52 staffing/views.py:1171
 #: templates/crm/clientcompany_detail.html:296
 #: templates/people/consultant.html:50
 #: templates/staffing/fixed_price_report.html:34
-#: templates/staffing/mission.html:97 templates/staffing/missions.html:30
+#: templates/staffing/mission.html:96 templates/staffing/missions.html:30
 msgid "Mission id"
 msgstr "N° de mission"
 
-#: staffing/models.py:45 staffing/views.py:1171
-#: templates/leads/lead_detail.html:217 templates/staffing/mission.html:106
-#: templates/staffing/mission.html:164
+#: staffing/models.py:55 staffing/views.py:1171
+#: templates/leads/lead_detail.html:217 templates/staffing/mission.html:108
+#: templates/staffing/mission.html:166
 msgid "Billing mode"
 msgstr "Mode de facturation"
 
-#: staffing/models.py:47 templates/leads/review.html:33
+#: staffing/models.py:57 templates/leads/review.html:33
 #: templates/leads/review.html:68
 msgid "Proba"
 msgstr "Proba"
 
-#: staffing/models.py:48
+#: staffing/models.py:58
 msgid "Automatic probability"
 msgstr "Probabilité automatique"
 
-#: staffing/models.py:53
+#: staffing/models.py:63
 msgid "Archived date"
 msgstr "Date d'archivage"
 
-#: staffing/models.py:331 templates/crm/company_pivotable.html:53
+#: staffing/models.py:65
+msgid "analytic code"
+msgstr "code analytique"
+
+#: staffing/models.py:349 templates/crm/company_pivotable.html:53
 #: templates/leads/lead_pivotable.html:47
 msgid "mission id"
 msgstr "N° de mission"
 
-#: staffing/models.py:332 templates/leads/lead_pivotable.html:47
+#: staffing/models.py:350 templates/leads/lead_pivotable.html:47
 #: templates/leads/lead_pivotable.html:54
 msgid "mission name"
 msgstr "Nom mission"
 
-#: staffing/models.py:337 templates/leads/lead_pivotable.html:49
+#: staffing/models.py:355 templates/leads/lead_pivotable.html:49
 #: templates/leads/lead_pivotable.html:55
 msgid "done (days)"
 msgstr "réalisé (jours)"
 
-#: staffing/models.py:338 templates/crm/company_pivotable.html:49
+#: staffing/models.py:356 templates/crm/company_pivotable.html:49
 #: templates/crm/company_pivotable.html:55
 msgid "done (keur)"
 msgstr "réalisé (k€)"
 
-#: staffing/models.py:339
+#: staffing/models.py:357
 msgid "forecast (days)"
 msgstr "prévu (jours)"
 
-#: staffing/models.py:340
+#: staffing/models.py:358
 msgid "forecast (keur)"
 msgstr "prévu (keur)"
 
-#: staffing/models.py:349 staffing/views.py:805 staffing/views.py:1064
+#: staffing/models.py:366 staffing/views.py:805 staffing/views.py:1064
 #: staffing/views.py:1171 templates/leads/lead_detail.html:212
 #: templates/staffing/consultant_staffing.html:11
-#: templates/staffing/mission.html:159 templates/staffing/pdc_detail.html:7
+#: templates/staffing/mission.html:161 templates/staffing/pdc_detail.html:7
 msgid "Mission"
 msgstr "Mission"
 
-#: staffing/models.py:358
+#: staffing/models.py:375
 msgid "Holiday"
 msgstr "Congé"
 
-#: staffing/models.py:366 staffing/models.py:392
+#: staffing/models.py:383 staffing/models.py:409
 #: templates/staffing/consultant_staffing.html:13
 #: templates/staffing/mission_staffing.html:28
 msgid "Load"
 msgstr "Charge"
 
-#: staffing/models.py:400 templates/people/consultant.html:30
+#: staffing/models.py:417 templates/people/consultant.html:30
 #: templates/people/consultant.html:32
 #: templates/staffing/consultant_timesheet.html:16
 #: templates/staffing/consultant_timesheet.html:24
@@ -1812,23 +1828,23 @@ msgstr "Charge"
 msgid "Timesheet"
 msgstr "Feuille de temps"
 
-#: staffing/models.py:408
+#: staffing/models.py:425
 msgid "No lunch ticket"
 msgstr "Pas de ticket restaurant"
 
-#: staffing/models.py:412
+#: staffing/models.py:429
 msgid "Lunch ticket"
 msgstr "Ticket restaurant"
 
-#: staffing/models.py:419 staffing/views.py:1172
+#: staffing/models.py:436 staffing/views.py:1172
 msgid "Daily rate"
 msgstr "Taux journalier"
 
-#: staffing/models.py:420 staffing/views.py:1172
+#: staffing/models.py:437 staffing/views.py:1172
 msgid "Bought daily rate"
 msgstr "Taux journalier d'achat"
 
-#: staffing/models.py:424
+#: staffing/models.py:441
 msgid "Financial condition"
 msgstr "Condition financière"
 
@@ -1898,7 +1914,7 @@ msgstr "Aucun consultant productif défini !"
 msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
-#: staffing/views.py:1089 templates/billing/_lead_billing.html:58
+#: staffing/views.py:1089 templates/billing/_lead_billing.html:59
 #: templates/billing/bill.html:156 templates/leads/lead_detail.html:239
 #: templates/staffing/mission_timesheet.html:39
 #: templates/staffing/mission_timesheet.html:111
@@ -1919,7 +1935,7 @@ msgid "Past done days"
 msgstr "Jours réalisés dans le passé"
 
 #: staffing/views.py:1172 templates/billing/bill_review.html:226
-#: templates/leads/lead_detail.html:214 templates/staffing/mission.html:161
+#: templates/leads/lead_detail.html:214 templates/staffing/mission.html:163
 #: templates/staffing/mission_timesheet.html:13
 msgid "Done days"
 msgstr "Jours réalisés"
@@ -2108,29 +2124,29 @@ msgstr ""
 msgid "Client billing control"
 msgstr "Contrôle facturation client"
 
-#: templates/billing/_lead_billing.html:31
+#: templates/billing/_lead_billing.html:32
 msgid "Clients bills"
 msgstr "Factures clients"
 
-#: templates/billing/_lead_billing.html:59
+#: templates/billing/_lead_billing.html:60
 #: templates/billing/pre_billing.html:62 templates/staffing/mission.html:60
 msgid "Still to be billed"
 msgstr "Reste à facturer"
 
-#: templates/billing/_lead_billing.html:62
-#: templates/billing/_lead_billing.html:102
+#: templates/billing/_lead_billing.html:63
+#: templates/billing/_lead_billing.html:103
 msgid "No bill yet"
 msgstr "Aucune facture"
 
-#: templates/billing/_lead_billing.html:67
+#: templates/billing/_lead_billing.html:68
 msgid "Add a client bill for this lead"
 msgstr "Ajouter une facture client pour cette affaire"
 
-#: templates/billing/_lead_billing.html:70
+#: templates/billing/_lead_billing.html:71
 msgid "Suppliers bills"
 msgstr "Factures fournisseurs"
 
-#: templates/billing/_lead_billing.html:107
+#: templates/billing/_lead_billing.html:108
 msgid "Add a supplier bill for this lead"
 msgstr "Ajouter une facture fournisseur pour cette affaire"
 
@@ -2287,7 +2303,7 @@ msgstr "Montant réalisé (€)"
 #: templates/leads/lead_mail.html:8 templates/leads/lead_mail.html:12
 #: templates/leads/lead_mail.txt:9 templates/leads/lead_mail.txt:13
 #: templates/leads/mail.html:8 templates/leads/mail.txt:7
-#: templates/leads/mail.txt:8 templates/staffing/mission.html:106
+#: templates/leads/mail.txt:8 templates/staffing/mission.html:108
 #: templates/staffing/mission_timesheet.html:89
 msgid "To be defined"
 msgstr "À définir"
@@ -2797,6 +2813,10 @@ msgid "Sales repartition per client"
 msgstr "Répartition du chiffre d'affaire facturé par client"
 
 #: templates/core/dashboard.html:68
+msgid "People count"
+msgstr "Nombre de personnes"
+
+#: templates/core/dashboard.html:78
 msgid "Billing per subsidiary per year"
 msgstr "Facturation par filiale et par an"
 
@@ -3004,7 +3024,7 @@ msgstr "Ajouter ou modifier une société"
 #: templates/crm/clientcompany_detail.html:274
 #: templates/crm/clientcompany_detail.html:276
 #: templates/expense/_make_vat_editable.html:8
-#: templates/staffing/mission.html:227 templates/staffing/mission.html:239
+#: templates/staffing/mission.html:229 templates/staffing/mission.html:241
 msgid "click to edit..."
 msgstr "Cliquez pour modifier..."
 
@@ -3445,17 +3465,17 @@ msgstr "Affaires similaires"
 msgid "Missions of this lead:"
 msgstr "Missions de cette affaire : "
 
-#: templates/leads/lead_detail.html:213 templates/staffing/mission.html:160
+#: templates/leads/lead_detail.html:213 templates/staffing/mission.html:162
 msgid "id"
 msgstr "n°"
 
-#: templates/leads/lead_detail.html:215 templates/staffing/mission.html:162
+#: templates/leads/lead_detail.html:215 templates/staffing/mission.html:164
 msgid "Done work (k€)"
 msgstr "Montant réalisé (k€)"
 
 #: templates/leads/lead_detail.html:216
 #: templates/staffing/fixed_price_report.html:37
-#: templates/staffing/mission.html:163
+#: templates/staffing/mission.html:165
 msgid "Sold (k€)"
 msgstr "Vendu (k€)"
 
@@ -3468,11 +3488,11 @@ msgid "A mission is created once a commercial proposal has been sent."
 msgstr ""
 "Une mission est créée une fois que la proposition commerciale est envoyée."
 
-#: templates/leads/lead_detail.html:267 templates/staffing/mission.html:208
+#: templates/leads/lead_detail.html:267 templates/staffing/mission.html:210
 msgid "Done actions"
 msgstr "Actions réalisées"
 
-#: templates/leads/lead_detail.html:272 templates/staffing/mission.html:213
+#: templates/leads/lead_detail.html:272 templates/staffing/mission.html:215
 msgid "No action done"
 msgstr "Aucune action réalisée"
 
@@ -3671,7 +3691,7 @@ msgstr "Charge prévisionnelle"
 msgid "Consultant's missions"
 msgstr "Missions du consultant"
 
-#: templates/people/consultant.html:51 templates/staffing/mission.html:109
+#: templates/people/consultant.html:51 templates/staffing/mission.html:111
 msgid "Probability"
 msgstr "Probabilité"
 
@@ -3812,6 +3832,10 @@ msgstr "au delà de l'obj."
 #, python-format
 msgid "prod rate (%%)"
 msgstr "taux de prod. (%%)"
+
+#: templates/people/graph_people_count.html:32
+msgid "people count"
+msgstr "nombre de personnes"
 
 #: templates/people/subcontractor_detail.html:23
 #: templates/staffing/pdc_review.html:90
@@ -4037,35 +4061,39 @@ msgstr "Les prévisions n'ont pas été mises à jour récemment"
 msgid "This mission is archived"
 msgstr "Cette mission est archivée"
 
-#: templates/staffing/mission.html:102
+#: templates/staffing/mission.html:99
+msgid "Analytic code"
+msgstr "Code analytique"
+
+#: templates/staffing/mission.html:104
 msgid "Client lead id"
 msgstr "Référence affaire client"
 
-#: templates/staffing/mission.html:112
+#: templates/staffing/mission.html:114
 msgid "Lead of this mission"
 msgstr "Affaire de cette mission"
 
-#: templates/staffing/mission.html:130
+#: templates/staffing/mission.html:132
 msgid "Consultants currently implicated in this mission"
 msgstr "Consultants impliqués actuellement dans cette mission"
 
-#: templates/staffing/mission.html:135
+#: templates/staffing/mission.html:137
 msgid "Daily rate (€)"
 msgstr "Taux journalier (€)"
 
-#: templates/staffing/mission.html:136
+#: templates/staffing/mission.html:138
 msgid "Buy rate (€)"
 msgstr "Taux d'achat (€)"
 
-#: templates/staffing/mission.html:137
+#: templates/staffing/mission.html:139
 msgid "Objective rate (€)"
 msgstr "Taux budget (€)"
 
-#: templates/staffing/mission.html:155
+#: templates/staffing/mission.html:157
 msgid "Other missions linked to this lead"
 msgstr "Autres missions liées à cette affaire"
 
-#: templates/staffing/mission.html:254 templates/staffing/missions.html:52
+#: templates/staffing/mission.html:256 templates/staffing/missions.html:52
 msgid "Archiving failed"
 msgstr "Échec de l'archivage"
 
