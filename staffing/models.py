@@ -23,6 +23,16 @@ from actionset.utils import launchTrigger
 from actionset.models import ActionState
 from core.utils import disable_for_loaddata, cacheable, convertDictKeyToDate, nextMonth
 
+class AnalyticCode(models.Model):
+    code = models.CharField(max_length=100)
+    description = models.CharField(_("Description"), max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        if self.description:
+            return "%s (%s)" % (self.code, self.description)
+        else:
+            return self.code
+
 
 class Mission(models.Model):
     MISSION_NATURE = (
@@ -52,6 +62,7 @@ class Mission(models.Model):
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     archived_date = models.DateTimeField(_("Archived date"), blank=True, null=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
+    analytic_code = models.ForeignKey(AnalyticCode, blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         if self.description and not self.lead:

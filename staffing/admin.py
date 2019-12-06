@@ -7,9 +7,15 @@ Django administration setup
 
 from django.contrib import admin
 
-from staffing.models import Mission, Holiday, Timesheet, FinancialCondition, Staffing
+from staffing.models import Mission, Holiday, Timesheet, FinancialCondition, Staffing, AnalyticCode
 from staffing.forms import MissionAdminForm, FinancialConditionAdminForm
 from core.admin import ReturnToAppAdmin
+
+
+class AnalyticCodeAdmin(ReturnToAppAdmin):
+    list_display =  ("code", "description")
+    search_fields = list_display
+    ordering = ("code",)
 
 
 class MissionAdmin(ReturnToAppAdmin):
@@ -42,6 +48,7 @@ class FinancialConditionAdmin(ReturnToAppAdmin):
     form = FinancialConditionAdminForm
 
 
+admin.site.register(AnalyticCode, AnalyticCodeAdmin)
 admin.site.register(Mission, MissionAdmin)
 admin.site.register(Holiday, HolidayAdmin)
 admin.site.register(FinancialCondition, FinancialConditionAdmin)
