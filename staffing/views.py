@@ -1357,10 +1357,10 @@ def mission_consultant_rate(request):
                                                                       defaults={"daily_rate": 0})
         value = request.POST["value"].replace(" ", "")
         if sold == "sold":
-            msg = _("Sold daily rate changed from %s to %s" % (condition.daily_rate, value))
+            msg = _("Sold daily rate changed from %(old)s to %(new)s") % {"old": condition.daily_rate, "new": value }
             condition.daily_rate = value
         else:
-            msg = _("Bought daily rate changed from %s to %s" % (condition.bought_daily_rate, value))
+            msg = _("Bought daily rate changed from %(old)s to %(new)s") % {"old": condition.bought_daily_rate, "new": value }
             condition.bought_daily_rate = value
         condition.save()
         LogEntry.objects.log_action(
