@@ -1,0 +1,26 @@
+{# Display object history in a simple table #}
+{# context : history_list #}
+
+{% load i18n %}
+
+{% if history_list %}
+    <h2>{% trans "Change history" %}</h2>
+    <table id="change-history" class="table table-hover table-striped table-condensed">
+        <thead>
+        <tr>
+            <th scope="col">{% trans 'Date/time' %}</th>
+            <th scope="col">{% trans 'User' %}</th>
+            <th scope="col">{% trans 'Changes' %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in history_list %}
+        <tr>
+            <th scope="row">{{ item.action_time|date:_("DATETIME_FORMAT") }}</th>
+            <td>{{ item.user.username }}{% if item.user.first_name %} ({{ item.user.first_name }} {{ item.user.last_name }}){% endif %}</td>
+            <td>{{ item.change_message }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

@@ -15,8 +15,10 @@ from django.core.cache import cache
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
+from django.contrib.admin.models import LogEntry, ADDITION, ContentType
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
+from django.utils.encoding import force_text
 from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q, Max
 from django.db import connections
@@ -1355,10 +1357,20 @@ def mission_consultant_rate(request):
                                                                       defaults={"daily_rate": 0})
         value = request.POST["value"].replace(" ", "")
         if sold == "sold":
+            msg = _("Sold daily rate changed from %s to %s" % (condition.daily_rate, value))
             condition.daily_rate = value
         else:
+            msg = _("Bought daily rate changed from %s to %s" % (condition.bought_daily_rate, value))
             condition.bought_daily_rate = value
         condition.save()
+        LogEntry.objects.log_action(
+            user_id=request.user.pk,
+            content_type_id=ContentType.objects.get_for_model(mission).pk,
+            object_id=mission.pk,
+            object_repr=force_text(mission),
+            action_flag=ADDITION,
+            change_message=msg,
+        )
         return HttpResponse(request.POST["value"])
     except (Mission.DoesNotExist, Consultant.DoesNotExist):
         return HttpResponse(_("Mission or consultant does not exist"))
