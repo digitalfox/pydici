@@ -146,7 +146,7 @@ class Consultant(models.Model):
 
     def get_turnover(self, start_date=None, end_date=None):
         """Get consultant turnover in euros of done missions according to timesheet and rates between startDate (included) and enDate (excluded). Only PROD missions are considered.
-        Fixed price mission margin (profit or loss) are not considered.
+        Fixed price mission margin (profit or loss) are considered.
         @param start_date: if None, from the creation of earth
         @param end_date : if None, up to today
         @return: turnover in euros"""
