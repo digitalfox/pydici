@@ -78,6 +78,13 @@ $(document).ready(function()
         }
     });
 
+    $("input[class=timesheet-cycle]").on("contextmenu", function(ev) {
+        event.stopPropagation();
+        event.preventDefault();
+        cycleitemReverse($(this));
+        return false;
+    });
+
     $("input[class=timesheet-cycle]").on('touchstart', function(ev) {
         event.stopPropagation();
         event.preventDefault();
