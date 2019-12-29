@@ -15,7 +15,7 @@ from django.core.cache import cache
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
-from django.contrib.admin.models import LogEntry, ADDITION, ContentType
+from django.contrib.admin.models import LogEntry, ADDITION,CHANGE, ContentType
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
@@ -667,6 +667,14 @@ def deactivate_mission(request, mission_id):
         mission = Mission.objects.get(id=mission_id)
         mission.active = False
         mission.save()
+        LogEntry.objects.log_action(
+            user_id=request.user.pk,
+            content_type_id=ContentType.objects.get_for_model(mission).pk,
+            object_id=mission.pk,
+            object_repr=force_text(mission),
+            action_flag=CHANGE,
+            change_message=_("Mission has been archived"),
+        )
     except Mission.DoesNotExist:
         error = True
     return HttpResponse(json.dumps({"error": error, "id": mission_id}),
@@ -1368,7 +1376,7 @@ def mission_consultant_rate(request):
             content_type_id=ContentType.objects.get_for_model(mission).pk,
             object_id=mission.pk,
             object_repr=force_text(mission),
-            action_flag=ADDITION,
+            action_flag=CHANGE,
             change_message=msg,
         )
         return HttpResponse(request.POST["value"])
