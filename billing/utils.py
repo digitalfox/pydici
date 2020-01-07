@@ -79,20 +79,23 @@ def compute_bill(bill):
             bill.amount_with_vat = bill.amount * (1 + bill.vat / 100)
 
 
-def create_client_bill_from_timesheet(mission, month):
-    """Create (and return) a bill and bill detail for given mission from timesheet of given month"""
+def create_client_bill_from_timesheet(mission, start_date, end_date):
+    """Create (and return) a bill and bill detail for given mission from timesheet of given interval"""
     ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
     Consultant = apps.get_model("people", "Consultant")
     bill = ClientBill(lead=mission.lead)
     bill.save()
     rates = mission.consultant_rates()
-    timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
-    timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
-    for i in timesheet_data:
-        consultant = Consultant.objects.get(id=i["consultant"])
-        billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
-        billDetail.save()
+    month = start_date
+    while month < end_date:
+        timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
+        timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
+        for i in timesheet_data:
+            consultant = Consultant.objects.get(id=i["consultant"])
+            billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
+            billDetail.save()
+        month = nextMonth(month)
     bill.save()  # save again to update bill amount according to its details
     return bill
 

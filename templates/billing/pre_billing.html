@@ -51,7 +51,7 @@
             <tr><th>{% trans "total" %}</th><td></td><td></td><th>{{ mission_data.0|floatformat:"-2" }} €</th></tr>
             </table>
             </div>
-                <a class="btn btn-default" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};month={{month.month}};year={{month.year|unlocalize}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
+                <a class="btn btn-default" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
             </div>
     {% endfor %}
      {% ifequal lead.mission_set.count 1 %}
