@@ -23,8 +23,10 @@
             {% trans "All leads" %}
         </label>
     </div>
-    <input id="startDate" name="startDate" class="datepicker dateinput" placeholder="{% trans 'From' %}">
-    <input id="endDate" name="endDate" class="datepicker dateinput" placeholder="{% trans 'To' %}">
+    <div class="btn-group col-lg-4" data-toggle="buttons">
+        <input id="startDate" name="startDate" class="btn btn-default datepicker dateinput" placeholder="{% trans 'From' %}">
+        <input id="endDate" name="endDate" class="btn btn-default datepicker dateinput" placeholder="{% trans 'To' %}">
+    </div>
 </div>
 
 <br/>
