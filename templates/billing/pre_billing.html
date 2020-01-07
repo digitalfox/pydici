@@ -13,16 +13,18 @@
 
 
 <div class="row">
-    <div class="btn-group col-lg-8" data-toggle="buttons">
-        <label class="btn btn-default col-lg-4 {% if mine %}active{% endif %}">
+    <div class="btn-group col-lg-4" data-toggle="buttons">
+        <label class="btn btn-default col-lg-6 {% if mine %}active{% endif %}">
             <input type="radio" onchange="window.location='{% url 'billing:pre_billing' start_date=start_date|date:'Ym' end_date=end_date|date:'Ym' mine=True %}'" />
             {% trans "Only my leads" %}
         </label>
-        <label class="btn btn-default col-lg-4 {% if not mine %}active{% endif %}">
+        <label class="btn btn-default col-lg-6 {% if not mine %}active{% endif %}">
             <input type="radio" onchange="window.location='{% url 'billing:pre_billing' start_date=start_date|date:'Ym' end_date=end_date|date:'Ym' mine=False %}'" />
             {% trans "All leads" %}
         </label>
     </div>
+    <input id="startDate" name="startDate" class="datepicker dateinput" placeholder="{% trans 'From' %}">
+    <input id="endDate" name="endDate" class="datepicker dateinput" placeholder="{% trans 'To' %}">
 </div>
 
 <br/>
@@ -140,8 +142,35 @@
     {% endifchanged %}
     <li><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }}) : </a>
     {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
+    </li>
 {% endfor %}
 
 {% endif %}
 
+{% include "core/_datepicker.html" %}
+
+<script type="text/javascript">
+// set dates on widgets with template value
+            {% if start_date %}
+                $("#startDate").datepicker("setDate", new Date("{{ start_date|date:"Y-m-d" }}"));
+            {% endif %}
+            {% if end_date %}
+                $("#endDate").datepicker("setDate", new Date("{{ end_date|date:"Y-m-d" }}"));
+            {% endif %}
+
+// reload data with choosen timeframe
+$('.datepicker').datepicker().on("changeDate", function(e) {
+    var param = "";
+    var fromDate = $("#startDate").datepicker("getDate");
+    var toDate   = $("#endDate").datepicker("getDate");
+    if (!isNaN(fromDate.getTime())) {
+        param += yyyymm(fromDate) + '/';
+    }
+    if (!isNaN(toDate.getTime())) {
+        param += yyyymm(toDate);
+    }
+    window.location.href = window.location.href.replace(/\d{6}\/?/g, '') + param;
+});
+
+</script>
 {% endblock %}

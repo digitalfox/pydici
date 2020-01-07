@@ -23,15 +23,6 @@
         {% include "core/_datepicker.html" %}
 
         <script type="text/javascript">
-            // This language is a shame...
-            function yyyymmdd(dateIn) {
-               var yyyy = dateIn.getFullYear();
-               var mm = dateIn.getMonth()+1; // getMonth() is zero-based
-               var dd  = dateIn.getDate();
-               return String(10000*yyyy + 100*mm + dd); // Leading zeros for mm and dd
-            }
-
-
             // Active state switcher
             $(document).ready(function() {
                 $('#type-selector button').on("click", function() {

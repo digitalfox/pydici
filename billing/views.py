@@ -418,17 +418,20 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
     """Pre billing page: help to identify bills to send"""
 
     if end_date is None:
-        end_date = previousMonth(date.today())
+        end_date = date.today().replace(day=1)
     else:
         end_date = date(int(end_date[0:4]), int(end_date[4:6]), 1)
     if start_date is None:
-        start_date = previousMonth(previousMonth(date.today()))
+        start_date = previousMonth(date.today())
     else:
         start_date = date(int(start_date[0:4]), int(start_date[4:6]), 1)
 
     if end_date - start_date > timedelta(180):
         # Prevent excessive window that is useless would lead to deny of service
         start_date = (end_date - timedelta(180)).replace(day=1)
+
+    if end_date < start_date:
+        end_date = nextMonth(start_date)
 
     timeSpentBilling = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
     rates = {}  # Key is mission, value is Consultant rates dict

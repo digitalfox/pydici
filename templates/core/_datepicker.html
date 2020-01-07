@@ -1,6 +1,19 @@
 {# Add a bootstrap date pickup to every input with datepickup css class #}
 
 <script type="text/javascript">
+// This language is a shame...
+function yyyymmdd(dateIn) {
+   var yyyy = dateIn.getFullYear();
+   var mm = dateIn.getMonth()+1; // getMonth() is zero-based
+   var dd  = dateIn.getDate();
+   return String(10000*yyyy + 100*mm + dd); // Leading zeros for mm and dd
+}
+function yyyymm(dateIn) {
+   var yyyy = dateIn.getFullYear();
+   var mm = dateIn.getMonth()+1; // getMonth() is zero-based
+   return String(100*yyyy + mm); // Leading zeros for mm and dd
+}
+
 $(document).ready(function() {
     $('input.datepicker').datepicker(
             {language: {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %},
