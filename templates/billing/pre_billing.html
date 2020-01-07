@@ -31,7 +31,7 @@
 </div>
 
 <div class="page-header">
-    <h1 id="client-timespent">{% trans "Pre billing for time spent missions" %} - {{ month|date:"F Y" }}</h1>
+    <h1 id="client-timespent">{% trans "Pre billing for time spent missions" %} ({{ start_date }} - {{ end_date }})</h1>
 </div>
 {% for lead, lead_data in time_spent_billing %}
     <h2><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
@@ -64,7 +64,7 @@
 {% endfor %}
 
 <div class="page-header">
-    <h1 id="client-fixedprice">{% trans "Pre billing for fixed price missions" %} - {{ month|date:"F Y" }}</h1>
+    <h1 id="client-fixedprice">{% trans "Pre billing for fixed price missions" %} ({{ start_date }} - {{ end_date }})</h1>
 </div>
 <div><ul>
 {% for mission in fixed_price_missions %}
@@ -90,7 +90,7 @@
 <div id="internal"></div>
 {% for subsidiaries, subsidiary_internal_billing in internal_billing.items %}
     <div class="page-header">
-        <h1>{% blocktrans with from=subsidiaries.0 to=subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} - {{ month|date:"F Y" }}</h1>
+        <h1>{% blocktrans with from=subsidiaries.0 to=subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} ({{ start_date }} - {{ end_date }})</h1>
     </div>
     {% for lead, lead_data in subsidiary_internal_billing %}
         <h2><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
@@ -125,7 +125,7 @@
 
 {% if undefined_billing_mode_missions %}
 <br/><hr>
-<h1 class="alert alert-danger">{% trans "Missions without defined billing mode" %} - {{ month|date:"F Y" }}</h1>
+<h1 class="alert alert-danger">{% trans "Missions without defined billing mode" %} ({{ start_date }} - {{ end_date }})</h1>
 <div><ul>
 {% for mission in undefined_billing_mode_missions %}
     {% ifchanged mission.lead %}
