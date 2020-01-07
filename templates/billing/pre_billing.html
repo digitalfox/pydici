@@ -10,11 +10,11 @@
 <div class="row">
     <div class="btn-group col-lg-8" data-toggle="buttons">
         <label class="btn btn-default col-lg-4 {% if mine %}active{% endif %}">
-            <input type="radio" onchange="window.location='{% url 'billing:pre_billing' year=month.year month=month.month mine=True %}'" />
+            <input type="radio" onchange="window.location='{% url 'billing:pre_billing' start_date=start_date|date:'Ym' end_date=end_date|date:'Ym' mine=True %}'" />
             {% trans "Only my leads" %}
         </label>
         <label class="btn btn-default col-lg-4 {% if not mine %}active{% endif %}">
-            <input type="radio" onchange="window.location='{% url 'billing:pre_billing' year=month.year month=month.month mine=False %}'" />
+            <input type="radio" onchange="window.location='{% url 'billing:pre_billing' start_date=start_date|date:'Ym' end_date=end_date|date:'Ym' mine=False %}'" />
             {% trans "All leads" %}
         </label>
     </div>

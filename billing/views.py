@@ -412,14 +412,22 @@ def supplierbill_delete(request, bill_id):
 
 @pydici_non_public
 @pydici_feature("billing_request")
-def pre_billing(request, year=None, month=None, mine=False):
+def pre_billing(request, start_date=None, end_date=None, mine=False):
     """Pre billing page: help to identify bills to send"""
-    if year and month:
-        month = date(int(year), int(month), 1)
-    else:
-        month = previousMonth(date.today())
 
-    next_month = nextMonth(month)
+    if end_date is None:
+        end_date = previousMonth(date.today())
+    else:
+        end_date = date(int(end_date[0:4]), int(end_date[4:6]), 1)
+    if start_date is None:
+        start_date = previousMonth(previousMonth(date.today()))
+    else:
+        start_date = date(int(start_date[0:4]), int(start_date[4:6]), 1)
+
+    if end_date - start_date > timedelta(180):
+        # Prevent excessive window that is useless would lead to deny of service
+        start_date = (end_date - timedelta(180)).replace(day=1)
+
     timeSpentBilling = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
     rates = {}  # Key is mission, value is Consultant rates dict
     internalBilling = {}  # Same structure as timeSpentBilling but for billing between internal subsidiaries
@@ -432,16 +440,16 @@ def pre_billing(request, year=None, month=None, mine=False):
 
 
     fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
-                                                timesheet__working_date__gte=month,
-                                                timesheet__working_date__lt=next_month)
+                                                timesheet__working_date__gte=start_date,
+                                                timesheet__working_date__lt=end_date)
     undefinedBillingModeMissions = Mission.objects.filter(nature="PROD", billing_mode=None,
-                                                          timesheet__working_date__gte=month,
-                                                          timesheet__working_date__lt=next_month)
+                                                          timesheet__working_date__gte=start_date,
+                                                          timesheet__working_date__lt=end_date)
 
-    timespent_timesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
+    timespent_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
                                                     mission__nature="PROD", mission__billing_mode="TIME_SPENT")
 
-    internalBillingTimesheets = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
+    internalBillingTimesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
                                                     mission__nature="PROD")
     internalBillingTimesheets = internalBillingTimesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
     #TODO: hanlde fixed price mission fully delegated to a subsidiary
@@ -472,7 +480,8 @@ def pre_billing(request, year=None, month=None, mine=False):
                    "fixed_price_missions": fixedPriceMissions,
                    "undefined_billing_mode_missions": undefinedBillingModeMissions,
                    "internal_billing": internalBilling,
-                   "month": month,
+                   "start_date": start_date,
+                   "end_date": end_date,
                    "mine": mine,
                    "user": request.user})
 
