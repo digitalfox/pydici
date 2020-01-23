@@ -10,6 +10,7 @@ jobs:
     services:
       mariadb:
         image: mariadb:latest
+        env:
           MYSQL_ROOT_PASSWORD: root
         
     steps:
