@@ -24,7 +24,7 @@ from staffing.models import Mission, Timesheet
 from people.models import Consultant
 from expense.models import Expense
 from crm.models import Supplier
-from billing.utils import compute_bill
+from billing.utils import compute_bill, get_bill_id_from_path
 from core.utils import sanitizeName
 
 
@@ -38,7 +38,7 @@ class BillStorage(FileSystemStorage):
 
     def url(self, name):
         try:
-            bill_id = os.path.split(dirname(name))[1]
+            bill_id = get_bill_id_from_path(name)
             if self.nature == "client":
                 return reverse("billing:bill_file", kwargs={"bill_id": bill_id, "nature": "client"})
             else:
@@ -109,6 +109,19 @@ class AbstractBill(models.Model):
 
     def vat_amount(self):
         return self.amount_with_vat - self.amount
+
+    def save(self, *args, **kwargs):
+        super(AbstractBill, self).save(*args, **kwargs)  # Save it
+        if self.bill_file:
+            bill_id = get_bill_id_from_path(self.bill_file.name)
+            if bill_id == "None":
+                # Bill file was saved prior ID generation. Let's move it to proper directory name
+                old_file_path = self.bill_file.path
+                self.bill_file.name = bill_file_path(self, os.path.basename(self.bill_file.name))  # Define new name
+                os.makedirs(os.path.dirname(self.bill_file.path), exist_ok=True) # Create dir if needed (it should)
+                os.rename(old_file_path, self.bill_file.path)  # Move file
+                super(AbstractBill, self).save(*args, **kwargs)  # Save it again with new path
+
 
     class Meta:
         abstract = True

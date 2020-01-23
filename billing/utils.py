@@ -235,6 +235,12 @@ def generate_bill_pdf(bill, request):
     bill.bill_file.save(filename, content)
     bill.save()
 
+
+def get_bill_id_from_path(name):
+    """Bill id is the last part of path"""
+    return os.path.split(path.dirname(name))[1]
+
+
 def switch_bill_id(nature, dry_run=True, verbose=True):
     """Rename bill files/directories using technical bill.id instead of bill.bill_id"""
     #TODO: onetime script. Could be removed in short future.
