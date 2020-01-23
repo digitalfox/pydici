@@ -8,6 +8,9 @@ install:
   - pip install -r requirements-sklearn.txt
   - pip install -r requirements-nextcloudtag.txt
 
+before_script:
+  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('password') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
+
 script:
   - python manage.py test
 
