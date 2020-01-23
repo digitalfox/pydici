@@ -86,7 +86,7 @@
         </tr>
             {% for bill in supplier_bills %}
                 <tr>
-                    <td><a href="{% url 'admin:billing_supplierbill_change' bill.id %}">{{ bill }}</a></td>
+                    <td><a href="{% url 'billing:supplier_bill' bill.id %}">{{ bill }}</a></td>
                     <td>{{ bill.supplier }}</td>
                     <td>{{ bill.supplier_bill_id }}</td>
                     <td>{{ bill.get_state_display }}</td>
