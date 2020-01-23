@@ -18,7 +18,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements-sklearn.txt
-        pip install -r requirements-sklearn.txt
+        pip install -r requirements-nextcloudtag.txt
     - name: Test with django test
       run: |
         python manage.py test
