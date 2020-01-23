@@ -377,13 +377,20 @@ def supplier_bill(request, bill_id=None):
     else:
         bill = None
 
+    lead_id =request.GET.get("lead")
+
     if request.POST:
         form = SupplierBillForm(request.POST, request.FILES, instance=bill)
         if form.is_valid():
             bill = form.save()
             return HttpResponseRedirect(reverse_lazy("billing:supplier_bills_archive"))
     else:
-        form = SupplierBillForm(instance=bill)
+        if bill:
+            form = SupplierBillForm(instance=bill)
+        elif lead_id:
+            form = SupplierBillForm(initial={"lead": lead_id})
+        else:
+            form = SupplierBillForm()
 
     return render(request, "billing/supplier_bill_form.html",
                   {"bill_form": form,
