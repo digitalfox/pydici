@@ -10,8 +10,7 @@ jobs:
     services:
       mariadb:
         image: mariadb:latest
-        env:
-          MYSQL_ROOT_PASSWORD: password
+          MYSQL_ROOT_PASSWORD: root
         
     steps:
     - uses: actions/checkout@v1

@@ -55,7 +55,7 @@ NEXTCLOUD_TAG_IS_ENABLED = True # Wether to enable or not Nextcloud tag add/remo
 NEXTCLOUD_DB_DATABASE = "nextcloud"
 NEXTCLOUD_DB_HOST = "localhost"
 NEXTCLOUD_DB_USER= "root"
-NEXTCLOUD_DB_PWD = ""
+NEXTCLOUD_DB_PWD = "root"
 # Filter on a nextcloud particular storage. Get it with "SELECT * FROM oc_storages" and using the one that
 # is used for the file to be taggued
 NEXTCLOUD_DB_FILE_STORAGE = 1
