@@ -114,6 +114,8 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
 
 class ExpenseTable(tables.Table):
     id = tables.TemplateColumn("""<a href="{{ record.get_absolute_url }}">{{ record.id }}</a>""", verbose_name="#")
+    description = tables.Column(attrs={"td": {"class": "description"}})
+    amount = tables.Column(attrs={"td": {"class": "amount"}})
     user = tables.Column(verbose_name=_("Consultant"))
     lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads:detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
     receipt = tables.TemplateColumn(template_name="expense/_receipt_column.html")

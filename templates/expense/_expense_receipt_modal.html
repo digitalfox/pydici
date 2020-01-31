@@ -22,8 +22,13 @@ $(document).ready(function(){
     // Fill modal with content from link href
     $("#expenseModal").on("show.bs.modal", function(e) {
         var link = $(e.relatedTarget);
-        var desc = link.closest("tr").find(".description").html() + " - " + link.closest("tr").find(".amount").html();
-        $(this).find("#expenseModalLabel").html(desc);
+        var desc = link.closest("tr").find(".description").html()
+        var amount = link.closest("tr").find(".amount").html();
+        var title = "";
+        if (desc && amount) {
+          title = desc + " - " + amount;
+        }
+        $(this).find("#expenseModalLabel").html(title);
         $(this).find(".modal-body").load(link.attr("href"));
     });
 });
