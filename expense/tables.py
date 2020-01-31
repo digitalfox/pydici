@@ -175,7 +175,8 @@ class UserExpenseWorkflowTable(ExpenseWorkflowTable):
 
 
 class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
-    description = tables.TemplateColumn("""{% load l10n %} <span id="managed_expense_{{record.id|unlocalize }}">{{ record.description }}</span>""")
+    description = tables.TemplateColumn("""{% load l10n %} <span id="managed_expense_{{record.id|unlocalize }}">{{ record.description }}</span>""",
+                                        attrs={"td": {"class": "description"}})
     class Meta:
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-condensed", "id": "managed_expense_workflow_table"}
         prefix = "managed_expense_workflow_table"
