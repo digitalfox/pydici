@@ -222,12 +222,18 @@ class SupplierBill(AbstractBill):
                                                    state__in=("1_VALIDATED", "2_PAID"))
         already_paid = already_paid.aggregate(Sum("amount"))["amount__sum"] or 0
 
+        # Add spent time on missions of this lead
         for mission in self.lead.mission_set.all():
             rates = dict([(i.id, j[1]) for i, j in mission.consultant_rates().items()])  # switch to consultant id
             timesheets = Timesheet.objects.filter(mission=mission)
             for consultant in mission.consultants().filter(subcontractor=True, subcontractor_company=self.supplier):
                 days = timesheets.filter(consultant=consultant).aggregate(Sum("charge"))["charge__sum"] or 0
                 total_expected += days * rates.get(consultant.id, 0)
+
+        # Add supplier expenses
+        supplier_consultants = [c.trigramme.lower() for c in self.supplier.consultant_set.all()]
+        expenses = Expense.objects.filter(lead=self.lead, state__in=("VALIDATED", "CONTROLED"), user__username__in=supplier_consultants)
+        total_expected += float(expenses.aggregate(Sum("amount"))["amount__sum"] or 0)
 
         return total_expected - float(already_paid)
 
