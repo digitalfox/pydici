@@ -3,7 +3,7 @@ django_tables2==2.0.6
 django-taggit==1.1.0
 django-taggit-templatetags2==1.6.1
 django-extensions==2.2.1
-django-debug-toolbar==2.0.0
+django-debug-toolbar==2.2.0
 -e git+https://github.com//harpb/django-userswitch#egg=django-userswitch
 django-crispy-forms==1.7.2
 Django-Select2==7.1.1
