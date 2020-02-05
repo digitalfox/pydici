@@ -232,7 +232,7 @@ class SupplierBill(AbstractBill):
 
         # Add supplier expenses
         supplier_consultants = [c.trigramme.lower() for c in self.supplier.consultant_set.all()]
-        expenses = Expense.objects.filter(lead=self.lead, state__in=("VALIDATED", "CONTROLED"), user__username__in=supplier_consultants)
+        expenses = Expense.objects.filter(lead=self.lead, state__in=("VALIDATED", "CONTROLLED"), user__username__in=supplier_consultants)
         total_expected += float(expenses.aggregate(Sum("amount"))["amount__sum"] or 0)
 
         return total_expected - float(already_paid)
