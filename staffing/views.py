@@ -1462,7 +1462,7 @@ def turnover_pivotable(request, year=None):
     """Turnover analysis (per people and mission) based on timesheet production"""
     data = []
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
-    missions = Mission.objects.filter(nature="PROD", lead__state="WON")
+    missions = Mission.objects.filter(nature="PROD")
 
     if not missions:
         return HttpResponse()
@@ -1486,13 +1486,13 @@ def turnover_pivotable(request, year=None):
 
 
     for mission in missions:
-        mission_data = {_("deal id"): mission.lead.deal_id,
+        mission_data = {_("deal id"): mission.lead.deal_id if mission.lead else mission.id,
                          _("name"): mission.short_name(),
-                         _("client organisation"): str(mission.lead.client.organisation),
-                         _("client company"): str(mission.lead.client.organisation.company),
+                         _("client organisation"): str(mission.lead.client.organisation) if mission.lead else "-",
+                         _("client company"): str(mission.lead.client.organisation.company) if mission.lead else "-",
                          _("responsible"): str(mission.responsible),
                          _("billing mode"): mission.get_billing_mode_display(),
-                         _("broker"): str(mission.lead.business_broker or _("Direct")),
+                         _("broker"): str(mission.lead.business_broker or _("Direct")) if mission.lead else _("Direct"),
                          _("subsidiary"): str(mission.subsidiary)}
         for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):
             fiscal_year = get_fiscal_year(month)
