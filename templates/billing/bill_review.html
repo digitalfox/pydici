@@ -11,18 +11,45 @@
 
 {% block content %}
     <h1>{% trans "Bills to review" %}</h1>
-    <ul>
-        {% if overdue_bills %}<li><a href="#overdue_bills">{% trans "Overdue client bills" %}</a></li>{% endif %}
-        {% if soondue_bills %}<li><a href="#due_soon_bills">{% trans "Client bills due soon" %}</a></li>{% endif %}
-        {% if litigious_bills %}<li><a href="#litigious_bills">{% trans "Litigious client bills" %}</a></li>{% endif %}
-        {% if recent_bills %}<li><a href="#recent_bills">{% trans "Recently paid client bills" %}</a></li>{% endif %}
-        {% if leads_without_bill %}<li><a href="#recent_leads">{% trans "Recent leads without bill" %}</a></li>{% endif %}
-        {% if supplier_overdue_bills %}<li><a href="#supplier_overdue_bills">{% trans "Supplier overdue bills" %}</a></li>{% endif %}
-        {% if supplier_soondue_bills %}<li><a href="#supplier_soondue_bills">{% trans "Supplier soon due bills" %}</a></li>{% endif %}
-    </ul>
+
+    <!-- buttons bar -->
+    <div class="row">
+        <!-- menu links -->
+        <div class="col-md-6">
+            <ul>
+                {% if overdue_bills %}<li><a href="#overdue_bills">{% trans "Overdue client bills" %}</a></li>{% endif %}
+                {% if soondue_bills %}<li><a href="#due_soon_bills">{% trans "Client bills due soon" %}</a></li>{% endif %}
+                {% if litigious_bills %}<li><a href="#litigious_bills">{% trans "Litigious client bills" %}</a></li>{% endif %}
+                {% if recent_bills %}<li><a href="#recent_bills">{% trans "Recently paid client bills" %}</a></li>{% endif %}
+                {% if leads_without_bill %}<li><a href="#recent_leads">{% trans "Recent leads without bill" %}</a></li>{% endif %}
+                {% if supplier_overdue_bills %}<li><a href="#supplier_overdue_bills">{% trans "Supplier overdue bills" %}</a></li>{% endif %}
+                {% if supplier_soondue_bills %}<li><a href="#supplier_soondue_bills">{% trans "Supplier soon due bills" %}</a></li>{% endif %}
+            </ul>
+        </div>
+        <!-- Scope  button -->
+        <div class="col-md-6">
+            {% trans "Scope: " %}
+            <div class="btn-group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ scope }} <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                  {% for scope_type, scope_filter, scope_label in scopes %}
+                    {% ifchanged scope_type %}
+                        {% if not forloop.first %}
+                            <li role="separator" class="divider"></li>
+                        {% endif %}
+                    {% endifchanged %}
+                    <li><a href="{% url 'billing:bill_review'%}/?{{scope_filter}}">{{ scope_label }}</a></li>
+                  {% endfor %}
+              </ul>
+            </div>
+        </div>
+    </div>
+
     <br/>
     {% if overdue_bills %}
-    <h1>{% trans "Overdue client bills" %}</h1>
+    <h2>{% trans "Overdue client bills" %}</h2>
         <table id="overdue_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
@@ -74,7 +101,7 @@
     {% endif %}
     {% if soondue_bills %}
     <br/><br/>
-    <h1>{% trans "Client bills due soon" %}</h1>
+    <h2>{% trans "Client bills due soon" %}</h2>
         <table id="due_soon_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
@@ -124,7 +151,7 @@
     {% endif %}
     {% if litigious_bills %}
         <br/><br/>
-        <h1>{% trans "Litigious client bills" %}</h1>
+        <h2>{% trans "Litigious client bills" %}</h2>
         <table id="litigious_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
@@ -175,7 +202,7 @@
     
     {% if recent_bills %}
         <br/><br/>
-        <h1>{% trans "Recently paid client bills" %}</h1>
+        <h2>{% trans "Recently paid client bills" %}</h2>
         <table id="recent_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
@@ -214,7 +241,7 @@
     {% endif %}
     {% if leads_without_bill %}
         <br/><br/>
-        <h1>{% trans "Recent leads without bill" %}</h1>
+        <h2>{% trans "Recent leads without bill" %}</h2>
         <table id="recent_leads" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
@@ -245,7 +272,7 @@
     {% endif %}
     {% if supplier_overdue_bills %}
         <br/><br/>
-        <h1>{% trans "Supplier over due bills" %}</h1>
+        <h2>{% trans "Supplier over due bills" %}</h2>
         <table id="supplier_overdue_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>
@@ -301,7 +328,7 @@
     {% endif %}
     {% if supplier_soondue_bills %}
         <br/><br/>
-        <h1>{% trans "Supplier soon due bills" %}</h1>
+        <h2>{% trans "Supplier soon due bills" %}</h2>
         <table id="supplier_soondue_bills" class="table table-hover table-striped table-condensed table-bordered">
         <thead>
         <tr>

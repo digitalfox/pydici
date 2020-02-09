@@ -40,9 +40,11 @@ from billing.utils import get_billing_info, create_client_bill_from_timesheet, c
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
+from people.utils import get_scopes
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
 from staffing.views import MissionTimesheetReportPdf
 from crm.models import Subsidiary
+from crm.utils import get_subsidiary_from_request
 from core.utils import get_fiscal_years_from_qs, get_parameter, user_has_feature
 from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth
@@ -58,13 +60,27 @@ def bill_review(request):
     today = date.today()
     wait_warning = timedelta(15)  # wait in days used to warn that a bill is due soon
 
+    subsidiary = get_subsidiary_from_request(request)
+
     # Get bills overdue, due soon, litigious and recently paid
     overdue_bills = ClientBill.objects.filter(state="1_SENT", due_date__lte=today).select_related()
     soondue_bills = ClientBill.objects.filter(state="1_SENT", due_date__gt=today, due_date__lte=(today + wait_warning)).select_related()
-    recent_bills = ClientBill.objects.filter(state="2_PAID").order_by("-payment_date").select_related()[:20]
+    recent_bills = ClientBill.objects.filter(state="2_PAID").order_by("-payment_date").select_related()
     litigious_bills = ClientBill.objects.filter(state="3_LITIGIOUS").select_related()
     supplier_overdue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__lte=today).select_related()
     supplier_soondue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__gt=today).select_related()
+
+    # Filter bills on subsidiary if defined
+    if subsidiary:
+        overdue_bills = overdue_bills.filter(lead__subsidiary=subsidiary)
+        soondue_bills = soondue_bills.filter(lead__subsidiary=subsidiary)
+        recent_bills = recent_bills.filter(lead__subsidiary=subsidiary)
+        litigious_bills = litigious_bills.filter(lead__subsidiary=subsidiary)
+        supplier_overdue_bills = supplier_overdue_bills.filter(lead__subsidiary=subsidiary)
+        supplier_soondue_bills = supplier_soondue_bills.filter(lead__subsidiary=subsidiary)
+
+    # Limit recent bill to last 20 ones
+    recent_bills = recent_bills[: 20]
 
     # Compute totals
     soondue_bills_total = soondue_bills.aggregate(Sum("amount"))["amount__sum"]
@@ -77,6 +93,11 @@ def bill_review(request):
     # Get leads with done timesheet in past three month that don't have bill yet
     leads_without_bill = Lead.objects.filter(state="WON", mission__timesheet__working_date__gte=(date.today() - timedelta(90)))
     leads_without_bill = leads_without_bill.annotate(Count("clientbill")).filter(clientbill__count=0)
+    if subsidiary:
+        leads_without_bill = leads_without_bill.filter(subsidiary=subsidiary)
+
+    # Get scopes
+    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, None, target="subsidiary")
 
     return render(request, "billing/bill_review.html",
                   {"overdue_bills": overdue_bills,
@@ -94,6 +115,10 @@ def bill_review(request):
                    "supplier_overdue_bills": supplier_overdue_bills,
                    "billing_management": user_has_feature(request.user, "billing_management"),
                    "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
+                   "scope": subsidiary or _(u"Everybody"),
+                   "scope_current_filter": scope_current_filter,
+                   "scope_current_url_filter": scope_current_url_filter,
+                   "scopes": scopes,
                    "user": request.user})
 
 
