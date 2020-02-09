@@ -579,6 +579,7 @@ def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_
 def graph_billing_jqp(request):
     """Nice graph bar of incomming cash from bills
     @todo: per year, with start-end date"""
+    subsidiary = get_subsidiary_from_request(request)
     billsData = defaultdict(list)  # Bill graph Data
     tsData = {}  # Timesheet done work graph data
     staffingData = {}  # Staffing forecasted work graph data
@@ -590,6 +591,8 @@ def graph_billing_jqp(request):
 
     # Gathering billsData
     bills = ClientBill.objects.filter(creation_date__gt=start_date, state__in=("1_SENT", "2_PAID"))
+    if subsidiary:
+        bills = bills.filter(lead__subsidiary=subsidiary)
     if bills.count() == 0:
         return HttpResponse()
 
@@ -607,14 +610,20 @@ def graph_billing_jqp(request):
         financialConditions[fc.consultant_id][fc.mission_id] = fc.daily_rate
 
     # Collect data for done work according to timesheet data
-    for ts in Timesheet.objects.filter(working_date__lt=today, working_date__gt=start_date, mission__nature="PROD").select_related():
+    timesheets = Timesheet.objects.filter(working_date__lt=today, working_date__gt=start_date, mission__nature="PROD")
+    if subsidiary:
+        timesheets = timesheets.filter(mission__subsidiary=subsidiary)
+    for ts in timesheets.select_related():
         kdate = ts.working_date.replace(day=1)
         if kdate not in tsData:
             tsData[kdate] = 0  # Create key
         tsData[kdate] += ts.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
 
     # Collect data for forecasted work according to staffing data
-    for staffing in Staffing.objects.filter(staffing_date__gte=today.replace(day=1), staffing_date__lt=end_date, mission__nature="PROD").select_related():
+    staffings = Staffing.objects.filter(staffing_date__gte=today.replace(day=1), staffing_date__lt=end_date, mission__nature="PROD")
+    if subsidiary:
+        staffings = staffings.filter(mission__subsidiary=subsidiary)
+    for staffing in staffings.select_related():
         kdate = staffing.staffing_date.replace(day=1)
         if kdate not in staffingData:
             staffingData[kdate] = 0  # Create key
@@ -731,10 +740,13 @@ def graph_outstanding_billing(request):
     outstanding = []
     outstanding_overdue = []
     graph_data = []
+    subsidiary = get_subsidiary_from_request(request)
     while current < end:
         months.append(current.isoformat())
         next_month = nextMonth(current)
         bills = ClientBill.objects.filter(due_date__lte=next_month, state__in=("1_SENT", "2_PAID")).exclude(payment_date__lt=current)
+        if subsidiary:
+            bills = bills.filter(lead__subsidiary=subsidiary)
         overdue_bills = bills.exclude(payment_date__lte=F("due_date")).exclude(payment_date__gt=next_month).exclude(due_date__gt=today)
         outstanding.append(float(bills.aggregate(Sum("amount"))["amount__sum"] or 0))
         outstanding_overdue.append(float(overdue_bills.aggregate(Sum("amount"))["amount__sum"] or 0))
