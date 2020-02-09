@@ -17,7 +17,7 @@ from django.db.models import Count
 
 from people.models import Consultant
 from crm.models import Company
-from staffing.models import Holiday, Timesheet
+from staffing.models import Holiday
 from core.decorator import pydici_non_public
 from core.utils import working_days, previousMonth, nextMonth, COLORS
 from people.utils import compute_consultant_tasks

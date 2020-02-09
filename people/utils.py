@@ -56,17 +56,6 @@ def get_scopes(subsidiary, team, target="all"):
     return scopes, scope_current_filter, scope_current_url_filter
 
 
-def get_subsidiary_from_request(request):
-    """ Check if Retrieves a subsidiary by given id
-    :param id: subsidiary_id
-    :param request
-    :return: found subsidiary otherwise none
-    """
-
-    if "subsidiary_id" in request.GET:
-        return Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
-    return None
-
 def compute_consultant_tasks(consultant):
     """gather all tasks consultant should do
     @:return: list of (task_name, count, link, priority(1-3))"""

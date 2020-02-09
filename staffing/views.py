@@ -48,7 +48,9 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
     timesheet_report_data
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm
-from people.utils import get_scopes, get_subsidiary_from_request
+from people.utils import get_scopes
+from crm.utils import get_subsidiary_from_request
+
 
 TIMESTRING_FORMATTER = {
     'cycle': formats.number_format,
