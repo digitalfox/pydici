@@ -1545,33 +1545,36 @@ def lunch_tickets_pivotable(request):
     start_date = (date.today() - timedelta(30*12)).replace(day=1)
 
     no_tickets = LunchTicket.objects.filter(lunch_date__gte=start_date, no_ticket=True).annotate(month=TruncMonth("lunch_date")).order_by()
-    no_tickets = no_tickets.values("month", "consultant").annotate(Count("pk"))
-    no_tickets = {(i["consultant"], i["month"]): i["pk__count"] for i in no_tickets}  # Switch to dict with (consultant, month) as key
+    no_tickets = no_tickets.values("month", "consultant").annotate(Count("id"))
+    no_tickets = {(i["consultant"], i["month"]): i["id__count"] for i in no_tickets}  # Switch to dict with (consultant, month) as key
 
-    timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=date.today().replace(day=1), mission__nature="HOLIDAYS")
+    timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=nextMonth(date.today().replace(day=1)), mission__nature="HOLIDAYS")
     timesheets = timesheets.annotate(month=TruncMonth("working_date"))
     timesheets = timesheets.order_by().values("month", "consultant__name", "consultant_id", "consultant__company__name")
     days_off = timesheets.filter(charge__gte=0.5).annotate(Count("id")) # Each days beyond half is counted as 1
+    days_off = {(i["consultant_id"], i["month"]): i["id__count"] for i in days_off}  # Switch to dict with (consultant, month) as key
+
+    consultants = timesheets.values("consultant_id", "consultant__name", "consultant__company__name").distinct()
 
     holidays_days = Holiday.objects.filter(day__gte=start_date).values_list("day", flat=True)
     month = start_date
     w_days = {}
-    while month <= date.today():
-        w_days[month] = working_days(month, holidays=holidays_days)
-        month = nextMonth(month)
+    while month < date.today():
+        next_month = nextMonth(month)
+        w_days[next_month] = working_days(month, holidays=holidays_days)
+        for consultant in consultants:
+            item = {}
+            item[_("month")] = next_month.isoformat()
+            item[_("consultant")] = consultant["consultant__name"]
+            item[_("subsidiary")] = consultant["consultant__company__name"]
+            item[_("days off previous month")] = days_off.get((consultant["consultant_id"], month), 0)
+            item[_("days without tickets previous month")] = no_tickets.get((consultant["consultant_id"], month), 0)
+            item[_("deserved tickets")] = w_days[next_month] - item[_("days off previous month")]  - item[_("days without tickets previous month")]
+            data.append(item)
+        # Increment month for next loop
+        month = next_month
 
-    for day in days_off:
-        item = {}
-        next = nextMonth(day["month"])
-        item[_("month")] = next.isoformat()
-        item[_("consultant")] = day["consultant__name"]
-        item[_("subsidiary")] = day["consultant__company__name"]
-        item[_("days off previous month")] = day["id__count"]
-        item[_("days without tickets previous month")] = no_tickets.get((day["consultant_id"], day["month"]), 0)
-        item[_("deserved tickets")] = w_days[next] - item[_("days off previous month")]  - item[_("days without tickets previous month")]
-        data.append(item)
-
-    #LunchTicket.
+    # LunchTicket.
     return render(request, "staffing/lunch_tickets_pivotable.html", {"data": json.dumps(data),
                                                                 "derivedAttributes": "{}"})
 
