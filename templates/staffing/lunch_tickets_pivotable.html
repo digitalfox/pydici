@@ -1,0 +1,74 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block extrajs %}
+    {% include "core/_c3.html" %}
+    {% include "core/_pivotable_header.html" %}
+{% endblock %}
+
+{% block title %}{% trans "Lunch tickets pivot table" %}{% endblock %}
+
+{% block content %}
+        <h2>{% trans "Lunch tickets pivot table" %}</h2>
+
+        <div class="row">
+            <div id="type-selector" class="btn-group" role="group">
+                <button class="btn btn-default active" onclick="deserved_consultant_tickets();">{% trans "Deserved tickets per consultant" %}</button>
+                <button class="btn btn-default" onclick="deserved_subsidiary_tickets();">{% trans "Deserved tickets per subsidiary" %}</button>
+                <button class="btn btn-default" onclick="days_without_tickets();">{% trans "days without tickets" %}</button>
+                <button class="btn btn-default" onclick="holidays();">{% trans "Number of days with at least half holiday day" %}</button>
+
+            </div>
+        </div>
+
+        <div id="pivotable-output" style="margin-top: 10px;"></div>
+
+        {% with output as "pivotable-output" %}
+            {% include "core/_pivotable_body.html" %}
+        {% endwith %}
+
+        <script type="text/javascript">
+
+            // Active state switcher
+            $(document).ready(function() {
+                $('#type-selector button').on("click", function() {
+                    $(this).addClass('active').siblings().removeClass('active');
+                 });
+            });
+
+            // Share data for all pivot tables
+            var data = {{ data|safe }};
+
+            // Preset definition
+            function deserved_consultant_tickets() {
+                var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"];
+                var cols = ["{% trans 'month' %}"];;
+                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'deserved tickets' %}"]);
+            }
+
+            function deserved_subsidiary_tickets() {
+                var rows = ["{% trans 'subsidiary' %}"];
+                var cols = ["{% trans 'month' %}"];;
+                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'deserved tickets' %}"]);
+            }
+
+            function holidays() {
+                var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"];
+                var cols = ["{% trans 'month' %}"];;
+                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'days off previous month' %}"]);
+            }
+
+            function days_without_tickets() {
+                var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"];
+                var cols = ["{% trans 'month' %}"];;
+                drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'days without tickets previous month' %}"]);
+            }
+
+
+            // default
+            deserved_consultant_tickets();
+
+        </script>
+
+{% endblock %}

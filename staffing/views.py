@@ -21,6 +21,7 @@ from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
 from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q, Max
+from django.db.models.functions import TruncMonth
 from django.db import connections
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
@@ -1533,6 +1534,46 @@ def turnover_pivotable(request, year=None):
                                                     "derivedAttributes": "{}",
                                                     "years": years,
                                                     "selected_year": year})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def lunch_tickets_pivotable(request):
+    """report due tickets on last 12 months
+    We consider working days of current month and holidays and days without tickets of previous one"""
+    data = []
+    start_date = (date.today() - timedelta(30*12)).replace(day=1)
+
+    no_tickets = LunchTicket.objects.filter(lunch_date__gte=start_date, no_ticket=True).annotate(month=TruncMonth("lunch_date")).order_by()
+    no_tickets = no_tickets.values("month", "consultant").annotate(Count("pk"))
+    no_tickets = {(i["consultant"], i["month"]): i["pk__count"] for i in no_tickets}  # Switch to dict with (consultant, month) as key
+
+    timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=date.today().replace(day=1), mission__nature="HOLIDAYS")
+    timesheets = timesheets.annotate(month=TruncMonth("working_date"))
+    timesheets = timesheets.order_by().values("month", "consultant__name", "consultant_id", "consultant__company__name")
+    days_off = timesheets.filter(charge__gte=0.5).annotate(Count("id")) # Each days beyond half is counted as 1
+
+    holidays_days = Holiday.objects.filter(day__gte=start_date).values_list("day", flat=True)
+    month = start_date
+    w_days = {}
+    while month <= date.today():
+        w_days[month] = working_days(month, holidays=holidays_days)
+        month = nextMonth(month)
+
+    for day in days_off:
+        item = {}
+        next = nextMonth(day["month"])
+        item[_("month")] = next.isoformat()
+        item[_("consultant")] = day["consultant__name"]
+        item[_("subsidiary")] = day["consultant__company__name"]
+        item[_("days off previous month")] = day["id__count"]
+        item[_("days without tickets previous month")] = no_tickets.get((day["consultant_id"], day["month"]), 0)
+        item[_("deserved tickets")] = w_days[next] - item[_("days off previous month")]  - item[_("days without tickets previous month")]
+        data.append(item)
+
+    #LunchTicket.
+    return render(request, "staffing/lunch_tickets_pivotable.html", {"data": json.dumps(data),
+                                                                "derivedAttributes": "{}"})
 
 
 @pydici_non_public
