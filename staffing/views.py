@@ -1561,7 +1561,7 @@ def lunch_tickets_pivotable(request):
     w_days = {}
     while month < date.today():
         next_month = nextMonth(month)
-        w_days[next_month] = working_days(month, holidays=holidays_days)
+        w_days = working_days(next_month, holidays=holidays_days)
         for consultant in consultants:
             item = {}
             item[_("month")] = next_month.isoformat()
@@ -1569,7 +1569,7 @@ def lunch_tickets_pivotable(request):
             item[_("subsidiary")] = consultant["consultant__company__name"]
             item[_("days off previous month")] = days_off.get((consultant["consultant_id"], month), 0)
             item[_("days without tickets previous month")] = no_tickets.get((consultant["consultant_id"], month), 0)
-            item[_("deserved tickets")] = w_days[next_month] - item[_("days off previous month")]  - item[_("days without tickets previous month")]
+            item[_("deserved tickets")] = w_days - item[_("days off previous month")]  - item[_("days without tickets previous month")]
             data.append(item)
         # Increment month for next loop
         month = next_month
