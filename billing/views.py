@@ -35,7 +35,7 @@ if not logger.handlers:
 from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
 from PyPDF2 import PdfFileMerger, PdfFileReader
 
-from billing.utils import get_billing_info, create_client_bill_from_timesheet, create_client_bill_from_proportion, \
+from billing.utils import get_billing_info, update_client_bill_from_timesheet, update_client_bill_from_proportion, \
     bill_pdf_filename, get_client_billing_control_pivotable_data, generate_bill_pdf
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
@@ -333,13 +333,16 @@ def client_bill(request, bill_id=None):
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)
         else:
             # Still no bill, let's create it with its detail if at least mission or lead has been provided
-            mission = None
+            missions = []
             if request.GET.get("lead"):
                 lead = Lead.objects.get(id=request.GET.get("lead"))
-                mission = lead.mission_set.first()  # take the first
+                missions = lead.mission_set.all()  # take all missions
             if request.GET.get("mission"):
-                mission = Mission.objects.get(id=request.GET.get("mission"))
-            if mission:
+                missions = [Mission.objects.get(id=request.GET.get("mission"))]
+            if missions:
+                bill = ClientBill.objects.create(lead=missions[0].lead)
+                bill.save()
+            for mission in missions:
                 if mission.billing_mode == "TIME_SPENT":
                     if request.GET.get("start_date") and request.GET.get("end_date"):
                         start_date = date(int(request.GET.get("start_date")[0:4]), int(request.GET.get("start_date")[4:6]), 1)
@@ -347,11 +350,12 @@ def client_bill(request, bill_id=None):
                     else:
                         start_date = previousMonth(previousMonth(date.today()))
                         end_date = previousMonth(date.today())
-                    bill = create_client_bill_from_timesheet(mission, start_date, end_date)
+                    update_client_bill_from_timesheet(bill, mission, start_date, end_date)
                 else: # FIXED_PRICE mission
                     proportion = request.GET.get("proportion", 0.30)
-                    bill = create_client_bill_from_proportion(mission, proportion=proportion)
+                    bill = update_client_bill_from_proportion(bill, mission, proportion=proportion)
 
+            if bill:
                 form = ClientBillForm(instance=bill)
                 billDetailFormSet = BillDetailFormSet(instance=bill)
                 billExpenseFormSet = BillExpenseFormSet(instance=bill)

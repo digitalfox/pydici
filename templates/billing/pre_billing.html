@@ -66,6 +66,7 @@
      {% ifequal lead.mission_set.count 1 %}
         <h4></h4>
      {% else %}
+        <a class="btn btn-default" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
         <p><strong>{% trans "Total:" %} {{ lead_data.0|floatformat:-2}} €</strong></p>
      {% endifequal %}
      <p><strong>{% trans "Still to be billed" %}: {{ lead.still_to_be_billed|floatformat:-2 }} €</strong></p>

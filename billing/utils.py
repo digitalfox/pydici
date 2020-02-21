@@ -79,13 +79,11 @@ def compute_bill(bill):
             bill.amount_with_vat = bill.amount * (1 + bill.vat / 100)
 
 
-def create_client_bill_from_timesheet(mission, start_date, end_date):
-    """Create (and return) a bill and bill detail for given mission from timesheet of given interval"""
+def update_client_bill_from_timesheet(bill, mission, start_date, end_date):
+    """Populate bill detail for given mission from timesheet of given interval"""
     ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
     Consultant = apps.get_model("people", "Consultant")
-    bill = ClientBill(lead=mission.lead)
-    bill.save()
     rates = mission.consultant_rates()
     month = start_date
     while month < end_date:
@@ -100,12 +98,10 @@ def create_client_bill_from_timesheet(mission, start_date, end_date):
     return bill
 
 
-def create_client_bill_from_proportion(mission, proportion):
-    """Create (and return) a bill and bill detail for given mission from proportion of mission total price"""
+def update_client_bill_from_proportion(bill, mission, proportion):
+    """Populate bill with detail for given mission from proportion of mission total price"""
     ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
-    bill = ClientBill(lead=mission.lead)
-    bill.save()
     billDetail = BillDetail(bill=bill, mission=mission, quantity=proportion, unit_price=mission.price*1000)
     billDetail.save()
     bill.save()  # save again to update bill amount according to its details
