@@ -65,16 +65,6 @@
     {% endif %}
 </div>
 
-{% if bills %}
-    <h2>{% trans "Client Bills" %}</h2>
-    <ul>
-    {% for bill in bills %}
-        <li><a href="{% url 'billing:client_bill' bill.id %}?return_to={{ request.get_full_path }}">{{ bill }} - {{ bill.lead }} ({{ bill.get_state_display }})</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
-
-
 <div class="row">
     {% if leads %}
         <h2 class="col-lg-12">{% trans "Leads" %}</h2>
@@ -96,15 +86,14 @@
         </ul>
     {% endif %}
 </div>
-<div class="row">
-    {% if bills %}
-        <h2 class="col-lg-12">{% trans "Client Bills" %}</h2>
-        <ul>
-        {% for bill in bills %}
-            <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'admin:billing_clientbill_change' bill.id %}?return_to={{ request.get_full_path }}">{{ bill }} - {{ bill.lead }} ({{ bill.get_state_display }})</a></li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-</div>
+
+{% if bills %}
+    <h2>{% trans "Client Bills" %}</h2>
+    <ul>
+    {% for bill in bills %}
+        <li><a href="{% url 'billing:client_bill' bill.id %}?return_to={{ request.get_full_path }}">{{ bill }} - {{ bill.lead }} ({{ bill.get_state_display }})</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
 
 {% endblock %}
