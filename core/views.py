@@ -88,7 +88,8 @@ def search(request):
         # Companies
         companies = Company.objects.all()
         for word in words:
-            companies = companies.filter(name__icontains=word)
+            companies = companies.filter(Q(name__icontains=word) |
+                                         Q(code__iexact=word))
         companies = companies.distinct()
 
         # Contacts
@@ -144,12 +145,6 @@ def search(request):
         if len(bills) >= max_record:
             more_record = True
 
-        # Add bills from lead
-        if leads:
-            bills = set(bills)
-            for lead in leads.prefetch_related("clientbill_set"):
-                for bill in lead.clientbill_set.all():
-                    bills.add(bill)
         # Sort
         bills = list(bills)
         bills.sort(key=lambda x: x.creation_date)
