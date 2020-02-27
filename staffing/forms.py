@@ -6,7 +6,7 @@ Staffing form setup
 """
 import types
 
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 from decimal import Decimal
 
 from django import forms
@@ -73,20 +73,37 @@ class LeadMissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
 
 class StaffingDateChoicesField(ChoiceField):
     widget = Select2Widget(attrs={'data-placeholder':_("Select a month...")})
+
     def __init__(self, *args, **kwargs):
         minDate = kwargs.pop("minDate", None)
+        maxDate = kwargs.pop("maxDate", None)
         if minDate:
             missionDuration = (date.today() - minDate).days / 30
             numberOfMonth = 24 + missionDuration
         else:
             numberOfMonth = 24
-        kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=numberOfMonth, minDate=minDate)]
+        kwargs["choices"] = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=numberOfMonth, minDate=minDate, maxDate=maxDate)]
         kwargs["choices"].insert(0, ("", ""))  # Add the empty choice for extra empty choices
         super(StaffingDateChoicesField, self).__init__(*args, **kwargs)
 
     def has_changed(self, initial, data):
         initial = str(initial) if initial is not None else ''
         return initial != data
+
+    def to_python(self, value):
+        if value in self.empty_values:
+            return None
+        if isinstance(value, datetime):
+            return value.date()
+        if isinstance(value, date):
+            return value
+        try:
+            return self.strptime(value, "%Y-%m-%d")
+        except (ValueError, TypeError) as e:
+            raise ValidationError(_("Invalid date format"), code='invalid')
+
+    def strptime(self, value, format):
+        return datetime.strptime(value, format).date()
 
 
 class ConsultantStaffingInlineFormset(BaseInlineFormSet):
@@ -120,16 +137,34 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
 class MissionStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
     def add_fields(self, form, index):
-         """that adds the field in, overwriting the previous default field"""
-         super(MissionStaffingInlineFormset, self).add_fields(form, index)
-         minDate = self.instance.staffing_start_date()
-         if minDate:
-             minDate = min(minDate, date.today())
-         else:
-             minDate = None
-         form.fields["consultant"] = ModelChoiceField(widget = ConsultantChoices(attrs={'data-placeholder':_("Select a consultant to add forecast...")}), queryset=Consultant.objects)
-         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=minDate)
-         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
+        """that adds the field in, overwriting the previous default field"""
+        super(MissionStaffingInlineFormset, self).add_fields(form, index)
+        if self.instance.start_date:
+           minDate = self.instance.start_date.replace(day=1)
+        else:
+           minDate = self.instance.staffing_start_date()
+           if minDate:
+               minDate = min(minDate, date.today())
+           else:
+               minDate = None
+        if self.instance.end_date:
+            maxDate = self.instance.end_date.replace(day=1)
+        else:
+            maxDate = None
+        form.fields["consultant"] = ModelChoiceField(widget = ConsultantChoices(attrs={'data-placeholder':_("Select a consultant to add forecast...")}), queryset=Consultant.objects)
+        form.fields["staffing_date"] = StaffingDateChoicesField(minDate=minDate, maxDate=maxDate)
+        form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
+
+
+class StaffingForm(forms.ModelForm):
+    """Just a single staffing. Used to add sanity checks"""
+    def clean(self):
+        mission = self.cleaned_data.get("mission")
+        if mission and (mission.start_date or mission.end_date):
+            if self.cleaned_data["staffing_date"] < mission.start_date.replace(day=1):
+                raise ValidationError("Staffing must be after %s" % mission.start_date)
+            if self.cleaned_data["staffing_date"] > mission.end_date:
+                raise ValidationError("Staffing must be before %s" % mission.end_date)
 
 
 class MassStaffingForm(forms.Form):
@@ -222,9 +257,10 @@ class MissionForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(MissionForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column(Field("description", placeholder=_("Name of this mission. Leave blank when leads has only one mission")),
-                                               AppendedText("price", "k€"), "billing_mode", "nature", "probability", "probability_auto", "active", css_class="col-md-6"),
-                                        Column(Field("deal_id", placeholder=_("Leave blank to auto generate")),
-                                               "analytic_code", "subsidiary", "responsible", "contacts",
+                                               AppendedText("price", "k€"), "billing_mode", "subsidiary", "responsible", "probability", "probability_auto", "active",
+                                               css_class="col-md-6"),
+                                        Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "analytic_code", "nature",
+                                               Field("start_date", css_class="datepicker"), Field("end_date", css_class="datepicker"), "contacts",
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
@@ -252,6 +288,18 @@ class MissionForm(PydiciCrispyModelForm):
 
         # No error, we return data as is
         return self.cleaned_data["price"]
+
+    def _clean_start_end_date(self, field):
+        if self.cleaned_data.get("start_date") and self.cleaned_data.get("end_date"):
+            if self.cleaned_data["start_date"] > self.cleaned_data["end_date"]:
+                raise ValidationError(_("start date must be prior to en date"))
+        return self.cleaned_data[field]
+
+    def clean_start_date(self):
+        return self._clean_start_end_date("start_date")
+
+    def clean_end_date(self):
+        return self._clean_start_end_date("end_date")
 
     class Meta:
         model = Mission

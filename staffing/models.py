@@ -63,6 +63,8 @@ class Mission(models.Model):
     archived_date = models.DateTimeField(_("Archived date"), blank=True, null=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
     analytic_code = models.ForeignKey(AnalyticCode, verbose_name=_("analytic code"), blank=True, null=True, on_delete=models.SET_NULL)
+    start_date = models.DateField(_("Start date"), blank=True, null=True)
+    end_date = models.DateField(_("End date"), blank=True, null=True)
 
     def __str__(self):
         if self.description and not self.lead:

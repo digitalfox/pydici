@@ -40,7 +40,7 @@ from people.models import Consultant, Subsidiary
 from leads.models import Lead
 from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
-    TimesheetForm, MassStaffingForm, MissionContactsForm
+    TimesheetForm, MassStaffingForm, MissionContactsForm, StaffingForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
     to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, \
     get_fiscal_years_from_qs, get_fiscal_year
@@ -157,6 +157,7 @@ def mission_staffing(request, mission_id, form_mode="manual"):
 
     StaffingFormSet = inlineformset_factory(Mission, Staffing,
                                             formset=MissionStaffingInlineFormset,
+                                            form=StaffingForm,
                                             fields="__all__")
     mission = Mission.objects.get(id=mission_id)
     if request.method == "POST":
@@ -206,7 +207,8 @@ def consultant_staffing(request, consultant_id):
             return HttpResponseRedirect(reverse("core:forbiden"))
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
-                                          formset=ConsultantStaffingInlineFormset, fields="__all__")
+                                            form=StaffingForm,
+                                            formset=ConsultantStaffingInlineFormset, fields="__all__")
 
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=consultant)
