@@ -48,11 +48,15 @@ class Mission(models.Model):
     BILLING_MODES = (
             (('FIXED_PRICE'), ugettext("Fixed price")),
             (('TIME_SPENT'), ugettext("Time spent")))
+    MANAGEMENT_MODES = (
+        (('LIMITED'), ugettext("Limited")),
+        (('ELASTIC'), ugettext("Elastic")))
     lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"), on_delete=models.CASCADE)
     deal_id = models.CharField(_("Mission id"), max_length=100, blank=True)
     description = models.CharField(_("Description"), max_length=30, blank=True, null=True)
     nature = models.CharField(_("Type"), max_length=30, choices=MISSION_NATURE, default="PROD")
     billing_mode = models.CharField(_("Billing mode"), max_length=30, choices=BILLING_MODES, null=True)
+    management_mode = models.CharField(_("Management mode"), max_length=30, choices=MANAGEMENT_MODES, null=True, blank=True)
     active = models.BooleanField(_("Active"), default=True)
     probability = models.IntegerField(_("Proba"), default=50)
     probability_auto = models.BooleanField(_("Automatic probability"), default=True)
@@ -254,6 +258,9 @@ class Mission(models.Model):
                 return float(self.price) - done_amount - forecasted_amount
         else:
             return 0
+
+    def target_margin(self):
+        return self.margin(mode="target")
 
     def objectiveMargin(self, startDate=None, endDate=None):
         """Compute margin over rate objective

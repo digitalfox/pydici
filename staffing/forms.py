@@ -257,7 +257,7 @@ class MissionForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(MissionForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column(Field("description", placeholder=_("Name of this mission. Leave blank when leads has only one mission")),
-                                               AppendedText("price", "k€"), "billing_mode", "subsidiary", "responsible", "probability", "probability_auto", "active",
+                                               AppendedText("price", "k€"), "billing_mode", "management_mode", "subsidiary", "responsible", "probability", "probability_auto", "active",
                                                css_class="col-md-6"),
                                         Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "analytic_code", "nature",
                                                Field("start_date", css_class="datepicker"), Field("end_date", css_class="datepicker"), "contacts",
@@ -300,6 +300,10 @@ class MissionForm(PydiciCrispyModelForm):
 
     def clean_end_date(self):
         return self._clean_start_end_date("end_date")
+
+    def clean(self):
+        if self.cleaned_data["management_mode"] == "ELASTIC" and self.cleaned_data["billing_mode"] == "FIXED_PRICE":
+            raise ValidationError(_("Fixed price mission cannot be elastic by definition"))
 
     class Meta:
         model = Mission
