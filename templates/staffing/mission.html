@@ -107,7 +107,13 @@
                             </tr>
                         {% endif %}
                         <tr>
+                            <th>{% trans "Sold" %}</th><td> {{ mission.price }} k€</td>
+                        </tr>
+                        <tr>
                             <th>{% trans "Billing mode" %}</th><td><div  id="billing_mode-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Management mode" %}</th><td>{% if mission.management_mode %}{{ mission.get_management_mode_display }}{% else %}{% trans "None" %}{% endif %}</td>
                         </tr>
                         <tr>
                             <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.probability }} %</div></td>
