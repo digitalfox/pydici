@@ -690,6 +690,7 @@ def deactivate_mission(request, mission_id):
 def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
     """Consultant timesheet"""
     management_mode_error = None
+    price_updated_missions = []
     # We use the first day to represent month
     if year and month:
         month = date(int(year), int(month), 1)
@@ -794,6 +795,13 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         # flush mission cache
         cache.delete("Mission.forecasted_work%s" % mission.id)
         cache.delete("Mission.done_work%s" % mission.id)
+        if mission.management_mode == "ELASTIC":
+            # Ajust mission price according to done work if needed
+            m_days, m_amount = mission.done_work_k()
+            if m_amount > mission.price:
+                mission.price = m_amount
+                mission.save()
+                price_updated_missions.append(mission)
 
     return render(request, "staffing/consultant_timesheet.html",
                   {"consultant": consultant,
@@ -807,6 +815,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                    "working_days": wDays,
                    "warning": warning,
                    "management_mode_error": management_mode_error,
+                   "price_updated_missions": price_updated_missions,
                    "next_date": next_date,
                    "previous_date": previous_date,
                    "previous_date_enabled": previous_date_enabled,
