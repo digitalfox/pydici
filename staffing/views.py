@@ -22,7 +22,7 @@ from django.utils.encoding import force_text
 from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q, Max
 from django.db.models.functions import TruncMonth
-from django.db import connections
+from django.db import connections, transaction
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
@@ -47,7 +47,7 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
-    timesheet_report_data
+    timesheet_report_data, check_missions_limited_mode
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm
 from people.utils import get_scopes
 from crm.utils import get_subsidiary_from_request
@@ -689,7 +689,7 @@ def deactivate_mission(request, mission_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
     """Consultant timesheet"""
-
+    management_mode_error = None
     # We use the first day to represent month
     if year and month:
         month = date(int(year), int(month), 1)
@@ -761,11 +761,19 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
         if form.is_valid():  # All validation rules pass
-            # Process the data in form.cleaned_data
-            saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
-            # Recreate a new form for next update and compute again totals
-            timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
-            form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
+            with transaction.atomic():
+                sid = transaction.savepoint()
+                # Process the data in form.cleaned_data
+                saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
+                offending_missions = check_missions_limited_mode(missions)
+                if offending_missions:  # Rollback timesheet update
+                    transaction.savepoint_rollback(sid)
+                    management_mode_error =  _("Timesheet exceeds mission price and management is set as 'limited' (%s)") % ", ".join([str(m) for m in offending_missions])
+                else: # No violation, we can commit timesheet
+                    transaction.savepoint_commit(sid)
+                # Recreate a new form for next update and compute again totals
+                timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
+                form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                                  forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData)
     else:
         # An unbound form
@@ -782,6 +790,11 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
 
     previous_date_enabled = check_user_timesheet_access(request.user, consultant, previous_date.replace(day=1)) != TIMESHEET_ACCESS_NOT_ALLOWED
 
+    for mission in missions:
+        # flush mission cache
+        cache.delete("Mission.forecasted_work%s" % mission.id)
+        cache.delete("Mission.done_work%s" % mission.id)
+
     return render(request, "staffing/consultant_timesheet.html",
                   {"consultant": consultant,
                    "form": form,
@@ -793,6 +806,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                    "working_days_balance": wDaysBalance,
                    "working_days": wDays,
                    "warning": warning,
+                   "management_mode_error": management_mode_error,
                    "next_date": next_date,
                    "previous_date": previous_date,
                    "previous_date_enabled": previous_date_enabled,

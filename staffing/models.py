@@ -238,7 +238,10 @@ class Mission(models.Model):
             if consultant_id in rates:
                 amount += charge * rates[consultant_id]
                 amount -= current_month_done.get(consultant_id, 0) * rates[consultant_id]
-
+        if days < 0:
+            # Negative forecast, means no forecast.
+            days = 0
+            amount = 0
         return (days, amount)
 
     def forecasted_work_k(self):
