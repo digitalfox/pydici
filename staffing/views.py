@@ -343,13 +343,10 @@ def pdc_review(request, year=None, month=None):
     available_month = {}  # available working days per month
     months = []  # list of month to be displayed
 
-    #TODO: simplify this !! Use nextMonth
+    month = start_date
     for i in range(n_month):
-        if start_date.month + i <= 12:
-            months.append(start_date.replace(month=start_date.month + i))
-        else:
-            # We wrap around a year (max one year)
-            months.append(start_date.replace(month=start_date.month + i - 12, year=start_date.year + 1))
+        months.append(month)
+        month = nextMonth(month)
 
     previous_slice_date = start_date - timedelta(days=(28 * n_month))
     next_slice_date = start_date + timedelta(days=(31 * n_month))
