@@ -1417,29 +1417,43 @@ def mission_consultant_rate(request):
 @pydici_non_public
 @pydici_feature("staffing")
 def mission_update(request):
-    """Update mission attribute (probability and billing_mode).
+    """Update mission attribute (probability, billing_mode and management mode).
     This is intended to be used through a jquery jeditable call"""
     if request.method == "GET":
         # Return authorized values
-        if request.GET["id"].startswith("billing_mode"):
-            values = Mission.BILLING_MODES
-        elif request.GET["id"].startswith("probability"):
-            values = Mission.PROBABILITY
+        attribute, mission_id = request.GET["id"].split("-")
+        mission = Mission.objects.get(id=mission_id)  # If no mission found, it fails, that's what we want
+        if attribute == "billing_mode":
+            values = dict(Mission.BILLING_MODES)
+            if mission.management_mode == "ELASTIC":
+                del values["FIXED_PRICE"]
+        elif attribute == "management_mode":
+            values = dict(Mission.MANAGEMENT_MODES)
+            if mission.billing_mode == "FIXED_PRICE":
+                del values["ELASTIC"]
+        elif attribute == "probability":
+            values = dict(Mission.PROBABILITY)
         else:
             values = {}
-        return HttpResponse(json.dumps(dict(values)))
+        return HttpResponse(json.dumps(values))
     elif request.method == "POST":
         # Update mission attributes
         attribute, mission_id = request.POST["id"].split("-")
         value = request.POST["value"]
         mission = Mission.objects.get(id=mission_id)  # If no mission found, it fails, that's what we want
         billingModes = dict(Mission.BILLING_MODES)
+        managementModes = dict(Mission.MANAGEMENT_MODES)
         probability = dict(Mission.PROBABILITY)
         if attribute == "billing_mode":
             if value in billingModes:
                 mission.billing_mode = value
                 mission.save()
                 return HttpResponse(billingModes[value])
+        elif attribute == "management_mode":
+            if value in managementModes:
+                mission.management_mode = value
+                mission.save()
+                return HttpResponse(managementModes[value])
         elif attribute == "probability":
             value = int(value)
             if value in probability:

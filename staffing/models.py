@@ -8,7 +8,7 @@ Database access layer for pydici staffing module
 from django.db import models, connections
 from django.db.models import Sum, Min, F
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
+from django.utils.translation import ugettext, pgettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.contrib.admin.models import ContentType, LogEntry
@@ -46,17 +46,18 @@ class Mission(models.Model):
             (75, ugettext("High (75 %)")),
             (100, ugettext("Certain (100 %)")))
     BILLING_MODES = (
-            (('FIXED_PRICE'), ugettext("Fixed price")),
-            (('TIME_SPENT'), ugettext("Time spent")))
+            ('FIXED_PRICE', ugettext("Fixed price")),
+            ('TIME_SPENT', ugettext("Time spent")))
     MANAGEMENT_MODES = (
-        (('LIMITED'), ugettext("Limited")),
-        (('ELASTIC'), ugettext("Elastic")))
+        ('LIMITED', ugettext("Limited")),
+        ('ELASTIC', ugettext("Elastic")),
+        ('NONE', pgettext("masculine", "None")))
     lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"), on_delete=models.CASCADE)
     deal_id = models.CharField(_("Mission id"), max_length=100, blank=True)
     description = models.CharField(_("Description"), max_length=30, blank=True, null=True)
     nature = models.CharField(_("Type"), max_length=30, choices=MISSION_NATURE, default="PROD")
     billing_mode = models.CharField(_("Billing mode"), max_length=30, choices=BILLING_MODES, null=True)
-    management_mode = models.CharField(_("Management mode"), max_length=30, choices=MANAGEMENT_MODES, null=True, blank=True)
+    management_mode = models.CharField(_("Management mode"), max_length=30, choices=MANAGEMENT_MODES, default="NONE")
     active = models.BooleanField(_("Active"), default=True)
     probability = models.IntegerField(_("Proba"), default=50)
     probability_auto = models.BooleanField(_("Automatic probability"), default=True)
