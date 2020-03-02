@@ -796,12 +796,16 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         cache.delete("Mission.forecasted_work%s" % mission.id)
         cache.delete("Mission.done_work%s" % mission.id)
         if mission.management_mode == "ELASTIC":
-            # Ajust mission price according to done work if needed
+            # Ajust mission and lead price according to done work if needed
             m_days, m_amount = mission.done_work_k()
             if m_amount > mission.price:
                 mission.price = m_amount
                 mission.save()
                 price_updated_missions.append(mission)
+                all_mission_price = mission.lead.mission_set.aggregate(Sum("price"))["price__sum"]
+                if all_mission_price > mission.lead.sales:
+                    mission.lead.sales = all_mission_price
+                    mission.lead.save()
 
     return render(request, "staffing/consultant_timesheet.html",
                   {"consultant": consultant,
