@@ -29,7 +29,7 @@ from staffing.models import Mission, FinancialCondition, Staffing, Timesheet
 from billing.models import ClientBill
 from expense.models import Expense
 from people.views import consultant_home
-from core.utils import nextMonth, previousMonth
+from core.utils import nextMonth, previousMonth, get_fiscal_year
 
 
 
@@ -199,7 +199,7 @@ def financial_control(request, start_date=None, end_date=None):
               "Subsidiary", "ClientCompany", "ClientCompanyCode", "ClientOrganization",
               "Lead", "DealId", "LeadPrice", "Billed", "LeadResponsible", "LeadResponsibleTrigramme", "LeadTeam",
               "Mission", "MissionId", "AnalyticCode", "AnalyticDescription", "BillingMode", "MissionPrice",
-              "TotalQuantityInDays", "TotalQuantityInEuros",
+              "TotalQuantityInDays", "TotalQuantityInEuros", "LastTimesheet",
               "ConsultantSubsidiary", "ConsultantTeam", "Trigramme", "Consultant", "Subcontractor", "CrossBilling",
               "ObjectiveRate", "DailyRate", "BoughtDailyRate", "BudgetType", "QuantityInDays", "QuantityInEuros",
               "StartDate", "EndDate"]
@@ -220,7 +220,7 @@ def financial_control(request, start_date=None, end_date=None):
     def createMissionRow(mission, start_date, end_date):
         """Inner function to create mission row"""
         missionRow = []
-        missionRow.append(start_date.year)
+        missionRow.append(get_fiscal_year(start_date))
         missionRow.append(end_date.isoformat())
         missionRow.append("timesheet")
         missionRow.append(mission.nature)
@@ -249,6 +249,8 @@ def financial_control(request, start_date=None, end_date=None):
         missionRow.append(mission.billing_mode or "")
         missionRow.append(mission.price or 0)
         missionRow.extend(mission.done_work())
+        last_timesheet = Timesheet.objects.filter(mission=mission).aggregate(Max("working_date"))["working_date__max"]
+        missionRow.append(last_timesheet.isoformat() if last_timesheet else "")
         return missionRow
 
     for mission in missions:
@@ -298,7 +300,7 @@ def financial_control(request, start_date=None, end_date=None):
 
     for expense in Expense.objects.filter(expense_date__gte=start_date, expense_date__lt=nextMonth(end_date), chargeable=False).select_related():
         row = []
-        row.append(start_date.year)
+        row.append(get_fiscal_year(start_date))
         row.append(end_date.isoformat())
         row.append("expense")
         row.append(expense.category)
