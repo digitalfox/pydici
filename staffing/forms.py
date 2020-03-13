@@ -160,9 +160,10 @@ class StaffingForm(forms.ModelForm):
     """Just a single staffing. Used to add sanity checks"""
     def clean(self):
         mission = self.cleaned_data.get("mission")
-        if mission and (mission.start_date or mission.end_date):
+        if mission and mission.start_date:
             if self.cleaned_data["staffing_date"] < mission.start_date.replace(day=1):
                 raise ValidationError(_("Staffing must be after %s") % mission.start_date)
+        if mission and mission.end_date:
             if self.cleaned_data["staffing_date"] > mission.end_date:
                 raise ValidationError(_("Staffing must be before %s") % mission.end_date)
 
