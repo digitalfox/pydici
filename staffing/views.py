@@ -788,21 +788,24 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
 
     previous_date_enabled = check_user_timesheet_access(request.user, consultant, previous_date.replace(day=1)) != TIMESHEET_ACCESS_NOT_ALLOWED
 
-    for mission in missions:
-        # flush mission cache
-        cache.delete("Mission.forecasted_work%s" % mission.id)
-        cache.delete("Mission.done_work%s" % mission.id)
-        if mission.management_mode == "ELASTIC":
-            # Ajust mission and lead price according to done work if needed
-            m_days, m_amount = mission.done_work_k()
-            if m_amount > mission.price:
-                mission.price = m_amount
-                mission.save()
-                price_updated_missions.append(mission)
-                all_mission_price = mission.lead.mission_set.aggregate(Sum("price"))["price__sum"]
-                if all_mission_price > mission.lead.sales:
-                    mission.lead.sales = all_mission_price
-                    mission.lead.save()
+    if request.method == "POST":
+        for mission in missions:
+            # flush mission cache
+            cache.delete("Mission.forecasted_work%s" % mission.id)
+            cache.delete("Mission.done_work%s" % mission.id)
+            if mission.management_mode == "ELASTIC":
+                # Ajust mission and lead price according to done work if needed
+                m_days, m_amount = mission.done_work_k()
+                if not mission.price:
+                    mission.price = 0  # default to 0 if not defined in elastic mode
+                if m_amount > mission.price:
+                    mission.price = m_amount
+                    mission.save()
+                    price_updated_missions.append(mission)
+                    all_mission_price = mission.lead.mission_set.aggregate(Sum("price"))["price__sum"]
+                    if all_mission_price > mission.lead.sales:
+                        mission.lead.sales = all_mission_price
+                        mission.lead.save()
 
     return render(request, "staffing/consultant_timesheet.html",
                   {"consultant": consultant,
