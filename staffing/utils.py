@@ -310,8 +310,9 @@ def create_next_year_std_missions(current, target, dryrun=True, start_date=None,
     """Create default set of mission for next year based on current holidays and nonprod missions
     @current: current suffix
     @target: target suffix
-    @dryrun: save new mission or just print its"""
-    #TODO: handle mission date boundaries
+    @dryrun: save new mission or just print its
+    @start_date: mission start boundary
+    @end_date: mission end boundary"""
     for m in Mission.objects.exclude(nature="PROD").filter(active=True):
         if not m.description or not current in m.description:
             continue
