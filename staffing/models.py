@@ -8,7 +8,7 @@ Database access layer for pydici staffing module
 from django.db import models, connections
 from django.db.models import Sum, Min, F
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
+from django.utils.translation import ugettext, pgettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.contrib.admin.models import ContentType, LogEntry
@@ -46,13 +46,18 @@ class Mission(models.Model):
             (75, ugettext("High (75 %)")),
             (100, ugettext("Certain (100 %)")))
     BILLING_MODES = (
-            (('FIXED_PRICE'), ugettext("Fixed price")),
-            (('TIME_SPENT'), ugettext("Time spent")))
+            ('FIXED_PRICE', ugettext("Fixed price")),
+            ('TIME_SPENT', ugettext("Time spent")))
+    MANAGEMENT_MODES = (
+        ('LIMITED', ugettext("Limited")),
+        ('ELASTIC', ugettext("Elastic")),
+        ('NONE', pgettext("masculine", "None")))
     lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"), on_delete=models.CASCADE)
     deal_id = models.CharField(_("Mission id"), max_length=100, blank=True)
     description = models.CharField(_("Description"), max_length=30, blank=True, null=True)
     nature = models.CharField(_("Type"), max_length=30, choices=MISSION_NATURE, default="PROD")
     billing_mode = models.CharField(_("Billing mode"), max_length=30, choices=BILLING_MODES, null=True)
+    management_mode = models.CharField(_("Management mode"), max_length=30, choices=MANAGEMENT_MODES, default="NONE")
     active = models.BooleanField(_("Active"), default=True)
     probability = models.IntegerField(_("Proba"), default=50)
     probability_auto = models.BooleanField(_("Automatic probability"), default=True)
@@ -63,6 +68,8 @@ class Mission(models.Model):
     archived_date = models.DateTimeField(_("Archived date"), blank=True, null=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
     analytic_code = models.ForeignKey(AnalyticCode, verbose_name=_("analytic code"), blank=True, null=True, on_delete=models.SET_NULL)
+    start_date = models.DateField(_("Start date"), blank=True, null=True)
+    end_date = models.DateField(_("End date"), blank=True, null=True)
 
     def __str__(self):
         if self.description and not self.lead:
@@ -232,7 +239,10 @@ class Mission(models.Model):
             if consultant_id in rates:
                 amount += charge * rates[consultant_id]
                 amount -= current_month_done.get(consultant_id, 0) * rates[consultant_id]
-
+        if days < 0:
+            # Negative forecast, means no forecast.
+            days = 0
+            amount = 0
         return (days, amount)
 
     def forecasted_work_k(self):
@@ -252,6 +262,9 @@ class Mission(models.Model):
                 return float(self.price) - done_amount - forecasted_amount
         else:
             return 0
+
+    def target_margin(self):
+        return self.margin(mode="target")
 
     def objectiveMargin(self, startDate=None, endDate=None):
         """Compute margin over rate objective

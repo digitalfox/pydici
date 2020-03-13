@@ -22,7 +22,7 @@ from django.utils.encoding import force_text
 from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q, Max
 from django.db.models.functions import TruncMonth
-from django.db import connections
+from django.db import connections, transaction
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
@@ -40,14 +40,14 @@ from people.models import Consultant, Subsidiary
 from leads.models import Lead
 from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
-    TimesheetForm, MassStaffingForm, MissionContactsForm
+    TimesheetForm, MassStaffingForm, MissionContactsForm, StaffingForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
     to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, \
     get_fiscal_years_from_qs, get_fiscal_year
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
-    timesheet_report_data
+    timesheet_report_data, check_missions_limited_mode
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm
 from people.utils import get_scopes
 from crm.utils import get_subsidiary_from_request
@@ -157,6 +157,7 @@ def mission_staffing(request, mission_id, form_mode="manual"):
 
     StaffingFormSet = inlineformset_factory(Mission, Staffing,
                                             formset=MissionStaffingInlineFormset,
+                                            form=StaffingForm,
                                             fields="__all__")
     mission = Mission.objects.get(id=mission_id)
     if request.method == "POST":
@@ -206,7 +207,8 @@ def consultant_staffing(request, consultant_id):
             return HttpResponseRedirect(reverse("core:forbiden"))
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
-                                          formset=ConsultantStaffingInlineFormset, fields="__all__")
+                                            form=StaffingForm,
+                                            formset=ConsultantStaffingInlineFormset, fields="__all__")
 
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=consultant)
@@ -341,13 +343,10 @@ def pdc_review(request, year=None, month=None):
     available_month = {}  # available working days per month
     months = []  # list of month to be displayed
 
-    #TODO: simplify this !! Use nextMonth
+    month = start_date
     for i in range(n_month):
-        if start_date.month + i <= 12:
-            months.append(start_date.replace(month=start_date.month + i))
-        else:
-            # We wrap around a year (max one year)
-            months.append(start_date.replace(month=start_date.month + i - 12, year=start_date.year + 1))
+        months.append(month)
+        month = nextMonth(month)
 
     previous_slice_date = start_date - timedelta(days=(28 * n_month))
     next_slice_date = start_date + timedelta(days=(31 * n_month))
@@ -687,7 +686,8 @@ def deactivate_mission(request, mission_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
     """Consultant timesheet"""
-
+    management_mode_error = None
+    price_updated_missions = []
     # We use the first day to represent month
     if year and month:
         month = date(int(year), int(month), 1)
@@ -759,11 +759,19 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
         if form.is_valid():  # All validation rules pass
-            # Process the data in form.cleaned_data
-            saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
-            # Recreate a new form for next update and compute again totals
-            timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
-            form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
+            with transaction.atomic():
+                sid = transaction.savepoint()
+                # Process the data in form.cleaned_data
+                saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
+                offending_missions = check_missions_limited_mode(missions)
+                if offending_missions:  # Rollback timesheet update
+                    transaction.savepoint_rollback(sid)
+                    management_mode_error =  _("Timesheet exceeds mission price and management is set as 'limited' (%s)") % ", ".join([str(m) for m in offending_missions])
+                else: # No violation, we can commit timesheet
+                    transaction.savepoint_commit(sid)
+                # Recreate a new form for next update and compute again totals
+                timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
+                form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                                  forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData)
     else:
         # An unbound form
@@ -780,6 +788,22 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
 
     previous_date_enabled = check_user_timesheet_access(request.user, consultant, previous_date.replace(day=1)) != TIMESHEET_ACCESS_NOT_ALLOWED
 
+    for mission in missions:
+        # flush mission cache
+        cache.delete("Mission.forecasted_work%s" % mission.id)
+        cache.delete("Mission.done_work%s" % mission.id)
+        if mission.management_mode == "ELASTIC":
+            # Ajust mission and lead price according to done work if needed
+            m_days, m_amount = mission.done_work_k()
+            if m_amount > mission.price:
+                mission.price = m_amount
+                mission.save()
+                price_updated_missions.append(mission)
+                all_mission_price = mission.lead.mission_set.aggregate(Sum("price"))["price__sum"]
+                if all_mission_price > mission.lead.sales:
+                    mission.lead.sales = all_mission_price
+                    mission.lead.save()
+
     return render(request, "staffing/consultant_timesheet.html",
                   {"consultant": consultant,
                    "form": form,
@@ -791,6 +815,8 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                    "working_days_balance": wDaysBalance,
                    "working_days": wDays,
                    "warning": warning,
+                   "management_mode_error": management_mode_error,
+                   "price_updated_missions": price_updated_missions,
                    "next_date": next_date,
                    "previous_date": previous_date,
                    "previous_date_enabled": previous_date_enabled,
@@ -1392,29 +1418,43 @@ def mission_consultant_rate(request):
 @pydici_non_public
 @pydici_feature("staffing")
 def mission_update(request):
-    """Update mission attribute (probability and billing_mode).
+    """Update mission attribute (probability, billing_mode and management mode).
     This is intended to be used through a jquery jeditable call"""
     if request.method == "GET":
         # Return authorized values
-        if request.GET["id"].startswith("billing_mode"):
-            values = Mission.BILLING_MODES
-        elif request.GET["id"].startswith("probability"):
-            values = Mission.PROBABILITY
+        attribute, mission_id = request.GET["id"].split("-")
+        mission = Mission.objects.get(id=mission_id)  # If no mission found, it fails, that's what we want
+        if attribute == "billing_mode":
+            values = dict(Mission.BILLING_MODES)
+            if mission.management_mode == "ELASTIC":
+                del values["FIXED_PRICE"]
+        elif attribute == "management_mode":
+            values = dict(Mission.MANAGEMENT_MODES)
+            if mission.billing_mode == "FIXED_PRICE":
+                del values["ELASTIC"]
+        elif attribute == "probability":
+            values = dict(Mission.PROBABILITY)
         else:
             values = {}
-        return HttpResponse(json.dumps(dict(values)))
+        return HttpResponse(json.dumps(values))
     elif request.method == "POST":
         # Update mission attributes
         attribute, mission_id = request.POST["id"].split("-")
         value = request.POST["value"]
         mission = Mission.objects.get(id=mission_id)  # If no mission found, it fails, that's what we want
         billingModes = dict(Mission.BILLING_MODES)
+        managementModes = dict(Mission.MANAGEMENT_MODES)
         probability = dict(Mission.PROBABILITY)
         if attribute == "billing_mode":
             if value in billingModes:
                 mission.billing_mode = value
                 mission.save()
                 return HttpResponse(billingModes[value])
+        elif attribute == "management_mode":
+            if value in managementModes:
+                mission.management_mode = value
+                mission.save()
+                return HttpResponse(managementModes[value])
         elif attribute == "probability":
             value = int(value)
             if value in probability:

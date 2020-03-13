@@ -77,6 +77,7 @@
                 <div class="col-md-12">
                     {% include "staffing/_check_mission_billing_mode.html" %}
                     {% include "staffing/_check_mission_rates.html" %}
+                    {% include "staffing/_check_mission_margin.html" %}
                 </div>
             </div>
          {% endif %}
@@ -106,7 +107,13 @@
                             </tr>
                         {% endif %}
                         <tr>
+                            <th>{% trans "Sold" %}</th><td> {{ mission.price }} k€</td>
+                        </tr>
+                        <tr>
                             <th>{% trans "Billing mode" %}</th><td><div  id="billing_mode-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></td>
+                        </tr>
+                        <tr>
+                            <th>{% trans "Management mode" %}</th><td><div  id="management_mode-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_management_mode_display }}</div></td>
                         </tr>
                         <tr>
                             <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.probability }} %</div></td>

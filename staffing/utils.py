@@ -173,7 +173,7 @@ def holidayDays(month=None):
     return [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth(month))]
 
 
-def staffingDates(n=12, format=None, minDate=None):
+def staffingDates(n=12, format=None, minDate=None, maxDate=None):
     """Returns a list of n next month as datetime (if format="datetime") or
     as a list of dict() with short/long(encoded) string date"""
     staffingDate = minDate or date.today().replace(day=1)
@@ -185,6 +185,8 @@ def staffingDates(n=12, format=None, minDate=None):
             dates.append({"value": formats.localize_input(staffingDate),
                           "label": formats.date_format(staffingDate, format="YEAR_MONTH_FORMAT").encode("latin-1"), })
         staffingDate = nextMonth(staffingDate)
+        if maxDate and staffingDate > maxDate:
+            break
     return dates
 
 
@@ -309,6 +311,7 @@ def create_next_year_std_missions(current, target, dryrun=True):
     @current: current suffix
     @target: target suffix
     @dryrun: save new mission or just print its"""
+    #TODO: handle mission date boundaries
     for m in Mission.objects.exclude(nature="PROD").filter(active=True):
         if not current in m.description:
             continue
@@ -321,3 +324,13 @@ def create_next_year_std_missions(current, target, dryrun=True):
         print("Creating new mission %s" % new_mission)
         if not dryrun:
             new_mission.save()
+
+def check_missions_limited_mode(missions):
+    """Ensure that after a timesheet update we don't violate management mode policy
+    @return list of missions that do not conform to policy"""
+    offending_missions = []
+    for mission in missions:
+        if mission.management_mode == "LIMITED":
+            if mission.target_margin() < 0:
+                offending_missions.append(mission)
+    return offending_missions

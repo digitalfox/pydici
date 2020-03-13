@@ -11,7 +11,7 @@ from django.db import models
 from django.db.models import Sum, Q
 from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
+from django.utils.translation import ugettext, pgettext
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
@@ -298,7 +298,7 @@ class Supplier(models.Model):
 class Client(AbstractAddress):
     """A client is defined by a contact and the organisation where he works at the moment"""
     EXPECTATIONS = (
-            ('1_NONE', ugettext("None")),
+            ('1_NONE', pgettext("feminine", "None")),
             ('2_DECREASING', ugettext("Decreasing")),
             ('3_FLAT', ugettext("Flat")),
             ('4_INCREASING', ugettext("Increasing")),
