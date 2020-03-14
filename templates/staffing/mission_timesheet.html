@@ -14,7 +14,7 @@
         <th class="table-separator"></th>
         <th style="text-align:center" colspan={{ staffing_months|length|add:2 }}>{% trans "Days to be done" %}</th>
         <th class="table-separator"></th>
-        <th style="text-align:center" colspan=3>{% trans "Total estimated" %}</th>
+        <th style="text-align:center" colspan=2>{% trans "Total estimated" %}</th>
     </tr>
     <tr align="right">
         <td></td>
@@ -42,7 +42,7 @@
             <td>{{ staffing|join:"</td><td>" }}</td>
             <td class="table-separator"></td>
             <td>{{ estimated|join:"</td><td>" }}</td>
-            <td></td>
+
             </tr><tr align="right" style="font-weight:bold">
             <td>{% trans "Total (k€)" %}</td>
             {% if timesheetAmount %}<td>{{ timesheetAmount|join:"</td><td>" }}</td>{% endif %}
