@@ -45,10 +45,11 @@
             <td></td>
             </tr><tr align="right" style="font-weight:bold">
             <td>{% trans "Total (k€)" %}</td>
-            <td>{{ timesheetAmount|join:"</td><td>" }}</td>
+            {% if timesheetAmount %}<td>{{ timesheetAmount|join:"</td><td>" }}</td>{% endif %}
             <td></td>
-            <td></td><td class="table-separator"></td>
-            <td>{{ staffingAmount|join:"</td><td>" }}</td>
+            <td></td>
+            <td class="table-separator"></td>
+            {% if staffingAmount %}<td>{{ staffingAmount|join:"</td><td>" }}</td>{% endif %}
             <td></td>
             <td></td><td class="table-separator"></td>
 	        <td></td>
