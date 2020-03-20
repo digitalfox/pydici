@@ -1597,14 +1597,14 @@ def lunch_tickets_pivotable(request):
     days_off = timesheets.filter(charge__gte=0.5).annotate(Count("id")) # Each days beyond half is counted as 1
     days_off = {(i["consultant_id"], i["month"]): i["id__count"] for i in days_off}  # Switch to dict with (consultant, month) as key
 
-    consultants = timesheets.values("consultant_id", "consultant__name", "consultant__company__name").distinct()
-
     holidays_days = Holiday.objects.filter(day__gte=start_date).values_list("day", flat=True)
     month = start_date
     w_days = {}
     while month < date.today():
         next_month = nextMonth(month)
         w_days = working_days(next_month, holidays=holidays_days)
+        current_month_timesheet = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month, consultant__subcontractor=False).order_by()
+        consultants = current_month_timesheet.values("consultant_id", "consultant__name", "consultant__company__name").distinct()
         for consultant in consultants:
             item = {}
             item[_("month")] = next_month.isoformat()
