@@ -12,6 +12,6 @@ django-datatables-view==1.19.0
 django-background-tasks==1.1.13
 WeasyPrint==48
 django-weasyprint==0.5.4
-bleach==3.1.1
+bleach==3.1.4
 Markdown==3.1.1
 pypdf2==1.26.0
