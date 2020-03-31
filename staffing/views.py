@@ -247,6 +247,21 @@ def mass_staffing(request):
                 for consultant in consultants:
                     for staffing_date in form.cleaned_data["staffing_dates"]:
                         staffing_date = date(*[int(i) for i in staffing_date.split("-")])
+                        if mission.start_date and staffing_date < mission.start_date.replace(day=1):
+                            messages.add_message(request, messages.INFO, _(
+                                "Staffing has been ignored for mission %s because %s is before mission start (%s)" % (
+                                mission.short_name(),
+                                staffing_date,
+                                mission.start_date)))
+                            continue
+                        if mission.end_date and staffing_date > mission.end_date:
+                            messages.add_message(request, messages.INFO, _(
+                                "Staffing has been ignored for mission %s because %s is after mission end (%s)" % (
+                                mission.short_name(),
+                                staffing_date,
+                                mission.end_date)))
+                            continue
+
                         staffing, created = Staffing.objects.get_or_create(consultant=consultant,
                                                                            mission=mission,
                                                                            staffing_date=staffing_date,
