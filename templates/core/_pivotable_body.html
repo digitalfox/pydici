@@ -2,29 +2,45 @@
 {# context: output #}
 {# context: derivedAttributes #}
 
-   <script type="text/javascript">
-                var lang = {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %};
+<script type="text/javascript">
+ var lang = {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %};
 
-                function drawPivot(data, rows, cols, rendererName, aggregatorName, vals, options) {
-                    var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.c3_renderers);
-                    if (typeof options == "undefined") { var options = {}; }
-                    $("#pivotable-output").pivotUI(
-                        data,
-                        {
-                            rows: rows,
-                            cols: cols,
-                            renderers: renderers,
-                            {% if derivedAttributes %}derivedAttributes: {{ derivedAttributes|safe }}, {% endif %}
-                            rendererName: rendererName,
-                            aggregatorName: aggregatorName,
-                            vals: vals,
-                            inclusions: options['inclusions'] || '',
-                            rowOrder: options['rowOrder'] || 'key_a_to_z',
-                            colOrder: options['colOrder'] || 'key_a_to_z'
-                        },
-                        true,
-                        lang
-                    );
-                }
+ function drawPivot(data, rows, cols, rendererName, aggregatorName, vals, options) {
+     var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.c3_renderers);
+     if (typeof options == "undefined") { var options = {}; }
+     $("#pivotable-output").pivotUI(
+         data,
+         {
+             rows: rows,
+             cols: cols,
+             renderers: renderers,
+             rendererOptions: options,
+             {% if derivedAttributes %}derivedAttributes: {{ derivedAttributes|safe }}, {% endif %}
+             rendererName: rendererName,
+             aggregatorName: aggregatorName,
+             onRefresh: hideTotal,
+             vals: vals,
+             inclusions: options['inclusions'] || '',
+             rowOrder: options['rowOrder'] || 'key_a_to_z',
+             colOrder: options['colOrder'] || 'key_a_to_z'
+         },
+         true,
+         lang
+     );
+ }
+ function hideTotal(config) {
+     // Hide total when it does not have any sense
+     if (config["rendererOptions"]["hideRowTotal"]) {
+         $(".pvtTotal.rowTotal").css("display", "None");
+         $(".pvtRowTotalLabel").css("display", "None");
+     }
+     if (config["rendererOptions"]["hideColTotal"]) {
+         $(".pvtTotal.colTotal").css("display", "None");
+         $(".pvtColTotalLabel").css("display", "None");
+     }
+     if (config["rendererOptions"]["hideGrandTotal"]) {
+         $(".pvtGrandTotal").css("display", "None");
+     }
+ }
 
-        </script>
+</script>

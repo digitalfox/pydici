@@ -1295,6 +1295,46 @@ def holidays_planning(request, year=None, month=None):
                    "next_month": next_month,
                    "user": request.user, })
 
+@pydici_non_public
+@pydici_feature("reports")
+def rate_objective_report(request):
+    data = []
+    #last_rate_objective = []
+    people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False) #.prefetch_related("rateobjective_set")
+    working_date_current = date.today()
+    working_date_next_year = date.today() + timedelta(365)
+    for p in people:
+        data.append({
+            _(u"consultant"): p.name,
+            _(u"subsidiary"): p.company.commercial_name,
+            _(u"type"): _(u"daily rate"),
+            _(u"horizon"): _(u"current"),
+            _(u"amount"): p.get_rate_objective(working_date = working_date_current, rate_type="DAILY_RATE").rate
+        })
+        data.append({
+            _(u"consultant"): p.name,
+            _(u"subsidiary"): p.company.commercial_name,
+            _(u"type"): _(u"daily rate"),
+            _(u"horizon"): _(u"next"),
+            _(u"amount"): p.get_rate_objective(working_date = working_date_next_year, rate_type="DAILY_RATE").rate
+        })
+        data.append({
+            _(u"consultant"): p.name,
+            _(u"subsidiary"): p.company.commercial_name,
+            _(u"type"): _(u"prod rate"),
+            _(u"horizon"): _(u"current"),
+            _(u"amount"): p.get_rate_objective(working_date = working_date_current, rate_type="PROD_RATE").rate,
+        })
+        data.append({
+            _(u"consultant"): p.name,
+            _(u"subsidiary"): p.company.commercial_name,
+            _(u"type"): _(u"prod rate"),
+            _(u"horizon"): _(u"next"),
+            _(u"amount"): p.get_rate_objective(working_date = working_date_next_year, rate_type="PROD_RATE").rate,
+        })
+
+    return render(request, "staffing/rates_report.html", {"data": json.dumps(data),
+                                                                 "derivedAttributes": [],})
 
 @pydici_non_public
 @pydici_feature("reports")
