@@ -4,6 +4,7 @@
     <br/>
     {% include "staffing/_check_mission_billing_mode.html" %}
     {% include "staffing/_check_mission_rates.html" %}
+    {% include "staffing/_check_mission_margin.html" %}
     {% if margin > 0 and mission.nature == "PROD" and mission.defined_rates %}
 
         <form action="{% url 'staffing:automatic_mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-automatic-staffing">
