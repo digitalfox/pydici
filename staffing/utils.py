@@ -232,6 +232,9 @@ def compute_automatic_staffing(mission, mode, duration, user=None):
         if max_staffing:
             start_date = max(current_month, nextMonth(max_staffing))
 
+    if mission.start_date:
+        start_date = max(start_date, mission.start_date)
+
     margin = mission.margin(mode="target")
     rates = mission.consultant_rates()
     rates_sum = sum([i[0] for i in rates.values()])
@@ -242,6 +245,8 @@ def compute_automatic_staffing(mission, mode, duration, user=None):
         month = start_date
         for i in range(duration):
             if total > margin*1000:
+                break
+            if mission.end_date and month > mission.end_date:
                 break
             s = Staffing(mission=mission, consultant=consultant, charge=days, staffing_date=month, update_date = now)
             if user:
