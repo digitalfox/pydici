@@ -286,7 +286,7 @@ class MissionForm(PydiciCrispyModelForm):
 
         remaining = self.instance.lead.sales - total
         if self.cleaned_data["price"] > remaining:
-            raise ValidationError(_(u"Only %s k€ are remaining on this lead. Define a lower price" % remaining))
+            raise ValidationError(_("Only %s k€ are remaining on this lead. Define a lower price" % remaining))
 
         # No error, we return data as is
         return self.cleaned_data["price"]
@@ -360,16 +360,16 @@ class CycleTimesheetField(forms.ChoiceField):
     # ◑ -> 2
     # ◔ -> 5
     # ◌ -> 8
-    TS_VALUES = {u"8": None,
-                 u"5": "0.25",
-                 u"2": "0.5",
-                 u"6": "0.75",
-                 u"0": "1"}
+    TS_VALUES = {"8": None,
+                 "5": "0.25",
+                 "2": "0.5",
+                 "6": "0.75",
+                 "0": "1"}
     TS_VALUES_R = {0: "",
-                   0.25: u"5",
-                   0.5: u"2",
-                   0.75: u"6",
-                   1: u"0"}
+                   0.25: "5",
+                   0.5: "2",
+                   0.75: "6",
+                   1: "0"}
 
     def __init__(self, choices=(), required=True, widget=None, label=None,
                  initial=None, help_text=None, *args, **kwargs):
@@ -390,7 +390,7 @@ class CycleTimesheetField(forms.ChoiceField):
     def to_python(self, value):
         if not value and not self.required:
             return None
-        if value is None or value == u"8":
+        if value is None or value == "8":
             return None
         try:
             return Decimal(self.TS_VALUES.get(value))

@@ -301,13 +301,13 @@ def pdc_review(request, year=None, month=None):
     subsidiary = None
 
     # Various projections modes. Value is ("short name", "description")
-    projections = {"none": (_(u"Only won leads"), _(u"Only consider won leads for staffing forecasting")),
-                   "balanced": (_(u"Balanced staffing projection"), _(u"Add missions forcecast staffing even if still not won with a ponderation based on the mission won probability")),
-                   "full": (_(u"Full staffing projection"), _(u"Add missions forcecast staffing even if still not won without any ponderation. All forecast is considered."))}
+    projections = {"none": (_("Only won leads"), _("Only consider won leads for staffing forecasting")),
+                   "balanced": (_("Balanced staffing projection"), _(u"Add missions forcecast staffing even if still not won with a ponderation based on the mission won probability")),
+                   "full": (_("Full staffing projection"), _("Add missions forcecast staffing even if still not won without any ponderation. All forecast is considered."))}
 
     # Group by modes. Value is label
-    groups = {"manager": _(u"Group by Manager"),
-              "level": _(u"Group by Level")}
+    groups = {"manager": _("Group by Manager"),
+              "level": _("Group by Level")}
 
     # Get team and subsidiary
     if "team_id" in request.GET:
@@ -464,7 +464,7 @@ def pdc_review(request, year=None, month=None):
 
     scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team)
     if team:
-        team_name = _(u"team %(manager_name)s") % {"manager_name": team}
+        team_name = _("team %(manager_name)s") % {"manager_name": team}
     else:
         team_name = None
 
@@ -483,7 +483,7 @@ def pdc_review(request, year=None, month=None):
                    "groupby": groupby,
                    "groupby_label": groups[groupby],
                    "groups": groups,
-                   "scope": subsidiary or team_name or _(u"Everybody"),
+                   "scope": subsidiary or team_name or _("Everybody"),
                    "scope_current_filter" : scope_current_filter,
                    "scope_current_url_filter": scope_current_url_filter,
                    "scopes": scopes,})
@@ -629,7 +629,7 @@ def prod_report(request, year=None, month=None):
     # Get scopes
     scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team)
     if team:
-        team_name = _(u"team %(manager_name)s") % {"manager_name": team}
+        team_name = _("team %(manager_name)s") % {"manager_name": team}
     else:
         team_name = None
 
@@ -639,7 +639,7 @@ def prod_report(request, year=None, month=None):
                    "end_date" : end_date,
                    "previous_slice_date": previous_slice_date,
                    "next_slice_date": next_slice_date,
-                   "scope": subsidiary or team_name or _(u"Everybody"),
+                   "scope": subsidiary or team_name or _("Everybody"),
                    "scope_current_filter": scope_current_filter,
                    "scope_current_url_filter": scope_current_url_filter,
                    "scopes": scopes })
@@ -670,7 +670,7 @@ def fixed_price_missions_report(request):
 
     return render(request, "staffing/fixed_price_report.html",
                   {"data": data,
-                   "scope": subsidiary or _(u"Everybody"),
+                   "scope": subsidiary or _("Everybody"),
                    "scope_current_filter": scope_current_filter,
                    "scope_current_url_filter": scope_current_url_filter,
                    "scopes": scopes })
@@ -1180,7 +1180,7 @@ def all_timesheet(request, year=None, month=None):
                        "consultants": consultants,
                        "missions": missions,
                        "charges": charges,
-                       "scope": subsidiary or _(u"Everybody"),
+                       "scope": subsidiary or _("Everybody"),
                        "scope_current_filter": scope_current_filter,
                        "scope_current_url_filter": scope_current_url_filter,
                        "scopes": scopes})
@@ -1225,7 +1225,7 @@ def detailed_csv_timesheet(request, year=None, month=None):
     next_month = nextMonth(month)
 
     # Header
-    header = [_("Lead"), _("Deal id"), _(u"Lead Price (k€)"), _("Mission"), _("Mission id"), _("Billing mode"), _(u"Mission Price (k€)"),
+    header = [_("Lead"), _("Deal id"), _("Lead Price (k€)"), _("Mission"), _("Mission id"), _("Billing mode"), _("Mission Price (k€)"),
               _("Consultant"), _("Daily rate"), _("Bought daily rate"), _("Past done days"), _("Done days"), _("Days to be done")]
     writer.writerow([month,])
     writer.writerow(header)

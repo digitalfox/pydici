@@ -29,7 +29,7 @@ def get_scopes(subsidiary, team, target="all"):
     @:return: scopes, scope_current_filter, scope_current_url_filter"""
 
     # Gather scopes
-    scopes = [(None, "all", _(u"Everybody")), ]
+    scopes = [(None, "all", _("Everybody")), ]
 
     if target in ("all", "subsidiary"):
         for s in Subsidiary.objects.filter(consultant__active=True, consultant__subcontractor=False,
@@ -41,7 +41,7 @@ def get_scopes(subsidiary, team, target="all"):
                                                                   subcontractor=False).values_list("staffing_manager",
                                                                                                    "staffing_manager__name").order_by().distinct():
             scopes.append(
-                ("team_id", "team_id=%s" % manager_id, _(u"team %(manager_name)s") % {"manager_name": manager_name}))
+                ("team_id", "team_id=%s" % manager_id, _("team %(manager_name)s") % {"manager_name": manager_name}))
     # Compute uri and filters
     if subsidiary:
         scope_current_filter = "subsidiary_id=%s" % subsidiary.id

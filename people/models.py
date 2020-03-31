@@ -54,7 +54,7 @@ class Consultant(models.Model):
         return self.name
 
     def full_name(self):
-        return u"%s (%s)" % (self.name, self.trigramme)
+        return "%s (%s)" % (self.name, self.trigramme)
 
     def save(self, *args, **kwargs):
         self.name = capitalize(self.name)

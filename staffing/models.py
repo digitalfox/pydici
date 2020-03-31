@@ -61,7 +61,7 @@ class Mission(models.Model):
     active = models.BooleanField(_("Active"), default=True)
     probability = models.IntegerField(_("Proba"), default=50)
     probability_auto = models.BooleanField(_("Automatic probability"), default=True)
-    price = models.DecimalField(_(u"Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
+    price = models.DecimalField(_("Price (k€)"), blank=True, null=True, max_digits=10, decimal_places=3)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     contacts = models.ManyToManyField(MissionContact, blank=True)
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
@@ -77,7 +77,7 @@ class Mission(models.Model):
         else:
             name = str(self.lead)
             if self.description:
-                return u"%s/%s" % (name, self.description)
+                return "%s/%s" % (name, self.description)
             else:
                 return name
 
@@ -85,16 +85,16 @@ class Mission(models.Model):
         """Name with deal name, mission desc and id. No client name"""
         if self.lead:
             if self.description:
-                return u"%s/%s (%s)" % (self.lead.name, self.description, self.mission_id())
+                return "%s/%s (%s)" % (self.lead.name, self.description, self.mission_id())
             else:
-                return u"%s (%s)" % (self.lead.name, self.mission_id())
+                return "%s (%s)" % (self.lead.name, self.mission_id())
         else:
             # default to full name
             return self.full_name()
 
     def full_name(self):
         """Full mission name with deal id"""
-        return u"%s (%s)" % (str(self), self.mission_id())
+        return "%s (%s)" % (str(self), self.mission_id())
 
     def no_more_staffing_since(self, refDate=None):
         """@return: True if at least one staffing is defined after refDate. Zero charge staffing are considered."""

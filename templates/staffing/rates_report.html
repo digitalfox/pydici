@@ -40,7 +40,7 @@
          function table_per_consultant() {
              var cols = ["{% trans 'type' %}", "{% trans 'horizon' %}"]
              var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"]
-             drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ['{% trans "amount" %}'],  {"hideRowTotal": true, "hideGrandTotal": true, "hideColTotal": true});
+             drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ['{% trans "amount" %}'],  {"hideRowTotal": true, "hideGrandTotal": true, "hideColTotal": true});
          }
 
          // default

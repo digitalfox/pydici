@@ -54,7 +54,7 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
 
     def render_column(self, row, column):
         if column == "pk":
-            return u"<a href='{0}'>{1}</a>".format(row.get_absolute_url(), str(row))
+            return "<a href='{0}'>{1}</a>".format(row.get_absolute_url(), str(row))
         elif column == "no_forecast":
             if row.no_more_staffing_since():
                 return self.ko_sign

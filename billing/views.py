@@ -115,7 +115,7 @@ def bill_review(request):
                    "supplier_overdue_bills": supplier_overdue_bills,
                    "billing_management": user_has_feature(request.user, "billing_management"),
                    "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
-                   "scope": subsidiary or _(u"Everybody"),
+                   "scope": subsidiary or _("Everybody"),
                    "scope_current_filter": scope_current_filter,
                    "scope_current_url_filter": scope_current_url_filter,
                    "scopes": scopes,
