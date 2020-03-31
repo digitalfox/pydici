@@ -36,7 +36,7 @@ from django.template.loader import get_template
 from django_weasyprint import WeasyTemplateView
 
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
-from people.models import Consultant, Subsidiary
+from people.models import Consultant, Subsidiary, RateObjective
 from leads.models import Lead
 from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
@@ -1314,40 +1314,19 @@ def holidays_planning(request, year=None, month=None):
 @pydici_feature("reports")
 def rate_objective_report(request):
     data = []
-    #last_rate_objective = []
-    people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False) #.prefetch_related("rateobjective_set")
+    people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False)
     working_date_current = date.today()
     working_date_next_year = date.today() + timedelta(365)
     for p in people:
-        data.append({
-            _(u"consultant"): p.name,
-            _(u"subsidiary"): p.company.commercial_name,
-            _(u"type"): _(u"daily rate"),
-            _(u"horizon"): _(u"current"),
-            _(u"amount"): p.get_rate_objective(working_date = working_date_current, rate_type="DAILY_RATE").rate
-        })
-        data.append({
-            _(u"consultant"): p.name,
-            _(u"subsidiary"): p.company.commercial_name,
-            _(u"type"): _(u"daily rate"),
-            _(u"horizon"): _(u"next"),
-            _(u"amount"): p.get_rate_objective(working_date = working_date_next_year, rate_type="DAILY_RATE").rate
-        })
-        data.append({
-            _(u"consultant"): p.name,
-            _(u"subsidiary"): p.company.commercial_name,
-            _(u"type"): _(u"prod rate"),
-            _(u"horizon"): _(u"current"),
-            _(u"amount"): p.get_rate_objective(working_date = working_date_current, rate_type="PROD_RATE").rate,
-        })
-        data.append({
-            _(u"consultant"): p.name,
-            _(u"subsidiary"): p.company.commercial_name,
-            _(u"type"): _(u"prod rate"),
-            _(u"horizon"): _(u"next"),
-            _(u"amount"): p.get_rate_objective(working_date = working_date_next_year, rate_type="PROD_RATE").rate,
-        })
-
+        for horizon, working_date in ((_("current"), working_date_current), (_("next"), working_date_next_year)):
+            for rate_type, rate_label in RateObjective.RATE_TYPE:
+                data.append({
+                    _("consultant"): p.name,
+                    _("subsidiary"): str(p.company),
+                    _("type"): str(rate_label),
+                    _("horizon"): horizon,
+                    _("amount"): p.get_rate_objective(working_date=working_date, rate_type=rate_type).rate
+                })
     return render(request, "staffing/rates_report.html", {"data": json.dumps(data),
                                                                  "derivedAttributes": [],})
 
@@ -1384,12 +1363,12 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
         if month and isinstance(month, (datetime, date)):
             month = month.strftime("%Y-%m")
         data.append({
-            _(u"month") : month,
-            _(u"type"): timesheet["mission__description"],
-            _(u"consultant"): timesheet["consultant__name"],
-            _(u"subsidiary"): timesheet["consultant__company__name"],
-            _(u"profil"): timesheet["consultant__profil__name"],
-            _(u"days"): timesheet["charge__sum"],
+            _("month") : month,
+            _("type"): timesheet["mission__description"],
+            _("consultant"): timesheet["consultant__name"],
+            _("subsidiary"): timesheet["consultant__company__name"],
+            _("profil"): timesheet["consultant__profil__name"],
+            _("days"): timesheet["charge__sum"],
         })
 
     return render(request, "staffing/missions_report.html", {"data": json.dumps(data),
