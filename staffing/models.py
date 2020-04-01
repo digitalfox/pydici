@@ -366,9 +366,9 @@ class Mission(models.Model):
                              ugettext("billing mode"): billing_mode,
                              ugettext("date"): month.strftime("%Y/%m"),
                              ugettext("done (days)"): timesheet_data.get(month, 0),
-                             ugettext("done (keur)"): timesheet_data.get(month, 0) * consultant_rates[consultant][0] / 1000,
+                             ugettext("done (€)"): timesheet_data.get(month, 0) * consultant_rates[consultant][0],
                              ugettext("forecast (days)"): staffing_data.get(month, 0),
-                             ugettext("forecast (keur)"): staffing_data.get(month, 0) * consultant_rates[consultant][0] / 1000})
+                             ugettext("forecast (€)"): staffing_data.get(month, 0) * consultant_rates[consultant][0]})
         return data
 
     def get_change_history(self):
