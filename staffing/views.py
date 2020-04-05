@@ -42,7 +42,7 @@ from people.models import ConsultantProfile
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm, StaffingForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
-    to_int_or_round, COLORS, convertDictKeyToDate, cumulateList, user_has_feature, get_parameter, \
+    to_int_or_round, COLORS, cumulateList, user_has_feature, get_parameter, \
     get_fiscal_years_from_qs, get_fiscal_year
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
@@ -911,8 +911,7 @@ def mission_timesheet(request, mission_id):
     for consultant in consultants:
         # Timesheet data
         timesheetData = []
-        data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-        data = convertDictKeyToDate(data)
+        data = dict(timesheets.filter(consultant=consultant).annotate(month=TruncMonth("working_date")).values_list("month").annotate(Sum("charge")).order_by("month"))
 
         for month in timesheetMonths:
             n_days = data.get(month, 0)
@@ -1664,7 +1663,6 @@ def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
     @:param subsidiary_id: filter graph on the given subsidiary
     @:param team_id: filter graph on the given team
     @todo: per year, with start-end date"""
-    dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
     data = {}  # Graph data
     natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures id
     natures_label = [i[1] for i in Mission.MISSION_NATURE]  # Mission natures label
@@ -1699,13 +1697,11 @@ def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
     if not timesheetMonths:
         return HttpResponse('')
 
-    nConsultant = dict(timesheets.extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Count("consultant__id", distinct=True)).order_by())
-    nConsultant = convertDictKeyToDate(nConsultant)
+    nConsultant = dict(timesheets.annotate(month=TruncMonth("working_date")).values_list("month").annotate(Count("consultant__id", distinct=True)).order_by())
 
     for nature, label in zip(natures, natures_label):
         nature_data[nature] = []
-        data = dict(timesheets.filter(mission__nature=nature).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-        data = convertDictKeyToDate(data)
+        data = dict(timesheets.filter(mission__nature=nature).annotate(month=TruncMonth("working_date")).values_list("month").annotate(Sum("charge")).order_by("month"))
         for month in timesheetMonths:
             nature_data[nature].append(round(100 * data.get(month, 0) / (working_days(month, holiday_days) * nConsultant.get(month, 1)), 1))
         graph_data.append([label] + nature_data[nature])

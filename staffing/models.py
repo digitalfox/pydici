@@ -5,8 +5,9 @@ Database access layer for pydici staffing module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.db import models, connections
+from django.db import models
 from django.db.models import Sum, Min, F
+from django.db.models.functions import TruncMonth
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, pgettext
 from django.db.models.signals import post_save
@@ -21,7 +22,7 @@ from people.models import Consultant
 from crm.models import MissionContact, Subsidiary
 from actionset.utils import launchTrigger
 from actionset.models import ActionState
-from core.utils import disable_for_loaddata, cacheable, convertDictKeyToDate, nextMonth
+from core.utils import disable_for_loaddata, cacheable, nextMonth
 
 class AnalyticCode(models.Model):
     code = models.CharField(max_length=100, unique=True)
@@ -271,7 +272,6 @@ class Mission(models.Model):
         @param startDate: starting date to consider. This date is included in range. If None, start date is the begining of the mission
         @param endDate: ending date to consider. This date is excluded from range. If None, end date is last timesheet for this mission.
         @return: dict where key is consultant, value is cumulated margin over objective"""
-        dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
         result = {}
         consultant_rates = self.consultant_rates()
         # Gather timesheet (Only consider timesheet up to current month)
@@ -284,8 +284,7 @@ class Mission(models.Model):
         timesheetMonths = list(timesheets.dates("working_date", "month"))
         for consultant in self.consultants():
             result[consultant] = 0  # Initialize margin over rate objective for this consultant
-            data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-            data = convertDictKeyToDate(data)
+            data = dict(timesheets.filter(consultant=consultant).annotate(month=TruncMonth("working_date")).values_list("month").annotate(Sum("charge")).order_by("month"))
 
             for month in timesheetMonths:
                 n_days = data.get(month, 0)
@@ -335,7 +334,6 @@ class Mission(models.Model):
         mission_name = self.short_name()
         current_month = date.today().replace(day=1)  # Current month
         subsidiary = str(self.subsidiary)
-        dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
         consultant_rates = self.consultant_rates()
         billing_mode = self.get_billing_mode_display()
 
@@ -353,10 +351,8 @@ class Mission(models.Model):
 
         for consultant in self.consultants():
             consultant_name = str(consultant)
-            timesheet_data = dict(timesheets.filter(consultant=consultant).extra(select={'month': dateTrunc("month", "working_date")}).values_list("month").annotate(Sum("charge")).order_by("month"))
-            timesheet_data = convertDictKeyToDate(timesheet_data)
+            timesheet_data = dict(timesheets.filter(consultant=consultant).annotate(month=TruncMonth("working_date")).values_list("month").annotate(Sum("charge")).order_by("month"))
             staffing_data = dict(staffings.filter(consultant=consultant).values_list("staffing_date").annotate(Sum("charge")).order_by("staffing_date"))
-            staffing_data = convertDictKeyToDate(staffing_data)
 
             for month in set(timesheetMonths + staffingMonths):
                 data.append({ugettext("mission id"): mission_id,
