@@ -27,24 +27,9 @@
             </ul>
         </div>
         <!-- Scope  button -->
-        <div class="col-md-6">
-            {% trans "Scope: " %}
-            <div class="btn-group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {{ scope }} <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu">
-                  {% for scope_type, scope_filter, scope_label in scopes %}
-                    {% ifchanged scope_type %}
-                        {% if not forloop.first %}
-                            <li role="separator" class="divider"></li>
-                        {% endif %}
-                    {% endifchanged %}
-                    <li><a href="{% url 'billing:bill_review'%}/?{{scope_filter}}">{{ scope_label }}</a></li>
-                  {% endfor %}
-              </ul>
-            </div>
-        </div>
+        {% url 'billing:bill_review' as page_url %}
+        {% include "core/_scope_button.html" %}
+
     </div>
 
     <br/>

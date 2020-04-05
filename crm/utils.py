@@ -11,12 +11,19 @@ from crm.models import Subsidiary
 
 
 def get_subsidiary_from_request(request):
-    """ Check if Retrieves a subsidiary by given id
+    """ Check if was given in URL and update session accordingly
     :param id: subsidiary_id
     :param request
     :return: found subsidiary otherwise none
     """
-
     if "subsidiary_id" in request.GET:
-        return Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
+        subsidiary_id = int(request.GET["subsidiary_id"])
+        request.session["subsidiary_id"] = subsidiary_id
+        return Subsidiary.objects.get(id=subsidiary_id)
+
+    try:
+        del request.session["subsidiary_id"]
+    except KeyError:
+        pass
+
     return None

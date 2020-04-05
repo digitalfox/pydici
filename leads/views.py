@@ -28,6 +28,8 @@ from django.conf import settings
 from taggit.models import Tag, TaggedItem
 
 from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter, moving_average
+from crm.utils import get_subsidiary_from_request
+from people.utils import get_scopes
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
@@ -241,6 +243,9 @@ def mail_lead(request, lead_id=0):
 @pydici_non_public
 @pydici_feature("leads")
 def review(request):
+    subsidiary = get_subsidiary_from_request(request)
+    # Get scopes
+    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, None, target="subsidiary")
     return render(request, "leads/review.html",
                   {"active_data_url": reverse('leads:active_lead_table_DT'),
                    "active_data_options": ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
@@ -251,6 +256,10 @@ def review(request):
                    "recent_archived_data_options" : ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
                                                                        { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}],
                                                          "order": [[9, "asc"]] ''',
+                   "scope": subsidiary or _("Everybody"),
+                   "scope_current_filter": scope_current_filter,
+                   "scope_current_url_filter": scope_current_url_filter,
+                   "scopes": scopes,
                    "user": request.user})
 
 
@@ -373,13 +382,16 @@ def tags(request, lead_id):
 @pydici_feature("leads")
 @cache_page(60 * 60 * 24)
 def graph_bar_jqp(request):
-    """Nice graph bar of lead state during time using jqplot
-    @todo: per year, with start-end date"""
+    """Nice graph bar of lead state during time using jqplot"""
     data = defaultdict(list)  # Raw data collected
     graph_data = []  # Data that will be returned to jqplot
 
     # Gathering data
-    for lead in Lead.objects.filter(creation_date__gt=date.today() - timedelta(3 * 365)):
+    subsidiary = get_subsidiary_from_request(request)
+    leads = Lead.objects.filter(creation_date__gt=date.today() - timedelta(3 * 365))
+    if subsidiary:
+        leads = leads.filter(subsidiary=subsidiary)
+    for lead in leads:
         # Using first day of each month as key date
         kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
         data[kdate].append(lead)
@@ -421,9 +433,10 @@ def graph_leads_won_rate(request):
     """Graph rates of won leads for given (or all) subsidiary"""
     graph_data = []
     start_date = (datetime.today() - timedelta(3 * 365))
+    subsidiary = get_subsidiary_from_request(request)
     leads = Lead.objects.filter(creation_date__gt=start_date)
-    if "subsidiary_id" in request.GET:
-        leads = leads.filter(subsidiary_id=int(request.GET["subsidiary_id"]))
+    if subsidiary:
+        leads = leads.filter(subsidiary=subsidiary)
     leads = leads.annotate(month=TruncMonth("creation_date")).order_by("month")
     leads = leads.values("month", "state").annotate(Count("state"))
     leads_state = {}

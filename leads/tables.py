@@ -32,8 +32,15 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
     probaTemplate = get_template("leads/_state_column.html")
     consultantTemplate = get_template("people/__consultant_name.html")
 
+    def _filter_on_subsidiary(self, qs):
+        if "subsidiary_id" in self.request.session:
+            qs = qs.filter(subsidiary_id=self.request.session["subsidiary_id"])
+        return qs
+
     def get_initial_queryset(self):
-        return Lead.objects.all().select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+        qs  = Lead.objects.all()
+        qs = self._filter_on_subsidiary(qs)
+        return qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
 
     def render_column(self, row, column):
         if column == "responsible":
@@ -81,7 +88,9 @@ class ActiveLeadTableDT(LeadTableDT):
     pydici_feature = "leads"
 
     def get_initial_queryset(self):
-        return Lead.objects.active().select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+        qs = Lead.objects.active()
+        qs = self._filter_on_subsidiary(qs)
+        return qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
 
     def render_column(self, row, column):
         if column in ("creation_date", "due_date", "start_date", "update_date"):
@@ -99,6 +108,7 @@ class RecentArchivedLeadTableDT(ActiveLeadTableDT):
         delay = timedelta(days=40)
         qs = Lead.objects.passive().filter(Q(update_date__gte=(today - delay)) |
                                                             Q(state="SLEEPING"))
+        qs = self._filter_on_subsidiary(qs)
         qs = qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
         return qs
 
