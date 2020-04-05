@@ -67,6 +67,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
         search = self.request.GET.get('search[value]', None)
+        qs = self._filter_on_subsidiary(qs)
         if search:
             qs = qs.filter(Q(name__icontains=search) |
                            Q(description__icontains=search) |
