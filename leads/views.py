@@ -452,13 +452,11 @@ def graph_leads_won_rate(request):
 
     # compute won rate
     for month, lead_state in leads_state.items():
-        months.append(month.date().isoformat())
         if lead_state.get("WON", 0) > 0:
             won_rate.append(100* lead_state.get("WON", 0) / (lead_state.get("LOST", 0) +
                                                              lead_state.get("FORGIVEN", 0) +
                                                              lead_state.get("WON", 0)))
-        else:
-            won_rate.append(None)
+            months.append(month.date().isoformat())
 
     graph_data.append(["x"] + months)
     graph_data.append(["won-rate"] + won_rate)
