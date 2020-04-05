@@ -9,7 +9,7 @@ from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTable
 import leads.views as v
 
 
-leads_urls = [url(r'^review', v.review, name="review"),
+leads_urls = [url(r'^review/?$', v.review, name="review"),
               url(r'^csv/(?P<target>.*)', v.csv_export, name="csv_export"),
               url(r'^tag/(?P<tag_id>\d+)/$', v.tag, name="tag"),
               url(r'^tags/(?P<lead_id>\d+)$', v.tags, name="tags"),
