@@ -1,18 +1,27 @@
-{# Fragment that display timesheet and rates graph to be included with a jquery load #}
+{# Fragment that display won rate graph to be included with a jquery load #}
 {# One must include in its extrajs block core/_c3.html to load according js/css #} {% load i18n %}
 
 {% if graph_data %}
-<div id="profile_rates_graph"></div>
+<div id="won_rate_graph"></div>
     <script type="text/javascript">
         var chart = c3.generate({
-        bindto: '#profile_rates_graph',
+        bindto: '#won_rate_graph',
         data: {
              x: "x",
              columns: {{ graph_data | safe }},
              type: 'spline',
+             names: {
+                "won-rate": '{% trans "won rate" %}',
+                "won-rate-MA90": '{% trans "won rate MA90" %}',
+                "won-rate-MA180": '{% trans "won rate MA180" %}',
+                },
         },
+        spline: {interpolation: { type: "monotone" }},
         point: {
             show: false
+        },
+        grid: {
+            y: { show: true },
         },
         axis: {
             x: {
@@ -24,9 +33,11 @@
             },
             y: {
                 label : {
-                    text: '{% trans "daily rate (€)" %}',
+                    text: '{% trans "won rate (%)" %}',
                     position: 'outer-middle',
                 },
+                max: 100,
+                padding: 0,
             },
         },
       });

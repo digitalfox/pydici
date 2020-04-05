@@ -18,15 +18,16 @@ from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 from django.db.models.query import QuerySet
+from django.db.models.functions import TruncMonth
 from django.conf import settings
 
 from taggit.models import Tag, TaggedItem
 
-from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter
+from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter, moving_average
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
@@ -413,6 +414,48 @@ def graph_bar_jqp(request):
                    "min_date": min_date,
                    "user": request.user})
 
+@pydici_non_public
+@pydici_feature("reports")
+#@cache_page(60 * 60 * 24)
+def graph_leads_won_rate(request):
+    """Graph rates of won leads for given (or all) subsidiary"""
+    graph_data = []
+    start_date = (datetime.today() - timedelta(365*3)).replace(day=1)
+    leads = Lead.objects.filter(creation_date__gte=start_date)
+    if "subsidiary_id" in request.GET:
+        leads = leads.filter(subsidiary_id=int(request.GET["subsidiary_id"]))
+    leads = leads.annotate(month=TruncMonth("creation_date")).order_by("month")
+    leads = leads.values("month", "state").annotate(Count("state"))
+    leads_state = {}
+    won_rate = []
+    months = []
+
+    # compute lead state for each month
+    for lead in leads:
+        month = lead["month"]
+        if month not in leads_state:
+            leads_state[month] = {}
+        leads_state[month][lead["state"]] = lead["state__count"]
+
+    # compute won rate
+    for month, lead_state in leads_state.items():
+        months.append(month.date().isoformat())
+        if lead_state.get("WON", 0) > 0:
+            won_rate.append(100* lead_state.get("WON", 0) / (lead_state.get("LOST", 0) +
+                                                             lead_state.get("FORGIVEN", 0) +
+                                                             lead_state.get("WON", 0)))
+        else:
+            won_rate.append(None)
+
+    graph_data.append(["x"] + months)
+    graph_data.append(["won-rate"] + won_rate)
+    graph_data.append(["won-rate-MA90"] + moving_average(won_rate, 3))
+    graph_data.append(["won-rate-MA180"] + moving_average(won_rate, 6))
+
+    return render(request, "leads/graph_won_rate.html",
+              {"graph_data": json.dumps(graph_data),
+               "series_colors": COLORS,
+               "user": request.user})
 
 @pydici_non_public
 @pydici_feature("reports")

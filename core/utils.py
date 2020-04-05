@@ -322,20 +322,8 @@ def cacheable(cache_key, timeout=3600):
     return paramed_decorator
 
 
-def convertDictKeyToDate(data):
-    """Convert dict key from unicode string with %Y-%m-%d %H:%M:%S format, to date.
-    This is used to convert dict from queryset for sqlite3 that don't support properly date trunc functions
-    and mysql that use datetime or date dependings on version...
-    If data is empty or if key is already, date, return as is"""
-    if data and isinstance(list(data.keys())[0], str):
-        return dict((datetime.strptime(k, "%Y-%m-%d").date(), v) for k, v in list(data.items()))
-    elif data and isinstance(list(data.keys())[0], datetime):
-        return dict((k.date(), v) for k, v in list(data.items()))
-    else:
-        return data
-
 def cumulateList(aList):
-    """Return a list with cumulate element.
+    """Return a list with cumulative element.
     Ex. [1, 2, 2] => [1, 3, 5]"""
     s = 0
     result = []
@@ -453,3 +441,18 @@ def get_fiscal_year(d):
         return d.year - 1
     else:
         return d.year
+
+
+def moving_average(items, n):
+    """compute standard moving average of items with a window of n. n first values are None"""
+    print(items)
+    if n < 2:
+        return items
+    result = [None] * (n - 1)
+    for i, item in enumerate(items[n-1:]):
+        x = items[i:i+n]
+        if None in x:
+            result.append(None)
+        else:
+            result.append(sum(x)/n)
+    return result
