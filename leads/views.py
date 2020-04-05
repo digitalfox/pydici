@@ -416,12 +416,12 @@ def graph_bar_jqp(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-#@cache_page(60 * 60 * 24)
+@cache_page(60 * 60 * 24)
 def graph_leads_won_rate(request):
     """Graph rates of won leads for given (or all) subsidiary"""
     graph_data = []
-    start_date = (datetime.today() - timedelta(365*3)).replace(day=1)
-    leads = Lead.objects.filter(creation_date__gte=start_date)
+    start_date = (datetime.today() - timedelta(3 * 365))
+    leads = Lead.objects.filter(creation_date__gt=start_date)
     if "subsidiary_id" in request.GET:
         leads = leads.filter(subsidiary_id=int(request.GET["subsidiary_id"]))
     leads = leads.annotate(month=TruncMonth("creation_date")).order_by("month")
