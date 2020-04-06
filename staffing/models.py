@@ -265,7 +265,7 @@ class Mission(models.Model):
             return 0
 
     def target_margin(self):
-        return self.margin(mode="current")
+        return self.margin(mode="target")
 
     def objectiveMargin(self, startDate=None, endDate=None):
         """Compute margin over rate objective

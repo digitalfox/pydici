@@ -339,6 +339,6 @@ def check_missions_limited_mode(missions):
     offending_missions = []
     for mission in missions:
         if mission.management_mode == "LIMITED":
-            if mission.target_margin() < 0:
+            if mission.margin(mode="current") < 0:
                 offending_missions.append(mission)
     return offending_missions
