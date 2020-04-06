@@ -373,10 +373,17 @@ def compute_leads_state(relearn=True, leads_id=None):
     @:param leads_id: estimate those leads. All current leads if None. Parameter is a list of id to ease serialisation"""
     if not HAVE_SCIKIT:
         return
+
+    # only predict probal for in-progress leads
+    current_leads = Lead.objects.exclude(state__in=list(STATES.keys()))
+
+    # only work on given leads
     if leads_id:
-        current_leads = Lead.objects.filter(id__in=leads_id)
-    else:
-        current_leads = Lead.objects.exclude(state__in=list(STATES.keys()))
+        current_leads = current_leads.filter(id__in=leads_id)
+
+    if current_leads.count() == 0:
+        # nothing to do
+        return
 
     current_features, current_targets = extract_leads_state(current_leads)
 
