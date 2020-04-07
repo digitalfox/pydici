@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, date
 import json
 import os
 import codecs
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 
 from django.shortcuts import render
@@ -439,7 +439,7 @@ def graph_leads_won_rate(request):
         leads = leads.filter(subsidiary=subsidiary)
     leads = leads.annotate(month=TruncMonth("creation_date")).order_by("month")
     leads = leads.values("month", "state").annotate(Count("state"))
-    leads_state = {}
+    leads_state = OrderedDict()
     won_rate = []
     months = []
 
