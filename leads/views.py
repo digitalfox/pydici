@@ -453,16 +453,16 @@ def graph_leads_won_rate(request):
     # compute won rate
     for month, lead_state in leads_state.items():
         if lead_state.get("WON", 0) > 0:
-            won_rate.append(100* lead_state.get("WON", 0) / (lead_state.get("LOST", 0) +
+            won_rate.append(round(100* lead_state.get("WON", 0) / (lead_state.get("LOST", 0) +
                                                              lead_state.get("FORGIVEN", 0) +
-                                                             lead_state.get("WON", 0)))
+                                                             lead_state.get("WON", 0)), 2))
             months.append(month.date().isoformat())
 
     if len(months) > 0:
         graph_data.append(["x"] + months)
         graph_data.append(["won-rate"] + won_rate)
-        graph_data.append(["won-rate-MA90"] + moving_average(won_rate, 3))
-        graph_data.append(["won-rate-MA180"] + moving_average(won_rate, 6))
+        graph_data.append(["won-rate-MA90"] + moving_average(won_rate, 3, round_digits=2))
+        graph_data.append(["won-rate-MA180"] + moving_average(won_rate, 6, round_digits=2))
 
     return render(request, "leads/graph_won_rate.html",
               {"graph_data": json.dumps(graph_data),

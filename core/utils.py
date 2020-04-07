@@ -443,8 +443,8 @@ def get_fiscal_year(d):
         return d.year
 
 
-def moving_average(items, n):
-    """compute standard moving average of items with a window of n. n first values are None"""
+def moving_average(items, n, round_digits=None):
+    """compute standard moving average of items with a window of n. n first values are None. If round, round result to number of given digits"""
     if n < 2:
         return items
     result = [None] * (n - 1)
@@ -453,5 +453,8 @@ def moving_average(items, n):
         if None in x:
             result.append(None)
         else:
-            result.append(sum(x)/n)
+            r = sum(x)/n
+            if round_digits:
+                r = round(r, round_digits)
+            result.append(r)
     return result
