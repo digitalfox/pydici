@@ -458,10 +458,11 @@ def graph_leads_won_rate(request):
                                                              lead_state.get("WON", 0)))
             months.append(month.date().isoformat())
 
-    graph_data.append(["x"] + months)
-    graph_data.append(["won-rate"] + won_rate)
-    graph_data.append(["won-rate-MA90"] + moving_average(won_rate, 3))
-    graph_data.append(["won-rate-MA180"] + moving_average(won_rate, 6))
+    if len(months) > 0:
+        graph_data.append(["x"] + months)
+        graph_data.append(["won-rate"] + won_rate)
+        graph_data.append(["won-rate-MA90"] + moving_average(won_rate, 3))
+        graph_data.append(["won-rate-MA180"] + moving_average(won_rate, 6))
 
     return render(request, "leads/graph_won_rate.html",
               {"graph_data": json.dumps(graph_data),
