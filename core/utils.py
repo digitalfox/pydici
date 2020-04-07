@@ -445,7 +445,6 @@ def get_fiscal_year(d):
 
 def moving_average(items, n):
     """compute standard moving average of items with a window of n. n first values are None"""
-    print(items)
     if n < 2:
         return items
     result = [None] * (n - 1)
