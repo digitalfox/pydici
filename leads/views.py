@@ -521,6 +521,8 @@ def graph_leads_pipe(request):
 
     # Compute offset by measuring pipe of last month
     current_leads = Lead.objects.exclude(state__in=output_states)
+    if subsidiary:
+        current_leads = current_leads.filter(subsidiary=subsidiary)
     offset_count = current_leads.count() - pipe_count[-1]
     pipe_count = [i + offset_count for i in pipe_count]
     offset_amount = (current_leads.aggregate(Sum("sales"))["sales__sum"] or 0) - pipe_amount[-1]
