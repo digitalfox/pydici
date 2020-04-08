@@ -19,7 +19,12 @@
 	$('#graph_bar_jqp_content').load('{% url 'leads:graph_bar_jqp' %}?{{ scope_current_filter }}')
 	</script>
     <br/>&nbsp;<br/>
-    <div id="graph_won_rate_content" class="col-lg-10"></div>
+    <div id="graph_leads_pipe_content" class="col-lg-11"></div>
+    <script type="text/javascript">
+    $('#graph_leads_pipe_content').load('{% url 'leads:graph_leads_pipe' %}?{{ scope_current_filter }}')
+    </script>
+    <br/>&nbsp;<br/>
+    <div id="graph_won_rate_content" class="col-lg-11"></div>
     <script type="text/javascript">
     $('#graph_won_rate_content').load('{% url 'leads:graph_leads_won_rate' %}?{{ scope_current_filter }}')
     </script>

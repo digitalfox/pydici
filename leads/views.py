@@ -18,7 +18,7 @@ from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Min
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 from django.db.models.query import QuerySet
@@ -27,7 +27,7 @@ from django.conf import settings
 
 from taggit.models import Tag, TaggedItem
 
-from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter, moving_average
+from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter, moving_average, nextMonth
 from crm.utils import get_subsidiary_from_request
 from people.utils import get_scopes
 from leads.models import Lead
@@ -468,6 +468,82 @@ def graph_leads_won_rate(request):
               {"graph_data": json.dumps(graph_data),
                "series_colors": COLORS,
                "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+#@cache_page(60 * 60 * 24)
+def graph_leads_pipe(request):
+    """Graph in/out leads for given (or all) subsidiary"""
+    graph_data = []
+    input_count = {}
+    input_amount = {}
+    output_count = {}
+    output_amount = {}
+    output_states = ("WON", "LOST", "FORGIVEN", "SLEEPING")
+    start_date = (datetime.today() - timedelta(3 * 365))
+    subsidiary = get_subsidiary_from_request(request)
+    leads = Lead.objects.filter(creation_date__gt=start_date)
+    leads = leads.annotate(timesheet_start=Min("mission__timesheet__working_date"))
+    if subsidiary:
+        leads = leads.filter(subsidiary=subsidiary)
+
+    for lead in leads:
+        month = lead.creation_date.replace(day=1).date()
+        input_count[month] = input_count.get(month, 0) + 1
+        input_amount[month] = input_amount.get(month, 0) + (lead.sales or 0)
+        if lead.state in output_states:
+            lead_start = lead.timesheet_start or lead.start_date or lead.update_date.date()
+            lead_start = lead_start.replace(day=1)
+            output_count[lead_start] = output_count.get(lead_start, 0) - 1
+            output_amount[lead_start] = output_amount.get(lead_start, 0) - (lead.sales or 0)
+
+    pipe_end_date = max(max(output_count.keys()), max(input_count.keys()))
+    pipe_start_date = min(min(output_count.keys()), min(input_count.keys()))
+    months = []
+    month = pipe_start_date
+    pipe_count = [0]  # start with fake 0 to allow sum with previous month
+    pipe_amount = [0]
+    while month <= pipe_end_date:
+        months.append(month)
+        pipe_count.append(pipe_count[-1] + input_count.get(month, 0) + output_count.get(month, 0))
+        pipe_amount.append(pipe_count[-1] + input_amount.get(month, 0) + output_amount.get(month, 0))
+        month = nextMonth(month)
+    # Remove fake zero
+    pipe_count.pop(0)
+    pipe_amount.pop(0)
+
+    # Pad for month without data and switch to list of values
+    input_count = [input_count.get(month, 0) for month in months]
+    input_amount = [round(input_amount.get(month, 0)) for month in months]
+    output_count = [output_count.get(month, 0) for month in months]
+    output_amount = [round(output_amount.get(month, 0)) for month in months]
+
+    # Compute offset by measuring pipe of last month
+    current_leads = Lead.objects.exclude(state__in=output_states)
+    offset_count = current_leads.count() - pipe_count[-1]
+    pipe_count = [i + offset_count for i in pipe_count]
+    offset_amount = (current_leads.aggregate(Sum("sales"))["sales__sum"] or 0) - pipe_amount[-1]
+    pipe_amount = [round(i + offset_amount) for i in pipe_amount]
+
+    graph_data.append(["x"] + [i.isoformat() for i in months])
+    graph_data.append(["input_count"] + input_count)
+    graph_data.append(["input_amount"] + input_amount)
+    graph_data.append(["output_count"] + output_count)
+    graph_data.append(["output_amount"] + output_amount)
+    graph_data.append(["pipe_count"] + pipe_count)
+    graph_data.append(["pipe_amount"] + pipe_amount)
+
+    count_max = max([max(input_count), -max(output_count), max(pipe_count)])
+    amount_max = max([max(input_amount), -max(output_amount), max(pipe_amount)])
+
+    return render(request, "leads/graph_leads_pipe.html",
+              {"graph_data": json.dumps(graph_data),
+               "count_max": count_max,
+               "amount_max": amount_max,
+               "series_colors": COLORS,
+               "user": request.user})
+
 
 @pydici_non_public
 @pydici_feature("reports")

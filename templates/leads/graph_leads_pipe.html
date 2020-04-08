@@ -1,0 +1,72 @@
+{# Fragment that display leads pipe graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_c3.html to load according js/css #}
+{% load i18n %}
+{% load l10n %}
+
+{% if graph_data %}
+<div id="leads_pipe_graph"></div>
+    <script type="text/javascript">
+        var chart = c3.generate({
+        bindto: '#leads_pipe_graph',
+        data: {
+             x: "x",
+             columns: {{ graph_data | safe }},
+             type: 'bar',
+             types: { pipe_count: "spline",
+                      pipe_amount: "spline"
+                      },
+             groups: [["input_count", "output_count"],
+                      ["input_amount", "output_amount"],
+                      ],
+             axes: {
+                input_count: 'y',
+                output_count: 'y',
+                pipe_count: 'y',
+                input_amount: 'y2',
+                output_amount: 'y2',
+                pipe_amount: 'y2',
+                },
+             names: {
+                "input_count": '{% trans "input count" %}',
+                "input_amount": '{% trans "input amount" %}',
+                "output_count": '{% trans "output count" %}',
+                "output_amount": '{% trans "output amount" %}',
+                },
+        },
+        spline: {interpolation: { type: "monotone" }},
+        point: {
+            show: false
+        },
+        grid: {
+            y: { show: true },
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    format: '%Y-%m',
+                    rotate: 45,
+                },
+            },
+            y: {
+                label : {
+                    text: '{% trans "Number of lead in pipe" %}',
+                    position: 'outer-middle',
+                },
+                min: -{{ count_max|unlocalize }},
+                max: {{ count_max|unlocalize }},
+            },
+            y2: {
+               show: true,
+               label : {
+                    text: '{% trans "Pipe amount (k€)" %}',
+                    position: 'outer-middle',
+                },
+                min: -{{ amount_max|unlocalize }},
+                max: {{ amount_max|unlocalize }},
+
+            }
+        },
+      });
+    </script>
+{% endif %}
