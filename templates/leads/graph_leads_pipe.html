@@ -35,12 +35,12 @@
                 pipe_amount: 'y2',
                 },
              names: {
-                "input_count": '{% trans "input count" %}',
-                "output_count": '{% trans "output count" %}',
-                "pipe_count":   '{% trans "count of leads in pipe" %}',
-                "input_amount": '{% trans "input amount" %}',
-                "output_amount": '{% trans "output amount" %}',
-                "pipe_amount":   '{% trans "amount of leads in pipe" %}'
+                "input_count": "{% trans "input count" %}",
+                "output_count": "{% trans "output count" %}",
+                "pipe_count":   "{% trans "count of leads in pipe" %}",
+                "input_amount": "{% trans "input amount" %}",
+                "output_amount": "{% trans "output amount" %}",
+                "pipe_amount":   "{% trans "amount of leads in pipe" %}"
                 },
         },
         spline: {interpolation: { type: "monotone" }},
@@ -60,7 +60,7 @@
             },
             y: {
                 label : {
-                    text: '{% trans "Number of lead in pipe" %}',
+                    text: "{% trans "Number of lead" %}",
                     position: 'outer-middle',
                 },
                 min: -{{ count_max|unlocalize }},
@@ -69,7 +69,7 @@
             y2: {
                show: true,
                label : {
-                    text: '{% trans "Pipe amount (k€)" %}',
+                    text: "{% trans "Pipe amount (k€)" %}",
                     position: 'outer-middle',
                 },
                 min: -{{ amount_max|unlocalize }},

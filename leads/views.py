@@ -530,10 +530,10 @@ def graph_leads_pipe(request):
 
     graph_data.append(["x"] + [i.isoformat() for i in months])
     graph_data.append(["input_count"] + input_count)
-    graph_data.append(["input_amount"] + input_amount)
     graph_data.append(["output_count"] + output_count)
-    graph_data.append(["output_amount"] + output_amount)
     graph_data.append(["pipe_count"] + pipe_count)
+    graph_data.append(["input_amount"] + input_amount)
+    graph_data.append(["output_amount"] + output_amount)
     graph_data.append(["pipe_amount"] + pipe_amount)
 
     count_max = max([max(input_count), -max(output_count), max(pipe_count)])
