@@ -18,6 +18,14 @@
              groups: [["input_count", "output_count"],
                       ["input_amount", "output_amount"],
                       ],
+             colors: {
+                input_count: '#1f77b4',
+                output_count: '#29a0ef',
+                pipe_count: '#2b4398',
+                input_amount: '#36982f',
+                output_amount: '#77be6a',
+                pipe_amount: '#39a531',
+                },
              axes: {
                 input_count: 'y',
                 output_count: 'y',
@@ -28,9 +36,11 @@
                 },
              names: {
                 "input_count": '{% trans "input count" %}',
-                "input_amount": '{% trans "input amount" %}',
                 "output_count": '{% trans "output count" %}',
+                "pipe_count":   '{% trans "count of leads in pipe" %}',
+                "input_amount": '{% trans "input amount" %}',
                 "output_amount": '{% trans "output amount" %}',
+                "pipe_amount":   '{% trans "amount of leads in pipe" %}'
                 },
         },
         spline: {interpolation: { type: "monotone" }},

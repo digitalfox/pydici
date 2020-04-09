@@ -472,7 +472,7 @@ def graph_leads_won_rate(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-#@cache_page(60 * 60 * 24)
+@cache_page(60 * 60 * 24)
 def graph_leads_pipe(request):
     """Graph in/out leads for given (or all) subsidiary"""
     graph_data = []
