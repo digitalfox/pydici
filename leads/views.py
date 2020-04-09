@@ -493,10 +493,10 @@ def graph_leads_pipe(request):
         input_count[month] = input_count.get(month, 0) + 1
         input_amount[month] = input_amount.get(month, 0) + (lead.sales or 0)
         if lead.state in output_states:
-            lead_start = lead.timesheet_start or lead.start_date or lead.update_date.date()
-            lead_start = lead_start.replace(day=1)
-            output_count[lead_start] = output_count.get(lead_start, 0) - 1
-            output_amount[lead_start] = output_amount.get(lead_start, 0) - (lead.sales or 0)
+            out_date = lead.timesheet_start or lead.start_date or lead.update_date.date()
+            out_date = out_date.replace(day=1)
+            output_count[out_date] = output_count.get(out_date, 0) - 1
+            output_amount[out_date] = output_amount.get(out_date, 0) - (lead.sales or 0)
 
     pipe_end_date = max(max(output_count.keys()), max(input_count.keys()))
     pipe_start_date = min(min(output_count.keys()), min(input_count.keys()))
@@ -507,7 +507,7 @@ def graph_leads_pipe(request):
     while month <= pipe_end_date:
         months.append(month)
         pipe_count.append(pipe_count[-1] + input_count.get(month, 0) + output_count.get(month, 0))
-        pipe_amount.append(pipe_count[-1] + input_amount.get(month, 0) + output_amount.get(month, 0))
+        pipe_amount.append(pipe_amount[-1] + input_amount.get(month, 0) + output_amount.get(month, 0))
         month = nextMonth(month)
     # Remove fake zero
     pipe_count.pop(0)
