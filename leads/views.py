@@ -28,7 +28,7 @@ from django.conf import settings
 from taggit.models import Tag, TaggedItem
 
 from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter, moving_average, nextMonth
-from crm.utils import get_subsidiary_from_request, get_subsidiary_from_session
+from crm.utils import get_subsidiary_from_session
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
