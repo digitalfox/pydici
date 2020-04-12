@@ -28,8 +28,7 @@ from django.conf import settings
 from taggit.models import Tag, TaggedItem
 
 from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter, moving_average, nextMonth
-from crm.utils import get_subsidiary_from_request
-from people.utils import get_scopes
+from crm.utils import get_subsidiary_from_request, get_subsidiary_from_session
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import postSaveLead
@@ -243,9 +242,6 @@ def mail_lead(request, lead_id=0):
 @pydici_non_public
 @pydici_feature("leads")
 def review(request):
-    subsidiary = get_subsidiary_from_request(request)
-    # Get scopes
-    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, None, target="subsidiary")
     return render(request, "leads/review.html",
                   {"active_data_url": reverse('leads:active_lead_table_DT'),
                    "active_data_options": ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
@@ -256,10 +252,6 @@ def review(request):
                    "recent_archived_data_options" : ''' "columnDefs": [{ "orderable": false, "targets": [5,8] },
                                                                        { className: "hidden-xs hidden-sm hidden-md", "targets": [10,11]}],
                                                          "order": [[9, "asc"]] ''',
-                   "scope": subsidiary or _("Everybody"),
-                   "scope_current_filter": scope_current_filter,
-                   "scope_current_url_filter": scope_current_url_filter,
-                   "scopes": scopes,
                    "user": request.user})
 
 
@@ -387,7 +379,7 @@ def graph_bar_jqp(request):
     graph_data = []  # Data that will be returned to jqplot
 
     # Gathering data
-    subsidiary = get_subsidiary_from_request(request)
+    subsidiary = get_subsidiary_from_session(request)
     leads = Lead.objects.filter(creation_date__gt=date.today() - timedelta(3 * 365))
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
@@ -433,7 +425,7 @@ def graph_leads_won_rate(request):
     """Graph rates of won leads for given (or all) subsidiary"""
     graph_data = []
     start_date = (datetime.today() - timedelta(3 * 365))
-    subsidiary = get_subsidiary_from_request(request)
+    subsidiary = get_subsidiary_from_session(request)
     leads = Lead.objects.filter(creation_date__gt=start_date)
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
@@ -482,7 +474,7 @@ def graph_leads_pipe(request):
     output_amount = {}
     output_states = ("WON", "LOST", "FORGIVEN", "SLEEPING")
     start_date = (datetime.today() - timedelta(3 * 365))
-    subsidiary = get_subsidiary_from_request(request)
+    subsidiary = get_subsidiary_from_session(request)
     leads = Lead.objects.filter(creation_date__gt=start_date)
     leads = leads.annotate(timesheet_start=Min("mission__timesheet__working_date"))
     if subsidiary:

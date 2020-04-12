@@ -150,6 +150,27 @@
         </li>
         </ul>
 
+        {# subsidiary context switcher #}
+            <div class="btn-group navbar-form pull-right hidden-sm">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  {% if current_subsidiary %}{{ current_subsidiary }}{% else %}{% trans 'all subsidiaries' %}{% endif %} <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                  {% for subsidiary in subsidiaries %}
+                        <li><a href="{{ request.path }}?subsidiary_id={{ subsidiary.id }}" >
+                            {% ifequal subsidiary.id request.session.subsidiary_id %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endifequal %}
+                            {{ subsidiary }}
+                        </a></li>
+                  {% endfor %}
+                <li role="separator" class="divider"></li>
+                <li><a href="{{ request.path }}?subsidiary_id=0">
+                    {% if not current_subsidiary %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}{% trans 'all subsidiaries' %}
+                </a></li>
+              </ul>
+            </div>
+        {# end of subsidiary context switcher #}
+
+
         {% if pydici_feature.search %}
         <form class="navbar-form pull-right hidden-sm" role="search" action="{% url 'core:search' %}" method="GET">
             <div class="form-group">

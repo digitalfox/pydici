@@ -12,7 +12,7 @@
          columns: {{ graph_data | safe }},
          type: 'bar',
          types : { '{% trans "growth" %}' : 'spline' },
-         groups: [{{ subsidiaries | safe }}],
+         groups: [{{ subsidiaries_names | safe }}],
          axes : { '{% trans "growth" %}': 'y2' },
          },
 

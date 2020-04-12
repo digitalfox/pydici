@@ -168,8 +168,7 @@ def dashboard(request):
     """Tactical management dashboard. This views is in core module because it aggregates data
     accross different modules"""
 
-    return render(request, "core/dashboard.html",
-                  {"subsidiaries": Subsidiary.objects.all()})
+    return render(request, "core/dashboard.html")
 
 
 @pydici_non_public

@@ -87,6 +87,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'core.middleware.ScopeMiddleware',
 ]
 
 if DEBUG:
@@ -114,6 +115,7 @@ TEMPLATES = [{
                                "django.contrib.messages.context_processors.messages",
                                "django.template.context_processors.request",
                                "core.context_processors.feature",
+                               "core.context_processors.scope",
                                ),
                 },
 }]

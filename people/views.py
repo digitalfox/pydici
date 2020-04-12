@@ -194,7 +194,7 @@ def graph_people_count(request, subsidiary_id=None, team_id=None):
     consultants = Consultant.objects.filter(subcontractor=False, productive=True)
     subcontractors = Consultant.objects.filter(subcontractor=True, productive=True)
 
-    subsidiaries = Subsidiary.objects.filter(mission__nature="PROD")
+    subsidiaries = Subsidiary.objects.filter(mission__nature="PROD").distinct()
     subsidiaries = subsidiaries.annotate(Count("mission__timesheet__consultant"))
     subsidiaries = subsidiaries.filter(mission__timesheet__consultant__count__gt=0)
 

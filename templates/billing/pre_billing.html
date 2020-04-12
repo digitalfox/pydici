@@ -98,9 +98,9 @@
 
 
 <div id="internal"></div>
-{% for subsidiaries, subsidiary_internal_billing in internal_billing.items %}
+{% for internal_subsidiaries, subsidiary_internal_billing in internal_billing.items %}
     <div class="page-header">
-        <h1>{% blocktrans with from=subsidiaries.0 to=subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} ({{ start_date }} - {{ end_date }})</h1>
+        <h1>{% blocktrans with from=internal_subsidiaries.0 to=internal_subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} ({{ start_date }} - {{ end_date }})</h1>
     </div>
     {% for lead, lead_data in subsidiary_internal_billing %}
         <h2><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>

@@ -727,7 +727,7 @@ def graph_yearly_billing(request):
     return render(request, "billing/graph_yearly_billing.html",
                   {"graph_data": json.dumps(graph_data),
                    "years": years,
-                   "subsidiaries" : json.dumps(labels),
+                   "subsidiaries_names" : json.dumps(labels),
                    "series_colors": COLORS,
                    "user": request.user})
 

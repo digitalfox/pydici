@@ -10,10 +10,6 @@
 
 {% block content %}
 
-    <!-- Scope  button -->
-    {% url 'leads:review' as page_url %}
-    {% include "core/_scope_button.html" %}
-
 	<div id="graph_bar_jqp_content" class="col-lg-12"></div>
 	<script type="text/javascript">
 	$('#graph_bar_jqp_content').load('{% url 'leads:graph_bar_jqp' %}?{{ scope_current_filter }}')
