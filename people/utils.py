@@ -20,37 +20,24 @@ from expense.models import Expense
 from expense.utils import user_expense_team
 
 
-def get_scopes(subsidiary, team, target="all"):
-    """Define scopes than can be used to filter data. Either team, subsidiary or everybody (default). Format is (type, filter, label) where type is "team_id" or "subsidiary_id".
-    @:param
+def get_team_scopes(subsidiary, team):
+    """Define scopes than can be used to filter data on team".
     @:param team
-    @:param target: all (default), subsidiary or team
-    @:param include_team: True (default), include team in scope
     @:return: scopes, scope_current_filter, scope_current_url_filter"""
-
-    #TODO: change this function to handle only team scope.
 
     # Gather scopes
     scopes = [(None, "all", _("Everybody")), ]
 
-    if target in ("all", "subsidiary"):
-        for s in Subsidiary.objects.filter(consultant__active=True, consultant__subcontractor=False,
-                                           consultant__productive=True).annotate(num=Count('consultant')).filter(num__gt=0):
-            scopes.append(("subsidiary_id", "subsidiary_id=%s" % s.id, str(s)))
+    consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
+    if subsidiary:
+        consultants = consultants.filter(company=subsidiary)
+    consultants = consultants.values_list("staffing_manager", "staffing_manager__name").order_by().distinct()
+    for manager_id, manager_name in consultants:
+        scopes.append(
+            ("team_id", "team_id=%s" % manager_id, _("team %(manager_name)s") % {"manager_name": manager_name}))
 
-    if target in ("all", "team"):
-        consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
-        if subsidiary:
-            consultants = consultants.filter(company=subsidiary)
-        consultants = consultants.values_list("staffing_manager", "staffing_manager__name").order_by().distinct()
-        for manager_id, manager_name in consultants:
-            scopes.append(
-                ("team_id", "team_id=%s" % manager_id, _("team %(manager_name)s") % {"manager_name": manager_name}))
     # Compute uri and filters
-    if target == "subsidiary" and subsidiary:
-        scope_current_filter = "subsidiary_id=%s" % subsidiary.id
-        scope_current_url_filter = "subsidiary/%s" % subsidiary.id
-    elif target == "team" and team:
+    if team:
         scope_current_filter = "team_id=%s" % team.id
         scope_current_url_filter = "team/%s" % team.id
     else:

@@ -49,7 +49,7 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
     timesheet_report_data, check_missions_limited_mode
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm
-from people.utils import get_scopes
+from people.utils import get_team_scopes
 from crm.utils import get_subsidiary_from_session
 
 
@@ -459,7 +459,7 @@ def pdc_review(request, year=None, month=None):
     else:
         staffing.sort(key=lambda x: x[0].profil.level)  # Sort by level
 
-    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team, target="team")
+    scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
     if team:
         team_name = _("team %(manager_name)s") % {"manager_name": team}
     else:
@@ -481,8 +481,8 @@ def pdc_review(request, year=None, month=None):
                    "groupby_label": groups[groupby],
                    "groups": groups,
                    "scope": team_name or subsidiary or _("Everybody"),
-                   "team_current_filter" : scope_current_filter,
-                   "team_current_url_filter": scope_current_url_filter,
+                   "team_current_filter" : team_current_filter,
+                   "team_current_url_filter": team_current_url_filter,
                    "scopes": scopes,})
 
 
@@ -623,8 +623,8 @@ def prod_report(request, year=None, month=None):
         totalData.append([status, "", [formats.number_format(turnover), formats.number_format(forecast)]])
     data.append([None, totalData])
 
-    # Get scopes
-    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team, target="team")
+    # Get team scopes
+    scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
     if team:
         team_name = _("team %(manager_name)s") % {"manager_name": team}
     else:
@@ -637,8 +637,8 @@ def prod_report(request, year=None, month=None):
                    "previous_slice_date": previous_slice_date,
                    "next_slice_date": next_slice_date,
                    "scope": team_name or  subsidiary or _("Everybody"),
-                   "team_current_filter": scope_current_filter,
-                   "team_current_url_filter": scope_current_url_filter,
+                   "team_current_filter": team_current_filter,
+                   "team_current_url_filter": team_current_url_filter,
                    "scopes": scopes })
 
 @pydici_non_public
