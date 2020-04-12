@@ -444,7 +444,7 @@ def supplierbill_delete(request, bill_id):
 @pydici_feature("billing_request")
 def pre_billing(request, start_date=None, end_date=None, mine=False):
     """Pre billing page: help to identify bills to send"""
-
+    subsidiary = get_subsidiary_from_session(request)
     if end_date is None:
         end_date = date.today().replace(day=1)
     else:
@@ -495,6 +495,11 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
 
     fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
     undefinedBillingModeMissions = undefinedBillingModeMissions.order_by("lead").distinct()
+
+    if subsidiary: # filter on subsidiary
+        fixedPriceMissions = fixedPriceMissions.filter(subsidiary=subsidiary)
+        timespent_timesheets = timespent_timesheets.filter(mission__subsidiary=subsidiary)
+        undefinedBillingModeMissions = undefinedBillingModeMissions.filter(subsidiary=subsidiary)
 
     timesheet_data = timespent_timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
     timeSpentBilling = get_billing_info(timesheet_data)

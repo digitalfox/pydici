@@ -1256,11 +1256,10 @@ def holidays_planning(request, year=None, month=None):
     else:
         month = date.today().replace(day=1)
 
+    subsidiary = get_subsidiary_from_session(request)
     holidays_days = Holiday.objects.all().values_list("day", flat=True)
     days = daysOfMonth(month)
     data = []
-    # TODO: holidays (jours fériés
-    # TODO: week end)
 
     if date.today().replace(day=1) == month:
         today = datetime.today().day
@@ -1269,7 +1268,10 @@ def holidays_planning(request, year=None, month=None):
 
     next_month = nextMonth(month)
     previous_month = previousMonth(month)
-    for consultant in Consultant.objects.filter(active=True, subcontractor=False):
+    consultants = Consultant.objects.filter(active=True, subcontractor=False)
+    if subsidiary:
+        consultants = consultants.filter(company=subsidiary)
+    for consultant in consultants:
         consultantData = [consultant, ]
         consultantHolidays = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
                                                       consultant=consultant, mission__nature="HOLIDAYS", charge__gt=0).values_list("working_date", flat=True)
