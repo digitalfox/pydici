@@ -24,7 +24,8 @@ from taggit.models import Tag
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciSubcontractordMixin
 from leads.models import Lead
 from people.models import Consultant
-from crm.models import Company, Contact, Subsidiary
+from crm.models import Company, Contact
+from crm.utils import get_subsidiary_from_session
 from staffing.models import Mission, FinancialCondition, Staffing, Timesheet
 from billing.models import ClientBill
 from expense.models import Expense
@@ -62,6 +63,7 @@ def search(request):
     consultants = companies = contacts = leads = missions = bills = tags = None
     max_record = 50
     more_record = False # Wether we have more records
+    subsidiary = get_subsidiary_from_session(request)
 
     if len(words) == 1:
         word = words[0]
@@ -84,6 +86,8 @@ def search(request):
             consultants = consultants.filter(Q(name__icontains=word) |
                                              Q(trigramme__icontains=word))
         consultants = consultants.distinct()
+        if subsidiary:
+            consultants = consultants.filter(company=subsidiary)
 
         # Companies
         companies = Company.objects.all()
@@ -115,7 +119,10 @@ def search(request):
                                  Q(client__organisation__company__name__icontains=word) |
                                  Q(client__organisation__name__iexact=word) |
                                  Q(deal_id__icontains=word[:-1]))  # Squash last letter that could be mission letter
-        leads = leads.distinct().select_related("client__organisation__company")[:max_record]
+        leads = leads.distinct()
+        if subsidiary:
+            leads = leads.filter(subsidiary=subsidiary)
+        leads = leads.select_related("client__organisation__company")[:max_record]
         if len(leads) >= max_record:
             more_record = True
 
@@ -124,6 +131,8 @@ def search(request):
         for word in words:
             missions = missions.filter(Q(deal_id__icontains=word) |
                                        Q(description__icontains=word))
+        if subsidiary:
+            missions = missions.filter(subsidiary=subsidiary)
         missions = missions.select_related("lead__client__organisation__company")[:max_record]
         if len(missions) >= max_record:
             more_record = True
@@ -141,6 +150,8 @@ def search(request):
         for word in words:
             bills = bills.filter(Q(bill_id__icontains=word) |
                                  Q(comment__icontains=word))
+        if subsidiary:
+            bills = bills.filter(lead__subsidiary=subsidiary)
         bills = bills.select_related("lead__client__organisation__company")[:max_record]
         if len(bills) >= max_record:
             more_record = True
