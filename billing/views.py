@@ -40,11 +40,10 @@ from billing.utils import get_billing_info, update_client_bill_from_timesheet, u
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
-from people.utils import get_scopes
 from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
 from staffing.views import MissionTimesheetReportPdf
 from crm.models import Subsidiary
-from crm.utils import get_subsidiary_from_request
+from crm.utils import get_subsidiary_from_session
 from core.utils import get_fiscal_years_from_qs, get_parameter, user_has_feature
 from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth
@@ -60,7 +59,7 @@ def bill_review(request):
     today = date.today()
     wait_warning = timedelta(15)  # wait in days used to warn that a bill is due soon
 
-    subsidiary = get_subsidiary_from_request(request)
+    subsidiary = get_subsidiary_from_session(request)
 
     # Get bills overdue, due soon, litigious and recently paid
     overdue_bills = ClientBill.objects.filter(state="1_SENT", due_date__lte=today).select_related()
@@ -96,9 +95,6 @@ def bill_review(request):
     if subsidiary:
         leads_without_bill = leads_without_bill.filter(subsidiary=subsidiary)
 
-    # Get scopes
-    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, None, target="subsidiary")
-
     return render(request, "billing/bill_review.html",
                   {"overdue_bills": overdue_bills,
                    "soondue_bills": soondue_bills,
@@ -115,10 +111,6 @@ def bill_review(request):
                    "supplier_overdue_bills": supplier_overdue_bills,
                    "billing_management": user_has_feature(request.user, "billing_management"),
                    "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
-                   "scope": subsidiary or _("Everybody"),
-                   "scope_current_filter": scope_current_filter,
-                   "scope_current_url_filter": scope_current_url_filter,
-                   "scopes": scopes,
                    "user": request.user})
 
 
@@ -583,7 +575,7 @@ def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_
 def graph_billing_jqp(request):
     """Nice graph bar of incomming cash from bills
     @todo: per year, with start-end date"""
-    subsidiary = get_subsidiary_from_request(request)
+    subsidiary = get_subsidiary_from_session(request)
     billsData = defaultdict(list)  # Bill graph Data
     tsData = {}  # Timesheet done work graph data
     staffingData = {}  # Staffing forecasted work graph data
@@ -744,7 +736,7 @@ def graph_outstanding_billing(request):
     outstanding = []
     outstanding_overdue = []
     graph_data = []
-    subsidiary = get_subsidiary_from_request(request)
+    subsidiary = get_subsidiary_from_session(request)
     while current < end:
         months.append(current.isoformat())
         next_month = nextMonth(current)

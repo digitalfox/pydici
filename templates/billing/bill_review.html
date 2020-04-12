@@ -26,10 +26,6 @@
                 {% if supplier_soondue_bills %}<li><a href="#supplier_soondue_bills">{% trans "Supplier soon due bills" %}</a></li>{% endif %}
             </ul>
         </div>
-        <!-- Scope  button -->
-        {% url 'billing:bill_review' as page_url %}
-        {% include "core/_scope_button.html" %}
-
     </div>
 
     <br/>
