@@ -14,6 +14,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from staffing.models import Mission
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
+from crm.utils import get_subsidiary_from_session
 
 
 class MissionsViewsMixin(PydiciNonPublicdMixin, PydiciFeatureMixin):
@@ -30,12 +31,21 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
     ko_sign = mark_safe("""<span class="glyphicon glyphicon-warning-sign" style="color:red"></span>""")
     ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"></span>""")
 
+    def _filter_on_subsidiary(self, qs):
+        subsidiary = get_subsidiary_from_session(self.request)
+        if subsidiary:
+            qs = qs.filter(subsidiary=subsidiary)
+        return qs
+
     def get_initial_queryset(self):
-        return Mission.objects.all().select_related("lead__client__organisation__company", "subsidiary")
+        qs = Mission.objects.all()
+        qs = self._filter_on_subsidiary(qs)
+        return qs.select_related("lead__client__organisation__company", "subsidiary")
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
         search = self.request.GET.get(u'search[value]', None)
+        qs = self._filter_on_subsidiary(qs)
         if search:
             qs = qs.filter(Q(deal_id__icontains=search) |
                            Q(description__icontains=search) |

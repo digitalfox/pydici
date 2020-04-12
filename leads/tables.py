@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 
 from leads.models import Lead
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
+from crm.utils import get_subsidiary_from_session
 
 
 class LeadsViewsReadMixin(PydiciNonPublicdMixin, PydiciFeatureMixin):
@@ -33,8 +34,9 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
     consultantTemplate = get_template("people/__consultant_name.html")
 
     def _filter_on_subsidiary(self, qs):
-        if "subsidiary_id" in self.request.session:
-            qs = qs.filter(subsidiary_id=self.request.session["subsidiary_id"])
+        subsidiary = get_subsidiary_from_session(self.request)
+        if subsidiary:
+            qs = qs.filter(subsidiary=subsidiary)
         return qs
 
     def get_initial_queryset(self):

@@ -16,10 +16,17 @@ from core.utils import to_int_or_round
 from billing.views import BillingRequestMixin
 from billing.models import ClientBill, SupplierBill
 from people.models import Consultant
-from leads.models import Lead
+from crm.utils import get_subsidiary_from_session
+
 
 class BillTableDT(PydiciNonPublicdMixin, BillingRequestMixin, BaseDatatableView):
     """Base bill table backend for datatables"""
+
+    def _filter_on_subsidiary(self, qs):
+        subsidiary = get_subsidiary_from_session(self.request)
+        if subsidiary:
+            qs = qs.filter(lead__subsidiary=subsidiary)
+        return qs
 
     def get_filters(self, search):
         """Custom method to get Q filter objects that should be combined with OR keyword"""
@@ -45,6 +52,7 @@ class BillTableDT(PydiciNonPublicdMixin, BillingRequestMixin, BaseDatatableView)
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
         search = self.request.GET.get('search[value]', None)
+        qs = self._filter_on_subsidiary(qs)
         if search:
             filters = self.get_filters(search)
             query = Q()
@@ -79,7 +87,9 @@ class ClientBillInCreationTableDT(BillTableDT):
     order_columns = columns
 
     def get_initial_queryset(self):
-        return ClientBill.objects.filter(state__in=("0_DRAFT", "0_PROPOSED"))
+        qs = ClientBill.objects.filter(state__in=("0_DRAFT", "0_PROPOSED"))
+        qs = self._filter_on_subsidiary(qs)
+        return qs
 
     def get_filters(self, search):
         filters = super(ClientBillInCreationTableDT, self).get_filters(search)
@@ -106,7 +116,9 @@ class ClientBillArchiveTableDT(BillTableDT):
     max_display_length = 100
 
     def get_initial_queryset(self):
-        return ClientBill.objects.exclude(state__in=("0_DRAFT", "0_PROPOSED"))
+        qs = ClientBill.objects.exclude(state__in=("0_DRAFT", "0_PROPOSED"))
+        qs = self._filter_on_subsidiary(qs)
+        return qs
 
 
 class SupplierBillArchiveTableDT(BillTableDT):
@@ -116,11 +128,14 @@ class SupplierBillArchiveTableDT(BillTableDT):
     max_display_length = 20
 
     def get_initial_queryset(self):
-        return SupplierBill.objects.all()
+        qs = SupplierBill.objects.all()
+        qs = self._filter_on_subsidiary(qs)
+        return qs
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
         search = self.request.GET.get('search[value]', None)
+        qs = self._filter_on_subsidiary(qs)
         if search:
             qs = qs.filter(Q(bill_id__icontains=search) |
                            Q(lead__deal_id__icontains=search) |
