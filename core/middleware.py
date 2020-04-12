@@ -14,6 +14,9 @@ class ScopeMiddleware:
 
     def __call__(self, request):
         if "subsidiary_id" in request.GET:
-            subsidiary_id = int(request.GET["subsidiary_id"])
+            try:
+                subsidiary_id = int(request.GET["subsidiary_id"])
+            except ValueError:
+                subsidiary_id = 0
             request.session["subsidiary_id"] = subsidiary_id
         return self.get_response(request)

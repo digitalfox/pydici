@@ -49,11 +49,9 @@ def scope(request):
     current_subsidiary = get_subsidiary_from_session(request)
     if current_subsidiary:
         scope_current_filter = "subsidiary_id=%s" % current_subsidiary.id
-        scope_current_url_filter = "subsidiary/%s" % current_subsidiary.id
     else:
         scope_current_filter = ""
         scope_current_url_filter = ""
     return {"subsidiaries": s,
             "current_subsidiary": current_subsidiary,
-            "scope_current_filter": scope_current_filter,
-            "scope_current_url_filter": scope_current_url_filter}
+            "scope_current_filter": scope_current_filter}

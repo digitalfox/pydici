@@ -9,28 +9,6 @@
 {% trans "All people timesheet for " %} {{ month|date:"F Y"}}
 <a href="{% url 'staffing:all_timesheet' year=next_date|date:'Y' month=next_date|date:'m' %}" title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a></h2>
 
-<!-- buttons bar -->
-<div class="row">
-    <div class="col-lg-12">
-        <!-- Scope  button -->
-        <div class="btn-group">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{ scope }} <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu">
-              {% for scope_type, scope_filter, scope_label in scopes %}
-                {% ifchanged scope_type %}
-                    {% if not forloop.first %}
-                        <li role="separator" class="divider"></li>
-                    {% endif %}
-                {% endifchanged %}
-                <li><a href="{% url 'staffing:all_timesheet' year=month|date:'Y' month=month|date:'m' %}/?{{scope_filter}}">{{ scope_label }}</a></li>
-              {% endfor %}
-          </ul>
-        </div>
-    </div>
-</div>
-
 <div class="row"><br/></div>
 
 <div class="table-responsive table-pydici-all-timehseets">

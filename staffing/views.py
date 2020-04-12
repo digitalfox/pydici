@@ -50,7 +50,7 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
     timesheet_report_data, check_missions_limited_mode
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm
 from people.utils import get_scopes
-from crm.utils import get_subsidiary_from_request
+from crm.utils import get_subsidiary_from_session
 
 
 TIMESTRING_FORMATTER = {
@@ -293,12 +293,11 @@ def pdc_review(request, year=None, month=None):
     @param year: start date year. None means current month,
     Request option parameters:
     - team: only display this team (staffing manager id)
-    - subsidiary: only display this subsidiary (subsidiary id)
     - n_month: number of month to display in forceast
     - projection: projection mode (nonce, balanced, full) used to filter still-not-won leads"""
 
     team = None
-    subsidiary = None
+    subsidiary = get_subsidiary_from_session(request)
 
     # Various projections modes. Value is ("short name", "description")
     projections = {"none": (_("Only won leads"), _("Only consider won leads for staffing forecasting")),
@@ -309,11 +308,9 @@ def pdc_review(request, year=None, month=None):
     groups = {"manager": _("Group by Manager"),
               "level": _("Group by Level")}
 
-    # Get team and subsidiary
+    # Get team
     if "team_id" in request.GET:
         team = Consultant.objects.get(id=int(request.GET["team_id"]))
-    if "subsidiary_id" in request.GET:
-        subsidiary = Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
 
     # Don't display this page if no productive consultant are defined
     people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False)
@@ -462,7 +459,7 @@ def pdc_review(request, year=None, month=None):
     else:
         staffing.sort(key=lambda x: x[0].profil.level)  # Sort by level
 
-    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team)
+    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team, target="team")
     if team:
         team_name = _("team %(manager_name)s") % {"manager_name": team}
     else:
@@ -483,9 +480,9 @@ def pdc_review(request, year=None, month=None):
                    "groupby": groupby,
                    "groupby_label": groups[groupby],
                    "groups": groups,
-                   "scope": subsidiary or team_name or _("Everybody"),
-                   "scope_current_filter" : scope_current_filter,
-                   "scope_current_url_filter": scope_current_url_filter,
+                   "scope": team_name or subsidiary or _("Everybody"),
+                   "team_current_filter" : scope_current_filter,
+                   "team_current_url_filter": scope_current_url_filter,
                    "scopes": scopes,})
 
 
@@ -516,7 +513,7 @@ def prod_report(request, year=None, month=None):
     #TODO: extract that in CSV as well
 
     team = None
-    subsidiary = get_subsidiary_from_request(request)
+    subsidiary = get_subsidiary_from_session(request)
     months = []
     n_month = 5
     tooltip_template = get_template("staffing/_consultant_prod_tooltip.html")
@@ -617,8 +614,8 @@ def prod_report(request, year=None, month=None):
     # Add total
     totalData = []
     for month in months:
-        forecast = totalForecasted[month]
-        turnover = totalDone[month]
+        forecast = totalForecasted.get(month, 0)
+        turnover = totalDone.get(month, 0)
         if forecast > turnover:
             status = all_status["ko"]
         else:
@@ -627,7 +624,7 @@ def prod_report(request, year=None, month=None):
     data.append([None, totalData])
 
     # Get scopes
-    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team)
+    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, team, target="team")
     if team:
         team_name = _("team %(manager_name)s") % {"manager_name": team}
     else:
@@ -639,9 +636,9 @@ def prod_report(request, year=None, month=None):
                    "end_date" : end_date,
                    "previous_slice_date": previous_slice_date,
                    "next_slice_date": next_slice_date,
-                   "scope": subsidiary or team_name or _("Everybody"),
-                   "scope_current_filter": scope_current_filter,
-                   "scope_current_url_filter": scope_current_url_filter,
+                   "scope": team_name or  subsidiary or _("Everybody"),
+                   "team_current_filter": scope_current_filter,
+                   "team_current_url_filter": scope_current_url_filter,
                    "scopes": scopes })
 
 @pydici_non_public
@@ -652,12 +649,11 @@ def fixed_price_missions_report(request):
 
     missions = Mission.objects.filter(active=True, nature="PROD", billing_mode="FIXED_PRICE")
 
-    # Get team and subsidiary
-    if "subsidiary_id" in request.GET:
-        subsidiary = Subsidiary.objects.get(id=int(request.GET["subsidiary_id"]))
+    subsidiary = get_subsidiary_from_session(request)
+
+    # Filter on subsidiary
+    if subsidiary:
         missions = missions.filter(subsidiary=subsidiary)
-    else:
-        subsidiary = None
 
     for mission in missions.select_related():
         #TODO: we mess up with objective margin that is computed for current but not target margin. Same issue in mission_tiemsheet page
@@ -665,15 +661,8 @@ def fixed_price_missions_report(request):
         target_margin = round(mission.margin(mode="target"), 1)
         data.append((mission, round(mission.done_work_k()[1],1), current_margin, target_margin))
 
-    # Get scopes
-    scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, None, target="subsidiary")
-
     return render(request, "staffing/fixed_price_report.html",
-                  {"data": data,
-                   "scope": subsidiary or _("Everybody"),
-                   "scope_current_filter": scope_current_filter,
-                   "scope_current_url_filter": scope_current_url_filter,
-                   "scopes": scopes })
+                  {"data": data })
 
 
 @pydici_non_public
@@ -1084,7 +1073,7 @@ class MissionTimesheetReportPdf(PydiciNonPublicdMixin, WeasyTemplateView):
 def all_timesheet(request, year=None, month=None):
 
     # var for filtering
-    subsidiary = get_subsidiary_from_request(request)
+    subsidiary = get_subsidiary_from_session(request)
     timesheets = None
 
     if year and month:
@@ -1166,10 +1155,6 @@ def all_timesheet(request, year=None, month=None):
         # Return CSV timesheet
         return all_csv_timesheet(request, charges, month)
     else:
-
-        # Get scopes
-        scopes, scope_current_filter, scope_current_url_filter = get_scopes(subsidiary, None, target="subsidiary")
-
         # Return html page
         return render(request, "staffing/all_timesheet.html",
                       {"user": request.user,
@@ -1178,11 +1163,7 @@ def all_timesheet(request, year=None, month=None):
                        "month": month,
                        "consultants": consultants,
                        "missions": missions,
-                       "charges": charges,
-                       "scope": subsidiary or _("Everybody"),
-                       "scope_current_filter": scope_current_filter,
-                       "scope_current_url_filter": scope_current_url_filter,
-                       "scopes": scopes})
+                       "charges": charges})
 
 @pydici_non_public
 @pydici_feature("reports")
@@ -1658,9 +1639,8 @@ def lunch_tickets_pivotable(request):
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 60 * 24)
-def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
+def graph_timesheet_rates_bar(request, team_id=None):
     """Nice graph bar of timesheet prod/holidays/nonprod rates
-    @:param subsidiary_id: filter graph on the given subsidiary
     @:param team_id: filter graph on the given team
     @todo: per year, with start-end date"""
     data = {}  # Graph data
@@ -1678,11 +1658,12 @@ def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
     timesheetStartDate = (date.today() - 3 * timedelta(365)).replace(day=1)  # Last three years
     timesheetEndDate = nextMonth(date.today())  # First day of next month
 
+    subsidiary = get_subsidiary_from_session(request)
     # Filter on scope
     if team_id:
         timesheets = Timesheet.objects.filter(consultant__staffing_manager_id=team_id)
-    elif subsidiary_id:
-        timesheets = Timesheet.objects.filter(consultant__company_id=subsidiary_id)
+    elif subsidiary:
+        timesheets = Timesheet.objects.filter(consultant__company=subsidiary)
     else:
         timesheets = Timesheet.objects.all()
 
@@ -1725,9 +1706,8 @@ def graph_timesheet_rates_bar(request, subsidiary_id=None, team_id=None):
 
 @pydici_non_public
 @cache_page(60 * 60 * 24)
-def graph_profile_rates(request, subsidiary_id=None, team_id=None):
+def graph_profile_rates(request, team_id=None):
     """Sale rate per profil
-    @:param subsidiary_id: filter graph on the given subsidiary
     @:param team_id: filter graph on the given team"""
     #TODO: add start/end timeframe
     graph_data = []
@@ -1744,11 +1724,12 @@ def graph_profile_rates(request, subsidiary_id=None, team_id=None):
                                             timesheet__working_date__gte=timesheetStartDate,
                                             timesheet__working_date__lt=timesheetEndDate)
 
+    subsidiary = get_subsidiary_from_session(request)
     # Filter on scope
     if team_id:
         consultants = consultants.filter(staffing_manager_id=team_id)
-    elif subsidiary_id:
-        consultants = consultants.filter(company_id=subsidiary_id)
+    elif subsidiary:
+        consultants = consultants.filter(company=subsidiary)
 
     consultants = consultants.distinct()
 
