@@ -17,6 +17,7 @@ from django.db.models import Count
 
 from people.models import Consultant
 from crm.models import Company
+from crm.utils import get_subsidiary_from_session
 from staffing.models import Holiday
 from core.decorator import pydici_non_public
 from core.utils import working_days, previousMonth, nextMonth, COLORS
@@ -179,10 +180,8 @@ def subcontractor_detail(request, consultant_id):
 
 @pydici_non_public
 @cache_page(60 * 60 * 24)
-def graph_people_count(request, subsidiary_id=None, team_id=None):
-    """Active people count
-    @:param subsidiary_id: filter graph on the given subsidiary
-    @:param team_id: filter graph on the given team"""
+def graph_people_count(request):
+    """Active people count"""
     #TODO: add start/end timeframe
     graph_data = []
     iso_months = []
@@ -194,24 +193,19 @@ def graph_people_count(request, subsidiary_id=None, team_id=None):
     consultants = Consultant.objects.filter(subcontractor=False, productive=True)
     subcontractors = Consultant.objects.filter(subcontractor=True, productive=True)
 
-    subsidiaries = Subsidiary.objects.filter(mission__nature="PROD").distinct()
-    subsidiaries = subsidiaries.annotate(Count("mission__timesheet__consultant"))
-    subsidiaries = subsidiaries.filter(mission__timesheet__consultant__count__gt=0)
-
-    if subsidiary_id:
-        subsidiaries = subsidiaries.filter(subsidiary_id=subsidiary_id)
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        subsidiaries = [subsidiary,]
+        consultants = consultants.filter(company=subsidiary)
+        subcontractors = subcontractors.filter(timesheet__mission__subsidiary=subsidiary)
+    else:
+        subsidiaries = Subsidiary.objects.filter(mission__nature="PROD").distinct()
+        subsidiaries = subsidiaries.annotate(Count("mission__timesheet__consultant"))
+        subsidiaries = subsidiaries.filter(mission__timesheet__consultant__count__gt=0)
 
     for subsidiary in subsidiaries:
         consultants_count[subsidiary] = []
         subcontractors_count[subsidiary] = []
-
-    # Filter on scope
-    if team_id:
-        consultants = consultants.filter(staffing_manager_id=team_id)
-        subcontractors = subcontractors.filter(staffing_manageid=0)  # Don't consider subcontractors for team counting
-    elif subsidiary_id:
-        consultants = consultants.filter(company_id=subsidiary_id)
-        subcontractors = subcontractors.filter(timesheet__mission__subsidiar__id=subsidiary_id)
 
     month = start_date
     while month < end_date:

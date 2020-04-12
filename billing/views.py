@@ -680,7 +680,11 @@ def graph_yearly_billing(request):
     graph_data = []
     labels = []
     growth = []
-    subsidiaries = Subsidiary.objects.all()
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        subsidiaries = [subsidiary,]
+    else:
+        subsidiaries = Subsidiary.objects.all()
     for subsidiary in subsidiaries:
         data[subsidiary.name] = []
 
