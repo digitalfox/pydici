@@ -114,7 +114,6 @@ TEMPLATES = [{
                                "django.contrib.messages.context_processors.messages",
                                "django.template.context_processors.request",
                                "core.context_processors.feature",
-                               "core.context_processors.menu",
                                ),
                 },
 }]
