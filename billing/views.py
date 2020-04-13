@@ -565,7 +565,8 @@ def lead_billing(request, lead_id):
 @pydici_feature("reports")
 def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_on_company=None, filter_on_lead=None):
     """Check lead/mission billing."""
-    data = get_client_billing_control_pivotable_data(filter_on_subsidiary=filter_on_subsidiary,
+    subsidiary = get_subsidiary_from_session(request)
+    data = get_client_billing_control_pivotable_data(filter_on_subsidiary=filter_on_subsidiary or subsidiary,
                                                      filter_on_company=filter_on_company,
                                                      filter_on_lead=filter_on_lead,
                                                      only_active=True)

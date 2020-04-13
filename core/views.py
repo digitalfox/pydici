@@ -347,8 +347,12 @@ def risk_reporting(request):
     """Risk reporting synthesis"""
     data = []
     today = datetime.date.today()
+    subsidiary = get_subsidiary_from_session(request)
     # Sent bills (still not paid)
-    for bill in ClientBill.objects.filter(state="1_SENT").select_related():
+    bills = ClientBill.objects.filter(state="1_SENT")
+    if subsidiary:
+        bills = bills.filter(lead__subsidiary=subsidiary)
+    for bill in bills.select_related():
         if bill.due_date < today:
             data_type = _("overdue bills")
         else:
@@ -363,7 +367,10 @@ def risk_reporting(request):
                      })
 
     # Leads with done works beyond sent or paid bills
-    for lead in Lead.objects.filter(mission__active=True).distinct().select_related():
+    leads = Lead.objects.filter(mission__active=True)
+    if subsidiary:
+        leads = leads.filter(subsidiary=subsidiary)
+    for lead in leads.distinct().select_related():
         if not "TIME_SPENT" in [m.billing_mode for m in lead.mission_set.all()]:
             # All missions of this lead are fixed price (no one is time spent). So done works beyond billing is not considered here
             # Fixed price mission tracking is done a separate report

@@ -579,6 +579,9 @@ def leads_pivotable(request, year=None):
     """Pivot table for all leads of given year"""
     data = []
     leads = Lead.objects.passive()
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        leads = leads.filter(subsidiary=subsidiary)
     derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _("sales (k€)"))
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 

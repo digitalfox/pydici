@@ -1292,22 +1292,26 @@ def holidays_planning(request, year=None, month=None):
                    "next_month": next_month,
                    "user": request.user, })
 
+
 @pydici_non_public
 @pydici_feature("reports")
 def rate_objective_report(request):
     data = []
-    people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False)
+    consultants = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False)
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        consultants = consultants.filter(company=subsidiary)
     working_date_current = date.today()
     working_date_next_year = date.today() + timedelta(365)
-    for p in people:
+    for consultant in consultants:
         for horizon, working_date in ((_("current"), working_date_current), (_("next"), working_date_next_year)):
             for rate_type, rate_label in RateObjective.RATE_TYPE:
                 data.append({
-                    _("consultant"): p.name,
-                    _("subsidiary"): str(p.company),
+                    _("consultant"): consultant.name,
+                    _("subsidiary"): str(consultant.company),
                     _("type"): str(rate_label),
                     _("horizon"): horizon,
-                    _("amount"): p.get_rate_objective(working_date=working_date, rate_type=rate_type).rate
+                    _("amount"): consultant.get_rate_objective(working_date=working_date, rate_type=rate_type).rate
                 })
     return render(request, "staffing/rates_report.html", {"data": json.dumps(data),
                                                                  "derivedAttributes": [],})
@@ -1321,6 +1325,10 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
     timesheets = Timesheet.objects.filter(mission__nature=nature, working_date__lte=date.today())
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        timesheets = timesheets.filter(consultant__company=subsidiary)
+
 
     years = get_fiscal_years_from_qs(timesheets, "working_date")
 
