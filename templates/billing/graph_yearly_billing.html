@@ -15,7 +15,13 @@
          groups: [{{ subsidiaries_names | safe }}],
          axes : { '{% trans "growth" %}': 'y2' },
          },
-
+     grid: {
+        y: {
+            lines: [
+                {value: 0, axis: 'y2'},
+            ],
+        },
+    },
     axis: {
         x: {
             tick: {
@@ -31,9 +37,10 @@
         },
         y2: {
             show: true,
-            padding: {top: 10, bottom: 0},
+            padding: {top: 0, bottom: 0},
+            max: 100,
             label : {
-                text: "{% trans "growth" %}",
+                text: "{% trans "growth (%)" %}",
                 position: 'outer-middle',
              },
          },
