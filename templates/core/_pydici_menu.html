@@ -139,7 +139,7 @@
                 <li><a href="{% url 'help' %}">{% trans "Help page" %}</a></li>
                 <li>{{ foo|get_admin_mail }}</li>
                 {% if pydici_feature.search %}
-                    <li><form class="navbar-form keep-open hidden-xs hidden-md hidden-lg" role="search" action="{% url 'core:search' %}" method="GET">
+                    <li><form class="navbar-form keep-open hidden-md hidden-lg" role="search" action="{% url 'core:search' %}" method="GET">
                         <div class="form-group">
                             <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q">
                         </div>
@@ -148,10 +148,24 @@
                 {% endif %}
             </ul>
         </li>
+        {# mobile version of context switcher #}
+        <li><a href="#" class="dropdown-toggle visible-sm visible-xs" data-toggle="dropdown">{% trans "Subsidiary" %}<span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+          {% for subsidiary in subsidiaries %}
+                <li><a href="{{ request.path }}?subsidiary_id={{ subsidiary.id }}" >
+                    {% ifequal subsidiary.id request.session.subsidiary_id %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% endifequal %}
+                    {{ subsidiary }}
+                </a></li>
+          {% endfor %}
+        <li><a href="{{ request.path }}?subsidiary_id=0">
+            {% if not current_subsidiary %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}{% trans 'all subsidiaries' %}
+        </a></li>
+      </ul></li>
+        {# end of mobile subsidiary switcher #}
         </ul>
 
         {# subsidiary context switcher #}
-            <div class="btn-group navbar-form pull-right hidden-sm">
+            <div class="btn-group navbar-form pull-right hidden-sm hidden-xs">
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                   {% if current_subsidiary %}{{ current_subsidiary }}{% else %}{% trans 'all subsidiaries' %}{% endif %} <span class="caret"></span>
               </button>
@@ -172,7 +186,7 @@
 
 
         {% if pydici_feature.search %}
-        <form class="navbar-form pull-right hidden-sm" role="search" action="{% url 'core:search' %}" method="GET">
+        <form class="navbar-form pull-right hidden-sm hidden-xs" role="search" action="{% url 'core:search' %}" method="GET">
             <div class="form-group">
               <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q"  value="{{ query|escape }}" >
             </div>
