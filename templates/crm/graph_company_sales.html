@@ -11,6 +11,10 @@
                     {% endif %}
                 {% else %}
                     {% blocktrans %} Client sales repartition since {{ min_date }}{% endblocktrans %}
+                    {% if subsidiary %}
+                        {% blocktrans %} for subsidiary {{ subsidiary }}{% endblocktrans %}
+                    {% endif %}
+
                 {% endif %}
     </h3></center>
 

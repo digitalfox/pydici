@@ -47,10 +47,11 @@ $('#graph_bar_jqp').load('{% url 'leads:graph_bar_jqp' %}?{{scope_current_filter
     <div id="graph_company_lastyear_sales" class="col-md-6"></div>
 </div>
 <script type="text/javascript">
-    $('#graph_company_sales').load('{% url 'crm:graph_company_sales' %}')
     {% if current_subsidiary %}
+        $('#graph_company_sales').load('{% url 'crm:graph_company_sales' subsidiary_id=current_subsidiary.id %}')
         $('#graph_company_lastyear_sales').load('{% url 'crm:graph_company_lastyear_sales' subsidiary_id=current_subsidiary.id %}')
     {% else %}
+        $('#graph_company_sales').load('{% url 'crm:graph_company_sales' %}')
         $('#graph_company_lastyear_sales').load('{% url 'crm:graph_company_lastyear_sales' %}')
     {% endif %}
 </script>
