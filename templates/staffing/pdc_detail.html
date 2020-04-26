@@ -13,6 +13,14 @@
         </tr>
     {% endfor %}
     </tbody>
+    <tfoot>
+        <tr>
+            <th>{% trans "total" %}</th><td>{{ total }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "available" %}</th><td>{{ available }}</td>
+        </tr>
+    </tfoot>
     </table>
 {% else %}
 {% trans "No staffing" %}
