@@ -154,6 +154,7 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
         form.fields["consultant"] = ModelChoiceField(widget = ConsultantChoices(attrs={'data-placeholder':_("Select a consultant to add forecast...")}), queryset=Consultant.objects)
         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=minDate, maxDate=maxDate)
         form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
+        form.fields["comment"].widget.attrs.setdefault("class", "hidden-xs hidden-sm")
 
 
 class StaffingForm(forms.ModelForm):

@@ -26,31 +26,35 @@
                <th>{% trans "Consultant" %}</th>
                <th></th>
                <th>{% trans "Month" %}</th>
+               <th class="hidden-xs hidden-sm"></th>
                <th>{% trans "Load" %}</th>
-               <th>{% trans "Comments" %}</th>
+               <th class="hidden-xs hidden-sm">{% trans "Comments" %}</th>
                <th></th>
                <th>{% trans "Del." %}</th>
-               <th>{% trans "Last change" %}</th>
+               <th class="hidden-xs hidden-sm">{% trans "Last change" %}</th>
            </tr>
            {% for form in formset.forms %}
                 {% with year_month=form.initial.staffing_date|date:'Ym' %}
                    {% ifchanged form.initial.staffing_date %}
                         {% if form.initial.staffing_date %}
-                           <tr><th style="backround-color:white" colspan=8>
+                           <tr><th style="backround-color:white" colspan=9>
                                 <a href="#" class="month_header" id="header_{{ year_month }}">
                                     <span class="glyphicon glyphicon-menu-right {% if not form.initial.staffing_date or year_month >= current_month or form.errors %}rotate90{% endif %}"></span>
                                     {{ form.initial.staffing_date|date:"F Y" }}
                                 </a>
                             </th></tr>
                        {% else %}
-                           <tr><th style="backround-color:white" colspan=8>{% trans "New staffing:" %}</th></tr>
+                           <tr><th style="backround-color:white" colspan=9>{% trans "New staffing:" %}</th></tr>
                        {% endif %}
                    {% endifchanged%}
                    <tr class="{%cycle 'row1' 'row2' %} {% if form.initial.staffing_date and year_month < current_month and not form.errors %}collapse{% endif%} {{ year_month }}" %}>
                    {% for field in form %}
+                      {% ifequal field.label "Charge" %}
+                            <td style="cursor: help" class="hidden-xs hidden-sm pdc-tooltip"><span title="{% trans 'Other missions charge' %}" data-toggle="tooltip" class="glyphicon glyphicon-list-alt"></span></td>
+                      {% endifequal %}
                       {% ifequal field.label "Last user" %}
                             {{ field.as_hidden }}
-                        {% else %}
+                      {% else %}
                             {% ifequal field.label "Update date" %}
                                 {{ field.as_hidden }}
                             {% else %}
@@ -59,9 +63,9 @@
                                 {{ field.errors }}
                                </td>
                             {% endifequal %}
-                        {% endifequal %}
+                      {% endifequal %}
                    {% endfor %}
-                   <td>
+                   <td class="hidden-xs hidden-sm">
                    {% if form.initial.last_user %}
                         {{ form.initial.last_user }} ({{ form.initial.update_date|timesince }})
                    {% endif %}
@@ -105,3 +109,53 @@
     {% endwith %}
 
 {% endif %}
+
+<script type="text/JavaScript">
+<!--
+$(document).ready(function(){
+    $(".pdc-tooltip").popover(
+        {
+          container: "body",
+          html: true,
+          content: function() {
+              console.log("coucou");
+              var staffing_date = $(this).closest('tr').find('td').eq($(this).index()-1)[0].firstElementChild.value.replace('-01','').replace('-','');
+              var consultant = $(this).closest('tr').find('td').eq($(this).index()-3)[0].firstElementChild.firstElementChild;
+              console.log(staffing_date);
+              console.log(consultant);
+              if (consultant) {
+                consultant = consultant.value;
+                } else {
+                return ''; // no consultant selected...
+                }
+              console.log(staffing_date);
+              console.log(consultant);
+              if (staffing_date.length == 6) {
+                  var url = '{% url 'staffing:pdc_detail' '123456' '19700101' %}'.replace("123456", consultant).replace("19700101", staffing_date);
+                  return $.ajax({
+                      url: url,
+                      dataType: 'html',
+                      async: false
+                      }).responseText;
+              } else {
+                  // Invalid staffing_date. It means we are outside pdc array (like client column)
+                  return '';
+              }
+          },
+           trigger: "click",
+           template: '<div class="popover" style="max-width:800px;" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+        }
+    );
+
+    /* avoid popover to open more than on at the same time */
+    $('.pdc-tooltip').on("click", function(){
+        $('.pdc-tooltip').not(this).popover('hide'); //all but this
+    });
+
+    $('#buttons-projection label').tooltip({
+        "container": "body"
+    });
+    $('[data-toggle="tooltip"]').tooltip();
+});
+// -->
+</script>
