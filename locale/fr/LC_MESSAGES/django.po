@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-01 15:41+0200\n"
-"PO-Revision-Date: 2020-05-01 15:40+0200\n"
+"POT-Creation-Date: 2020-05-01 15:43+0200\n"
+"PO-Revision-Date: 2020-05-01 15:43+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -411,7 +411,7 @@ msgstr "N° affaire"
 
 #: billing/utils.py:150 leads/views.py:605 staffing/views.py:1565
 msgid "client organisation"
-msgstr "département"
+msgstr "organisation client"
 
 #: billing/utils.py:151 leads/views.py:606 staffing/views.py:1566
 #: templates/billing/client_billing_control_pivotable.html:61
@@ -809,7 +809,7 @@ msgstr "Laissez vide pour utiliser le nom standard"
 
 #: crm/forms.py:176 crm/models.py:136
 msgid "Client organisation"
-msgstr "Département"
+msgstr "Organisation client"
 
 #: crm/forms.py:201 crm/models.py:106
 #: templates/crm/clientcompany_detail.html:390
@@ -879,7 +879,7 @@ msgstr "Sociétés"
 
 #: crm/models.py:113
 msgid "Organization"
-msgstr "Département"
+msgstr "Organisation"
 
 #: crm/models.py:114
 msgid "Client company"
@@ -971,7 +971,7 @@ msgstr "Stratégique"
 
 #: crm/models.py:311
 msgid "Company : Organisation"
-msgstr "Société : département"
+msgstr "Société : organisation"
 
 #: crm/models.py:313
 msgid "Expectations"
@@ -3214,7 +3214,7 @@ msgstr "Ajouter ou modifier un client"
 
 #: templates/crm/client_organisation.html:6
 msgid "Add or modify a Client Organisation"
-msgstr "Ajouter ou modifier un département client"
+msgstr "Ajouter ou modifier une organisation client"
 
 #: templates/crm/clientcompany.html:6
 msgid "Add or modify a company"
