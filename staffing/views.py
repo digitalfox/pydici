@@ -661,9 +661,9 @@ def fixed_price_missions_report(request):
 
     for mission in missions.select_related():
         #TODO: we mess up with objective margin that is computed for current but not target margin. Same issue in mission_tiemsheet page
-        current_margin = round(mission.margin() + sum(mission.objectiveMargin().values()) / 1000, 1)
-        target_margin = round(mission.margin(mode="target"), 1)
-        data.append((mission, round(mission.done_work_k()[1],1), current_margin, target_margin))
+        remaining = round(mission.margin(), 1)
+        target_margin = round(mission.margin(mode="target") + sum(mission.objectiveMargin().values()) / 1000, 1)
+        data.append((mission, round(mission.done_work_k()[1],1), remaining, target_margin))
 
     return render(request, "staffing/fixed_price_report.html",
                   {"data": data })
@@ -991,7 +991,7 @@ def mission_timesheet(request, mission_id):
 
     missionData = list(map(to_int_or_round, missionData))
 
-    objectiveMargin = mission.objectiveMargin(endDate=nextMonth(current_month))
+    objectiveMargin = mission.objectiveMargin()
 
     # Prepare data for graph
     isoTimesheetDates = [t.isoformat() for t in timesheetMonths]

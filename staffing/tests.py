@@ -127,8 +127,8 @@ class StaffingViewsTest(TestCase):
         cache.clear()  # avoid bad computation due to rates cache with previous values
         response = self.client.get(reverse("staffing:mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["margin"], 0)  # That's because we are in fixed price
-        self.assertEqual(response.context["objective_margin_total"], 2600)
+        self.assertEqual(response.context["margin"], 0)  # That's because we are in timespent
+        self.assertEqual(response.context["objective_margin_total"], 4150)
         self.assertEqual(response.context["forecasted_unused"], 2.1)
         self.assertEqual(response.context["current_unused"], 19.4)
         # Switch to fixed price mission
@@ -137,7 +137,7 @@ class StaffingViewsTest(TestCase):
         response = self.client.get(reverse("staffing:mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["margin"], 2.1)
-        self.assertEqual(response.context["objective_margin_total"], 2600)
+        self.assertEqual(response.context["objective_margin_total"], 4150)
         self.assertEqual(response.context["forecasted_unused"], 0)  # Unused is margin in fixes price :-)
         self.assertEqual(response.context["current_unused"], 0)  # idem
         # Check mission data main table

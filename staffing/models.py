@@ -274,20 +274,38 @@ class Mission(models.Model):
         @return: dict where key is consultant, value is cumulated margin over objective"""
         result = {}
         consultant_rates = self.consultant_rates()
-        # Gather timesheet (Only consider timesheet up to current month)
+        # Gather timesheet and staffing (starting current month)
         timesheets = Timesheet.objects.filter(mission=self)
+        staffings = Staffing.objects.filter(mission=self, staffing_date__gte=date.today().replace(day=1))
         if startDate:
             timesheets = timesheets.filter(working_date__gte=startDate)
+            staffings = staffings.filter(staffing_date__gte=startDate)
         if endDate:
             timesheets = timesheets.filter(working_date__lt=endDate)
+            staffings = staffings.filter(staffing_date__lt=endDate)
         timesheets = timesheets.order_by("working_date")
+        staffings = staffings.order_by("staffing_date")
         timesheetMonths = list(timesheets.dates("working_date", "month"))
+        staffingMonths = list(staffings.dates("staffing_date", "month"))
         for consultant in self.consultants():
             result[consultant] = 0  # Initialize margin over rate objective for this consultant
-            data = dict(timesheets.filter(consultant=consultant).annotate(month=TruncMonth("working_date")).values_list("month").annotate(Sum("charge")).order_by("month"))
+            timesheet_data = dict(timesheets.filter(consultant=consultant).annotate(month=TruncMonth("working_date")).values_list("month").annotate(Sum("charge")).order_by("month"))
+            staffing_data = dict(staffings.filter(consultant=consultant).annotate(month=TruncMonth("staffing_date")).values_list("month").annotate(Sum("charge")).order_by("month"))
 
             for month in timesheetMonths:
-                n_days = data.get(month, 0)
+                n_days = timesheet_data.get(month, 0)
+                if consultant.subcontractor:
+                    # Compute objective margin on sold rate
+                    if consultant_rates[consultant][0] and consultant_rates[consultant][1]:
+                        result[consultant] += n_days * (consultant_rates[consultant][0] - consultant_rates[consultant][1])
+                else:
+                    # Compute objective margin on rate objective for this period
+                    objectiveRate = consultant.get_rate_objective(working_date=month, rate_type="DAILY_RATE")
+                    if objectiveRate:
+                        result[consultant] += n_days * (consultant_rates[consultant][0] - objectiveRate.rate)
+
+            for month in staffingMonths:
+                n_days = staffing_data.get(month, 0) - timesheet_data.get(month, 0)  # substract timesheet data from staffing to avoid twice counting
                 if consultant.subcontractor:
                     # Compute objective margin on sold rate
                     if consultant_rates[consultant][0] and consultant_rates[consultant][1]:
