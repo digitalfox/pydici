@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-26 18:40+0200\n"
-"PO-Revision-Date: 2020-04-26 18:39+0200\n"
+"POT-Creation-Date: 2020-05-01 15:41+0200\n"
+"PO-Revision-Date: 2020-05-01 15:40+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -333,18 +333,9 @@ msgstr "Français"
 msgid "English"
 msgstr "Anglais"
 
-#: billing/models.py:145 billing/models.py:213
-#: templates/billing/_lead_billing.html:44
-#: templates/billing/_lead_billing.html:85
-#: templates/billing/bill_review.html:44 templates/billing/bill_review.html:95
-#: templates/billing/bill_review.html:145
-#: templates/billing/bill_review.html:197
-#: templates/billing/bill_review.html:270
-#: templates/billing/bill_review.html:326
-#: templates/billing/client_bills_archive.html:20
-#: templates/billing/supplier_bills_archive.html:21
-msgid "File"
-msgstr "Fichier"
+#: billing/models.py:145
+msgid "Bill File"
+msgstr "Fichier de la facture"
 
 #: billing/models.py:147
 msgid "Anonymize profile name"
@@ -378,6 +369,18 @@ msgstr "Reçue"
 #: billing/models.py:208 expense/models.py:29
 msgid "Validated"
 msgstr "Validée"
+
+#: billing/models.py:213 templates/billing/_lead_billing.html:44
+#: templates/billing/_lead_billing.html:85
+#: templates/billing/bill_review.html:44 templates/billing/bill_review.html:95
+#: templates/billing/bill_review.html:145
+#: templates/billing/bill_review.html:197
+#: templates/billing/bill_review.html:270
+#: templates/billing/bill_review.html:326
+#: templates/billing/client_bills_archive.html:20
+#: templates/billing/supplier_bills_archive.html:21
+msgid "File"
+msgstr "Fichier"
 
 #: billing/models.py:216 templates/billing/_lead_billing.html:78
 msgid "Supplier Bill id"
