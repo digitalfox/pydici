@@ -113,9 +113,12 @@
 
 <script type="text/JavaScript">
     function highlight(text) {
-      var re = new RegExp(text,"gi");
-      var target = document.getElementById("search-results");
-      target.innerHTML = target.innerHTML.replace(re,"<span class='search-highlight'>" +  text + "</span>");
+      if (text.length > 0) {
+          var re = new RegExp(text,"gi");
+          $("#search-results").find("a").each(function() {
+                this.innerHTML = this.innerHTML.replace(re,"<span class='search-highlight'>" +  text + "</span>");
+          });
+      }
     }
 
     $(document).ready(function(){
