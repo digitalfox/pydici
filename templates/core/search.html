@@ -4,6 +4,7 @@
 
 {% block content %}
 
+<div id="search-results">
 <div class="row">
     <div class="col-lg-12">
         {% if query %}
@@ -108,4 +109,17 @@
     </ul>
 {% endif %}
 
+</div> {# end of search results #}
+
+<script type="text/JavaScript">
+    function highlight(text) {
+      var re = new RegExp(text,"gi");
+      var target = document.getElementById("search-results");
+      target.innerHTML = target.innerHTML.replace(re,"<span class='search-highlight'>" +  text + "</span>");
+    }
+
+    $(document).ready(function(){
+        highlight('{{query}}');
+    });
+</script>
 {% endblock %}

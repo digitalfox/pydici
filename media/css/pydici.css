@@ -88,6 +88,11 @@ a.disabled-items {
     color: #888;
 }
 
+/* search highlight */
+.search-highlight {
+  background-color: yellow;
+}
+
 /* Titles */
 h1 { font-size:20px; }
 h2 { font-size:18px; }
