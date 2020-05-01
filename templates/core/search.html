@@ -77,15 +77,27 @@
 </div>
 
 <div class="row">
-    {% if missions %}
-        <h2 class="col-lg-12">{% trans "Missions" %}</h2>
+    {% if active_missions %}
+        <h2 class="col-lg-12">{% trans "Actives missions" %}</h2>
         <ul>
-        {% for mission in missions %}
+        {% for mission in active_missions %}
             <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.full_name }}</a></li>
         {% endfor %}
         </ul>
     {% endif %}
 </div>
+
+<div class="row">
+    {% if archived_missions %}
+        <h2 class="col-lg-12">{% trans "Archived missions" %}</h2>
+        <ul>
+        {% for mission in archived_missions %}
+            <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.full_name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+
 
 {% if bills %}
     <h2>{% trans "Client Bills" %}</h2>

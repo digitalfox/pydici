@@ -83,6 +83,10 @@ a { color: #8F6749; }
 a:link, a:visited { color: #8F6749; }
 a:hover { color: #883915; }
 
+/* disabled items */
+a.disabled-items {
+    color: #888;
+}
 
 /* Titles */
 h1 { font-size:20px; }

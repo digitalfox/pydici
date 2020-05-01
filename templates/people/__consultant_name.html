@@ -4,7 +4,7 @@
 {# context: consultant #}
 {# tab: tab anchor name #}
 {% cache 60 consultant consultant.id %}
-<a href="{% url 'people:consultant_home' consultant.trigramme %}{{ tab }}">{{ consultant }}</a><span title="{{consultant.id|unlocalize}}"></span>
+<a href="{% url 'people:consultant_home' consultant.trigramme %}{{ tab }}" {% if not consultant.active %}class="disabled-items"{% endif %}>{{ consultant }}</a><span title="{{consultant.id|unlocalize}}"></span>
 {% if consultant.is_in_holidays %}<span class="pydici-tooltip glyphicon glyphicon-sunglasses" title="{% trans 'on holidays !' %}"></span>{% endif %}
 {% if not consultant.subcontractor and consultant.active %}
     {% with late_timesheet=consultant.timesheet_is_up_to_date %}

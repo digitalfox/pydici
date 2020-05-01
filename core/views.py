@@ -85,7 +85,7 @@ def search(request):
         for word in words:
             consultants = consultants.filter(Q(name__icontains=word) |
                                              Q(trigramme__icontains=word))
-        consultants = consultants.distinct()
+        consultants = consultants.distinct().order_by("-active", "name", )
         if subsidiary:
             consultants = consultants.filter(company=subsidiary)
 
@@ -145,6 +145,14 @@ def search(request):
                     missions.add(mission)
             missions = list(missions)
 
+        archived_missions = []
+        active_missions = []
+        for mission in missions:
+            if mission.active:
+                active_missions.append(mission)
+            else:
+                archived_missions.append(mission)
+
         # Bills
         bills = ClientBill.objects.all()
         for word in words:
@@ -167,7 +175,8 @@ def search(request):
                    "contacts": contacts,
                    "leads": leads,
                    "tags": tags,
-                   "missions": missions,
+                   "active_missions": active_missions,
+                   "archived_missions": archived_missions,
                    "bills": bills,
                    "more_record": more_record,
                    "user": request.user})
