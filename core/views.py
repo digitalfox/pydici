@@ -60,9 +60,9 @@ def search(request):
 
     words = request.GET.get("q", "")
     words = words.split()
-    consultants = companies = contacts = leads = missions = bills = tags = None
+    consultants = companies = contacts = leads = active_missions = archived_missions = bills = tags = None
     max_record = 50
-    more_record = False # Wether we have more records
+    more_record = False  # Wether we have more records
     subsidiary = get_subsidiary_from_session(request)
 
     if len(words) == 1:
