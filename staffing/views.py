@@ -1310,12 +1310,13 @@ def rate_objective_report(request):
     for consultant in consultants:
         for horizon, working_date in ((_("current"), working_date_current), (_("next"), working_date_next_year)):
             for rate_type, rate_label in RateObjective.RATE_TYPE:
+                rate_objective = consultant.get_rate_objective(working_date=working_date, rate_type=rate_type)
                 data.append({
                     _("consultant"): consultant.name,
                     _("subsidiary"): str(consultant.company),
                     _("type"): str(rate_label),
                     _("horizon"): horizon,
-                    _("amount"): consultant.get_rate_objective(working_date=working_date, rate_type=rate_type).rate
+                    _("amount"): rate_objective.rate if rate_objective else None
                 })
     return render(request, "staffing/rates_report.html", {"data": json.dumps(data),
                                                                  "derivedAttributes": [],})
