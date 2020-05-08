@@ -80,10 +80,12 @@ class Company(AbstractCompany):
     businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True, on_delete=models.SET_NULL)
     external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
 
-    def sales(self, onlyLastYear=False):
+    def sales(self, onlyLastYear=False, subsidiary=None):
         """Sales billed for this company in keuros"""
         from billing.models import ClientBill
         data = ClientBill.objects.filter(lead__client__organisation__company=self)
+        if subsidiary:
+            data = data.filter(lead__subsidiary=subsidiary)
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():
@@ -91,10 +93,12 @@ class Company(AbstractCompany):
         else:
             return 0
 
-    def supplier_billing(self, onlyLastYear=False):
+    def supplier_billing(self, onlyLastYear=False, subsidiary=None):
         """Supplier billing for this company in keuros"""
         from billing.models import SupplierBill
         data = SupplierBill.objects.filter(lead__client__organisation__company=self)
+        if subsidiary:
+            data = data.filter(lead__subsidiary=subsidiary)
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():

@@ -27,6 +27,7 @@ from crm.models import Company, Client, ClientOrganisation, Contact, Administrat
     BusinessBroker, Supplier, Subsidiary
 from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactForm, MissionContactForm,\
     AdministrativeContactForm, BusinessBrokerForm, SupplierForm
+from crm.utils import get_subsidiary_from_session
 from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
@@ -333,11 +334,16 @@ def company(request, company_id=None):
 @pydici_feature("3rdparties")
 def company_detail(request, company_id):
     """Home page of client company"""
-
     company = Company.objects.get(id=company_id)
+    subsidiary = get_subsidiary_from_session(request)
+    data_for_other_subsidiaries = False
 
     # Find leads of this company
     leads = Lead.objects.filter(client__organisation__company=company)
+    if subsidiary:
+        if leads.exclude(subsidiary=subsidiary).exists():
+            data_for_other_subsidiaries = True
+        leads = leads.filter(subsidiary=subsidiary)
     leads = leads.order_by("client", "state", "start_date")
 
     # Statistics on won/lost etc.
@@ -347,6 +353,8 @@ def company_detail(request, company_id):
 
     # Find consultant that work (=declare timesheet) for this company
     consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct().order_by("company", "subcontractor")
+    if subsidiary:
+        consultants = consultants.filter(company=subsidiary)
 
     # Gather contacts for this company
     business_contacts = Contact.objects.filter(client__organisation__company=company).distinct()
@@ -367,6 +375,8 @@ def company_detail(request, company_id):
     # Billing stats
     today = date.today()
     company_bills = ClientBill.objects.filter(lead__client__organisation__company=company)
+    if subsidiary:
+        company_bills = company_bills.filter(lead__subsidiary=subsidiary)
     bills_stat = [
         [_("overdue"), company_bills.filter(state="1_SENT").filter(due_date__lte=today).count()],
         [_("soon due"), company_bills.filter(state="1_SENT").filter(due_date__gt=today).filter(due_date__lte=(today + timedelta(15))).count()],
@@ -375,9 +385,9 @@ def company_detail(request, company_id):
     bills_stat_count = sum([i[1] for i in bills_stat])
 
     # Sales stats
-    sales = int(company.sales())
-    sales_last_year = int(company.sales(onlyLastYear=True))
-    supplier_billing = int(company.supplier_billing())
+    sales = int(company.sales(subsidiary=subsidiary))
+    sales_last_year = int(company.sales(onlyLastYear=True, subsidiary=subsidiary))
+    supplier_billing = int(company.supplier_billing(subsidiary=subsidiary))
     direct_sales = sales - supplier_billing
 
     # Other companies
@@ -403,6 +413,7 @@ def company_detail(request, company_id):
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
                    "lead_data_url": reverse('leads:client_company_lead_table_DT', args=[company.id,]),
                    "mission_data_url": reverse('staffing:client_company_mission_table_DT', args=[company.id,]),
+                   "data_for_other_subsidiaries": data_for_other_subsidiaries,
                    "companies": companies,
                    "sales_last_year": sales_last_year
                   })
