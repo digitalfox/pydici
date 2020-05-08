@@ -962,21 +962,23 @@ def mission_timesheet(request, mission_id):
     else:
         estimatedTotal = (0, 0)
 
+    # compute margin indicators
+    objectiveMargin = mission.objectiveMargin()
+    if mission.price and timesheetTotal and staffingTotal:
+        currentUnused = to_int_or_round(float(mission.price) - timesheetTotal[-1], 3)
+        forecastedUnused = to_int_or_round(float(mission.price) - timesheetTotal[-1] - staffingTotal[-1], 3)
+    else:
+        currentUnused = 0
+        forecastedUnused = 0
+
     if mission.price and timesheetTotal and staffingTotal and mission.billing_mode == "FIXED_PRICE":
-        margin = float(mission.price) - timesheetTotal[-1] - staffingTotal[-1]
-        margin = to_int_or_round(margin, 3)
+        margin = to_int_or_round(forecastedUnused + sum(objectiveMargin.values())/1000, 3)
         daysTotal = timesheetTotal[-2] + staffingTotal[-2]
         avgDailyRate = int((1000.0 * float(mission.price) / daysTotal)) if daysTotal > 0 else 0
     else:
         margin = 0
         avgDailyRate = 0
 
-    if mission.price and timesheetTotal and staffingTotal and mission.billing_mode == "TIME_SPENT":
-        currentUnused = to_int_or_round(float(mission.price) - timesheetTotal[-1], 1)
-        forecastedUnused = to_int_or_round(float(mission.price) - timesheetTotal[-1] - staffingTotal[-1], 1)
-    else:
-        currentUnused = 0
-        forecastedUnused = 0
 
     # pad to 8 values
     padded_mission_data = []
@@ -990,8 +992,6 @@ def mission_timesheet(request, mission_id):
                         timesheetAverageRate, staffingAverageRate))
 
     missionData = list(map(to_int_or_round, missionData))
-
-    objectiveMargin = mission.objectiveMargin()
 
     # Prepare data for graph
     isoTimesheetDates = [t.isoformat() for t in timesheetMonths]

@@ -136,10 +136,10 @@ class StaffingViewsTest(TestCase):
         mission.save()
         response = self.client.get(reverse("staffing:mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["margin"], 2.1)
+        self.assertEqual(response.context["margin"], 6.25)
         self.assertEqual(response.context["objective_margin_total"], 4150)
-        self.assertEqual(response.context["forecasted_unused"], 0)  # Unused is margin in fixes price :-)
-        self.assertEqual(response.context["current_unused"], 0)  # idem
+        self.assertEqual(response.context["forecasted_unused"], 2.1)  # Unused is margin on days. Same that timespent
+        self.assertEqual(response.context["current_unused"], 19.4)  # idem
         # Check mission data main table
         data = list(response.context["mission_data"])
         self.assertListEqual(data[0], [c2, [5, 9, 14, 15.4], [1, 6, 7, 7.7], [21, 23.1], None, None, None, None])
