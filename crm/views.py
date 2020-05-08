@@ -550,15 +550,22 @@ def graph_company_business_activity(request, company_id):
     preSalesData = dict()
     wonLeadsData = dict()
     company = Company.objects.get(id=company_id)
+    subsidiary = get_subsidiary_from_session(request)
 
-    for bill in ClientBill.objects.filter(lead__client__organisation__company=company, state__in=("1_SENT", "2_PAID")):
+    bills = ClientBill.objects.filter(lead__client__organisation__company=company, state__in=("1_SENT", "2_PAID"))
+    if subsidiary:
+        bills = bills.filter(lead__subsidiary=subsidiary)
+    for bill in bills:
         kdate = bill.creation_date.replace(day=1)
         if kdate in billsData:
             billsData[kdate] += int(float(bill.amount) / 1000)
         else:
             billsData[kdate] = int(float(bill.amount) / 1000)
 
-    for lead in Lead.objects.filter(client__organisation__company=company):
+    leads = Lead.objects.filter(client__organisation__company=company)
+    if subsidiary:
+        leads = leads.filter(subsidiary=subsidiary)
+    for lead in leads:
         kdate = lead.creation_date.date().replace(day=1)
         for data in (lostLeadsData, wonLeadsData, preSalesData, billsData):
             data[kdate] = data.get(kdate, 0)  # Default to 0 to avoid stacking weirdness in graph

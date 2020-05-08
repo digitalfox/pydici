@@ -263,7 +263,7 @@
                 <div id="graph_company_business_activity_content"></div>
                 <script type="text/javascript">
                 $(document).ready(function() {
-                    $('#graph_company_business_activity_content').load('{% url 'crm:graph_company_business_activity' company.id %}');
+                    $('#graph_company_business_activity_content').load('{% url 'crm:graph_company_business_activity' company.id %}?{{scope_current_filter}}');
                 });
                 </script>
             </div>
