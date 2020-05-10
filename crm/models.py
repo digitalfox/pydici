@@ -326,7 +326,7 @@ class Client(AbstractAddress):
         else:
             return str(self.organisation)
 
-    def getFinancialConditions(self):
+    def getFinancialConditions(self, subsidiary=None):
         """Get financial condition for this client by profil
         @return: ((profil1, avgrate1), (profil2, avgrate2)...)"""
         FinancialCondition = apps.get_model("staffing", "FinancialCondition")
@@ -337,11 +337,14 @@ class Client(AbstractAddress):
         for profil in ConsultantProfile.objects.all():
             data[profil] = []
 
-        #for profil in ConsultantProfile
-        for fc in FinancialCondition.objects.filter(mission__lead__client=self,
-                                               consultant__timesheet__charge__gt=0,  # exclude null charge
-                                               consultant__timesheet=models.F("mission__timesheet")  # Join to avoid duplicate entries
-                                               ).select_related():
+        financialConditions = FinancialCondition.objects.filter(mission__lead__client=self,
+                                          consultant__timesheet__charge__gt=0,  # exclude null charge
+                                          consultant__timesheet=models.F("mission__timesheet") # Join to avoid duplicate entries
+                                          )
+        if subsidiary:
+            financialConditions = financialConditions.filter(mission__lead__subsidiary=subsidiary)
+
+        for fc in financialConditions.select_related():
             data[fc.consultant.profil].append(fc.daily_rate)
 
         # compute average
@@ -356,8 +359,7 @@ class Client(AbstractAddress):
         rates.sort(key=lambda x: x[0].level)
         return rates
 
-    @cacheable("Client.objectiveMargin__%(id)s", 60)
-    def objectiveMargin(self):
+    def objectiveMargin(self, subsidiary=None):
         """Compute margin over budget objective across all mission of this client
         @return: list of (margin in €, margin in % of total turnover) for internal consultant and subcontractor"""
         Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
@@ -366,6 +368,8 @@ class Client(AbstractAddress):
 
         for mission in Mission.objects.filter(lead__client=self):
             for consultant, margin in list(mission.objectiveMargin().items()):
+                if subsidiary and consultant.company != subsidiary:
+                    continue
                 if consultant.subcontractor:
                     subcontractorMargin += margin
                 else:
@@ -379,13 +383,15 @@ class Client(AbstractAddress):
             subcontractorMargin_pc = 0
         return ((consultantMargin, consultantMargin_pc), (subcontractorMargin, subcontractorMargin_pc))
 
-    def fixedPriceMissionMargin(self):
+    def fixedPriceMissionMargin(self, subsidiary=None):
         """Compute total fixed price margin in €  mission for this client. Only finished mission (ie archived) are
         considered"""
         Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         margin = 0
         missions = Mission.objects.filter(lead__client=self, active=False,
                                           lead__state = "WON", billing_mode="FIXED_PRICE")
+        if subsidiary:
+            missions = missions.filter(subsidiary=subsidiary)
         for mission in missions:
             margin += mission.margin()
         return margin * 1000

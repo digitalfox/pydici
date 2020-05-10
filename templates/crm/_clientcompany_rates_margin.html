@@ -3,6 +3,7 @@
 {# context : client #}
 
 {% load i18n %}
+{% load pydici_tags %}
 
 <h2>{% trans "Billed turnover: "%} {{ company.sales|floatformat:-1 }} k€</h2>
 <br/>
@@ -19,7 +20,8 @@
                 <tr>
                     <td>{{ client.organisation.name }}</td>
                      <td>{% if client.contact %}{{ client.contact }}{% endif %}</td>
-                     {% for profil, rate in client.getFinancialConditions %}
+                     {% call_for_current_subsidiary client 'getFinancialConditions' as fc %}
+                     {% for profil, rate in fc %}
                             <td>{{ rate|default_if_none:'-' }}</td>
                      {% endfor %}
                 </tr>
@@ -45,14 +47,16 @@
                 <th>{% trans "€" %}</th>
             </tr>
             {% for client in clients %}
+                {% call_for_current_subsidiary client 'objectiveMargin' as om %}
+                {% call_for_current_subsidiary client 'fixedPriceMissionMargin' as fixed_price_mission_margin %}
                 <tr>
                     <td>{{ client.organisation.name }}</td>
                      <td>{% if client.contact %}{{ client.contact }}{% endif %}</td>
-                    <td>{{ client.objectiveMargin.0.0|floatformat:0 }}</td>
-                    <td>{{ client.objectiveMargin.0.1|floatformat:-2 }} %</td>
-                    <td>{{ client.objectiveMargin.1.0|floatformat:0 }}</td>
-                    <td>{{ client.objectiveMargin.1.1|floatformat:-2 }} %</td>
-                    <td>{{ client.fixedPriceMissionMargin|floatformat:0 }}</td>
+                    <td>{{ om.0.0|floatformat:0 }}</td>
+                    <td>{{ om.0.1|floatformat:-2 }} %</td>
+                    <td>{{ om.1.0|floatformat:0 }}</td>
+                    <td>{{ om.1.1|floatformat:-2 }} %</td>
+                    <td>{{ fixed_price_mission_margin|floatformat:0 }}</td>
                 </tr>
             {% endfor %}
 

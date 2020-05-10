@@ -252,7 +252,7 @@ class Mission(models.Model):
         return days, amount / 1000
 
     def margin(self, mode="current"):
-        """Compute mission margin in keuros
+        """Compute mission margin in keuros considering only "unused" work
         @:parameter mode: can be current (default) to compute margin as of today (ie. remaining budget) or target to compute margin at mission end (with forecasted work"""
         if self.price:
             done_days, done_amount = self.done_work_k()
