@@ -5,7 +5,8 @@
 {% load i18n %}
 {% load pydici_tags %}
 
-<h2>{% trans "Billed turnover: "%} {{ company.sales|floatformat:-1 }} k€</h2>
+{% call_for_current_subsidiary company "sales" as company_sales %}
+<h2>{% trans "Billed turnover: "%} {{ company_sales|floatformat:-1 }} k€</h2>
 <br/>
 <h2>{% trans "Average rates by profile (€)" %}</h2>
         <table class="table table-hover table-striped table-condensed">
