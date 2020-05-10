@@ -433,10 +433,13 @@ def company_rates_margin(request, company_id):
 
 @pydici_non_public
 @pydici_feature("3rdparties")
-def company_billing(request, company_id):
+def company_billing(request, company_id, subsidiary=None):
     company = Company.objects.get(id=company_id)
+    subsidiary = get_subsidiary_from_session(request)
     # Find leads of this company
     leads = Lead.objects.filter(client__organisation__company=company)
+    if subsidiary:
+        leads = leads.filter(subsidiary=subsidiary)
     leads = leads.order_by("client", "state", "start_date")
     leads = leads.select_related().prefetch_related("clientbill_set", "supplierbill_set")
     return render(request, "crm/_clientcompany_billing.html",
