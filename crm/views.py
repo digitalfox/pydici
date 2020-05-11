@@ -454,6 +454,7 @@ def company_pivotable(request, company_id=None):
     data = []
     dateFormat = "%Y%m%d"
     startDate = endDate = None
+    subsidiary = get_subsidiary_from_session(request)
     try:
         startDate = request.GET.get("start")
         endDate = request.GET.get("end", None)
@@ -470,7 +471,10 @@ def company_pivotable(request, company_id=None):
         company = Company.objects.get(id=company_id)
     except Company.DoesNotExist:
         return Http404()
-    for lead in Lead.objects.filter(client__organisation__company=company):
+    leads = Lead.objects.filter(client__organisation__company=company)
+    if subsidiary:
+        leads = leads.filter(subsidiary=subsidiary)
+    for lead in leads:
         clientName = str(lead.client)
         for mission in lead.mission_set.all():
             missionData = mission.pivotable_data(startDate=startDate, endDate=endDate)
