@@ -46,13 +46,13 @@
             function done_by_client() {
                 var rows = ["{% trans 'client' %}"];
                 var cols = ["{% trans 'date' %}"];;
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "done (keur)" %}']);
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "done (€)" %}']);
             }
 
             function done_by_mission() {
                 var rows = ["{% trans 'mission id' %}"];
                 var cols = ["{% trans 'date' %}"];;
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "done (keur)" %}']);
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "done (€)" %}']);
             }
 
             // set dates on widgets with template value
