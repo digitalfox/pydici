@@ -63,37 +63,41 @@ def detail(request, lead_id):
     """Lead detailed description"""
     try:
         lead = Lead.objects.select_related("client__contact", "client__organisation__company", "subsidiary").prefetch_related("mission_set").get(id=lead_id)
-        # Lead rank in active list
-        active_leads = Lead.objects.active().order_by("creation_date")
-        try:
-            rank = [l.id for l in active_leads].index(lead.id)
-            active_count = active_leads.count()
-            if rank == 0:
-                previous_lead = None
-                next_lead = active_leads[1]
-            elif rank + 1 >= active_count:
-                previous_lead = active_leads[rank - 1]
-                next_lead = None
-            else:
-                previous_lead = active_leads[rank - 1]
-                next_lead = active_leads[rank + 1]
-        except (ValueError, IndexError):
-            # Lead is not in active list, rank it to zero
-            rank = 0
-            next_lead = None
-            previous_lead = None
-            active_count = None
-
-        # Find suggested tags for this lead except if it has already at least two tags
-        tags = lead.tags.all()
-        if tags.count() < 3:
-            suggestedTags = set(predict_tags(lead))
-            suggestedTags -= set(tags)
-        else:
-            suggestedTags = []
-
     except Lead.DoesNotExist:
         raise Http404
+    # Lead rank in active list
+    subsidiary = get_subsidiary_from_session(request)
+    active_leads = Lead.objects.active().order_by("creation_date")
+    if subsidiary:
+        active_leads = active_leads.filter(subsidiary=subsidiary)
+    try:
+        rank = [l.id for l in active_leads].index(lead.id)
+        active_count = active_leads.count()
+        if rank == 0:
+            previous_lead = None
+            next_lead = active_leads[1]
+        elif rank + 1 >= active_count:
+            previous_lead = active_leads[rank - 1]
+            next_lead = None
+        else:
+            previous_lead = active_leads[rank - 1]
+            next_lead = active_leads[rank + 1]
+    except (ValueError, IndexError):
+        # Lead is not in active list, rank it to zero
+        rank = 0
+        next_lead = None
+        previous_lead = None
+        active_count = None
+
+    # Find suggested tags for this lead except if it has already at least two tags
+    tags = lead.tags.all()
+    if tags.count() < 3:
+        suggestedTags = set(predict_tags(lead))
+        suggestedTags -= set(tags)
+    else:
+        suggestedTags = []
+
+
     return render(request, "leads/lead_detail.html",
                   {"lead": lead,
                    "active_count": active_count,
