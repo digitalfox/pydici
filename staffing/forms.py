@@ -151,7 +151,6 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
            if minDate:
                minDate = max(minDate, date.today()-timedelta(365))
                minDate = min(minDate, date.today())
-               minDate = nextMonth(minDate)
            else:
                minDate = None
         if self.instance.end_date:
