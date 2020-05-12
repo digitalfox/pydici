@@ -203,7 +203,7 @@ class Lead(models.Model):
         for mission in self.mission_set.all():
             margin += sum(mission.objectiveMargin().values()) / 1000
             if mission.billing_mode == "FIXED_PRICE":
-                margin += mission.margin(mode="target")
+                margin += mission.remaining(mode="target")
         return margin
 
     @cacheable("Lead.__billed__%(id)s", 3)

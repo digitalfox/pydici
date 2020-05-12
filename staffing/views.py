@@ -184,7 +184,7 @@ def mission_staffing(request, mission_id, form_mode="manual"):
     return render(request, 'staffing/mission_staffing.html',
                   {"formset": formset,
                    "mission": mission,
-                   "margin": mission.margin(mode="target"),
+                   "remaining": mission.remaining(mode="target"),
                    "automatic_staffing_form": MissionAutomaticStaffingForm(),
                    "read_only": readOnly,
                    "staffing_dates": staffingDates(),
@@ -661,8 +661,8 @@ def fixed_price_missions_report(request):
 
     for mission in missions.select_related():
         #TODO: we mess up with objective margin that is computed for current but not target margin. Same issue in mission_tiemsheet page
-        remaining = round(mission.margin(), 1)
-        target_margin = round(mission.margin(mode="target") + sum(mission.objectiveMargin().values()) / 1000, 1)
+        remaining = round(mission.remaining(), 1)
+        target_margin = round(mission.remaining(mode="target") + sum(mission.objectiveMargin().values()) / 1000, 1)
         data.append((mission, round(mission.done_work_k()[1],1), remaining, target_margin))
 
     return render(request, "staffing/fixed_price_report.html",

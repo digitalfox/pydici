@@ -235,7 +235,7 @@ def compute_automatic_staffing(mission, mode, duration, user=None):
     if mission.start_date:
         start_date = max(start_date, mission.start_date)
 
-    margin = mission.margin(mode="target")
+    margin = mission.remaining(mode="target")
     rates = mission.consultant_rates()
     rates_sum = sum([i[0] for i in rates.values()])
     days = margin*1000 / rates_sum / duration
@@ -339,6 +339,6 @@ def check_missions_limited_mode(missions):
     offending_missions = []
     for mission in missions:
         if mission.management_mode == "LIMITED":
-            if mission.margin(mode="current") < 0:
+            if mission.remaining(mode="current") < 0:
                 offending_missions.append(mission)
     return offending_missions

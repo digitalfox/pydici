@@ -1,12 +1,12 @@
 {% load i18n %}
-{% with margin=mission.target_margin %}
-    {% if margin < 0 and mission.management_mode != "ELASTIC" %}
+{% with remaining=mission.target_remaining %}
+    {% if remaining < 0 and mission.management_mode != "ELASTIC" %}
         {% if mission.management_mode == "LIMITED" %}
             <div class="alert alert-danger col-md-6">
         {% else %}
             <div class="alert alert-warning col-md-6">
         {% endif %}
-        {% trans "Current forecast exceeds mission price" %} ({{ mission.target_margin|floatformat:-2  }} k€)
+        {% trans "Current forecast exceeds mission price" %} ({{ remaining|floatformat:-2  }} k€)
         </div>
     {% endif %}
 {% endwith %}

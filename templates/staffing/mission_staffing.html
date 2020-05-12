@@ -9,7 +9,7 @@
 
         <form action="{% url 'staffing:automatic_mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-automatic-staffing">
             <div class="alert alert-info">
-                {% blocktrans with margin=margin|floatformat:"-2" %}This mission has {{ margin }} k€ to be forecasted.{% endblocktrans %}
+                {% blocktrans with remaining=remaining|floatformat:"-2" %}This mission has {{ remaining }} k€ to be forecasted.{% endblocktrans %}
                 {% trans "Do automatic forecast" %} {{ automatic_staffing_form.mode }} {% trans "in" %} {{ automatic_staffing_form.duration }} {% trans "months" %}.
 
                 <button type='submit' class="btn btn-default"><span class="glyphicon glyphicon-cog"></span> {% trans 'Compute automatic forecast' %}</button>

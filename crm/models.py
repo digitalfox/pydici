@@ -393,7 +393,7 @@ class Client(AbstractAddress):
         if subsidiary:
             missions = missions.filter(subsidiary=subsidiary)
         for mission in missions:
-            margin += mission.margin()
+            margin += mission.remaining()
         return margin * 1000
 
     def sales(self, onlyLastYear=False):
