@@ -154,7 +154,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                      _("responsible"): str(lead.responsible),
                      _("consultant"): "-"}
         # Add legacy bills non related to specific mission (ie. not using pydici billing, just header and pdf payload)
-        legacy_bills = ClientBill.objects.filter(lead=lead, state__in=bill_state).annotate(Count("billdetail")).filter(billdetail__count=0)
+        legacy_bills = ClientBill.objects.filter(lead=lead, state__in=bill_state).annotate(Count("billdetail"), Count("billexpense")).filter(billdetail__count=0, billexpense__count=0)
         for legacy_bill in legacy_bills:
             legacy_bill_data = lead_data.copy()
             legacy_bill_data[_("amount")] = - float(legacy_bill.amount or 0)
