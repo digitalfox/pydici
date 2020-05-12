@@ -514,8 +514,6 @@ def pdc_detail(request, consultant_id, staffing_date):
 @pydici_feature("reports")
 def prod_report(request, year=None, month=None):
     """Report production by each people and team for each month"""
-    #TODO: extract that in CSV as well
-
     team = None
     subsidiary = get_subsidiary_from_session(request)
     months = []
@@ -1671,7 +1669,7 @@ def graph_timesheet_rates_bar(request, team_id=None):
 
     # Compute date data
     timesheetStartDate = (date.today() - 3 * timedelta(365)).replace(day=1)  # Last three years
-    timesheetEndDate = nextMonth(date.today())  # First day of next month
+    timesheetEndDate = date.today()
 
     subsidiary = get_subsidiary_from_session(request)
     # Filter on scope
@@ -1755,7 +1753,7 @@ def graph_profile_rates(request, team_id=None):
 
     month = timesheetStartDate
     while month < timesheetEndDate:
-        next_month = nextMonth(month)
+        upperBound = min(date.today(), nextMonth(month))
         isoTimesheetMonths.append(month.isoformat())
         monthGlobalNDays = 0
         monthGlobalTurnover = 0
@@ -1764,8 +1762,8 @@ def graph_profile_rates(request, team_id=None):
                 nDays[consultant.profil.id][month] = 0
             if not month in turnover[consultant.profil_id]:
                 turnover[consultant.profil_id][month] = 0
-            nDays[consultant.profil_id][month] += Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=next_month, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"] or 0
-            turnover[consultant.profil_id][month] += consultant.get_turnover(month, next_month)
+            nDays[consultant.profil_id][month] += Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=upperBound, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"] or 0
+            turnover[consultant.profil_id][month] += consultant.get_turnover(month, upperBound)
 
         for profil, profilName in profils.items():
             if profil in nDays:
@@ -1779,7 +1777,7 @@ def graph_profile_rates(request, team_id=None):
             globalDailyRate.append(round(monthGlobalTurnover / monthGlobalNDays))
         else:
             globalDailyRate.append(None)
-        month = next_month
+        month = nextMonth(month)
 
     if not isoTimesheetMonths or set(globalDailyRate) == {None}:
         return HttpResponse('')
