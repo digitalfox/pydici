@@ -25,7 +25,7 @@ from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget,
 from django.utils import formats
 
 
-from staffing.models import Mission, FinancialCondition
+from staffing.models import Mission, FinancialCondition, Staffing
 from people.models import Consultant
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 from people.forms import ConsultantChoices, ConsultantMChoices
@@ -136,6 +136,10 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
 
 class MissionStaffingInlineFormset(BaseInlineFormSet):
     """Custom inline formset used to override fields"""
+    def __init__(self, *args, **kwargs):
+        kwargs["queryset"] = Staffing.objects.filter(staffing_date__gte=date.today()-timedelta(365))
+        super(MissionStaffingInlineFormset, self).__init__(*args, **kwargs)
+
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
