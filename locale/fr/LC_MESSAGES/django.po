@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-12 23:34+0200\n"
-"PO-Revision-Date: 2020-05-12 23:34+0200\n"
+"POT-Creation-Date: 2020-05-14 10:25+0200\n"
+"PO-Revision-Date: 2020-05-14 10:25+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -1404,7 +1404,7 @@ msgstr "Abandonnée"
 msgid "Sleeping"
 msgstr "En sommeil"
 
-#: leads/models.py:60 templates/leads/lead_detail.html:199
+#: leads/models.py:60 templates/leads/lead_detail.html:200
 #: templates/staffing/mission.html:129
 msgid "Administrative notes"
 msgstr "Commentaires administratifs"
@@ -1542,8 +1542,8 @@ msgid "billed (€)"
 msgstr "facturé (€)"
 
 #: leads/views.py:617 templates/leads/leads_pivotable.html:72
-msgid "Over budget margin (k€)"
-msgstr "Marge au delà du budget (k€)"
+msgid "Over budget margin (€)"
+msgstr "Marge au delà du budget (€)"
 
 #: people/admin.py:32
 msgid "For subcontractors"
@@ -1620,7 +1620,7 @@ msgstr "Factures à revoir"
 msgid "Supplier bills to review"
 msgstr "Factures fournisseurs à valider"
 
-#: people/utils.py:89 templates/leads/lead_detail.html:262
+#: people/utils.py:89 templates/leads/lead_detail.html:263
 #: templates/people/consultant_detail.html:84
 #: templates/people/subcontractor_detail.html:16
 #: templates/staffing/mission.html:213
@@ -1815,7 +1815,7 @@ msgid "Mission id"
 msgstr "N° de mission"
 
 #: staffing/models.py:60 staffing/views.py:1210
-#: templates/leads/lead_detail.html:217 templates/staffing/mission.html:113
+#: templates/leads/lead_detail.html:218 templates/staffing/mission.html:113
 #: templates/staffing/mission.html:174
 msgid "Billing mode"
 msgstr "Mode de facturation"
@@ -1879,7 +1879,7 @@ msgid "forecast (€)"
 msgstr "prévu (€)"
 
 #: staffing/models.py:401 staffing/views.py:853 staffing/views.py:1111
-#: staffing/views.py:1210 templates/leads/lead_detail.html:212
+#: staffing/views.py:1210 templates/leads/lead_detail.html:213
 #: templates/staffing/consultant_staffing.html:11
 #: templates/staffing/mission.html:169 templates/staffing/pdc_detail.html:7
 msgid "Mission"
@@ -2021,7 +2021,7 @@ msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
 #: staffing/views.py:1136 templates/billing/_lead_billing.html:59
-#: templates/billing/bill.html:156 templates/leads/lead_detail.html:239
+#: templates/billing/bill.html:156 templates/leads/lead_detail.html:240
 #: templates/staffing/mission_timesheet.html:39
 #: templates/staffing/mission_timesheet.html:117
 #: templates/staffing/prod_report.html:72
@@ -2041,7 +2041,7 @@ msgid "Past done days"
 msgstr "Jours réalisés dans le passé"
 
 #: staffing/views.py:1211 templates/billing/bill_review.html:234
-#: templates/leads/lead_detail.html:214 templates/staffing/mission.html:171
+#: templates/leads/lead_detail.html:215 templates/staffing/mission.html:171
 #: templates/staffing/mission_timesheet.html:13
 msgid "Done days"
 msgstr "Jours réalisés"
@@ -3706,55 +3706,68 @@ msgstr "Rentabilité"
 msgid "Sold"
 msgstr "Vendu"
 
-#: templates/leads/lead_detail.html:183 templates/leads/lead_detail.html:231
-msgid "Unused"
-msgstr "Non utilisé"
+#: templates/leads/lead_detail.html:183 templates/leads/lead_detail.html:232
+msgid "Unattributed"
+msgstr "Non attribué"
+
+#: templates/leads/lead_detail.html:183
+msgid "Non attributed amount to missions"
+msgstr "Montant non attribué à des missions"
 
 #: templates/leads/lead_detail.html:184
 #: templates/staffing/mission_timesheet.html:108
 msgid "Margin over rate objective"
 msgstr "Marge sur objectifs de TJM"
 
-#: templates/leads/lead_detail.html:190
+#: templates/leads/lead_detail.html:185
+msgid "Full margin"
+msgstr "Marge total"
+
+#: templates/leads/lead_detail.html:185
+msgid "Sum of objective margin and unused days for fixed price missions"
+msgstr ""
+"Somme des marges sur objectifs et des montants non utilisés pour les forfaits"
+
+#: templates/leads/lead_detail.html:191
 msgid "Similar leads"
 msgstr "Affaires similaires"
 
-#: templates/leads/lead_detail.html:208
+#: templates/leads/lead_detail.html:209
 msgid "Missions of this lead:"
 msgstr "Missions de cette affaire : "
 
-#: templates/leads/lead_detail.html:213 templates/staffing/mission.html:170
+#: templates/leads/lead_detail.html:214 templates/staffing/mission.html:170
 msgid "id"
 msgstr "n°"
 
-#: templates/leads/lead_detail.html:215 templates/staffing/mission.html:172
+#: templates/leads/lead_detail.html:216 templates/staffing/mission.html:172
 msgid "Done work (k€)"
 msgstr "Montant réalisé (k€)"
 
-#: templates/leads/lead_detail.html:216
+#: templates/leads/lead_detail.html:217
 #: templates/staffing/fixed_price_report.html:20
 #: templates/staffing/mission.html:173
 msgid "Sold (k€)"
 msgstr "Vendu (k€)"
 
-#: templates/leads/lead_detail.html:250
+#: templates/leads/lead_detail.html:251
 msgid "Create a new mission for this lead"
 msgstr "Créer une nouvelle mission pour cette affaire"
 
-#: templates/leads/lead_detail.html:254
+#: templates/leads/lead_detail.html:255
 msgid "A mission is created once a commercial proposal has been sent."
 msgstr ""
 "Une mission est créée une fois que la proposition commerciale est envoyée."
 
-#: templates/leads/lead_detail.html:267 templates/staffing/mission.html:218
+#: templates/leads/lead_detail.html:268 templates/staffing/mission.html:218
 msgid "Done actions"
 msgstr "Actions réalisées"
 
-#: templates/leads/lead_detail.html:272 templates/staffing/mission.html:223
+#: templates/leads/lead_detail.html:273 templates/staffing/mission.html:223
 msgid "No action done"
 msgstr "Aucune action réalisée"
 
-#: templates/leads/lead_detail.html:316
+#: templates/leads/lead_detail.html:317
 msgid "Tag already exists"
 msgstr "Étiquette existante"
 
@@ -4597,6 +4610,9 @@ msgstr "CA par société client"
 #: templates/staffing/turnover_pivotable.html:31
 msgid "Turnover per billing mode"
 msgstr "CA par mode de facturation"
+
+#~ msgid "Unused"
+#~ msgstr "Non utilisé"
 
 #~ msgid "done (k€)"
 #~ msgstr "réalisé (k€)"
