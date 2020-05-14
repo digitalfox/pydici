@@ -177,11 +177,12 @@
                 <h2>{% trans "Profitability" %}</h2>
                 <table class="table table-hover table-striped table-condensed">
                     <tr><th>{% trans "Sold" %}</th>
-                    <td>{% if lead.sales %}{{ lead.sales }} k€
+                    <td>{% if lead.sales %}{{ lead.sales|floatformat:-3 }} k€
                         {% else %} <a href="{% url 'leads:lead' lead.id|unlocalize %}">{% trans "To be defined" %}</a>
                         {% endif %}</td></tr>
-                    <tr><th>{% trans "Unused" %}</th><td>{{ lead.unused }} k€</td></tr>
-                    <tr><th>{% trans "Margin over rate objective" %}</th><td>{{ lead.totalObjectiveMargin }} €</td></tr>
+                    <tr><th>{% trans "Unattributed" %} <span class="glyphicon glyphicon-question-sign pydici-tooltip hidden-sm hidden-xs" title="{% blocktrans %}Non attributed amount to missions{% endblocktrans %}"></span></th><td>{{ lead.unattributed|floatformat:-3 }} k€</td></tr>
+                    <tr><th>{% trans "Margin over rate objective" %}</th><td>{{ lead.totalObjectiveMargin|floatformat:-2 }} €</td></tr>
+                    <tr><th>{% trans "Full margin" %} <span class="glyphicon glyphicon-question-sign pydici-tooltip hidden-sm hidden-xs" title="{% blocktrans %}Sum of objective margin and unused days for fixed price missions{% endblocktrans %}"></span></th><td>{{ lead.margin|floatformat:-2 }} €</td></tr>
                 </table>
             </div>
             {% endif %}
@@ -228,11 +229,11 @@
         {% endfor %}
         {% ifnotequal lead.mission_set.count 1 %}
     	    <tr>
-    	        <th>{% trans "Unused" %}</th>
+    	        <th>{% trans "Unattributed" %}</th>
     	        <th></th>
     	        <th></th>
     	        <th></th>
-    	        <th>{{ lead.unused }}</th>
+    	        <th>{{ lead.unattributed }}</th>
     	        <th></th>
     	    </tr>
             <tr>

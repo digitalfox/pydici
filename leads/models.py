@@ -163,8 +163,8 @@ class Lead(models.Model):
         days, amount = self.done_work()
         return days, amount / 1000
 
-    def unused(self):
-        """Returns unused money. ie. sales price minus all planned missions"""
+    def unattributed(self):
+        """Returns non attributed amount to missions. ie. sales price minus all missions amount"""
         unused = 0
         if self.sales:
             unused = self.sales
@@ -201,9 +201,9 @@ class Lead(models.Model):
         @:return: margin in k€"""
         margin = 0
         for mission in self.mission_set.all():
-            margin += sum(mission.objectiveMargin().values()) / 1000
+            margin += sum(mission.objectiveMargin().values())
             if mission.billing_mode == "FIXED_PRICE":
-                margin += mission.remaining(mode="target")
+                margin += mission.remaining(mode="target") * 1000
         return margin
 
     @cacheable("Lead.__billed__%(id)s", 3)

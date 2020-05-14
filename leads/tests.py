@@ -100,9 +100,10 @@ class LeadModelTest(TestCase):
             lead = Lead.objects.get(id=i)
             a, b = lead.done_work()
             c, d = lead.done_work_k()
-            e = lead.unused()
+            e = lead.unattributed()
             f = lead.totalObjectiveMargin()
-            for x in (a, b, c, d, e, f):
+            g = lead.margin()
+            for x in (a, b, c, d, e, f, g):
                 self.assertIsInstance(x, (int, float, Decimal))
 
     def test_checkDoc(self):
