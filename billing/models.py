@@ -275,6 +275,8 @@ class BillDetail(models.Model):
     def save(self, *args, **kwargs):
         if self.unit_price and self.quantity:
             self.amount = Decimal(self.unit_price) * Decimal(self.quantity)
+        else:
+            self.amount = 0
 
         # compute amount with VAT if amount is defined
         if self.amount:
@@ -282,6 +284,8 @@ class BillDetail(models.Model):
         # compute amount if not defined and amount with VAT is defined
         elif self.amount_with_vat:
             self.amount = self.amount_with_vat / (1 + self.vat / 100)
+        else:
+            self.amount_with_vat = 0
         super(BillDetail, self).save(*args, **kwargs)  # Save it
 
     class Meta:
