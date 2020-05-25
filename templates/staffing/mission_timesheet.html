@@ -64,7 +64,7 @@
 	        <td></td>
         {% else %}
             <tr align="right">
-            <td>{{ consultant }}</td>
+            <td>{% include "people/__consultant_name.html" %}</td>
             <td>{{ timesheet|join:"</td><td>" }}</td>
             <td class="table-separator"></td>
             <td>{{ staffing|join:"</td><td>" }}</td>
