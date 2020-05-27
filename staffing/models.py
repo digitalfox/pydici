@@ -179,7 +179,7 @@ class Mission(models.Model):
         """Compute done work according to timesheet for this mission
         Result is cached for few seconds
         @return: (done work in days, done work in euros)"""
-        return self.done_work_period(None, nextMonth(date.today()))
+        return self.done_work_period(None, date.today())
 
     def done_work_k(self):
         """Same as done_work, but with amount in keur"""

@@ -890,8 +890,8 @@ def mission_timesheet(request, mission_id):
         # This view should only be accessed by ajax request. Redirect lost users
         return redirect("staffing:mission_home", mission_id)
 
-    # Gather timesheet (Only consider timesheet up to current month)
-    timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
+    # Gather timesheet (Only consider timesheet up to today)
+    timesheets = Timesheet.objects.filter(mission=mission).filter(working_date__lt=date.today()).order_by("working_date")
     timesheetMonths = list(timesheets.dates("working_date", "month"))
 
     # Gather forecaster (till current month)
