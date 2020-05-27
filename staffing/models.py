@@ -232,7 +232,7 @@ class Mission(models.Model):
         current_month = date.today().replace(day=1)
         staffings = Staffing.objects.filter(mission=self, staffing_date__gte=current_month)
         staffings = staffings.values_list("consultant").annotate(Sum("charge")).order_by()
-        current_month_done = Timesheet.objects.filter(mission=self, working_date__gte=current_month, working_date__lt=nextMonth(date.today()))
+        current_month_done = Timesheet.objects.filter(mission=self, working_date__gte=current_month, working_date__lt=date.today())
         current_month_done = dict(current_month_done.values_list("consultant").annotate(Sum("charge")).order_by())
         for consultant_id, charge in staffings:
             days += charge  # Add forecasted days
