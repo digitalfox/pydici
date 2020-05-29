@@ -35,7 +35,7 @@ Create a virtual env in a directory readable by your apache user and activate it
    . venv/bin/activate
 
 Install prerequisites :
-   pip install -r <path to pydici source code>/requirements.txt
+    pip install -r <path to pydici source code>/requirements.txt
 
 Setup your favorite database (mysql/mariaDB or postgresql) and create a schema/base (with UTF-8 character set please) with a valid user that can create/alter/select/delete/update its objects.
 
