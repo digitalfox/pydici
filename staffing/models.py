@@ -239,12 +239,14 @@ class Mission(models.Model):
         for consultant_id, charge in staffings:
             days += charge  # Add forecasted days
             current_month_balance = current_month_staffing.get(consultant_id, 0) - current_month_done.get(consultant_id, 0)
+            charge_adjustement = 0
             if current_month_balance > 0:
-                days -= current_month_done.get(consultant_id, 0)  # leave remaining forecast
+                charge_adjustement = -current_month_done.get(consultant_id, 0)  # leave remaining forecast
             else:
-                days -= current_month_staffing.get(consultant_id, 0) # forecast has been exhausted
+                charge_adjustement = -current_month_staffing.get(consultant_id, 0) # forecast has been exhausted
+            days += charge_adjustement
             if consultant_id in rates:
-                amount += days * rates[consultant_id]
+                amount += (charge + charge_adjustement) * rates[consultant_id]
         if days < 0:
             # Negative forecast, means no forecast.
             days = 0
