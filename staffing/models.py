@@ -234,12 +234,17 @@ class Mission(models.Model):
         staffings = staffings.values_list("consultant").annotate(Sum("charge")).order_by()
         current_month_done = Timesheet.objects.filter(mission=self, working_date__gte=current_month, working_date__lt=date.today())
         current_month_done = dict(current_month_done.values_list("consultant").annotate(Sum("charge")).order_by())
+        current_month_staffing = Staffing.objects.filter(mission=self, staffing_date__gte=current_month, staffing_date__lt=nextMonth(current_month))
+        current_month_staffing = dict(current_month_staffing.values_list("consultant").annotate(Sum("charge")).order_by())
         for consultant_id, charge in staffings:
             days += charge  # Add forecasted days
-            days -= current_month_done.get(consultant_id, 0) # Substract current month done works from forecastinng
+            current_month_balance = current_month_staffing.get(consultant_id, 0) - current_month_done.get(consultant_id, 0)
+            if current_month_balance > 0:
+                days -= current_month_done.get(consultant_id, 0)  # leave remaining forecast
+            else:
+                days -= current_month_staffing.get(consultant_id, 0) # forecast has been exhausted
             if consultant_id in rates:
-                amount += charge * rates[consultant_id]
-                amount -= current_month_done.get(consultant_id, 0) * rates[consultant_id]
+                amount += days * rates[consultant_id]
         if days < 0:
             # Negative forecast, means no forecast.
             days = 0
