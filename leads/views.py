@@ -18,7 +18,7 @@ from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
-from django.db.models import Sum, Count, Min
+from django.db.models import Sum, Count, Min, Q
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 from django.db.models.query import QuerySet
@@ -603,6 +603,7 @@ def leads_pivotable(request, year=None):
         leads = leads.filter(creation_date__gte=start, creation_date__lt=end)
     leads = leads.select_related("responsible", "client__contact", "client__organisation__company", "subsidiary",
                          "business_broker__company", "business_broker__contact")
+    leads = leads.annotate(active_mission_count=Count('mission', filter=Q(mission__active=True)))
     for lead in leads:
         data.append({_("deal id"): lead.deal_id,
                      _("name"): lead.name,
@@ -615,7 +616,9 @@ def leads_pivotable(request, year=None):
                      _("state"): lead.get_state_display(),
                      _("billed (€)"): int(list(lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0),
                      _("Over budget margin (€)"): lead.margin(),
-                     _("subsidiary"): str(lead.subsidiary)})
+                     _("subsidiary"): str(lead.subsidiary),
+                     _("active"): lead.active_mission_count > 0,
+                     })
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
                                                     "years": years,

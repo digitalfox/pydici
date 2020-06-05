@@ -68,7 +68,7 @@
                 var rows = ["{% trans 'subsidiary' %}"];
                 var cols = ["{% trans 'client company' %}"];
                 var options = {}
-                options['inclusions'] = { {% trans "state" %}: ['{% trans "Won" %}'] };
+                options['inclusions'] = { {% trans "state" %}: ['{% trans "Won" %}'], {% trans "active" %}: ['false'] };
                 drawPivot(data, rows, cols, "Horizontal Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "Over budget margin (€)" %}'], options);
             }
 
