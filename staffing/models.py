@@ -6,7 +6,7 @@ Database access layer for pydici staffing module
 """
 
 from django.db import models
-from django.db.models import Sum, Min, F
+from django.db.models import Sum, Min, F, Q
 from django.db.models.functions import TruncMonth
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, pgettext
@@ -209,9 +209,9 @@ class Mission(models.Model):
         if not include_external_subcontractor:
             timesheets = timesheets.filter(consultant__subcontractor=False)
         if not include_internal_subcontractor:
-            timesheets = timesheets.filter(consultant__company=F("mission__subsidiary"))
+            timesheets = timesheets.filter(Q(consultant__company=F("mission__subsidiary")) | Q(consultant__subcontractor=True))
         if filter_on_subsidiary:
-            timesheets = timesheets.filter(consultant__company=filter_on_subsidiary)
+            timesheets = timesheets.filter(Q(consultant__company=filter_on_subsidiary) | Q(consultant__subcontractor=True))
         if filter_on_consultant:
             timesheets = timesheets.filter(consultant=filter_on_consultant)
         timesheets = timesheets.values_list("consultant").annotate(Sum("charge")).order_by()
