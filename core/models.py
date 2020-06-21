@@ -37,6 +37,10 @@ _FEATURES_CHOICES = (
     ("billing_management", _("Manage bills, allow to mark bills sent, paid etc.")),
     ("billing_request", _("Create bills and proposed them to billing team ")),
     ("expense", _("Expense request")),
+    ("expense_paymaster", _("Expense paymaster: create expense payment to pay expense to consultant")),
+    ("expense_manager", _("Expense manager: validate expense of his team")),
+    ("expense_subsidiary_administrator", _("Expense administator on subsidiary perimeter: full right to manage expense on his subsidiary except its own expense")),
+    ("expense_administrator", _("Expense administator: full right to manage expense")),
 )
 
 FEATURES = set([x[0] for x in _FEATURES_CHOICES])

@@ -20,8 +20,9 @@ It rely on 6 states:
 - controled: second level review by administrative staff. This can be a terminal state if no payment is needed (ex. corp card)
 - paid: expense has been paid to user (and linked to a payment). This is a terminal state
 
-For groups control permissions around this simple workflow:
+Five features controls permissions around this simple workflow: (a superuser bypass all controls)
 - expense_administrator: can do anything
+- expense_subsidiary_administrator: can do anything on his subsidiary except for its own expense
 - expense_manager: can validate requested expense of his team
 - expense_paymaster: can control expense create expense payment
 - expense_requester: can create new expense
@@ -31,6 +32,7 @@ from django.core.cache import cache
 
 from expense.models import EXPENSE_STATES, EXPENSE_TRANSITION_TO_STATES
 from people.models import Consultant
+from core.utils import user_has_feature
 
 
 def expense_next_states(expense, user):
@@ -106,11 +108,10 @@ def expense_transition_to_state_display(state):
 
 def user_expense_perm(user):
     """compute user perm and returns expense_administrator, expense_manager, expense_paymaster, expense_requester"""
-    #TODO: migrate this to features instead of group link
-    expense_administrator = user.is_superuser or user.groups.filter(name="expense_administrator").exists()
-    expense_manager = expense_administrator or user.groups.filter(name="expense_manager").exists()
-    expense_paymaster = expense_administrator or user.groups.filter(name="expense_paymaster").exists()
-    expense_requester = expense_administrator or user.groups.filter(name="expense_requester").exists()
+    expense_administrator = user.is_superuser or user_has_feature(user, "expense_administrator")
+    expense_manager = expense_administrator or user_has_feature(user, "expense_manager")
+    expense_paymaster = expense_administrator or user_has_feature(user, "expense_paymaster")
+    expense_requester = expense_administrator or user_has_feature(user, "expense_requester")
 
     return expense_administrator, expense_manager, expense_paymaster, expense_requester
 
