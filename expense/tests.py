@@ -51,8 +51,9 @@ class WorkflowTest(TestCase):
             self.assertIn("NEEDS_INFORMATION", states)
             self.assertIn("REJECTED", states)
 
-        # Not yet validated, so user can edit it
+        # Not yet validated, so user and his manager can edit it
         self.assertTrue(can_edit_expense(e, tco))
+        self.assertTrue(can_edit_expense(e, abr))
 
         # Reject it
         e.state = "REJECT"
@@ -114,9 +115,11 @@ class WorkflowTest(TestCase):
         self.assertIn("VALIDATED", states)
         self.assertIn("NEEDS_INFORMATION", states)
         self.assertIn("REJECTED", states)
+        self.assertTrue(can_edit_expense(e, gba))
 
         e.state = "VALIDATED"
         for user in (abo, gba):
             self.assertEqual(len(expense_next_states(e, user)), 0)  # No transition allowed
             self.assertFalse(can_edit_expense(e, user))  # No edition allowed
+
 
