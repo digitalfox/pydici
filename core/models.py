@@ -39,7 +39,7 @@ _FEATURES_CHOICES = (
     ("expense", _("Expense request")),
     ("expense_paymaster", _("Expense paymaster: create expense payment to pay expense to consultant")),
     ("expense_manager", _("Expense manager: validate expense of his team")),
-    ("expense_subsidiary_administrator", _("Expense administator on subsidiary perimeter: full right to manage expense on his subsidiary except its own expense")),
+    ("expense_subsidiary_manager", _("Expense manager on subsidiary perimeter: act an expense manager for every consultant of his subsidiary")),
     ("expense_administrator", _("Expense administator: full right to manage expense")),
 )
 

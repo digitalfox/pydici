@@ -27,13 +27,14 @@ from people.models import Consultant
 from core.decorator import pydici_non_public, pydici_feature, pydici_subcontractor
 from core.views import tableToCSV
 from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm, user_expense_team
+from people.utils import users_are_in_same_company
 
 
 @pydici_subcontractor
 @pydici_feature("expense")
 def expense(request, expense_id):
     """Display one expense"""
-    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
 
     if not expense_requester:
         return HttpResponseRedirect(reverse("core:forbiden"))
@@ -46,7 +47,9 @@ def expense(request, expense_id):
         raise Http404
 
     if not (expense_administrator or expense_paymaster):
-        if not (expense.user == request.user or expense.user in user_team):
+        if not (expense.user == request.user or \
+                expense.user in user_team or \
+                (expense_subsidiary_manager and users_are_in_same_company(expense.user, request.user))):
             return HttpResponseRedirect(reverse("core:forbiden"))
 
     return render(request, "expense/expense.html",
@@ -60,17 +63,21 @@ def expense(request, expense_id):
 @pydici_feature("expense")
 def expenses(request, expense_id=None, clone_from=None):
     """Display user expenses and expenses that he can validate"""
-    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
 
     if not expense_requester:
         return HttpResponseRedirect(reverse("core:forbiden"))
-
-    user_team = user_expense_team(request.user)
 
     consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
     subcontractor = None
     if consultant.subcontractor:
         subcontractor = consultant
+
+    if expense_subsidiary_manager:
+        # consider all subsidiary for expense subsidiary manager
+        user_team = consultant.user_team(subsidiary=True, exclude_self=True)
+    else:
+        user_team = consultant.user_team(exclude_self=True)
 
     try:
         if expense_id:
@@ -148,7 +155,7 @@ def expenses(request, expense_id=None, clone_from=None):
 def expense_receipt(request, expense_id):
     """Returns expense receipt if authorize to"""
     data = BytesIO()
-    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
     try:
         expense = Expense.objects.get(id=expense_id)
         content_type = expense.receipt_content_type()
@@ -166,7 +173,7 @@ def expense_receipt(request, expense_id):
 def expense_delete(request, expense_id):
     """Delete given expense if authorized to"""
     expense = None
-    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
     if not expense_requester:
         return HttpResponseRedirect(reverse("core:forbiden"))
 
@@ -194,7 +201,7 @@ def expense_delete(request, expense_id):
 def expenses_history(request):
     """Display expense history"""
 
-    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
 
     return render(request, "expense/expense_archive.html",
                   {"data_url": reverse('expense:expense_table_DT'),
@@ -278,7 +285,7 @@ def update_expense_state(request, expense_id, target_state):
 def update_expense_vat(request):
     """Update expense VAT."""
 
-    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
 
     if not (expense_administrator or expense_paymaster):
         return HttpResponseForbidden()
@@ -302,7 +309,7 @@ def update_expense_vat(request):
 @pydici_feature("management")
 def expense_payments(request, expense_payment_id=None):
     readOnly = False
-    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
 
     if not (expense_paymaster or expense_administrator):
         readOnly = True
@@ -368,7 +375,7 @@ def expense_payments(request, expense_payment_id=None):
 @pydici_feature("management")
 def expense_payment_detail(request, expense_payment_id):
     """Display detail of this expense payment"""
-    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
     if not expense_requester:
         return HttpResponseRedirect(reverse("core:forbiden"))
     try:

@@ -8,6 +8,14 @@
         }
     },
     {
+        "pk": 2,
+        "model": "crm.subsidiary",
+        "fields": {
+            "name": "another subsidiary of the E company",
+            "code": "F"
+        }
+    },
+    {
         "pk": 1, 
         "model": "crm.company", 
         "fields": {

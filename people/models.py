@@ -182,21 +182,26 @@ class Consultant(models.Model):
         if users.count() >= 1:
             return users[0]
 
-    def team(self, exclude_self=True, only_active=False, staffing=False):
-        """Returns Consultant team as a list of consultant"""
-        if staffing:
+    def team(self, exclude_self=True, only_active=False, staffing=False, subsidiary=False):
+        """Returns Consultant team as a list of consultant. Default is directly managed team
+        @:param staffing: consider only consultant who has self as staffing manager
+        @:param subsidiary: take all subsidiary whomever is manager"""
+        if subsidiary:
+            team = Consultant.objects.filter(company=self.company)
+        elif staffing:
             team = self.team_as_staffing_manager.all()
         else:
             team = self.team_as_manager.all()
+
         if exclude_self:
             team = team.exclude(id=self.id)
         if only_active:
             team = team.filter(active=True)
         return team
 
-    def user_team(self, exclude_self=True, only_active=False):
+    def user_team(self, exclude_self=True, only_active=False, staffing=False, subsidiary=False):
         """Returns consultant team as list of pydici user"""
-        users = [c.get_user() for c in self.team(exclude_self=exclude_self, only_active=only_active)]
+        users = [c.get_user() for c in self.team(exclude_self=exclude_self, only_active=only_active, staffing=staffing, subsidiary=subsidiary)]
         return [u for u in users if u is not None]
 
     def pending_actions(self):

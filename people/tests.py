@@ -40,20 +40,21 @@ class PeopleModelTest(TestCase):
         c = Consultant.objects.get(trigramme="SRE")
         u = User.objects.get(username="sre")
         self.assertEqual(c.get_user(), u)
-        c = Consultant.objects.get(trigramme="GBA")
+        c = Consultant.objects.get(trigramme="MAG")
         self.assertEqual(c.get_user(), None)
 
     def test_team(self):
         c = Consultant.objects.get(trigramme="SRE")
-        self.assertEqual(list(c.team().order_by("id").values_list("id", flat=True)), [3, 5])
-        self.assertEqual(list(c.team(exclude_self=False).order_by("id").values_list("id", flat=True)), [1, 3, 5])
-        self.assertEqual(list(c.team(exclude_self=False, only_active=True).order_by("id").values_list("id", flat=True)), [1, 5])
-        self.assertEqual(list(c.team(only_active=True).order_by("id").values_list("id", flat=True)), [5, ])
+        self.assertEqual(list(c.team().order_by("id").values_list("id", flat=True)), [3, 5, 6, 7, 8])
+        self.assertEqual(list(c.team(exclude_self=False).order_by("id").values_list("id", flat=True)), [1, 3, 5, 6, 7, 8])
+        self.assertEqual(list(c.team(exclude_self=False, only_active=True).order_by("id").values_list("id", flat=True)), [1, 5, 6, 7, 8])
+        self.assertEqual(list(c.team(only_active=True).order_by("id").values_list("id", flat=True)), [5, 6, 7, 8])
 
     def test_user_team(self):
         c = Consultant.objects.get(trigramme="SRE")
-        self.assertEqual(c.user_team(), [User.objects.get(username="abr")])
-        self.assertEqual(c.user_team(exclude_self=False), [User.objects.get(username="abr"), User.objects.get(username="sre")])
+        team = [User.objects.get(username="abo"), User.objects.get(username="abr"), User.objects.get(username="fla"), User.objects.get(username="gba")]
+        self.assertEqual(c.user_team(), team)
+        self.assertEqual(c.user_team(exclude_self=False), team + [User.objects.get(username="sre"),])
 
     def test_pending_action(self):
         c = Consultant.objects.get(trigramme="SRE")

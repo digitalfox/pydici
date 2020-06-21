@@ -14,10 +14,8 @@ from django.utils.translation import ugettext as _
 from django.urls import reverse
 
 from people.models import Consultant
-from crm.models import Subsidiary
 from billing.models import ClientBill, SupplierBill
 from expense.models import Expense
-from expense.utils import user_expense_team
 
 
 def get_team_scopes(subsidiary, team):
@@ -58,7 +56,7 @@ def compute_consultant_tasks(consultant):
         return tasks
 
     # Expenses to reviews
-    expenses = Expense.objects.filter(user__in=user_expense_team(user), workflow_in_progress=True, state="REQUESTED")
+    expenses = Expense.objects.filter(user__in=consultant.user_team(exclude_self=False), workflow_in_progress=True, state="REQUESTED")
     expenses_count = expenses.count()
     if expenses_count > 0:
         expenses_age = (now - expenses.aggregate(Min("update_date"))["update_date__min"]).days
@@ -99,3 +97,9 @@ def get_task_priority(value, threshold):
         return 2
     else:
         return 1
+
+
+def users_are_in_same_company(user1, user2):
+    """Returns true if user1 and user2 according Consultant belongs to the same company"""
+    return Consultant.objects.get(trigramme=user1.username.upper()).company == \
+           Consultant.objects.get(trigramme=user2.username.upper()).company

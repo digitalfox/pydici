@@ -23,7 +23,7 @@
             "productive": true,
             "active": false, 
             "name": "Gr\u00e9goire", 
-            "company": 1, 
+            "company": 2,
             "profil": 1, 
             "manager": 1
         }
@@ -74,6 +74,42 @@
             "company": 1, 
             "profil": 2, 
             "manager": 5
+        }
+    },
+      {
+        "pk": 6,
+        "model": "people.consultant",
+        "fields": {
+            "trigramme": "ABO",
+            "productive": true,
+            "name": "Alex",
+            "company": 2,
+            "profil": 2,
+            "manager": 1
+        }
+    },
+    {
+        "pk": 7,
+        "model": "people.consultant",
+        "fields": {
+            "trigramme": "FLA",
+            "productive": false,
+            "name": "Flo",
+            "company": 1,
+            "profil": 1,
+            "manager": 1
+        }
+    },
+    {
+        "pk": 8,
+        "model": "people.consultant",
+        "fields": {
+            "trigramme": "MAG",
+            "productive": true,
+            "name": "Marsu",
+            "company": 2,
+            "profil": 2,
+            "manager": 1
         }
     }
 ]

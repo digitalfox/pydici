@@ -22,7 +22,7 @@ It rely on 6 states:
 
 Five features controls permissions around this simple workflow: (a superuser bypass all controls)
 - expense_administrator: can do anything
-- expense_subsidiary_administrator: can do anything on his subsidiary except for its own expense
+- expense_subsidiary_manager: can do anything on his subsidiary except for its own expense
 - expense_manager: can validate requested expense of his team
 - expense_paymaster: can control expense create expense payment
 - expense_requester: can create new expense
@@ -33,6 +33,7 @@ from django.core.cache import cache
 from expense.models import EXPENSE_STATES, EXPENSE_TRANSITION_TO_STATES
 from people.models import Consultant
 from core.utils import user_has_feature
+from people.utils import users_are_in_same_company
 
 
 def expense_next_states(expense, user):
@@ -41,7 +42,7 @@ def expense_next_states(expense, user):
     next_states = ()
 
     # Get roles according to standard expense groups
-    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(user)
 
     # Get user team if any
     user_team = user_expense_team(user)
@@ -54,6 +55,8 @@ def expense_next_states(expense, user):
         if expense_administrator:
             next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED")
         if expense.user in user_team and expense_manager:
+            next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED")
+        if expense_subsidiary_manager and users_are_in_same_company(user, expense.user):
             next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED")
     elif state == "VALIDATED":
         if expense_administrator or expense_paymaster:
@@ -71,7 +74,7 @@ def expense_next_states(expense, user):
 
 def can_edit_expense(expense, user):
     """Check if user can modify given expense"""
-    expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(user)
 
     if expense_administrator:
         return True
@@ -107,16 +110,18 @@ def expense_transition_to_state_display(state):
 
 
 def user_expense_perm(user):
-    """compute user perm and returns expense_administrator, expense_manager, expense_paymaster, expense_requester"""
+    """compute user perm and returns expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester"""
     expense_administrator = user.is_superuser or user_has_feature(user, "expense_administrator")
+    expense_subsidiary_manager = expense_administrator or user_has_feature(user, "expense_subsidiary_manager")
     expense_manager = expense_administrator or user_has_feature(user, "expense_manager")
     expense_paymaster = expense_administrator or user_has_feature(user, "expense_paymaster")
-    expense_requester = expense_administrator or user_has_feature(user, "expense_requester")
+    expense_requester = expense_administrator or user_has_feature(user, "expense")
 
-    return expense_administrator, expense_manager, expense_paymaster, expense_requester
+    return expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester
 
 
 def user_expense_team(user):
+    #TODO: remove this function and use Consultant.user_team instead
     EXPENSE_USER_TEAM_CACHE_KEY = "PYDICI_EXPENSE_USER_%s"
     try:
         consultant = Consultant.objects.get(trigramme__iexact=user.username)

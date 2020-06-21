@@ -45,7 +45,7 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
         except Consultant.DoesNotExist:
             user_team = []
 
-        expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
+        expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
         expenses = Expense.objects.all()
         if not expense_paymaster:
             expenses = expenses.filter(Q(user=self.request.user) | Q(user__in=user_team))
@@ -219,7 +219,7 @@ class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatat
             user_team = []
 
         expensePayments = ExpensePayment.objects.all()
-        expense_administrator, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
+        expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
         if not expense_paymaster:
             expensePayments = expensePayments.filter(
                 Q(expense__user=self.request.user) | Q(expense__user__in=user_team)).distinct()
