@@ -85,6 +85,9 @@ def can_edit_expense(expense, user):
     if expense.user == user:
         return True
 
+    if expense_subsidiary_manager and users_are_in_same_company(user, expense.user):
+        return True
+    
     user_team = user_expense_team(user)
 
     if expense.user in user_team and expense_manager:
