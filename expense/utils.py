@@ -44,9 +44,6 @@ def expense_next_states(expense, user):
     # Get roles according to standard expense groups
     expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(user)
 
-    # Get user team if any
-    user_team = user_expense_team(user)
-
     # A user cannot manipulate his own expense, except admin
     if expense.user == user and not expense_administrator:
         return next_states
@@ -54,7 +51,7 @@ def expense_next_states(expense, user):
     if state == "REQUESTED":
         if expense_administrator:
             next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED")
-        if expense.user in user_team and expense_manager:
+        if expense_manager and expense.user in Consultant.objects.get(trigramme__iexact=user.username).user_team(exclude_self=True):
             next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED")
         if expense_subsidiary_manager and users_are_in_same_company(user, expense.user):
             next_states = ("VALIDATED", "NEEDS_INFORMATION", "REJECTED")
@@ -89,7 +86,7 @@ def can_edit_expense(expense, user):
         return True
 
     if expense_manager:
-        user_team = user_expense_team(user)
+        user_team = Consultant.objects.get(trigramme__iexact=user.username).user_team(exclude_self=True)
         if expense.user in user_team:
             return True
 
@@ -121,20 +118,6 @@ def user_expense_perm(user):
     expense_requester = expense_administrator or user_has_feature(user, "expense")
 
     return expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester
-
-
-def user_expense_team(user):
-    #TODO: remove this function and use Consultant.user_team instead
-    EXPENSE_USER_TEAM_CACHE_KEY = "PYDICI_EXPENSE_USER_%s"
-    try:
-        consultant = Consultant.objects.get(trigramme__iexact=user.username)
-        user_team = cache.get(EXPENSE_USER_TEAM_CACHE_KEY % consultant.id)
-        if not user_team:
-            user_team = consultant.user_team(exclude_self=False)
-            cache.set(EXPENSE_USER_TEAM_CACHE_KEY % consultant.id, user_team, 3600)
-    except Consultant.DoesNotExist:
-        user_team = []
-    return user_team
 
 
 def migrate_default_workflow():

@@ -26,7 +26,7 @@ from leads.models import Lead
 from people.models import Consultant
 from core.decorator import pydici_non_public, pydici_feature, pydici_subcontractor
 from core.views import tableToCSV
-from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm, user_expense_team
+from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm
 from people.utils import users_are_in_same_company
 
 
@@ -39,7 +39,8 @@ def expense(request, expense_id):
     if not expense_requester:
         return HttpResponseRedirect(reverse("core:forbiden"))
 
-    user_team = user_expense_team(request.user)
+    consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+    user_team = consultant.user_team(exclude_self=False)
 
     try:
         expense = Expense.objects.get(id=expense_id)
