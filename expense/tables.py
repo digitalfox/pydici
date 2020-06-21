@@ -39,13 +39,16 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
     ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"><span class="visuallyhidden">Yes</span></span>""")
 
     def get_initial_queryset(self):
-        try:
-            consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
+        expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
+        consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
+
+        if expense_subsidiary_manager:
+            user_team = consultant.user_team(subsidiary=True)
+        elif expense_manager:
             user_team = consultant.user_team()
-        except Consultant.DoesNotExist:
+        else:
             user_team = []
 
-        expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
         expenses = Expense.objects.all()
         if not expense_paymaster:
             expenses = expenses.filter(Q(user=self.request.user) | Q(user__in=user_team))
