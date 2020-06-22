@@ -250,6 +250,8 @@ class Lead(models.Model):
         @return: True is doc is ok, else False"""
         if self.state == "WON" and self.mission_set.filter(active=True).count() == 0:
             clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(self)
+            if not deliveryDir:
+                return True  # if path is not defined, not needs to go further
             try:
                 if len(os.listdir(deliveryDir)) == 0:
                     return False
@@ -263,6 +265,8 @@ class Lead(models.Model):
         @return: True is doc is ok, else False"""
         if self.state in ("WON", "OFFER_SENT", "NEGOTIATION"):
             clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(self)
+            if not businessDir:
+                return True  # if path is not defined, not needs to go further
             try:
                 if len(os.listdir(businessDir)) == 0:
                     return False
@@ -279,8 +283,11 @@ class Lead(models.Model):
     def getDocURL(self):
         """@return: URL to reach this lead base directory"""
         (clientDir, leadDir, businessDir, inputDir, deliveryDir) = getLeadDirs(self)
-        url = settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
-        return url
+        if leadDir:
+            url = settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
+            return url
+        else:
+            return ""
 
     def get_absolute_url(self):
         return reverse('leads:detail', args=[str(self.id)])

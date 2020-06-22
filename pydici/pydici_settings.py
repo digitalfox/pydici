@@ -21,6 +21,7 @@ PYDICI_DEFAULT_VAT_RATE = "20.0"
 
 # Filesystem for commercial and mission delivery. It is intented to be
 # accessed localy by pydici and exposed though a web server and/or a webdav server
+# set to None in order to disable
 DOCUMENT_PROJECT_PATH = os.path.join(PYDICI_ROOTDIR, 'data/documents')
 # URL for directories
 DOCUMENT_PROJECT_URL_DIR = "http://localhost:9999/client/"
@@ -50,7 +51,7 @@ TELEGRAM_STICKERS = {
 
 # Nextcloud document tag integration
 
-NEXTCLOUD_TAG_IS_ENABLED = True # Wether to enable or not Nextcloud tag add/remove by Pydici
+NEXTCLOUD_TAG_IS_ENABLED = True  # Wether to enable or not Nextcloud tag add/remove by Pydici
 # Nextcloud DB connection settings
 NEXTCLOUD_DB_DATABASE = "nextcloud"
 NEXTCLOUD_DB_HOST = "localhost"

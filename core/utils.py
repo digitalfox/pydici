@@ -246,6 +246,10 @@ def getLeadDirs(lead, with_prefix=True):
     """Get documents directories relative to this lead
     @return: client_dir, lead_dir, business_dir, input_dir, delivery_dir"""
 
+    if not settings.DOCUMENT_PROJECT_PATH:
+        # If project path is not defined, not needs to go further
+        return (None, None, None, None, None)
+
     # Compose the path without the prefix, useful for nextcloud for instance
     client_dir = os.path.join(settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name),
                                                                           code=lead.client.organisation.company.code))
@@ -290,7 +294,7 @@ def getLeadDirs(lead, with_prefix=True):
 def createProjectTree(lead):
     """Create standard document filesystem tree for this lead"""
     for directory in getLeadDirs(lead):
-        if not os.path.exists(directory):
+        if directory and not os.path.exists(directory):
             os.mkdir(directory)
 
 

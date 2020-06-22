@@ -109,6 +109,7 @@ def detail(request, lead_id):
                    "completion_url": reverse("leads:tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
                    "similar_leads": predict_similar(lead),
+                   "enable_doc_tab": bool(settings.DOCUMENT_PROJECT_PATH),
                    "user": request.user})
 
 @pydici_non_public
@@ -177,6 +178,10 @@ def lead_documents(request, lead_id):
     lead = Lead.objects.get(id=lead_id)
     documents = []  # List of name/url docs grouped by type
     clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
+    if clientDir is None:
+        # Documents mechanism is disabled. This view should never been called..
+        raise Http404
+
     lead_url_dir = settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
     lead_url_file = settings.DOCUMENT_PROJECT_URL_FILE + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
     for directory in (businessDir, inputDir, deliveryDir):

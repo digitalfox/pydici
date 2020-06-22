@@ -34,7 +34,7 @@ class LeadModelTest(TestCase):
     def setUp(self):
         setup_test_user_features()
         self.test_user = User.objects.get(username=TEST_USERNAME)
-        if not os.path.exists(settings.DOCUMENT_PROJECT_PATH):
+        if settings.DOCUMENT_PROJECT_PATH and not os.path.exists(settings.DOCUMENT_PROJECT_PATH):
             os.makedirs(settings.DOCUMENT_PROJECT_PATH)
 
     def test_create_lead(self):
@@ -198,7 +198,7 @@ class LeadNextcloudTagTestCase(TestCase):
         """Create the nextcloud file tables with init datas"""
         if not settings.NEXTCLOUD_TAG_IS_ENABLED:
             return
-        if not os.path.exists(settings.DOCUMENT_PROJECT_PATH):
+        if settings.DOCUMENT_PROJECT_PATH and not os.path.exists(settings.DOCUMENT_PROJECT_PATH):
             os.makedirs(settings.DOCUMENT_PROJECT_PATH)
 
         connection = None

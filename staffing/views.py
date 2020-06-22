@@ -137,6 +137,7 @@ def mission_home(request, mission_id):
     mission = Mission.objects.get(id=mission_id)
     return render(request, 'staffing/mission.html',
                   {"mission": mission,
+                   "enable_doc_tab": bool(settings.DOCUMENT_PROJECT_PATH),
                    "user": request.user})
 
 
