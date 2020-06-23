@@ -659,10 +659,10 @@ def fixed_price_missions_report(request):
         missions = missions.filter(subsidiary=subsidiary)
 
     for mission in missions.select_related():
-        #TODO: we mess up with objective margin that is computed for current but not target margin. Same issue in mission_tiemsheet page
-        remaining = round(mission.remaining(), 1)
-        target_margin = round(mission.remaining(mode="target") + sum(mission.objectiveMargin().values()) / 1000, 1)
-        data.append((mission, round(mission.done_work_k()[1],1), remaining, target_margin))
+        current_remaining = round(mission.remaining(), 1)
+        target_remaining = round(mission.remaining(mode="target"), 1)
+        margin = round(sum(mission.objectiveMargin().values()) / 1000 + target_remaining, 1)
+        data.append((mission, round(mission.done_work_k()[1],1), current_remaining, target_remaining, margin))
 
     return render(request, "staffing/fixed_price_report.html",
                   {"data": data })

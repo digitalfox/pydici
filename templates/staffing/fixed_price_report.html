@@ -19,12 +19,13 @@
                         <th>{% trans "Responsible" %}</th>
                         <th>{% trans "Sold (k€)" %}</th>
                         <th>{% trans "Done works (k€)" %}</th>
-                        <th>{% trans "Remaining (k€)" %}</th>
-                        <th>{% trans "Target margin (k€)" %}</th>
+                        <th>{% trans "Current remaining (k€)" %}</th>
+                        <th>{% trans "Target remaining (k€)" %}</th>
+                        <th>{% trans "Margin (k€)" %} <span class="glyphicon glyphicon-question-sign pydici-tooltip hidden-sm hidden-xs" title="{% blocktrans %}Sum of unused or overtaken days and margin over budget rate, considering done days and forecasting{% endblocktrans %}"></span></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for mission, done, current_margin, target_margin in data %}
+                    {% for mission, done, current_remaining, target_remaining, margin in data %}
                         <tr>
                             <td><a href="{{ mission.get_absolute_url }}">{{ mission }}</a></td>
                             <td>{{ mission.mission_id }}</td>
@@ -32,8 +33,9 @@
                             <td>{% with consultant=mission.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}</td>
                             <td style="text-align:right">{{ mission.price|floatformat:-1 }}</td>
                             <td style="text-align:right">{{ done }}</td>
-                            <td style="text-align:right;{% if current_margin < 0 %}background-color:#E76F6F{% endif %}">{{ current_margin }}</td>
-                            <td style="text-align:right;{% if target_margin < 0 %}background-color:#E76F6F{% endif %}">{{ target_margin }}</td>
+                            <td style="text-align:right;{% if current_margin < 0 %}background-color:#E76F6F{% endif %}">{{ current_remaining }}</td>
+                            <td style="text-align:right;{% if current_margin < 0 %}background-color:#E76F6F{% endif %}">{{ target_remaining }}</td>
+                            <td style="text-align:right;{% if target_margin < 0 %}background-color:#E76F6F{% endif %}">{{ margin }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -45,5 +47,14 @@
 {% with "mission_table" as table_id %}
     {% include "core/_datatables-dj-tables.html" %}
 {% endwith %}
+
+<script type="text/javascript">
+<!--
+
+$(document).ready(function() {
+    $(".pydici-tooltip").tooltip();
+-->
+</script>
+
 
 {% endblock %}
