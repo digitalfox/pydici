@@ -10,6 +10,7 @@ import csv
 import json
 from itertools import zip_longest
 import codecs
+from collections import defaultdict
 
 from django.core.cache import cache
 from django.shortcuts import render, redirect
@@ -1537,6 +1538,7 @@ def turnover_pivotable(request, year=None):
     data = []
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
     missions = Mission.objects.filter(nature="PROD")
+    total_turnover = defaultdict(int)
 
     if not missions:
         return HttpResponse()
@@ -1589,6 +1591,7 @@ def turnover_pivotable(request, year=None):
             mission_month_data[_("month")] = month.isoformat()
             mission_month_data[_("fiscal year")] = fiscal_year
             data.append(mission_month_data)
+            total_turnover[mission_month_data[_("client company")]] += mission_month_data[_("turnover (€)")]
             # Handle internal subcontractor for this mission
             for subsidiary in subsidiaries.exclude(id=mission.subsidiary_id):
                 subsidiary_month_data = mission_data.copy()
@@ -1600,6 +1603,14 @@ def turnover_pivotable(request, year=None):
                 if subsidiary_turnover > 0:
                     subsidiary_month_data[_("own turnover (€)")] = subsidiary_turnover
                     data.append(subsidiary_month_data)
+
+    # Mark top companies
+    top_companies = [k for k,v in sorted(total_turnover.items(), key=lambda item: item[1], reverse=True)][:8]
+    for d in data:
+        if d[_("client company")] in top_companies:
+            d[_("top client company")] = d[_("client company")]
+        else:
+            d[_("top client company")] = _("others")
 
     return render(request, "staffing/turnover_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": "{}",

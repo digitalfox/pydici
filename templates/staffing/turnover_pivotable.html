@@ -28,6 +28,7 @@
                 <button class="btn btn-default" onclick="turnover_per_month_table();">{% trans "Turnover per month (tableau)" %}</button>
                 <button class="btn btn-default" onclick="turnover_per_broker();">{% trans "Turnover per broker" %}</button>
                 <button class="btn btn-default" onclick="turnover_per_client();">{% trans "Turnover per client company" %}</button>
+                <button class="btn btn-default" onclick="turnover_top_client();">{% trans "Turnover for top client company" %}</button>
                 <button class="btn btn-default" onclick="turnover_per_billing_mode();">{% trans "Turnover per billing mode" %}</button>
             </div>
         </div>
@@ -77,6 +78,13 @@
                 var options = {};
                 options["colOrder"] = "value_z_to_a";
                 drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'own turnover (€)' %}"], options);
+            }
+
+            function turnover_top_client() {
+                var rows = ["{% trans 'top client company' %}"];
+                var cols = ["{% trans 'month' %}"];
+                var options = {};
+                drawPivot(data, rows, cols, "Area Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
             }
 
             function turnover_per_billing_mode() {
