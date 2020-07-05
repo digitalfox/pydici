@@ -13,6 +13,8 @@ from django.contrib.admin.models import LogEntry, ADDITION, ContentType
 from django.utils.encoding import force_text
 from django.urls import reverse
 from django.conf import settings
+from django.utils.safestring import mark_safe
+from django.db.models import Count
 
 from background_task import background
 from taggit.models import Tag
@@ -322,3 +324,11 @@ def connect_to_nextcloud_db():
         return connection
     except mysql.connector.Error as e:
         raise e
+
+
+def leads_state_stat(leads):
+    """Compute leads statistics in compatible C3.js format"""
+    states = dict(Lead.STATES)
+    leads_stat = leads.values("state").order_by("state").annotate(count=Count("state"))
+    leads_stat = [[mark_safe(states[s['state']]), s['count']] for s in leads_stat]  # Use state label
+    return leads_stat

@@ -30,6 +30,7 @@ from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactFo
 from crm.utils import get_subsidiary_from_session
 from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
+from leads.utils import leads_state_stat
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
 from core.utils import COLORS
 from billing.models import ClientBill
@@ -347,9 +348,7 @@ def company_detail(request, company_id):
     leads = leads.order_by("client", "state", "start_date")
 
     # Statistics on won/lost etc.
-    states = dict(Lead.STATES)
-    leads_stat = leads.values("state").order_by("state").annotate(count=Count("state"))
-    leads_stat = [[mark_safe(states[s['state']]), s['count']] for s in leads_stat]  # Use state label
+    leads_stat = leads_state_stat(leads)
 
     # Find consultant that work (=declare timesheet) for this company
     consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct().order_by("company", "subcontractor")

@@ -1,0 +1,36 @@
+{# Fragment that display leads activity stats graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_c3.html to load according js/css #}
+{% load i18n %}
+{% load l10n %}
+
+    <div class="row">
+        {% with data=leads_state_data title=leads_state_title %}
+            {% include "crm/__leads_state_donut.html" %}
+        {% endwith %}
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+                <div id="leads_activity"></div>
+                <p>&nbsp;</p>
+                <h3><div class="text-center">{% trans "New leads per days" %}</div></h3>
+                <script type="text/javascript">
+                    $(document).ready(function() {
+                        // Display new lead activity
+                            var chart_leads_won_rate = c3.generate({
+                                bindto: '#leads_activity',
+                                data: {
+                                    columns: {{ lead_creation_rate_data | safe }},
+                                    type : 'gauge',
+                                },
+                                gauge: {
+                                    units: "",
+                                    label: {
+                                        format: function (value) { return value; },
+                                        },
+                                    min: 0,
+                                    max: {{ max_creation_rate|unlocalize }},
+                                 },
+                            });
+                    });
+                    </script>
+            </div>
+    </div> {# end of row #}

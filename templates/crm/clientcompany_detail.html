@@ -146,33 +146,9 @@
         </div> <!-- end of dashboard panels -->
 
         <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div id="leads_stat"></div>
-                <script type="text/javascript">
-                $(document).ready(function() {
-                    // Display donnut of lead statistics
-                        var chart_leads_stat = c3.generate({
-                            bindto: '#leads_stat',
-                            data: {
-                                columns: {{ leads_stat | safe }},
-                                type : 'donut',
-                            },
-                            tooltip: {
-                                format: {
-                                    value: function (value, ratio, id, index) { return value; }
-                                    }
-                                },
-                            donut: {
-                                title: "{% trans 'Leads' context 'short' %}",
-                                label: {
-                                    format: function (value) { return value; },
-                                    threshold: 0.001,
-                                    },
-                                },
-                        });
-                });
-                </script>
-            </div>
+            {% with data=leads_stat %}
+                {% include "crm/__leads_state_donut.html" %}
+            {% endwith %}
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div id="leads_won_rate"></div>
                 <p>&nbsp;</p>

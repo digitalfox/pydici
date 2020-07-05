@@ -31,7 +31,7 @@ from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter, movi
 from crm.utils import get_subsidiary_from_session
 from leads.models import Lead
 from leads.forms import LeadForm
-from leads.utils import postSaveLead
+from leads.utils import postSaveLead, leads_state_stat
 from leads.utils import tag_leads_files, remove_lead_tag, merge_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
@@ -248,6 +248,7 @@ def mail_lead(request, lead_id=0):
     except Exception as e:
         return HttpResponse(_("Failed to send mail: %s") % e)
 
+
 @pydici_non_public
 @pydici_feature("leads")
 def review(request):
@@ -427,6 +428,7 @@ def graph_bar_jqp(request):
                    "min_date": min_date,
                    "user": request.user})
 
+
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 60 * 24)
@@ -546,6 +548,56 @@ def graph_leads_pipe(request):
                "amount_max": amount_max,
                "series_colors": COLORS,
                "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def graph_leads_activity(request):
+    """some graph and figures about current leads activity"""
+    subsidiary = get_subsidiary_from_session(request)
+
+    # lead stat
+    current_leads = Lead.objects.active()
+    if subsidiary:
+        current_leads = current_leads.filter(subsidiary=subsidiary)
+    leads_state_data = leads_state_stat(current_leads)
+
+    # lead creation rate
+    first_lead_creation_date = Lead.objects.all().aggregate(Min("creation_date")).get("creation_date__min", datetime.now()).date()
+    today = date.today()
+    lead_creation_rate_data = []
+    max_creation_rate = 0
+    for timeframe in (30, 30*6, 365):
+        start = today - timedelta(timeframe)
+        if start > first_lead_creation_date:
+            rate = Lead.objects.filter(creation_date__gte=start).count() / timeframe
+            rate = round(rate, 2)
+            lead_creation_rate_data.append([_("Lead rate last %s days" % timeframe), rate])
+            max_creation_rate = max(rate, max_creation_rate)
+
+    # lead duration
+    leads = Lead.objects.filter(creation_date__gt=(datetime.today() - timedelta(3 * 365)))
+    leads = leads.annotate(timesheet_start=Min("mission__timesheet__working_date"))
+    if subsidiary:
+        leads = leads.filter(subsidiary=subsidiary)
+    leads_duration = defaultdict(list)
+    for lead in leads:
+        end_date = lead.timesheet_start or lead.start_date or lead.update_date.date()
+        duration = (end_date - lead.creation_date.date()).days
+        leads_duration[lead.creation_date.date().replace(day=1)].append(duration)
+
+    # compute average
+    leads_duration_dates = leads_duration.keys()
+    leads_duration_data = [sum(i)/len(i) for i in leads_duration.values()]
+
+    return render(request, "leads/graph_leads_activity.html",
+                  {"leads_state_data": leads_state_data,
+                   "leads_state_title": _("Current leads"),
+                   "lead_creation_rate_data": lead_creation_rate_data,
+                   "max_creation_rate": max_creation_rate,
+                   "leads_duration_dates": leads_duration_dates,
+                   "leads_duration_data": leads_duration_data,
+                   "user": request.user})
 
 
 @pydici_non_public

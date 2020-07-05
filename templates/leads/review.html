@@ -1,5 +1,6 @@
 {% extends "core/pydici.html" %}
 {% load i18n %}
+{% load l10n %}
 
 {% block extrajs %}
     {% include "core/_jqplot.html" %}
@@ -10,10 +11,11 @@
 
 {% block content %}
 
-	<div id="graph_bar_jqp_content" class="col-lg-12"></div>
-	<script type="text/javascript">
-	$('#graph_bar_jqp_content').load('{% url 'leads:graph_bar_jqp' %}?{{ scope_current_filter }}')
-	</script>
+    <div id="graph_leads_activity_content" class="col-lg-12"></div>
+    <script type="text/javascript">
+    $('#graph_leads_activity_content').load('{% url 'leads:graph_leads_activity' %}?{{ scope_current_filter }}')
+    </script>
+
     <br/>&nbsp;<br/>
     <div id="graph_leads_pipe_content" class="col-lg-11"></div>
     <script type="text/javascript">

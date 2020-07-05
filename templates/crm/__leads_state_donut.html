@@ -1,0 +1,31 @@
+{% load i18n %}
+{# display lead states as a donut #}
+{# context : "data" in compatible C3.js format and "title" of donut #}
+
+<div class="col-lg-3 col-md-6 col-sm-6">
+    <div id="leads_stat"></div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        // Display donnut of lead statistics
+            var chart_leads_stat = c3.generate({
+                bindto: '#leads_stat',
+                data: {
+                    columns: {{ data | safe }},
+                    type : 'donut',
+                },
+                tooltip: {
+                    format: {
+                        value: function (value, ratio, id, index) { return value; }
+                        }
+                    },
+                donut: {
+                    title: '{% if title %}{{ title }}{% else %}{% trans "Leads" %}{% endif %}',
+                    label: {
+                        format: function (value) { return value; },
+                        threshold: 0.001,
+                        },
+                    },
+            });
+    });
+    </script>
+</div>
