@@ -102,7 +102,8 @@ def update_client_bill_from_proportion(bill, mission, proportion):
     """Populate bill with detail for given mission from proportion of mission total price"""
     ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
-    billDetail = BillDetail(bill=bill, mission=mission, quantity=proportion, unit_price=mission.price*1000)
+    unit_price = mission.price * 1000 if mission.price else 0
+    billDetail = BillDetail(bill=bill, mission=mission, quantity=proportion, unit_price=unit_price)
     billDetail.save()
     bill.save()  # save again to update bill amount according to its details
     return bill
