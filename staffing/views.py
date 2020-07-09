@@ -1318,8 +1318,50 @@ def rate_objective_report(request):
                     _("horizon"): horizon,
                     _("amount"): rate_objective.rate if rate_objective else None
                 })
-    return render(request, "staffing/rates_report.html", {"data": json.dumps(data),
+    return render(request, "staffing/rate_objective_report.html", {"data": json.dumps(data),
                                                                  "derivedAttributes": [],})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def rates_report(request):
+    data = []
+    fiscal_year_month = int(get_parameter("FISCAL_YEAR_MONTH"))
+    current_year = date.today().year
+    years = [current_year - 2,  current_year -1, current_year]
+    consultants = Consultant.objects.filter(productive=True, subcontractor=False)
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        consultants = consultants.filter(company=subsidiary)
+
+    consultants = consultants.filter(timesheet__working_date__gte=date(years[0], fiscal_year_month, 1)).distinct()
+
+    for year in years:
+        start_date = date(year, fiscal_year_month, 1)
+        end_date = date(year + 1, fiscal_year_month, 1)
+        for consultant in consultants:
+            data.append({
+                _("consultant"): consultant.name,
+                _("subsidiary"): str(consultant.company),
+                _("type"): _("production rate"),
+                _("year"): year,
+                _("amount"): 100 * consultant.get_production_rate(start_date=start_date, end_date=end_date)
+            })
+            prod_days = Timesheet.objects.filter(consultant=consultant,
+                                                 charge__gt=0,
+                                                 working_date__gte=start_date,
+                                                 working_date__lt=end_date,
+                                                 mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"]
+            turnover = consultant.get_turnover(start_date=start_date, end_date=end_date)
+            data.append({
+                _("consultant"): consultant.name,
+                _("subsidiary"): str(consultant.company),
+                _("type"): _("daily rate"),
+                _("year"): year,
+                _("amount"): (turnover / prod_days) if prod_days else 0
+            })
+    return render(request, "staffing/rates_report.html", {"data": json.dumps(data),
+                                                          "derivedAttributes": [],})
 
 @pydici_non_public
 @pydici_feature("reports")
