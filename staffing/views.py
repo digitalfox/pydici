@@ -1328,7 +1328,7 @@ def rates_report(request):
     data = []
     fiscal_year_month = int(get_parameter("FISCAL_YEAR_MONTH"))
     current_year = date.today().year
-    years = [current_year - 2,  current_year -1, current_year]
+    years = [current_year - 3, current_year - 2,  current_year -1, current_year]
     consultants = Consultant.objects.filter(productive=True, subcontractor=False)
     subsidiary = get_subsidiary_from_session(request)
     if subsidiary:

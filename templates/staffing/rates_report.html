@@ -16,7 +16,8 @@
 
         <div id="type-selector" class="btn-group" role="group">
             <button class="btn btn-default" onclick="table_per_consultant();">{% trans "Table per consultant" %}</button>
-            <button class="btn btn-default" onclick="bar_per_year();">{% trans "Bar chart per year" %}</button>
+            <button class="btn btn-default" onclick="daily_rate_per_year();">{% trans "Daily rate per year" %}</button>
+            <button class="btn btn-default" onclick="production_rate_per_year();">{% trans "Production rate per year" %}</button>
         </div>
 
         <div id="pivotable-output" style="margin-top: 10px;"></div>
@@ -39,15 +40,25 @@
 
          // Preset definition
          function table_per_consultant() {
-             var cols = ["{% trans 'type' %}", "{% trans 'year' %}"]
-             var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"]
+             var cols = ["{% trans 'type' %}", "{% trans 'year' %}"];
+             var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"];
              drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ['{% trans "amount" %}'],  {"hideRowTotal": true, "hideGrandTotal": true, "hideColTotal": true});
          }
 
-         function bar_per_year() {
-             var cols = ["{% trans 'type' %}"]
-             var rows = ["{% trans 'subsidiary' %}", "{% trans 'year' %}"]
-             drawPivot(data, rows, cols, "Bar Chart", '{% trans "Average" %}', ['{% trans "amount" %}'],  {"hideRowTotal": true, "hideGrandTotal": true, "hideColTotal": true});
+         function daily_rate_per_year() {
+             var cols = ["{% trans 'year' %}"];
+             var rows = ["{% trans 'subsidiary' %}"];
+             var options = {};
+             options['inclusions'] = { {% trans "type" %}: ['{% trans "daily rate" %}'] };
+             drawPivot(data, rows, cols, "Line Chart", '{% trans "Average" %}', ['{% trans "amount" %}'],  options);
+         }
+
+         function production_rate_per_year() {
+             var cols = ["{% trans 'year' %}"];
+             var rows = ["{% trans 'subsidiary' %}"];
+             var options = {};
+             options['inclusions'] = { {% trans "type" %}: ['{% trans "production rate" %}'] };
+             drawPivot(data, rows, cols, "Line Chart", '{% trans "Average" %}', ['{% trans "amount" %}'],  options);
          }
 
          // default
