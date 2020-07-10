@@ -1340,12 +1340,14 @@ def rates_report(request):
         start_date = date(year, fiscal_year_month, 1)
         end_date = date(year + 1, fiscal_year_month, 1)
         for consultant in consultants:
-            data.append({
-                _("consultant"): consultant.name,
-                _("subsidiary"): str(consultant.company),
-                _("type"): _("production rate"),
-                _("year"): year,
-                _("amount"): 100 * consultant.get_production_rate(start_date=start_date, end_date=end_date)
+            amount = 100 * consultant.get_production_rate(start_date=start_date, end_date=end_date)
+            if amount:
+                data.append({
+                    _("consultant"): consultant.name,
+                    _("subsidiary"): str(consultant.company),
+                    _("type"): _("production rate"),
+                    _("year"): year,
+                    _("amount"): amount
             })
             prod_days = Timesheet.objects.filter(consultant=consultant,
                                                  charge__gt=0,
@@ -1353,12 +1355,13 @@ def rates_report(request):
                                                  working_date__lt=end_date,
                                                  mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"]
             turnover = consultant.get_turnover(start_date=start_date, end_date=end_date)
-            data.append({
-                _("consultant"): consultant.name,
-                _("subsidiary"): str(consultant.company),
-                _("type"): _("daily rate"),
-                _("year"): year,
-                _("amount"): (turnover / prod_days) if prod_days else 0
+            if turnover > 0 and prod_days:
+                data.append({
+                    _("consultant"): consultant.name,
+                    _("subsidiary"): str(consultant.company),
+                    _("type"): _("daily rate"),
+                    _("year"): year,
+                    _("amount"): turnover / prod_days
             })
     return render(request, "staffing/rates_report.html", {"data": json.dumps(data),
                                                           "derivedAttributes": [],})
