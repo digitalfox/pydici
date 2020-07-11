@@ -17,7 +17,7 @@
         <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
         {% if user.is_staff and pydici_feature.menubar %}
-        {% cache 3600 menu request.user.id %}
+        {% cache 3600 menu request.user.id request.session.subsidiary_id %}
         {% if pydici_feature.leads %}
         <li><a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Leads" %}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
@@ -108,7 +108,7 @@
                 <li><a href="{% url 'staffing:nonprod-pivotable' %}">{% trans "Non productive missions pivot table" %}</a></li>
                 <li><a href="{% url 'staffing:lunch_tickets_pivotable' %}">{% trans "Lunch tickets pivot table" %}</a></li>
                 <li><a href="{% url 'staffing:rate_objective_report' %}">{% trans "Rate objectives report" %}</a></li>
-                <li><a href="{% url 'staffing:rates_report' %}">{% trans "Production rates and daily rates report" %}</a></li>
+                <li><a href="{% url 'staffing:rates_report' %}?{{scope_current_filter}}">{% trans "Production rates and daily rates report" %}</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">{% trans "Leads" %}</li>
                 <li><a href="{% url 'leads:leads-pivotable' %}">{% trans "Leads pivot table" %}</a></li>

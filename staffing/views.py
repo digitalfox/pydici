@@ -1324,6 +1324,7 @@ def rate_objective_report(request):
 
 @pydici_non_public
 @pydici_feature("reports")
+@cache_page(60*10*10)
 def rates_report(request):
     data = []
     fiscal_year_month = int(get_parameter("FISCAL_YEAR_MONTH"))
