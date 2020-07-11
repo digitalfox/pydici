@@ -1345,6 +1345,7 @@ def rates_report(request):
             if amount:
                 data.append({
                     _("consultant"): consultant.name,
+                    _("profile"): str(consultant.profil),
                     _("subsidiary"): str(consultant.company),
                     _("type"): _("production rate"),
                     _("year"): year,
@@ -1359,6 +1360,7 @@ def rates_report(request):
             if turnover > 0 and prod_days:
                 data.append({
                     _("consultant"): consultant.name,
+                    _("profile"): str(consultant.profil),
                     _("subsidiary"): str(consultant.company),
                     _("type"): _("daily rate"),
                     _("year"): year,
