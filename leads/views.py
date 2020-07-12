@@ -584,6 +584,7 @@ def lead_pivotable(request, lead_id=None):
 
 @pydici_non_public
 @pydici_feature("reports")
+@cache_page(60 * 60 * 24)
 def leads_pivotable(request, year=None):
     """Pivot table for all leads of given year"""
     data = []

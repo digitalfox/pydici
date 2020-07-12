@@ -1592,6 +1592,9 @@ def turnover_pivotable(request, year=None):
         return HttpResponse()
 
     subsidiaries = Subsidiary.objects.all()
+    current_subsidiary = get_subsidiary_from_session(request)
+    if current_subsidiary:
+        subsidiaries = subsidiaries.filter(id=current_subsidiary.id)
 
     years = get_fiscal_years_from_qs(missions, "lead__creation_date")
 
@@ -1608,7 +1611,6 @@ def turnover_pivotable(request, year=None):
     missions = missions.select_related("responsible", "lead__client__contact", "lead__client__organisation__company", "subsidiary",
                          "lead__business_broker__company", "lead__business_broker__contact")
 
-
     for mission in missions:
         mission_data = {_("deal id"): mission.lead.deal_id if mission.lead else mission.id,
                          _("name"): mission.short_name(),
@@ -1622,24 +1624,25 @@ def turnover_pivotable(request, year=None):
             fiscal_year = get_fiscal_year(month)
             if year != "all" and (month < start or month >= end):
                 continue  # Skip mission if outside period
-            mission_month_data = mission_data.copy()
             next_month = nextMonth(month)
-            own_turnover = int(mission.done_work_period(month, next_month, include_external_subcontractor=False,
-                                                                           include_internal_subcontractor=False)[1])
-            turnover_with_external_subcontractor = int(mission.done_work_period(month, next_month,
-                                                                                include_external_subcontractor=True,
-                                                                                include_internal_subcontractor=False)[1])
-            turnover_with_internal_subcontractor = int(mission.done_work_period(month, next_month,
-                                                                                include_external_subcontractor=False,
-                                                                                include_internal_subcontractor=True)[1])
-            mission_month_data[_("turnover (€)")] = turnover_with_external_subcontractor + turnover_with_internal_subcontractor - own_turnover
-            mission_month_data[_("external subcontractor turnover (€)")] = turnover_with_external_subcontractor - own_turnover
-            mission_month_data[_("internal subcontractor turnover (€)")] = turnover_with_internal_subcontractor - own_turnover
-            mission_month_data[_("own turnover (€)")] = own_turnover
-            mission_month_data[_("month")] = month.isoformat()
-            mission_month_data[_("fiscal year")] = fiscal_year
-            data.append(mission_month_data)
-            total_turnover[mission_month_data[_("client company")]] += mission_month_data[_("turnover (€)")]
+            if (current_subsidiary and current_subsidiary.id == mission.subsidiary.id) or current_subsidiary is None:
+                mission_month_data = mission_data.copy()
+                own_turnover = int(mission.done_work_period(month, next_month, include_external_subcontractor=False,
+                                                                               include_internal_subcontractor=False)[1])
+                turnover_with_external_subcontractor = int(mission.done_work_period(month, next_month,
+                                                                                    include_external_subcontractor=True,
+                                                                                    include_internal_subcontractor=False)[1])
+                turnover_with_internal_subcontractor = int(mission.done_work_period(month, next_month,
+                                                                                    include_external_subcontractor=False,
+                                                                                    include_internal_subcontractor=True)[1])
+                mission_month_data[_("turnover (€)")] = turnover_with_external_subcontractor + turnover_with_internal_subcontractor - own_turnover
+                mission_month_data[_("external subcontractor turnover (€)")] = turnover_with_external_subcontractor - own_turnover
+                mission_month_data[_("internal subcontractor turnover (€)")] = turnover_with_internal_subcontractor - own_turnover
+                mission_month_data[_("own turnover (€)")] = own_turnover
+                mission_month_data[_("month")] = month.isoformat()
+                mission_month_data[_("fiscal year")] = fiscal_year
+                data.append(mission_month_data)
+                total_turnover[mission_month_data[_("client company")]] += mission_month_data[_("turnover (€)")]
             # Handle internal subcontractor for this mission
             for subsidiary in subsidiaries.exclude(id=mission.subsidiary_id):
                 subsidiary_month_data = mission_data.copy()
