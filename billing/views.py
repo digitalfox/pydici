@@ -634,7 +634,6 @@ def graph_billing_jqp(request):
         staffingData[kdate] += staffing.charge * financialConditions.get(staffing.consultant_id, {}).get(staffing.mission_id, 0) / 1000
         wStaffingData[kdate] += staffing.charge * financialConditions.get(staffing.consultant_id, {}).get(staffing.mission_id, 0) * staffing.mission.probability / 100 / 1000
 
-    # Set bottom of each graph. Starts if [0, 0, 0, ...]
     billKdates = list(billsData.keys())
     billKdates.sort()
     isoBillKdates = [a.isoformat() for a in billKdates]  # List of date as string in ISO format
@@ -671,7 +670,6 @@ def graph_billing_jqp(request):
                   {"graph_data": json.dumps(graph_data),
                    "series_label": [i[1] for i in ClientBill.CLIENT_BILL_STATE if i[0] in states],
                    "series_colors": COLORS,
-                   # "min_date": min_date,
                    "user": request.user})
 
 
