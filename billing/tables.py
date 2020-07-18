@@ -70,7 +70,11 @@ class BillTableDT(PydiciNonPublicdMixin, BillingRequestMixin, BaseDatatableView)
             else:
                 return "-"
         elif column in ("creation_date", "due_date", "payment_date"):
-            return getattr(row, column).strftime("%d/%m/%y")
+            attr = getattr(row, column)
+            if attr:
+                return attr.strftime("%d/%m/%y")
+            else:
+                return "-"
         elif column == "state":
             return row.get_state_display()
         elif column == "file":
@@ -111,7 +115,7 @@ class ClientBillInCreationTableDT(BillTableDT):
 
 class ClientBillArchiveTableDT(BillTableDT):
     """Client bill archive"""
-    columns = ("bill_id", "subsidiary", "lead","creation_date", "state", "amount", "amount_with_vat", "comment", "file")
+    columns = ("bill_id", "subsidiary", "lead","creation_date", "payment_date", "state", "amount", "amount_with_vat", "comment", "file")
     order_columns = columns
     max_display_length = 100
 
@@ -123,7 +127,7 @@ class ClientBillArchiveTableDT(BillTableDT):
 
 class SupplierBillArchiveTableDT(BillTableDT):
     """Supplier bill archive"""
-    columns = ("bill_id", "supplier", "subsidiary", "lead","creation_date", "state", "amount", "amount_with_vat", "comment",  "file")
+    columns = ("bill_id", "supplier", "subsidiary", "lead","creation_date", "payment_date", "state", "amount", "amount_with_vat", "comment",  "file")
     order_columns = columns
     max_display_length = 20
 

@@ -540,7 +540,7 @@ def client_bills_archive(request):
     """Review all client bill """
     return render(request, "billing/client_bills_archive.html",
                   {"data_url": reverse('billing:client_bills_archive_DT'),
-                   "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [1, 8] }]  ''',
+                   "datatable_options": ''' "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [1, 9] }]  ''',
                    "user": request.user})
 
 
@@ -550,7 +550,7 @@ def supplier_bills_archive(request):
     """Review all supplier bill """
     return render(request, "billing/supplier_bills_archive.html",
                   {"data_url": reverse('billing:supplier_bills_archive_DT'),
-                   "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2, 9] }]  ''',
+                   "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2, 10] }]  ''',
                    "user": request.user})
 
 @pydici_non_public
