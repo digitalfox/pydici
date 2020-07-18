@@ -586,13 +586,14 @@ def graph_billing_jqp(request):
     tsData = {}  # Timesheet done work graph data
     staffingData = {}  # Staffing forecasted work graph data
     wStaffingData = {}  # Weighted Staffing forecasted work graph data
+    states = ["1_SENT", "2_PAID"]
     today = date.today()
     start_date = today - timedelta(3 * 365)  # last three years
     end_date = today + timedelta(6 * 30)  # No more than 6 month forecasted
     graph_data = []  # Data that will be returned to jqplot
 
     # Gathering billsData
-    bills = ClientBill.objects.filter(creation_date__gt=start_date, state__in=("1_SENT", "2_PAID"))
+    bills = ClientBill.objects.filter(creation_date__gt=start_date, state__in=(states))
     if subsidiary:
         bills = bills.filter(lead__subsidiary=subsidiary)
     if bills.count() == 0:
@@ -639,8 +640,8 @@ def graph_billing_jqp(request):
     isoBillKdates = [a.isoformat() for a in billKdates]  # List of date as string in ISO format
 
     # Draw a bar for each state
-    for state in ClientBill.CLIENT_BILL_STATE:
-        ydata = [sum([float(i.amount) / 1000 for i in x if i.state == state[0]]) for x in sortedValues(billsData)]
+    for state in states:
+        ydata = [sum([float(i.amount) / 1000 for i in x if i.state == state]) for x in sortedValues(billsData)]
         graph_data.append(list(zip(isoBillKdates, ydata)))
 
     # Sort keys
@@ -668,7 +669,7 @@ def graph_billing_jqp(request):
 
     return render(request, "billing/graph_billing_jqp.html",
                   {"graph_data": json.dumps(graph_data),
-                   "series_label": [i[1] for i in ClientBill.CLIENT_BILL_STATE],
+                   "series_label": [i[1] for i in ClientBill.CLIENT_BILL_STATE if i[0] in states],
                    "series_colors": COLORS,
                    # "min_date": min_date,
                    "user": request.user})
