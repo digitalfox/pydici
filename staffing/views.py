@@ -552,8 +552,7 @@ def prod_report(request, year=None, month=None):
         team = Consultant.objects.get(id=int(request.GET["team_id"]))
 
     # Filter on scope
-    consultants = Consultant.objects.filter(productive=True).filter(active=True).filter(
-        subcontractor=False).select_related("staffing_manager")
+    consultants = Consultant.objects.filter(productive=True).filter(subcontractor=False, timesheet__working_date__gte=start_date).distinct().select_related("staffing_manager")
     if team:
         consultants = consultants.filter(staffing_manager=team)
     if subsidiary:
