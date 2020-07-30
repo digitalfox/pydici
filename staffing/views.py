@@ -586,6 +586,8 @@ def prod_report(request, year=None, month=None):
             except AttributeError:
                 prod_rate_obj = daily_rate_obj = forecast = 0 # At least one rate objective is missing
             turnover = int(consultant.get_turnover(month, upperBound))
+            if turnover == 0 and not consultant.active:
+                forecast = 0  # Remove forecast for consultant that leave during the period
             try:
                 prod_rate = consultant_days.get("PROD", 0) / (consultant_days.get("PROD", 0) + consultant_days.get("NONPROD", 0))
             except ZeroDivisionError:
