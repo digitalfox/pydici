@@ -27,4 +27,5 @@ jobs:
         pip install -r requirements-nextcloudtag.txt
     - name: Test with django test
       run: |
+        sudo systemctl start mysql.service
         python manage.py test
