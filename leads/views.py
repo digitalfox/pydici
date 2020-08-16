@@ -551,7 +551,8 @@ def graph_leads_pipe(request):
 
 
 @pydici_non_public
-@pydici_feature("leads")
+@pydici_feature("reports")
+@cache_page(60 * 60)
 def graph_leads_activity(request):
     """some graph and figures about current leads activity"""
     subsidiary = get_subsidiary_from_session(request)
