@@ -13,7 +13,7 @@
 
     <div id="graph_leads_activity_content" class="col-lg-12"></div>
     <script type="text/javascript">
-    $('#graph_leads_activity_content').load('{% url 'leads:graph_leads_activity' %}?{{ scope_current_filter }}')
+        $('#graph_leads_activity_content').load('{% url 'leads:graph_leads_activity' %}?{{ scope_current_filter }}')
     </script>
 
     <br/>&nbsp;<br/>

@@ -587,16 +587,15 @@ def graph_leads_activity(request):
         leads_duration[lead.creation_date.date().replace(day=1)].append(duration)
 
     # compute average
-    leads_duration_dates = leads_duration.keys()
-    leads_duration_data = [sum(i)/len(i) for i in leads_duration.values()]
+    leads_duration_data = [["x"] + [d.isoformat() for d in leads_duration.keys()]]
+    leads_duration_data.append([_("duration")] + [sum(i)/len(i) for i in leads_duration.values()])
 
     return render(request, "leads/graph_leads_activity.html",
                   {"leads_state_data": leads_state_data,
                    "leads_state_title": _("Current leads"),
-                   "lead_creation_rate_data": lead_creation_rate_data,
+                   "lead_creation_rate_data": json.dumps(lead_creation_rate_data),
                    "max_creation_rate": max_creation_rate,
-                   "leads_duration_dates": leads_duration_dates,
-                   "leads_duration_data": leads_duration_data,
+                   "leads_duration_data": json.dumps(leads_duration_data),
                    "user": request.user})
 
 
