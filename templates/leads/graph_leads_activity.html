@@ -44,11 +44,18 @@
                                 data: {
                                     columns: {{ leads_duration_data | safe }},
                                     x: "x",
-                                    type : 'bar',
+                                    types : {
+                                        '{% trans 'duration' %}' : 'bar',
+                                        '{% trans 'average duration 6 months' %}' : 'spline'
+                                        },
                                 },
                                 legend: {
                                     show: false
                                 },
+                                point: {
+                                   show: false
+                                },
+                                spline: {interpolation: { type: "monotone" }},
                                 axis: {
                                     x: {
                                         type: 'timeseries',

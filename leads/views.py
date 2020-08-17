@@ -35,7 +35,7 @@ from leads.utils import postSaveLead, leads_state_stat
 from leads.utils import tag_leads_files, remove_lead_tag, merge_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
-from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years_from_qs
+from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years_from_qs, to_int_or_round
 from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
 
@@ -573,11 +573,11 @@ def graph_leads_activity(request):
         if start > first_lead_creation_date:
             rate = Lead.objects.filter(creation_date__gte=start).count() / timeframe
             rate = round(rate, 2)
-            lead_creation_rate_data.append([_("Lead rate last %s days" % timeframe), rate])
+            lead_creation_rate_data.append([_("Last %s days") % timeframe, rate])
             max_creation_rate = max(rate, max_creation_rate)
 
     # lead duration
-    leads = Lead.objects.filter(creation_date__gt=(datetime.today() - timedelta(3 * 365)))
+    leads = Lead.objects.filter(creation_date__gt=(datetime.today() - timedelta(2 * 365)))
     leads = leads.annotate(timesheet_start=Min("mission__timesheet__working_date"))
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
@@ -587,9 +587,11 @@ def graph_leads_activity(request):
         duration = (end_date - lead.creation_date.date()).days
         leads_duration[lead.creation_date.date().replace(day=1)].append(duration)
 
-    # compute average
-    leads_duration_data = [["x"] + [d.isoformat() for d in leads_duration.keys()]]
-    leads_duration_data.append([_("duration")] + [sum(i)/len(i) for i in leads_duration.values()])
+    leads_duration_per_month = to_int_or_round([sum(i) / len(i) for i in sortedValues(leads_duration)], 1)
+    leads_duration_data = [["x"] + [d.isoformat() for d in sorted(leads_duration.keys())],
+                           [_("duration")] + leads_duration_per_month,
+                           [_("average duration 6 months")] + moving_average(leads_duration_per_month, 6,
+                                                                             round_digits=1)]
 
     return render(request, "leads/graph_leads_activity.html",
                   {"leads_state_data": leads_state_data,
