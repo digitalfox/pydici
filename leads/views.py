@@ -563,26 +563,28 @@ def graph_leads_activity(request):
         current_leads = current_leads.filter(subsidiary=subsidiary)
     leads_state_data = leads_state_stat(current_leads)
 
+    leads = Lead.objects.all()
+    if subsidiary:
+        leads = leads.filter(subsidiary=subsidiary)
+
     # lead creation rate
-    first_lead_creation_date = Lead.objects.all().aggregate(Min("creation_date")).get("creation_date__min", datetime.now()).date()
+    first_lead_creation_date = leads.aggregate(Min("creation_date")).get("creation_date__min", datetime.now()).date()
     today = date.today()
     lead_creation_rate_data = []
     max_creation_rate = 0
     for timeframe in (30, 30*6, 365):
         start = today - timedelta(timeframe)
         if start > first_lead_creation_date:
-            rate = Lead.objects.filter(creation_date__gte=start).count() / timeframe
+            rate = leads.filter(creation_date__gte=start).count() / timeframe
             rate = round(rate, 2)
             lead_creation_rate_data.append([_("Last %s days") % timeframe, rate])
             max_creation_rate = max(rate, max_creation_rate)
 
     # lead duration
-    leads = Lead.objects.filter(creation_date__gt=(datetime.today() - timedelta(2 * 365)))
-    leads = leads.annotate(timesheet_start=Min("mission__timesheet__working_date"))
-    if subsidiary:
-        leads = leads.filter(subsidiary=subsidiary)
+    d_leads = leads.filter(creation_date__gt=(datetime.today() - timedelta(2 * 365)))
+    d_leads = d_leads.annotate(timesheet_start=Min("mission__timesheet__working_date"))
     leads_duration = defaultdict(list)
-    for lead in leads:
+    for lead in d_leads:
         end_date = lead.timesheet_start or lead.start_date or lead.update_date.date()
         duration = (end_date - lead.creation_date.date()).days
         leads_duration[lead.creation_date.date().replace(day=1)].append(duration)
