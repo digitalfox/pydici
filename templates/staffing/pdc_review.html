@@ -193,6 +193,7 @@ $(document).ready(function(){
         {
           container: "body",
           html: true,
+          sanitize: false,
           content: function() {
               var staffing_date = $(this).closest('table').find('span').eq($(this).index()-1).attr('title');
               var consultant = $(this).closest('tr').find('span').attr('title');
