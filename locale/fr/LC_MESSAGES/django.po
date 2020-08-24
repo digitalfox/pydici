@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-17 21:51+0200\n"
-"PO-Revision-Date: 2020-08-17 21:50+0200\n"
+"POT-Creation-Date: 2020-08-24 18:50+0200\n"
+"PO-Revision-Date: 2020-08-24 18:50+0200\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -404,18 +404,18 @@ msgstr "Prix unitaire (€)"
 msgid "Label"
 msgstr "Libellé"
 
-#: billing/utils.py:150 leads/views.py:668 staffing/views.py:1616
+#: billing/utils.py:150 leads/views.py:670 staffing/views.py:1616
 #: templates/crm/clientcompany_detail.html:302
 #: templates/expense/expense_list.html:16 templates/leads/leads.html:16
 #: templates/leads/leads_to_bill.html:17
 msgid "deal id"
 msgstr "N° affaire"
 
-#: billing/utils.py:151 leads/views.py:670 staffing/views.py:1618
+#: billing/utils.py:151 leads/views.py:672 staffing/views.py:1618
 msgid "client organisation"
 msgstr "organisation client"
 
-#: billing/utils.py:152 leads/views.py:671 staffing/views.py:1619
+#: billing/utils.py:152 leads/views.py:673 staffing/views.py:1619
 #: staffing/views.py:1646 staffing/views.py:1662 staffing/views.py:1663
 #: templates/billing/client_billing_control_pivotable.html:61
 #: templates/leads/leads_pivotable.html:60
@@ -424,7 +424,7 @@ msgstr "organisation client"
 msgid "client company"
 msgstr "entreprise"
 
-#: billing/utils.py:153 leads/views.py:675 staffing/views.py:1622
+#: billing/utils.py:153 leads/views.py:677 staffing/views.py:1622
 #: templates/staffing/turnover_pivotable.html:68
 msgid "broker"
 msgstr "apporteur"
@@ -433,7 +433,7 @@ msgstr "apporteur"
 msgid "Direct"
 msgstr "Direct"
 
-#: billing/utils.py:154 core/views.py:370 core/views.py:391 leads/views.py:679
+#: billing/utils.py:154 core/views.py:370 core/views.py:391 leads/views.py:681
 #: staffing/models.py:386 staffing/views.py:1317 staffing/views.py:1350
 #: staffing/views.py:1365 staffing/views.py:1413 staffing/views.py:1623
 #: staffing/views.py:1650 staffing/views.py:1703
@@ -473,7 +473,7 @@ msgstr "Direct"
 msgid "subsidiary"
 msgstr "filiale"
 
-#: billing/utils.py:155 billing/utils.py:185 leads/views.py:674
+#: billing/utils.py:155 billing/utils.py:185 leads/views.py:676
 #: staffing/views.py:1620 templates/crm/clientcompany_detail.html:274
 #: templates/crm/clientcompany_detail.html:304 templates/leads/leads.html:18
 #: templates/leads/leads_pivotable.html:54
@@ -1197,7 +1197,7 @@ msgstr "Justificatif"
 msgid "Paid with corporate card"
 msgstr "Payé avec la carte société"
 
-#: expense/models.py:114 leads/views.py:676
+#: expense/models.py:114 leads/views.py:678
 #: templates/leads/leads_pivotable.html:48
 #: templates/leads/leads_pivotable.html:63
 #: templates/leads/leads_pivotable.html:71
@@ -1554,32 +1554,33 @@ msgstr "C.A. (k€)"
 msgid "Lead %(id)s was sent to %(mail)s !"
 msgstr "L'affaire %(id)s a été envoyée à %(mail)s !"
 
-#: leads/views.py:576
+#: leads/views.py:580
 #, python-format
 msgid "Last %s days"
 msgstr "%s derniers jours"
 
-#: leads/views.py:592 templates/leads/graph_leads_activity.html:48
+#: leads/views.py:594 templates/leads/graph_leads_activity.html:48
 msgid "duration"
 msgstr "durée"
 
-#: leads/views.py:593 templates/leads/graph_leads_activity.html:49
+#: leads/views.py:595 templates/leads/graph_leads_activity.html:49
 msgid "average duration 6 months"
 msgstr "durée moyenne sur 6 mois"
 
-#: leads/views.py:598
-msgid "Current leads"
-msgstr "Affaires en cours"
+#: leads/views.py:600
+#, python-format
+msgid "%s leads in progress"
+msgstr "%s affaires en cours"
 
-#: leads/views.py:649 templates/leads/leads_pivotable.html:55
+#: leads/views.py:651 templates/leads/leads_pivotable.html:55
 msgid "sales (interval)"
 msgstr "prix (interval)"
 
-#: leads/views.py:649 leads/views.py:672
+#: leads/views.py:651 leads/views.py:674
 msgid "sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/views.py:669 staffing/views.py:1617 templates/crm/_contact_list.html:9
+#: leads/views.py:671 staffing/views.py:1617 templates/crm/_contact_list.html:9
 #: templates/crm/clientcompany_detail.html:272
 #: templates/crm/clientcompany_detail.html:301
 #: templates/crm/contact_detail.html:20 templates/crm/contact_list.html:12
@@ -1588,7 +1589,7 @@ msgstr "C.A. (k€)"
 msgid "name"
 msgstr "nom"
 
-#: leads/views.py:673 staffing/models.py:388
+#: leads/views.py:675 staffing/models.py:388
 #: templates/crm/company_pivotable.html:48
 #: templates/crm/company_pivotable.html:54
 #: templates/leads/lead_pivotable.html:39
@@ -1596,15 +1597,15 @@ msgstr "nom"
 msgid "date"
 msgstr "date"
 
-#: leads/views.py:677 templates/leads/leads_pivotable.html:64
+#: leads/views.py:679 templates/leads/leads_pivotable.html:64
 msgid "billed (€)"
 msgstr "facturé (€)"
 
-#: leads/views.py:678 templates/leads/leads_pivotable.html:72
+#: leads/views.py:680 templates/leads/leads_pivotable.html:72
 msgid "Over budget margin (€)"
 msgstr "Marge au delà du budget (€)"
 
-#: leads/views.py:680
+#: leads/views.py:682
 msgid "active"
 msgstr "active"
 
@@ -3095,24 +3096,24 @@ msgstr "toutes filiales"
 msgid "Commercial activity"
 msgstr "Activité commerciale"
 
-#: templates/core/dashboard.html:22 templates/staffing/pdc_review.html:140
+#: templates/core/dashboard.html:35 templates/staffing/pdc_review.html:140
 #: templates/staffing/prod_report.html:88
 msgid "Production rates and daily rates review"
 msgstr "Suivi du taux de production et des TJM"
 
-#: templates/core/dashboard.html:35
+#: templates/core/dashboard.html:48
 msgid "Billing review and done work"
 msgstr "Suivi de la facturation comparé au travail réalisé/engagé"
 
-#: templates/core/dashboard.html:44
+#: templates/core/dashboard.html:57
 msgid "Sales repartition per client"
 msgstr "Répartition du chiffre d'affaire facturé par client"
 
-#: templates/core/dashboard.html:73
+#: templates/core/dashboard.html:86
 msgid "People count"
 msgstr "Nombre de personnes"
 
-#: templates/core/dashboard.html:83
+#: templates/core/dashboard.html:96
 msgid "Billing per subsidiary per year"
 msgstr "Facturation par filiale et par an"
 
@@ -3675,8 +3676,8 @@ msgid "Number of leads"
 msgstr "Nombre d'affaires"
 
 #: templates/leads/graph_leads_activity.html:14
-msgid "New leads per days"
-msgstr "Nouvelles affaires par jour"
+msgid "New leads per week"
+msgstr "Nouvelles affaires par semaine"
 
 #: templates/leads/graph_leads_activity.html:69
 msgid "lead duration (days)"
@@ -4735,6 +4736,9 @@ msgstr "CA par top société client"
 #: templates/staffing/turnover_pivotable.html:32
 msgid "Turnover per billing mode"
 msgstr "CA par mode de facturation"
+
+#~ msgid "Current leads"
+#~ msgstr "Affaires en cours"
 
 #~ msgctxt "short"
 #~ msgid "Leads"
