@@ -567,7 +567,7 @@ def graph_leads_activity(request):
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
 
-    # lead creation rate
+    # lead creation rate per week
     first_lead_creation_date = leads.aggregate(Min("creation_date")).get("creation_date__min", datetime.now()).date()
     today = date.today()
     lead_creation_rate_data = []
@@ -575,7 +575,7 @@ def graph_leads_activity(request):
     for timeframe in (30, 30*6, 365):
         start = today - timedelta(timeframe)
         if start > first_lead_creation_date:
-            rate = leads.filter(creation_date__gte=start).count() / timeframe
+            rate = 7 * leads.filter(creation_date__gte=start).count() / timeframe
             rate = round(rate, 2)
             lead_creation_rate_data.append([_("Last %s days") % timeframe, rate])
             max_creation_rate = max(rate, max_creation_rate)
@@ -597,7 +597,7 @@ def graph_leads_activity(request):
 
     return render(request, "leads/graph_leads_activity.html",
                   {"leads_state_data": leads_state_data,
-                   "leads_state_title": _("Current leads"),
+                   "leads_state_title": _("%s leads in progress") % len(current_leads),
                    "lead_creation_rate_data": json.dumps(lead_creation_rate_data),
                    "max_creation_rate": max_creation_rate,
                    "leads_duration_data": json.dumps(leads_duration_data),
