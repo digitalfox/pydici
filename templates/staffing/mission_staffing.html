@@ -117,6 +117,7 @@ $(document).ready(function(){
         {
           container: "body",
           html: true,
+          sanitize: false,
           content: function() {
               var staffing_date = $(this).closest('tr').find('td').eq($(this).index()-1)[0].firstElementChild.value.replace('-01','').replace('-','');
               var consultant = $(this).closest('tr').find('td').eq($(this).index()-3)[0].firstElementChild.firstElementChild;
