@@ -9,17 +9,19 @@ from datetime import date, timedelta
 import json
 
 from django.shortcuts import render, redirect
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext as _
 from django.db.models import Count
+from django.db import transaction
+from django.contrib.auth.models import User, Group
 
-from people.models import Consultant
+from people.models import Consultant, ConsultantProfile
 from crm.models import Company
 from crm.utils import get_subsidiary_from_session
 from staffing.models import Holiday
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, pydici_feature
 from core.utils import working_days, previousMonth, nextMonth, COLORS
 from people.utils import compute_consultant_tasks
 from crm.models import Subsidiary
@@ -176,6 +178,42 @@ def subcontractor_detail(request, consultant_id):
                    "companies": companies,
                    "leads_as_staffee": leads_as_staffee,
                    "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def consultant_list(request):
+    """Return json list of consultants"""
+    data = Consultant.objects.all().values("name", "trigramme", "profil__name", "company__name", "subcontractor")
+    return JsonResponse(list(data), safe=False)
+
+
+@pydici_non_public
+def consultant_provisioning(request):
+    """Create User and Consultant object"""
+    try:
+        if not request.user.is_superuser:
+            raise("Only superuser can provision user")
+        with transaction.atomic():
+            user = User.objects.create_user(username=request.POST["trigramme"], password=request.POST["trigramme"])
+            user.first_name = request.POST["firstname"]
+            user.last_name = request.POST["lastname"]
+            user.email = request.POST["email"]
+            user.is_staff = True
+            for group in request.POST.getlist("groups"):
+                user.groups.add(Group.objects.get(name=group))
+            user.save()
+
+            consultant = Consultant(name="%s %s" % (request.POST["firstname"], request.POST["lastname"]),
+                                    trigramme = request.POST["trigramme"].upper(),
+                                    company = Subsidiary.objects.get(code=request.POST["company"],),
+                                    profil = ConsultantProfile.objects.get(name=request.POST["profile"]))
+            consultant.save()
+            if request.headers.get("Dry-Run"):
+                raise Exception("Dry run mode. User is not created")
+        return JsonResponse({"result": "ok"})
+    except Exception as e:
+        return JsonResponse({"result": "error", "msg": str(e)})
 
 
 @pydici_non_public
