@@ -885,9 +885,9 @@ def mission_timesheet(request, mission_id):
     consultant_rates = mission.consultant_rates()
 
     if "csv" in request.GET:
-        return mission_csv_timesheet(request, mission, consultants)
+        return mission_csv_timesheet(request, mission, consultants, end=date.today())
     if "pdf" in request.GET:
-        return MissionTimesheetReportPdf.as_view()(request, mission=mission)
+        return MissionTimesheetReportPdf.as_view()(request, mission=mission, end=date.today())
 
     if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # This view should only be accessed by ajax request. Redirect lost users
@@ -1043,7 +1043,7 @@ def mission_timesheet(request, mission_id):
 
 @pydici_non_public
 @pydici_feature("reports")
-def mission_csv_timesheet(request, mission, consultants):
+def mission_csv_timesheet(request, mission, consultants, start=None, end=None):
     """@return: csv timesheet for a given mission"""
     # This "view" is never called directly but only through consultant_timesheet view
     response = HttpResponse(content_type="text/csv")
@@ -1051,7 +1051,7 @@ def mission_csv_timesheet(request, mission, consultants):
     response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
 
     writer = csv.writer(response, delimiter=';')
-    for line in timesheet_report_data(mission, padding=True):
+    for line in timesheet_report_data(mission, padding=True, start=start, end=end):
         writer.writerow(line)
 
     return response
