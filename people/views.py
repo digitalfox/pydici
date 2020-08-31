@@ -184,7 +184,7 @@ def subcontractor_detail(request, consultant_id):
 @pydici_feature("reports")
 def consultant_list(request):
     """Return json list of consultants"""
-    data = Consultant.objects.all().values("name", "trigramme", "profil__name", "company__name", "subcontractor")
+    data = Consultant.objects.all().values("name", "trigramme", "profil__name", "company__name", "subcontractor", "active", "productive")
     return JsonResponse(list(data), safe=False)
 
 
