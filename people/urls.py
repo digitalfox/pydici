@@ -14,5 +14,6 @@ people_urls = [url(r'^home/consultant/(?P<consultant_id>\d+)/$', v.consultant_ho
                url(r'^detail/subcontractor/(?P<consultant_id>\d+)/$', v.subcontractor_detail, name="subcontractor_detail"),
                url(r'^consultant_list$', v.consultant_list, name="consultant_list"),
                url(r'^consultant_provisioning$', v.consultant_provisioning, name="consultant_provisioning"),
+               url(r'^consultant_deactivation$', v.consultant_deactivation, name="consultant_deactivation"),
                url(r'^graph/people-count/?$', v.graph_people_count, name="graph_people_count"),
                ]

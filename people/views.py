@@ -193,7 +193,7 @@ def consultant_provisioning(request):
     """Create User and Consultant object"""
     try:
         if not request.user.is_superuser:
-            raise("Only superuser can provision user")
+            raise Exception("Only superuser can deactivate user")
         with transaction.atomic():
             user = User.objects.create_user(username=request.POST["trigramme"], password=request.POST["trigramme"])
             user.first_name = request.POST["firstname"]
@@ -211,6 +211,27 @@ def consultant_provisioning(request):
             consultant.save()
             if request.headers.get("Dry-Run"):
                 raise Exception("Dry run mode. User is not created")
+        return JsonResponse({"result": "ok"})
+    except Exception as e:
+        return JsonResponse({"result": "error", "msg": str(e)})
+
+
+@pydici_non_public
+def consultant_deactivation(request):
+    """Deactivate a consultant and remove according user"""
+    try:
+        if not request.user.is_superuser:
+            raise Exception("Only superuser can deactivate user")
+        with transaction.atomic():
+            try:
+                User.objects.get(username=request.POST["trigramme"]).delete()
+            except User.DoesNotExist:
+                pass
+            consultant = Consultant.objects.get(trigramme=request.POST["trigramme"].upper())
+            consultant.active = False
+            consultant.save()
+            if request.headers.get("Dry-Run"):
+                raise Exception("Dry run mode. Nothing was removeed/deactivated")
         return JsonResponse({"result": "ok"})
     except Exception as e:
         return JsonResponse({"result": "error", "msg": str(e)})
