@@ -193,7 +193,7 @@ def consultant_provisioning(request):
     """Create User and Consultant object"""
     try:
         if not request.user.is_superuser:
-            raise Exception("Only superuser can deactivate user")
+            raise Exception("Only superuser can create user")
         with transaction.atomic():
             user = User.objects.create_user(username=request.POST["trigramme"], password=request.POST["trigramme"])
             user.first_name = request.POST["firstname"]
