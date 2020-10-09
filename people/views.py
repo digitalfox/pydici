@@ -272,6 +272,7 @@ def graph_people_count(request):
         iso_months.append(month.isoformat())
         for subsidiary in subsidiaries:
             consultants_count[subsidiary].append(consultants.filter(company=subsidiary,
+                                                                    timesheet__mission__nature__in=("PROD", "NONPROD"),
                                                                     timesheet__working_date__gte=month,
                                                                     timesheet__working_date__lt=next_month).distinct().count())
             subcontractors_count[subsidiary].append(subcontractors.filter(timesheet__working_date__gte=month,
