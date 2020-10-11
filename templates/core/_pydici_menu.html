@@ -139,14 +139,6 @@
                 <li><a href="{% url 'admin:index' %}">{% trans "Admin console" %}</a></li>
                 <li><a href="{% url 'help' %}">{% trans "Help page" %}</a></li>
                 <li>{{ foo|get_admin_mail }}</li>
-                {% if pydici_feature.search %}
-                    <li><form class="navbar-form keep-open hidden-md hidden-lg" role="search" action="{% url 'core:search' %}" method="GET">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q">
-                        </div>
-                        </form>
-                    </li>
-                {% endif %}
             </ul>
         </li>
         {# mobile version of context switcher #}
@@ -164,6 +156,13 @@
       </ul></li>
         {# end of mobile subsidiary switcher #}
         </ul>
+        {% if pydici_feature.search %}
+            <form class="navbar-form keep-open hidden-md hidden-lg" role="search" action="{% url 'core:search' %}" method="GET">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="{% trans 'search' %}" name="q">
+                </div>
+            </form>
+        {% endif %}
 
         {# subsidiary context switcher #}
             <div class="btn-group navbar-form pull-right hidden-sm hidden-xs">
