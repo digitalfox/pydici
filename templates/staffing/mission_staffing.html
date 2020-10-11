@@ -23,12 +23,10 @@
         <table class="table table-striped table-hover table-condensed">
            <tr>
                <th>{% trans "Consultant" %}</th>
-               <th></th>
                <th>{% trans "Month" %}</th>
                <th class="hidden-xs hidden-sm"></th>
                <th>{% trans "Load" %}</th>
                <th class="hidden-xs hidden-sm">{% trans "Comments" %}</th>
-               <th></th>
                <th>{% trans "Del." %}</th>
                <th class="hidden-xs hidden-sm">{% trans "Last change" %}</th>
            </tr>
@@ -47,28 +45,21 @@
                        {% endif %}
                    {% endifchanged%}
                    <tr class="{%cycle 'row1' 'row2' %} {% if form.initial.staffing_date and year_month < current_month and not form.errors %}collapse{% endif%} {{ year_month }}" %}>
-                   {% for field in form %}
-                      {% ifequal field.label "Charge" %}
-                            <td style="cursor: help" class="hidden-xs hidden-sm pdc-tooltip"><span title="{% trans 'Other missions charge' %}" data-toggle="tooltip" class="glyphicon glyphicon-list-alt"></span></td>
-                      {% endifequal %}
-                      {% ifequal field.label "Last user" %}
-                            {{ field.as_hidden }}
-                      {% else %}
-                            {% ifequal field.label "Update date" %}
-                                {{ field.as_hidden }}
-                            {% else %}
-                               <td>
-                                {{ field }}
-                                {{ field.errors }}
-                               </td>
-                            {% endifequal %}
-                      {% endifequal %}
-                   {% endfor %}
-                   <td class="hidden-xs hidden-sm">
-                   {% if form.initial.last_user %}
-                        {{ form.initial.last_user }} ({{ form.initial.update_date|timesince }})
-                   {% endif %}
-                   </td>
+                       <td>{{ form.consultant }}{{ form.consultant.errors }}</td>
+                       <td>{{ form.staffing_date}}{{ form.staffing_date.errors }}</td>
+                       <td style="cursor: help" class="hidden-xs hidden-sm pdc-tooltip"><span title="{% trans 'Other missions charge' %}" data-toggle="tooltip" class="glyphicon glyphicon-list-alt"></span></td>
+                       <td class="pydici_small_number">{{ form.charge }}{{ form.charge.errors }}</td>
+                       <td class="hidden-xs hidden-sm">{{ form.comment }}{{ form.comment.errors }}</td>
+                       <td>{{ form.DELETE }}</td>
+                       <td class="hidden-xs hidden-sm">
+                            {% if form.initial.last_user %}
+                                {{ form.initial.last_user }} ({{ form.initial.update_date|timesince }})
+                            {% endif %}
+                       </td>
+                       {{ form.id.as_hidden }}
+                       {{ form.mission.as_hidden }}
+                       {{ form.update_date.as_hidden }}
+                       {{ form.last_user.as_hidden }}
                    </tr>
                     {% if form.non_field_errors %}
                         <tr>
@@ -119,7 +110,7 @@ $(document).ready(function(){
           sanitize: false,
           content: function() {
               var staffing_date = $(this).closest('tr').find('td').eq($(this).index()-1)[0].firstElementChild.value.replace('-01','').replace('-','');
-              var consultant = $(this).closest('tr').find('td').eq($(this).index()-3)[0].firstElementChild.firstElementChild;
+              var consultant = $(this).closest('tr').find('td').eq($(this).index()-2)[0].firstElementChild.firstElementChild;
               if (consultant) {
                 consultant = consultant.value;
                 } else {
