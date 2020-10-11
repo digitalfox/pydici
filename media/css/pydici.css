@@ -482,3 +482,8 @@ div.ui-tooltip {
 .rotate90 {
  transform: rotate(90deg);
  }
+
+/* small input number */
+.pydici_small_number input {
+    width: 5em;
+}

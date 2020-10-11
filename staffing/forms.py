@@ -132,7 +132,6 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
         super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
         form.fields["mission"] = ModelChoiceField(widget=MissionChoices(attrs={'data-placeholder':_("Select a mission to add forecast...")}), queryset=Mission.objects)
         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=self.lowerDayBound)
-        form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
 
 
 class MissionStaffingInlineFormset(BaseInlineFormSet):
