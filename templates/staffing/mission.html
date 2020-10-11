@@ -71,16 +71,7 @@
                     <div class="alert alert-info">{% trans "This mission is archived" %}</div>
              {% endif %}
 
-         {% if mission.lead %}
-            {% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
-            <div class="row">
-                <div class="col-md-12">
-                    {% include "staffing/_check_mission_billing_mode.html" %}
-                    {% include "staffing/_check_mission_rates.html" %}
-                    {% include "staffing/_check_mission_margin.html" %}
-                </div>
-            </div>
-         {% endif %}
+         {% include "staffing/_check_prod_mission.html" %}
 
         <div class="row">
             <div class="col-md-6">

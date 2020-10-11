@@ -2,9 +2,8 @@
 {# Fragment of page to be included in a mission_home tab #}
 <div id="pydici-ajax-form-content-mission-staffing">
     <br/>
-    {% include "staffing/_check_mission_billing_mode.html" %}
-    {% include "staffing/_check_mission_rates.html" %}
-    {% include "staffing/_check_mission_margin.html" %}
+    {% include "staffing/_check_prod_mission.html" %}
+
     {% if remaining > 0 and mission.nature == "PROD" and mission.defined_rates %}
 
         <form action="{% url 'staffing:automatic_mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-automatic-staffing">

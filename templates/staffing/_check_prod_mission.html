@@ -1,0 +1,11 @@
+{# all controls of productive mission #}
+{% if mission.lead %}
+    {% with mission.lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
+    <div class="row">
+        <div class="col-md-12">
+            {% include "staffing/_check_mission_billing_mode.html" %}
+            {% include "staffing/_check_mission_rates.html" %}
+            {% include "staffing/_check_mission_margin.html" %}
+        </div>
+    </div>
+{% endif %}
