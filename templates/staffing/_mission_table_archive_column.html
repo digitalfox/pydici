@@ -10,4 +10,7 @@
        onClick="$.get('{% url 'staffing:deactivate_mission' row.id %}', process_mission_archive)">
         <em>{% trans "Archive" %}</em>
     </a>
+{% else %}
+    {{ row.archived_date|date:"j F Y" }}
+
 {% endif %}
