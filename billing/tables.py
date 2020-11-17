@@ -117,7 +117,7 @@ class ClientBillArchiveTableDT(BillTableDT):
     """Client bill archive"""
     columns = ("bill_id", "subsidiary", "lead","creation_date", "payment_date", "state", "amount", "amount_with_vat", "comment", "file")
     order_columns = columns
-    max_display_length = 100
+    max_display_length = 500
 
     def get_initial_queryset(self):
         qs = ClientBill.objects.exclude(state__in=("0_DRAFT", "0_PROPOSED"))
