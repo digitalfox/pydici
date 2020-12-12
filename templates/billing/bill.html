@@ -41,13 +41,21 @@
         <strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
 
         {% if bill.lead.paying_authority %}
-            <div class="lead">{{ bill.lead.paying_authority.billing_name|default:bill.lead.paying_authority.company }}</div>
-            {{ bill.lead.paying_authority.company.billing_address|linebreaksbr }}
+            <div class="lead">
+                {{ bill.lead.paying_authority.billing_name|default:bill.lead.paying_authority.company }}<br>
+                {{ bill.lead.paying_authority.company.billing_address|linebreaksbr }}<br>
+                {% if bill.lead.paying_authority.company.vat_id %}
+                    {% trans "VAT id:" %} {{ bill.lead.paying_authority.company.vat_id }}<br>
+                {% endif %}
+            </div>
         {% else %}
             <div class="lead">
                 {{ bill.lead.client.billing_name|default:bill.lead.client.organisation }}
                 {{ bill.lead.client.billing_contact.contact }}<br>
-                {{ bill.lead.client.billing_address|linebreaksbr }}
+                {{ bill.lead.client.billing_address|linebreaksbr }}<br>
+                {% if bill.lead.client.vat_id or bill.lead.client.organisation.company.vat_id %}
+                    {% trans "VAT id:" %} {{ bill.lead.client.vat_id|default:bill.lead.client.organisation.company.vat_id }}<br>
+                {% endif %}
             </div>
         {% endif %}
     </div>

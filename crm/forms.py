@@ -131,6 +131,7 @@ class ClientForm(PydiciCrispyModelForm):
                                      "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
                                          "crm:contact_create"))),
                 "alignment",
+                "vat_id",
                 "billing_name",
                 FieldWithButtons(
                     "billing_contact",
@@ -195,7 +196,7 @@ class CompanyForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(CompanyForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(
-            Div(Column("name", "code", "businessOwner", "web", "legal_description", css_class="col-md-6"),
+            Div(Column("name", "code", "businessOwner", "vat_id", "web", "legal_description", css_class="col-md-6"),
                 get_address_column(show_banner=False), css_class="row"),
             self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Company"),
