@@ -46,11 +46,10 @@ class AbstractCompany(AbstractAddress):
     code = models.CharField(_("Code"), max_length=3, unique=True)
     web = models.URLField(blank=True, null=True)
     legal_description = models.TextField("Legal description", blank=True, null=True)
-
+    vat_id = models.CharField(max_length=30, blank=True, null=True, verbose_name=_("VAT id"))
 
     def __str__(self):
         return str(self.name)
-
 
     def save(self, *args, **kwargs):
         # If billing addresse is not defined, use main address
@@ -69,6 +68,7 @@ class Subsidiary(AbstractCompany):
     """Internal company / organisation unit"""
     payment_description = models.TextField(_("Payment condition description"), blank=True, null=True)
     commercial_name = models.CharField(_("Commercial name"), max_length=200)
+
     class Meta:
         verbose_name = _("Subsidiary")
         verbose_name_plural = _("Subsidiaries")
@@ -319,6 +319,7 @@ class Client(AbstractAddress):
     active = models.BooleanField(_("Active"), default=True)
     billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
     billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True, verbose_name=_("Billing contact"), on_delete=models.SET_NULL)
+    vat_id = models.CharField(max_length=30, blank=True, null=True,  verbose_name=_("VAT id"))
 
     def __str__(self):
         if self.contact:
