@@ -131,7 +131,7 @@ class ClientForm(PydiciCrispyModelForm):
                                      "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
                                          "crm:contact_create"))),
                 "alignment",
-                "vat_id",
+                Field("vat_id", placeholder=_("Leave blank to use company vat id")),
                 "billing_lang",
                 "billing_name",
                 FieldWithButtons(
