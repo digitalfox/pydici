@@ -132,6 +132,7 @@ class ClientForm(PydiciCrispyModelForm):
                                          "crm:contact_create"))),
                 "alignment",
                 "vat_id",
+                "billing_lang",
                 "billing_name",
                 FieldWithButtons(
                     "billing_contact",
@@ -154,7 +155,9 @@ class ClientForm(PydiciCrispyModelForm):
                                             """<a role='button' class='btn btn-default' href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""),
                                         css_id="contact_input_group"),
                        css_class="col-md-6"),
-                Column("alignment",
+                Column(Field("vat_id", placeholder=_("Leave blank to use company vat id")),
+                       "billing_lang",
+                       "alignment",
                        "expectations",
                        css_class="col-md-6"),
                 css_class="row"))

@@ -4,13 +4,6 @@ Database access layer for pydici core module
 @author: Aurélien Gâteau (mail@agateau.com)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 
-Some parts of Pydici require being a member of a group with access to specific
-features.
-
-To check if a user has access to a feature from Python code, use
-`utils.user_has_feature()` or the `decorator.pydici_feature()` decorator.
-
-To check for access from a template, use `{% if pydici_feature.<feature_name> %}`.
 """
 
 from django.contrib.auth.models import Group
@@ -18,6 +11,20 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.cache import cache
 
+# Some shared value list
+CLIENT_BILL_LANG = (
+        ("fr-fr", _("French")),
+        ("en-en", _("English"))
+    )
+
+"""
+Some parts of Pydici require being a member of a group with access to specific
+features.
+
+To check if a user has access to a feature from Python code, use
+`utils.user_has_feature()` or the `decorator.pydici_feature()` decorator.
+
+To check for access from a template, use `{% if pydici_feature.<feature_name> %}`."""
 
 _FEATURES_CHOICES = (
     ("3rdparties", _("3rd Parties: Access to the 'Third parties' menu")),

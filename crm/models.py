@@ -14,9 +14,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, pgettext
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-
-
-from core.utils import GEdge, GEdges, GNode, GNodes, cacheable
+from django.conf import settings
+from core.utils import GEdge, GEdges, GNode, GNodes
+from core.models import CLIENT_BILL_LANG
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -319,6 +319,7 @@ class Client(AbstractAddress):
     active = models.BooleanField(_("Active"), default=True)
     billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
     billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True, verbose_name=_("Billing contact"), on_delete=models.SET_NULL)
+    billing_lang = models.CharField(_("Billing language"), max_length=10, choices=CLIENT_BILL_LANG, default=settings.LANGUAGE_CODE)
     vat_id = models.CharField(max_length=30, blank=True, null=True,  verbose_name=_("VAT id"))
 
     def __str__(self):

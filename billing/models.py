@@ -26,6 +26,7 @@ from expense.models import Expense
 from crm.models import Supplier
 from billing.utils import compute_bill, get_bill_id_from_path
 from core.utils import sanitizeName
+from core.models import CLIENT_BILL_LANG
 
 
 # Custom storage that hook static url to custom view
@@ -63,6 +64,7 @@ def default_due_date():
 def default_bill_id():
     return datetime.now().isoformat()
 
+
 class AbstractBill(models.Model):
     """Abstract class that factorize ClientBill and SupplierBill fields and logic"""
     lead = models.ForeignKey(Lead, verbose_name=_("Lead"), on_delete=models.CASCADE)
@@ -78,7 +80,6 @@ class AbstractBill(models.Model):
                               default=float(settings.PYDICI_DEFAULT_VAT_RATE))
     expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True})
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
-
 
     def __str__(self):
         if self.bill_id:
@@ -137,16 +138,12 @@ class ClientBill(AbstractBill):
         ('3_LITIGIOUS', _("Litigious")),
         ('4_CANCELED', _("Canceled")),)
 
-    CLIENT_BILL_LANG = (
-        ("fr-fr", _("French")),
-        ("en-en", _("English"))
-    )
     state = models.CharField(_("State"), max_length=30, choices=CLIENT_BILL_STATE, default="0_DRAFT")
     bill_file = models.FileField(_("Bill File"), max_length=500, upload_to=bill_file_path,
                                  storage=BillStorage(nature="client"), null=True, blank=True)
     anonymize_profile = models.BooleanField(_("Anonymize profile name"), default=False)
     include_timesheet = models.BooleanField(_("Include timesheet"), default=False)
-    lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, default=settings.LANGUAGE_CODE)
+    lang = models.CharField(_("Language"), max_length=10, choices=CLIENT_BILL_LANG, null=True, blank=True)
     client_comment = models.CharField(_("Client comments"), max_length=500, blank=True, null=True)
     client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
 
@@ -183,6 +180,8 @@ class ClientBill(AbstractBill):
         return reverse("billing:client_bill", args=[self.id,])
 
     def save(self, *args, **kwargs):
+        if not self.lang:
+            self.lang = self.lead.client.billing_lang
         if self.client_deal_id == "" and self.lead.client_deal_id:
             self.client_deal_id = self.lead.client_deal_id
         if self.state in ("0_DRAFT", "0_PROPOSED"):

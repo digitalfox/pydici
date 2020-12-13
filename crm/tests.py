@@ -32,6 +32,7 @@ class CrmViewsTest(TestCase):
         # Initial data
         data = { "client-expectations": "3_FLAT",
                  "client-alignment": "2_STANDARD",
+                 "client-billing_lang": "fr-fr",
                  "client-contact": "",
                  "contact-name": "",
                  "contact-email": "",
