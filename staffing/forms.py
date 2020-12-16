@@ -431,3 +431,22 @@ TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD = {
     'cycle': CycleTimesheetField,
     'keyboard': KeyboardTimesheetField
 }
+
+class OptimiserForm(forms.Form):
+    """A form to select optimiser input data and parameters"""
+    def __init__(self, *args, **kwargs):
+        staffing_dates = kwargs.pop("staffing_dates", [])
+        super(OptimiserForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
+        self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.all(), required=False)
+        self.fields["staffing_dates"] = forms.fields.MultipleChoiceField(label=_("Staffing dates"), choices=staffing_dates)
+        self.fields["missions"] = forms.ModelMultipleChoiceField(widget=MissionMChoices, queryset=Mission.objects.all())
+        self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
+
+        submit = Submit("Submit", _("Solve"))
+        submit.field_classes = "btn btn-default"
+        self.helper.layout = Layout(Div(Column("missions", "consultants", "all_consultants", css_class='col-md-6'),
+                                        Column("staffing_dates", css_class='col-md-6'),
+                                        css_class='row'),
+                                    submit)

@@ -10,6 +10,7 @@ import staffing.tables as t
 
 staffing_urls = [url(r'^pdcreview/?$', v.pdc_review, name='pdcreview-index'),
                  url(r'^pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', v.pdc_review, name='pdcreview'),
+                 url(r'^pdc_optim/$', v.optimise_pdc, name="optimise_pdc"),
                  url(r'^production-report/?$', v.prod_report, name='prod_report'),
                  url(r'^production-report/(?P<year>\d+)/(?P<month>\d+)/?$', v.prod_report, name='prod_report'),
                  url(r'^fixed-price-mission-report/?$', v.fixed_price_missions_report, name="fixed_price_missions_report"),

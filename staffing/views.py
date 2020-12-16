@@ -49,7 +49,8 @@ from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMi
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
     timesheet_report_data, check_missions_limited_mode
-from staffing.forms import MissionForm, MissionAutomaticStaffingForm
+from staffing.forms import MissionForm, MissionAutomaticStaffingForm, OptimiserForm
+from staffing.optim import solve_pdc, display_solver_solution
 from people.utils import get_team_scopes
 from crm.utils import get_subsidiary_from_session
 
@@ -1056,6 +1057,7 @@ def mission_csv_timesheet(request, mission, consultants, start=None, end=None):
 
     return response
 
+
 class MissionTimesheetReportPdf(PydiciNonPublicdMixin, WeasyTemplateView):
     template_name = 'staffing/mission_timesheet_report.html'
 
@@ -1577,6 +1579,66 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 
     def get_success_url(self):
         return self.request.GET.get('return_to', False) or reverse_lazy("staffing:mission_home", args=[self.object.id, ])
+
+
+def optimise_pdc(request):
+    """Propose optimised mission staffing according to business rules"""
+    staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in
+                      staffingDates(format="datetime", n=12)]
+    scores_data = []
+    total_score = -1
+    results = []
+    results_month = []
+
+    if request.method == "POST":  # If the form has been submitted...
+        form = OptimiserForm(request.POST, staffing_dates=staffing_dates)
+        if form.is_valid():  # All validation rules pass
+            # Process the data in form.cleaned_data
+            consultants_t = [c.trigramme for c in form.cleaned_data["consultants"]]
+            missions_id = [m.mission_id() for m in form.cleaned_data["missions"]]
+            results_month = form.cleaned_data["staffing_dates"]
+            # hard code some parameters still not bounded to form
+            predefined_assignment = {}
+            solver_param = {}
+            # generate fake charge and freetime for now. #TODO: get real data
+            consultants_freetime = {}
+            for consultant in form.cleaned_data["consultants"]:
+                consultants_freetime[consultant.trigramme] = { month:20 for month in results_month}
+            missions_charge = {}
+            for mission in form.cleaned_data["missions"]:
+                missions_charge[mission.mission_id()] = { month:10 for month in results_month}
+
+            solver, status, scores, staffing = solve_pdc(consultants_t,
+                                                          [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level > 2],
+                                                          missions_id,
+                                                          results_month,
+                                                          missions_charge, consultants_freetime, predefined_assignment,
+                                                          solver_param)
+            display_solver_solution(solver, status, scores, staffing, consultants_t,
+                                    missions_id, results_month,
+                                    missions_charge, consultants_freetime)
+            scores_data = [(score.Name(), solver.Value(score)) for score in scores]
+            total_score = sum(solver.Value(score) for score in scores)
+            for mission in missions_id:
+                for consultant in consultants_t:
+                    charges = [str(solver.Value(staffing[consultant][mission][month])) for month in results_month]
+                    results.append([mission, consultant, *charges])
+                all_charges = []
+                for month in results_month:
+                    mission_charge = sum(solver.Value(staffing[consultant][mission][month]) for consultant in consultants_t)
+                    all_charges.append("%s/%s\t" % (mission_charge, missions_charge[mission][month]))
+                results.append([mission, _("All"), *all_charges])
+    else:
+        # An unbound form
+        form = OptimiserForm(staffing_dates=staffing_dates)
+
+    return render(request, "staffing/optimise_pdc.html",
+                  {"form": form,
+                   "scores": scores_data,
+                   "total_score": total_score,
+                   "results": results,
+                   "missions": missions,
+                   "results_month": results_month})
 
 
 @pydici_non_public

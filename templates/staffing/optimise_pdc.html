@@ -1,0 +1,39 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Optimise staffing" %}{% endblock %}
+
+{% block content %}
+
+{% crispy form form.helper %}
+
+{% if results %}
+    <ul>
+        <li>{% trans "Total score: " %} {{ total_score }}</li>
+        {% for score_name, score_value in scores %}
+        <li>{{ score_name}} = {{ score_value }}</li>
+        {% endfor %}
+    </ul>
+
+<table class="table table-striped table-hover table-pydici-extra-condensed" id="pdc_optim_table">
+    <thead>
+        <td>{% trans "Mission" %}</td>
+        <td>{% trans "Consultant" %}</td>
+        {% for month in results_month %}
+            <td>{{ month }}</td>
+        {% endfor %}
+    </thead>
+    <tbody>
+        {% for row in results %}
+            <tr>
+                {% for item in row %}
+                    <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endif %}
+{% endblock %}
