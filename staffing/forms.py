@@ -8,6 +8,7 @@ import types
 
 from datetime import timedelta, date, datetime
 from decimal import Decimal
+from math import sqrt
 
 from django import forms
 from django.conf import settings
@@ -16,10 +17,11 @@ from django.forms import ChoiceField, ModelChoiceField
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
+from django.db.models import Sum
 
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Column, Field
+from crispy_forms.layout import Submit, Layout, Div, Column, Field, Row
 from crispy_forms.bootstrap import AppendedText
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget, Select2Widget
 from django.utils import formats
@@ -432,21 +434,62 @@ TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD = {
     'keyboard': KeyboardTimesheetField
 }
 
+
+class MissionOptimiserForm(forms.Form):
+    """Declaration of mission staffing to optimise. Part of a formset included in OptimiserForm"""
+    def __init__(self, *args, **kwargs):
+        self.staffing_dates = kwargs.pop("staffing_dates", [])
+        super().__init__(*args, **kwargs)
+        self.fields["mission"] = forms.ModelChoiceField(widget=MissionChoices(attrs={'data-placeholder':_("Select a mission to add forecast...")}), queryset=Mission.objects)
+        for month in self.staffing_dates:
+            self.fields["charge_%s" % month[1]] = forms.IntegerField(required=False, label=month[1])
+        self.fields["predefined_assignment"] = forms.ModelMultipleChoiceField(required=False, widget=ConsultantMChoices, queryset=Consultant.objects.filter(active=True))
+
+    def clean(self):
+        mission = self.cleaned_data["mission"]
+        if sum(self.cleaned_data["charge_%s" % month[1]] or 0 for month in self.staffing_dates) == 0:
+            # Charge is not defined. Get it from staffing
+            charge = Staffing.objects.filter(mission=mission, staffing_date__gte=self.staffing_dates[0][0]).aggregate(Sum("charge"))["charge__sum"] or 0
+            if charge > 0:
+                for month in self.staffing_dates:
+                    c = Staffing.objects.filter(mission=mission, staffing_date=month[0]).aggregate(
+                        Sum("charge"))["charge__sum"]
+                    c = int(c or 0)  # Solver only work with integer
+                    self.cleaned_data["charge_%s" % month[1]] = c
+                    self.data = self.data.copy()  # Make it writable since we *do* modified data
+                    self.data[self.add_prefix("charge_%s" % month[1])] = c  # Use prefix for data dict as we are in a formset
+            elif mission.price:
+                # No staffing defined... infer something from mission price
+                days = int(mission.price)  # yes, 1 day is 1k€ as a rough estimation
+                duration = sqrt(days / 20) * 2  # Guess duration with square root of man.month charge as a max. Take the double for safety
+                for i, month in enumerate(self.staffing_dates):
+                    if i > duration or i > 7:
+                        # Stop planning after guessed duration of 8 month
+                        break
+                    c = int(days / duration)
+                    self.cleaned_data["charge_%s" % month[1]] = c
+                    self.data = self.data.copy()  # Make it writable since we *do* modified data
+                    self.data[self.add_prefix("charge_%s" % month[1])] = c  # Use prefix for data dict as we are in a formset
+
+        return self.cleaned_data
+
+
+class MissionOptimiserFormsetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form_method = "post"
+        self.template = "bootstrap/table_inline_formset.html"
+        self.form_tag = False
+
+
 class OptimiserForm(forms.Form):
     """A form to select optimiser input data and parameters"""
     def __init__(self, *args, **kwargs):
-        staffing_dates = kwargs.pop("staffing_dates", [])
-        super(OptimiserForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.form_tag = False
 
-        self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.all(), required=False)
-        self.fields["staffing_dates"] = forms.fields.MultipleChoiceField(label=_("Staffing dates"), choices=staffing_dates)
-        self.fields["missions"] = forms.ModelMultipleChoiceField(widget=MissionMChoices, queryset=Mission.objects.all())
-        self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
+        self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.filter(active=True), required=False)
 
-        submit = Submit("Submit", _("Solve"))
-        submit.field_classes = "btn btn-default"
-        self.helper.layout = Layout(Div(Column("missions", "consultants", "all_consultants", css_class='col-md-6'),
-                                        Column("staffing_dates", css_class='col-md-6'),
-                                        css_class='row'),
-                                    submit)
+        #self.helper.layout = Layout(Div(Column("consultants"),
+        #                                css_class='row'))

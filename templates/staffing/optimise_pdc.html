@@ -6,22 +6,35 @@
 
 {% block content %}
 
-{% crispy form form.helper %}
+<form id="optimise-form-id" method="POST">
+    {% crispy form %}
+    {% crispy formset formset_helper %}
+    <div class="pull-left">
+        <input id="submit-id-submit" class="btn btn-default" type="submit" value="{% trans 'Solve' %}" name="Submit">
+    </div>
+</form>
+
+<br/><br/>
+{% if error %}
+    <div class="alert alert-danger col-md-6">{{ error }}</div>
+{% endif %}
 
 {% if results %}
-    <ul>
+    <div class="row"><ul>
+        <li>{% trans "Solution type: " %} {{ solver.StatusName }}</li>
+        <li>{% trans "Computation time: " %} {{ solver.WallTime }} sec. ({{ solver.NumBranches }} {% trans "branches" %}, {{ solver.NumConflicts }} {% trans "conflicts" %})</li>
         <li>{% trans "Total score: " %} {{ total_score }}</li>
         {% for score_name, score_value in scores %}
         <li>{{ score_name}} = {{ score_value }}</li>
         {% endfor %}
-    </ul>
+    </ul></div>
 
 <table class="table table-striped table-hover table-pydici-extra-condensed" id="pdc_optim_table">
     <thead>
         <td>{% trans "Mission" %}</td>
         <td>{% trans "Consultant" %}</td>
-        {% for month in results_month %}
-            <td>{{ month }}</td>
+        {% for month in staffing_dates %}
+            <td>{{ month.1 }}</td>
         {% endfor %}
     </thead>
     <tbody>

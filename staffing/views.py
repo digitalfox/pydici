@@ -13,11 +13,13 @@ import codecs
 from collections import defaultdict
 
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
 from django.contrib.admin.models import LogEntry, ADDITION,CHANGE, ContentType
 from django.forms.models import inlineformset_factory
+from django.forms import formset_factory
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
 from django.urls import reverse, reverse_lazy
@@ -49,7 +51,7 @@ from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMi
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
     timesheet_report_data, check_missions_limited_mode
-from staffing.forms import MissionForm, MissionAutomaticStaffingForm, OptimiserForm
+from staffing.forms import MissionForm, MissionAutomaticStaffingForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, display_solver_solution
 from people.utils import get_team_scopes
 from crm.utils import get_subsidiary_from_session
@@ -1584,61 +1586,90 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 def optimise_pdc(request):
     """Propose optimised mission staffing according to business rules"""
     staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in
-                      staffingDates(format="datetime", n=12)]
+                      staffingDates(format="datetime", n=8)]
     scores_data = []
     total_score = -1
     results = []
-    results_month = []
+    error = ""
+    MissionOptimiserFormset = formset_factory(MissionOptimiserForm, extra=3)
+    solver = None
 
     if request.method == "POST":  # If the form has been submitted...
-        form = OptimiserForm(request.POST, staffing_dates=staffing_dates)
-        if form.is_valid():  # All validation rules pass
+        form = OptimiserForm(request.POST)
+        formset = MissionOptimiserFormset(request.POST, form_kwargs={"staffing_dates": staffing_dates})
+        if form.is_valid() and formset.is_valid():  # All validation rules pass
             # Process the data in form.cleaned_data
             consultants_t = [c.trigramme for c in form.cleaned_data["consultants"]]
-            missions_id = [m.mission_id() for m in form.cleaned_data["missions"]]
-            results_month = form.cleaned_data["staffing_dates"]
+            #results_month = form.cleaned_data["staffing_dates"]
             # hard code some parameters still not bounded to form
-            predefined_assignment = {}
+
             solver_param = {}
-            # generate fake charge and freetime for now. #TODO: get real data
+            # generate fake freetime for now. #TODO: get real data
             consultants_freetime = {}
             for consultant in form.cleaned_data["consultants"]:
-                consultants_freetime[consultant.trigramme] = { month:20 for month in results_month}
+                consultants_freetime[consultant.trigramme] = { month[1]:20 for month in staffing_dates}
             missions_charge = {}
-            for mission in form.cleaned_data["missions"]:
-                missions_charge[mission.mission_id()] = { month:10 for month in results_month}
+            predefined_assignment = {}
+            missions_id = []
+            for mission_form in formset.cleaned_data:
+                if mission_form:
+                    missions_charge[mission_form["mission"].mission_id()] = { month[1]:mission_form["charge_%s" % month[1]] or 0 for month in staffing_dates}
+                    missions_id.append(mission_form["mission"].mission_id())
+                    if mission_form["predefined_assignment"]:
+                        predefined_assignment[mission_form["mission"].mission_id()] = [c.trigramme for c in mission_form["predefined_assignment"]]
+                        if not set(c.trigramme for c in mission_form["predefined_assignment"]).issubset(set(c.trigramme for c in form.cleaned_data["consultants"])):
+                            error = _("Predefined assignment must be in consultant list")
 
-            solver, status, scores, staffing = solve_pdc(consultants_t,
-                                                          [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level > 2],
-                                                          missions_id,
-                                                          results_month,
-                                                          missions_charge, consultants_freetime, predefined_assignment,
-                                                          solver_param)
-            display_solver_solution(solver, status, scores, staffing, consultants_t,
-                                    missions_id, results_month,
-                                    missions_charge, consultants_freetime)
-            scores_data = [(score.Name(), solver.Value(score)) for score in scores]
-            total_score = sum(solver.Value(score) for score in scores)
-            for mission in missions_id:
-                for consultant in consultants_t:
-                    charges = [str(solver.Value(staffing[consultant][mission][month])) for month in results_month]
-                    results.append([mission, consultant, *charges])
-                all_charges = []
-                for month in results_month:
-                    mission_charge = sum(solver.Value(staffing[consultant][mission][month]) for consultant in consultants_t)
-                    all_charges.append("%s/%s\t" % (mission_charge, missions_charge[mission][month]))
-                results.append([mission, _("All"), *all_charges])
+            if not error:
+                solver, status, scores, staffing = solve_pdc(consultants_t,
+                                                              [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level > 2],
+                                                              missions_id,
+                                                              [month[1] for month in staffing_dates],
+                                                              missions_charge, consultants_freetime, predefined_assignment,
+                                                              solver_param)
+                if status:
+                    display_solver_solution(solver, scores, staffing, consultants_t,
+                                        missions_id, [month[1] for month in staffing_dates],
+                                        missions_charge, consultants_freetime)
+                    scores_data = [(score.Name(), solver.Value(score)) for score in scores]
+                    total_score = sum(solver.Value(score) for score in scores)
+                    for mission in missions_id:
+                        for consultant in consultants_t:
+                            charges = [solver.Value(staffing[consultant][mission][month[1]]) for month in staffing_dates]
+                            if sum(charges) > 0:
+                                results.append([mission, consultant, *charges])
+                        all_charges = []
+                        for month in staffing_dates:
+                            mission_charge = sum(solver.Value(staffing[consultant][mission][month[1]]) for consultant in consultants_t)
+                            all_charges.append("%s/%s\t" % (mission_charge, missions_charge[mission][month[1]]))
+                        results.append([mission, _("All"), *all_charges])
+                    for consultant in consultants_t:
+                        all_charges = []
+                        for month in staffing_dates:
+                            consultant_charge = sum(
+                                solver.Value(staffing[consultant][mission][month[1]]) for mission in missions_id)
+                            all_charges.append("%s/%s" % (consultant_charge, consultants_freetime[consultant][month[1]]))
+                        results.append([_("All"), consultant, *all_charges])
+
+                else:
+                    error = _("There's no solution. Add consultants, increase duration or deactivate some rules.")
     else:
         # An unbound form
-        form = OptimiserForm(staffing_dates=staffing_dates)
+        form = OptimiserForm()
+        formset = MissionOptimiserFormset(form_kwargs={"staffing_dates": staffing_dates})
 
+    #1/0
     return render(request, "staffing/optimise_pdc.html",
                   {"form": form,
+                   "formset": formset,
+                   "formset_helper": MissionOptimiserFormsetHelper(),
                    "scores": scores_data,
                    "total_score": total_score,
                    "results": results,
+                   "error": error,
                    "missions": missions,
-                   "results_month": results_month})
+                   "solver" : solver,
+                   "staffing_dates": staffing_dates})
 
 
 @pydici_non_public
