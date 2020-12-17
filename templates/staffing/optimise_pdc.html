@@ -22,7 +22,7 @@
 {% if results %}
     <div class="row"><ul>
         <li>{% trans "Solution type: " %} {{ solver.StatusName }}</li>
-        <li>{% trans "Computation time: " %} {{ solver.WallTime }} sec. ({{ solver.NumBranches }} {% trans "branches" %}, {{ solver.NumConflicts }} {% trans "conflicts" %})</li>
+        <li>{% trans "Computation time: " %} {{ solver.WallTime|floatformat:-3 }} sec. ({{ solver.NumBranches }} {% trans "branches" %}, {{ solver.NumConflicts }} {% trans "conflicts" %})</li>
         <li>{% trans "Total score: " %} {{ total_score }}</li>
         {% for score_name, score_value in scores %}
         <li>{{ score_name}} = {{ score_value }}</li>

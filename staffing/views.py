@@ -13,7 +13,6 @@ import codecs
 from collections import defaultdict
 
 from django.core.cache import cache
-from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
@@ -52,7 +51,7 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
     timesheet_report_data, check_missions_limited_mode
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
-from staffing.optim import solve_pdc, display_solver_solution
+from staffing.optim import solve_pdc, solver_solution_format
 from people.utils import get_team_scopes
 from crm.utils import get_subsidiary_from_session
 
@@ -1599,58 +1598,41 @@ def optimise_pdc(request):
         formset = MissionOptimiserFormset(request.POST, form_kwargs={"staffing_dates": staffing_dates})
         if form.is_valid() and formset.is_valid():  # All validation rules pass
             # Process the data in form.cleaned_data
-            consultants_t = [c.trigramme for c in form.cleaned_data["consultants"]]
             # hard code some parameters still not bounded to form
             solver_param = {}
             # generate fake freetime for now. #TODO: get real data
             consultants_freetime = {}
             for consultant in form.cleaned_data["consultants"]:
-                consultants_freetime[consultant.trigramme] = { month[1]:20 for month in staffing_dates}
+                consultants_freetime[consultant.trigramme] = {month[1]:20 for month in staffing_dates}
             missions_charge = {}
             predefined_assignment = {}
+            missions = []
             missions_id = []
             for mission_form in formset.cleaned_data:
                 if mission_form:
-                    missions_charge[mission_form["mission"].mission_id()] = { month[1]:mission_form["charge_%s" % month[1]] or 0 for month in staffing_dates}
+                    missions_charge[mission_form["mission"].mission_id()] = {month[1]:mission_form["charge_%s" % month[1]] or 0 for month in staffing_dates}
                     missions_id.append(mission_form["mission"].mission_id())
+                    missions.append(mission_form["mission"])
                     if mission_form["predefined_assignment"]:
                         predefined_assignment[mission_form["mission"].mission_id()] = [c.trigramme for c in mission_form["predefined_assignment"]]
                         if not set(c.trigramme for c in mission_form["predefined_assignment"]).issubset(set(c.trigramme for c in form.cleaned_data["consultants"])):
                             error = _("Predefined assignment must be in consultant list")
 
             if not error:
-                solver, status, scores, staffing = solve_pdc(consultants_t,
+                solver, status, scores, staffing = solve_pdc([c.trigramme for c in form.cleaned_data["consultants"]],
                                                               [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level > 2],
                                                               missions_id,
                                                               [month[1] for month in staffing_dates],
                                                               missions_charge, consultants_freetime, predefined_assignment,
                                                               solver_param)
                 if status:
-                    display_solver_solution(solver, scores, staffing, consultants_t,
-                                        missions_id, [month[1] for month in staffing_dates],
-                                        missions_charge, consultants_freetime)
                     scores_data = [(score.Name(), solver.Value(score)) for score in scores]
                     total_score = sum(solver.Value(score) for score in scores)
-                    for mission in missions_id:
-                        for consultant in consultants_t:
-                            charges = [solver.Value(staffing[consultant][mission][month[1]]) for month in staffing_dates]
-                            if sum(charges) > 0:
-                                results.append([mission, consultant, *charges])
-                        all_charges = []
-                        for month in staffing_dates:
-                            mission_charge = sum(solver.Value(staffing[consultant][mission][month[1]]) for consultant in consultants_t)
-                            all_charges.append("%s/%s\t" % (mission_charge, missions_charge[mission][month[1]]))
-                        results.append([mission, _("All"), *all_charges])
-                    for consultant in consultants_t:
-                        all_charges = []
-                        for month in staffing_dates:
-                            consultant_charge = sum(
-                                solver.Value(staffing[consultant][mission][month[1]]) for mission in missions_id)
-                            all_charges.append("%s/%s" % (consultant_charge, consultants_freetime[consultant][month[1]]))
-                        results.append([_("All"), consultant, *all_charges])
+                    results = solver_solution_format(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates,
+                                                     missions_charge, consultants_freetime)
                 else:
                     error = _("There's no solution. Add consultants, increase duration or deactivate some rules.")
-            # recreate a new formset for further editing
+            # recreate a new formset for further editing, based on previous one, removing previous extra forms
             formset = MissionOptimiserFormset(initial=[i for i in formset.cleaned_data if i], form_kwargs={"staffing_dates": staffing_dates})
     else:
         # An unbound form

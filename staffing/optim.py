@@ -7,6 +7,9 @@ Optimisation tools for pydici staffing module
 
 from ortools.sat.python import cp_model
 
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
+
 
 def solve_pdc(consultants, senior_consultants, missions, months, missions_charge, consultants_freetime, predefined_assignment,
               solver_param=None):
@@ -147,6 +150,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
 
 
 def display_solver_solution(solver, scores, staffing, consultants, missions, months, missions_charge, consultants_freetime):
+    """Display on stdout solver solution. For test and dev process only"""
     for score in scores:
         print("%s = %s" % (score.Name(), solver.Value(score)))
     print("Total score = %s" % (sum(solver.Value(score) for score in scores)))
@@ -170,3 +174,30 @@ def display_solver_solution(solver, scores, staffing, consultants, missions, mon
             print("%s/%s\t" % (consultant_charge, consultants_freetime[consultant][month]), end="")
         print()
 
+def solver_solution_format(solver, staffing, consultants, missions, staffing_dates, missions_charge, consultants_freetime):
+    """Prepare solver solution an array for template rendering"""
+    results = []
+    for mission in missions:
+        mission_id = mission.mission_id()
+        mission_link = mark_safe("<a href='%s'>%s</a>" % (mission.get_absolute_url(), str(mission)))
+        for consultant in consultants:
+            charges = [solver.Value(staffing[consultant.trigramme][mission_id][month[1]]) for month in staffing_dates]
+            if sum(charges) > 0:
+                results.append([mission_link, consultant, *charges])
+        all_charges = []
+        results.append([""] * (len(staffing_dates) + 2))
+        for month in staffing_dates:
+            mission_charge = sum(solver.Value(staffing[consultant.trigramme][mission_id][month[1]]) for consultant in consultants)
+            all_charges.append("%s/%s\t" % (mission_charge, missions_charge[mission_id][month[1]]))
+        results.append([mission_link, _("All"), *all_charges])
+        results.append([""] * (len(staffing_dates) + 2))
+        results.append([mark_safe("&nbsp;")] * (len(staffing_dates) + 2))
+    for consultant in consultants:
+        all_charges = []
+        for month in staffing_dates:
+            consultant_charge = sum(
+                solver.Value(staffing[consultant.trigramme][mission_id][month[1]]) for mission in missions)
+            all_charges.append("%s/%s" % (consultant_charge, consultants_freetime[consultant.trigramme][month[1]]))
+        results.append([_("All missions"), consultant, *all_charges])
+
+    return results
