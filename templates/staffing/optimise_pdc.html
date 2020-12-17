@@ -24,19 +24,21 @@
         <li>{% trans "Solution type: " %} {{ solver.StatusName }}</li>
         <li>{% trans "Computation time: " %} {{ solver.WallTime|floatformat:-3 }} sec. ({{ solver.NumBranches }} {% trans "branches" %}, {{ solver.NumConflicts }} {% trans "conflicts" %})</li>
         <li>{% trans "Total score: " %} {{ total_score }}</li>
-        {% for score_name, score_value in scores %}
-        <li>{{ score_name}} = {{ score_value }}</li>
-        {% endfor %}
+        <ul>{% for score_name, score_value in scores %}
+            <li>{{ score_name}} = {{ score_value }}</li>
+            {% endfor %}
+        </ul>
     </ul></div>
 
 <table class="table table-striped table-hover table-pydici-extra-condensed" id="pdc_optim_table">
     <thead>
-        <td>{% trans "Mission" %}</td>
-        <td>{% trans "Consultant" %}</td>
+    <tr>
+        <th>{% trans "Mission" %}</th>
+        <th>{% trans "Consultant" %}</th>
         {% for month in staffing_dates %}
-            <td>{{ month.1 }}</td>
+            <th style="text-align: left">{{ month.1 }}</th>
         {% endfor %}
-    </thead>
+    </tr></thead>
     <tbody>
         {% for row in results %}
             <tr>
@@ -47,6 +49,8 @@
         {% endfor %}
     </tbody>
 </table>
+
+
 
 {% endif %}
 {% endblock %}

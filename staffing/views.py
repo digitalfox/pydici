@@ -51,7 +51,7 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
     timesheet_report_data, check_missions_limited_mode
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
-from staffing.optim import solve_pdc, solver_solution_format
+from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime
 from people.utils import get_team_scopes
 from crm.utils import get_subsidiary_from_session
 
@@ -1596,14 +1596,9 @@ def optimise_pdc(request):
     if request.method == "POST":
         form = OptimiserForm(request.POST)
         formset = MissionOptimiserFormset(request.POST, form_kwargs={"staffing_dates": staffing_dates})
-        if form.is_valid() and formset.is_valid():  # All validation rules pass
+        if form.is_valid() and formset.is_valid():
             # Process the data in form.cleaned_data
-            # hard code some parameters still not bounded to form
             solver_param = {}
-            # generate fake freetime for now. #TODO: get real data
-            consultants_freetime = {}
-            for consultant in form.cleaned_data["consultants"]:
-                consultants_freetime[consultant.trigramme] = {month[1]:20 for month in staffing_dates}
             missions_charge = {}
             predefined_assignment = {}
             missions = []
@@ -1618,6 +1613,7 @@ def optimise_pdc(request):
                         if not set(c.trigramme for c in mission_form["predefined_assignment"]).issubset(set(c.trigramme for c in form.cleaned_data["consultants"])):
                             error = _("Predefined assignment must be in consultant list")
 
+            consultants_freetime = compute_consultant_freetime(form.cleaned_data["consultants"], missions, staffing_dates)
             if not error:
                 solver, status, scores, staffing = solve_pdc([c.trigramme for c in form.cleaned_data["consultants"]],
                                                               [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level > 2],

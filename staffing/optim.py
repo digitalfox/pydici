@@ -9,6 +9,10 @@ from ortools.sat.python import cp_model
 
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+from django.db.models import Sum
+
+from core.utils import working_days
+from staffing.models import Holiday
 
 
 def solve_pdc(consultants, senior_consultants, missions, months, missions_charge, consultants_freetime, predefined_assignment,
@@ -174,6 +178,7 @@ def display_solver_solution(solver, scores, staffing, consultants, missions, mon
             print("%s/%s\t" % (consultant_charge, consultants_freetime[consultant][month]), end="")
         print()
 
+
 def solver_solution_format(solver, staffing, consultants, missions, staffing_dates, missions_charge, consultants_freetime):
     """Prepare solver solution an array for template rendering"""
     results = []
@@ -196,8 +201,23 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
         all_charges = []
         for month in staffing_dates:
             consultant_charge = sum(
-                solver.Value(staffing[consultant.trigramme][mission_id][month[1]]) for mission in missions)
+                solver.Value(staffing[consultant.trigramme][mission.mission_id()][month[1]]) for mission in missions)
             all_charges.append("%s/%s" % (consultant_charge, consultants_freetime[consultant.trigramme][month[1]]))
         results.append([_("All missions"), consultant, *all_charges])
 
     return results
+
+
+def compute_consultant_freetime(consultants, missions, months):
+    """Compute freetime except for missions we want to plan"""
+    freetime = {}
+    holidays_days = Holiday.objects.all().values_list("day", flat=True)
+    wdays = {month[0]: working_days(month[0], holidays_days) for month in months}
+    for consultant in consultants:
+        freetime[consultant.trigramme] = {}
+        for month in months:
+            current_staffings = consultant.staffing_set.filter(staffing_date=month[0], mission__probability__gt=0).exclude(mission__in=(missions))
+            charge = current_staffings.aggregate(Sum("charge"))["charge__sum"] or 0
+            freetime[consultant.trigramme][month[1]] = int(wdays[month[0]] - charge)
+    
+    return freetime
