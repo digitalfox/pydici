@@ -446,18 +446,15 @@ class MissionOptimiserForm(forms.Form):
         self.fields["predefined_assignment"] = forms.ModelMultipleChoiceField(required=False, widget=ConsultantMChoices, queryset=Consultant.objects.filter(active=True))
 
     def clean(self):
-        mission = self.cleaned_data["mission"]
-        if sum(self.cleaned_data["charge_%s" % month[1]] or 0 for month in self.staffing_dates) == 0:
+        mission = self.cleaned_data.get("mission")
+        if mission and sum(self.cleaned_data["charge_%s" % month[1]] or 0 for month in self.staffing_dates) == 0:
             # Charge is not defined. Get it from staffing
             charge = Staffing.objects.filter(mission=mission, staffing_date__gte=self.staffing_dates[0][0]).aggregate(Sum("charge"))["charge__sum"] or 0
             if charge > 0:
                 for month in self.staffing_dates:
                     c = Staffing.objects.filter(mission=mission, staffing_date=month[0]).aggregate(
                         Sum("charge"))["charge__sum"]
-                    c = int(c or 0)  # Solver only work with integer
-                    self.cleaned_data["charge_%s" % month[1]] = c
-                    self.data = self.data.copy()  # Make it writable since we *do* modified data
-                    self.data[self.add_prefix("charge_%s" % month[1])] = c  # Use prefix for data dict as we are in a formset
+                    self.cleaned_data["charge_%s" % month[1]] = int(c or 0)  # Solver only work with integer
             elif mission.price:
                 # No staffing defined... infer something from mission price
                 days = int(mission.price)  # yes, 1 day is 1k€ as a rough estimation
@@ -466,10 +463,7 @@ class MissionOptimiserForm(forms.Form):
                     if i > duration or i > 7:
                         # Stop planning after guessed duration of 8 month
                         break
-                    c = int(days / duration)
-                    self.cleaned_data["charge_%s" % month[1]] = c
-                    self.data = self.data.copy()  # Make it writable since we *do* modified data
-                    self.data[self.add_prefix("charge_%s" % month[1])] = c  # Use prefix for data dict as we are in a formset
+                    self.cleaned_data["charge_%s" % month[1]] = int(days / duration)
 
         return self.cleaned_data
 

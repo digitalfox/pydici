@@ -1594,15 +1594,13 @@ def optimise_pdc(request):
     MissionOptimiserFormset = formset_factory(MissionOptimiserForm, extra=3)
     solver = None
 
-    if request.method == "POST":  # If the form has been submitted...
+    if request.method == "POST":
         form = OptimiserForm(request.POST)
         formset = MissionOptimiserFormset(request.POST, form_kwargs={"staffing_dates": staffing_dates})
         if form.is_valid() and formset.is_valid():  # All validation rules pass
             # Process the data in form.cleaned_data
             consultants_t = [c.trigramme for c in form.cleaned_data["consultants"]]
-            #results_month = form.cleaned_data["staffing_dates"]
             # hard code some parameters still not bounded to form
-
             solver_param = {}
             # generate fake freetime for now. #TODO: get real data
             consultants_freetime = {}
@@ -1650,15 +1648,15 @@ def optimise_pdc(request):
                                 solver.Value(staffing[consultant][mission][month[1]]) for mission in missions_id)
                             all_charges.append("%s/%s" % (consultant_charge, consultants_freetime[consultant][month[1]]))
                         results.append([_("All"), consultant, *all_charges])
-
                 else:
                     error = _("There's no solution. Add consultants, increase duration or deactivate some rules.")
+            # recreate a new formset for further editing
+            formset = MissionOptimiserFormset(initial=[i for i in formset.cleaned_data if i], form_kwargs={"staffing_dates": staffing_dates})
     else:
         # An unbound form
         form = OptimiserForm()
         formset = MissionOptimiserFormset(form_kwargs={"staffing_dates": staffing_dates})
 
-    #1/0
     return render(request, "staffing/optimise_pdc.html",
                   {"form": form,
                    "formset": formset,
