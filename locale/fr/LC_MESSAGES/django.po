@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-13 15:32+0100\n"
-"PO-Revision-Date: 2020-12-13 15:31+0100\n"
+"POT-Creation-Date: 2020-12-17 16:26+0100\n"
+"PO-Revision-Date: 2020-12-17 16:25+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -845,13 +845,13 @@ msgstr "Adresse de facturation"
 msgid "%s (inactive)"
 msgstr "%s (inactif)"
 
+#: crm/forms.py:134 crm/forms.py:158
+msgid "Leave blank to use company vat id"
+msgstr "Laissez vide pour utiliser le n° de TVA de la société"
+
 #: crm/forms.py:148
 msgid "Leave blank to use standard name"
 msgstr "Laissez vide pour utiliser le nom standard"
-
-#: crm/forms.py:158
-msgid "Leave blank to use company vat id"
-msgstr "Laissez vide pour utiliser le n° de TVA de la société"
 
 #: crm/forms.py:180 crm/models.py:140
 msgid "Client organisation"
@@ -3625,7 +3625,7 @@ msgstr "Aucune note de frais"
 
 #: templates/expense/expense_payment_detail.html:16
 msgid "Expense payment detail"
-msgstr "Délai du remboursement de frais"
+msgstr "Détail du remboursement de frais"
 
 #: templates/expense/expense_payment_detail.html:21
 msgid "Expenses of payment n°"
