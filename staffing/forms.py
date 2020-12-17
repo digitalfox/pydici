@@ -261,6 +261,7 @@ class MissionAdminForm(PydiciCrispyModelForm):
         fields = ('lead',)
         widgets = { "lead" : LeadChoices }
 
+
 class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""
 
@@ -484,6 +485,11 @@ class OptimiserForm(forms.Form):
         self.helper.form_tag = False
 
         self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.filter(active=True), required=False)
+        self.fields["create_staffing"] = forms.BooleanField(label="Create staffing", required=False)
+        self.fields["senior_quota"] = forms.IntegerField(label=_("Senior min. quota (%)"), initial=20)
+        self.fields["newbie_quota"] = forms.IntegerField(label=_("Newbie min. quota (%)"), initial=30)
 
-        #self.helper.layout = Layout(Div(Column("consultants"),
-        #                                css_class='row'))
+        self.helper.layout = Layout(Div(Column("consultants", css_class="col-md-6"),
+                                        Column(Row(Column("senior_quota", css_class="col-md-6"), Column("newbie_quota", css_class="col-md-6")),
+                                               "create_staffing", css_class="col-md-6"),
+                                        css_class='row'))

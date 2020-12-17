@@ -1598,7 +1598,8 @@ def optimise_pdc(request):
         formset = MissionOptimiserFormset(request.POST, form_kwargs={"staffing_dates": staffing_dates})
         if form.is_valid() and formset.is_valid():
             # Process the data in form.cleaned_data
-            solver_param = {}
+            solver_param = {"senior_quota": int(form["senior_quota"].value()),
+                            "newbie_quota": int(form["newbie_quota"].value()),}
             missions_charge = {}
             predefined_assignment = {}
             missions = []
@@ -1643,7 +1644,6 @@ def optimise_pdc(request):
                    "total_score": total_score,
                    "results": results,
                    "error": error,
-                   "missions": missions,
                    "solver" : solver,
                    "staffing_dates": staffing_dates})
 
