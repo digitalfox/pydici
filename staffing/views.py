@@ -1599,7 +1599,8 @@ def optimise_pdc(request):
         if form.is_valid() and formset.is_valid():
             # Process the data in form.cleaned_data
             solver_param = {"senior_quota": int(form["senior_quota"].value()),
-                            "newbie_quota": int(form["newbie_quota"].value()),}
+                            "newbie_quota": int(form["newbie_quota"].value()),
+                            "planning_weight": int(form["planning_weight"].value()),}
             missions_charge = {}
             predefined_assignment = {}
             missions = []

@@ -488,8 +488,9 @@ class OptimiserForm(forms.Form):
         self.fields["create_staffing"] = forms.BooleanField(label="Create staffing", required=False)
         self.fields["senior_quota"] = forms.IntegerField(label=_("Senior min. quota (%)"), initial=20)
         self.fields["newbie_quota"] = forms.IntegerField(label=_("Newbie min. quota (%)"), initial=30)
+        self.fields["planning_weight"] = forms.ChoiceField(label=_("Mission planning weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
 
         self.helper.layout = Layout(Div(Column("consultants", css_class="col-md-6"),
                                         Column(Row(Column("senior_quota", css_class="col-md-6"), Column("newbie_quota", css_class="col-md-6")),
-                                               "create_staffing", css_class="col-md-6"),
+                                               "planning_weight", "create_staffing", css_class="col-md-6"),
                                         css_class='row'))

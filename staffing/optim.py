@@ -22,6 +22,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
         solver_param = {}
     senior_quota = solver_param.get("senior_quota", 20)
     newbie_quota = solver_param.get("newbie_quota", 30)
+    planning_weight = solver_param.get("planning_weight", 1)
 
     # CP-SAT model
     model = cp_model.CpModel()
@@ -106,15 +107,15 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     people_per_mission_score_items = []
 
     # respect mission planning
-    for mission in missions:
-        for month in months:
-            if missions_charge[mission][month] > 0:
-                # add score if planning is not respected
-                planning_score_items.append(staffing_mission_delta[mission][month])
-                pass
-            else:
-                # add twice penalty when charge is used outside forecast (late or too early work)
-                planning_score_items.append(2 * sum(staffing[consultant][mission][month] for consultant in consultants))
+    if planning_weight > 0:
+        for mission in missions:
+            for month in months:
+                if missions_charge[mission][month] > 0:
+                    # add score if planning is not respected
+                    planning_score_items.append(planning_weight * staffing_mission_delta[mission][month])
+                else:
+                    # add twice penalty when charge is used outside forecast (late or too early work)
+                    planning_score_items.append(planning_weight * 2 * sum(staffing[consultant][mission][month] for consultant in consultants))
 
     for consultant in consultants:
         for month in months:
