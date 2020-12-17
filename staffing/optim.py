@@ -22,36 +22,26 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     staffing = {}  # Per month
     staffing_b = {}  # Bool indicating if consultant is staffed  (ie staffing >0) by month on this mission
     staffing_b_all = {}  # Bool indicating if consultant is staffed on this mission
-    staffing_cum = {}  # cumulative staffing since mission beginning
     staffing_mission_delta = {}  # Delta between proposition and forecast for mission/month
     for consultant in consultants:
         if consultant not in staffing:
             staffing[consultant] = {}
             staffing_b[consultant] = {}
             staffing_b_all[consultant] = {}
-            staffing_cum[consultant] = {}
         for mission in missions:
             if mission not in staffing[consultant]:
                 staffing[consultant][mission] = {}
                 staffing_b[consultant][mission] = {}
-                staffing_cum[consultant][mission] = {}
             for month in months:
                 # Define vars
                 staffing[consultant][mission][month] = model.NewIntVar(0, consultants_freetime[consultant][month],
                                                                        "staffing[%s,%s,%s]" % (consultant, mission, month))
                 staffing_b[consultant][mission][month] = model.NewBoolVar(
                     "staffing_b[%s,%s,%s]" % (consultant, mission, month))
-                staffing_cum[consultant][mission][month] = model.NewIntVar(0,
-                                                                           sum(consultants_freetime[consultant].values()),
-                                                                           "staffing_cum[%s,%s,%s]" % (
-                                                                           consultant, mission, month))
                 # Links vars staffing and staffing_b
                 model.Add(staffing[consultant][mission][month] > 0).OnlyEnforceIf(staffing_b[consultant][mission][month])
                 model.Add(staffing[consultant][mission][month] == 0).OnlyEnforceIf(
                     staffing_b[consultant][mission][month].Not())
-                # Links vars staffing and staffing_cum
-                model.Add(sum(staffing[consultant][mission][month] for month in months[:months.index(month) + 1]) ==
-                          staffing_cum[consultant][mission][month])
 
             # Define vars staffing_b_all
             staffing_b_all[consultant][mission] = model.NewBoolVar("staffing_b_all[%s,%s]" % (consultant, mission))
@@ -80,8 +70,8 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
         for month in months:
             charge = sum(staffing[consultant][mission][month] for consultant in consultants if consultant not in senior_consultants)
             lead_charge = sum(staffing[consultant][mission][month] for consultant in senior_consultants)
-            model.Add((charge + lead_charge) * newbie_quota < charge * 100)
-            model.Add((charge + lead_charge) * senior_quota < lead_charge * 100)
+            model.Add((charge + lead_charge) * newbie_quota <= charge * 100)
+            model.Add((charge + lead_charge) * senior_quota <= lead_charge * 100)
 
     # All missions are done, but not overshoot
     for mission in missions:
@@ -97,7 +87,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
             model.Add(sum(staffing[consultant][mission][month] for mission in missions) <= consultants_freetime[consultant][
                 month])
 
-    # We have predefined asignment
+    # We have predefined assignment
     for mission, assigned_consultants in predefined_assignment.items():
         for consultant in assigned_consultants:
             model.Add(sum(staffing[consultant][mission][month] for month in months) > 0)
@@ -111,9 +101,6 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     # respect mission planning
     for mission in missions:
         for month in months:
-            consultant_charge_cum = sum(staffing_cum[consultant][mission][month] for consultant in consultants)
-            mission_charge_cum = sum(missions_charge[mission][month] for month in months[:months.index(month) + 1])
-            # print("%s %s %s" % (mission, month, mission_charge_cum))
             if missions_charge[mission][month] > 0:
                 # add score if planning is not respected
                 planning_score_items.append(staffing_mission_delta[mission][month])
@@ -124,16 +111,18 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
 
     for consultant in consultants:
         for month in months:
-            # reduce free time
-            charge = sum(staffing[consultant][mission][month] for mission in missions)
-            freetime_score_items.append(consultants_freetime[consultant][month] - charge)
-            # limit number of mission per people
-            mission_per_people_score_items.append(sum(staffing_b[consultant][mission][month] for mission in missions))
+            # optimise freetime and mission per people only if we have stuff to do
+            if sum(missions_charge[mission][month] for mission in missions) > 0:
+                # reduce free time for newbies, not for senior consultants
+                if consultant not in senior_consultants:
+                    charge = sum(staffing[consultant][mission][month] for mission in missions)
+                    freetime_score_items.append(consultants_freetime[consultant][month] - charge)
+                # limit number of mission per people
+                mission_per_people_score_items.append(sum(staffing_b[consultant][mission][month] for mission in missions))
 
     # limit number of people per mission
     for mission in missions:
         people_per_mission_score_items.append(sum(staffing_b_all[consultant][mission] for consultant in consultants))
-        pass
 
     # Optim part
     # Define intermediate score
@@ -152,15 +141,12 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
 
     # Solve it
     solver = cp_model.CpSolver()
-    status = solver.Solve(model)
+    solver.parameters.max_time_in_seconds = 10.0 # Limit to 10 secs
+    status = solver.Solve(model) in (cp_model.OPTIMAL, cp_model.FEASIBLE)
     return (solver, status, [planning_score, freetime_score, people_per_mission_score, mission_per_people_score], staffing)
 
 
-def display_solver_solution(solver, status, scores, staffing, consultants, missions, months, missions_charge, consultants_freetime):
-    if status != cp_model.OPTIMAL and status != cp_model.FEASIBLE:
-        print("No solution found. Sorry")
-        return
-
+def display_solver_solution(solver, scores, staffing, consultants, missions, months, missions_charge, consultants_freetime):
     for score in scores:
         print("%s = %s" % (score.Name(), solver.Value(score)))
     print("Total score = %s" % (sum(solver.Value(score) for score in scores)))
