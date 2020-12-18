@@ -1600,7 +1600,10 @@ def optimise_pdc(request):
             # Process the data in form.cleaned_data
             solver_param = {"senior_quota": int(form["senior_quota"].value()),
                             "newbie_quota": int(form["newbie_quota"].value()),
-                            "planning_weight": int(form["planning_weight"].value()),}
+                            "planning_weight": int(form["planning_weight"].value()),
+                            "freetime_weight": int(form["freetime_weight"].value()),
+                            "mission_per_people_weight": int(form["mission_per_people_weight"].value()),
+                            "people_per_mission_weight": int(form["people_per_mission_weight"].value()),}
             missions_charge = {}
             predefined_assignment = {}
             missions = []

@@ -172,5 +172,5 @@ class OptimTest(TestCase):
     def test_optim(self):
         solver, status, scores, staffing = solve_pdc(self.consultants, self.senior_consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime, self.predefined_assignment,
                       solver_param={})
-        display_solver_solution(solver, status, scores, staffing, self.consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime)
-        self.assertEqual((sum(solver.Value(score) for score in scores)), 76)
+        display_solver_solution(solver, scores, staffing, self.consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime)
+        self.assertEqual((sum(solver.Value(score) for score in scores)), 26)

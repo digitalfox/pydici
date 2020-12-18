@@ -23,6 +23,9 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     senior_quota = solver_param.get("senior_quota", 20)
     newbie_quota = solver_param.get("newbie_quota", 30)
     planning_weight = solver_param.get("planning_weight", 1)
+    mission_per_people_weight = solver_param.get("mission_per_people_weight", 1)
+    people_per_mission_weight = solver_param.get("people_per_mission_weight", 1)
+    freetime_weight = solver_param.get("freetime_weight", 1)
 
     # CP-SAT model
     model = cp_model.CpModel()
@@ -112,17 +115,17 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
             for month in months:
                 if missions_charge[mission][month] > 0:
                     # add score if planning is not respected
-                    planning_score_items.append(planning_weight * staffing_mission_delta[mission][month])
+                    planning_score_items.append(staffing_mission_delta[mission][month])
                 else:
                     # add twice penalty when charge is used outside forecast (late or too early work)
-                    planning_score_items.append(planning_weight * 2 * sum(staffing[consultant][mission][month] for consultant in consultants))
+                    planning_score_items.append(2 * sum(staffing[consultant][mission][month] for consultant in consultants))
 
     for consultant in consultants:
         for month in months:
             # optimise freetime and mission per people only if we have stuff to do
             if sum(missions_charge[mission][month] for mission in missions) > 0:
                 # reduce free time for newbies, not for senior consultants
-                if consultant not in senior_consultants:
+                if consultant not in senior_consultants and freetime_weight > 0:
                     charge = sum(staffing[consultant][mission][month] for mission in missions)
                     freetime_score_items.append(consultants_freetime[consultant][month] - charge)
                 # limit number of mission per people
@@ -138,10 +141,10 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     freetime_score = model.NewIntVar(0, 1000, "freetime_score")
     people_per_mission_score = model.NewIntVar(0, 1000, "people_per_mission_score")
     mission_per_people_score = model.NewIntVar(0, 1000, "mission_per_people_score")
-    model.Add(planning_score == sum(planning_score_items))
-    model.Add(freetime_score == sum(freetime_score_items))
-    model.Add(people_per_mission_score == sum(people_per_mission_score_items))
-    model.Add(mission_per_people_score == sum(mission_per_people_score_items))
+    model.Add(planning_score == planning_weight * sum(planning_score_items))
+    model.Add(freetime_score == freetime_weight * sum(freetime_score_items))
+    model.Add(people_per_mission_score == people_per_mission_weight * sum(people_per_mission_score_items))
+    model.Add(mission_per_people_score == mission_per_people_weight * sum(mission_per_people_score_items))
 
     score = planning_score + freetime_score + mission_per_people_score + people_per_mission_score
     # optimise model to have minimum score
