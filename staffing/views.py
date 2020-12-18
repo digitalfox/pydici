@@ -1632,7 +1632,7 @@ def optimise_pdc(request):
                     results = solver_solution_format(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates,
                                                      missions_charge, consultants_freetime)
                 else:
-                    error = _("There's no solution. Add consultants, increase duration or deactivate some rules.")
+                    error = _("There's no solution. Add consultants, remove mission or relax experience ratio constraint")
             # recreate a new formset for further editing, based on previous one, removing previous extra forms
             formset = MissionOptimiserFormset(initial=[i for i in formset.cleaned_data if i], form_kwargs={"staffing_dates": staffing_dates})
     else:
