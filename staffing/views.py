@@ -51,7 +51,7 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
     timesheet_report_data, check_missions_limited_mode
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
-from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime
+from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, solver_apply_forecast
 from people.utils import get_team_scopes
 from crm.utils import get_subsidiary_from_session
 
@@ -1631,6 +1631,8 @@ def optimise_pdc(request):
                     total_score = sum(solver.Value(score) for score in scores)
                     results = solver_solution_format(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates,
                                                      missions_charge, consultants_freetime)
+                    if "action_update" in request.POST:
+                        solver_apply_forecast(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates, request.user)
                 else:
                     error = _("There's no solution. Add consultants, remove mission or relax experience ratio constraint")
             # recreate a new formset for further editing, based on previous one, removing previous extra forms

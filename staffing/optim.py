@@ -5,14 +5,17 @@ Optimisation tools for pydici staffing module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+from datetime import datetime
+
 from ortools.sat.python import cp_model
 
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.db.models import Sum
+from django.db import transaction
 
 from core.utils import working_days
-from staffing.models import Holiday
+from staffing.models import Holiday, Staffing
 
 
 def solve_pdc(consultants, senior_consultants, missions, months, missions_charge, consultants_freetime, predefined_assignment,
@@ -225,3 +228,22 @@ def compute_consultant_freetime(consultants, missions, months):
             freetime[consultant.trigramme][month[1]] = int(wdays[month[0]] - charge)
     
     return freetime
+
+
+@transaction.atomic
+def solver_apply_forecast(solver, staffing, consultants, missions, staffing_dates, user):
+    """Apply solver solution to staffing forecast"""
+    now = datetime.now().replace(microsecond=0)  # Remove useless microsecond
+    for mission in missions:
+        mission_id = mission.mission_id()
+        # Remove previous staffing for this mission after first month
+        Staffing.objects.filter(mission=mission, staffing_date__gte=staffing_dates[0][0]).delete()
+        # Create new staffing according to solver solution
+        for consultant in consultants:
+            for month in staffing_dates:
+                charge = solver.Value(staffing[consultant.trigramme][mission_id][month[1]])
+                if charge > 0:
+                    s = Staffing(mission=mission, consultant=consultant,
+                                 staffing_date=month[0], charge=charge,
+                                 update_date=now, last_user=str(user))
+                    s.save()

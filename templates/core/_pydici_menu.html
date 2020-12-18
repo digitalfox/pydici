@@ -47,6 +47,7 @@
                 {% endif %}
                 {% if pydici_feature.staffing_mass %}
                     <li><a href="{% url 'staffing:mass_staffing' %}">{% trans "Mass staffing" %}</a></li>
+                    <li><a href="{% url 'staffing:optimise_pdc' %}">{% trans "Optimise workload schedule" %}</a></li>
                 {% endif %}
             </ul>
         </li>

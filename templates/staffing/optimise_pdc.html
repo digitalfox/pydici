@@ -10,7 +10,10 @@
     {% crispy form %}
     {% crispy formset formset_helper %}
     <div class="pull-left">
-        <input id="submit-id-submit" class="btn btn-default" type="submit" value="{% trans 'Solve' %}" name="Submit">
+        <button type="submit" class="btn btn-default" name="action_solve">{% trans 'Solve' %}</button>
+        {% if results and not errors %}
+            <button type="submit" class="btn btn-danger" name="action_update">{% trans 'Update forecast according to prevision' %}</button>
+        {% endif %}
     </div>
 </form>
 
