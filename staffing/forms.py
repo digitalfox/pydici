@@ -457,14 +457,18 @@ class MissionOptimiserForm(forms.Form):
                         Sum("charge"))["charge__sum"]
                     self.cleaned_data["charge_%s" % month[1]] = int(c or 0)  # Solver only work with integer
             elif mission.price:
-                # No staffing defined... infer something from mission price
-                days = int(mission.price)  # yes, 1 day is 1k€ as a rough estimation
-                duration = sqrt(days / 20) * 2  # Guess duration with square root of man.month charge as a max. Take the double for safety
-                for i, month in enumerate(self.staffing_dates):
-                    if i > duration or i > 7:
-                        # Stop planning after guessed duration of 8 month
-                        break
-                    self.cleaned_data["charge_%s" % month[1]] = int(days / duration)
+                # No staffing defined... infer something from mission remaining
+                remaining = mission.remaining()
+                rates = [i[0] for i in mission.consultant_rates().values()]
+                if remaining > 0 and rates:
+                    avg_rate = sum(rates) / len(rates) / 1000
+                    days = int(remaining / avg_rate)
+                    duration = sqrt(days / 20) * 2  # Guess duration with square root of man.month charge as a max. Take the double for safety
+                    for i, month in enumerate(self.staffing_dates):
+                        if i > duration or i > 7 or duration == 0:
+                            # Stop planning after guessed duration of 8 month
+                            break
+                        self.cleaned_data["charge_%s" % month[1]] = int(days / duration)
 
         return self.cleaned_data
 
