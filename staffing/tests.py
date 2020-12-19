@@ -162,15 +162,26 @@ class OptimTest(TestCase):
                        "M4": {"jan": 5, "feb": 10, "mar": 10},
                        }
 
+    missions_remaining = {"M1": 90000,
+                          "M2": 35000,
+                          "M3": 30000,
+                          "M4": 40000,
+                         }
+
     consultants_freetime = {"SRE": {"jan": 15, "feb": 18, "mar": 13},
                             "JCF": {"jan": 10, "feb": 15, "mar": 20},
                             "MFR": {"jan": 20, "feb": 20, "mar": 20},
                             }
+    consultants_rates = {"SRE": {"M1": 1500, "M2": 1450, "M3": 1500, "M4": 1800},
+                         "JCF": {"M1": 1600, "M2": 1350, "M3": 1500, "M4": 1700},
+                         "MFR": {"M1": 1000, "M2": 950, "M3": 1200, "M4": 1400},
+                        }
 
     predefined_assignment = {"M4": ["JCF", ]}
 
     def test_optim(self):
-        solver, status, scores, staffing = solve_pdc(self.consultants, self.senior_consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime, self.predefined_assignment,
-                      solver_param={})
+        solver, status, scores, staffing = solve_pdc(self.consultants, self.senior_consultants, self.missions, self.months,
+                                                     self.missions_charge, self.missions_remaining, self.consultants_freetime, self.predefined_assignment,
+                                                     self.consultants_rates, solver_param={})
         display_solver_solution(solver, scores, staffing, self.consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime)
-        self.assertEqual((sum(solver.Value(score) for score in scores)), 26)
+        self.assertEqual((sum(solver.Value(score) for score in scores)), 38)

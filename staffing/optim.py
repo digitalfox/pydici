@@ -18,8 +18,8 @@ from core.utils import working_days
 from staffing.models import Holiday, Staffing
 
 
-def solve_pdc(consultants, senior_consultants, missions, months, missions_charge, consultants_freetime, predefined_assignment,
-              solver_param=None):
+def solve_pdc(consultants, senior_consultants, missions, months, missions_charge, missions_remaining, consultants_freetime,
+              predefined_assignment, consultants_rates, solver_param=None):
     # default value
     if solver_param is None:
         solver_param = {}
@@ -89,11 +89,16 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
 
     # All missions are done, but not overshoot
     for mission in missions:
-        s = []
+        s_days = []
+        s_amount = []
         for month in months:
-            s.extend(staffing[consultant][mission][month] for consultant in consultants)
-
-        model.Add(sum(s) == sum(missions_charge[mission].values()))
+            s_amount.extend(staffing[consultant][mission][month]*consultants_rates[consultant][mission] for consultant in consultants)
+            s_days.extend(staffing[consultant][mission][month] for consultant in consultants)
+        min_rate = min(consultants_rates[consultant][mission] for consultant in consultants)
+        max_rate = max(consultants_rates[consultant][mission] for consultant in consultants)
+        model.Add(sum(s_amount) <= missions_remaining[mission])  # Don't overshoot mission price
+        model.Add(sum(s_days) * max_rate <= missions_remaining[mission])  # Don't overshoot planned forecast at max rate
+        model.Add(sum(s_amount) >= sum(missions_charge[mission][month] for month in months) * min_rate)  # Do the work at least at min rate for all days
 
     # Consultant have limited free time
     for consultant in consultants:
@@ -229,6 +234,20 @@ def compute_consultant_freetime(consultants, missions, months):
     
     return freetime
 
+
+def compute_consultant_rates(consultants, missions):
+    """Get or estimate consultant rates for given missions"""
+    rates = {}
+    for mission in missions:
+        mission_rates = mission.consultant_rates()
+        for consultant in consultants:
+            if consultant.trigramme not in rates:
+                rates[consultant.trigramme] = {}
+            if consultant in mission_rates:
+                rates[consultant.trigramme][mission.mission_id()] = mission_rates[consultant][0]
+            else: # use objective rate if rate is not defined at mission level
+                rates[consultant.trigramme][mission.mission_id()] = consultant.get_rate_objective(rate_type="DAILY_RATE").rate
+    return rates
 
 @transaction.atomic
 def solver_apply_forecast(solver, staffing, consultants, missions, staffing_dates, user):
