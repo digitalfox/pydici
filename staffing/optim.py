@@ -36,6 +36,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     staffing_b = {}  # Bool indicating if consultant is staffed  (ie staffing >0) by month on this mission
     staffing_b_all = {}  # Bool indicating if consultant is staffed on this mission
     staffing_mission_delta = {}  # Delta between proposition and forecast for mission/month
+    staffing_mission_global_delta = {}  # Delta between proposition and forecast for mission accross all month
     for consultant in consultants:
         if consultant not in staffing:
             staffing[consultant] = {}
@@ -64,19 +65,26 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
             model.Add(sum(staffing[consultant][mission][month] for month in months) == 0).OnlyEnforceIf(
                 staffing_b_all[consultant][mission].Not())
 
-    # Define delta between proposition and forecast
+    # Define monthly delta between proposition and forecast
     for mission in missions:
         if mission not in staffing_mission_delta:
             staffing_mission_delta[mission] = {}
         for month in months:
             staffing_mission_delta[mission][month] = model.NewIntVar(-1000, 1000,
                                                                      "staffing_mission_delta[%s,%s]" % (mission, month))
-            model.Add(
-                sum(staffing[consultant][mission][month] for consultant in consultants) >= missions_charge[mission][month] -
-                staffing_mission_delta[mission][month])
-            model.Add(
-                sum(staffing[consultant][mission][month] for consultant in consultants) <= missions_charge[mission][month] +
-                staffing_mission_delta[mission][month])
+            month_total = sum(staffing[consultant][mission][month] for consultant in consultants)
+            model.Add(month_total >= missions_charge[mission][month] - staffing_mission_delta[mission][month])
+            model.Add(month_total <= missions_charge[mission][month] + staffing_mission_delta[mission][month])
+
+    # Define global delta between proposition and forecast
+    for mission in missions:
+        staffing_mission_global_delta[mission] = model.NewIntVar(-1000, 1000, "staffing_mission_global_delta[%s]" % (mission))
+        s = []
+        mission_total = sum(missions_charge[mission][month] for month in months)
+        for month in months:
+            s.extend(staffing[consultant][mission][month] for consultant in consultants)
+        model.Add(sum(s) >= mission_total - staffing_mission_global_delta[mission])
+        model.Add(sum(s) <= mission_total + staffing_mission_global_delta[mission])
 
     # Each mission should have a noob and senior quota each month
     for mission in missions:
@@ -126,6 +134,8 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
                 else:
                     # add twice penalty when charge is used outside forecast (late or too early work)
                     planning_score_items.append(2 * sum(staffing[consultant][mission][month] for consultant in consultants))
+            # Add score for global planning delta
+            planning_score_items.append(staffing_mission_global_delta[mission])
 
     for consultant in consultants:
         for month in months:

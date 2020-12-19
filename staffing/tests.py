@@ -184,4 +184,4 @@ class OptimTest(TestCase):
                                                      self.missions_charge, self.missions_remaining, self.consultants_freetime, self.predefined_assignment,
                                                      self.consultants_rates, solver_param={})
         display_solver_solution(solver, scores, staffing, self.consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime)
-        self.assertEqual((sum(solver.Value(score) for score in scores)), 38)
+        self.assertEqual((sum(solver.Value(score) for score in scores)), 26)
