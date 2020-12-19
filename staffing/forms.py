@@ -500,3 +500,8 @@ class OptimiserForm(forms.Form):
                                                    Column("freetime_weight", "mission_per_people_weight", css_class="col-md-6")),
                                                css_class="col-md-6"),
                                         css_class='row'))
+
+    def clean_consultants(self):
+        if len(self.cleaned_data["consultants"]) < 1:
+            raise ValidationError(_("Select at least one consultant"))
+        return self.cleaned_data["consultants"]

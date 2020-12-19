@@ -246,7 +246,11 @@ def compute_consultant_rates(consultants, missions):
             if consultant in mission_rates:
                 rates[consultant.trigramme][mission.mission_id()] = mission_rates[consultant][0]
             else: # use objective rate if rate is not defined at mission level
-                rates[consultant.trigramme][mission.mission_id()] = consultant.get_rate_objective(rate_type="DAILY_RATE").rate
+                consultant_rate = consultant.get_rate_objective(rate_type="DAILY_RATE")
+                if consultant_rate:
+                    rates[consultant.trigramme][mission.mission_id()] = consultant_rate.rate
+                else:
+                    rates[consultant.trigramme][mission.mission_id()] = 0
     return rates
 
 @transaction.atomic
