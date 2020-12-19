@@ -29,7 +29,6 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     mission_per_people_weight = solver_param.get("mission_per_people_weight", 1)
     people_per_mission_weight = solver_param.get("people_per_mission_weight", 1)
     freetime_weight = solver_param.get("freetime_weight", 1)
-
     # CP-SAT model
     model = cp_model.CpModel()
     # variable we are searching
@@ -79,7 +78,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
                 sum(staffing[consultant][mission][month] for consultant in consultants) <= missions_charge[mission][month] +
                 staffing_mission_delta[mission][month])
 
-    # Each mission should have a noob for at least 30% and senior for 20% of mission charge each month
+    # Each mission should have a noob and senior quota each month
     for mission in missions:
         for month in months:
             charge = sum(staffing[consultant][mission][month] for consultant in consultants if consultant not in senior_consultants)
@@ -92,12 +91,10 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
         s_days = []
         s_amount = []
         for month in months:
-            s_amount.extend(staffing[consultant][mission][month]*consultants_rates[consultant][mission] for consultant in consultants)
+            s_amount.extend(staffing[consultant][mission][month] * consultants_rates[consultant][mission] for consultant in consultants)
             s_days.extend(staffing[consultant][mission][month] for consultant in consultants)
         min_rate = min(consultants_rates[consultant][mission] for consultant in consultants)
-        max_rate = max(consultants_rates[consultant][mission] for consultant in consultants)
         model.Add(sum(s_amount) <= missions_remaining[mission])  # Don't overshoot mission price
-        model.Add(sum(s_days) * max_rate <= missions_remaining[mission])  # Don't overshoot planned forecast at max rate
         model.Add(sum(s_amount) >= sum(missions_charge[mission][month] for month in months) * min_rate)  # Do the work at least at min rate for all days
 
     # Consultant have limited free time
