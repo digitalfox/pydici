@@ -248,7 +248,7 @@ def compute_consultant_freetime(consultants, missions, months):
         for month in months:
             current_staffings = consultant.staffing_set.filter(staffing_date=month[0], mission__probability__gt=0).exclude(mission__in=(missions))
             charge = current_staffings.aggregate(Sum("charge"))["charge__sum"] or 0
-            freetime[consultant.trigramme][month[1]] = int(wdays[month[0]] - charge)
+            freetime[consultant.trigramme][month[1]] = max(0, int(wdays[month[0]] - charge))
     
     return freetime
 
