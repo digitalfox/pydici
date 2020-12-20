@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-20 20:03+0100\n"
-"PO-Revision-Date: 2020-12-18 23:00+0100\n"
+"POT-Creation-Date: 2020-12-20 22:22+0100\n"
+"PO-Revision-Date: 2020-12-20 22:22+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -956,8 +956,8 @@ msgstr "Fax"
 msgid "Function"
 msgstr "Fonction"
 
-#: crm/models.py:167 staffing/forms.py:502 staffing/forms.py:503
-#: staffing/forms.py:504 staffing/forms.py:505
+#: crm/models.py:167 staffing/forms.py:503 staffing/forms.py:504
+#: staffing/forms.py:505 staffing/forms.py:506
 #: templates/leads/lead_mail.html:10 templates/leads/lead_mail.txt:11
 #: templates/leads/lead_mail.txt:19 templates/leads/mail.html:9
 #: templates/leads/mail.html:11
@@ -1013,8 +1013,8 @@ msgstr "Croissance"
 msgid "To restrain"
 msgstr "À restreindre"
 
-#: crm/models.py:312 staffing/forms.py:502 staffing/forms.py:503
-#: staffing/forms.py:504 staffing/forms.py:505
+#: crm/models.py:312 staffing/forms.py:503 staffing/forms.py:504
+#: staffing/forms.py:505 staffing/forms.py:506
 msgid "Standard"
 msgstr "Standard"
 
@@ -1841,55 +1841,65 @@ msgid "replace current staffing"
 msgstr "à la place des prévisions existantes"
 
 #: staffing/forms.py:446
-#, fuzzy
-#| msgid "Select a mission to add forecast..."
 msgid "Select mission to plan"
-msgstr "Choisir une mission pour ajouter des prévisions..."
+msgstr "Choisir une mission à planifier"
 
 #: staffing/forms.py:449
 msgid "Predefined assigment"
 msgstr "Assignation fixe"
 
 #: staffing/forms.py:454
-#, fuzzy
-#| msgid "Mission has been archived"
 msgid "Mission has no budget remaining"
-msgstr "La mission a été archivée"
+msgstr "La mission n'a plus de budget"
 
 #: staffing/forms.py:500
-msgid "Senior min. quota (%)"
-msgstr "Quota minimum d'expérimenté (%)"
+msgid "staffing projection freetime"
+msgstr "Projection pour dispo"
+
+#: staffing/forms.py:500
+msgid "full"
+msgstr "complète"
+
+#: staffing/forms.py:500
+msgid "balanced"
+msgstr "pondérée"
+
+#: staffing/forms.py:500
+msgid "none"
+msgstr "aucune"
 
 #: staffing/forms.py:501
-msgid "Newbie min. quota (%)"
-msgstr "Quota minimum de débutants (%)"
+msgid "Senior min. quota (%)"
+msgstr "Quota mini expérimenté (%)"
 
 #: staffing/forms.py:502
+msgid "Newbie min. quota (%)"
+msgstr "Quota mini débutants (%)"
+
+#: staffing/forms.py:503
 msgid "Mission planning weight"
 msgstr "Importance du respect planning mission"
 
-#: staffing/forms.py:502 staffing/forms.py:503 staffing/forms.py:504
-#: staffing/forms.py:505
+#: staffing/forms.py:503 staffing/forms.py:504 staffing/forms.py:505
+#: staffing/forms.py:506
 msgid "High"
 msgstr "Haute"
 
-#: staffing/forms.py:503
+#: staffing/forms.py:504
 msgid "Consultant free time weight"
 msgstr "Importance minimisation temps disponible"
 
-#: staffing/forms.py:504
+#: staffing/forms.py:505
 msgid "People per mission weight"
 msgstr "Importance nb de personne / mission"
 
-#: staffing/forms.py:505
+#: staffing/forms.py:506
 msgid "Mission per people weight"
 msgstr "Importance  nb mission / personne"
 
-#: staffing/forms.py:514
-#, fuzzy
-#| msgid "See also timesheet of this consultant"
+#: staffing/forms.py:515
 msgid "Select at least one consultant"
-msgstr "Voir aussi les feuilles de temps de ce consultant"
+msgstr "Sélectionnez au moins un consultant"
 
 #: staffing/models.py:42
 msgid "Unproductive"
