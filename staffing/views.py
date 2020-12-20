@@ -18,6 +18,7 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
 from django.contrib.admin.models import LogEntry, ADDITION,CHANGE, ContentType
 from django.forms.models import inlineformset_factory
+from django.forms import formset_factory
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
 from django.urls import reverse, reverse_lazy
@@ -49,7 +50,8 @@ from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMi
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
     timesheet_report_data, check_missions_limited_mode
-from staffing.forms import MissionForm, MissionAutomaticStaffingForm
+from staffing.forms import MissionForm, MissionAutomaticStaffingForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
+from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from people.utils import get_team_scopes
 from crm.utils import get_subsidiary_from_session
 
@@ -1056,6 +1058,7 @@ def mission_csv_timesheet(request, mission, consultants, start=None, end=None):
 
     return response
 
+
 class MissionTimesheetReportPdf(PydiciNonPublicdMixin, WeasyTemplateView):
     template_name = 'staffing/mission_timesheet_report.html'
 
@@ -1577,6 +1580,81 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 
     def get_success_url(self):
         return self.request.GET.get('return_to', False) or reverse_lazy("staffing:mission_home", args=[self.object.id, ])
+
+
+@pydici_non_public
+@pydici_feature("staffing_mass")
+def optimise_pdc(request):
+    """Propose optimised mission staffing according to business rules"""
+    staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in
+                      staffingDates(format="datetime", n=8)]
+    scores_data = []
+    total_score = -1
+    results = []
+    error = ""
+    MissionOptimiserFormset = formset_factory(MissionOptimiserForm, extra=3)
+    solver = None
+
+    if request.method == "POST":
+        form = OptimiserForm(request.POST)
+        formset = MissionOptimiserFormset(request.POST, form_kwargs={"staffing_dates": staffing_dates})
+        if form.is_valid() and formset.is_valid():
+            # Process the data in form.cleaned_data
+            solver_param = {"senior_quota": int(form["senior_quota"].value()),
+                            "newbie_quota": int(form["newbie_quota"].value()),
+                            "planning_weight": int(form["planning_weight"].value()),
+                            "freetime_weight": int(form["freetime_weight"].value()),
+                            "mission_per_people_weight": int(form["mission_per_people_weight"].value()),
+                            "people_per_mission_weight": int(form["people_per_mission_weight"].value()),}
+            missions_charge = {}
+            predefined_assignment = {}
+            missions = []
+            missions_id = []
+            for mission_form in formset.cleaned_data:
+                if mission_form:
+                    missions_charge[mission_form["mission"].mission_id()] = {month[1]:mission_form["charge_%s" % month[1]] or 0 for month in staffing_dates}
+                    missions_id.append(mission_form["mission"].mission_id())
+                    missions.append(mission_form["mission"])
+                    if mission_form["predefined_assignment"]:
+                        predefined_assignment[mission_form["mission"].mission_id()] = [c.trigramme for c in mission_form["predefined_assignment"]]
+                        if not set(c.trigramme for c in mission_form["predefined_assignment"]).issubset(set(c.trigramme for c in form.cleaned_data["consultants"])):
+                            error = _("Predefined assignment must be in consultant list")
+
+            consultants_freetime = compute_consultant_freetime(form.cleaned_data["consultants"], missions, staffing_dates)
+            consultant_rates = compute_consultant_rates(form.cleaned_data["consultants"], missions)
+            missions_remaining = {m.mission_id():int(1000 * m.remaining()) for m in missions}
+            if not error:
+                solver, status, scores, staffing = solve_pdc([c.trigramme for c in form.cleaned_data["consultants"]],
+                                                              [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level > 2],
+                                                              missions_id, [month[1] for month in staffing_dates],
+                                                              missions_charge, missions_remaining, consultants_freetime,
+                                                              predefined_assignment, consultant_rates, solver_param)
+                if status:
+                    scores_data = [(score.Name(), solver.Value(score)) for score in scores]
+                    total_score = sum(solver.Value(score) for score in scores)
+                    results = solver_solution_format(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates,
+                                                     missions_charge, consultants_freetime)
+                    if "action_update" in request.POST:
+                        solver_apply_forecast(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates, request.user)
+                else:
+                    error = _("There's no solution. Add consultants, remove mission or relax experience ratio constraint")
+            # recreate a new formset for further editing, based on previous one, removing previous extra forms
+            formset = MissionOptimiserFormset(initial=[i for i in formset.cleaned_data if i], form_kwargs={"staffing_dates": staffing_dates})
+    else:
+        # An unbound form
+        form = OptimiserForm()
+        formset = MissionOptimiserFormset(form_kwargs={"staffing_dates": staffing_dates})
+
+    return render(request, "staffing/optimise_pdc.html",
+                  {"form": form,
+                   "formset": formset,
+                   "formset_helper": MissionOptimiserFormsetHelper(),
+                   "scores": scores_data,
+                   "total_score": total_score,
+                   "results": results,
+                   "error": error,
+                   "solver" : solver,
+                   "staffing_dates": staffing_dates})
 
 
 @pydici_non_public

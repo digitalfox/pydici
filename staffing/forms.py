@@ -8,6 +8,7 @@ import types
 
 from datetime import timedelta, date, datetime
 from decimal import Decimal
+from math import sqrt
 
 from django import forms
 from django.conf import settings
@@ -16,10 +17,11 @@ from django.forms import ChoiceField, ModelChoiceField
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
+from django.db.models import Sum
 
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, Column, Field
+from crispy_forms.layout import Submit, Layout, Div, Column, Field, Row
 from crispy_forms.bootstrap import AppendedText
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget, Select2Widget
 from django.utils import formats
@@ -41,7 +43,8 @@ class MissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
                      "lead__client__organisation__name__icontains", "lead__client__organisation__company__name__icontains"]
 
     def get_queryset(self):
-        return Mission.objects.filter(active=True)
+        return self.queryset or Mission.objects.filter(active=True)
+
 
 class MissionMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
     model = Mission
@@ -259,6 +262,7 @@ class MissionAdminForm(PydiciCrispyModelForm):
         fields = ('lead',)
         widgets = { "lead" : LeadChoices }
 
+
 class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""
 
@@ -431,3 +435,81 @@ TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD = {
     'cycle': CycleTimesheetField,
     'keyboard': KeyboardTimesheetField
 }
+
+
+class MissionOptimiserForm(forms.Form):
+    """Declaration of mission staffing to optimise. Part of a formset included in OptimiserForm"""
+    def __init__(self, *args, **kwargs):
+        self.staffing_dates = kwargs.pop("staffing_dates", [])
+        super().__init__(*args, **kwargs)
+        qs = Mission.objects.filter(nature="PROD", active=True)
+        self.fields["mission"] = forms.ModelChoiceField(widget=MissionChoices(attrs={'data-width': '15em', 'data-placeholder':_("Select mission to plan")}, queryset=qs), queryset=qs)
+        for month in self.staffing_dates:
+            self.fields["charge_%s" % month[1]] = forms.IntegerField(required=False, label=month[1])
+        self.fields["predefined_assignment"] = forms.ModelMultipleChoiceField(label=_("Predefined assigment"), required=False, widget=ConsultantMChoices, queryset=Consultant.objects.filter(active=True))
+
+    def clean_mission(self):
+        mission = self.cleaned_data.get("mission")
+        if mission.remaining() <= 0:
+            raise ValidationError(_("Mission has no budget remaining"))
+        return mission
+
+    def clean(self):
+        mission = self.cleaned_data.get("mission")
+        if mission and sum(self.cleaned_data["charge_%s" % month[1]] or 0 for month in self.staffing_dates) == 0:
+            # Charge is not defined. Get it from staffing
+            charge = Staffing.objects.filter(mission=mission, staffing_date__gte=self.staffing_dates[0][0]).aggregate(Sum("charge"))["charge__sum"] or 0
+            if charge > 0:
+                for month in self.staffing_dates:
+                    c = Staffing.objects.filter(mission=mission, staffing_date=month[0]).aggregate(
+                        Sum("charge"))["charge__sum"]
+                    self.cleaned_data["charge_%s" % month[1]] = int(c or 0)  # Solver only work with integer
+            elif mission.price:
+                # No staffing defined... infer something from mission remaining
+                remaining = mission.remaining()
+                rates = [i[0] for i in mission.consultant_rates().values()]
+                if remaining > 0 and rates:
+                    avg_rate = sum(rates) / len(rates) / 1000
+                    days = int(remaining / avg_rate)
+                    duration = sqrt(days / 20) * 2  # Guess duration with square root of man.month charge as a max. Take the double for safety
+                    for i, month in enumerate(self.staffing_dates):
+                        if i > duration or i > 7 or duration == 0:
+                            # Stop planning after guessed duration of 8 month
+                            break
+                        self.cleaned_data["charge_%s" % month[1]] = int(days / duration)
+
+        return self.cleaned_data
+
+
+class MissionOptimiserFormsetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form_method = "post"
+        self.template = "bootstrap/table_inline_formset.html"
+        self.form_tag = False
+
+
+class OptimiserForm(forms.Form):
+    """A form to select optimiser input data and parameters"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+        self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.filter(active=True), required=False)
+        self.fields["senior_quota"] = forms.IntegerField(label=_("Senior min. quota (%)"), initial=20)
+        self.fields["newbie_quota"] = forms.IntegerField(label=_("Newbie min. quota (%)"), initial=30)
+        self.fields["planning_weight"] = forms.ChoiceField(label=_("Mission planning weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
+        self.fields["freetime_weight"] = forms.ChoiceField(label=_("Consultant free time weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
+        self.fields["people_per_mission_weight"] = forms.ChoiceField(label=_("People per mission weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
+        self.fields["mission_per_people_weight"] = forms.ChoiceField(label=_("Mission per people weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
+        self.helper.layout = Layout(Div(Column(Row(Column("senior_quota", css_class="col-md-6"), Column("newbie_quota", css_class="col-md-6")), "consultants",  css_class="col-md-6"),
+                                        Column(Row(Column("planning_weight", "people_per_mission_weight", css_class="col-md-6"),
+                                                   Column("freetime_weight", "mission_per_people_weight", css_class="col-md-6")),
+                                               css_class="col-md-6"),
+                                        css_class='row'))
+
+    def clean_consultants(self):
+        if len(self.cleaned_data["consultants"]) < 1:
+            raise ValidationError(_("Select at least one consultant"))
+        return self.cleaned_data["consultants"]

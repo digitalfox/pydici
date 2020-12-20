@@ -1,0 +1,59 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Optimise staffing" %}{% endblock %}
+
+{% block content %}
+
+<form id="optimise-form-id" method="POST">
+    {% crispy form %}
+    {% crispy formset formset_helper %}
+    <div class="pull-left">
+        <button type="submit" class="btn btn-default" name="action_solve">{% trans 'Solve' %}</button>
+        {% if results and not errors %}
+            <button type="submit" class="btn btn-danger" name="action_update">{% trans 'Update forecast according to prevision' %}</button>
+        {% endif %}
+    </div>
+</form>
+
+<br/><br/>
+{% if error %}
+    <div class="alert alert-danger col-md-6">{{ error }}</div>
+{% endif %}
+
+{% if results %}
+    <div class="row"><ul>
+        <li>{% trans "Solution type: " %} {{ solver.StatusName }}</li>
+        <li>{% trans "Computation time: " %} {{ solver.WallTime|floatformat:-3 }} sec. ({{ solver.NumBranches }} {% trans "branches" %}, {{ solver.NumConflicts }} {% trans "conflicts" %})</li>
+        <li>{% trans "Total score: " %} {{ total_score }}</li>
+        <ul>{% for score_name, score_value in scores %}
+            <li>{{ score_name}} = {{ score_value }}</li>
+            {% endfor %}
+        </ul>
+    </ul></div>
+
+<table class="table table-striped table-hover table-pydici-extra-condensed" id="pdc_optim_table">
+    <thead>
+    <tr>
+        <th>{% trans "Mission" %}</th>
+        <th>{% trans "Consultant" %}</th>
+        {% for month in staffing_dates %}
+            <th style="text-align: left">{{ month.1 }}</th>
+        {% endfor %}
+    </tr></thead>
+    <tbody>
+        {% for row in results %}
+            <tr>
+                {% for item in row %}
+                    <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endif %}
+{% endblock %}

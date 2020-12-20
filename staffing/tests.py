@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 from staffing import utils
 from leads.models import Lead
 from staffing.models import Mission, Staffing, Timesheet, FinancialCondition
+from staffing.optim import solve_pdc, display_solver_solution
 from people.models import Consultant, RateObjective
 from core.utils import previousMonth, nextMonth
 from core.tests import PYDICI_FIXTURES, TEST_USERNAME, setup_test_user_features
@@ -147,3 +148,40 @@ class StaffingViewsTest(TestCase):
         self.assertListEqual(data[2], [None, [13, 20, 33, 30.6], [5, 14, 19, 17.3], [52, 47.9],
                                        [11.9, 18.7], [4.3, 13],
                                        [915.4, 935, 927.3], [860, 928.6, 910.5]])
+
+
+class OptimTest(TestCase):
+    consultants = ["SRE", "JCF", "MFR"]
+    senior_consultants = ["SRE", "JCF"]
+    missions = ["M1", "M2", "M3", "M4"]
+    months = ["jan", "feb", "mar"]
+
+    missions_charge = {"M1": {"jan": 25, "feb": 20, "mar": 20},
+                       "M2": {"jan": 0, "feb": 0, "mar": 20},
+                       "M3": {"jan": 10, "feb": 5, "mar": 0},
+                       "M4": {"jan": 5, "feb": 10, "mar": 10},
+                       }
+
+    missions_remaining = {"M1": 90000,
+                          "M2": 35000,
+                          "M3": 30000,
+                          "M4": 40000,
+                         }
+
+    consultants_freetime = {"SRE": {"jan": 15, "feb": 18, "mar": 13},
+                            "JCF": {"jan": 10, "feb": 15, "mar": 20},
+                            "MFR": {"jan": 20, "feb": 20, "mar": 20},
+                            }
+    consultants_rates = {"SRE": {"M1": 1500, "M2": 1450, "M3": 1500, "M4": 1800},
+                         "JCF": {"M1": 1600, "M2": 1350, "M3": 1500, "M4": 1700},
+                         "MFR": {"M1": 1000, "M2": 950, "M3": 1200, "M4": 1400},
+                        }
+
+    predefined_assignment = {"M4": ["JCF", ]}
+
+    def test_optim(self):
+        solver, status, scores, staffing = solve_pdc(self.consultants, self.senior_consultants, self.missions, self.months,
+                                                     self.missions_charge, self.missions_remaining, self.consultants_freetime, self.predefined_assignment,
+                                                     self.consultants_rates, solver_param={})
+        display_solver_solution(solver, scores, staffing, self.consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime)
+        self.assertEqual((sum(solver.Value(score) for score in scores)), 26)
