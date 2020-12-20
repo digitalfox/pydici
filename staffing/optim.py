@@ -37,25 +37,35 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     staffing_b_all = {}  # Bool indicating if consultant is staffed on this mission
     staffing_mission_delta = {}  # Delta between proposition and forecast for mission/month
     staffing_mission_global_delta = {}  # Delta between proposition and forecast for mission accross all month
+    staffing_holes = {}  # Detect holes in staffing, ie. when zero charge in current month and charge in previous and next month
     for consultant in consultants:
         if consultant not in staffing:
             staffing[consultant] = {}
             staffing_b[consultant] = {}
             staffing_b_all[consultant] = {}
+            staffing_holes[consultant] = {}
         for mission in missions:
             if mission not in staffing[consultant]:
                 staffing[consultant][mission] = {}
                 staffing_b[consultant][mission] = {}
-            for month in months:
+                staffing_holes[consultant][mission] = {}
+            for month_num, month in enumerate(months):
                 # Define vars
                 staffing[consultant][mission][month] = model.NewIntVar(0, consultants_freetime[consultant][month],
                                                                        "staffing[%s,%s,%s]" % (consultant, mission, month))
                 staffing_b[consultant][mission][month] = model.NewBoolVar(
                     "staffing_b[%s,%s,%s]" % (consultant, mission, month))
+                staffing_holes[consultant][mission][month] = model.NewBoolVar(
+                    "staffing_holes[%s,%s,%s]" % (consultant, mission, month))
                 # Links vars staffing and staffing_b
                 model.Add(staffing[consultant][mission][month] > 0).OnlyEnforceIf(staffing_b[consultant][mission][month])
                 model.Add(staffing[consultant][mission][month] == 0).OnlyEnforceIf(
                     staffing_b[consultant][mission][month].Not())
+                # Links vars staffing_b and staffing_holes
+                if month_num > 1:
+                    model.Add(staffing_holes[consultant][mission][month] == 1).OnlyEnforceIf([staffing_b[consultant][mission][month],
+                                                                                              staffing_b[consultant][mission][months[month_num-1]].Not(),
+                                                                                              staffing_b[consultant][mission][months[month_num - 2]]])
 
             # Define vars staffing_b_all
             staffing_b_all[consultant][mission] = model.NewBoolVar("staffing_b_all[%s,%s]" % (consultant, mission))
@@ -130,6 +140,9 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
                 else:
                     # add twice penalty when charge is used outside forecast (late or too early work)
                     planning_score_items.append(2 * sum(staffing[consultant][mission][month] for consultant in consultants))
+                # Prevent holes in staffing
+                if missions_charge[mission][month] > 0:
+                    planning_score_items.append(2 * sum(staffing_holes[consultant][mission][month] for consultant in consultants))
             # Add score for global planning delta
             planning_score_items.append(staffing_mission_global_delta[mission])
 
