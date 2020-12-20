@@ -238,8 +238,9 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
     return results
 
 
-def compute_consultant_freetime(consultants, missions, months):
-    """Compute freetime except for missions we want to plan"""
+def compute_consultant_freetime(consultants, missions, months, projections="full"):
+    """Compute freetime except for missions we want to plan
+    projections: none, balanced or full. Similar to pdc review concept. Use mission probability"""
     freetime = {}
     holidays_days = Holiday.objects.all().values_list("day", flat=True)
     wdays = {month[0]: working_days(month[0], holidays_days) for month in months}
@@ -247,9 +248,16 @@ def compute_consultant_freetime(consultants, missions, months):
         freetime[consultant.trigramme] = {}
         for month in months:
             current_staffings = consultant.staffing_set.filter(staffing_date=month[0], mission__probability__gt=0).exclude(mission__in=(missions))
-            charge = current_staffings.aggregate(Sum("charge"))["charge__sum"] or 0
+            current_staffings = current_staffings.select_related()
+            if projections == "none":
+                current_staffings = current_staffings.filter(mission__probability=100)
+            charge = 0
+            for staffing in current_staffings:
+                if projections == "full":
+                    charge += staffing.charge
+                else:
+                    charge += staffing.charge * staffing.mission.probability / 100
             freetime[consultant.trigramme][month[1]] = max(0, int(wdays[month[0]] - charge))
-    
     return freetime
 
 

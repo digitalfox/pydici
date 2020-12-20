@@ -1620,7 +1620,7 @@ def optimise_pdc(request):
                         if not set(c.trigramme for c in mission_form["predefined_assignment"]).issubset(set(c.trigramme for c in form.cleaned_data["consultants"])):
                             error = _("Predefined assignment must be in consultant list")
 
-            consultants_freetime = compute_consultant_freetime(form.cleaned_data["consultants"], missions, staffing_dates)
+            consultants_freetime = compute_consultant_freetime(form.cleaned_data["consultants"], missions, staffing_dates, projections=form.cleaned_data["projections"])
             consultant_rates = compute_consultant_rates(form.cleaned_data["consultants"], missions)
             missions_remaining = {m.mission_id():int(1000 * m.remaining()) for m in missions}
             if not error:

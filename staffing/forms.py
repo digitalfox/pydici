@@ -497,13 +497,14 @@ class OptimiserForm(forms.Form):
         self.helper.form_tag = False
 
         self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.filter(active=True), required=False)
+        self.fields["projections"] = forms.ChoiceField(label=_("staffing projection freetime"), choices=(("full", _("full")), ("balanced", _("balanced")), ("none", _("none"))), initial="balanced")
         self.fields["senior_quota"] = forms.IntegerField(label=_("Senior min. quota (%)"), initial=20)
         self.fields["newbie_quota"] = forms.IntegerField(label=_("Newbie min. quota (%)"), initial=30)
         self.fields["planning_weight"] = forms.ChoiceField(label=_("Mission planning weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
         self.fields["freetime_weight"] = forms.ChoiceField(label=_("Consultant free time weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
         self.fields["people_per_mission_weight"] = forms.ChoiceField(label=_("People per mission weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
         self.fields["mission_per_people_weight"] = forms.ChoiceField(label=_("Mission per people weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
-        self.helper.layout = Layout(Div(Column(Row(Column("senior_quota", css_class="col-md-6"), Column("newbie_quota", css_class="col-md-6")), "consultants",  css_class="col-md-6"),
+        self.helper.layout = Layout(Div(Column(Row(Column("senior_quota", css_class="col-md-4"), Column("newbie_quota", css_class="col-md-4"), Column("projections", css_class="col-md-4")), "consultants",  css_class="col-md-6"),
                                         Column(Row(Column("planning_weight", "people_per_mission_weight", css_class="col-md-6"),
                                                    Column("freetime_weight", "mission_per_people_weight", css_class="col-md-6")),
                                                css_class="col-md-6"),
