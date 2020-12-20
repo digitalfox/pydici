@@ -1582,6 +1582,8 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
         return self.request.GET.get('return_to', False) or reverse_lazy("staffing:mission_home", args=[self.object.id, ])
 
 
+@pydici_non_public
+@pydici_feature("staffing_mass")
 def optimise_pdc(request):
     """Propose optimised mission staffing according to business rules"""
     staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in
