@@ -144,7 +144,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
                 if missions_charge[mission][month] > 0:
                     planning_score_items.append(2 * sum(staffing_holes[consultant][mission][month] for consultant in consultants))
             # Add score for global planning delta
-            planning_score_items.append(staffing_mission_global_delta[mission])
+            planning_score_items.append(2 * staffing_mission_global_delta[mission])
 
     for consultant in consultants:
         for month in months:
