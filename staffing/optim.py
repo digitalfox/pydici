@@ -96,14 +96,10 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
 
     # All missions are done, but not overshoot
     for mission in missions:
-        s_days = []
         s_amount = []
         for month in months:
             s_amount.extend(staffing[consultant][mission][month] * consultants_rates[consultant][mission] for consultant in consultants)
-            s_days.extend(staffing[consultant][mission][month] for consultant in consultants)
-        min_rate = min(consultants_rates[consultant][mission] for consultant in consultants)
         model.Add(sum(s_amount) <= missions_remaining[mission])  # Don't overshoot mission price
-        model.Add(sum(s_amount) >= sum(missions_charge[mission][month] for month in months) * min_rate)  # Do the work at least at min rate for all days
 
     # Consultant have limited free time
     for consultant in consultants:
