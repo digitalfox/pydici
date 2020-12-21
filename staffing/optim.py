@@ -11,7 +11,6 @@ from ortools.sat.python import cp_model
 
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-from django.db.models import Sum
 from django.db import transaction
 
 from core.utils import working_days
@@ -86,7 +85,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
 
     # Define global delta between proposition and forecast
     for mission in missions:
-        staffing_mission_global_delta[mission] = model.NewIntVar(-1000, 1000, "staffing_mission_global_delta[%s]" % (mission))
+        staffing_mission_global_delta[mission] = model.NewIntVar(-1000, 1000, "staffing_mission_global_delta[%s]" % mission)
         s = []
         mission_total = sum(missions_charge[mission][month] for month in months)
         for month in months:
@@ -177,9 +176,9 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
 
     # Solve it
     solver = cp_model.CpSolver()
-    solver.parameters.max_time_in_seconds = 10.0 # Limit to 10 secs
+    solver.parameters.max_time_in_seconds = 10.0  # Limit to 10 secs
     status = solver.Solve(model) in (cp_model.OPTIMAL, cp_model.FEASIBLE)
-    return (solver, status, [planning_score, freetime_score, people_per_mission_score, mission_per_people_score], staffing)
+    return solver, status, [planning_score, freetime_score, people_per_mission_score, mission_per_people_score], staffing
 
 
 def display_solver_solution(solver, scores, staffing, consultants, missions, months, missions_charge, consultants_freetime):
@@ -246,7 +245,7 @@ def compute_consultant_freetime(consultants, missions, months, projections="full
     for consultant in consultants:
         freetime[consultant.trigramme] = {}
         for month in months:
-            current_staffings = consultant.staffing_set.filter(staffing_date=month[0], mission__probability__gt=0).exclude(mission__in=(missions))
+            current_staffings = consultant.staffing_set.filter(staffing_date=month[0], mission__probability__gt=0).exclude(mission__in=missions)
             current_staffings = current_staffings.select_related()
             if projections == "none":
                 current_staffings = current_staffings.filter(mission__probability=100)
@@ -270,13 +269,14 @@ def compute_consultant_rates(consultants, missions):
                 rates[consultant.trigramme] = {}
             if consultant in mission_rates:
                 rates[consultant.trigramme][mission.mission_id()] = mission_rates[consultant][0]
-            else: # use objective rate if rate is not defined at mission level
+            else:  # use objective rate if rate is not defined at mission level
                 consultant_rate = consultant.get_rate_objective(rate_type="DAILY_RATE")
                 if consultant_rate:
                     rates[consultant.trigramme][mission.mission_id()] = consultant_rate.rate
                 else:
                     rates[consultant.trigramme][mission.mission_id()] = 0
     return rates
+
 
 @transaction.atomic
 def solver_apply_forecast(solver, staffing, consultants, missions, staffing_dates, user):
