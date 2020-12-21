@@ -36,6 +36,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     staffing_b = {}  # Bool indicating if consultant is staffed  (ie staffing >0) by month on this mission
     staffing_b_all = {}  # Bool indicating if consultant is staffed on this mission
     staffing_mission_delta = {}  # Delta between proposition and forecast for mission/month
+    staffing_mission_cum_delta = {}  # Cumulated Delta between proposition and forecast for mission/month
     staffing_mission_global_delta = {}  # Delta between proposition and forecast for mission accross all month
     for consultant in consultants:
         if consultant not in staffing:
@@ -76,12 +77,19 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     for mission in missions:
         if mission not in staffing_mission_delta:
             staffing_mission_delta[mission] = {}
+            staffing_mission_cum_delta[mission] = {}
         for month in months:
-            staffing_mission_delta[mission][month] = model.NewIntVar(-1000, 1000,
+            staffing_mission_delta[mission][month] = model.NewIntVar(0, 1000,
                                                                      "staffing_mission_delta[%s,%s]" % (mission, month))
+            staffing_mission_cum_delta[mission][month] = model.NewIntVar(0, 1000,
+                                                                     "staffing_mission_cum_delta[%s,%s]" % (mission, month))
             month_total = sum(staffing[consultant][mission][month] for consultant in consultants)
             model.Add(month_total >= missions_charge[mission][month] - staffing_mission_delta[mission][month])
             model.Add(month_total <= missions_charge[mission][month] + staffing_mission_delta[mission][month])
+            cum_staffing = sum(staffing_cum[consultant][mission][month] for consultant in consultants)
+            cum_charge = sum(missions_charge[mission][month] for month in months[:months.index(month) + 1])
+            model.Add(cum_staffing >= cum_charge - staffing_mission_cum_delta[mission][month])
+            model.Add(cum_staffing <= cum_charge + staffing_mission_cum_delta[mission][month])
 
     # Define global delta between proposition and forecast
     for mission in missions:
@@ -131,10 +139,8 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     if planning_weight > 0:
         for mission in missions:
             for month in months:
-                # add score if cumulated planning is not respected
-                cum_staffing = sum(staffing_cum[consultant][mission][month] for consultant in consultants)
-                cum_charge = sum(missions_charge[mission][month] for month in months[:months.index(month) + 1])
-                planning_score_items.append(cum_charge - cum_staffing)
+                # add score if cumulated planning delta is not respected
+                planning_score_items.append(staffing_mission_cum_delta[mission][month])
                 if missions_charge[mission][month] > 0:
                     # add score if month planning is not respected
                     planning_score_items.append(staffing_mission_delta[mission][month])
