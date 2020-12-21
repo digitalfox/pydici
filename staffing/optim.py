@@ -132,13 +132,13 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     if planning_weight > 0:
         for mission in missions:
             for month in months:
+                # add score if cumulated planning is not respected
+                cum_staffing = sum(staffing_cum[consultant][mission][month] for consultant in consultants)
+                cum_charge = sum(missions_charge[mission][month] for month in months[:months.index(month) + 1])
+                planning_score_items.append(cum_charge - cum_staffing)
                 if missions_charge[mission][month] > 0:
                     # add score if month planning is not respected
                     planning_score_items.append(staffing_mission_delta[mission][month])
-                    # add score if cumulated planning is not respected
-                    cum_staffing = sum(staffing_cum[consultant][mission][month] for consultant in consultants)
-                    cum_charge = sum(missions_charge[mission][month] for month in months[:months.index(month) + 1])
-                    planning_score_items.append(cum_charge - cum_staffing)
                 else:
                     # add penalty when charge is used outside forecast (late or too early work)
                     planning_score_items.append(3 * sum(staffing[consultant][mission][month] for consultant in consultants))
