@@ -33,39 +33,37 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     model = cp_model.CpModel()
     # variable we are searching
     staffing = {}  # Per month
+    staffing_cum = {}  # cumulative staffing since mission beginning
     staffing_b = {}  # Bool indicating if consultant is staffed  (ie staffing >0) by month on this mission
     staffing_b_all = {}  # Bool indicating if consultant is staffed on this mission
     staffing_mission_delta = {}  # Delta between proposition and forecast for mission/month
     staffing_mission_global_delta = {}  # Delta between proposition and forecast for mission accross all month
-    staffing_holes = {}  # Detect holes in staffing, ie. when zero charge in current month and charge in previous and next month
     for consultant in consultants:
         if consultant not in staffing:
             staffing[consultant] = {}
+            staffing_cum[consultant] = {}
             staffing_b[consultant] = {}
             staffing_b_all[consultant] = {}
-            staffing_holes[consultant] = {}
         for mission in missions:
             if mission not in staffing[consultant]:
                 staffing[consultant][mission] = {}
+                staffing_cum[consultant][mission] = {}
                 staffing_b[consultant][mission] = {}
-                staffing_holes[consultant][mission] = {}
             for month_num, month in enumerate(months):
                 # Define vars
                 staffing[consultant][mission][month] = model.NewIntVar(0, consultants_freetime[consultant][month],
                                                                        "staffing[%s,%s,%s]" % (consultant, mission, month))
+                staffing_cum[consultant][mission][month] = model.NewIntVar(0, sum(consultants_freetime[consultant].values()),
+                                                                           "staffing_cum[%s,%s,%s]" % (consultant, mission, month))
                 staffing_b[consultant][mission][month] = model.NewBoolVar(
                     "staffing_b[%s,%s,%s]" % (consultant, mission, month))
-                staffing_holes[consultant][mission][month] = model.NewBoolVar(
-                    "staffing_holes[%s,%s,%s]" % (consultant, mission, month))
                 # Links vars staffing and staffing_b
                 model.Add(staffing[consultant][mission][month] > 0).OnlyEnforceIf(staffing_b[consultant][mission][month])
                 model.Add(staffing[consultant][mission][month] == 0).OnlyEnforceIf(
                     staffing_b[consultant][mission][month].Not())
-                # Links vars staffing_b and staffing_holes
-                if month_num > 1:
-                    model.Add(staffing_holes[consultant][mission][month] == 1).OnlyEnforceIf([staffing_b[consultant][mission][month],
-                                                                                              staffing_b[consultant][mission][months[month_num-1]].Not(),
-                                                                                              staffing_b[consultant][mission][months[month_num - 2]]])
+                # Links vars staffing and staffing_cum
+                model.Add(sum(staffing[consultant][mission][month] for month in months[:months.index(month) + 1]) ==
+                          staffing_cum[consultant][mission][month])
 
             # Define vars staffing_b_all
             staffing_b_all[consultant][mission] = model.NewBoolVar("staffing_b_all[%s,%s]" % (consultant, mission))
@@ -135,16 +133,17 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
         for mission in missions:
             for month in months:
                 if missions_charge[mission][month] > 0:
-                    # add score if planning is not respected
+                    # add score if month planning is not respected
                     planning_score_items.append(staffing_mission_delta[mission][month])
+                    # add score if cumulated planning is not respected
+                    cum_staffing = sum(staffing_cum[consultant][mission][month] for consultant in consultants)
+                    cum_charge = sum(missions_charge[mission][month] for month in months[:months.index(month) + 1])
+                    planning_score_items.append(cum_charge - cum_staffing)
                 else:
-                    # add twice penalty when charge is used outside forecast (late or too early work)
-                    planning_score_items.append(2 * sum(staffing[consultant][mission][month] for consultant in consultants))
-                # Prevent holes in staffing
-                if missions_charge[mission][month] > 0:
-                    planning_score_items.append(2 * sum(staffing_holes[consultant][mission][month] for consultant in consultants))
+                    # add penalty when charge is used outside forecast (late or too early work)
+                    planning_score_items.append(3 * sum(staffing[consultant][mission][month] for consultant in consultants))
             # Add score for global planning delta
-            planning_score_items.append(2 * staffing_mission_global_delta[mission])
+            planning_score_items.append(4 * staffing_mission_global_delta[mission])
 
     for consultant in consultants:
         for month in months:
