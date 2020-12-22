@@ -469,7 +469,7 @@ class MissionOptimiserForm(forms.Form):
                 remaining = mission.remaining()
                 rates = [i[0] for i in mission.consultant_rates().values()]
                 if remaining > 0 and rates:
-                    avg_rate = sum(rates) / len(rates) / 1000
+                    avg_rate = (sum(rates) / len(rates) / 1000) or 1 # default to 1K€ per day
                     days = int(remaining / avg_rate)
                     duration = sqrt(days / 20) * 2  # Guess duration with square root of man.month charge as a max. Take the double for safety
                     for i, month in enumerate(self.staffing_dates):
