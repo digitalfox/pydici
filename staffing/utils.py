@@ -256,6 +256,54 @@ def compute_automatic_staffing(mission, mode, duration, user=None):
 
             month = nextMonth(month)
 
+def timesheet_report_data_grouped(mission, start=None, end=None):
+    """Timesheet charges for a single mission, on a timerange, by whole month
+    For each month, charges are grouped by daily rate
+    Returns a list of lines to be sent as CSV"""
+
+    timesheets = Timesheet.objects.select_related().filter(mission=mission)
+    months = timesheets.dates("working_date", "month")
+    data = []
+
+    data.append([mission.short_name()])
+    rates_consultants = {}
+    for consultant, rate in mission.consultant_rates().items():
+        daily_rate, _ = rate
+        if daily_rate not in rates_consultants:
+            rates_consultants[daily_rate] = []
+        rates_consultants[daily_rate].append(consultant)
+
+    for month in months:
+        if start and month < start:
+            continue
+        if end and month > end:
+            break
+        next_month = nextMonth(month)
+
+        # Header
+        data.append([""])
+        data.append([formats.date_format(month, format="YEAR_MONTH_FORMAT")])
+
+        rates = sorted(rates_consultants.keys())
+        for rate in rates:
+            rate_label = "R {}".format(rate)
+            total = 0
+            row = [rate_label, ]
+
+            #timesheets is already a Queryset, we cannot aggregate in SQL
+            rate_timesheets_charges = timesheets.filter(consultant__in=rates_consultants[rate],
+                                                working_date__gte=month,
+                                                working_date__lt=next_month).values("charge")
+
+            for c in rate_timesheets_charges:
+               total += c["charge"]
+            row.append(total)
+
+            if total:
+               data.append(row)
+
+    return data
+
 
 def timesheet_report_data(mission, start=None, end=None, padding=False):
     """Prepare data for timesheet report from start to end.

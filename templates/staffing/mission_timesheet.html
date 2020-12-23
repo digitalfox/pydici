@@ -78,10 +78,11 @@
     <br/>
     <a class="btn btn-default" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
     <a class="btn btn-default" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?pdf">{% trans "Export this timesheet in PDF" %}</a>
+    <a class="btn btn-default" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?csv_grouped">{% trans "Export this timesheet grouped by rate" %}</a>
     </div>
     <br/>
     {% if mission.nature == "PROD" and pydici_feature.leads_profitability %}
-        
+
             <div class="col-sm-6 col-md-4">
                 <h2>{% trans "Profitability" %}</h2>
                 <table class="table table-hover">

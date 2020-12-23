@@ -49,7 +49,7 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
-    timesheet_report_data, check_missions_limited_mode
+    timesheet_report_data, timesheet_report_data_grouped, check_missions_limited_mode
 from staffing.forms import MissionForm, MissionAutomaticStaffingForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from people.utils import get_team_scopes
@@ -890,6 +890,8 @@ def mission_timesheet(request, mission_id):
         return mission_csv_timesheet(request, mission, consultants, end=date.today())
     if "pdf" in request.GET:
         return MissionTimesheetReportPdf.as_view()(request, mission=mission, end=date.today())
+    if "csv_grouped" in request.GET:
+        return mission_csv_timesheet_grouped(request, mission, consultants, end=date.today())
 
     if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # This view should only be accessed by ajax request. Redirect lost users
@@ -1058,6 +1060,21 @@ def mission_csv_timesheet(request, mission, consultants, start=None, end=None):
 
     return response
 
+
+@pydici_non_public
+@pydici_feature("reports")
+def mission_csv_timesheet_grouped(request, mission, consultants, start=None, end=None):
+    """@return: csv timesheet for a given mission, grouped by daily rate"""
+    # This "view" is never called directly but only through consultant_timesheet view
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = "attachment; filename=%s.csv" % mission.mission_id()
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
+    writer = csv.writer(response, delimiter=';')
+    for line in timesheet_report_data_grouped(mission, start=start, end=end):
+        writer.writerow(line)
+
+    return response
 
 class MissionTimesheetReportPdf(PydiciNonPublicdMixin, WeasyTemplateView):
     template_name = 'staffing/mission_timesheet_report.html'
