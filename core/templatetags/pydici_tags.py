@@ -22,7 +22,6 @@ def call_for_current_subsidiary(context, obj, f_name):
     Used for model methods called on templates that do not have access to request and session and cannot be called
     with explicit arguments"""
     subsidiary = context.get("current_subsidiary")
-    print(subsidiary)
     f = getattr(obj, f_name)
     if subsidiary:
         return f(subsidiary=subsidiary)
