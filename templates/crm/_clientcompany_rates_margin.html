@@ -23,7 +23,7 @@
                      <td>{% if client.contact %}{{ client.contact }}{% endif %}</td>
                      {% call_for_current_subsidiary client 'getFinancialConditions' as fc %}
                      {% for profil, rate in fc %}
-                            <td>{{ rate|default_if_none:'-' }}</td>
+                            <td>{{ rate|floatformat:0 }}</td>
                      {% endfor %}
                 </tr>
             {% endfor %}
