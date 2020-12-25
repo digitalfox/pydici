@@ -8,7 +8,7 @@ Database access layer for pydici CRM module
 from datetime import date, timedelta
 
 from django.db import models
-from django.db.models import Sum, Q, Avg
+from django.db.models import Sum, Q, F, Avg
 from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, pgettext
@@ -337,7 +337,7 @@ class Client(AbstractAddress):
 
         financialConditions = FinancialCondition.objects.filter(mission__lead__client=self,
                                           consultant__timesheet__charge__gt=0,  # exclude null charge
-                                          consultant__timesheet=models.F("mission__timesheet") # Join to avoid duplicate entries
+                                          consultant__timesheet=F("mission__timesheet") # Join to avoid duplicate entries
                                           )
         if subsidiary:
             financialConditions = financialConditions.filter(mission__lead__subsidiary=subsidiary)
@@ -349,7 +349,28 @@ class Client(AbstractAddress):
         for profil in ConsultantProfile.objects.all():
             data.append([profil.name, financialConditions.get(profil.name)])
 
-        return  data
+        return data
+
+    def daily_rate_ranking(self, subsidiary=None):
+        """compute daily rate ranking and return (ranking, average daily rate)"""
+        FinancialCondition = apps.get_model("staffing", "FinancialCondition")
+        financialConditions = FinancialCondition.objects.filter(consultant__timesheet__charge__gt=0,  # exclude null charge
+                                                                consultant__timesheet=F("mission__timesheet") # Join to avoid duplicate entries
+                                                                ).select_related()
+        if subsidiary:
+            financialConditions = financialConditions.filter(mission__lead__subsidiary=subsidiary)
+
+        financialConditions = financialConditions.values("mission__lead__client").order_by("mission__lead__client")
+        financialConditions = financialConditions.annotate(Avg("daily_rate")).order_by("-daily_rate__avg")
+        financialConditions = financialConditions.values_list("mission__lead__client", "daily_rate__avg")
+
+        daily_rate = dict(financialConditions).get(self.id)
+        if daily_rate:
+            rank = [c[0] for c in financialConditions].index(self.id)
+        else:
+            rank = None
+
+        return rank, daily_rate
 
     def objectiveMargin(self, subsidiary=None):
         """Compute margin over budget objective across all mission of this client
