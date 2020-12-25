@@ -8,7 +8,7 @@ Database access layer for pydici CRM module
 from datetime import date, timedelta
 
 from django.db import models
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, Avg
 from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, pgettext
@@ -333,11 +333,7 @@ class Client(AbstractAddress):
         @return: ((profil1, avgrate1), (profil2, avgrate2)...)"""
         FinancialCondition = apps.get_model("staffing", "FinancialCondition")
         ConsultantProfile = apps.get_model("people", "ConsultantProfile")
-        data = {}
-        rates = []
-
-        for profil in ConsultantProfile.objects.all():
-            data[profil] = []
+        data = []
 
         financialConditions = FinancialCondition.objects.filter(mission__lead__client=self,
                                           consultant__timesheet__charge__gt=0,  # exclude null charge
@@ -346,20 +342,14 @@ class Client(AbstractAddress):
         if subsidiary:
             financialConditions = financialConditions.filter(mission__lead__subsidiary=subsidiary)
 
-        for fc in financialConditions.select_related():
-            data[fc.consultant.profil].append(fc.daily_rate)
+        financialConditions = financialConditions.values("consultant__profil").annotate(Avg("daily_rate")).order_by("consultant__profil__level")
+        financialConditions =  financialConditions.values("consultant__profil__name", "daily_rate__avg")
+        financialConditions = {p["consultant__profil__name"]: p["daily_rate__avg"] for p in financialConditions}
 
-        # compute average
-        for profil, profilRates in list(data.items()):
-            if len(profilRates) > 0:
-                avg = sum(profilRates) / len(profilRates)
-            else:
-                avg = None
-            rates.append((profil, avg))
+        for profil in ConsultantProfile.objects.all():
+            data.append([profil.name, financialConditions.get(profil.name)])
 
-        # Sort by profil
-        rates.sort(key=lambda x: x[0].level)
-        return rates
+        return  data
 
     def objectiveMargin(self, subsidiary=None):
         """Compute margin over budget objective across all mission of this client
