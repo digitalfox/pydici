@@ -89,7 +89,7 @@ class Company(AbstractCompany):
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():
-            return float(list(data.aggregate(Sum("amount")).values())[0]) / 1000
+            return float(list(data.aggregate(Sum("amount")).values())[0] or 0) / 1000
         else:
             return 0
 
@@ -416,7 +416,7 @@ class Client(AbstractAddress):
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():
-            return float(list(data.aggregate(Sum("amount")).values())[0]) / 1000
+            return float(list(data.aggregate(Sum("amount")).values())[0] or 0) / 1000
         else:
             return 0
 
