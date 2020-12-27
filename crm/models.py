@@ -18,6 +18,8 @@ from django.conf import settings
 from core.utils import GEdge, GEdges, GNode, GNodes
 from core.models import CLIENT_BILL_LANG
 
+from crm.utils import get_clients_rate_ranking
+
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
 
@@ -353,20 +355,10 @@ class Client(AbstractAddress):
 
     def daily_rate_ranking(self, subsidiary=None):
         """compute daily rate ranking and return (ranking, average daily rate)"""
-        FinancialCondition = apps.get_model("staffing", "FinancialCondition")
-        financialConditions = FinancialCondition.objects.filter(consultant__timesheet__charge__gt=0,  # exclude null charge
-                                                                consultant__timesheet=F("mission__timesheet") # Join to avoid duplicate entries
-                                                                ).select_related()
-        if subsidiary:
-            financialConditions = financialConditions.filter(mission__lead__subsidiary=subsidiary)
-
-        financialConditions = financialConditions.values("mission__lead__client").order_by("mission__lead__client")
-        financialConditions = financialConditions.annotate(Avg("daily_rate")).order_by("-daily_rate__avg")
-        financialConditions = financialConditions.values_list("mission__lead__client", "daily_rate__avg")
-
+        financialConditions = get_clients_rate_ranking(subsidiary)
         daily_rate = dict(financialConditions).get(self.id)
         if daily_rate:
-            rank = [c[0] for c in financialConditions].index(self.id)
+            rank = [c[0] for c in financialConditions].index(self.id) + 1
         else:
             rank = None
 

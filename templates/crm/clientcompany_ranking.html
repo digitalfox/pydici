@@ -1,0 +1,33 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load l10n %}
+
+{% block title %}{% trans "Client ranking" %}{% endblock %}
+
+{% block content %}
+
+<table id="client_ranking" class="table table-hover table-striped table-condensed table-bordered">
+    <thead>
+        <tr>
+            <th>{% trans "Client" %}</th>
+            <th>{% trans "Alignement" %}</th>
+            <th>{% trans "Expectations" %}</th>
+            <th>{% trans "daily rate rank" %}</th>
+            <th>{% trans "daily rate" %}</th>
+            <th>{% trans "sales" %}</th>
+            <th>{% trans "last year sales" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for line in data %}
+             <tr>
+                 <td>{{ line|join:"</td><td>" }}</td>
+             </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% with "client_ranking" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
+
+{% endblock %}

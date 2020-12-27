@@ -35,6 +35,7 @@ crm_urls = [
             url(r'^client/(?P<client_id>\d+)/change$', v.client, name="client_change"),
             url(r'^client-organisation$', v.clientOrganisation, name="client_organisation"),
             url(r'^client-organisation/(?P<client_organisation_id>\d+)/change$', v.clientOrganisation, name="client_organisation_change"),
+            url(r'^clients/ranking$', v.clients_ranking, name="clients_ranking"),
             url(r'^company/graph/sales$', v.graph_company_sales, name="graph_company_sales"),
             url(r'^company/graph/sales/(?P<subsidiary_id>[0-9]+)$$', v.graph_company_sales, name="graph_company_sales"),
             url(r'^company/graph/sales/lastyear$', v.graph_company_sales, {"onlyLastYear": True}, name="graph_company_lastyear_sales"),

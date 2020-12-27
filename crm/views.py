@@ -432,7 +432,7 @@ def company_rates_margin(request, company_id):
 
 @pydici_non_public
 @pydici_feature("3rdparties")
-def company_billing(request, company_id, subsidiary=None):
+def company_billing(request, company_id):
     company = Company.objects.get(id=company_id)
     subsidiary = get_subsidiary_from_session(request)
     # Find leads of this company
@@ -497,6 +497,25 @@ def company_list(request):
     companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
     return render(request, "crm/clientcompany_list.html",
                   {"companies": list(companies)})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+@cache_page(60 * 60 * 24)
+def clients_ranking(request):
+    subsidiary = get_subsidiary_from_session(request)
+    clients = Client.objects.all()
+    data = []
+    for client in clients:
+        rate_rank, average_rate = client.daily_rate_ranking(subsidiary=subsidiary)
+        average_rate = int(average_rate) if average_rate else ""
+        data.append([mark_safe("<a href='%s'>%s</a>" % (client.get_absolute_url(), client)),
+                     client.get_alignment_display(), client.get_expectations_display(),
+                     rate_rank or "", average_rate,
+                     int(client.sales()), int(client.sales(onlyLastYear=True))])
+    return render(request, "crm/clientcompany_ranking.html",
+                  {"data": data,
+                   "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "type": "num-fmt", "targets": [3, 4, 5, 6] }],  ''',})
 
 
 @pydici_non_public

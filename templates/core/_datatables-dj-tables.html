@@ -14,7 +14,7 @@ $(document).ready(function() {
 
 
         $('#{{ table_id }}').dataTable({
-            {{ datatable_options }}
+            {{ datatable_options|safe }}
             "bPaginate": false,
             "bInfo": false,
             "bStateSave": false,
