@@ -401,10 +401,12 @@ class Client(AbstractAddress):
             margin += mission.remaining()
         return margin * 1000
 
-    def sales(self, onlyLastYear=False):
+    def sales(self, onlyLastYear=False, subsidiary=None):
         """Sales billed for this client in keuros"""
         from billing.models import ClientBill
         data = ClientBill.objects.filter(lead__client=self)
+        if subsidiary:
+            data = data.filter(lead__subsidiary=subsidiary)
         if onlyLastYear:
             data = data.filter(creation_date__gt=(date.today() - timedelta(365)))
         if data.count():

@@ -512,7 +512,7 @@ def clients_ranking(request):
         data.append([mark_safe("<a href='%s'>%s</a>" % (client.get_absolute_url(), client)),
                      client.get_alignment_display(), client.get_expectations_display(),
                      rate_rank or "", average_rate,
-                     int(client.sales()), int(client.sales(onlyLastYear=True))])
+                     int(client.sales(subsidiary=subsidiary)), int(client.sales(onlyLastYear=True, subsidiary=subsidiary))])
     return render(request, "crm/clientcompany_ranking.html",
                   {"data": data,
                    "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "type": "num-fmt", "targets": [3, 4, 5, 6] }],  ''',})
