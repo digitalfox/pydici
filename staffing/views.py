@@ -1659,7 +1659,7 @@ def optimise_pdc(request):
                     if "action_update" in request.POST:
                         solver_apply_forecast(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates, request.user)
                 else:
-                    error = _("There's no solution. Add consultants, remove mission or relax experience ratio constraint")
+                    error = _("There's no solution. Add consultants, remove mission, exclusions or relax experience ratio constraint")
             # recreate a new formset for further editing, based on previous one, removing previous extra forms
             formset = MissionOptimiserFormset(initial=[i for i in formset.cleaned_data if i], form_kwargs={"staffing_dates": staffing_dates})
     else:

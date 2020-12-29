@@ -166,7 +166,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
 
     # limit number of people per mission
     for mission in missions:
-        people_per_mission_score_items.append(sum(staffing_b_all[consultant][mission] for consultant in consultants))
+        people_per_mission_score_items.append(5*sum(staffing_b_all[consultant][mission] for consultant in consultants))
 
     # Optim part
     # Define intermediate score
