@@ -125,9 +125,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     # We have predefined assignment
     for mission, assigned_consultants in predefined_assignment.items():
         for consultant in assigned_consultants:
-            for month in months:
-                if missions_charge[mission][month] > 0:
-                    model.Add(staffing[consultant][mission][month] > 0)
+            model.Add(sum(staffing[consultant][mission][month] for month in months) > 0)
 
     # define score components
     planning_score_items = []
