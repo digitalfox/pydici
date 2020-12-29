@@ -179,9 +179,12 @@ class OptimTest(TestCase):
 
     predefined_assignment = {"M4": ["JCF", ]}
 
+    exclusions = {"M3": ["JCF", ]}
+
     def test_optim(self):
         solver, status, scores, staffing = solve_pdc(self.consultants, self.senior_consultants, self.missions, self.months,
-                                                     self.missions_charge, self.missions_remaining, self.consultants_freetime, self.predefined_assignment,
+                                                     self.missions_charge, self.missions_remaining, self.consultants_freetime,
+                                                     self.predefined_assignment, self.exclusions,
                                                      self.consultants_rates, solver_param={})
         display_solver_solution(solver, scores, staffing, self.consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime)
-        self.assertEqual((sum(solver.Value(score) for score in scores)), 26)
+        self.assertEqual((sum(solver.Value(score) for score in scores)), 27)

@@ -446,7 +446,12 @@ class MissionOptimiserForm(forms.Form):
         self.fields["mission"] = forms.ModelChoiceField(widget=MissionChoices(attrs={'data-width': '15em', 'data-placeholder':_("Select mission to plan")}, queryset=qs), queryset=qs)
         for month in self.staffing_dates:
             self.fields["charge_%s" % month[1]] = forms.IntegerField(required=False, label=month[1])
-        self.fields["predefined_assignment"] = forms.ModelMultipleChoiceField(label=_("Predefined assigment"), required=False, widget=ConsultantMChoices, queryset=Consultant.objects.filter(active=True))
+        self.fields["predefined_assignment"] = forms.ModelMultipleChoiceField(label=_("Predefined assigment"),
+                                                                              required=False, widget=ConsultantMChoices,
+                                                                              queryset=Consultant.objects.filter(active=True))
+        self.fields["exclusions"] = forms.ModelMultipleChoiceField(label=_("Exclusions"),
+                                                                              required=False, widget=ConsultantMChoices,
+                                                                              queryset=Consultant.objects.filter(active=True))
 
     def clean_mission(self):
         mission = self.cleaned_data.get("mission")

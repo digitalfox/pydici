@@ -18,7 +18,7 @@ from staffing.models import Holiday, Staffing
 
 
 def solve_pdc(consultants, senior_consultants, missions, months, missions_charge, missions_remaining, consultants_freetime,
-              predefined_assignment, consultants_rates, solver_param=None):
+              predefined_assignment, exclusions, consultants_rates, solver_param=None):
     # default value
     if solver_param is None:
         solver_param = {}
@@ -122,10 +122,15 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
             model.Add(sum(staffing[consultant][mission][month] for mission in missions) <= consultants_freetime[consultant][
                 month])
 
-    # We have predefined assignment
+    # Respect predefined assignment
     for mission, assigned_consultants in predefined_assignment.items():
         for consultant in assigned_consultants:
             model.Add(sum(staffing[consultant][mission][month] for month in months) > 0)
+
+    # Respect exclusions
+    for mission, excluded_consultants in exclusions.items():
+        for consultant in excluded_consultants:
+            model.AddBoolAnd([staffing_b_all[consultant][mission].Not()])
 
     # define score components
     planning_score_items = []

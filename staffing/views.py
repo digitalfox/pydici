@@ -1625,6 +1625,7 @@ def optimise_pdc(request):
                             "people_per_mission_weight": int(form["people_per_mission_weight"].value()),}
             missions_charge = {}
             predefined_assignment = {}
+            exclusions = {}
             missions = []
             missions_id = []
             for mission_form in formset.cleaned_data:
@@ -1636,6 +1637,10 @@ def optimise_pdc(request):
                         predefined_assignment[mission_form["mission"].mission_id()] = [c.trigramme for c in mission_form["predefined_assignment"]]
                         if not set(c.trigramme for c in mission_form["predefined_assignment"]).issubset(set(c.trigramme for c in form.cleaned_data["consultants"])):
                             error = _("Predefined assignment must be in consultant list")
+                    if mission_form["exclusions"]:
+                        exclusions[mission_form["mission"].mission_id()] = [c.trigramme for c in mission_form["exclusions"]]
+                        if not set(c.trigramme for c in mission_form["exclusions"]).issubset(set(c.trigramme for c in form.cleaned_data["consultants"])):
+                            error = _("Excluded consultant must be in consultant list")
 
             consultants_freetime = compute_consultant_freetime(form.cleaned_data["consultants"], missions, staffing_dates, projections=form.cleaned_data["projections"])
             consultant_rates = compute_consultant_rates(form.cleaned_data["consultants"], missions)
@@ -1645,7 +1650,7 @@ def optimise_pdc(request):
                                                               [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level > 2],
                                                               missions_id, [month[1] for month in staffing_dates],
                                                               missions_charge, missions_remaining, consultants_freetime,
-                                                              predefined_assignment, consultant_rates, solver_param)
+                                                              predefined_assignment, exclusions, consultant_rates, solver_param)
                 if status:
                     scores_data = [(score.Name(), solver.Value(score)) for score in scores]
                     total_score = sum(solver.Value(score) for score in scores)
