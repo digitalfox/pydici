@@ -1658,9 +1658,22 @@ def optimise_pdc(request):
             # recreate a new formset for further editing, based on previous one, removing previous extra forms
             formset = MissionOptimiserFormset(initial=[i for i in formset.cleaned_data if i], form_kwargs={"staffing_dates": staffing_dates})
     else:
-        # An unbound form
-        form = OptimiserForm()
-        formset = MissionOptimiserFormset(form_kwargs={"staffing_dates": staffing_dates})
+        # An unbound form with optional initial data
+        consultants = []
+        missions = []
+        try:
+            if "missions" in request.GET:
+                missions = [Mission.objects.get(id=int(m)) for m in request.GET.getlist("missions")]
+            if "consultants" in request.GET:
+                consultants = [Consultant.objects.get(trigramme=c) for c in request.GET.getlist("consultants")]
+        except Exception:
+            pass # User give garbage as in put
+        # complete consultants list with already staffed people
+        [consultants.extend(m.consultants()) for m in missions]
+        # Create form and formset with optional initial data
+        form = OptimiserForm(initial={"consultants": consultants})
+        formset = MissionOptimiserFormset(form_kwargs={"staffing_dates": staffing_dates},
+                                          initial=[{"mission":m, "predefined_assignment": m.consultants()} for m in missions])
 
     return render(request, "staffing/optimise_pdc.html",
                   {"form": form,
