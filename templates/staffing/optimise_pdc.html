@@ -32,7 +32,7 @@
         <div class="col-sm-6">
             <br/>
             <ul>
-                <li>{% trans "Solution type: " %} {{ solver.StatusName }}</li>
+                <li>{% trans "Solution type: " %} {% trans solver.StatusName %}</li>
                 <li>{% trans "Computation time: " %} {{ solver.WallTime|floatformat:-3 }} sec. ({{ solver.NumBranches }} {% trans "branches" %}, {{ solver.NumConflicts }} {% trans "conflicts" %})</li>
                 <li>{% trans "Total score: " %} {{ total_score }}</li>
             </ul>

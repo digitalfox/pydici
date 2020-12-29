@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-29 22:18+0100\n"
-"PO-Revision-Date: 2020-12-29 22:18+0100\n"
+"POT-Creation-Date: 2020-12-30 00:46+0100\n"
+"PO-Revision-Date: 2020-12-30 00:45+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -1226,7 +1226,7 @@ msgstr "état"
 #: templates/expense/expense_payments.html:46
 #: templates/staffing/mission.html:135
 #: templates/staffing/mission_staffing.html:19
-#: templates/staffing/optimise_pdc.html:40
+#: templates/staffing/optimise_pdc.html:81
 msgid "Consultant"
 msgstr "Consultant"
 
@@ -2023,7 +2023,7 @@ msgstr "prévu (€)"
 #: staffing/models.py:409 staffing/views.py:852 staffing/views.py:1127
 #: staffing/views.py:1226 templates/leads/lead_detail.html:213
 #: templates/staffing/consultant_staffing.html:10
-#: templates/staffing/mission.html:160 templates/staffing/optimise_pdc.html:39
+#: templates/staffing/mission.html:160 templates/staffing/optimise_pdc.html:80
 #: templates/staffing/pdc_detail.html:8
 msgid "Mission"
 msgstr "Mission"
@@ -2068,13 +2068,21 @@ msgstr "Taux journalier d'achat"
 msgid "Financial condition"
 msgstr "Condition financière"
 
-#: staffing/optim.py:234 templates/leads/leads_pivotable.html:18
+#: staffing/optim.py:192
+msgid "FEASIBLE"
+msgstr "faisable"
+
+#: staffing/optim.py:193
+msgid "OPTIMAL"
+msgstr "optimal"
+
+#: staffing/optim.py:238 templates/leads/leads_pivotable.html:18
 #: templates/staffing/missions_report.html:36
 #: templates/staffing/turnover_pivotable.html:21
 msgid "All"
 msgstr "Tous"
 
-#: staffing/optim.py:243 templates/staffing/missions.html:7
+#: staffing/optim.py:247 templates/staffing/missions.html:7
 #: templates/staffing/missions.html:16
 msgid "All missions"
 msgstr "Toutes les missions"
@@ -4762,35 +4770,35 @@ msgstr "Tableau par consultant"
 msgid "Graph per month"
 msgstr "Graphique par mois"
 
-#: templates/staffing/optimise_pdc.html:5
+#: templates/staffing/optimise_pdc.html:9
 msgid "Optimise staffing"
 msgstr "Optimiser le plan de charge"
 
-#: templates/staffing/optimise_pdc.html:13
+#: templates/staffing/optimise_pdc.html:17
 msgid "Solve"
 msgstr "Résoudre"
 
-#: templates/staffing/optimise_pdc.html:15
+#: templates/staffing/optimise_pdc.html:19
 msgid "Update forecast according to prevision"
 msgstr "Mettre à jour les prévisions de charge"
 
-#: templates/staffing/optimise_pdc.html:27
+#: templates/staffing/optimise_pdc.html:35
 msgid "Solution type: "
 msgstr "Type de solution :"
 
-#: templates/staffing/optimise_pdc.html:28
+#: templates/staffing/optimise_pdc.html:36
 msgid "Computation time: "
 msgstr "Temps de calcul :"
 
-#: templates/staffing/optimise_pdc.html:28
+#: templates/staffing/optimise_pdc.html:36
 msgid "branches"
 msgstr "branches"
 
-#: templates/staffing/optimise_pdc.html:28
+#: templates/staffing/optimise_pdc.html:36
 msgid "conflicts"
 msgstr "conflits"
 
-#: templates/staffing/optimise_pdc.html:29
+#: templates/staffing/optimise_pdc.html:37
 msgid "Total score: "
 msgstr "Score total :"
 
