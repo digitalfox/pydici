@@ -1609,7 +1609,7 @@ def optimise_pdc(request):
     total_score = -1
     results = []
     error = ""
-    MissionOptimiserFormset = formset_factory(MissionOptimiserForm, extra=3)
+    MissionOptimiserFormset = formset_factory(MissionOptimiserForm, extra=3, can_delete=True)
     solver = None
 
     if request.method == "POST":
@@ -1629,7 +1629,7 @@ def optimise_pdc(request):
             missions = []
             missions_id = []
             for mission_form in formset.cleaned_data:
-                if mission_form:
+                if mission_form and not mission_form["DELETE"]:
                     missions_charge[mission_form["mission"].mission_id()] = {month[1]:mission_form["charge_%s" % month[1]] or 0 for month in staffing_dates}
                     missions_id.append(mission_form["mission"].mission_id())
                     missions.append(mission_form["mission"])
@@ -1661,7 +1661,7 @@ def optimise_pdc(request):
                 else:
                     error = _("There's no solution. Add consultants, remove mission, exclusions or relax experience ratio constraint")
             # recreate a new formset for further editing, based on previous one, removing previous extra forms
-            formset = MissionOptimiserFormset(initial=[i for i in formset.cleaned_data if i], form_kwargs={"staffing_dates": staffing_dates})
+            formset = MissionOptimiserFormset(initial=[i for i in formset.cleaned_data if i and not i["DELETE"]], form_kwargs={"staffing_dates": staffing_dates})
     else:
         # An unbound form with optional initial data
         consultants = []
