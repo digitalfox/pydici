@@ -16,13 +16,13 @@ from django.core.cache import cache
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
-from django.contrib.admin.models import LogEntry, ADDITION,CHANGE, ContentType
+from django.contrib.admin.models import LogEntry, CHANGE, ContentType
 from django.forms.models import inlineformset_factory
 from django.forms import formset_factory
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
 from django.urls import reverse, reverse_lazy
-from django.db.models import Sum, Count, Q, Max
+from django.db.models import Sum, Count, Q
 from django.db.models.functions import TruncMonth
 from django.db import connections, transaction
 from django.utils.safestring import mark_safe
@@ -48,9 +48,9 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
     get_fiscal_years_from_qs, get_fiscal_year
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
-    sortMissions, holidayDays, staffingDates, time_string_for_day_percent, compute_automatic_staffing, \
+    sortMissions, holidayDays, staffingDates, time_string_for_day_percent, \
     timesheet_report_data, timesheet_report_data_grouped, check_missions_limited_mode
-from staffing.forms import MissionForm, MissionAutomaticStaffingForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
+from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from people.utils import get_team_scopes
 from crm.utils import get_subsidiary_from_session
@@ -90,7 +90,7 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
     if user_consultant.id == consultant.id or consultant in user_consultant.team():
         # User is accessing his own timesheet and timesheet of his team
         # A consultant can only edit his own timesheet on current month and 3 days after
-        if ontime_editing :
+        if ontime_editing:
             return TIMESHEET_ACCESS_READ_WRITE
         else:
             return TIMESHEET_ACCESS_READ_ONLY
@@ -101,7 +101,7 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
 
     # A user with timesheet_subcontractor can managed subcontractor  timesheet
     if consultant.subcontractor and user_has_feature(user, "timesheet_subcontractor"):
-        if ontime_editing :
+        if ontime_editing:
             return TIMESHEET_ACCESS_READ_WRITE
         else:
             return TIMESHEET_ACCESS_READ_ONLY
@@ -146,8 +146,8 @@ def mission_home(request, mission_id):
 
 @pydici_non_public
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def mission_staffing(request, mission_id, form_mode="manual"):
-    """Edit mission staffing. form_mode determine if staffing is done manually (manual) or automatically (automatic)"""
+def mission_staffing(request, mission_id):
+    """Edit mission staffing"""
     if (request.user.has_perm("staffing.add_staffing") and
         request.user.has_perm("staffing.change_staffing") and
         request.user.has_perm("staffing.delete_staffing")):
@@ -168,28 +168,21 @@ def mission_staffing(request, mission_id, form_mode="manual"):
         if readOnly:
             # Readonly users should never go here !
             return HttpResponseRedirect(reverse("core:forbiden"))
-        if form_mode=="manual":
-            formset = StaffingFormSet(request.POST, instance=mission)
-            if formset.is_valid():
-                saveFormsetAndLog(formset, request)
-                formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
-        else:
-            form = MissionAutomaticStaffingForm(request.POST)
-            if form.is_valid():
-                compute_automatic_staffing(mission, form.cleaned_data["mode"], int(form.cleaned_data["duration"]), user=request.user)
-                formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
+        formset = StaffingFormSet(request.POST, instance=mission)
+        if formset.is_valid():
+            saveFormsetAndLog(formset, request)
+            formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
     else:
         formset = StaffingFormSet(instance=mission)  # An unbound form
 
     # flush mission cache
-    cache.delete("Mission.forecasted_work%s" % mission.id )
+    cache.delete("Mission.forecasted_work%s" % mission.id)
     cache.delete("Mission.done_work%s" % mission.id)
 
     return render(request, 'staffing/mission_staffing.html',
                   {"formset": formset,
                    "mission": mission,
                    "remaining": mission.remaining(mode="target"),
-                   "automatic_staffing_form": MissionAutomaticStaffingForm(),
                    "read_only": readOnly,
                    "staffing_dates": staffingDates(),
                    "current_month": datetime.today().strftime("%Y%m"),
@@ -377,7 +370,7 @@ def pdc_review(request, year=None, month=None):
     consultants = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False).select_related("staffing_manager")
     if team:
         consultants = consultants.filter(staffing_manager=team)
-    if subsidiary :
+    if subsidiary:
         consultants = consultants.filter(company=subsidiary)
     for consultant in consultants:
         staffing[consultant] = []
@@ -394,7 +387,7 @@ def pdc_review(request, year=None, month=None):
             prod = []
             unprod = []
             holidays = []
-            for current_staffing  in current_staffings.select_related("mission__lead__client__organisation__company"):
+            for current_staffing in current_staffings.select_related("mission__lead__client__organisation__company"):
                 nature = current_staffing.mission.nature
                 if nature == "PROD":
                     missions.add(current_staffing.mission)  # Store prod missions for this consultant
@@ -476,7 +469,7 @@ def pdc_review(request, year=None, month=None):
                    "rates": rates,
                    "user": request.user,
                    "projection": projection,
-                   "projection_label" : projections[projection][0],
+                   "projection_label": projections[projection][0],
                    "projections": projections,
                    "previous_slice_date": previous_slice_date,
                    "next_slice_date": next_slice_date,
@@ -487,7 +480,7 @@ def pdc_review(request, year=None, month=None):
                    "scope": team_name or subsidiary or _("Everybody"),
                    "team_current_filter" : team_current_filter,
                    "team_current_url_filter": team_current_url_filter,
-                   "scopes": scopes,})
+                   "scopes": scopes})
 
 
 @pydici_non_public
@@ -586,7 +579,7 @@ def prod_report(request, year=None, month=None):
                     consultant.get_rate_objective(working_date=month, rate_type="PROD_RATE").rate) / 100
                 forecast = int(daily_rate_obj * prod_rate_obj * (month_days - consultant_days.get("HOLIDAYS",0)))
             except AttributeError:
-                prod_rate_obj = daily_rate_obj = forecast = 0 # At least one rate objective is missing
+                prod_rate_obj = daily_rate_obj = forecast = 0  # At least one rate objective is missing
             turnover = int(consultant.get_turnover(month, upperBound))
             if turnover == 0 and not consultant.active:
                 forecast = 0  # Remove forecast for consultant that leave during the period
@@ -640,13 +633,14 @@ def prod_report(request, year=None, month=None):
     return render(request, "staffing/prod_report.html",
                   {"data": data,
                    "months": months,
-                   "end_date" : end_date,
+                   "end_date": end_date,
                    "previous_slice_date": previous_slice_date,
                    "next_slice_date": next_slice_date,
                    "scope": team_name or  subsidiary or _("Everybody"),
                    "team_current_filter": team_current_filter,
                    "team_current_url_filter": team_current_url_filter,
-                   "scopes": scopes })
+                   "scopes": scopes})
+
 
 @pydici_non_public
 @pydici_feature("reports")
@@ -922,7 +916,7 @@ def mission_timesheet(request, mission_id):
         staffingData = []
         for month in staffingMonths:
             data = sum([t.charge for t in staffings.filter(consultant=consultant) if (t.staffing_date.month == month.month and t.staffing_date.year == month.year)])
-            if timesheetMonths  and \
+            if timesheetMonths and \
                date(timesheetMonths[-1].year, timesheetMonths[-1].month, 1) == current_month and \
                date(month.year, month.month, 1) == current_month:
                 # Remove timesheet days from current month forecast days
@@ -984,7 +978,6 @@ def mission_timesheet(request, mission_id):
         margin = 0
         avgDailyRate = 0
 
-
     # pad to 8 values
     padded_mission_data = []
     for consultant, timesheet, staffing, estimated in missionData:
@@ -1014,7 +1007,7 @@ def mission_timesheet(request, mission_id):
         else:
             # Both timesheet and staffing but no overlap
             isoDates = isoTimesheetDates + isoStaffingDates
-            graph_timesheet = timesheetTotalAmount[:-1] +  [0,]*len(isoStaffingDates)
+            graph_timesheet = timesheetTotalAmount[:-1] + [0,]*len(isoStaffingDates)
             graph_staffing = [0,]*len(isoTimesheetDates) + staffingTotalAmount[:-1]
     else:
         # Only timesheet or staffing

@@ -37,7 +37,7 @@
         <li role="presentation"><a data-toggle="tab" href="#tab-other-missions" id="tabheader-other-missions"><span class="glyphicon glyphicon-list"></span> {% trans "Other missions" %}</a></li>
         <li role="presentation"><a data-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing:mission_timesheet' mission.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
         {% if mission.active %}
-            <li role="presentation"><a data-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'staffing:manual_mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'staffing:mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
         {% endif %}
         {% if mission.lead %}
             <li role="presentation"><a data-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense:lead_expenses' mission.lead.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>

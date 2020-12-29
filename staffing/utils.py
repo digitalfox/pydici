@@ -8,16 +8,14 @@ appropriate to live in Staffing models or view
 """
 import time
 from datetime import date, datetime
-from math import floor
 
 from django.conf import settings
 from django.db import transaction
 from django.utils.translation import ugettext as _
-from django.db.models import Max
 from django.utils import formats
 from django.core.cache import cache
 
-from staffing.models import Timesheet, Staffing, Mission, LunchTicket, Holiday
+from staffing.models import Timesheet, Mission, LunchTicket, Holiday
 from core.utils import month_days, nextMonth, daysOfMonth, to_int_or_round
 from people.models import TIMESHEET_IS_UP_TO_DATE_CACHE_KEY, CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY
 
@@ -92,7 +90,7 @@ def saveTimesheetData(consultant, month, data, oldData):
         if missionId == "ticket":
             # Lunch ticket handling
             lunchTicket, created = LunchTicket.objects.get_or_create(consultant=consultant,
-                                                                    lunch_date=working_date)
+                                                                     lunch_date=working_date)
             if charge:
                 # Create/update new data
                 lunchTicket.no_ticket = True
@@ -153,7 +151,7 @@ def sortMissions(missions):
             prodMissions.append(mission)
         else:
             # Oups, we should never go here. Just log, in case of
-            print("Unknown mission nature (%s). Cannot sort") % mission.nature
+            print("Unknown mission nature (%s). Cannot sort" % mission.nature)
 
     # Sort each list
     holidaysMissions.sort(key=lambda x: str(x.description))
@@ -170,7 +168,7 @@ def holidayDays(month=None):
     if not month:
         month = date.today()
     month = month.replace(day=1)
-    return [h.day for h in  Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth(month))]
+    return [h.day for h in Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth(month))]
 
 
 def staffingDates(n=12, format=None, minDate=None, maxDate=None):
@@ -208,53 +206,6 @@ def day_percent_for_time_string(time_string, day_duration=settings.TIMESHEET_DAY
     duration = value_struct[3] + value_struct[4] / 60.0
     return duration / day_duration
 
-
-@transaction.atomic
-def compute_automatic_staffing(mission, mode, duration, user=None):
-    """Compute staffing for a given mission. Mode can be after (current staffing) for replace (erase and create)"""
-    now = datetime.now().replace(microsecond=0)  # Remove useless microsecond
-    current_month = date.today().replace(day=1)
-    start_date = current_month
-    total = 0
-
-    if not mission.consultants():
-        # no consultant, no staffing. Come on.
-        return
-
-    if mode=="replace":
-        mission.staffing_set.all().delete()
-        cache.delete("Mission.forecasted_work%s" % mission.id)
-        cache.delete("Mission.done_work%s" % mission.id)
-        if mission.lead:
-            start_date = max(current_month, mission.lead.start_date.replace(day=1))
-    else:
-        max_staffing = Staffing.objects.filter(mission=mission).aggregate(Max("staffing_date"))["staffing_date__max"]
-        if max_staffing:
-            start_date = max(current_month, nextMonth(max_staffing))
-
-    if mission.start_date:
-        start_date = max(start_date, mission.start_date)
-
-    margin = mission.remaining(mode="target")
-    rates = mission.consultant_rates()
-    rates_sum = sum([i[0] for i in rates.values()])
-    days = margin*1000 / rates_sum / duration
-    days = max(floor(days * 4) / 4, 0.25)
-
-    for consultant in rates.keys():
-        month = start_date
-        for i in range(duration):
-            if total > margin*1000:
-                break
-            if mission.end_date and month > mission.end_date:
-                break
-            s = Staffing(mission=mission, consultant=consultant, charge=days, staffing_date=month, update_date = now)
-            if user:
-                s.last_user = str(user)
-            s.save()
-            total += days * rates[consultant][0]
-
-            month = nextMonth(month)
 
 def timesheet_report_data_grouped(mission, start=None, end=None):
     """Timesheet charges for a single mission, on a timerange, by whole month

@@ -82,6 +82,7 @@ div.table-pydici-all-timehseets {
 a { color: #8F6749; }
 a:link, a:visited { color: #8F6749; }
 a:hover { color: #883915; }
+a.button-link:link, a.button-link:visited { color: #333; }
 
 /* disabled items */
 a.disabled-items {

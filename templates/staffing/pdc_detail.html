@@ -24,9 +24,9 @@
     </tfoot>
     </table>
     {% if available < 0  %}
-        <a role="button" class="btn btn-default"
+        <a role="button" class="btn btn-default button-link"
            href="{% url 'staffing:optimise_pdc' %}?{% for staffing in staffings %}{% ifequal staffing.mission.nature 'PROD' %}missions={{ staffing.mission.id|unlocalize }};{% endifequal %}{% endfor %}">
-            <span class="glyphicon glyphicon-cog"></span> {% trans "Optimize workload" %}</a>
+            <span class="glyphicon glyphicon-cog"></span> {% trans "Optimize workload for those missions" %}</a>
     {% endif %}
 {% else %}
 {% trans "No staffing" %}
