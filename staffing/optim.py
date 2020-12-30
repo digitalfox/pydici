@@ -223,28 +223,46 @@ def display_solver_solution(solver, scores, staffing, consultants, missions, mon
 def solver_solution_format(solver, staffing, consultants, missions, staffing_dates, missions_charge, consultants_freetime):
     """Prepare solver solution an array for template rendering"""
     results = []
+    class_optim_ok = "optim_ok"
+    class_optim_warn = "optim_warn"
     for mission in missions:
         mission_id = mission.mission_id()
-        mission_link = mark_safe("<a href='%s'>%s</a>" % (mission.get_absolute_url(), str(mission)))
+        mission_link = mark_safe("<a href='%s#tab-timesheet'>%s</a>" % (mission.get_absolute_url(), str(mission)))
         for consultant in consultants:
+            consultant_link = mark_safe("<a href='%s#tab-staffing'>%s</a>" % (consultant.get_absolute_url(), str(consultant)))
             charges = [solver.Value(staffing[consultant.trigramme][mission_id][month[1]]) for month in staffing_dates]
             if sum(charges) > 0:
-                results.append([mission_link, consultant, *charges])
+                charges = [(None, str(i or "")) for i in charges]
+                results.append([mission_link, consultant_link, *charges])
         all_charges = []
         results.append([""] * (len(staffing_dates) + 2))
         for month in staffing_dates:
             mission_charge = sum(solver.Value(staffing[consultant.trigramme][mission_id][month[1]]) for consultant in consultants)
-            all_charges.append("%s/%s\t" % (mission_charge, missions_charge[mission_id][month[1]]))
+            if mission_charge > 0 or missions_charge[mission_id][month[1]] > 0:
+                if abs(missions_charge[mission_id][month[1]] - mission_charge) < 2:
+                    class_optim = class_optim_ok
+                else:
+                    class_optim = class_optim_warn
+
+                all_charges.append((class_optim, "%s/%s\t" % (mission_charge, missions_charge[mission_id][month[1]])))
+            else:
+                # No charge planned of forecasted, display nothing for this month
+                all_charges.append(("", ""))
         results.append([mission_link, _("All"), *all_charges])
-        results.append([""] * (len(staffing_dates) + 2))
-        results.append([mark_safe("&nbsp;")] * (len(staffing_dates) + 2))
+        results.append([""] * 2 + [None, ""] * len(staffing_dates))  # Zero content row (hack for bold line)
+        results.append([mark_safe("&nbsp;")] * 2 + [[None, mark_safe("&nbsp;")]] * len(staffing_dates))  # Empty row
     for consultant in consultants:
+        consultant_link = mark_safe("<a href='%s#tab-staffing'>%s</a>" % (consultant.get_absolute_url(), str(consultant)))
         all_charges = []
         for month in staffing_dates:
             consultant_charge = sum(
                 solver.Value(staffing[consultant.trigramme][mission.mission_id()][month[1]]) for mission in missions)
-            all_charges.append("%s/%s" % (consultant_charge, consultants_freetime[consultant.trigramme][month[1]]))
-        results.append([_("All missions"), consultant, *all_charges])
+            if consultants_freetime[consultant.trigramme][month[1]] - consultant_charge < 2:
+                class_optim = class_optim_warn
+            else:
+                class_optim = class_optim_ok
+            all_charges.append((class_optim, "%s/%s" % (consultant_charge, consultants_freetime[consultant.trigramme][month[1]])))
+        results.append([_("All missions"), consultant_link, *all_charges])
 
     return results
 

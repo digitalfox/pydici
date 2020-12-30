@@ -488,3 +488,7 @@ div.ui-tooltip {
 .pydici_small_number input {
     width: 5em;
 }
+
+/* workload optim result */
+.optim_ok { background-color: #e7ffde; }
+.optim_warn { background-color: #ffc5c5; }

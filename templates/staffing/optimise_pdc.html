@@ -87,7 +87,12 @@
         {% for row in results %}
             <tr>
                 {% for item in row %}
-                    <td>{{ item }}</td>
+                    {% if forloop.counter > 2 %}
+                        <td class="{{ item.0 }}">{{ item.1 }}</td>
+                    {% else %}
+                        <td>{{ item }}</td>
+
+                    {% endif %}
                 {% endfor %}
             </tr>
         {% endfor %}
