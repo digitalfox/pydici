@@ -33,6 +33,7 @@
             <br/>
             <ul>
                 <li>{% trans "Solution type: " %} {% trans solver.StatusName %}</li>
+                {% if solver.StatusName != "OPTIMAL" %}<li class="optim_warn">{% trans "Solution is not optimal. Try to increase planning weight or set weight to None for number of mission per people or consultant freetime" %}</li>{% endif %}
                 <li>{% trans "Computation time: " %} {{ solver.WallTime|floatformat:-3 }} sec. ({{ solver.NumBranches }} {% trans "branches" %}, {{ solver.NumConflicts }} {% trans "conflicts" %})</li>
                 <li>{% trans "Total score: " %} {{ total_score }}</li>
             </ul>
