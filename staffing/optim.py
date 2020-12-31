@@ -188,9 +188,13 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = 10.0  # Limit to 10 secs
     status = solver.Solve(model) in (cp_model.OPTIMAL, cp_model.FEASIBLE)
-    # Declare status string to make them translatable
+    # Declare status and score string to make them translatable
     ugettext_noop("FEASIBLE")
     ugettext_noop("OPTIMAL")
+    ugettext_noop("planning_score")
+    ugettext_noop("freetime_score")
+    ugettext_noop("people_per_mission_score")
+    ugettext_noop("mission_per_people_score")
     return solver, status, [planning_score, freetime_score, people_per_mission_score, mission_per_people_score], staffing
 
 

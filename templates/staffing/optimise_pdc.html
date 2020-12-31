@@ -51,11 +51,11 @@
                 data: {
                     columns: [
                         {% for score_name, score_value in scores %}
-                            ['{{ score_name }}', {{ score_value }}],
+                            ['{% trans score_name %}', {{ score_value }}],
                         {% endfor %}
                     ],
                     groups: [
-                        [{% for score_name, score_value in scores %}'{{ score_name }}',{% endfor %}]
+                        [{% for score_name, score_value in scores %}'{% trans score_name %}',{% endfor %}]
                     ],
                     type: 'bar',
                     labels: true
@@ -70,7 +70,8 @@
                     x : { show: false, },
                     y : { show: false, },
                 },
-                legend: {  position: 'right' }
+                legend: {  position: 'right' },
+                tooltip: { format: { title: function (x, index) { return "{% trans 'Optimisation score' %}"; } } },
             });
         });
     </script>
