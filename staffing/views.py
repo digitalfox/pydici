@@ -1596,8 +1596,12 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 @pydici_feature("staffing_mass")
 def optimise_pdc(request):
     """Propose optimised mission staffing according to business rules"""
+    if date.today().day  > 20:
+        start_date = nextMonth(date.today())
+    else:
+        start_date = date.today().replace(day=1)
     staffing_dates = [(i, formats.date_format(i, format="b y")) for i in
-                      staffingDates(format="datetime", n=8)]
+                      staffingDates(format="datetime", n=8, minDate=start_date)]
     scores_data = []
     total_score = -1
     results = []
