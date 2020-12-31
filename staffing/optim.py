@@ -234,10 +234,24 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
         mission_link = mark_safe("<a href='%s#tab-timesheet'>%s</a>" % (mission.get_absolute_url(), str(mission)))
         for consultant in consultants:
             consultant_link = mark_safe("<a href='%s#tab-staffing'>%s</a>" % (consultant.get_absolute_url(), str(consultant)))
-            charges = [solver.Value(staffing[consultant.trigramme][mission_id][month[1]]) for month in staffing_dates]
-            if sum(charges) > 0:
-                charges = [(None, str(i or "")) for i in charges]
-                results.append([mission_link, consultant_link, *charges])
+            charges = []
+            for month in staffing_dates:
+                charge = solver.Value(staffing[consultant.trigramme][mission_id][month[1]])
+                try:
+                    delta = charge - Staffing.objects.get(mission=mission, consultant=consultant, staffing_date=month[0]).charge
+                except Staffing.DoesNotExist:
+                    delta = charge
+                if charge or delta:
+                    if delta > 0:
+                        charges.append((None, mark_safe("%i <small>(+%i)</small>" % (charge, delta))))
+                    elif delta < 0:
+                        charges.append((None, mark_safe("%i <small>(%i)</small>" % (charge, delta))))
+                    else:
+                        charges.append((None, "%i" % charge))
+                else:
+                    charges.append("")  # Don't display zero to ease readability
+            # Add charges for mission / consultant
+            results.append([mission_link, consultant_link, *charges])
         all_charges = []
         results.append([""] * (len(staffing_dates) + 2))
         for month in staffing_dates:
