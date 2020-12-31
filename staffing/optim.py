@@ -235,6 +235,7 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
         for consultant in consultants:
             consultant_link = mark_safe("<a href='%s#tab-staffing'>%s</a>" % (consultant.get_absolute_url(), str(consultant)))
             charges = []
+            display_consultant = False
             for month in staffing_dates:
                 charge = solver.Value(staffing[consultant.trigramme][mission_id][month[1]])
                 try:
@@ -242,6 +243,7 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
                 except Staffing.DoesNotExist:
                     delta = charge
                 if charge or delta:
+                    display_consultant = True
                     if delta > 0:
                         charges.append((None, mark_safe("%i <small>(+%i)</small>" % (charge, delta))))
                     elif delta < 0:
@@ -250,8 +252,9 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
                         charges.append((None, "%i" % charge))
                 else:
                     charges.append("")  # Don't display zero to ease readability
-            # Add charges for mission / consultant
-            results.append([mission_link, consultant_link, *charges])
+            # Add charges for mission / consultant if needed
+            if display_consultant:
+                results.append([mission_link, consultant_link, *charges])
         all_charges = []
         results.append([""] * (len(staffing_dates) + 2))
         for month in staffing_dates:
