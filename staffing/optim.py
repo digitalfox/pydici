@@ -228,6 +228,7 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
     """Prepare solver solution an array for template rendering"""
     results = []
     class_optim_ok = "optim_ok"
+    class_optim_info = "optim_info"
     class_optim_warn = "optim_warn"
     for mission in missions:
         mission_id = mission.mission_id()
@@ -244,12 +245,15 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
                     delta = charge
                 if charge or delta:
                     display_consultant = True
+                    class_optim = None
+                    if (abs(delta) == charge) or (charge == 0 and delta != 0):  # Notify for newcomers and leavers
+                        class_optim = class_optim_info
                     if delta > 0:
-                        charges.append((None, mark_safe("%i <small>(+%i)</small>" % (charge, delta))))
+                        charges.append((class_optim, mark_safe("%i <small>(+%i)</small>" % (charge, delta))))
                     elif delta < 0:
-                        charges.append((None, mark_safe("%i <small>(%i)</small>" % (charge, delta))))
+                        charges.append((class_optim, mark_safe("%i <small>(%i)</small>" % (charge, delta))))
                     else:
-                        charges.append((None, "%i" % charge))
+                        charges.append((class_optim, "%i" % charge))
                 else:
                     charges.append("")  # Don't display zero to ease readability
             # Add charges for mission / consultant if needed
