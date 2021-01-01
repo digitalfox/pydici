@@ -9,7 +9,7 @@ from django.db import models
 from django.db.models import Sum, Min, F, Q
 from django.db.models.functions import TruncMonth
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext, pgettext_lazy
+from django.utils.translation import ugettext, pgettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.contrib.admin.models import ContentType, LogEntry
@@ -53,7 +53,7 @@ class Mission(models.Model):
     MANAGEMENT_MODES = (
         ('LIMITED', ugettext("Limited")),
         ('ELASTIC', ugettext("Elastic")),
-        ('NONE', pgettext_lazy("masculine", "None")))
+        ('NONE', pgettext("masculine", "None")))
     lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"), on_delete=models.CASCADE)
     deal_id = models.CharField(_("Mission id"), max_length=100, blank=True)
     description = models.CharField(_("Description"), max_length=30, blank=True, null=True)
