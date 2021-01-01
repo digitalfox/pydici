@@ -807,10 +807,6 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                     mission.price = m_amount
                     mission.save()
                     price_updated_missions.append(mission)
-                    all_mission_price = mission.lead.mission_set.aggregate(Sum("price"))["price__sum"]
-                    if all_mission_price > mission.lead.sales:
-                        mission.lead.sales = all_mission_price
-                        mission.lead.save()
 
     return render(request, "staffing/consultant_timesheet.html",
                   {"consultant": consultant,

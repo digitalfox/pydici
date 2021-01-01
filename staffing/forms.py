@@ -295,7 +295,7 @@ class MissionForm(PydiciCrispyModelForm):
                 total += mission.price
 
         remaining = self.instance.lead.sales - total
-        if self.cleaned_data["price"] > remaining:
+        if self.cleaned_data["price"] > remaining and self.instance.management_mode != "ELASTIC":
             raise ValidationError(_("Only %s k€ are remaining on this lead. Define a lower price" % remaining))
 
         # No error, we return data as is

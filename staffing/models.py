@@ -83,6 +83,15 @@ class Mission(models.Model):
             else:
                 return name
 
+    def save(self, *args, **kwargs):
+        super(Mission, self).save(*args, **kwargs)
+        # update lead price if needed
+        if self.lead and self.lead.sales:
+            all_mission_price = self.lead.mission_set.aggregate(Sum("price"))["price__sum"] or 0
+            if all_mission_price > self.lead.sales:
+                self.lead.sales = all_mission_price
+                self.lead.save()
+
     def short_name(self):
         """Name with deal name, mission desc and id. No client name"""
         if self.lead:
@@ -399,7 +408,6 @@ class Mission(models.Model):
                                               content_type__app_label="staffing")
         actionList = actionList.select_related().order_by('-action_time')
         return actionList
-
 
     def get_absolute_url(self):
         return reverse('staffing:mission_home', args=[str(self.id)])
