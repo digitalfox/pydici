@@ -1605,6 +1605,7 @@ def optimise_pdc(request):
     scores_data = []
     total_score = -1
     results = []
+    missions_remaining_results = []
     error = ""
     MissionOptimiserFormset = formset_factory(MissionOptimiserForm, extra=3, can_delete=True)
     solver = None
