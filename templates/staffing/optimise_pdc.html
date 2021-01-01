@@ -102,7 +102,30 @@
     </tbody>
 </table>
 
-
+<table class="table table-striped table-hover table-pydici-extra-condensed" id="pdc_optim_mission_table">
+    <thead>
+        <tr>
+            <th>{% trans "Mission" %}</th>
+            <th>{% trans "Price" %}</th>
+            <th>{% trans "Current remaining" %}</th>
+            <th>{% trans "Target remaining with current forecast" %}</th>
+            <th>{% trans "Target remaining with proposed forecast" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for row in missions_remaining_results %}
+        <tr>
+            {% for item in row %}
+                {% if forloop.counter > 1 %}
+                    <td style="text-align: center">{{ item }} k€</td>
+                {% else %}
+                    <td>{{ item }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 {% endif %}
 {% endblock %}

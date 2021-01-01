@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_noop
 from django.db import transaction
 
-from core.utils import working_days
+from core.utils import working_days, to_int_or_round
 from staffing.models import Holiday, Staffing
 
 
@@ -224,15 +224,25 @@ def display_solver_solution(solver, scores, staffing, consultants, missions, mon
         print()
 
 
-def solver_solution_format(solver, staffing, consultants, missions, staffing_dates, missions_charge, consultants_freetime):
-    """Prepare solver solution an array for template rendering"""
+def solver_solution_format(solver, staffing, consultants, missions, staffing_dates, missions_charge, consultants_freetime, consultant_rates):
+    """Prepare solver solution for template rendering. Returns staffing_array and mission_remaining_array"""
     results = []
+    missions_remaining_results = []
     class_optim_ok = "optim_ok"
     class_optim_info = "optim_info"
     class_optim_warn = "optim_warn"
     for mission in missions:
         mission_id = mission.mission_id()
         mission_link = mark_safe("<a href='%s#tab-timesheet'>%s</a>" % (mission.get_absolute_url(), str(mission)))
+        new_forecast = sum([solver.Value(staffing[consultant.trigramme][mission_id][month[1]]) * consultant_rates[consultant.trigramme][mission_id] / 1000
+                                                           for consultant in consultants for month in staffing_dates])
+        new_target_remaining = mission.remaining(mode="current") - new_forecast
+        missions_remaining_results.append([mission_link,
+                                           to_int_or_round(mission.price or 3),
+                                           to_int_or_round(mission.remaining(mode="current"), 3),
+                                           to_int_or_round(mission.remaining(mode="target"), 3),
+                                           to_int_or_round(new_target_remaining, 3),
+                                           ])
         for consultant in consultants:
             consultant_link = mark_safe("<a href='%s#tab-staffing'>%s</a>" % (consultant.get_absolute_url(), str(consultant)))
             charges = []
@@ -289,7 +299,7 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
             all_charges.append((class_optim, "%s/%s" % (consultant_charge, consultants_freetime[consultant.trigramme][month[1]])))
         results.append([_("All missions"), consultant_link, *all_charges])
 
-    return results
+    return results, missions_remaining_results
 
 
 def compute_consultant_freetime(consultants, missions, months, projections="full"):

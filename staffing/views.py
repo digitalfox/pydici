@@ -1651,8 +1651,9 @@ def optimise_pdc(request):
                 if status:
                     scores_data = [(score.Name(), solver.Value(score)) for score in scores]
                     total_score = sum(solver.Value(score) for score in scores)
-                    results = solver_solution_format(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates,
-                                                     missions_charge, consultants_freetime)
+                    results, missions_remaining_results = solver_solution_format(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates,
+                                                                                 missions_charge, consultants_freetime, consultant_rates)
+
                     if "action_update" in request.POST:
                         solver_apply_forecast(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates, request.user)
                 else:
@@ -1684,6 +1685,7 @@ def optimise_pdc(request):
                    "scores": scores_data,
                    "total_score": total_score,
                    "results": results,
+                   "missions_remaining_results": missions_remaining_results,
                    "error": error,
                    "solver" : solver,
                    "staffing_dates": staffing_dates})
