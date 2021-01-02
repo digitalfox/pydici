@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load l10n %}
 {# Fragment of page to be included in a consultant_home tab #}
 
 <div id="pydici-ajax-form-content-consultant-staffing" class="content-large">
@@ -60,6 +61,11 @@
         <br />
         <div class="submit-row">
             <button type='submit' class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span> {% trans 'Save' %}</button>
+            <a role="button" class="btn btn-default button-link"
+               href="{% url 'staffing:optimise_pdc' %}?{% for mission in consultant.active_missions %}{% ifequal mission.nature 'PROD' %}missions={{ mission.id|unlocalize }};{% endifequal %}{% endfor %}">
+               <span class="glyphicon glyphicon-cog"></span> {% trans "Optimize workload for current missions" %}
+            </a>
+
         </div>
     </form>
 </div>
