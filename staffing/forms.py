@@ -30,7 +30,6 @@ from django.utils import formats
 from staffing.models import Mission, FinancialCondition, Staffing
 from people.models import Consultant
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
-from core.utils import nextMonth
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
 from staffing.utils import staffingDates, time_string_for_day_percent, day_percent_for_time_string

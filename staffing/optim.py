@@ -83,7 +83,7 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
             staffing_mission_delta[mission][month] = model.NewIntVar(0, 1000,
                                                                      "staffing_mission_delta[%s,%s]" % (mission, month))
             staffing_mission_cum_delta[mission][month] = model.NewIntVar(0, 1000,
-                                                                     "staffing_mission_cum_delta[%s,%s]" % (mission, month))
+                                                                         "staffing_mission_cum_delta[%s,%s]" % (mission, month))
             month_total = sum(staffing[consultant][mission][month] for consultant in consultants)
             model.Add(month_total >= missions_charge[mission][month] - staffing_mission_delta[mission][month])
             model.Add(month_total <= missions_charge[mission][month] + staffing_mission_delta[mission][month])
@@ -235,7 +235,7 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
         mission_id = mission.mission_id()
         mission_link = mark_safe("<a href='%s#tab-timesheet'>%s</a>" % (mission.get_absolute_url(), str(mission)))
         new_forecast = sum([solver.Value(staffing[consultant.trigramme][mission_id][month[1]]) * consultant_rates[consultant.trigramme][mission_id] / 1000
-                                                           for consultant in consultants for month in staffing_dates])
+                            for consultant in consultants for month in staffing_dates])
         new_target_remaining = mission.remaining(mode="current") - new_forecast
         missions_remaining_results.append([mission_link,
                                            to_int_or_round(mission.price or 3),

@@ -64,7 +64,7 @@ def gatherTimesheetData(consultant, missions, month):
         if day.isoweekday() in (6, 7) or day in holiday_days:
             warning[day.day - 1] = None
 
-    return (timesheetData, timesheetTotal, warning)
+    return timesheetData, timesheetTotal, warning
 
 
 @transaction.atomic
@@ -78,7 +78,7 @@ def saveTimesheetData(consultant, month, data, oldData):
     cache.delete(CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY % consultant.__dict__)
 
     for key, charge in data.items():
-        if not charge and not key in oldData:
+        if not charge and key not in oldData:
             # No charge in new and old data
             continue
         if charge and key in oldData and float(data[key]) == oldData[key]:
@@ -241,17 +241,17 @@ def timesheet_report_data_grouped(mission, start=None, end=None):
             total = 0
             row = [rate_label, ]
 
-            #timesheets is already a Queryset, we cannot aggregate in SQL
+            # timesheets is already a Queryset, we cannot aggregate in SQL
             rate_timesheets_charges = timesheets.filter(consultant__in=rates_consultants[rate],
-                                                working_date__gte=month,
-                                                working_date__lt=next_month).values("charge")
+                                                        working_date__gte=month,
+                                                        working_date__lt=next_month).values("charge")
 
             for c in rate_timesheets_charges:
-               total += c["charge"]
+                total += c["charge"]
             row.append(total)
 
             if total:
-               data.append(row)
+                data.append(row)
 
     return data
 
@@ -318,19 +318,20 @@ def create_next_year_std_missions(current, target, dryrun=True, start_date=None,
     @start_date: mission start boundary
     @end_date: mission end boundary"""
     for m in Mission.objects.exclude(nature="PROD").filter(active=True):
-        if not m.description or not current in m.description:
+        if not m.description or current not in m.description:
             continue
-        new_mission = Mission(description = m.description.replace(current, target),
-                              subsidiary = m.subsidiary,
-                              nature = m.nature,
-                              billing_mode = "TIME_SPENT",
-                              probability = 100,
-                              probability_auto = False,
-                              start_date = start_date,
-                              end_date = end_date)
+        new_mission = Mission(description=m.description.replace(current, target),
+                              subsidiary=m.subsidiary,
+                              nature=m.nature,
+                              billing_mode="TIME_SPENT",
+                              probability=100,
+                              probability_auto=False,
+                              start_date=start_date,
+                              end_date=end_date)
         print("Creating new mission %s" % new_mission)
         if not dryrun:
             new_mission.save()
+
 
 def check_missions_limited_mode(missions):
     """Ensure that after a timesheet update we don't violate management mode policy
