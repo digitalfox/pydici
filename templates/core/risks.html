@@ -15,6 +15,7 @@
         <div id="type-selector" class="btn-group" role="group">
             <button class="btn btn-default active" onclick="array();">{% trans "Risks per client (array)" %}</button>
             <button class="btn btn-default" onclick="graph();">{% trans "Risks per type (graph)" %}</button>
+            <button class="btn btn-default" onclick="missing_bills();">{% trans "Work without bill" %}</button>
         </div>
 
         <div id="pivotable-output" style="margin-top: 10px;"></div>
@@ -46,6 +47,15 @@
                 var cols = ["{% trans 'subsidiary' %}",];
                 var rows = ["{% trans 'type' %}",];
                 drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ['{% trans "amount" %}']);
+            }
+
+            function missing_bills() {
+                var rows = ["{% trans 'subsidiary' %}",];
+                var cols = ["{% trans 'deal_id' %}", "{% trans 'deal' %}"];
+                var options = {};
+                options["colOrder"] = "value_z_to_a";
+                options['inclusions'] = { {% trans "type" %}: ['{% trans "work without bill" %}'] };
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ['{% trans "amount" %}'], options);
             }
 
 
