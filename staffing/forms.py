@@ -14,6 +14,7 @@ from django import forms
 from django.conf import settings
 from django.forms.models import BaseInlineFormSet
 from django.forms import ChoiceField, ModelChoiceField
+from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
@@ -228,7 +229,7 @@ class TimesheetForm(forms.Form):
                     mission_link = str(mission)
                     if mission.lead_id:
                         mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), str(mission))
-                    self.fields[key].label = mark_safe("<span class='pydici-tooltip' title='%s'>%s</span>" % (tooltip, mission_link))
+                    self.fields[key].label = mark_safe("<span class='pydici-tooltip' title='%s'>%s</span>" % (escape(tooltip), escape(mission_link)))
                 else:
                     self.fields[key].label = ""
             # Add staffing total and forecast in hidden field
