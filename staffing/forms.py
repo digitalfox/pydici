@@ -460,7 +460,14 @@ class MissionOptimiserForm(forms.Form):
             rates = mission.consultant_rates()
             min_price = 0
             for consultant in self.cleaned_data.get("predefined_assignment"):
-                min_price += rates[consultant][0]/1000
+                if consultant in rates:
+                    min_price += rates[consultant][0]/1000
+                else:  # use consultant budget rate or set to zero
+                    rate_objective = consultant.get_rate_objective(rate_type="DAILY_RATE")
+                    if rate_objective:
+                        min_price += rate_objective.rate / 1000
+                    else:
+                        min_price = 0
             remaining = mission.remaining()
             if min_price > remaining:
                 raise ValidationError(_("Remaining budget (%s k€) is too low for at least one day of each predefined consultant") % remaining)
