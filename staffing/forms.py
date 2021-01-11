@@ -453,6 +453,20 @@ class MissionOptimiserForm(forms.Form):
             raise ValidationError(_("Mission has no budget remaining"))
         return mission
 
+    def clean_predefined_assignment(self):
+        """Ensure that there's enough budget to plan at least one day per prefedined assignment"""
+        mission = self.cleaned_data.get("mission")
+        if mission:
+            rates = mission.consultant_rates()
+            min_price = 0
+            for consultant in self.cleaned_data.get("predefined_assignment"):
+                min_price += rates[consultant][0]/1000
+            remaining = mission.remaining()
+            if min_price > remaining:
+                raise ValidationError(_("Remaining budget (%s k€) is too low for at least one day of each predefined consultant") % remaining)
+
+        return self.cleaned_data.get("predefined_assignment")
+
     def clean(self):
         mission = self.cleaned_data.get("mission")
         if mission and sum(self.cleaned_data["charge_%s" % month[1]] or 0 for month in self.staffing_dates) == 0:
