@@ -165,7 +165,7 @@ class Consultant(models.Model):
                 mission = Mission.objects.get(id=mission_id)
                 done_work = mission.done_work_k()[1]
                 price = float(mission.price or 0)
-                if done_work and done_work > price or (not mission.active and done_work < price):
+                if done_work and (done_work > price or (not mission.active and done_work < price)):
                     # mission is a fixed price and has been overshoot. Limit turnover to fixed price in proportion to what have been done
                     # or mission is archived and have margin
                     mission_turnover = mission_turnover * price / done_work
