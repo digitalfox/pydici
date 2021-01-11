@@ -9,6 +9,7 @@ from django.utils.translation import ugettext as _
 from django.template.loader import get_template
 from django.db.models import Q
 from django.utils.safestring import mark_safe
+from django.utils.html import escape
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
@@ -65,7 +66,7 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
 
     def render_column(self, row, column):
         if column == "pk":
-            return "<a href='{0}'>{1}</a>".format(row.get_absolute_url(), str(row))
+            return "<a href='{0}'>{1}</a>".format(row.get_absolute_url(), escape(row))
         elif column == "no_forecast":
             if row.no_more_staffing_since():
                 return self.ko_sign

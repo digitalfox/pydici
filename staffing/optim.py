@@ -12,6 +12,7 @@ from ortools.sat.python import cp_model
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_noop
+from django.utils.html import escape
 from django.db import transaction
 
 from core.utils import working_days, to_int_or_round
@@ -233,7 +234,7 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
     class_optim_warn = "optim_warn"
     for mission in missions:
         mission_id = mission.mission_id()
-        mission_link = mark_safe("<a href='%s#tab-timesheet'>%s</a>" % (mission.get_absolute_url(), str(mission)))
+        mission_link = mark_safe("<a href='%s#tab-timesheet'>%s</a>" % (mission.get_absolute_url(), escape(mission)))
         new_forecast = sum([solver.Value(staffing[consultant.trigramme][mission_id][month[1]]) * consultant_rates[consultant.trigramme][mission_id] / 1000
                             for consultant in consultants for month in staffing_dates])
         new_target_remaining = mission.remaining(mode="current") - new_forecast
@@ -244,7 +245,7 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
                                            to_int_or_round(new_target_remaining, 3),
                                            ])
         for consultant in consultants:
-            consultant_link = mark_safe("<a href='%s#tab-staffing'>%s</a>" % (consultant.get_absolute_url(), str(consultant)))
+            consultant_link = mark_safe("<a href='%s#tab-staffing'>%s</a>" % (consultant.get_absolute_url(), escape(consultant)))
             charges = []
             display_consultant = False
             for month in staffing_dates:
@@ -287,7 +288,7 @@ def solver_solution_format(solver, staffing, consultants, missions, staffing_dat
         results.append([""] * 2 + [None, ""] * len(staffing_dates))  # Zero content row (hack for bold line)
         results.append([mark_safe("&nbsp;")] * 2 + [[None, mark_safe("&nbsp;")]] * len(staffing_dates))  # Empty row
     for consultant in consultants:
-        consultant_link = mark_safe("<a href='%s#tab-staffing'>%s</a>" % (consultant.get_absolute_url(), str(consultant)))
+        consultant_link = mark_safe("<a href='%s#tab-staffing'>%s</a>" % (consultant.get_absolute_url(), escape(consultant)))
         all_charges = []
         for month in staffing_dates:
             consultant_charge = sum(

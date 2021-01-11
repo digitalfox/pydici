@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, pgettext
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.html import escape
 from django.conf import settings
 from core.utils import GEdge, GEdges, GNode, GNodes
 from core.models import CLIENT_BILL_LANG
@@ -169,12 +170,12 @@ class Contact(models.Model):
             return _("None")
         elif companies_count == 1:
             if html:
-                return mark_safe("<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[companies[0].id,]), str(companies[0])))
+                return mark_safe("<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[companies[0].id,]), escape(companies[0])))
             else:
                 return companies[0]
         elif companies_count > 1:
             if html:
-                return mark_safe(", ".join(["<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[i.id,]), str(i)) for i in companies]))
+                return mark_safe(", ".join(["<a href='%s'>%s</a>" % (reverse("crm:company_detail", args=[i.id,]), escape(i)) for i in companies]))
             else:
                 return ", ".join([str(i) for i in companies])
     companies.short_description = _("Companies")

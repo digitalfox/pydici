@@ -8,6 +8,7 @@ Pydici leads tables
 from django.db.models import Q
 from django.template.loader import get_template
 from django.urls import reverse
+from django.utils.html import escape
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from taggit.models import Tag
@@ -51,7 +52,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
             else:
                 return "-"
         elif column == "client":
-            return "<a href='{0}'>{1}</a>".format(row.client.get_absolute_url(), row.client)
+            return "<a href='{0}'>{1}</a>".format(row.client.get_absolute_url(), escape(row.client))
         elif column == "sales":
             if row.sales:
                 return round(float(row.sales),3)

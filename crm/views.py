@@ -16,6 +16,7 @@ from django.views.generic import DetailView, ListView
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.utils.html import escape
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
@@ -509,7 +510,7 @@ def clients_ranking(request):
     for client in clients:
         rate_rank, average_rate = client.daily_rate_ranking(subsidiary=subsidiary)
         average_rate = int(average_rate) if average_rate else ""
-        data.append([mark_safe("<a href='%s'>%s</a>" % (client.get_absolute_url(), client)),
+        data.append([mark_safe("<a href='%s'>%s</a>" % (client.get_absolute_url(), escape(client))),
                      client.get_alignment_display(), client.get_expectations_display(),
                      rate_rank or "", average_rate,
                      int(client.sales(subsidiary=subsidiary)), int(client.sales(onlyLastYear=True, subsidiary=subsidiary))])

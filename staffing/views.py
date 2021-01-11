@@ -424,7 +424,7 @@ def pdc_review(request, year=None, month=None):
         # Add client synthesis to staffing dict
         company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
         client_list = ", ".join(["<a href='%s'>%s</a>" %
-                                (reverse("crm:company_detail", args=[c.id]), str(c)) for c in company])
+                                (reverse("crm:company_detail", args=[c.id]), escape(c)) for c in company])
         client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
         staffing[consultant].append([client_list])
 
@@ -1118,15 +1118,15 @@ def all_timesheet(request, year=None, month=None):
         data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet' class='pydici-tooltip' title='%s'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme]),
                                                                                    month.year,
                                                                                    month.month,
-                                                                                   escape(str(consultant.name)),
-                                                                                   escape(str(consultant.trigramme)))) for consultant in consultants]
+                                                                                   escape(consultant.name),
+                                                                                   escape(consultant.trigramme))) for consultant in consultants]
     data = [[_("Mission")] + data]
     for timesheet in timesheets:
         charges[(timesheet["mission"], timesheet["consultant"])] = to_int_or_round(timesheet["sum"], 2)
     for mission in missions:
         mission_data = escape(str(mission))
         missionUrl = "<a href='%s' class='pydici-tooltip' title='%s'>%s</a>" % (reverse("staffing:mission_home", args=[mission.id, ]),
-                                        escape(str(mission.mission_id())),
+                                        escape(mission.mission_id()),
                                         (mission_data[:75] + '...' if len(mission_data) > 75 else mission_data))
 
         if "csv" in request.GET:
