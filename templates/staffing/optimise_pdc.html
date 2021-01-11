@@ -1,5 +1,6 @@
 {% extends "core/pydici.html" %}
 {% load i18n %}
+{% load l10n %}
 {% load crispy_forms_tags %}
 
 {% block extrajs %}
@@ -52,7 +53,7 @@
                 data: {
                     columns: [
                         {% for score_name, score_value in scores %}
-                            ['{% trans score_name %}', {{ score_value }}],
+                            ['{% trans score_name %}', {{ score_value|unlocalize }}],
                         {% endfor %}
                     ],
                     groups: [
