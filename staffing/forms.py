@@ -551,3 +551,8 @@ class OptimiserForm(forms.Form):
             if not min([c.profil.level for c in self.cleaned_data["consultants"]]) <= 2:
                 raise ValidationError(_("%s %% newbie profile is required but no newbie consultant has been selected") % self.cleaned_data["newbie_quota"])
         return self.cleaned_data["newbie_quota"]
+
+    def clean(self):
+        if self.cleaned_data["newbie_quota"] + self.cleaned_data["senior_quota"] > 100:
+            raise ValidationError(_("Sum of newbie and senior quota cannot exceed 100%"))
+        return self.cleaned_data
