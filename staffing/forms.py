@@ -536,13 +536,13 @@ class OptimiserForm(forms.Form):
         return self.cleaned_data["consultants"]
 
     def clean_senior_quota(self):
-        if self.cleaned_data["senior_quota"] > 0:
+        if self.cleaned_data.get("consultants") and self.cleaned_data["senior_quota"] > 0:
             if not max([c.profil.level for c in self.cleaned_data["consultants"]]) > 2:
                 raise ValidationError(_("%s %% senior profile is required but no senior consultant has been selected") % self.cleaned_data["senior_quota"])
         return self.cleaned_data["senior_quota"]
 
     def clean_newbie_quota(self):
-        if self.cleaned_data["newbie_quota"] > 0:
+        if self.cleaned_data.get("consultants") and self.cleaned_data["newbie_quota"] > 0:
             if not min([c.profil.level for c in self.cleaned_data["consultants"]]) <= 2:
                 raise ValidationError(_("%s %% newbie profile is required but no newbie consultant has been selected") % self.cleaned_data["newbie_quota"])
         return self.cleaned_data["newbie_quota"]
