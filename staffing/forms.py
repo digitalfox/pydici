@@ -512,6 +512,7 @@ class MissionOptimiserFormsetHelper(FormHelper):
 class OptimiserForm(forms.Form):
     """A form to select optimiser input data and parameters"""
     def __init__(self, *args, **kwargs):
+        self.subsidiary = kwargs.pop("subsidiary", None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -532,7 +533,11 @@ class OptimiserForm(forms.Form):
 
     def clean_consultants(self):
         if len(self.cleaned_data["consultants"]) < 1:
-            raise ValidationError(_("Select at least one consultant"))
+            # no consultant defined ? Let's populate with all active and productive people except subcontractor
+            consultants = Consultant.objects.filter(productive=True, active=True, subcontractor=False)
+            if self.subsidiary:
+                consultants = consultants.filter(company=self.subsidiary)
+            self.cleaned_data["consultants"] = consultants
         return self.cleaned_data["consultants"]
 
     def clean_senior_quota(self):

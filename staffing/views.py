@@ -1607,7 +1607,7 @@ def optimise_pdc(request):
     solver = None
 
     if request.method == "POST":
-        form = OptimiserForm(request.POST)
+        form = OptimiserForm(request.POST, subsidiary=get_subsidiary_from_session(request))
         formset = MissionOptimiserFormset(request.POST, form_kwargs={"staffing_dates": staffing_dates})
         if form.is_valid() and formset.is_valid():
             # Process the data in form.cleaned_data
@@ -1655,8 +1655,10 @@ def optimise_pdc(request):
                         solver_apply_forecast(solver, staffing, form.cleaned_data["consultants"], missions, staffing_dates, request.user)
                 else:
                     error = _("There's no solution. Add consultants, remove mission, exclusions or relax experience ratio constraint")
-            # recreate a new formset for further editing, based on previous one, removing previous extra forms
+            # recreate a new formset for further editing with updated charge, based on previous one, removing previous extra forms
             formset = MissionOptimiserFormset(initial=[i for i in formset.cleaned_data if i and not i["DELETE"]], form_kwargs={"staffing_dates": staffing_dates})
+            # recreate a new form for further editing with updated consultants list.
+            form = OptimiserForm(initial=form.cleaned_data, subsidiary=get_subsidiary_from_session(request))
     else:
         # An unbound form with optional initial data
         consultants = []
@@ -1671,7 +1673,7 @@ def optimise_pdc(request):
         # complete consultants list with already staffed people
         [consultants.extend(m.consultants()) for m in missions]
         # Create form and formset with optional initial data
-        form = OptimiserForm(initial={"consultants": consultants})
+        form = OptimiserForm(initial={"consultants": consultants}, subsidiary=get_subsidiary_from_session(request))
         formset = MissionOptimiserFormset(form_kwargs={"staffing_dates": staffing_dates},
                                           initial=[{"mission":m, "predefined_assignment": m.consultants()} for m in missions])
 
