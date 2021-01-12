@@ -519,8 +519,8 @@ class OptimiserForm(forms.Form):
 
         self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.filter(active=True), required=False)
         self.fields["projections"] = forms.ChoiceField(label=_("staffing projection freetime"), choices=(("full", _("full")), ("balanced", _("balanced")), ("none", _("none"))), initial="balanced")
-        self.fields["senior_quota"] = forms.IntegerField(label=_("Senior min. quota (%)"), initial=20)
-        self.fields["newbie_quota"] = forms.IntegerField(label=_("Newbie min. quota (%)"), initial=30)
+        self.fields["senior_quota"] = forms.IntegerField(label=_("Senior min. quota (%)"), initial=20, min_value=0, max_value=100)
+        self.fields["newbie_quota"] = forms.IntegerField(label=_("Newbie min. quota (%)"), initial=30, min_value=0, max_value=100)
         self.fields["planning_weight"] = forms.ChoiceField(label=_("Mission planning weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
         self.fields["freetime_weight"] = forms.ChoiceField(label=_("Consultant free time weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
         self.fields["people_per_mission_weight"] = forms.ChoiceField(label=_("People per mission weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
