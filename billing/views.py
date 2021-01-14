@@ -305,7 +305,7 @@ def client_bill(request, bill_id=None):
                     elif "bill_file" in form.changed_data:
                         # a file has been provided by user himself. We must not generate a file and overwrite it.
                         messages.add_message(request, messages.WARNING, _("Using custom user file to replace current bill"))
-                    else:
+                    elif bill.billexpense_set.exists() or bill.billdetail_set.exists():
                         # bill file exist but authorized admin change information and do not provide custom file. Let's generate again bill file
                         messages.add_message(request, messages.WARNING, _("A new bill is generated and replace the previous one"))
                         if os.path.exists(bill.bill_file.path):
