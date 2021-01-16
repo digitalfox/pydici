@@ -12,6 +12,7 @@ import sys
 import os
 from os.path import abspath, join, dirname, pardir
 import logging
+from datetime import date
 
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
@@ -28,13 +29,14 @@ os.chdir(PYDICI_DIR)
 
 # Django imports
 from django.core.wsgi import get_wsgi_application
+from django.db.models import Sum
 
 # Init and model loading
 application = get_wsgi_application()
 
 # Pydici imports
 from people.models import Consultant
-from staffing.models import Mission
+from staffing.models import Mission, Timesheet, Holiday
 
 # Enable logging
 logging.basicConfig(
@@ -49,6 +51,7 @@ MISSION_SELECT, MISSION_TIMESHEET = range(2)
 
 NONPROD_BUTTON = InlineKeyboardButton("non production mission ?", callback_data="NONPROD")
 
+
 def mission_keyboard(consultant, nature):
     keyboard = []
     for mission in consultant.forecasted_missions():
@@ -57,11 +60,27 @@ def mission_keyboard(consultant, nature):
     return keyboard
 
 
+def remaining_time_to_declare(context):
+    consultant = context.user_data["consultant"]
+    today = date.today()
+    holidays = Holiday.objects.all()
+    if today.weekday() < 15 and today not in holidays:
+        declared = Timesheet.objects.filter(consultant=consultant, working_date=today).aggregate(Sum("charge"))[
+                       "charge__sum"] or 0
+        return 1 - declared - sum(context.user_data["timesheet"].values())
+    else:
+        return 0
+
+
 def start(update, context):
     """Start timesheet session when user type /start"""
     user = update.message.from_user
-    #TODO: add telegram alias field to Consultant
-    consultant = Consultant.objects.get(trigramme="SRE")
+    try:
+        consultant = Consultant.objects.get(telegram_alias="%s" % user.name.lstrip("@"), active=True)
+    except Consultant.DoesNotExist:
+        update.message.reply_text("sorry, i don't know you")
+        return ConversationHandler.END
+
     context.user_data["consultant"] = consultant
     context.user_data["mission_nature"] = "PROD"
     context.user_data["timesheet"] = {}
@@ -90,7 +109,8 @@ def mission_timesheet(update, context):
         ]
     ]
     query.edit_message_text(
-        text="how much did you work on %s ?" % mission.short_name(), reply_markup=InlineKeyboardMarkup(keyboard))
+        text="how much did you work on %s ? (%s is remaining for today)" % (mission.short_name(), remaining_time_to_declare(context)),
+        reply_markup=InlineKeyboardMarkup(keyboard))
     return MISSION_TIMESHEET
 
 
@@ -113,7 +133,7 @@ def select_mission(update, context):
     if query.data == "NONPROD":
         context.user_data["mission_nature"] = "NONPROD"
     else:
-        context.user_data["timesheet"][mission] = query.data
+        context.user_data["timesheet"][mission] = float(query.data)
 
     keyboard = mission_keyboard(consultant, context.user_data["mission_nature"])
 
