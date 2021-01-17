@@ -73,6 +73,9 @@ def remaining_time_to_declare(context):
 def start(update, context):
     """Start timesheet session when user type /start"""
     user = update.message.from_user
+    if update.effective_chat.id < 0:
+        update.message.reply_text("I am too shy to do that in public. Let's go private :-)")
+        return ConversationHandler.END
     try:
         consultant = Consultant.objects.get(telegram_alias="%s" % user.name.lstrip("@"), active=True)
     except Consultant.DoesNotExist:
