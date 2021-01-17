@@ -14,6 +14,10 @@ from os.path import abspath, join, dirname, pardir
 import logging
 from datetime import date
 
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO,
+)
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, CallbackContext
@@ -38,13 +42,7 @@ application = get_wsgi_application()
 from people.models import Consultant
 from staffing.models import Mission, Timesheet, Holiday
 
-# Enable logging
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
-
 logger = logging.getLogger(__name__)
-
 
 # Stages
 MISSION_SELECT, MISSION_TIMESHEET = range(2)
@@ -119,7 +117,12 @@ def end(update, context):
     query = update.callback_query
     query.answer()
     msg = "You timesheet was updated:\n"
-    msg += "\n".join(["%s : %s" % (m.short_name(), c) for m, c in context.user_data["timesheet"].items()])
+    msg += "\n - ".join(["%s : %s" % (m.short_name(), c) for m, c in context.user_data["timesheet"].items()])
+    total = sum(context.user_data["timesheet"].values())
+    if total > 1:
+        msg += "\n\nWhat a day, %s declared. Time to get some rest!" % total
+    elif total < 1:
+        msg += "\n\nOnly %s today. Don't you forget to declare something ?" % total
     query.edit_message_text(text=msg)
     return ConversationHandler.END
 
@@ -129,10 +132,10 @@ def select_mission(update, context):
     query = update.callback_query
     query.answer()
     consultant = context.user_data["consultant"]
-    mission = context.user_data["mission"]
     if query.data == "NONPROD":
         context.user_data["mission_nature"] = "NONPROD"
     else:
+        mission = context.user_data["mission"]
         context.user_data["timesheet"][mission] = float(query.data)
 
     keyboard = mission_keyboard(consultant, context.user_data["mission_nature"])
