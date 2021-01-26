@@ -553,6 +553,6 @@ class OptimiserForm(forms.Form):
         return self.cleaned_data["newbie_quota"]
 
     def clean(self):
-        if self.cleaned_data["newbie_quota"] + self.cleaned_data["senior_quota"] > 100:
+        if self.cleaned_data.get("newbie_quota", 0) + self.cleaned_data.get("senior_quota", 0) > 100:
             raise ValidationError(_("Sum of newbie and senior quota cannot exceed 100%"))
         return self.cleaned_data
