@@ -34,6 +34,8 @@ os.chdir(PYDICI_DIR)
 # Django imports
 from django.core.wsgi import get_wsgi_application
 from django.db.models import Sum
+from django.db import transaction
+
 
 # Init and model loading
 application = get_wsgi_application()
@@ -119,6 +121,16 @@ def end(update, context):
     """Returns `ConversationHandler.END`, which tells the  ConversationHandler that the conversation is over"""
     query = update.callback_query
     query.answer()
+    consultant = context.user_data["consultant"]
+    with transaction.atomic():
+        try:
+            Timesheet.objects.filter(consultant=consultant, working_date=date.today()).delete()
+            for mission, charge in context.user_data["timesheet"].items():
+                Timesheet.objects.create(mission=mission, consultant=consultant,
+                                         charge=charge, working_date=date.today())
+        except:
+            query.edit_message_text(text="Oups, cannot update your timesheet, sorry")
+            return ConversationHandler.END
     msg = "You timesheet was updated:\n"
     msg += "\n - ".join(["%s : %s" % (m.short_name(), c) for m, c in context.user_data["timesheet"].items()])
     total = sum(context.user_data["timesheet"].values())
