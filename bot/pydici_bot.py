@@ -2,7 +2,7 @@
 # coding: utf-8
 
 """
-Telegram bot for timesheet input
+Telegram bot for timesheet input and various reminder
 
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
@@ -12,15 +12,16 @@ import sys
 import os
 from os.path import abspath, join, dirname, pardir
 import logging
-from datetime import date
+from datetime import date, datetime
+import random
 
 # Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO,
 )
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, CallbackContext
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, JobQueue
 
 # # Setup django envt & django imports
 PYDICI_DIR = abspath(join(dirname(__file__), pardir))
@@ -35,6 +36,7 @@ os.chdir(PYDICI_DIR)
 from django.core.wsgi import get_wsgi_application
 from django.db.models import Sum
 from django.db import transaction
+from django.utils.translation import ugettext as _
 
 
 # Init and model loading
@@ -42,7 +44,9 @@ application = get_wsgi_application()
 
 # Pydici imports
 from people.models import Consultant
+from people.utils import compute_consultant_tasks
 from staffing.models import Mission, Timesheet, Holiday
+from core.utils import get_parameter
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +54,17 @@ logger = logging.getLogger(__name__)
 MISSION_SELECT, MISSION_TIMESHEET = range(2)
 
 NONPROD_BUTTON = InlineKeyboardButton("non production mission ?", callback_data="NONPROD")
+
+
+def check_user_is_declared(update, context):
+    """Ensure user we are talking is defined in our database. If yes, return consultant object"""
+    try:
+        user = update.message.from_user
+        consultant = Consultant.objects.get(telegram_alias="%s" % user.name.lstrip("@"), active=True)
+        return consultant
+    except Consultant.DoesNotExist:
+        update.message.reply_text("sorry, i don't know you")
+        return ConversationHandler.END
 
 
 def mission_keyboard(consultant, nature):
@@ -78,10 +93,10 @@ def start(update, context):
     if update.effective_chat.id < 0:
         update.message.reply_text("I am too shy to do that in public. Let's go private :-)")
         return ConversationHandler.END
-    try:
-        consultant = Consultant.objects.get(telegram_alias="%s" % user.name.lstrip("@"), active=True)
-    except Consultant.DoesNotExist:
-        update.message.reply_text("sorry, i don't know you")
+
+    consultant = check_user_is_declared(update, context)
+
+    if consultant == ConversationHandler.END:
         return ConversationHandler.END
 
     context.user_data["consultant"] = consultant
@@ -164,12 +179,52 @@ def select_mission(update, context):
     return MISSION_SELECT
 
 
+def alert_consultant(context):
+    """Randomly alert consultant about important stuff to do"""
+    now = datetime.now()
+    if now.weekday() in (5,6) or now.hour < 9 or now.hour > 19:
+        # don't bother people outside business hours
+        return
+    consultants = Consultant.objects.exclude(telegram_id=None).filter(active=True)
+    if not consultants:
+        logger.warning("No consultant have telegram id defined. Alerting won't be possible. Bye")
+        return
+    consultant = random.choice(consultants)
+    #TODO: add pressure control mechanism to avoid persecuting people we already warned x times before
+    tasks = compute_consultant_tasks(consultant)
+    if tasks:
+        task_name, task_count, task_link, task_priority = random.choice(tasks)
+        url = get_parameter("HOST") + task_link
+        msg = _("Hey, what about thinking about that: %s (x%s)\n%s" % (task_name, task_count, url))
+        context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
+
+
+def hello(update, context):
+    user = update.message.from_user
+
+    consultant = check_user_is_declared(update, context)
+
+    if consultant == ConversationHandler.END:
+        return ConversationHandler.END
+
+    if consultant.telegram_id:
+        update.message.reply_text(_("very happy to see you again !"))
+    else:
+        consultant.telegram_id = user.id
+        consultant.save()
+        update.message.reply_text(_("I very pleased to meet you !"))
+
+    return ConversationHandler.END
+
+
 def main():
+    #TODO: get if from config file as well
     updater = Updater(os.environ["PYDICI_TOKEN"], use_context=True)
     dispatcher = updater.dispatcher
 
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[CommandHandler('start', start),
+                      CommandHandler("hello", hello)],
         states={
             MISSION_SELECT: [
                 CallbackQueryHandler(select_mission, pattern="NONPROD"),
@@ -185,6 +240,9 @@ def main():
 
     # Add ConversationHandler to dispatcher
     dispatcher.add_handler(conv_handler)
+
+    # Add alert job
+    updater.job_queue.run_repeating(alert_consultant, 3600)
 
     # Start the Bot
     updater.start_polling()
