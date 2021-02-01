@@ -54,17 +54,17 @@ logger = logging.getLogger(__name__)
 # Stages
 MISSION_SELECT, MISSION_TIMESHEET = range(2)
 
-NONPROD_BUTTON = InlineKeyboardButton("non production mission ?", callback_data="NONPROD")
+NONPROD_BUTTON = InlineKeyboardButton(_("non productive mission?"), callback_data="NONPROD")
 
 
 def check_user_is_declared(update, context):
-    """Ensure user we are talking is defined in our database. If yes, return consultant object"""
+    """Ensure user we are talking  with is defined in our database. If yes, return consultant object"""
     try:
         user = update.message.from_user
         consultant = Consultant.objects.get(telegram_alias="%s" % user.name.lstrip("@"), active=True)
         return consultant
     except Consultant.DoesNotExist:
-        update.message.reply_text(_("sorry, i don't know you"))
+        update.message.reply_text(_("sorry, I don't know you"))
         return ConversationHandler.END
 
 
@@ -88,30 +88,6 @@ def remaining_time_to_declare(context):
         return 0
 
 
-def start(update, context):
-    """Start timesheet session when user type /start"""
-    user = update.message.from_user
-    if update.effective_chat.id < 0:
-        update.message.reply_text(_("I am too shy to do that in public. Let's go private :-)"))
-        return ConversationHandler.END
-
-    consultant = check_user_is_declared(update, context)
-
-    if consultant == ConversationHandler.END:
-        return ConversationHandler.END
-
-    context.user_data["consultant"] = consultant
-    context.user_data["mission_nature"] = "PROD"
-    context.user_data["timesheet"] = {}
-
-    keyboard = mission_keyboard(consultant, "PROD")
-    keyboard.append([NONPROD_BUTTON])
-
-    update.message.reply_text(_("On what did you work today ?"), reply_markup=InlineKeyboardMarkup(keyboard))
-
-    return MISSION_SELECT
-
-
 def mission_timesheet(update, context):
     """Declare timesheet for given mission"""
     query = update.callback_query
@@ -128,12 +104,13 @@ def mission_timesheet(update, context):
         ]
     ]
     query.edit_message_text(
-        text="how much did you work on %(mission)s ? (%(time)s is remaining for today)" % (mission.short_name(), remaining_time_to_declare(context)),
+        text=_("how much did you work on %(mission)s ? (%(time)s is remaining for today)") % {"mission": mission.short_name(),
+                                                                                              "time": remaining_time_to_declare(context)},
         reply_markup=InlineKeyboardMarkup(keyboard))
     return MISSION_TIMESHEET
 
 
-def end(update, context):
+def end_timesheet(update, context):
     """Returns `ConversationHandler.END`, which tells the  ConversationHandler that the conversation is over"""
     query = update.callback_query
     query.answer()
@@ -180,6 +157,31 @@ def select_mission(update, context):
     return MISSION_SELECT
 
 
+def time(update, context):
+    """Start timesheet session when user type /start"""
+    if update.effective_chat.id < 0:
+        update.message.reply_text(_("I am too shy to do that in public. Let's go private :-)"))
+        return ConversationHandler.END
+
+    consultant = check_user_is_declared(update, context)
+    if consultant == ConversationHandler.END:
+        return ConversationHandler.END
+
+    if consultant == ConversationHandler.END:
+        return ConversationHandler.END
+
+    context.user_data["consultant"] = consultant
+    context.user_data["mission_nature"] = "PROD"
+    context.user_data["timesheet"] = {}
+
+    keyboard = mission_keyboard(consultant, "PROD")
+    keyboard.append([NONPROD_BUTTON])
+
+    update.message.reply_text(_("On what did you work today ?"), reply_markup=InlineKeyboardMarkup(keyboard))
+
+    return MISSION_SELECT
+
+
 def alert_consultant(context):
     """Randomly alert consultant about important stuff to do"""
     now = datetime.now()
@@ -202,13 +204,28 @@ def alert_consultant(context):
         context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
 
 
-def hello(update, context):
-    user = update.message.from_user
-
+def help(update, context):
+    """Bot help"""
     consultant = check_user_is_declared(update, context)
-
     if consultant == ConversationHandler.END:
         return ConversationHandler.END
+    msg = _("""Hello. I am just a bot you know. So I won't fake doing incredible things. Here's what can I do for you:
+    /hello nice way to meet. After this cordial introduction, I may talk to you from time to time to remind you importants things to do
+    /time a fun and easy way to declare your timesheet of the day
+    """)
+
+    update.message.reply_text(msg)
+
+    return ConversationHandler.END
+
+
+def hello(update, context):
+    """Bot introduction. Allow to receive alerts after this first meeting"""
+    consultant = check_user_is_declared(update, context)
+    if consultant == ConversationHandler.END:
+        return ConversationHandler.END
+
+    user = update.message.from_user
 
     if consultant.telegram_id:
         update.message.reply_text(_("very happy to see you again !"))
@@ -226,19 +243,20 @@ def main():
     dispatcher = updater.dispatcher
 
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start),
-                      CommandHandler("hello", hello)],
-        states={
+        entry_points=[CommandHandler('time', time),
+                      CommandHandler("hello", hello),
+                      CommandHandler("help", help)],
+        states={  # used for timesheet session only
             MISSION_SELECT: [
                 CallbackQueryHandler(select_mission, pattern="NONPROD"),
-                CallbackQueryHandler(end, pattern="END"),
+                CallbackQueryHandler(end_timesheet, pattern="END"),
                 CallbackQueryHandler(mission_timesheet),
             ],
             MISSION_TIMESHEET: [
                 CallbackQueryHandler(select_mission),
             ],
         },
-        fallbacks=[CommandHandler('start', start)],
+        fallbacks=[CommandHandler('help', help)],
     )
 
     # Add ConversationHandler to dispatcher
