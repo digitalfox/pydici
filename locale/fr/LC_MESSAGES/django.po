@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-12 22:49+0100\n"
-"PO-Revision-Date: 2021-01-12 22:49+0100\n"
+"POT-Creation-Date: 2021-02-01 13:16+0100\n"
+"PO-Revision-Date: 2021-01-31 19:33+0100\n"
 "Last-Translator: Sebastien Renard <renard@kde.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -48,7 +48,7 @@ msgstr "Quand un consultant est créé"
 
 #: actionset/models.py:28 actionset/models.py:49 crm/models.py:48
 #: crm/models.py:149 crm/models.py:470 expense/models.py:64 leads/models.py:58
-#: leads/views.py:222 people/models.py:29 people/models.py:287
+#: leads/views.py:222 people/models.py:29 people/models.py:289
 #: templates/crm/clientcompany_detail.html:369
 #: templates/leads/manage_tags.html:22 templates/leads/review.html:37
 #: templates/leads/review.html:72 templates/people/consultant.html:49
@@ -73,7 +73,7 @@ msgid "Trigger"
 msgstr "Déclencheur"
 
 #: actionset/models.py:31 crm/models.py:322 people/models.py:46
-#: people/models.py:290 staffing/models.py:63
+#: people/models.py:292 staffing/models.py:63
 msgid "Active"
 msgstr "Active"
 
@@ -624,6 +624,75 @@ msgstr "encours des factures émises"
 msgid "billing outstanding overdue"
 msgstr "encours des factures en retard"
 
+#: bot/pydici_bot.py:66
+msgid "sorry, i don't know you"
+msgstr "Désolé, on ne se connaît pas"
+
+#: bot/pydici_bot.py:94
+msgid "I am too shy to do that in public. Let's go private :-)"
+msgstr ""
+"Je suis un peu trop timide pour faire cela en public, retrouvons nous en "
+"privé :-)"
+
+#: bot/pydici_bot.py:109
+msgid "On what did you work today ?"
+msgstr "Sur quoi tu as bossé aujourd'hui ?"
+
+#: bot/pydici_bot.py:147
+msgid "Oups, cannot update your timesheet, sorry"
+msgstr "Oups, impossible de mettre à jour le pointage. Désolé."
+
+#: bot/pydici_bot.py:149
+msgid "You timesheet was updated:\n"
+msgstr "Le pointage a été mis à jour :\n"
+
+#: bot/pydici_bot.py:153
+#, python-format
+msgid ""
+"\n"
+"\n"
+"What a day, %s declared. Time to get some rest!"
+msgstr ""
+"\n"
+"\n"
+"Quelle journée, %s jours déclarés. Il est temps de se reposer !"
+
+#: bot/pydici_bot.py:155
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Only %s today. Don't you forget to declare something ?"
+msgstr ""
+"\n"
+"\n"
+"Seulement %s jours aujourd'hui ? Rien n'a été oublié ?"
+
+#: bot/pydici_bot.py:176
+msgid "That's all for today !"
+msgstr "C'est tout pour aujourd'hui !"
+
+#: bot/pydici_bot.py:178
+msgid "On which other mission did you work today ?"
+msgstr ""
+
+#: bot/pydici_bot.py:198
+#, python-format
+msgid ""
+"Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n"
+"%(link)s"
+msgstr ""
+"Hey, pense à regarder ça : %(task_name)s (x%(task_count)s)\n"
+"%(link)s"
+
+#: bot/pydici_bot.py:213
+msgid "very happy to see you again !"
+msgstr "Ça fait plaisir de se revoir !"
+
+#: bot/pydici_bot.py:217
+msgid "I very pleased to meet you !"
+msgstr "Très heureux de faire vos connaissance !"
+
 #: core/forms.py:52 expense/forms.py:68 staffing/forms.py:194
 #: templates/billing/client_bill_form.html:29
 #: templates/billing/supplier_bill_form.html:20
@@ -905,7 +974,7 @@ msgstr "Description des conditions de paiement"
 msgid "Commercial name"
 msgstr "Nom commercial"
 
-#: crm/models.py:76 leads/models.py:81 people/models.py:44 people/models.py:289
+#: crm/models.py:76 leads/models.py:81 people/models.py:44 people/models.py:291
 #: staffing/models.py:69 templates/billing/client_bills_archive.html:13
 #: templates/billing/client_bills_in_creation.html:13
 #: templates/billing/supplier_bills_archive.html:14
@@ -936,7 +1005,7 @@ msgstr "Organisation"
 msgid "Client company"
 msgstr "Société client"
 
-#: crm/models.py:151 people/models.py:292
+#: crm/models.py:151 people/models.py:294
 #: templates/staffing/mission_contacts.html:16
 msgid "Phone"
 msgstr "Téléphone"
@@ -1221,7 +1290,7 @@ msgstr "Payé avec la carte société"
 msgid "state"
 msgstr "état"
 
-#: expense/tables.py:122 expense/tables.py:190 people/models.py:257
+#: expense/tables.py:122 expense/tables.py:190 people/models.py:259
 #: staffing/views.py:1223 templates/billing/bill.html:149
 #: templates/expense/expense.html:31 templates/expense/expense_archive.html:22
 #: templates/expense/expense_payments.html:46
@@ -1355,7 +1424,7 @@ msgstr ""
 msgid "Responsible"
 msgstr "Responsable"
 
-#: leads/forms.py:75 leads/models.py:63 leads/views.py:222 people/models.py:304
+#: leads/forms.py:75 leads/models.py:63 leads/views.py:222 people/models.py:306
 #: templates/core/index.html:15 templates/core/index.html:40
 #: templates/core/index.html:64 templates/core/index.html:88
 #: templates/leads/lead_detail.html:139
@@ -1482,7 +1551,7 @@ msgstr "Montant (k€)"
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:69 leads/views.py:222 people/models.py:280
+#: leads/models.py:69 leads/views.py:222 people/models.py:282
 msgid "Starting"
 msgstr "Démarrage"
 
@@ -1657,7 +1726,7 @@ msgstr "Profil"
 msgid "Subcontractor"
 msgstr "Sous-traitant"
 
-#: people/models.py:277 staffing/views.py:1375
+#: people/models.py:279 staffing/views.py:1375
 #: templates/people/consultant_detail.html:254
 #: templates/people/consultant_detail.html:260
 #: templates/staffing/_consultant_prod_tooltip.html:2
@@ -1665,7 +1734,7 @@ msgstr "Sous-traitant"
 msgid "daily rate"
 msgstr "taux journalier"
 
-#: people/models.py:278 staffing/views.py:1360 staffing/views.py:1885
+#: people/models.py:280 staffing/views.py:1360 staffing/views.py:1885
 #: templates/staffing/_consultant_prod_tooltip.html:1
 #: templates/staffing/graph_timesheet_rates_bar.html:15
 #: templates/staffing/graph_timesheet_rates_bar.html:25
@@ -1673,40 +1742,44 @@ msgstr "taux journalier"
 msgid "production rate"
 msgstr "taux de production"
 
-#: people/models.py:281
+#: people/models.py:283
 msgid "Rate"
 msgstr "Taux"
 
-#: people/models.py:282
+#: people/models.py:284
 msgid "Rate type"
 msgstr "Type de taux"
 
-#: people/models.py:305
+#: people/models.py:307
 msgid "Salesmen"
 msgstr "Commerciaux"
 
-#: people/utils.py:27 staffing/views.py:480 staffing/views.py:639
+#: people/utils.py:28 staffing/views.py:480 staffing/views.py:639
 msgid "Everybody"
 msgstr "Tout le monde"
 
-#: people/utils.py:35 staffing/views.py:461 staffing/views.py:629
+#: people/utils.py:36 staffing/views.py:461 staffing/views.py:629
 #, python-format
 msgid "team %(manager_name)s"
 msgstr "équipe %(manager_name)s"
 
-#: people/utils.py:64
+#: people/utils.py:65
 msgid "Expenses to review"
 msgstr "Notes de frais à valider"
 
-#: people/utils.py:72 templates/billing/bill_review.html:13
+#: people/utils.py:72
+msgid "Mission without billing mode"
+msgstr "Mission sans mode de facturation défini"
+
+#: people/utils.py:81 templates/billing/bill_review.html:13
 msgid "Bills to review"
 msgstr "Factures à revoir"
 
-#: people/utils.py:80
+#: people/utils.py:89
 msgid "Supplier bills to review"
 msgstr "Factures fournisseurs à valider"
 
-#: people/utils.py:87 templates/leads/lead_detail.html:263
+#: people/utils.py:96 templates/leads/lead_detail.html:263
 #: templates/people/consultant_detail.html:84
 #: templates/people/subcontractor_detail.html:16
 #: templates/staffing/mission.html:204

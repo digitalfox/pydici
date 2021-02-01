@@ -63,7 +63,7 @@ def check_user_is_declared(update, context):
         consultant = Consultant.objects.get(telegram_alias="%s" % user.name.lstrip("@"), active=True)
         return consultant
     except Consultant.DoesNotExist:
-        update.message.reply_text("sorry, i don't know you")
+        update.message.reply_text(_("sorry, i don't know you"))
         return ConversationHandler.END
 
 
@@ -91,7 +91,7 @@ def start(update, context):
     """Start timesheet session when user type /start"""
     user = update.message.from_user
     if update.effective_chat.id < 0:
-        update.message.reply_text("I am too shy to do that in public. Let's go private :-)")
+        update.message.reply_text(_("I am too shy to do that in public. Let's go private :-)"))
         return ConversationHandler.END
 
     consultant = check_user_is_declared(update, context)
@@ -106,7 +106,7 @@ def start(update, context):
     keyboard = mission_keyboard(consultant, "PROD")
     keyboard.append([NONPROD_BUTTON])
 
-    update.message.reply_text("On what did you work today ?", reply_markup=InlineKeyboardMarkup(keyboard))
+    update.message.reply_text(_("On what did you work today ?"), reply_markup=InlineKeyboardMarkup(keyboard))
 
     return MISSION_SELECT
 
@@ -127,7 +127,7 @@ def mission_timesheet(update, context):
         ]
     ]
     query.edit_message_text(
-        text="how much did you work on %s ? (%s is remaining for today)" % (mission.short_name(), remaining_time_to_declare(context)),
+        text="how much did you work on %(mission)s ? (%(time)s is remaining for today)" % (mission.short_name(), remaining_time_to_declare(context)),
         reply_markup=InlineKeyboardMarkup(keyboard))
     return MISSION_TIMESHEET
 
@@ -144,15 +144,15 @@ def end(update, context):
                 Timesheet.objects.create(mission=mission, consultant=consultant,
                                          charge=charge, working_date=date.today())
         except:
-            query.edit_message_text(text="Oups, cannot update your timesheet, sorry")
+            query.edit_message_text(text=_("Oups, cannot update your timesheet, sorry"))
             return ConversationHandler.END
-    msg = "You timesheet was updated:\n"
+    msg = _("You timesheet was updated:\n")
     msg += "\n - ".join(["%s : %s" % (m.short_name(), c) for m, c in context.user_data["timesheet"].items()])
     total = sum(context.user_data["timesheet"].values())
     if total > 1:
-        msg += "\n\nWhat a day, %s declared. Time to get some rest!" % total
+        msg += _("\n\nWhat a day, %s declared. Time to get some rest!") % total
     elif total < 1:
-        msg += "\n\nOnly %s today. Don't you forget to declare something ?" % total
+        msg += _("\n\nOnly %s today. Don't you forget to declare something ?") % total
     query.edit_message_text(text=msg)
     return ConversationHandler.END
 
@@ -173,18 +173,18 @@ def select_mission(update, context):
     if context.user_data["mission_nature"] == "PROD":
         keyboard.append([NONPROD_BUTTON])
     else:
-        keyboard.append([InlineKeyboardButton("That's all for today !", callback_data="END")])
+        keyboard.append([InlineKeyboardButton(_("That's all for today !"), callback_data="END")])
 
-    query.edit_message_text(text="On which other mission did you work today ?", reply_markup=InlineKeyboardMarkup(keyboard))
+    query.edit_message_text(text=_("On which other mission did you work today ?"), reply_markup=InlineKeyboardMarkup(keyboard))
     return MISSION_SELECT
 
 
 def alert_consultant(context):
     """Randomly alert consultant about important stuff to do"""
     now = datetime.now()
-    if now.weekday() in (5,6) or now.hour < 9 or now.hour > 19:
+    #if now.weekday() in (5,6) or now.hour < 9 or now.hour > 19:
         # don't bother people outside business hours
-        return
+    #    return
     consultants = Consultant.objects.exclude(telegram_id=None).filter(active=True)
     if not consultants:
         logger.warning("No consultant have telegram id defined. Alerting won't be possible. Bye")
@@ -195,7 +195,9 @@ def alert_consultant(context):
     if tasks:
         task_name, task_count, task_link, task_priority = random.choice(tasks)
         url = get_parameter("HOST") + task_link
-        msg = _("Hey, what about thinking about that: %s (x%s)\n%s" % (task_name, task_count, url))
+        msg = _("Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n%(link)s") % {"task_name": task_name,
+                                                                                                     "task_count": task_count,
+                                                                                                     "link": url}
         context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
 
 
@@ -242,7 +244,7 @@ def main():
     dispatcher.add_handler(conv_handler)
 
     # Add alert job
-    updater.job_queue.run_repeating(alert_consultant, 3600)
+    updater.job_queue.run_repeating(alert_consultant, 3)
 
     # Start the Bot
     updater.start_polling()
