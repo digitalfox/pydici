@@ -38,6 +38,7 @@ from django.db.models import Sum
 from django.db import transaction
 from django.utils.translation import ugettext as _
 from django.conf import settings
+from django.core.cache import cache
 
 
 # Init and model loading
@@ -185,15 +186,23 @@ def time(update, context):
 def alert_consultant(context):
     """Randomly alert consultant about important stuff to do"""
     now = datetime.now()
-    #if now.weekday() in (5,6) or now.hour < 9 or now.hour > 19:
+    if now.weekday() in (5,6) or now.hour < 9 or now.hour > 19:
         # don't bother people outside business hours
-    #    return
+        return
     consultants = Consultant.objects.exclude(telegram_id=None).filter(active=True)
     if not consultants:
         logger.warning("No consultant have telegram id defined. Alerting won't be possible. Bye")
         return
     consultant = random.choice(consultants)
-    #TODO: add pressure control mechanism to avoid persecuting people we already warned x times before
+    if consultant.is_in_holidays():
+        # don't bother people during holidays
+        return
+    cache_key = "BOT_ALERT_CONSULTANT_LAST_24H_%s" % consultant.trigramme
+    if cache.get(cache_key):
+        # don't persecute people :-)
+        return
+    cache.set(cache_key, 1, 3600*24)  # Keep track 24 hours that this user has been alerted
+
     tasks = compute_consultant_tasks(consultant)
     if tasks:
         task_name, task_count, task_link, task_priority = random.choice(tasks)
