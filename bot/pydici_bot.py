@@ -126,6 +126,7 @@ def end_timesheet(update, context):
             query.edit_message_text(text=_("Oups, cannot update your timesheet, sorry"))
             return ConversationHandler.END
     msg = _("You timesheet was updated:\n")
+    msg += " - "
     msg += "\n - ".join(["%s : %s" % (m.short_name(), c) for m, c in context.user_data["timesheet"].items()])
     total = sum(context.user_data["timesheet"].values())
     if total > 1:
@@ -254,6 +255,7 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('time', time),
                       CommandHandler("hello", hello),
+                      CommandHandler("start", hello),
                       CommandHandler("help", help)],
         states={  # used for timesheet session only
             MISSION_SELECT: [
