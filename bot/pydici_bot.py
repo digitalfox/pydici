@@ -56,6 +56,7 @@ logger = logging.getLogger(__name__)
 MISSION_SELECT, MISSION_TIMESHEET = range(2)
 
 NONPROD_BUTTON = InlineKeyboardButton(_("non productive mission?"), callback_data="NONPROD")
+END_TIMESHEET_BUTTON = InlineKeyboardButton(_("That's all for today !"), callback_data="END")
 
 
 def check_user_is_declared(update, context):
@@ -151,9 +152,9 @@ def select_mission(update, context):
     keyboard = mission_keyboard(consultant, context.user_data["mission_nature"])
 
     if context.user_data["mission_nature"] == "PROD":
-        keyboard.append([NONPROD_BUTTON])
+        keyboard.append([NONPROD_BUTTON, END_TIMESHEET_BUTTON])
     else:
-        keyboard.append([InlineKeyboardButton(_("That's all for today !"), callback_data="END")])
+        keyboard.append([END_TIMESHEET_BUTTON])
 
     query.edit_message_text(text=_("On which other mission did you work today ?"), reply_markup=InlineKeyboardMarkup(keyboard))
     return MISSION_SELECT
