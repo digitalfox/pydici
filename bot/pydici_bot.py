@@ -37,6 +37,7 @@ from django.core.wsgi import get_wsgi_application
 from django.db.models import Sum
 from django.db import transaction
 from django.utils.translation import ugettext as _
+from django.conf import settings
 
 
 # Init and model loading
@@ -220,8 +221,8 @@ def hello(update, context):
 
 
 def main():
-    #TODO: get if from config file as well
-    updater = Updater(os.environ["PYDICI_TOKEN"], use_context=True)
+    token = os.environ.get("TELEGRAM_TOKEN", settings.TELEGRAM_TOKEN)
+    updater = Updater(token, use_context=True)
     dispatcher = updater.dispatcher
 
     conv_handler = ConversationHandler(
@@ -244,7 +245,7 @@ def main():
     dispatcher.add_handler(conv_handler)
 
     # Add alert job
-    updater.job_queue.run_repeating(alert_consultant, 3)
+    updater.job_queue.run_repeating(alert_consultant, get_parameter("BOT_ALERT_INTERVAL"))
 
     # Start the Bot
     updater.start_polling()
