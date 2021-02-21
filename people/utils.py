@@ -16,6 +16,7 @@ from django.urls import reverse
 from people.models import Consultant
 from billing.models import ClientBill, SupplierBill
 from expense.models import Expense
+from staffing.models import Mission
 
 
 def get_team_scopes(subsidiary, team):
@@ -62,6 +63,14 @@ def compute_consultant_tasks(consultant):
         expenses_age = (now - expenses.aggregate(Min("update_date"))["update_date__min"]).days
         expenses_priority = get_task_priority(expenses_age, (5, 10))
         tasks.append((_("Expenses to review"), expenses_count, reverse("expense:expenses")+"#managed_expense_workflow_table", expenses_priority))
+
+    # Missions without billing mode
+    missions_without_billing_mode = Mission.objects.filter(responsible=consultant, active=True,
+                                                           nature="PROD", billing_mode=None)
+    missions_without_billing_mode_count = missions_without_billing_mode.count()
+    if missions_without_billing_mode_count > 0:
+        tasks.append((_("Mission without billing mode"), missions_without_billing_mode_count,
+                      reverse("staffing:mission_home", args=[missions_without_billing_mode[0].id]), 3))
 
     # Client bills to reviews
     bills = ClientBill.objects.filter(state="0_DRAFT", billdetail__mission__responsible=consultant).distinct()

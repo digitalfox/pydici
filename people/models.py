@@ -49,6 +49,8 @@ class Consultant(models.Model):
     profil = models.ForeignKey(ConsultantProfile, verbose_name=_("Profil"), on_delete=models.CASCADE)
     subcontractor = models.BooleanField(_("Subcontractor"), default=False)
     subcontractor_company = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
+    telegram_alias = models.CharField(max_length=50, null=True, blank=True)
+    telegram_id = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name
