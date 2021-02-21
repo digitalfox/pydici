@@ -60,6 +60,7 @@ class GroupFeature(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     feature = models.CharField(_("Feature"), max_length=80,
                                choices=_FEATURES_CHOICES)
+
     class Meta:
         unique_together = (('group', 'feature'))
 
@@ -73,7 +74,7 @@ class Parameter(models.Model):
     PARAMETER_CACHE_KEY = "PYDICI_PARAM_CACHE_%s"
     PARAMETER_TYPES = (("TEXT", _("text")),
                        ("FLOAT", _("float")))
-    key= models.CharField(_("Key"), max_length=255, unique=True)
+    key = models.CharField(_("Key"), max_length=255, unique=True)
     value = models.CharField(_("Value"), max_length=255)
     type = models.CharField(_("Type"), max_length=30, choices=PARAMETER_TYPES)
     desc = models.CharField(_("Description"), max_length=255)
