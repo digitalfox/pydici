@@ -12,8 +12,9 @@ import sys
 import os
 from os.path import abspath, join, dirname, pardir
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, time
 import random
+import pytz
 
 # Enable logging
 logging.basicConfig(
@@ -21,7 +22,7 @@ logging.basicConfig(
 )
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, JobQueue
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler
 
 # # Setup django envt & django imports
 PYDICI_DIR = abspath(join(dirname(__file__), pardir))
@@ -70,6 +71,12 @@ def check_user_is_declared(update, context):
         return ConversationHandler.END
 
 
+def outside_business_hours():
+    """Don't bother people outside business hours"""
+    now = datetime.now()
+    return now.weekday() in (5, 6) or now.hour < 9 or now.hour > 19
+
+
 def mission_keyboard(consultant, nature):
     keyboard = []
     for mission in consultant.forecasted_missions():
@@ -80,12 +87,16 @@ def mission_keyboard(consultant, nature):
 
 def remaining_time_to_declare(context):
     consultant = context.user_data["consultant"]
+    return time_to_declare(consultant) - sum(context.user_data["timesheet"].values())
+
+
+def time_to_declare(consultant):
     today = date.today()
     holidays = Holiday.objects.all()
-    if today.weekday() < 15 and today not in holidays:
+    if today.weekday() < 5 and today not in holidays:
         declared = Timesheet.objects.filter(consultant=consultant, working_date=today).aggregate(Sum("charge"))[
                        "charge__sum"] or 0
-        return 1 - declared - sum(context.user_data["timesheet"].values())
+        return 1 - declared
     else:
         return 0
 
@@ -160,7 +171,7 @@ def select_mission(update, context):
     return MISSION_SELECT
 
 
-def time(update, context):
+def declare_time(update, context):
     """Start timesheet session when user type /start"""
     if update.effective_chat.id < 0:
         update.message.reply_text(_("I am too shy to do that in public. Let's go private :-)"))
@@ -187,10 +198,9 @@ def time(update, context):
 
 def alert_consultant(context):
     """Randomly alert consultant about important stuff to do"""
-    now = datetime.now()
-    if now.weekday() in (5,6) or now.hour < 9 or now.hour > 19:
-        # don't bother people outside business hours
+    if outside_business_hours():
         return
+
     consultants = Consultant.objects.exclude(telegram_id=None).filter(active=True)
     if not consultants:
         logger.warning("No consultant have telegram id defined. Alerting won't be possible. Bye")
@@ -213,6 +223,16 @@ def alert_consultant(context):
                                                                                                      "task_count": task_count,
                                                                                                      "link": url}
         context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
+
+
+def call_for_timesheet(context):
+    """If needed, remind people to declare timesheet of current day"""
+    if outside_business_hours():
+        return
+    msg = _("""Hope the day was fine. Time to declare your timesheet no? Just click /time""")
+    for consultant in Consultant.objects.exclude(telegram_id=None).filter(active=True):
+        if time_to_declare(consultant) > 0:
+            context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
 
 
 def help(update, context):
@@ -254,7 +274,7 @@ def main():
     dispatcher = updater.dispatcher
 
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('time', time),
+        entry_points=[CommandHandler('time', declare_time),
                       CommandHandler("hello", hello),
                       CommandHandler("start", hello),
                       CommandHandler("help", help)],
@@ -276,6 +296,15 @@ def main():
 
     # Add alert job
     updater.job_queue.run_repeating(alert_consultant, get_parameter("BOT_ALERT_INTERVAL"))
+
+    # Add call for timesheet alert
+    try:
+        timesheet_time = time(*[int(i) for i in get_parameter("BOT_CALL_TIME_FOR_TIMESHEET").split(":")],
+                              tzinfo=pytz.timezone(settings.TIME_ZONE))
+    except (TypeError, ValueError):
+        logger.error("Cannot parse timesheet time. Defaulting to 19:00")
+        timesheet_time = time(19, tzinfo=pytz.timezone(settings.TIME_ZONE))
+    updater.job_queue.run_daily(call_for_timesheet, timesheet_time)
 
     # Start the Bot
     updater.start_polling()
