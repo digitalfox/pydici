@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-21 14:02+0100\n"
-"PO-Revision-Date: 2021-02-21 14:01+0100\n"
+"POT-Creation-Date: 2021-02-21 15:39+0100\n"
+"PO-Revision-Date: 2021-02-21 15:39+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -624,19 +624,19 @@ msgstr "encours des factures émises"
 msgid "billing outstanding overdue"
 msgstr "encours des factures en retard"
 
-#: bot/pydici_bot.py:58
+#: bot/pydici_bot.py:59
 msgid "non productive mission?"
 msgstr "Des missions non productives ?"
 
-#: bot/pydici_bot.py:59
+#: bot/pydici_bot.py:60
 msgid "That's all for today !"
 msgstr "C'est tout pour aujourd'hui !"
 
-#: bot/pydici_bot.py:69
+#: bot/pydici_bot.py:70
 msgid "sorry, I don't know you"
 msgstr "Désolé, on ne se connaît pas"
 
-#: bot/pydici_bot.py:109
+#: bot/pydici_bot.py:120
 #, python-format
 msgid ""
 "how much did you work on %(mission)s ? (%(time)s is remaining for today)"
@@ -644,15 +644,15 @@ msgstr ""
 "combien de temps as-tu travaillé sur %(mission)s ? (il reste %(time)s à "
 "déclarer pour aujourd'hui)"
 
-#: bot/pydici_bot.py:127
+#: bot/pydici_bot.py:138
 msgid "Oups, cannot update your timesheet, sorry"
 msgstr "Oups, impossible de mettre à jour le pointage. Désolé."
 
-#: bot/pydici_bot.py:129
+#: bot/pydici_bot.py:140
 msgid "You timesheet was updated:\n"
 msgstr "Le pointage a été mis à jour :\n"
 
-#: bot/pydici_bot.py:134
+#: bot/pydici_bot.py:145
 #, python-format
 msgid ""
 "\n"
@@ -663,7 +663,7 @@ msgstr ""
 "\n"
 "Quelle journée, %s jours déclarés. Il est temps de se reposer !"
 
-#: bot/pydici_bot.py:136
+#: bot/pydici_bot.py:147
 #, python-format
 msgid ""
 "\n"
@@ -674,21 +674,21 @@ msgstr ""
 "\n"
 "Seulement %s jours aujourd'hui ? Rien n'a été oublié ?"
 
-#: bot/pydici_bot.py:159
+#: bot/pydici_bot.py:170
 msgid "On which other mission did you work today ?"
 msgstr "Sur quelle autre mission as-tu bossé aujourd'hui ?"
 
-#: bot/pydici_bot.py:166
+#: bot/pydici_bot.py:177
 msgid "I am too shy to do that in public. Let's go private :-)"
 msgstr ""
 "Je suis un peu trop timide pour faire cela en public, retrouvons nous en "
 "privé :-)"
 
-#: bot/pydici_bot.py:183
+#: bot/pydici_bot.py:194
 msgid "On what did you work today ?"
 msgstr "Sur quoi tu as bossé aujourd'hui ?"
 
-#: bot/pydici_bot.py:212
+#: bot/pydici_bot.py:222
 #, python-format
 msgid ""
 "Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n"
@@ -697,7 +697,14 @@ msgstr ""
 "Hey, pense à regarder ça : %(task_name)s (x%(task_count)s)\n"
 "%(link)s"
 
-#: bot/pydici_bot.py:223
+#: bot/pydici_bot.py:232
+msgid ""
+"Hope the day was fine. Time to declare your timesheet no? Just click /time"
+msgstr ""
+"J'espère que ta journée a été bonne. C'est le bon moment pour faire ton "
+"pointage non ? Clique simplement sur /time"
+
+#: bot/pydici_bot.py:243
 msgid ""
 "Hello. I am just a bot you know. So I won't fake doing incredible things. "
 "Here's what can I do for you:\n"
@@ -715,11 +722,11 @@ msgstr ""
 "    /time une manière simple et amusante de faire son pointage du jour\n"
 "    "
 
-#: bot/pydici_bot.py:242
+#: bot/pydici_bot.py:262
 msgid "very happy to see you again !"
 msgstr "Ça fait plaisir de se revoir !"
 
-#: bot/pydici_bot.py:246
+#: bot/pydici_bot.py:266
 msgid "I very pleased to meet you !"
 msgstr "Très heureux de faire ta connaissance !"
 
