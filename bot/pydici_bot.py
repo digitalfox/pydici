@@ -36,7 +36,7 @@ os.chdir(PYDICI_DIR)
 # Django imports
 from django.core.wsgi import get_wsgi_application
 from django.db.models import Sum
-from django.db import transaction
+from django.db import transaction, close_old_connections
 from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.core.cache import cache
@@ -173,6 +173,7 @@ def select_mission(update, context):
 
 def declare_time(update, context):
     """Start timesheet session when user type /start"""
+    close_old_connections()
     if update.effective_chat.id < 0:
         update.message.reply_text(_("I am too shy to do that in public. Let's go private :-)"))
         return ConversationHandler.END
@@ -198,6 +199,7 @@ def declare_time(update, context):
 
 def alert_consultant(context):
     """Randomly alert consultant about important stuff to do"""
+    close_old_connections()
     if outside_business_hours():
         return
 
@@ -227,6 +229,7 @@ def alert_consultant(context):
 
 def call_for_timesheet(context):
     """If needed, remind people to declare timesheet of current day"""
+    close_old_connections()
     if outside_business_hours():
         return
     msg = _("""Hope the day was fine. Time to declare your timesheet no? Just click /time""")
@@ -237,6 +240,7 @@ def call_for_timesheet(context):
 
 def help(update, context):
     """Bot help"""
+    close_old_connections()
     consultant = check_user_is_declared(update, context)
     if consultant == ConversationHandler.END:
         return ConversationHandler.END
@@ -252,6 +256,7 @@ def help(update, context):
 
 def hello(update, context):
     """Bot introduction. Allow to receive alerts after this first meeting"""
+    close_old_connections()
     consultant = check_user_is_declared(update, context)
     if consultant == ConversationHandler.END:
         return ConversationHandler.END
