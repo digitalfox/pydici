@@ -68,7 +68,7 @@ def check_user_is_declared(update, context):
         return consultant
     except Consultant.DoesNotExist:
         update.message.reply_text(_("sorry, I don't know you"))
-        return ConversationHandler.END
+        return None
 
 
 def outside_business_hours():
@@ -179,10 +179,7 @@ def declare_time(update, context):
         return ConversationHandler.END
 
     consultant = check_user_is_declared(update, context)
-    if consultant == ConversationHandler.END:
-        return ConversationHandler.END
-
-    if consultant == ConversationHandler.END:
+    if consultant is None:
         return ConversationHandler.END
 
     context.user_data["consultant"] = consultant
@@ -242,7 +239,7 @@ def help(update, context):
     """Bot help"""
     close_old_connections()
     consultant = check_user_is_declared(update, context)
-    if consultant == ConversationHandler.END:
+    if consultant is None:
         return ConversationHandler.END
     msg = _("""Hello. I am just a bot you know. So I won't fake doing incredible things. Here's what can I do for you:
     /hello nice way to meet. After this cordial introduction, I may talk to you from time to time to remind you importants things to do
@@ -258,7 +255,7 @@ def hello(update, context):
     """Bot introduction. Allow to receive alerts after this first meeting"""
     close_old_connections()
     consultant = check_user_is_declared(update, context)
-    if consultant == ConversationHandler.END:
+    if consultant is None:
         return ConversationHandler.END
 
     user = update.message.from_user
