@@ -85,11 +85,6 @@ def mission_keyboard(consultant, nature):
     return keyboard
 
 
-def remaining_time_to_declare(context):
-    consultant = context.user_data["consultant"]
-    return time_to_declare(consultant) - sum(context.user_data["timesheet"].values())
-
-
 def time_to_declare(consultant):
     today = date.today()
     holidays = Holiday.objects.all()
@@ -118,7 +113,7 @@ def mission_timesheet(update, context):
     ]
     query.edit_message_text(
         text=_("how much did you work on %(mission)s ? (%(time)s is remaining for today)") % {"mission": mission.short_name(),
-                                                                                              "time": remaining_time_to_declare(context)},
+                                                                                              "time": 1 - sum(context.user_data["timesheet"].values())},
         reply_markup=InlineKeyboardMarkup(keyboard))
     return MISSION_TIMESHEET
 
