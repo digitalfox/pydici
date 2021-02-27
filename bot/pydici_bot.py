@@ -69,6 +69,9 @@ def check_user_is_declared(update, context):
     except Consultant.DoesNotExist:
         update.message.reply_text(_("sorry, I don't know you"))
         return None
+    except AttributeError:
+        # User is editing a message. Don't answer
+        return None
 
 
 def outside_business_hours():
