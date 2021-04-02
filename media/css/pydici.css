@@ -1,12 +1,3 @@
-body {
-    padding-bottom: 60px;
-    padding-top: 60px;
-}
-.navbar {
-    margin-bottom: 20px;
-}
-
-.nav li { list-style-type: none; }
 
 .table-pydici-extra-condensed > thead > tr > th, .table-pydici-extra-condensed > tbody > tr > th, .table-pydici-extra-condensed > tfoot > tr > th, .table-pydici-extra-condensed > thead > tr > td, .table-pydici-extra-condensed > tbody > tr > td, .table-pydici-extra-condensed > tfoot > tr > td {
     padding: 0px;

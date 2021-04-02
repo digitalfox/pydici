@@ -109,7 +109,7 @@ def link_to_timesheet(value, arg=None):
     @param value: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
-        url = "<a href='%s#tab-timesheet'>%s</a>" % (reverse("people:consultant_home", args=[c.trigramme, ]),
+        url = "<a class='dropdown-item' href='%s#tab-timesheet'>%s</a>" % (reverse("people:consultant_home", args=[c.trigramme, ]),
                                         escape(_("My timesheet")))
         return mark_safe(url)
     except Consultant.DoesNotExist:
@@ -122,7 +122,7 @@ def link_to_staffing(value, arg=None):
     @param arg: consultant trigramme"""
     try:
         c = Consultant.objects.get(trigramme__iexact=value)
-        url = "<a href='%s#tab-staffing'>%s</a>" % (reverse("people:consultant_home", args=[c.trigramme, ]),
+        url = "<a class='dropdown-item' href='%s#tab-staffing'>%s</a>" % (reverse("people:consultant_home", args=[c.trigramme, ]),
                                         escape(_("My staffing")))
         return mark_safe(url)
     except Consultant.DoesNotExist:
@@ -133,7 +133,7 @@ def link_to_staffing(value, arg=None):
 def get_admin_mail(value, arg=None):
     """Config to get admin contact"""
     if settings.ADMINS:
-        return mark_safe("<a href='mailto:%s'>%s</a>" % (settings.ADMINS[0][1],
+        return mark_safe("<a class='dropdown-item' href='mailto:%s'>%s</a>" % (settings.ADMINS[0][1],
                                                          _("Mail to support")))
 
 
