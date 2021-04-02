@@ -4,9 +4,9 @@
 <h3>{% trans "This consultant does not work anymore for the company" %}</h3>
 {% endif %}
 
-<div class="row">
+<div class="row" id="pydici-blocks">
 
-    <div class="col-lg-8 col-md-12 col-sm-6 col-xs-12">
+    <div class="col-lg-8 col-md-12">
         <div class="pydici-block">
         <h3 class="pydici-block-title">{% trans "This month" %}</h3>
             <ul class="icon-list arrow-right">
@@ -15,25 +15,27 @@
                  {% else %}<img src="{{ MEDIA_URL }}pydici/decrease.png" border=0 title="{% trans 'Decrease' %}" />{% endif %}
                 {{ turnover_variation|floatformat:-2 }}%)</li>
             </ul>
-            <div class="col-md-2 col-sm-6 col-xs-6">
-                <center><h4>{% trans "prod rate (&#37;)" %}</h4></center>
-                <div id="consultant_prod_rate"></div>
-            </div>
-            <div class="col-md-2 col-sm-6 col-xs-6">
-                <center><h4>{% trans "daily rate (€)" %}</h4></center>
-                <div id="consultant_daily_rate"></div>
-            </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div id="consultant_timesheet_status"></div>
-            </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div id="consultant_forecast_status"></div>
+            <div class="row">
+                <div class="col-md-2 col-sm-6 col-xs-6">
+                    <center><h4>{% trans "prod rate (&#37;)" %}</h4></center>
+                    <div id="consultant_prod_rate"></div>
+                </div>
+                <div class="col-md-2 col-sm-6 col-xs-6">
+                    <center><h4>{% trans "daily rate (€)" %}</h4></center>
+                    <div id="consultant_daily_rate"></div>
+                </div>
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div id="consultant_timesheet_status"></div>
+                </div>
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div id="consultant_forecast_status"></div>
+                </div>
             </div>
         </div>
     </div>
 
     {% if tasks %}
-    <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
             <h3 class="pydici-block-title">{% trans "Things to do right now !" %}</h3>
             <ul class="icon-list checkmark">
@@ -45,7 +47,7 @@
     </div>
     {% endif %}
 
-    <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
             {% if consultant.manager %}
                 {% ifnotequal consultant.manager consultant %}
@@ -151,7 +153,6 @@
             </div>
         </div>
     {% endif %}
-
 </div> <!-- end of row -->
 
 <div class="row">
@@ -272,9 +273,11 @@
                 },
         });
     }
-    // Don't display right now graph, it can badly compute div size in some corner cases
+    // Don't display graph and do masonry layout right now graph, it can badly compute div size in some corner cases
     // Sad solution. I pay a beer for the one who solve it properly
-    setTimeout(displayConsultantGraph, 50);
+    setTimeout(function(){ displayConsultantGraph();
+                          $("#pydici-blocks").masonry({"percentPosition": true, columnWidth:1});
+                         }, 10);
 
 //});
 </script>
