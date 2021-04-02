@@ -340,8 +340,8 @@ def client_bill(request, bill_id=None):
                         start_date = date(int(request.GET.get("start_date")[0:4]), int(request.GET.get("start_date")[4:6]), 1)
                         end_date = date(int(request.GET.get("end_date")[0:4]), int(request.GET.get("end_date")[4:6]), 1)
                     else:
-                        start_date = previousMonth(previousMonth(date.today()))
-                        end_date = previousMonth(date.today())
+                        start_date = previousMonth(date.today())
+                        end_date = date.today().replace(day=1)
                     update_client_bill_from_timesheet(bill, mission, start_date, end_date)
                 else: # FIXED_PRICE mission
                     proportion = request.GET.get("proportion", 0.30)
