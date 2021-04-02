@@ -9,19 +9,18 @@ $(document).ready(function() {
 
     // Display a tab and load its content with ajax if data-tab-url is defined
     function displayBsTab(tab, href) {
-        tab.tab('show');
+        tab.show();
         var url = tab.attr("data-tab-url");
         if (url) {
             $(href).load(url,function(result) {
-                tab.tab('show');
+                tab.show();
             });
         }
     }
 
     // Bind click on tab event
-    $("#{{ tabs }} a" ).on("click", function (e) {
-       e.preventDefault();
-       href = this.hash;
+    $("#{{ tabs }} button" ).on("click", function (e) {
+       href = this.attributes["data-bs-target"].value;
        displayBsTab($(this), href);
     });
     
@@ -31,25 +30,25 @@ $(document).ready(function() {
         var url = document.location.toString();
         if (!url.match('#')) {
             // No hash, so we load first tab
-            $('a[data-toggle="tab"]:first').trigger("shown.bs.tab");
-            if ($('.active a').attr("data-tab-url")) {
-                $('#tab-home').load($('.active a').attr("data-tab-url"),function(result){
-                    $('tab-content').find('.active a').tab('show');
+            $('button[data-bs-toggle="tab"]:first').trigger("shown.bs.tab");
+            var tab_url = $("button.nav-link.active").attr("data-tab-url");
+            if (tab_url) {
+                $('#tab-home').load(tab_url,function(result){
+                    $('tab-content').find("button.nav-link.active").show();
                 });
             }
         }else {
-            var activeTab = $('[href=\\' + location.hash.replace(tabprefix,"") + ']');
+            var activeTab = $('[data-bs-target=\\' + location.hash.replace(tabprefix,"") + ']');
             activeTab.trigger("click");
         }
      };
 
     // Change hash for page-reload
-    $('.nav-tabs a').on('shown.bs.tab', function (e) {
-        var hash = e.target.hash.replace("#", "#" + tabprefix)
+    $('.nav-tabs button').on('shown.bs.tab', function (e) {
+        var hash = e.target.attributes["data-bs-target"].value.replace("#", "#" + tabprefix);
         var url = window.location.toString();
         // Push tab hash in history else if we are already on it
-        if (url.match('#') && !url.match(e.target.hash)) {
-            console.log(hash);
+        if (!url.match(hash)) {
             history.pushState(null, null, hash);
         }
     });
