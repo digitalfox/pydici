@@ -9,8 +9,9 @@
             "processing": true,
             "serverSide": true,
             "deferRender": true,
+            "responsive": true,
             "ajax": "{{ data_url }}",
-            buttons: ['excel', 'csv', { extend: 'print', text: '{% trans "Print" %}'}],
+            buttons: ['excel', 'csv'],
             dom: "<'row'<'col-md-12'f>><'row'<'col-md-12'tr>><'row'<'col-md-3'l><'col-md-3'B><'col-md-6'p>>",
             {% if datatable_options %}{{ datatable_options|safe }}, {% endif %}
             "language": {
