@@ -2,7 +2,7 @@
 {% load l10n %}
 {# Fragment of page to be included in a consultant_home tab #}
 
-<div id="pydici-ajax-form-content-consultant-staffing" class="content-large">
+<div id="pydici-ajax-form-content-consultant-staffing" class="py-2">
     <form action="{% url 'staffing:consultant_staffing' consultant.id %}" method="POST" id="pydici-ajax-form-consultant-staffing">
         {{ formset.management_form }}
         <div class="form-row">
@@ -11,9 +11,9 @@
                <th>{% trans "Mission" %}</th>
                <th>{% trans "Month" %}</th>
                <th>{% trans "Load" %}</th>
-               <th class="hidden-xs hidden-sm">{% trans "Comments" %}</th>
+               <th class="d-none d-lg-table-cell">{% trans "Comments" %}</th>
                <th>{% trans "Del." %}</th>
-               <th class="hidden-xs hidden-sm">{% trans "Last change" %}</th>
+               <th class="d-none d-lg-table-cell">{% trans "Last change" %}</th>
            </tr>
            {% for form in formset.forms %}
                 {% with year_month=form.initial.staffing_date|date:'Ym' %}
@@ -21,7 +21,7 @@
                        {% if form.initial.staffing_date %}
                             <tr><th style="backround-color:white" colspan=8>
                                 <a href="#" class="month_header" id="header_{{ year_month }}">
-                                    <span class="glyphicon glyphicon-menu-right {% if year_month <= current_month or form.errors %}rotate90{% endif %}"></span>
+                                    <i class="{% if year_month <= current_month or form.errors %}bi-chevron-compact-down{% else %}bi-chevron-compact-right{% endif %}"></i>
                                     {{ form.initial.staffing_date|date:"F Y" }}
                                 </a>
                             </th></tr>
@@ -33,9 +33,9 @@
                        <td>{{ form.mission }}{{ form.mission.errors }}</td>
                        <td>{{ form.staffing_date}}{{ form.staffing_date.errors }}</td>
                        <td class="pydici_small_number">{{ form.charge }}{{ form.charge.errors }}</td>
-                       <td class="hidden-xs hidden-sm">{{ form.comment }}{{ form.comment.errors }}</td>
+                       <td class="d-none d-lg-table-cell">{{ form.comment }}{{ form.comment.errors }}</td>
                        <td>{{ form.DELETE }}</td>
-                       <td class="hidden-xs hidden-sm">
+                       <td class="d-none d-lg-table-cell">
                             {% if form.initial.last_user %}
                                 {{ form.initial.last_user }} ({{ form.initial.update_date|timesince }})
                             {% endif %}
@@ -60,10 +60,10 @@
         </div>
         <br />
         <div class="submit-row">
-            <button type='submit' class="btn btn-default"><i class="bi-save"></i> {% trans 'Save' %}</button>
-            <a role="button" class="btn btn-default button-link"
+            <button type='submit' class="btn btn-primary"><i class="bi-save"></i> {% trans 'Save' %}</button>
+            <a role="button" class="btn btn-primary button-link"
                href="{% url 'staffing:optimise_pdc' %}?{% for mission in consultant.active_missions %}{% ifequal mission.nature 'PROD' %}missions={{ mission.id|unlocalize }};{% endifequal %}{% endfor %}">
-               <span class="glyphicon glyphicon-cog"></span> {% trans "Optimize workload for current missions" %}
+               <i class="bi-gear"></i> {% trans "Optimize workload for current missions" %}
             </a>
 
         </div>

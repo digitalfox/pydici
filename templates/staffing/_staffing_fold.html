@@ -6,7 +6,12 @@ $(document).ready(function() {
         e.preventDefault(); // avoid scrolling
         var year_month = $(this).attr("id").substr(7,6); // extract yyyymm from id to compute class name to hide
         $("."+year_month).toggle('fast'); // hide lines
-        $(this).children().toggleClass('rotate90'); // rotate sign
+        // rotate sign
+        if ($(this).children().hasClass("bi-chevron-compact-right")) {
+            $(this).children().removeClass("bi-chevron-compact-right").addClass("bi-chevron-compact-down");
+        } else {
+            $(this).children().removeClass("bi-chevron-compact-down").addClass("bi-chevron-compact-right");
+        }
         return false;
      });
 });
