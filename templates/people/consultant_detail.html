@@ -9,8 +9,8 @@
     <div class="col-lg-8 col-md-12">
         <div class="pydici-block">
         <h3 class="pydici-block-title">{% trans "This month" %}</h3>
-            <ul class="icon-list arrow-right">
-                <li>{% trans "My turnover this month: " %} <b>{{ month_turnover|floatformat:-2 }} €</b>
+            <ul class="icon-list">
+                <li class="bi bi-file-earmark-bar-graph">{% trans "My turnover this month: " %} <b>{{ month_turnover|floatformat:-2 }} €</b>
                 ({% if turnover_variation > 0 %}<img src="{{ MEDIA_URL }}pydici/increase.png" border=0 title="{% trans 'Increase' %}" />
                  {% else %}<img src="{{ MEDIA_URL }}pydici/decrease.png" border=0 title="{% trans 'Decrease' %}" />{% endif %}
                 {{ turnover_variation|floatformat:-2 }}%)</li>
@@ -38,9 +38,9 @@
     <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
             <h3 class="pydici-block-title">{% trans "Things to do right now !" %}</h3>
-            <ul class="icon-list checkmark">
+            <ul class="icon-list">
             {% for name, count, link, priority in tasks %}
-                <li class="task_priority_{{priority}}"><a href="{{ link }}">{{ name }} {% if count > 1 %}(x{{ count }}){% endif %}</a></li>
+                <li class="task_priority_{{priority}} bi bi-check2-square"><a href="{{ link }}">{{ name }} {% if count > 1 %}(x{{ count }}){% endif %}</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -56,9 +56,9 @@
             {% endif %}
             {% if staff %}
                 <h3 class="pydici-block-title">{% trans "Staff" %}</h3>
-                <ul class="row icon-list chevron-right">
+                <ul class="row icon-list">
                 {% for people in staff %}
-                    <li class="col-sm-6">{% with consultant=people %}{% include "people/__consultant_name.html" %}{% endwith %}</li>
+                    <li class="col-sm-6 bi bi-person-fill">{% with consultant=people %}{% include "people/__consultant_name.html" %}{% endwith %}</li>
                 {% endfor %}
                 </ul>
             {% endif %}
@@ -69,9 +69,9 @@
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
                 <h3 class="pydici-block-title">{% trans "Staled missions (to be updated or archived)" %}</h3>
-                <ul class="row icon-list chevron-right">
+                <ul class="row icon-list">
                 {% for mission in staled_missions %}
-                    <li><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></li>
+                    <li class="bi bi-chevron-right"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></li>
                 {% endfor %}
                 </ul>
         </div>
@@ -95,12 +95,12 @@
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
             <h3 class="pydici-block-title">{% trans "Business territory" %}</h3>
-            <ul class="row icon-list chevron-right">
+            <ul class="row icon-list">
             {% for company in business_territory %}
                 {% if forloop.counter > 12 %}
                     <div class="collapse collapse-business-territory">
                 {% endif %}
-                <li class="col-sm-6"><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
+                <li class="col-sm-6 bi bi-people"><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
                 {% if forloop.counter > 12 %}
                     </div>
                 {% endif %}
@@ -120,9 +120,9 @@
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="pydici-block">
             <h3 class="pydici-block-title">{% trans "Current missions" %}</h3>
-            <ul class="row icon-list chevron-right">
+            <ul class="row icon-list">
             {% for mission in missions %}
-                <li><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></li>
+                <li class="bi bi-chevron-right"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -132,9 +132,9 @@
         <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="pydici-block">
                     <h3 class="pydici-block-title">{% trans "Current leads as responsible" %}</h3>
-                    <ul class="row icon-list chevron-right">
+                    <ul class="row icon-list">
                     {% for lead in leads_as_responsible %}
-                        <li><a href="{% url 'leads:detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
+                        <li class="bi bi-chevron-right"><a href="{% url 'leads:detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
                     {% endfor %}
                     </ul>
             </div>
@@ -145,9 +145,9 @@
         <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="pydici-block">
                     <h3 class="pydici-block-title">{% trans "Current leads as resource" %}</h3>
-                    <ul class="icon-list chevron-right">
+                    <ul class="icon-list">
                     {% for lead in leads_as_staffee %}
-                        <li><a href="{% url 'leads:detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
+                        <li class="bi bi-chevron-right"><a href="{% url 'leads:detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
                     {% endfor %}
                     </ul>
             </div>

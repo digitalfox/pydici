@@ -41,23 +41,19 @@ div.table-pydici-all-timehseets {
   position: relative;
 }
 .icon-list li:before {
-  font-family: 'Glyphicons Halflings';
-  position: absolute;
-  left: 0px;
-  top:3px;
-  font-size:70%;
+  font-family: 'bootstrap-icons';
+  display: inline-block;
+  font-family: bootstrap-icons !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: -.125em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   color: grey;
-}
-.chevron-right li:before {
- content: '\e080';
-}
-
-.checkmark li:before {
- content: '\e067';
-}
-
-.arrow-right li:before {
- content: '\e092';
+  margin-right: 5px;
 }
 
 
