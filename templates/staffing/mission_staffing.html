@@ -71,7 +71,7 @@
         {% if read_only %}
             <em>{% trans "Note: you are not allowed to change mission staffing" %}</em>
         {% else %}
-	            <button type='submit' class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span> {% trans 'Save' %}</button>
+	            <button type='submit' class="btn btn-default"><i class="bi-save"></i> {% trans 'Save' %}</button>
                 <a role="button" class="btn btn-default button-link" href="{% url 'staffing:optimise_pdc' %}?missions={{ mission.id|unlocalize }}">
                     <span class="glyphicon glyphicon-cog"></span> {% trans "Optimize workload for this mission" %}
                 </a>

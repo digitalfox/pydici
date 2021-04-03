@@ -2,32 +2,32 @@
 {% load pydici_filters %}
 
 <div id="pydici-ajax-form-content-consultant-timesheet">
+
+    <div class="row py-2">
     {% if week %}
-        <div class="pull-right"><button id="switch-month" class="btn btn-default">{% trans "Switch to month mode" %}</button></div>
+        <div class="col-1 align-self-center text-center" title="{% trans 'Previous week' %}">
+            <i class="bi-chevron-left timesheet-nav-btn {% if not previous_date_enabled %} timesheet-nav-btn-disabled{% endif %}" id="previous-week"></i>
+        </div>
+        <div class="col-6 col-lg-4 col-xl-3 align-self-center text-center">{% trans "Timesheet" %} {{ month|date:"F Y"}} - {% trans "week " %} {{ week }}</div>
+        <div class="col-1 align-self-center text-center" title="{% trans 'Next week' %}">
+            <i class="bi-chevron-right timesheet-nav-btn" id="next-week"></i>
+        </div>
     {% else %}
-        <div class="pull-right"><button id="switch-week" class="btn btn-default">{% trans "Switch to week mode" %}</button></div>
+        <div class="col-1 align-self-center text-center" title="{% trans 'Previous month' %}">
+            <i class="bi-chevron-left timesheet-nav-btn{% if not previous_date_enabled %} timesheet-nav-btn-disabled{% endif %}" id="previous-month"></i>
+        </div>
+        <div class="col-6 col-lg-4 col-xl-2 align-self-center text-center">{% trans "Timesheet" %} {{ month|date:"F Y"}}</div>
+        <div class="col-1 align-self-center text-center" title="{% trans 'Next month' %}">
+            <i class="bi-chevron-right timesheet-nav-btn" id="next-month"></i>
+        </div>
     {% endif %}
-    <h2>
-    <ul class="pager" style="text-align:left">
     {% if week %}
-        <li class="pydici-tooltip" title="{% trans 'Previous week' %}">
-            <span class="glyphicon glyphicon-chevron-left timesheet-nav-btn {% if not previous_date_enabled %} timesheet-nav-btn-disabled{% endif %}" id="previous-week"></span>
-        </li>
-        <li>{% trans "Timesheet" %} {{ month|date:"F Y"}} - {% trans "week " %} {{ week }}</li>
-        <li class="pydici-tooltip" title="{% trans 'Next week' %}">
-            <span class="glyphicon glyphicon-chevron-right timesheet-nav-btn" id="next-week"></span>
-        </li>
+        <div class="col-4"><button id="switch-month" class="btn btn-primary">{% trans "Switch to month mode" %}</button></div>
     {% else %}
-        <li class="pydici-tooltip" title="{% trans 'Previous month' %}">
-            <span class="glyphicon glyphicon-chevron-left timesheet-nav-btn{% if not previous_date_enabled %} timesheet-nav-btn-disabled{% endif %}" id="previous-month"></span>
-        </li>
-        <li>{% trans "Timesheet" %} {{ month|date:"F Y"}}</li>
-        <li class="pydici-tooltip" title="{% trans 'Next month' %}">
-            <span class="glyphicon glyphicon-chevron-right timesheet-nav-btn" id="next-month"></span>
-        </li>
+        <div class="col-4"><button id="switch-week" class="btn btn-primary">{% trans "Switch to week mode" %}</button></div>
     {% endif %}
-    </ul>
-    </h2>
+    </div>
+
     {% if missions %}
         {% if management_mode_error %}
             <div class="alert alert-danger col-md-6">{{ management_mode_error }}</div>
@@ -81,7 +81,7 @@
             <div id="readonly-warning"><em>{% trans "Note: Past month timesheet and other people timesheets are read only" %}</em></div>
         {% else %}
             <div class="submit-row">
-                <button type='submit' class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span> {% trans 'Save' %}</button>
+                <button type='submit' class="btn btn-primary"><i class="bi-save"></i> {% trans 'Save' %}</button>
             </div>
         {% endif %}
         </form>
@@ -137,12 +137,8 @@ $('#switch-month').on("click", function () {
     $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' %}');
 });
 
-
-
-$(".pydici-tooltip").tooltip();
-
 /* Hide last column for small devices */
-$("#pydici-consultant-timesheet-table td:last-child").addClass("hidden-xs");
+$("#pydici-consultant-timesheet-table td:last-child").addClass("d-none d-sm-block");
 
  if (0 !== {{ today }}) {
      highlight_today({{ today }} + 1, "2px solid #555");
