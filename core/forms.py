@@ -22,7 +22,7 @@ class PydiciSelect2WidgetMixin(object):
 
     def build_attrs(self, base_attrs, extra_attrs=None):
         """Set select2's attributes."""
-        default_attrs = {"data-minimum-input-length": 0, "data-width": "100%", "data-theme": "bootstrap-5"}
+        default_attrs = {"data-minimum-input-length": 0, "data-theme": "bootstrap-5"}
         default_attrs.update(base_attrs)
         attrs = super().build_attrs(default_attrs, extra_attrs=extra_attrs)
         return attrs
