@@ -155,6 +155,7 @@ INSTALLED_APPS = [
     'taggit_templatetags2',
     'django_tables2',
     'crispy_forms',
+    'crispy_bootstrap5',
     'django_select2',
     'background_task',
 ]
@@ -179,7 +180,8 @@ else:
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 CRISPY_FAIL_SILENTLY = not DEBUG
 SELECT2_CACHE_BACKEND = 'select2'
 TAGGIT_LIMIT = 200

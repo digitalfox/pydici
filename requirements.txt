@@ -5,7 +5,8 @@ django-taggit-templatetags2==1.6.1
 django-extensions==3.0.5
 django-debug-toolbar==2.2.0
 -e git+https://github.com//harpb/django-userswitch#egg=django-userswitch
-django-crispy-forms==1.9.2
+django-crispy-forms==1.11.2
+-e git+https://github.com/django-crispy-forms/crispy-bootstrap5#egg=crispy-bootstrap5
 Django-Select2==7.4.2
 python-memcached==1.59
 django-datatables-view==1.19.1

@@ -50,7 +50,7 @@ class PydiciCrispyBaseForm(object):
         self.inline_helper = FormHelper()  # For inline (ie embeded in an other form)
         self.inline_helper.form_tag = False
         self.submit = Submit("Submit", _("Save"))
-        self.submit.field_classes = "btn btn-default"
+        self.submit.field_classes = "btn btn-primary"
 
 
 class PydiciCrispyModelForm(PydiciCrispyBaseForm, forms.ModelForm):

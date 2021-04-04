@@ -12,7 +12,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_text
 from django import forms
 
-from crispy_forms.layout import Layout, Div, Column, Fieldset, Field, HTML
+from crispy_forms.layout import Layout, Div, Column, Fieldset, Field, HTML, Row
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, StrictButton, FieldWithButtons
 from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
@@ -84,24 +84,27 @@ class LeadForm(PydiciCrispyModelForm):
         clientPopupUrl = reverse("crm:client_organisation_company_popup")
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"),
                                                   Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-12"),
-                                                  Column(FieldWithButtons("client", HTML(
-                                                      "<a role='button' class='btn btn-default' href='%s' data-remote='false' data-toggle='modal' data-target='#clientModal'><span class='glyphicon glyphicon-plus'></span></a>" % clientPopupUrl)),
-                                                         css_class="col-md-6"),
-                                                  Column("subsidiary", css_class="col-md-6"),
-                                                  Column("description", css_class="col-md-6"),
-                                                  Column("administrative_notes", css_class="col-md-6"),
+                                                  Row(Column(FieldWithButtons("client", HTML(
+                                                          "<a role='button' class='btn btn-primary' href='%s' data-remote='false' data-toggle='modal' data-target='#clientModal'><i class='bi bi-plus'></i></a>" % clientPopupUrl)),
+                                                          css_class="col-6"),
+                                                      Column("subsidiary", css_class="col-md-6 col-12"),),
+                                                  Row(Column("description", css_class="col-md-6 col-12"),
+                                                      Column("administrative_notes", css_class="col-md-6 col-12")),
                                                   Column(Field("action", placeholder=_("Next commercial action to be done")), css_class="col-md-6")),
-                                              Tab(_("State and tracking"), Div(Column("responsible", Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
-                                                                                      Field("start_date", placeholder=_("Date of the operational start"), css_class="datepicker"),
-                                                                                      css_class='col-md-6'),
-                                                                               Column(Field("deal_id", placeholder=_("Leave blank to auto generate")),
-                                                                                      Field("client_deal_id", placeholder=_("Internal client reference")), "state", css_class='col-md-6'))),
-                                              Tab(_("Commercial"), Div(Column(AppendedText("sales", "k€"), "salesman", css_class='col-md-6'),
+                                              Tab(_("State and tracking"),
+                                                  Row(Column("responsible", css_class="col-md-6 col-12"),
+                                                      Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), css_class="col-md-6 col-12")),
+                                                  Row(Column(Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"), css_class="col-md-6 col-12"),
+                                                      Column(Field("client_deal_id", placeholder=_("Internal client reference")), css_class="col-md-6 col-12")),
+                                                  Row(Column(Field("start_date", placeholder=_("Date of the operational start"), css_class="datepicker"), css_class="col-md-6 col-12"),
+                                                      Column("state", css_class='col-md-6'))),
+                                              Tab(_("Commercial"), Row(Column(AppendedText("sales", "k€"), css_class="col-md-6"),
                                                                        Column(FieldWithButtons("business_broker",
-                                                                                           HTML("<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create"))),
-                                                                              FieldWithButtons("paying_authority",
-                                                                                           HTML("<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create"))), css_class='col-md-6'))),
-                                              Tab(_("Staffing"), Div(Field("staffing", placeholder=_("People that could contribute...")),
+                                                                                           HTML("<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create"))),css_class="col-md-6")),
+                                                                   Row(Column("salesman", css_class="col-md-6"),
+                                                                       Column(FieldWithButtons("paying_authority",
+                                                                                           HTML("<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create")))))),
+                                              Tab(_("Staffing"), Column(Field("staffing", placeholder=_("People that could contribute...")),
                                                                      Field("external_staffing", placeholder=_("People outside company that could contribute...")),
                                                                      css_class="col-md-6"))),
                                     Fieldset("", "send_email"),
