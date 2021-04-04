@@ -499,3 +499,9 @@ body {
     border-color: rgba(244,141,51);
     background-color: rgba(244,141,51, 0.9);
 }
+
+.navbar-brand {
+    font-size: 1rem;
+    padding-top: 0;
+    padding-bottom: 0;
+}
