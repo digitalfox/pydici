@@ -123,12 +123,12 @@ class ClientForm(PydiciCrispyModelForm):
                 FieldWithButtons(
                     "organisation",
                     HTML(
-                        "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+                        "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                             "crm:client_organisation"))),
                 "expectations",
                 FieldWithButtons("contact",
                                  HTML(
-                                     "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+                                     "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                          "crm:contact_create"))),
                 "alignment",
                 Field("vat_id", placeholder=_("Leave blank to use company vat id")),
@@ -137,7 +137,7 @@ class ClientForm(PydiciCrispyModelForm):
                 FieldWithButtons(
                     "billing_contact",
                     HTML(
-                        "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+                        "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                             "crm:administrative_contact_add"))),
                 css_class="col-md-6"),
             get_address_column(),
@@ -148,11 +148,11 @@ class ClientForm(PydiciCrispyModelForm):
             Div(Column(Field("billing_name", placeholder=_("Leave blank to use standard name")),
                        FieldWithButtons("organisation",
                                         HTML(
-                                            """<a role='button' class='btn btn-default' href='#' onclick='$("#organisationForm").show("slow"); $("#organisation_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""),
+                                            """<a role='button' class='btn btn-primary' href='#' onclick='$("#organisationForm").show("slow"); $("#organisation_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
                                         css_id="organisation_input_group"),
                        FieldWithButtons("contact",
                                         HTML(
-                                            """<a role='button' class='btn btn-default' href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""),
+                                            """<a role='button' class='btn btn-primary' href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
                                         css_id="contact_input_group"),
                        css_class="col-md-6"),
                 Column(Field("vat_id", placeholder=_("Leave blank to use company vat id")),
@@ -172,7 +172,7 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(ClientOrganisationForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column("name", AppendedText("company",
-                                                                    "<a href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+                                                                    "<a href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                                                         "crm:company")), css_class="col-md-6"),
                                         get_address_column(),
                                         css_class="row"),
@@ -180,7 +180,7 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
         self.inline_helper.layout = Layout(Fieldset(_("Client organisation"),
                                                     Column("name",
                                                            FieldWithButtons("company", HTML(
-                                                               """<a role='button' class='btn btn-default' href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><span class='glyphicon glyphicon-plus'></span></a>"""),
+                                                               """<a role='button' class='btn btn-primary' href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
                                                                             css_id="company_input_group"),
                                                            css_class="col-md-6"),
                                                     Column(css_class="col-md-6"),
@@ -242,11 +242,11 @@ class MissionContactForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(MissionContactForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column(FieldWithButtons("contact", HTML(
-            "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                 "crm:contact_create"))),
                                                css_class="col-md-6"),
                                         Column(FieldWithButtons("company", HTML(
-                                            "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+                                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                                 "crm:company"))),
                                                css_class="col-md-6"),
                                         css_class="row"),
@@ -263,12 +263,12 @@ class BusinessBrokerForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(BusinessBrokerForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column(FieldWithButtons("contact", HTML(
-            "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                 "crm:contact_create"))),
                                                "billing_name",
                                                css_class="col-md-6"),
                                         Column(FieldWithButtons("company", HTML(
-                                            "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+                                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                                 "crm:company"))),
                                                css_class="col-md-6"),
                                         css_class="row"),
@@ -287,11 +287,11 @@ class AdministrativeContactForm(PydiciCrispyModelForm):
         self.helper.layout = Layout(Div(Column("function", "default_phone", "default_mail",
                                                css_class="col-md-6"),
                                         Column(FieldWithButtons("company", HTML(
-                                            "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+                                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                                 "crm:company"))),
                                                "default_fax",
                                                FieldWithButtons("contact", HTML(
-                                                   "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+                                                   "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                                        "crm:contact_create"))),
                                                css_class="col-md-6"),
                                         css_class="row"),
@@ -308,11 +308,11 @@ class SupplierForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(SupplierForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column(FieldWithButtons("contact", HTML(
-            "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                 "crm:contact_create"))),
                                                css_class="col-md-6"),
                                         Column(FieldWithButtons("company", HTML(
-                                            "<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse(
+                                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                                 "crm:company"))),
                                                css_class="col-md-6"),
                                         css_class="row"),

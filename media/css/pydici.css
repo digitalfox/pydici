@@ -444,8 +444,8 @@ div.ui-tooltip {
     font-size: 40px;
 }
 
-.popover {
-    z-index: 1010; /* Avoid to be above select2 search dropbox */
+.modal {
+    z-index: 1051; /* Avoid to be above select2 search dropbox */
 }
 
 /*
@@ -492,7 +492,7 @@ div.ui-tooltip {
 body {
     font-size: 0.9rem;
 }
-.form-control, .dropdown-menu {
+.form-control, .form-select, .btn, .input-group-text, .dropdown-menu {
     font-size: 0.9rem;
 }
 

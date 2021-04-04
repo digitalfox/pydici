@@ -85,7 +85,7 @@ class LeadForm(PydiciCrispyModelForm):
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"),
                                                   Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-12"),
                                                   Row(Column(FieldWithButtons("client", HTML(
-                                                          "<a role='button' class='btn btn-primary' href='%s' data-remote='false' data-toggle='modal' data-target='#clientModal'><i class='bi bi-plus'></i></a>" % clientPopupUrl)),
+                                                          "<a role='button' class='btn btn-primary' href='%s' data-remote='false' data-bs-toggle='modal' data-bs-target='#clientModal'><i class='bi bi-plus'></i></a>" % clientPopupUrl)),
                                                           css_class="col-6"),
                                                       Column("subsidiary", css_class="col-md-6 col-12"),),
                                                   Row(Column("description", css_class="col-md-6 col-12"),
@@ -105,8 +105,8 @@ class LeadForm(PydiciCrispyModelForm):
                                                                        Column(FieldWithButtons("paying_authority",
                                                                                            HTML("<a role='button' class='btn btn-default' href='%s' target='_blank'><span class='glyphicon glyphicon-plus'></span></a>" % reverse("crm:businessbroker_create")))))),
                                               Tab(_("Staffing"), Column(Field("staffing", placeholder=_("People that could contribute...")),
-                                                                     Field("external_staffing", placeholder=_("People outside company that could contribute...")),
-                                                                     css_class="col-md-6"))),
+                                                                        Field("external_staffing", placeholder=_("People outside company that could contribute...")),
+                                                                        css_class="col-md-6"))),
                                     Fieldset("", "send_email"),
                                     Field("tags", css_class="hide"),  # Don't use type=hidden, it breaks tag parsing.
                                     self.submit)
