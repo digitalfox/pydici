@@ -11,9 +11,8 @@
 <link href="{{ MEDIA_URL }}css/iconic.css" rel="stylesheet">
 <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css" rel="stylesheet">
 <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
-<link href="{{ MEDIA_URL }}css/pydici-admin-base.css" rel="stylesheet">
-<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" type="text/css" media="screen" rel="stylesheet">
-<link href="{{ MEDIA_URL }}css/select2-bootstrap.min.css" rel="stylesheet">
+<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" type="text/css" media="screen" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" type="text/css" media="screen" rel="stylesheet">
 {% endblock %}
 
 {% block extrahead %}
@@ -41,14 +40,14 @@
 
 
 {% block footer %}
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
                 // Disable django admin tool-bar and breadcrumbs
                 $('#user-tools').hide();
                 $('.breadcrumbs').hide();
-                $('.django-select2').djangoSelect2({ "theme": "bootstrap",  "width": "80em"});
+                $('.django-select2').djangoSelect2({ "theme": "bootstrap-5",  "width": "80em"});
                 });
         </script>
 

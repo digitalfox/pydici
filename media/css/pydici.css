@@ -398,7 +398,7 @@ div.ui-tooltip {
    }
 
 /* Fix some select2 CSS issues */
-.select2-selection__clear {
+/*.select2-selection__clear {
     margin-right: -15px !important;
 }
 
@@ -406,9 +406,9 @@ div.ui-tooltip {
 {
     margin: 8px 0 0 6px;
 }
-
+*/
 /* Fix select2 issue in actionset popover */
-.force_child_span_inline {
+/*.force_child_span_inline {
     display: inline-block;
     vertical-align: middle;
 }
@@ -417,10 +417,26 @@ div.ui-tooltip {
     display: inline-block;
     vertical-align: middle;
 }
+*/
 
-/* fix select2 line height */
+/* fix select2 line height and margin to properly align fields in form */
 .select2-container .select2-selection--single {
-    height: 34px !important;
+    height: 38px !important;
+    margin-top: 2px;
+}
+
+/* Override select2 bootstrap-5 theme font size */
+.select2-container--bootstrap-5 .select2-selection {
+    font-size: 0.9rem;
+}
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+    font-size: 0.9rem;
+}
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2 {
+    font-size: 0.9rem;
+}
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option {
+    font-size: 0.9rem;
 }
 
 /* huge text for dashboard */
@@ -474,6 +490,9 @@ div.ui-tooltip {
 
 /* override boostratp default */
 body {
+    font-size: 0.9rem;
+}
+.form-control, .dropdown-menu {
     font-size: 0.9rem;
 }
 
