@@ -509,6 +509,10 @@ body {
     padding-bottom: 0;
 }
 
+.table-striped > tbody > tr:nth-of-type(2n+1) {
+    //--bs-table-accent-bg: #f5f5f5;
+}
+
 /* override bootstrap datepicker default */
 .datepicker {
     padding: .375rem .75rem; // bootstrap default
