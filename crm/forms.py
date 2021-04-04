@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.forms.widgets import Textarea
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
-from crispy_forms.layout import Layout, Div, Column, Fieldset, HTML, Field
+from crispy_forms.layout import Layout, Div, Column, Fieldset, HTML, Field, Row
 from crispy_forms.bootstrap import AppendedText, FieldWithButtons, Tab, TabHolder
 
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, \
@@ -178,12 +178,10 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
                                         css_class="row"),
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Client organisation"),
-                                                    Column("name",
-                                                           FieldWithButtons("company", HTML(
+                                                    Row(Column("name"),
+                                                        Column(FieldWithButtons("company", HTML(
                                                                """<a role='button' class='btn btn-primary' href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
-                                                                            css_id="company_input_group"),
-                                                           css_class="col-md-6"),
-                                                    Column(css_class="col-md-6"),
+                                                                            css_id="company_input_group"))),
                                                     css_class="collapse", css_id="organisationForm"))
 
 
@@ -203,9 +201,8 @@ class CompanyForm(PydiciCrispyModelForm):
                 get_address_column(show_banner=False), css_class="row"),
             self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Company"),
-                                                    Column("name", "code", "businessOwner", "web",
-                                                           css_class="col-md-6"),
-                                                    Column(css_class="col-md-6"),
+                                                    Row(Column("name"), Column("code")),
+                                                    Row(Column("businessOwner"), Column("web")),
                                                     css_class="collapse", css_id="companyForm"))
 
 
@@ -222,9 +219,10 @@ class ContactForm(PydiciCrispyModelForm):
                                         css_class="row"),
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Contact"),
-                                                    Column("name", "email", "function", "contact_points",
-                                                           css_class="col-md-6"),
-                                                    Column("mobile_phone", "phone", "fax", css_class="col-md-6"),
+                                                    Row(Column("name"), Column("mobile_phone")),
+                                                    Row(Column("email"), Column("phone")),
+                                                    Row(Column("function"), Column("fax")),
+                                                    Row("contact_points", css_class="col-md-6"),
                                                     css_class="collapse", css_id="contactForm"),
                                            )
 

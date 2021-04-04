@@ -10,12 +10,12 @@
 {% crispy form form.helper %}
 
 <!-- Modal window to display client creation -->
-<div class="modal fade" id="clientModal" role="dialog">
+<div class="modal fade" id="clientModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-        <h1>{% trans "New client" %}</h1>
+        <h1 class="modal-title">{% trans "New client" %}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
       </div>
       <div class="modal-body">
         ...
