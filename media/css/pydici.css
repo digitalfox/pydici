@@ -505,3 +505,8 @@ body {
     padding-top: 0;
     padding-bottom: 0;
 }
+
+/* override bootstrap datepicker default */
+.datepicker {
+    padding: .375rem .75rem; // bootstrap default
+}
