@@ -154,7 +154,9 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 
 .timesheet-nav-btn {
     cursor: pointer;
-    color: #8F6749;
+    font-size: 150%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .timesheet-nav-btn-disabled {

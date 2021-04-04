@@ -5,20 +5,20 @@
 
     <div class="row py-2">
     {% if week %}
-        <div class="col-1 align-self-center text-center" title="{% trans 'Previous week' %}">
-            <i class="bi-chevron-left timesheet-nav-btn {% if not previous_date_enabled %} timesheet-nav-btn-disabled{% endif %}" id="previous-week"></i>
+        <div class="col-1 align-self-center text-end" title="{% trans 'Previous week' %}">
+            <i class="bi bi-arrow-left-circle timesheet-nav-btn {% if not previous_date_enabled %} timesheet-nav-btn-disabled{% endif %}" id="previous-week"></i>
         </div>
         <div class="col-6 col-lg-4 col-xl-3 align-self-center text-center">{% trans "Timesheet" %} {{ month|date:"F Y"}} - {% trans "week " %} {{ week }}</div>
-        <div class="col-1 align-self-center text-center" title="{% trans 'Next week' %}">
-            <i class="bi-chevron-right timesheet-nav-btn" id="next-week"></i>
+        <div class="col-1 align-self-center text-start" title="{% trans 'Next week' %}">
+            <i class="bi bi-arrow-right-circle timesheet-nav-btn" id="next-week"></i>
         </div>
     {% else %}
-        <div class="col-1 align-self-center text-center" title="{% trans 'Previous month' %}">
-            <i class="bi-chevron-left timesheet-nav-btn{% if not previous_date_enabled %} timesheet-nav-btn-disabled{% endif %}" id="previous-month"></i>
+        <div class="col-1 align-self-center text-end" title="{% trans 'Previous month' %}">
+            <i class="bi bi-arrow-left-circle timesheet-nav-btn{% if not previous_date_enabled %} timesheet-nav-btn-disabled{% endif %}" id="previous-month"></i>
         </div>
         <div class="col-6 col-lg-4 col-xl-2 align-self-center text-center">{% trans "Timesheet" %} {{ month|date:"F Y"}}</div>
-        <div class="col-1 align-self-center text-center" title="{% trans 'Next month' %}">
-            <i class="bi-chevron-right timesheet-nav-btn" id="next-month"></i>
+        <div class="col-1 align-self-center text-start" title="{% trans 'Next month' %}">
+            <i class="bi bi-arrow-right-circle timesheet-nav-btn" id="next-month"></i>
         </div>
     {% endif %}
     {% if week %}
