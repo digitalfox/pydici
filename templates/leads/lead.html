@@ -7,7 +7,9 @@
 
 {% block content %}
 
-{% crispy form form.helper %}
+<div class="row py-2">
+  {% crispy form form.helper %}
+</div>
 
 <!-- Modal window to display client creation -->
 <div class="modal fade" id="clientModal" tabindex="-1">
