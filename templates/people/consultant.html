@@ -23,7 +23,7 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="consultant-tabs">
         {% if consultant.subcontractor %}
-            <li class="active"><a data-bs-toggle="tab" href="#tab-home" data-tab-url="{% url 'people:subcontractor_detail' consultant.id %}"><i class="bi-house"></i> {% trans "Home" %}</a></li>
+            <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home" data-tab-url="{% url 'people:subcontractor_detail' consultant.id %}"><i class="bi bi-house"></i> {% trans "Home" %}</button></li>
         {% else %}
             <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home" data-tab-url="{% url 'people:consultant_detail' consultant.id %}"><i class="bi-house"></i> {% trans "Home" %}</button></li>
         {% endif %}
@@ -46,7 +46,7 @@
     <div id="tab-missions" class="tab-pane fade" role="tabpanel">
         <div class="py-2">
             <h2>{% trans "Consultant's missions" %}</h2>
-            <table id="consultant_missions" class="table table-hover table-striped table-condensed" cellspacing="0" width="100%">
+            <table id="consultant_missions" class="table table-hover table-striped table-sm" cellspacing="0" width="100%">
                 <thead>
                     <tr><th>{% trans "Name" %}</th>
                         <th>{% trans "Mission id" %}</th>

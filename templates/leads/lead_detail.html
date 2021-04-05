@@ -9,6 +9,7 @@
 {% block extrajs %}
     {% include "core/_c3.html" %}
     {% include "core/_pivotable_header.html" %}
+    <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
 {% endblock %}
 
 
@@ -18,17 +19,23 @@
     {% include "core/_init_tabs.html" %}
 {% endwith %}
 
+<div class="row py-2">
     <h1>{% trans "Lead detail" %}</h1>
     {% if active_count %}
-    <ul class="pager" style="text-align:left">
+
 	    {% if previous_lead %}
-	        <li><a href="{% url 'leads:detail' previous_lead.id|unlocalize %}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+            <div class="col-1 align-self-center text-end">
+                <a href="{% url 'leads:detail' previous_lead.id|unlocalize %}"><i class="bi bi-arrow-left-circle"></i></a>
+            </div>
 	    {% endif %}
 	    {{ active_rank }} / {{ active_count }}
 	    {% if next_lead %}
-	        <li><a href="{% url 'leads:detail' next_lead.id|unlocalize %}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+            <div class="col-1 align-self-center text-start">
+                <a href="{% url 'leads:detail' next_lead.id|unlocalize %}"><i class="bi bi-arrow-right-circle"></i></a>
+            </div>
+
 	    {% endif %}
-    </ul>
+
     {% endif %}
 
     <h2><a href="{% url 'crm:company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a>
@@ -38,19 +45,19 @@
 <div>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="lead-tabs">
-        <li class="active"><a data-toggle="tab" href="#tab-description"><span class="glyphicon glyphicon-home"></span> {% trans "Description" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-missions"><span class="glyphicon glyphicon-list"></span> {% trans "Missions" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-billing" data-tab-url="{% url 'billing:lead_billing' lead.id|unlocalize %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}</a></li>
-        {% if enable_doc_tab %}<li><a data-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads:lead_documents' lead.id|unlocalize %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>{% endif %}
-        <li><a data-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' lead.id|unlocalize %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
-        <li><a data-toggle="tab" href="#tab-history"><span class="glyphicon glyphicon-film"></span> {% trans "History" %}</a></li>
+        <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-description"><i class="bi bi-house"></i> {% trans "Description" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-missions"><span class="glyphicon glyphicon-list"></span> {% trans "Missions" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-billing" data-tab-url="{% url 'billing:lead_billing' lead.id|unlocalize %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}</button></li>
+        {% if enable_doc_tab %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-documents" data-tab-url="{% url 'leads:lead_documents' lead.id|unlocalize %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</button></li>{% endif %}
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' lead.id|unlocalize %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-history"><span class="glyphicon glyphicon-film"></span> {% trans "History" %}</button></li>
     </ul>
 </div>
 
 <div class="tab-content">
-    <div id="tab-description" class="tab-pane fade active in">
-        <div class="row">
+    <div id="tab-description" class="tab-pane fade active show" role="tabpanel">
+        <div class="row p-2 mx-0">
             <div class="tag_banner alert alert-info">
         	    {% for tag in lead.tags.all %}
         	    <div id="tag_{{ tag.id|unlocalize }}" style="display:inline">
@@ -75,15 +82,15 @@
         	    {% endif %}
             </div>
         </div>
-        <div class="row">
+        <div class="row p-2">
         <div class="col-lg-8 col-md-8 col-sm-12">
             {% with lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
             {% if lead.description %}
-                <div class='well'>{{ lead.description|pydici_simple_format }}</div>
+                <div class="card card-body bg-light">{{ lead.description|pydici_simple_format }}</div>
             {% endif %}
         </div>
         {% if lead.stateproba_set.all.count > 0 %}
-                <div class="col-lg-4 col-md-4 hidden-sm hidden-xs">
+                <div class="col-lg-4 col-md-4 d-none d-lg-block">
                         <div id="lead_proba"></div>
                         <script type="text/javascript">
                         $(document).ready(function() {
@@ -112,10 +119,10 @@
                     </div>
             {% endif %}
         </div>
-        <div class="row">
-        <div class="col-lg-6 col-md-8 col-sm-12">
+        <div class="row p-2" id="lead-information-blocks">
+            <div class="col-lg-6 col-md-8 col-sm-12">
             <h2>{% trans "Informations" %}</h2>
-            <table class="table table-hover table-striped table-condensed">
+            <table class="table table-hover table-striped table-sm">
                 <tr>
                     <th>{% trans "Contact" %}</th>
                     <td>{% if lead.client.contact %}<a href="{% url 'crm:contact_detail' lead.client.contact.id %}">{{ lead.client.contact }}</a> {% else %}{% trans "Unknown" context "client" %} {% endif %} {% if lead.client.contact.function %} ({{ lead.client.contact.function }}) {% endif %}</td>
@@ -162,7 +169,7 @@
                     <th>{% trans "Sales (k€)" %}</th><td>{{ lead.sales|default_if_none:_("Unknown amount") }}</td>
                 </tr>
                 {% if lead.stateproba_set.all.count > 0 %}
-                    <tr class="hidden-md hidden-lg"><th>{% trans "Estimation" %}</th><td>{% for code, state, proba in lead.getStateProba %}{{state }} : {{ proba }} %, {% endfor %}</td></tr>
+                    <tr class="d-md-none"><th>{% trans "Estimation" %}</th><td>{% for code, state, proba in lead.getStateProba %}{{state }} : {{ proba }} %, {% endfor %}</td></tr>
                 {% endif %}
                 <tr>
                     <th>{% trans "Potential resource(s)" %}</th><td>{{ lead.staffing_list }}</td>
@@ -172,24 +179,22 @@
                 </tr>
                 </table>
             </div>
-            {% if lead.state == "WON" and pydici_feature.leads_profitability %}
             <div class="col-lg-6 col-md-8 col-sm-12">
+                {% if lead.state == "WON" and pydici_feature.leads_profitability %}
                 <h2>{% trans "Profitability" %}</h2>
-                <table class="table table-hover table-striped table-condensed">
+                <table class="table table-hover table-striped table-sm">
                     <tr><th>{% trans "Sold" %}</th>
                     <td>{% if lead.sales %}{{ lead.sales|floatformat:-3 }} k€
                         {% else %} <a href="{% url 'leads:lead' lead.id|unlocalize %}">{% trans "To be defined" %}</a>
                         {% endif %}</td></tr>
-                    <tr><th>{% trans "Unattributed" %} <span class="glyphicon glyphicon-question-sign pydici-tooltip hidden-sm hidden-xs" title="{% blocktrans %}Non attributed amount to missions{% endblocktrans %}"></span></th><td>{{ lead.unattributed|floatformat:-3 }} k€</td></tr>
+                    <tr><th>{% trans "Unattributed" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Non attributed amount to missions{% endblocktrans %}"></i></th><td>{{ lead.unattributed|floatformat:-3 }} k€</td></tr>
                     <tr><th>{% trans "Margin over rate objective" %}</th><td>{{ lead.totalObjectiveMargin|floatformat:-2 }} €</td></tr>
-                    <tr><th>{% trans "Full margin" %} <span class="glyphicon glyphicon-question-sign pydici-tooltip hidden-sm hidden-xs" title="{% blocktrans %}Sum of objective margin and unused days for fixed price missions{% endblocktrans %}"></span></th><td>{{ lead.margin|floatformat:-2 }} €</td></tr>
+                    <tr><th>{% trans "Full margin" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Sum of objective margin and unused days for fixed price missions{% endblocktrans %}"></i></th><td>{{ lead.margin|floatformat:-2 }} €</td></tr>
                 </table>
-            </div>
-            {% endif %}
+                {% endif %}
 
-            <div class="col-lg-6 col-md-8 col-sm-12">
                 <h2>{% trans "Similar leads" %}</h2>
-                <table class="table table-hover table-striped table-condensed">
+                <table class="table table-hover table-striped table-sm">
                     {% for similar_lead in similar_leads %}
                         <tr><td><a href="{% url 'leads:detail' similar_lead.id|unlocalize %}" title='{{ similar_lead.description }}'>{{ similar_lead }}</a></td></tr>
                     {% endfor %}
@@ -198,17 +203,17 @@
             <div class="col-lg-6 col-md-8 col-sm-12">
                 {% if lead.administrative_notes %}
                     <h2>{% trans "Administrative notes" %}</h2>
-                    <div class='well'>{{ lead.administrative_notes|pydici_simple_format }}</div>
+                    <div class="card card-body bg-light">{{ lead.administrative_notes|pydici_simple_format }}</div>
                 {% endif %}
             </div>
         </div>
     </div> {# End of description tab #}
 
-    <div id="tab-missions" class="tab-pane fade">
+    <div id="tab-missions" class="tab-pane fade" role="tabpanel">
     {% if lead.mission_set.count %}
         <h2>{% trans "Missions of this lead:" %}</h2>
         <div class="table-responsive)">
-        <table class="table table-hover table-striped table-condensed">
+        <table class="table table-hover table-striped table-sm">
         <tr>
             <th>{% trans "Mission" %}</th>
             <th>{% trans "id" %}</th>
@@ -257,9 +262,9 @@
     </div> {# end of tab missions #}
 
 
-    <div id="tab-billing" class="tab-pane fade"></div>
+    <div id="tab-billing" class="tab-pane fade" role="tabpanel"></div>
 
-    <div id="tab-actions" class="tab-pane fade">
+    <div id="tab-actions" class="tab-pane fade" role="tabpanel">
         <h2>{% trans "Pending actions" %}</h2>
             {% with lead.pending_actions as actions %}
                 {% include "actionset/_lead_mission_actions.html" %}
@@ -276,19 +281,20 @@
     </div>
 
 
-    {% if enable_doc_tab %}<div id="tab-documents" class="tab-pane fade"></div>{% endif %}
+    {% if enable_doc_tab %}<div id="tab-documents" class="tab-pane fade" role="tabpanel"></div>{% endif %}
 
 
-    <div id="tab-reporting" class="tab-pane fade"></div>
+    <div id="tab-reporting" class="tab-pane fade" role="tabpanel"></div>
 
 
-    <div id="tab-history" class="tab-pane fade">
+    <div id="tab-history" class="tab-pane fade" role="tabpanel">
         {% with history_list=lead.get_change_history %}
             {% include "core/_object_history.html" %}
         {% endwith %}
     </div>
 
 </div> {# End of all tabs #}
+</div> {# End of main row #}
 
 <script type="text/javascript">
 <!--
