@@ -27,7 +27,7 @@
 
 {% if pydici_feature.contacts_write %}
     <br/>
-    <a class="btn btn-default" href="javascript:;"
+    <a class="btn btn-primary" href="javascript:;"
        onClick="$('#contact_display').hide();$('#contact_edit').show();">
        {% trans "Add or edit" %}</a>
     </div>
@@ -36,11 +36,11 @@
     <form action="{% url 'staffing:mission_contacts' mission.id %}#tab-contacts" method="POST">
         {{ mission_contact_form.non_field_errors }}
         {{ mission_contact_form }}
-        <input class="btn btn-default" type="submit" value="{% trans 'Save' %}"/>
+        <input class="btn btn-primary" type="submit" value="{% trans 'Save' %}"/>
     </form>
        <br/>
-    <a href="{% url 'crm:mission_contact_create' %}?return_to={% url 'staffing:mission_home' mission.id %}#goto_tab-contacts" class="btn btn-default">{% trans "New mission contact" %}</a>
-    <a class="btn btn-default" href="javascript:;"
+    <a href="{% url 'crm:mission_contact_create' %}?return_to={% url 'staffing:mission_home' mission.id %}#goto_tab-contacts" class="btn btn-primary">{% trans "New mission contact" %}</a>
+    <a class="btn btn-primary" href="javascript:;"
        onClick="$('#contact_display').show();$('#contact_edit').hide();">
        {% trans "Close" %}</a>
     </div>

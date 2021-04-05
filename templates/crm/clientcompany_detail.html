@@ -403,7 +403,7 @@
              {% include "core/_datatables-dj-tables.html" %}
         {% endwith %}
         {% if pydici_feature.contacts_write %}
-        <br/><a class="btn btn-default" href="{% url 'crm:administrative_contact_add' %}?company={{ company.id|safe }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
+        <br/><a class="btn btn-primary" href="{% url 'crm:administrative_contact_add' %}?company={{ company.id|safe }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
         {% endif %}
     </div>
 

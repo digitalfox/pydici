@@ -35,7 +35,7 @@
 
 <br/><br/>
 
-<a href="{% url 'staffing:all_timesheet' year=month.year month=month.month %}/?csv" class="btn btn-default">{% trans "Export this timesheet in a spreadsheet" %}</a>
-<a href="{% url 'staffing:detailed_csv_timesheet' year=month.year month=month.month %}/?csv" class="btn btn-default">{% trans "Export detailed timesheet in a spreadsheet" %}</a>
+<a href="{% url 'staffing:all_timesheet' year=month.year month=month.month %}/?csv" class="btn btn-primary">{% trans "Export this timesheet in a spreadsheet" %}</a>
+<a href="{% url 'staffing:detailed_csv_timesheet' year=month.year month=month.month %}/?csv" class="btn btn-primary">{% trans "Export detailed timesheet in a spreadsheet" %}</a>
 
 {% endblock %}

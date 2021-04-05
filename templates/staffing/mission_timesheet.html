@@ -76,9 +76,9 @@
 
     </table>
     <br/>
-    <a class="btn btn-default" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
-    <a class="btn btn-default" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?pdf">{% trans "Export this timesheet in PDF" %}</a>
-    <a class="btn btn-default" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?csv_grouped">{% trans "Export this timesheet grouped by rate" %}</a>
+    <a class="btn btn-primary" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
+    <a class="btn btn-primary" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?pdf">{% trans "Export this timesheet in PDF" %}</a>
+    <a class="btn btn-primary" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?csv_grouped">{% trans "Export this timesheet grouped by rate" %}</a>
     </div>
     <br/>
     {% if mission.nature == "PROD" and pydici_feature.leads_profitability %}

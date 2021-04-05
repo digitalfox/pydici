@@ -14,18 +14,18 @@
 
 <div class="row">
     <div class="btn-group col-lg-4" data-toggle="buttons">
-        <label class="btn btn-default col-lg-6 {% if mine %}active{% endif %}">
+        <label class="btn btn-primary col-lg-6 {% if mine %}active{% endif %}">
             <input type="radio" onchange="window.location='{% url 'billing:pre_billing' start_date=start_date|date:'Ym' end_date=end_date|date:'Ym' mine=True %}'" />
             {% trans "Only my leads" %}
         </label>
-        <label class="btn btn-default col-lg-6 {% if not mine %}active{% endif %}">
+        <label class="btn btn-primary col-lg-6 {% if not mine %}active{% endif %}">
             <input type="radio" onchange="window.location='{% url 'billing:pre_billing' start_date=start_date|date:'Ym' end_date=end_date|date:'Ym' mine=False %}'" />
             {% trans "All leads" %}
         </label>
     </div>
     <div class="btn-group col-lg-4" data-toggle="buttons">
-        <input id="startDate" name="startDate" class="btn btn-default datepicker dateinput" placeholder="{% trans 'From' %}">
-        <input id="endDate" name="endDate" class="btn btn-default datepicker dateinput" placeholder="{% trans 'To' %}">
+        <input id="startDate" name="startDate" class="btn btn-primary datepicker dateinput" placeholder="{% trans 'From' %}">
+        <input id="endDate" name="endDate" class="btn btn-primary datepicker dateinput" placeholder="{% trans 'To' %}">
     </div>
 </div>
 
@@ -60,13 +60,13 @@
             <tr><th>{% trans "total" %}</th><td></td><td></td><th>{{ mission_data.0|floatformat:"-2" }} €</th></tr>
             </table>
             </div>
-                <a class="btn btn-default" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
+                <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
             </div>
     {% endfor %}
      {% ifequal lead.mission_set.count 1 %}
         <h4></h4>
      {% else %}
-        <a class="btn btn-default" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
+        <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
         <p><strong>{% trans "Total:" %} {{ lead_data.0|floatformat:-2}} €</strong></p>
      {% endifequal %}
      <p><strong>{% trans "Still to be billed" %}: {{ lead.still_to_be_billed|floatformat:-2 }} €</strong></p>
@@ -88,8 +88,8 @@
     {% endifchanged %}
     <li><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }}) : </a>
         {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
-        <a class="btn btn-default" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.3" target="_blank">{% trans "Bill 30% for this mission" %}</a>
-        <a class="btn btn-default" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.7" target="_blank">{% trans "Bill 70% for this mission" %}</a>
+        <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.3" target="_blank">{% trans "Bill 30% for this mission" %}</a>
+        <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.7" target="_blank">{% trans "Bill 70% for this mission" %}</a>
     </li>
 
 {% endfor %}
@@ -127,7 +127,7 @@
          {% else %}
             <h4>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</h4>
          {% endifequal %}
-         <a class="btn btn-default" href="">{% trans "Add an internal bill" %}</a>
+         <a class="btn btn-primary" href="">{% trans "Add an internal bill" %}</a>
          <br/><br/><hr/>
     {% endfor %}
 {% endfor %}

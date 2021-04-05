@@ -145,20 +145,20 @@ class ExpenseWorkflowTable(ExpenseTable):
     def render_transitions(self, record):
         result = []
         for transition in self.transitionsData[record.id]:
-            result.append("""<a role='button' title='%s' class='btn btn-default btn-xs' href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
+            result.append("""<a role='button' title='%s' class='btn btn-primary btn-xs' href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
                           % (expense_transition_to_state_display(transition), reverse("expense:update_expense_state", args=[record.id, transition]), expense_transition_to_state_display(transition)[0:2]))
         if self.expenseEditPerm[record.id]:
-            result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>"
+            result.append("<a role='button' title='%s' class='btn btn-primary btn-xs' href='%s'>%s</a>"
                           % (smart_str(_("Edit")),
                              reverse("expense:expenses", kwargs={"expense_id": record.id}),
                              # Translators: Ed is the short term for Edit
                              smart_str(_("Ed"))))
-            result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
+            result.append("<a role='button' title='%s' class='btn btn-primary btn-xs' href='%s'>%s</a>" %
                           (smart_str(_("Delete")),
                            reverse("expense:expense_delete", kwargs={"expense_id": record.id}),
                            # Translators: De is the short term for Delete
                            smart_str(_("De"))))
-        result.append("<a role='button' title='%s' class='btn btn-default btn-xs' href='%s'>%s</a>" %
+        result.append("<a role='button' title='%s' class='btn btn-primary btn-xs' href='%s'>%s</a>" %
                       (smart_str(_("Clone")),
                        reverse("expense:clone_expense", kwargs={"clone_from": record.id}),
                        # Translators: Cl is the short term for Clone

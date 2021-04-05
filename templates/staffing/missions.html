@@ -14,10 +14,10 @@
 
 {% if all %}
     <h1>{% trans "All missions" %}</h1>
-    <br/><a class="btn btn-default" href='{% url 'staffing:missions' %}'>{% trans "Only display active missions" %}</a><br/><br/>
+    <br/><a class="btn btn-primary" href='{% url 'staffing:missions' %}'>{% trans "Only display active missions" %}</a><br/><br/>
 {% else %}
     <h1>{% trans "Active missions" %}</h1>
-    <br/><a class="btn btn-default" href="{% url 'staffing:all-missions' %}">{% trans "Also display inactive missions" %}</a><br/><br/>
+    <br/><a class="btn btn-primary" href="{% url 'staffing:all-missions' %}">{% trans "Also display inactive missions" %}</a><br/><br/>
 {% endif %}
 
 <table id="mission_table" class="table table-striped table-hover table-sm table-bordered" cellspacing="0" width="100%">

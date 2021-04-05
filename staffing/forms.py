@@ -192,7 +192,7 @@ class MassStaffingForm(forms.Form):
         self.fields["missions"] = forms.ModelMultipleChoiceField(widget=MissionMChoices, queryset=Mission.objects.all())
         self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.all(), required=False)
         submit = Submit("Submit", _("Save"))
-        submit.field_classes = "btn btn-default"
+        submit.field_classes = "btn btn-primary"
         self.helper.layout = Layout(Div(Column("missions", "consultants", "all_consultants", css_class='col-md-6'),
                                         Column("charge", "staffing_dates", "comment", css_class='col-md-6'),
                                         css_class='row'),

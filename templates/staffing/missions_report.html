@@ -23,13 +23,13 @@
         {% endifequal %}
         <div id="date-selector" class="btn-group" role="group">
             {% for year in years %}
-                <a class="btn btn-default {% ifequal year selected_year %}active{% endifequal %}"
+                <a class="btn btn-primary {% ifequal year selected_year %}active{% endifequal %}"
                    {% ifequal nature "HOLIDAYS" %}href="{% url 'staffing:holidays-pivotable-year' year %}"
                    {% else %}                     href="{% url 'staffing:nonprod-pivotable-year' year %}"
                    {% endifequal %}
                     >{{ year }}</a>
             {% endfor %}
-                <a class="btn btn-default {% ifequal 'all' selected_year %}active{% endifequal %}"
+                <a class="btn btn-primary {% ifequal 'all' selected_year %}active{% endifequal %}"
                    {% ifequal nature "HOLIDAYS" %}href="{% url 'staffing:holidays-pivotable-all' %}"
                    {% else %}                     href="{% url 'staffing:nonprod-pivotable-all' %}"
                    {% endifequal %}
@@ -37,9 +37,9 @@
         </div>
 
         <div id="type-selector" class="btn-group" role="group">
-            <button class="btn btn-default active" onclick="graph_per_consultant();">{% trans "Graph per consultant" %}</button>
-            <button class="btn btn-default" onclick="table_per_consultant();">{% trans "Table per consultant" %}</button>
-            <button class="btn btn-default" onclick="graph_per_month();">{% trans "Graph per month" %}</button>
+            <button class="btn btn-primary active" onclick="graph_per_consultant();">{% trans "Graph per consultant" %}</button>
+            <button class="btn btn-primary" onclick="table_per_consultant();">{% trans "Table per consultant" %}</button>
+            <button class="btn btn-primary" onclick="graph_per_month();">{% trans "Graph per month" %}</button>
         </div>
 
         <div id="pivotable-output" style="margin-top: 10px;"></div>

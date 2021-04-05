@@ -65,7 +65,7 @@
     {% endwith %}
 
     {% if pydici_feature.billing_request %}
-            <a class="btn btn-default" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
+            <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
     {% endif %}
 
     <h3>{% trans "Suppliers bills" %}</h3>
@@ -105,6 +105,6 @@
     {% endwith %}
 
     {% if perms.billing.add_supplierbill %}
-            <a class="btn btn-default" href="{% url 'billing:supplier_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
+            <a class="btn btn-primary" href="{% url 'billing:supplier_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
     {% endif %}
 

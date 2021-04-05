@@ -210,67 +210,70 @@
     </div> {# End of description tab #}
 
     <div id="tab-missions" class="tab-pane fade" role="tabpanel">
-    {% if lead.mission_set.count %}
-        <h2>{% trans "Missions of this lead:" %}</h2>
-        <div class="table-responsive)">
-        <table class="table table-hover table-striped table-sm">
-        <tr>
-            <th>{% trans "Mission" %}</th>
-            <th>{% trans "id" %}</th>
-            <th>{% trans "Done days" %}</th>
-            <th>{% trans "Done work (k€)" %}</th>
-            <th>{% trans "Sold (k€)" %}</th>
-            <th>{% trans "Billing mode" %}</th>
-        </tr>
-        {% for mission in lead.mission_set.all %}
-        <tr>
-            <td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></td>
-            <td>{{ mission.mission_id }}</td>
-            <td>{{ mission.done_work_k.0 }}</td>
-            <td>{{ mission.done_work_k.1|floatformat }}</td>
-            <td>{{ mission.price }}</td>
-            <td>{{ mission.get_billing_mode_display }}</td>
-        </tr>
-        {% endfor %}
-        {% ifnotequal lead.mission_set.count 1 %}
-    	    <tr>
-    	        <th>{% trans "Unattributed" %}</th>
-    	        <th></th>
-    	        <th></th>
-    	        <th></th>
-    	        <th>{{ lead.unattributed }}</th>
-    	        <th></th>
-    	    </tr>
+        {% if lead.mission_set.count %}
+            <div class="row py-2"><h2>{% trans "Missions of this lead:" %}</h2></div>
+            <div class="row py-2">
+            <div class="table-responsive">
+            <table class="table table-hover table-striped table-sm">
             <tr>
-    	        <th>{% trans "Total" %}</th>
-    	        <th></th>
-    	        <th>{{ lead.done_work_k.0 }}</th>
-    	        <th>{{ lead.done_work_k.1|floatformat }}</th>
-    	        <th>{{ lead.sales }}</th>
-    	        <th></th>
-    	    </tr>
-    	{% endifnotequal %}
-        </table>
-        </div>
-        {% if perms.staffing.add_mission %}
-            <a class="btn btn-default" href="{% url 'staffing:create_new_mission_from_lead' lead.id|unlocalize %}">{% trans "Create a new mission for this lead" %}</a>
+                <th>{% trans "Mission" %}</th>
+                <th>{% trans "id" %}</th>
+                <th>{% trans "Done days" %}</th>
+                <th>{% trans "Done work (k€)" %}</th>
+                <th>{% trans "Sold (k€)" %}</th>
+                <th>{% trans "Billing mode" %}</th>
+            </tr>
+            {% for mission in lead.mission_set.all %}
+            <tr>
+                <td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></td>
+                <td>{{ mission.mission_id }}</td>
+                <td>{{ mission.done_work_k.0 }}</td>
+                <td>{{ mission.done_work_k.1|floatformat }}</td>
+                <td>{{ mission.price }}</td>
+                <td>{{ mission.get_billing_mode_display }}</td>
+            </tr>
+            {% endfor %}
+            {% ifnotequal lead.mission_set.count 1 %}
+                <tr>
+                    <th>{% trans "Unattributed" %}</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>{{ lead.unattributed }}</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th>{% trans "Total" %}</th>
+                    <th></th>
+                    <th>{{ lead.done_work_k.0 }}</th>
+                    <th>{{ lead.done_work_k.1|floatformat }}</th>
+                    <th>{{ lead.sales }}</th>
+                    <th></th>
+                </tr>
+            {% endifnotequal %}
+            </table>
+            </div>
+            </div>
+            {% if perms.staffing.add_mission %}
+                <a class="btn btn-primary" href="{% url 'staffing:create_new_mission_from_lead' lead.id|unlocalize %}">{% trans "Create a new mission for this lead" %}</a>
+            {% endif %}
+        {% else %}
+            <br/>
+            <div class="alert alert-info">{% trans "A mission is created once a commercial proposal has been sent." %}</div>
         {% endif %}
-    {% else %}
-        <br/>
-        <div class="alert alert-info">{% trans "A mission is created once a commercial proposal has been sent." %}</div>
-    {% endif %}
+
     </div> {# end of tab missions #}
 
 
     <div id="tab-billing" class="tab-pane fade" role="tabpanel"></div>
 
     <div id="tab-actions" class="tab-pane fade" role="tabpanel">
-        <h2>{% trans "Pending actions" %}</h2>
+        <h2 class="py-2">{% trans "Pending actions" %}</h2>
             {% with lead.pending_actions as actions %}
                 {% include "actionset/_lead_mission_actions.html" %}
             {% endwith %}
 
-        <h2>{% trans "Done actions" %}</h2>
+        <h2 class="py-2">{% trans "Done actions" %}</h2>
             <ul>
             {% for action in lead.done_actions %}
                 <li>{{ action.action.name }} - {{ action.get_state_display }} ({{ action.update_date }})</li>

@@ -66,7 +66,7 @@ class ExpenseForm(forms.ModelForm):
         super(ExpenseForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         submit = Submit("Submit", _("Save"))
-        submit.field_classes = "btn btn-default"
+        submit.field_classes = "btn btn-primary"
         if subcontractor:
             self.fields["lead"] = forms.ModelChoiceField(label=_("Lead"), widget=SubcontractorLeadChoices(subcontractor=subcontractor), queryset=Lead.objects.all())
             # Subcontractor expense are not refunded directly like payroll but through supplier bill. That's similar to a payroll with a corporate card.
