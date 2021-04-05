@@ -8,7 +8,7 @@
 
 <div id="content-main">
 
-<h1>{% blocktrans %}Leads for tag <em>{{ tag }}</em>{% endblocktrans %}</h1>
+<h1 class="mt-3">{% blocktrans %}Leads for tag <em>{{ tag }}</em>{% endblocktrans %}</h1>
 
 <ul class="row">
 {% for lead in leads %}
@@ -17,7 +17,6 @@
     </li>
 {% endfor %}
 </ul>
-<div style="clear:both;"></div>
 
 {% include "leads/_tag_cloud.html" %}
 

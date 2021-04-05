@@ -5,24 +5,24 @@
 {# tab: tab anchor name #}
 {% cache 60 consultant consultant.id %}
 <a href="{% url 'people:consultant_home' consultant.trigramme %}{{ tab }}" {% if not consultant.active %}class="disabled-items"{% endif %}>{{ consultant }}</a><span title="{{consultant.id|unlocalize}}"></span>
-{% if consultant.is_in_holidays %}<span class="pydici-tooltip glyphicon glyphicon-sunglasses" title="{% trans 'on holidays !' %}"></span>{% endif %}
+{% if consultant.is_in_holidays %}<i class="pydici-tooltip bi bi-sunglasses" title="{% trans 'on holidays !' %}"></i>{% endif %}
 {% if not consultant.subcontractor and consultant.active %}
     {% with late_timesheet=consultant.timesheet_is_up_to_date %}
         {% with previous_month_late=late_timesheet|first current_month_late=late_timesheet|last %}
             {% if previous_month_late > 0 %}
                 {% with days=previous_month_late|floatformat:-1 %}
-                    <span title="{% blocktrans %} {{ days }} days missing in last month timesheet{% endblocktrans %}" style="color:red" class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>
+                    <i title="{% blocktrans %} {{ days }} days missing in last month timesheet{% endblocktrans %}" style="color:red" class="pydici-tooltip bi bi-exclamation-triangle"></i>
                 {% endwith %}
             {% endif %}
             {% if current_month_late > 0 %}
                 {% with days=current_month_late|floatformat:-1 %}
-                    <span title="{% blocktrans %} {{ days}} days missing in current month timesheet{% endblocktrans %}"
+                    <i title="{% blocktrans %} {{ days}} days missing in current month timesheet{% endblocktrans %}"
                         {% if current_month_late > 8 %}
                             style="color:red"
                         {% elif current_month_late > 4 %}
                             style="color:orange"
                         {% endif %}
-                          class="pydici-tooltip glyphicon glyphicon-warning-sign"></span>
+                          class="pydici-tooltip bi bi-exclamation-triangle"></i>
                 {% endwith %}
             {% endif %}
         {% endwith %}

@@ -60,10 +60,10 @@
         </div>
         <br />
         <div class="submit-row">
-            <button type='submit' class="btn btn-primary"><i class="bi-save"></i> {% trans 'Save' %}</button>
+            <button type='submit' class="btn btn-primary"><i class="bi bi-save"></i> {% trans 'Save' %}</button>
             <a role="button" class="btn btn-primary button-link"
                href="{% url 'staffing:optimise_pdc' %}?{% for mission in consultant.active_missions %}{% ifequal mission.nature 'PROD' %}missions={{ mission.id|unlocalize }};{% endifequal %}{% endfor %}">
-               <i class="bi-gear"></i> {% trans "Optimize workload for current missions" %}
+               <i class="bi bi-gear"></i> {% trans "Optimize workload for current missions" %}
             </a>
 
         </div>

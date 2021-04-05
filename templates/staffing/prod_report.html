@@ -32,7 +32,7 @@
               {% for scope_type, scope_filter, scope_label in scopes %}
                 {% ifchanged scope_type %}
                     {% if not forloop.first %}
-                        <li role="separator" class="divider"></li>
+                        <li><hr class="dropdown-divider"></li>
                     {% endif %}
                 {% endifchanged %}
                 <li><a href="{% url 'staffing:prod_report' year=end_date|date:'Y' month=end_date|date:'m' %}/?{{scope_filter}}">{{ scope_label }}</a></li>

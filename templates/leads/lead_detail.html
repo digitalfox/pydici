@@ -19,10 +19,11 @@
     {% include "core/_init_tabs.html" %}
 {% endwith %}
 
-    <h1 class="py-2">{% trans "Lead detail" %}</h1>
+    <div class="my-3 d-flex flex-row">
+    <h1 class="mx-3 align-self-center my-0">{% trans "Lead detail" %}</h1>
     {% if active_count %}
-        <nav>
-        <ul class="pagination">
+        <nav class="mx-3">
+        <ul class="pagination my-0">
 	    {% if previous_lead %}
             <li class="page-item">
                 <a class ="page-link" href="{% url 'leads:detail' previous_lead.id|unlocalize %}"><i class="bi bi-arrow-left-circle"></i></a>
@@ -38,6 +39,7 @@
         </ul>
         </nav>
     {% endif %}
+    </div>
 
     <h2><a href="{% url 'crm:company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a>
         {% with lead.client as client %}{% include "crm/_client_picto.html" %}{% endwith %}
