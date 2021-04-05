@@ -1,11 +1,11 @@
 {% load i18n %}
 {% load pydici_filters %}
 
-        <h2>{% trans "Pivot table for lead " %} {{ lead }}</h2>
+        <h2 class="mt-3">{% trans "Pivot table for lead " %} {{ lead }}</h2>
 
         <div id="type-selector" class="btn-group" role="group">
-            <button class="btn btn-primary active" onclick="mission_by_date();">{% trans "Mission by date" %}</button>
-            <button class="btn btn-primary" onclick="mission_by_consultant();">{% trans "Mission by consultant" %}</button>
+            <button type="button" class="btn btn-primary active" onclick="mission_by_date();">{% trans "Mission by date" %}</button>
+            <button type="button" class="btn btn-primary" onclick="mission_by_consultant();">{% trans "Mission by consultant" %}</button>
             &nbsp;
             <input id="startDate" name="startDate" class="datepicker dateinput" placeholder="{% trans 'From' %}">
             <input id="endDate" name="endDate" class="datepicker dateinput" placeholder="{% trans 'To' %}">

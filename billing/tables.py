@@ -78,7 +78,7 @@ class BillTableDT(PydiciNonPublicdMixin, BillingRequestMixin, BaseDatatableView)
         elif column == "state":
             return row.get_state_display()
         elif column == "file":
-            return mark_safe("""<a href='%s'><span class="glyphicon glyphicon-file"></span></a>""" % row.bill_file_url())
+            return mark_safe("""<a href='%s'><i class="bi bi-file-earmark-text"></i></a>""" % row.bill_file_url())
         elif column == "subsidiary":
             return str(row.lead.subsidiary)
         else:

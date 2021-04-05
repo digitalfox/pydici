@@ -34,19 +34,19 @@
         <li role="presentation" class="active"><a data-bs-toggle="tab" href="#tab-home"><i class="bi bi-house"></i> {% trans "Description" %}</a></li>
         <li role="presentation"><a data-bs-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"></span> {% trans "Consultants" %}</a></li>
         <li role="presentation"><a data-bs-toggle="tab" href="#tab-contacts" data-tab-url="{% url 'staffing:mission_contacts' mission.id %}"><span class="glyphicon glyphicon-envelope"></span> {% trans "Contacts" %}</a></li>
-        <li role="presentation"><a data-bs-toggle="tab" href="#tab-other-missions" id="tabheader-other-missions"><span class="glyphicon glyphicon-list"></span> {% trans "Other missions" %}</a></li>
+        <li role="presentation"><a data-bs-toggle="tab" href="#tab-other-missions" id="tabheader-other-missions"><i class="bi bi-list-ul"></i> {% trans "Other missions" %}</a></li>
         <li role="presentation"><a data-bs-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing:mission_timesheet' mission.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
         {% if mission.active %}
             <li role="presentation"><a data-bs-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'staffing:mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
         {% endif %}
         {% if mission.lead %}
             <li role="presentation"><a data-bs-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense:lead_expenses' mission.lead.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
-            {% if enable_doc_tab %}<li role="presentation"><a data-bs-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads:lead_documents' mission.lead.id %}"><span class="glyphicon glyphicon-file"></span> {% trans "Documents" %}</a></li>{% endif %}
-            <li><a data-bs-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' mission.lead.id %}"><span class="glyphicon glyphicon-stats"></span> {% trans "Reporting" %}</a></li>
+            {% if enable_doc_tab %}<li role="presentation"><a data-bs-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads:lead_documents' mission.lead.id %}"><i class="bi bi-file-earmark-text"></i> {% trans "Documents" %}</a></li>{% endif %}
+            <li><a data-bs-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' mission.lead.id %}"><i class="bi bi-graph-up"></i> {% trans "Reporting" %}</a></li>
         {% endif %}
-        <li role="presentation"><a data-bs-toggle="tab" href="#tab-actions"><span class="glyphicon glyphicon-tasks"></span> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
-        {% if mission.lead %}<li><a data-bs-toggle="tab" href="#tab-billing" data-tab-url="{% url 'billing:lead_billing' mission.lead.id %}"><span class="glyphicon glyphicon-euro"></span> {% trans "Billing" %}</a></li>{% endif %}
-        <li><a data-bs-toggle="tab" href="#tab-history"><span class="glyphicon glyphicon-film"></span> {% trans "History" %}</a></li>
+        <li role="presentation"><a data-bs-toggle="tab" href="#tab-actions"><i class="bi bi-check2-square"></i> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
+        {% if mission.lead %}<li><a data-bs-toggle="tab" href="#tab-billing" data-tab-url="{% url 'billing:lead_billing' mission.lead.id %}"><i class="bi bi-calculator"></i> {% trans "Billing" %}</a></li>{% endif %}
+        <li><a data-bs-toggle="tab" href="#tab-history"><i class="bi bi-clock-history"></i> {% trans "History" %}</a></li>
     </ul>
 </div>
 

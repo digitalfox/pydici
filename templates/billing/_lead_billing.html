@@ -6,9 +6,8 @@
 
     {% with data=lead.billing_control_data %}
 
-    <div class="row">
-        <h3 class="col-md-6">{% trans "Client billing control" %}</h3>
-    </div>
+    <h2 class="py-2">{% trans "Client billing control" %}</h2>
+
 
     <div id="pivotable-output-{{ lead.id|unlocalize }}" style="margin-top: 10px;"></div>
 
@@ -29,7 +28,7 @@
 
     {% endwith %}
 
-    <h3>{% trans "Clients bills" %}</h3>
+    <h2 class="pt-3">{% trans "Clients bills" %}</h2>
     {% with lead.clientbill_set.all as client_bills %}
     {% if client_bills %}
     <table class="table table-hover table-striped table-sm">
@@ -52,7 +51,7 @@
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date|default_if_none:"" }}</td>
                     <td>{{ bill.comment|default_if_none:"" }}</td>
-                    <td><a href='{{ bill.bill_file_url }}'><span class="glyphicon glyphicon-file"></span></a></td>
+                    <td><a href='{{ bill.bill_file_url }}'><i class="bi bi-file-earmark-text"></i></a></td>
                 </tr>
             {% endfor %}
     </table>
@@ -68,7 +67,7 @@
             <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
     {% endif %}
 
-    <h3>{% trans "Suppliers bills" %}</h3>
+    <h2 class="pt-3">{% trans "Suppliers bills" %}</h2>
     {% with lead.supplierbill_set.all as supplier_bills %}
     {% if supplier_bills %}
     <table class="table table-hover table-striped table-sm">
@@ -95,7 +94,7 @@
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date|default_if_none:"" }}</td>
                     <td>{{ bill.comment|default_if_none:"" }}</td>
-                    <td><a href='{{ bill.bill_file_url }}'><span class="glyphicon glyphicon-file"></span></a></td>
+                    <td><a href='{{ bill.bill_file_url }}'><i class="bi bi-file-earmark-text"></i></a></td>
                 </tr>
             {% endfor %}
     </table>
