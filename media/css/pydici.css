@@ -158,6 +158,9 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+.timesheet-nav-btn:hover {
+    color:#883915;
+}
 
 .timesheet-nav-btn-disabled {
     cursor: default;
@@ -518,6 +521,9 @@ body {
     //--bs-table-accent-bg: #f5f5f5;
 }
 
+.page-link,.page-link:hover {
+    color: #333
+}
 /* override bootstrap datepicker default */
 .datepicker {
     padding: .375rem .75rem; // bootstrap default

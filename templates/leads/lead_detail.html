@@ -19,23 +19,24 @@
     {% include "core/_init_tabs.html" %}
 {% endwith %}
 
-<div class="row py-2">
-    <h1>{% trans "Lead detail" %}</h1>
+    <h1 class="py-2">{% trans "Lead detail" %}</h1>
     {% if active_count %}
-
+        <nav>
+        <ul class="pagination">
 	    {% if previous_lead %}
-            <div class="col-1 align-self-center text-end">
-                <a href="{% url 'leads:detail' previous_lead.id|unlocalize %}"><i class="bi bi-arrow-left-circle"></i></a>
-            </div>
+            <li class="page-item">
+                <a class ="page-link" href="{% url 'leads:detail' previous_lead.id|unlocalize %}"><i class="bi bi-arrow-left-circle"></i></a>
+            </li>
 	    {% endif %}
-	    {{ active_rank }} / {{ active_count }}
+            <li class="page-item"><div class="page-link">{{ active_rank }} / {{ active_count }}</div></li>
 	    {% if next_lead %}
-            <div class="col-1 align-self-center text-start">
-                <a href="{% url 'leads:detail' next_lead.id|unlocalize %}"><i class="bi bi-arrow-right-circle"></i></a>
-            </div>
+            <li class="page-item">
+                <a class="page-link" href="{% url 'leads:detail' next_lead.id|unlocalize %}"><i class="bi bi-arrow-right-circle"></i></a>
+            </li>
 
 	    {% endif %}
-
+        </ul>
+        </nav>
     {% endif %}
 
     <h2><a href="{% url 'crm:company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a>
@@ -297,7 +298,6 @@
     </div>
 
 </div> {# End of all tabs #}
-</div> {# End of main row #}
 
 <script type="text/javascript">
 <!--
