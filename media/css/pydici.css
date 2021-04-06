@@ -511,6 +511,18 @@ body {
     background-color: rgba(244,141,51, 0.9);
 }
 
+.page-item.active .page-link {
+    background-color: #8F6749;
+    border-color: rgba(244,141,51, 0.9);
+}
+
+.page-link:focus, .select2-container--bootstrap-5.select2-container--focus .select2-selection,  .select2-container--bootstrap-5.select2-container--open .select2-selection,
+.select2-container--bootstrap-5 .select2-dropdown .select2-search .select2-search__field:focus,
+.form-select:focus, .form-control:focus {
+    box-shadow: 0 0 0 .25rem rgba(244,141,51,.3);
+    border-color: rgba(244,141,51, 0.9);
+}
+
 .navbar-brand {
     font-size: 1rem;
     padding-top: 0;

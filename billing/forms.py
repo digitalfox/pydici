@@ -129,7 +129,7 @@ class BillDetailFormSetHelper(FormHelper):
         super(BillDetailFormSetHelper, self).__init__(*args, **kwargs)
         self.form_method = 'post'
         self.form_tag = False
-        self.template = 'bootstrap/table_inline_formset.html'
+        self.template = 'bootstrap5/table_inline_formset.html'
 
 
 class BillDetailForm(ModelForm):
@@ -173,7 +173,7 @@ class BillExpenseFormSetHelper(FormHelper):
         super(BillExpenseFormSetHelper, self).__init__(*args, **kwargs)
         self.form_method = 'post'
         self.form_tag = False
-        self.template = 'bootstrap/table_inline_formset.html'
+        self.template = 'bootstrap5/table_inline_formset.html'
 
 
 class BillExpenseForm(ModelForm):

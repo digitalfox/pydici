@@ -437,15 +437,15 @@ class MissionOptimiserForm(forms.Form):
         self.staffing_dates = kwargs.pop("staffing_dates", [])
         super().__init__(*args, **kwargs)
         qs = Mission.objects.filter(nature="PROD", active=True)
-        self.fields["mission"] = forms.ModelChoiceField(widget=MissionChoices(attrs={'data-width': '15em', 'data-placeholder':_("Select mission to plan")}, queryset=qs), queryset=qs)
+        self.fields["mission"] = forms.ModelChoiceField(widget=MissionChoices(attrs={'data-width': '15em', 'data-placeholder': _("Select mission to plan")}, queryset=qs), queryset=qs)
         for month in self.staffing_dates:
             self.fields["charge_%s" % month[1]] = forms.IntegerField(required=False, label=month[1])
-        self.fields["predefined_assignment"] = forms.ModelMultipleChoiceField(label=_("Predefined assigment"),
+        self.fields["predefined_assignment"] = forms.ModelMultipleChoiceField(label=_("Predefined assignment"),
                                                                               required=False, widget=ConsultantMChoices,
                                                                               queryset=Consultant.objects.filter(active=True))
         self.fields["exclusions"] = forms.ModelMultipleChoiceField(label=_("Exclusions"),
-                                                                              required=False, widget=ConsultantMChoices,
-                                                                              queryset=Consultant.objects.filter(active=True))
+                                                                   required=False, widget=ConsultantMChoices,
+                                                                   queryset=Consultant.objects.filter(active=True))
 
     def clean_mission(self):
         mission = self.cleaned_data.get("mission")
@@ -454,7 +454,7 @@ class MissionOptimiserForm(forms.Form):
         return mission
 
     def clean_predefined_assignment(self):
-        """Ensure that there's enough budget to plan at least one day per prefedined assignment"""
+        """Ensure that there's enough budget to plan at least one day per predefined assignment"""
         mission = self.cleaned_data.get("mission")
         if mission:
             rates = mission.consultant_rates()
@@ -505,7 +505,7 @@ class MissionOptimiserFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.form_method = "post"
-        self.template = "bootstrap/table_inline_formset.html"
+        self.template = "bootstrap5/table_inline_formset.html"
         self.form_tag = False
 
 
