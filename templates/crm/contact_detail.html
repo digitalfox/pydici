@@ -17,11 +17,11 @@
 <div class="row">
     <div class="col-md-6">
         <table class="table table-hover table-striped">
-        <tr><th><span class="glyphicon glyphicon-user"></span> {% trans "name" %}</th><td>{{ contact.name }}</td></tr>
+        <tr><th><i class="bi bi-person"></i> {% trans "name" %}</th><td>{{ contact.name }}</td></tr>
         <tr><th><span class="glyphicon glyphicon-earphone"></span> {% trans "phone" %}</th><td>{{ contact.phone }}</td></tr>
         <tr><th><span class="glyphicon glyphicon-phone"></span> {% trans "mobile phone" %}</th><td>{{ contact.mobile_phone }}</td></tr>
         <tr><th><span class="glyphicon glyphicon-print"></span> {% trans "fax" %}</th><td>{{ contact.fax }}</td></tr>
-        <tr><th><span class="glyphicon glyphicon-envelope"></span> {% trans "email" %}</th><td>{{ contact.email|urlize }}</td></tr>
+        <tr><th><i class="bi bi-envelope"></i> {% trans "email" %}</th><td>{{ contact.email|urlize }}</td></tr>
         <tr><th><span class="glyphicon glyphicon-briefcase"></span> {% trans "function" %}</th><td>{{ contact.function }}</td></tr>
         <tr><th><i class="bi bi-house"></i> {% trans "companies" %}</th><td>{{ contact.companies_html}}</td></tr>
         </table>

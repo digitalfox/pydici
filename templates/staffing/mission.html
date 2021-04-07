@@ -30,28 +30,28 @@
 
 <div>
     <!-- Nav tabs -->
-    <ul class="nav nav-tabs" id="mission-tabs" role="tablist">
-        <li role="presentation" class="active"><a data-bs-toggle="tab" href="#tab-home"><i class="bi bi-house"></i> {% trans "Description" %}</a></li>
-        <li role="presentation"><a data-bs-toggle="tab" href="#tab-consultants"><span class="glyphicon glyphicon-user"></span> {% trans "Consultants" %}</a></li>
-        <li role="presentation"><a data-bs-toggle="tab" href="#tab-contacts" data-tab-url="{% url 'staffing:mission_contacts' mission.id %}"><span class="glyphicon glyphicon-envelope"></span> {% trans "Contacts" %}</a></li>
-        <li role="presentation"><a data-bs-toggle="tab" href="#tab-other-missions" id="tabheader-other-missions"><i class="bi bi-list-ul"></i> {% trans "Other missions" %}</a></li>
-        <li role="presentation"><a data-bs-toggle="tab" href="#tab-timesheet" data-tab-url="{% url 'staffing:mission_timesheet' mission.id %}"><span class="glyphicon glyphicon-time"></span> {% trans "Timesheet" %}</a></li>
+    <ul class="nav nav-tabs" id="mission-tabs">
+        <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home"><i class="bi bi-house"></i> {% trans "Description" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-consultants"><i class="bi bi-person"></i> {% trans "Consultants" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-contacts" data-tab-url="{% url 'staffing:mission_contacts' mission.id %}"><i class="bi bi-envelope"></i> {% trans "Contacts" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-other-missions" id="tabheader-other-missions"><i class="bi bi-list-ul"></i> {% trans "Other missions" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-timesheet" data-tab-url="{% url 'staffing:mission_timesheet' mission.id %}"><i class="bi bi-clock"></i> {% trans "Timesheet" %}</button></li>
         {% if mission.active %}
-            <li role="presentation"><a data-bs-toggle="tab" href="#tab-staffing" data-tab-url="{% url 'staffing:mission_staffing' mission.id %}"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Forecast staffing" %}</a></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-staffing" data-tab-url="{% url 'staffing:mission_staffing' mission.id %}"><i class="bi bi-eye"></i> {% trans "Forecast staffing" %}</button></li>
         {% endif %}
         {% if mission.lead %}
-            <li role="presentation"><a data-bs-toggle="tab" href="#tab-expenses" data-tab-url="{% url 'expense:lead_expenses' mission.lead.id %}"><span class="glyphicon glyphicon-plane"></span> {% trans "Expenses" %}</a></li>
-            {% if enable_doc_tab %}<li role="presentation"><a data-bs-toggle="tab" href="#tab-documents" data-tab-url="{% url 'leads:lead_documents' mission.lead.id %}"><i class="bi bi-file-earmark-text"></i> {% trans "Documents" %}</a></li>{% endif %}
-            <li><a data-bs-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' mission.lead.id %}"><i class="bi bi-graph-up"></i> {% trans "Reporting" %}</a></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-expenses" data-tab-url="{% url 'expense:lead_expenses' mission.lead.id %}"><i class="bi bi-credit-card"></i> {% trans "Expenses" %}</button></li>
+            {% if enable_doc_tab %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-documents" data-tab-url="{% url 'leads:lead_documents' mission.lead.id %}"><i class="bi bi-file-earmark-text"></i> {% trans "Documents" %}</button></li>{% endif %}
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' mission.lead.id %}"><i class="bi bi-graph-up"></i> {% trans "Reporting" %}</button></li>
         {% endif %}
-        <li role="presentation"><a data-bs-toggle="tab" href="#tab-actions"><i class="bi bi-check2-square"></i> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</a></li>
-        {% if mission.lead %}<li><a data-bs-toggle="tab" href="#tab-billing" data-tab-url="{% url 'billing:lead_billing' mission.lead.id %}"><i class="bi bi-calculator"></i> {% trans "Billing" %}</a></li>{% endif %}
-        <li><a data-bs-toggle="tab" href="#tab-history"><i class="bi bi-clock-history"></i> {% trans "History" %}</a></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-actions"><i class="bi bi-check2-square"></i> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</button></li>
+        {% if mission.lead %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-billing" data-tab-url="{% url 'billing:lead_billing' mission.lead.id %}"><i class="bi bi-calculator"></i> {% trans "Billing" %}</button></li>{% endif %}
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-history"><i class="bi bi-clock-history"></i> {% trans "History" %}</button></li>
     </ul>
 </div>
 
 <div class="tab-content">
-    <div id="tab-home" class="tab-pane active fade in">
+    <div id="tab-home" class="tab-pane active fade show" role="tabpanel">
         
             <br/>
             {% if mission.active %}
@@ -74,8 +74,8 @@
          {% include "staffing/_check_prod_mission.html" %}
 
         <div class="row">
-            <div class="col-md-6">
-                <table class="table table-hover table-striped table-sm">
+            <div class="col-md-5">
+                <table class="table table-striped table-sm">
                     <tr>
                         <th>{% trans "Type" %}</th><td>{{ mission.get_nature_display }}</td>
                     </tr>
@@ -115,22 +115,25 @@
                  {% endif %}
                 </table>
                 </div>
-                <div class="col-md-6">
-                    {% if mission.lead.administrative_notes %}
-                        <h2>{% trans "Administrative notes" %}</h2>
-                        <div class='well'>{{ mission.lead.administrative_notes|pydici_simple_format }}</div>
+                <div class="col-md-7">
+                    {% if mission.lead.description %}
+                        <h2>{% trans "Leads description" %}</h2>
+                        <div class="card card-body bg-light">{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }}</div>
                     {% endif %}
+                    {% if mission.lead.administrative_notes %}
+                        <h2 class="mt-2">{% trans "Administrative notes" %}</h2>
+                        <div class="card card-body bg-light">{{ mission.lead.administrative_notes|pydici_simple_format }}</div>
+                    {% endif %}
+
                 </div>
             </div>
-            {% if mission.lead.description %}
-                    <div class='well'>{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }}</div>
-            {% endif %}
+
     </div>
 
-    <div id="tab-consultants" class="tab-pane fade">
+    <div id="tab-consultants" class="tab-pane fade" role="tabpanel">
 	    <h2>{% trans "Consultants currently implicated in this mission" %}</h2>
 	    <div class="col-lg-6 col-md-8 col-sm-12">
-	    <table class="table table-hover table-striped table-sm">
+	    <table class="table table-striped table-sm">
 	    <tr>
             <th>{% trans "Consultant" %}</th>
             <th style="text-align:right;">{% trans "Daily rate (€)" %}</th>
@@ -140,22 +143,22 @@
 	    {% for consultant, rate in mission.consultant_rates.items %}
 	        <tr>
 	            <td>{% include "people/__consultant_name.html" %}</td>
-	            <td align="right"><div id="sold-{{ mission.id|unlocalize }}-{{ consultant.id|unlocalize }}" class="jeditable-rate" >{{ rate.0 }}</div></td>
-	            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id|unlocalize }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1 }}</div>{% endif %}</td>
-                <td align="right">{{ consultant.get_rate_objective.rate }}</td>
+	            <td align="right"><div id="sold-{{ mission.id|unlocalize }}-{{ consultant.id|unlocalize }}" class="jeditable-rate" >{{ rate.0|unlocalize }}</div></td>
+	            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id|unlocalize }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1|unlocalize }}</div>{% endif %}</td>
+                <td align="right">{{ consultant.get_rate_objective.rate|unlocalize }}</td>
 	        </tr>
 	    {% endfor %}
 	    </table>
 	    </div>
     </div>
 
-    <div id="tab-contacts" class="tab-pane fade"></div>
+    <div id="tab-contacts" class="tab-pane fade" role="tabpanel"></div>
     
-    <div id="tab-other-missions" class="tab-pane fade">
+    <div id="tab-other-missions" class="tab-pane fade" role="tabpanel">
         {% if mission.sister_missions %}
         <h2>{% trans "Other missions linked to this lead" %}</h2>
         <div class="table-responsive">
-        <table class="table table-hover table-striped table-sm">
+        <table class="table table-striped table-sm">
         <tr>
 	        <th>{% trans "Mission" %}</th>
 	        <th>{% trans "id" %}</th>
@@ -186,19 +189,19 @@
         {% endif %}
     </div>
 
-    <div id="tab-timesheet" class="tab-pane fade"></div>
+    <div id="tab-timesheet" class="tab-pane fade" role="tabpanel"></div>
     
-    <div id="tab-staffing" class="tab-pane fade"></div>
+    <div id="tab-staffing" class="tab-pane fade" role="tabpanel"></div>
     
-    <div id="tab-expenses" class="tab-pane fade"></div>
+    <div id="tab-expenses" class="tab-pane fade" role="tabpanel"></div>
     
-    {% if enable_doc_tab %}<div id="tab-documents" class="tab-pane fade"></div>{% endif %}
+    {% if enable_doc_tab %}<div id="tab-documents" class="tab-pane fade" role="tabpanel"></div>{% endif %}
 
-    <div id="tab-reporting" class="tab-pane fade"></div>
+    <div id="tab-reporting" class="tab-pane fade" role="tabpanel"></div>
     
-    <div id="tab-billing" class="tab-pane fade"></div>
+    <div id="tab-billing" class="tab-pane fade" role="tabpanel"></div>
 
-    <div id="tab-actions" class="tab-pane fade">
+    <div id="tab-actions" class="tab-pane fade" role="tabpanel">
     <br/>
 
     <h2>{% trans "Pending actions" %}</h2>
