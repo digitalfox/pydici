@@ -1,20 +1,17 @@
 {% load i18n %}
 {# Fragment of page to be included in a mission_home tab #}
 
-    <br/>
     {% include "staffing/_check_prod_mission.html" %}
-
-    <div style="clear:both;"></div>
 
     <div class="table-responsive">
     <table class="table table-hover table-striped table-pydici-extra-condensed pydici-mission-timesheet">
     <tr>
         <th></th>
-        <th style="text-align:center" colspan={{ timesheet_months|length|add:2 }}>{% trans "Done days" %}</th>
+        <th class="text-center" colspan={{ timesheet_months|length|add:2 }}>{% trans "Done days" %}</th>
         <th class="table-separator"></th>
-        <th style="text-align:center" colspan={{ staffing_months|length|add:2 }}>{% trans "Days to be done" %}</th>
+        <th class="text-center" colspan={{ staffing_months|length|add:2 }}>{% trans "Days to be done" %}</th>
         <th class="table-separator"></th>
-        <th style="text-align:center" colspan=2>{% trans "Total estimated" %}</th>
+        <th class="text-center" colspan=2>{% trans "Total estimated" %}</th>
     </tr>
     <tr align="right">
         <td></td>
@@ -75,15 +72,15 @@
     {% endfor %}
 
     </table>
-    <br/>
+
     <a class="btn btn-primary" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
     <a class="btn btn-primary" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?pdf">{% trans "Export this timesheet in PDF" %}</a>
     <a class="btn btn-primary" href="{% url 'staffing:mission_timesheet' mission_id=mission.id %}?csv_grouped">{% trans "Export this timesheet grouped by rate" %}</a>
     </div>
-    <br/>
-    {% if mission.nature == "PROD" and pydici_feature.leads_profitability %}
 
-            <div class="col-sm-6 col-md-4">
+    {% if mission.nature == "PROD" and pydici_feature.leads_profitability %}
+        <div class="row mt-3">
+            <div class="col-md-6 col-xl-4">
                 <h2>{% trans "Profitability" %}</h2>
                 <table class="table table-hover">
                     <tr><td>{% trans "Sold" %}</td>
@@ -93,20 +90,20 @@
                     {% ifequal mission.billing_mode "FIXED_PRICE" %}
                         <tr><td>{% trans "Average daily rate" %}</td><td>{{ avg_daily_rate }}  €</td></tr>
                         {% if forecasted_unused < 0 %}
-                            <tr><td>{% trans "Overtaking" %} <span class="glyphicon glyphicon-question-sign pydici-tooltip hidden-sm hidden-xs" title="{% blocktrans %}Done and forecasted days with defined rate overtake mision price{% endblocktrans %}"></span></td><td>{{ forecasted_unused }} k€</td></tr>
+                            <tr><td>{% trans "Overtaking" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Done and forecasted days with defined rate overtake mision price{% endblocktrans %}"></i></td><td>{{ forecasted_unused }} k€</td></tr>
                         {% else %}
                             <tr><td>{% trans "Forecasted unused" %}</td><td>{{ forecasted_unused }} k€</td></tr>
                         {% endif %}
-                        <tr><td>{% trans "Margin" %} <span class="glyphicon glyphicon-question-sign pydici-tooltip hidden-sm hidden-xs" title="{% blocktrans %}Sum of unused or overtaken days and margin over budget rate, considering done days and forecasting{% endblocktrans %}"></span></td><td>{{ margin }} k€</td></tr>
+                        <tr><td>{% trans "Margin" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Sum of unused or overtaken days and margin over budget rate, considering done days and forecasting{% endblocktrans %}"></i></td><td>{{ margin }} k€</td></tr>
                     {% else %}
                         <tr><td>{% trans "Currently unused" %}</td><td>{{ current_unused }} k€</td></tr>
-                        <tr><td>{% trans "Forecasted unused" %}{% if forecasted_unused < 0 %} <span class="glyphicon glyphicon-question-sign pydici-tooltip hidden-sm hidden-xs" title="{% blocktrans %}Consider mission price update to reflect reality or use elastic management mode for this mission{% endblocktrans %}"></span>{% endif %}</td><td>{{ forecasted_unused }} k€</td></tr>
+                        <tr><td>{% trans "Forecasted unused" %}{% if forecasted_unused < 0 %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Consider mission price update to reflect reality or use elastic management mode for this mission{% endblocktrans %}"></i>{% endif %}</td><td>{{ forecasted_unused }} k€</td></tr>
                     {% endifequal %}
                 </table>
             </div>
 
-            <div class="col-sm-6 col-md-4 col-md-offset-2 col-sm-offset-0 col-xs-offset-0">
-                <h2>{% trans "Margin over rate objective" %} <span class="glyphicon glyphicon-question-sign pydici-tooltip hidden-sm hidden-xs" title="{% blocktrans %}Computed as the difference between budget objectives and applied rates for done days (timesheet) and forecasted days{% endblocktrans %}"></span></h2>
+            <div class="col-md-6 col-xl-4">
+                <h2>{% trans "Margin over rate objective" %} <span class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Computed as the difference between budget objectives and applied rates for done days (timesheet) and forecasted days{% endblocktrans %}"></span></h2>
                 <table class="table table-hover">
                 {% for consultant, consultant_objective_margin in objective_margin.items %}
                     <tr>
@@ -120,7 +117,7 @@
                 </tr>
                 </table>
             </div>
-        
+        </div>
     {% endif %}
 
 <script type="text/javascript">
@@ -163,9 +160,7 @@ $(document).ready(function() {
 -->
 </script>
 
-<div style="clear:both;"></div>
-
-<div id="mission_timesheet_graph"></div>
+<div id="mission_timesheet_graph" class="my-2"></div>
 
 <script type="text/javascript">
 $(document).ready(function() {
