@@ -1,12 +1,15 @@
 {% load i18n %}
 {% with remaining=mission.target_remaining %}
     {% if remaining < 0 and mission.management_mode != "ELASTIC" %}
-        {% if mission.management_mode == "LIMITED" %}
-            <div class="alert alert-danger col-md-6">
-        {% else %}
-            <div class="alert alert-warning col-md-6">
-        {% endif %}
-        {% trans "Current forecast exceeds mission price" %} ({{ remaining|floatformat:-2  }} k€)
+        <div class="col-md-6">
+            {% if mission.management_mode == "LIMITED" %}
+                <div class="alert alert-danger">
+            {% else %}
+                <div class="alert alert-warning">
+            {% endif %}
+            <i class="bi bi-eye"></i>
+            {% trans "Current forecast exceeds mission price" %} ({{ remaining|floatformat:-2  }} k€)
+            </div>
         </div>
     {% endif %}
 {% endwith %}

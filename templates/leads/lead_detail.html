@@ -60,7 +60,7 @@
 
 <div class="tab-content">
     <div id="tab-description" class="tab-pane fade active show" role="tabpanel">
-        <div class="row p-2 mx-0">
+        <div class="row mt-2"><div class="col-12">
             <div class="tag_banner alert alert-info">
         	    {% for tag in lead.tags.all %}
         	    <div id="tag_{{ tag.id|unlocalize }}" style="display:inline">
@@ -83,17 +83,17 @@
             		    {% endif %}
             	    </div>
         	    {% endif %}
-            </div>
+            </div></div>
         </div>
-        <div class="row p-2">
-        <div class="col-lg-8 col-md-8 col-sm-12">
+        <div class="mb-2 row">
             {% with lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
-            {% if lead.description %}
-                <div class="card card-body bg-light">{{ lead.description|pydici_simple_format }}</div>
-            {% endif %}
         </div>
+        <div class="row">
+            {% if lead.description %}
+                <div class="col-md-12 col-lg-8"><div class="card card-body bg-light">{{ lead.description|pydici_simple_format }}</div></div>
+            {% endif %}
         {% if lead.stateproba_set.all.count > 0 %}
-                <div class="col-lg-4 col-md-4 d-none d-lg-block">
+                <div class="col-4 d-none d-lg-block">
                         <div id="lead_proba"></div>
                         <script type="text/javascript">
                         $(document).ready(function() {

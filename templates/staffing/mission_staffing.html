@@ -2,14 +2,17 @@
 {% load l10n %}
 {# Fragment of page to be included in a mission_home tab #}
 <div id="pydici-ajax-form-content-mission-staffing">
-    <br/>
-    {% include "staffing/_check_prod_mission.html" %}
+    <div class="my-2 row">
+        {% include "staffing/_check_prod_mission.html" %}
 
-    {% if remaining > 0 and mission.nature == "PROD"  %}
-        <div class="alert alert-info">
-            {% blocktrans with remaining=remaining|floatformat:"-2" %}This mission has {{ remaining }} k€ to be forecasted.{% endblocktrans %}
-        </div>
-    {% endif %}
+        {% if remaining > 0 and mission.nature == "PROD"  %}
+            <div class="col-md-6">
+                <div class="alert alert-info">
+                    <i class="bi bi-eye"></i> {% blocktrans with remaining=remaining|floatformat:"-2" %}This mission has {{ remaining }} k€ to be forecasted.{% endblocktrans %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
 
     <form action="{% url 'staffing:mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-staffing">
         {{ formset.management_form }}

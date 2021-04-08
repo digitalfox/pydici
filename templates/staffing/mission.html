@@ -52,26 +52,28 @@
 
 <div class="tab-content">
     <div id="tab-home" class="tab-pane active fade show" role="tabpanel">
-        
-            <br/>
+        <div class="my-2 row">
             {% if mission.active %}
                    {% if mission.no_more_staffing_since %}
-                       <div id="mission_no_staffing_warning" class="alert alert-warning">
-                           {% trans "This mission has no staffing in future" %}.
-                           {% if mission.lead %}<strong>{% trans "Still to be billed" %}: {{ mission.lead.still_to_be_billed|floatformat:-2 }} €. </strong>{% endif %}
-                            <button onClick="$.get('{% url 'staffing:deactivate_mission' mission.id %}', process_mission_archive)"
-                               class="btn btn-primary">{% trans "Archive this mission" %}</button>
+                       <div class="col-md-6">
+                            <div id="mission_no_staffing_warning" class="alert alert-warning">
+                               {% trans "This mission has no staffing in future" %}.
+                               {% if mission.lead %}<strong>{% trans "Still to be billed" %}: {{ mission.lead.still_to_be_billed|floatformat:-2 }} €. </strong>{% endif %}
+                                <button onClick="$.get('{% url 'staffing:deactivate_mission' mission.id %}', process_mission_archive)"
+                                   class="btn btn-primary">{% trans "Archive this mission" %}</button>
+                           </div>
                        </div>
                    {% else %}
                        {% if mission.no_staffing_update_since %}
-                           <div class="alert alert-warning">{% trans "Staffing has not been updated recently" %}</div>
+                           <div class="col-md-6"><div class="alert alert-warning">{% trans "Staffing has not been updated recently" %}</div></div>
                        {% endif %}
                    {% endif %}
              {% else %}
-                    <div class="alert alert-info">{% trans "This mission is archived" %}</div>
+                    <div class="col-md-6"><div class="alert alert-info">{% trans "This mission is archived" %}</div></div>
              {% endif %}
 
-         {% include "staffing/_check_prod_mission.html" %}
+            {% include "staffing/_check_prod_mission.html" %}
+        </div>
 
         <div class="row">
             <div class="col-md-5">
