@@ -61,31 +61,37 @@
 <div class="tab-content">
     <div id="tab-description" class="tab-pane fade active show" role="tabpanel">
         <div class="row mt-2"><div class="col-12">
-            <div class="tag_banner alert alert-info">
-        	    {% for tag in lead.tags.all %}
-        	    <div id="tag_{{ tag.id|unlocalize }}" style="display:inline">
-        	    	<a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a>
-        	    	<a class='tagrlink' href='javascript:;' onClick="$.get('{% url 'leads:remove_tag' tag.id|unlocalize lead.id|unlocalize %}', hide_tag);"><span class="glyphicon glyphicon-remove-circle"></span></a>&nbsp;
+            <div class="tag_banner alert">
+                <div class="d-flex flex-row">
+                    <div id="newtags" class="d-flex flex-row align-self-center">
+                        {% for tag in lead.tags.all %}
+                        <div id="tag_{{ tag.id|unlocalize }}" class="mx-1">
+                            <a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a>
+                            <a class='tagrlink' href='javascript:;' onClick="$.get('{% url 'leads:remove_tag' tag.id|unlocalize lead.id|unlocalize %}', hide_tag);"><i class="bi bi-x-circle"></i></a>&nbsp;
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if perms.leads.change_lead %}
+                        <form id="tag_form">
+                            <div class="ms-3">
+                                <input class="textInput form-control" type="text" id="newtag" value="" maxlength="100" onclick="this.value='';"/>
+                            </div>
+                        </form>
+                    {% endif %}
                 </div>
-        	    {% endfor %}
-        	    <div id="newtags" style="display:inline"></div>
                 {% if perms.leads.change_lead %}
-            	    <form id="tag_form" style="display:inline">
-            	        <input type="text" id="newtag" value="" maxlength="100" onclick="this.value='';"/>
-            	    </form>
-            	    <br/>
-            	    <div id="suggested">
-            		    {% if suggested_tags %}
-            		    {% trans "Suggested tags: " %}
-            		    {% for tag in suggested_tags %}
-            		        <a href="">{{ tag }}</a>&nbsp;&nbsp;
-            		    {% endfor %}
-            		    {% endif %}
-            	    </div>
-        	    {% endif %}
-            </div></div>
-        </div>
-        <div class="mb-2 row">
+                    <div id="suggested">
+                        {% if suggested_tags %}
+                        {% trans "Suggested tags: " %}
+                        {% for tag in suggested_tags %}
+                            <a href="">{{ tag }}</a>&nbsp;&nbsp;
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div></div>
+        <div class="row">
             {% with lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
         </div>
         <div class="row">
@@ -320,8 +326,8 @@ $(document).ready(function() {
 	                function(data) {
 	                    if (data.tag_created) {
 	                        // Add new tag on list
-				var remove_link = "<a class='tagrlink' href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "', hide_tag)\"><span class=\"glyphicon glyphicon-remove-circle\"></span></a>";
-				$("#newtags").append("<div id='tag_" + data.id + "' style='display:inline'><a href='"+ data.tag_url + "'>" + data.tag_name + "</a>" + remove_link + "&nbsp;&nbsp;");
+				var remove_link = "<a class='tagrlink' href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "', hide_tag)\"> <i class=\"bi bi-x-circle\"></i></a>";
+				$("#newtags").append("<div id='tag_" + data.id + "'><a href='"+ data.tag_url + "' class='mx-1'>" + data.tag_name + "</a> " + remove_link + "&nbsp;&nbsp;");
 	                        $("#newtag").val("");
 	                    }
 	                    else {
@@ -339,7 +345,7 @@ $(document).ready(function() {
                 { tag : $(this).text(), lead_id : {{lead.id|unlocalize}} },
                 function(data) {
 	                // Add new tag on list
-		var remove_link = "<a href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "')\"><span class=\"glyphicon glyphicon-remove-circle\"></span></a>";
+		var remove_link = "<a href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "')\"><i class=\"bi bi-x-circle\"></i></a>";
 		$("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>" + remove_link + "&nbsp;&nbsp;");
                 });
         // Remove from suggested list
