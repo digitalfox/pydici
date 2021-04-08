@@ -34,8 +34,8 @@
                        <td>{{ form.staffing_date}}{{ form.staffing_date.errors }}</td>
                        <td class="pydici_small_number">{{ form.charge }}{{ form.charge.errors }}</td>
                        <td class="d-none d-lg-table-cell">{{ form.comment }}{{ form.comment.errors }}</td>
-                       <td>{{ form.DELETE }}</td>
-                       <td class="d-none d-lg-table-cell">
+                       <td class="align-middle">{{ form.DELETE }}</td>
+                       <td class="d-none d-lg-table-cell align-middle">
                             {% if form.initial.last_user %}
                                 {{ form.initial.last_user }} ({{ form.initial.update_date|timesince }})
                             {% endif %}

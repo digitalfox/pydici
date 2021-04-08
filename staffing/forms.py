@@ -135,6 +135,8 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
         super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
         form.fields["mission"] = ModelChoiceField(widget=MissionChoices(attrs={'data-placeholder':_("Select a mission to add forecast...")}), queryset=Mission.objects)
         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=self.lowerDayBound)
+        form.fields["charge"].widget.attrs["class"] = "numberinput form-control"
+        form.fields["comment"].widget.attrs["class"] = "d-none d-lg-table-cell form-control textinput"
 
 
 class MissionStaffingInlineFormset(BaseInlineFormSet):
@@ -159,10 +161,10 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
             maxDate = self.instance.end_date.replace(day=1)
         else:
             maxDate = None
-        form.fields["consultant"] = ModelChoiceField(widget = ConsultantChoices(attrs={'data-placeholder':_("Select a consultant to add forecast...")}), queryset=Consultant.objects)
+        form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices(attrs={'data-placeholder':_("Select a consultant to add forecast...")}), queryset=Consultant.objects)
         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=minDate, maxDate=maxDate)
-        form.fields["charge"].widget.attrs.setdefault("size", 3)  # Reduce default size
-        form.fields["comment"].widget.attrs.setdefault("class", "hidden-xs hidden-sm")
+        form.fields["charge"].widget.attrs["class"] = "numberinput form-control"
+        form.fields["comment"].widget.attrs["class"] = "d-none d-lg-table-cell form-control textinput"
 
 
 class StaffingForm(forms.ModelForm):

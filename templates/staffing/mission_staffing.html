@@ -21,11 +21,11 @@
            <tr>
                <th>{% trans "Consultant" %}</th>
                <th>{% trans "Month" %}</th>
-               <th class="hidden-xs hidden-sm"></th>
+               <th class="d-none d-lg-table-cell"></th>
                <th>{% trans "Load" %}</th>
-               <th class="hidden-xs hidden-sm">{% trans "Comments" %}</th>
+               <th class="d-none d-lg-table-cell">{% trans "Comments" %}</th>
                <th>{% trans "Del." %}</th>
-               <th class="hidden-xs hidden-sm">{% trans "Last change" %}</th>
+               <th class="d-none d-lg-table-cell">{% trans "Last change" %}</th>
            </tr>
            {% for form in formset.forms %}
                 {% with year_month=form.initial.staffing_date|date:'Ym' %}
@@ -44,11 +44,11 @@
                    <tr class="{%cycle 'row1' 'row2' %} {% if form.initial.staffing_date and year_month < current_month and not form.errors %}collapse{% endif%} {{ year_month }}" %}>
                        <td>{{ form.consultant }}{{ form.consultant.errors }}</td>
                        <td>{{ form.staffing_date}}{{ form.staffing_date.errors }}</td>
-                       <td style="cursor: help" class="hidden-xs hidden-sm pdc-tooltip"><span title="{% trans 'Other missions charge' %}" data-toggle="tooltip" class="glyphicon glyphicon-list-alt"></span></td>
+                       <td style="cursor: help" class="d-none d-lg-table-cell pdc-tooltip align-middle"><i title="{% trans 'Other missions charge' %}" data-toggle="tooltip" class="bi bi-list-ul"></i></td>
                        <td class="pydici_small_number">{{ form.charge }}{{ form.charge.errors }}</td>
-                       <td class="hidden-xs hidden-sm">{{ form.comment }}{{ form.comment.errors }}</td>
-                       <td>{{ form.DELETE }}</td>
-                       <td class="hidden-xs hidden-sm">
+                       <td class="d-none d-lg-table-cell">{{ form.comment }}{{ form.comment.errors }}</td>
+                       <td class="align-middle">{{ form.DELETE }}</td>
+                       <td class="d-none d-lg-table-cell align-middle">
                             {% if form.initial.last_user %}
                                 {{ form.initial.last_user }} ({{ form.initial.update_date|timesince }})
                             {% endif %}
@@ -124,7 +124,7 @@ $(document).ready(function(){
               }
           },
            trigger: "click",
-           template: '<div class="popover" style="max-width:800px;" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+           template: '<div class="popover" style="max-width:800px;" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
         }
     );
 
