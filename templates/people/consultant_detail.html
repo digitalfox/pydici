@@ -97,17 +97,11 @@
             <h3 class="pydici-block-title">{% trans "Business territory" %}</h3>
             <ul class="row icon-list">
             {% for company in business_territory %}
-                {% if forloop.counter > 12 %}
-                    <div class="collapse collapse-business-territory">
-                {% endif %}
-                <li class="col-sm-6 bi bi-people"><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
-                {% if forloop.counter > 12 %}
-                    </div>
-                {% endif %}
+                <li class="col-sm-6 bi bi-people {% if forloop.counter > 12 %}collapse collapse-business-territory{% endif %}"><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
                 {% if forloop.last and forloop.counter > 12 %}
-                    <div class="pydici-more-less" data-toggle="collapse" aria-expanded="false" data-target=".collapse-business-territory" aria-controls="collapse-business-territory">
-                        <span class="glyphicon glyphicon-collapse-down"></span>
-                        <span class="glyphicon glyphicon-collapse-up"></span>
+                    <div class="pydici-more-less" data-bs-toggle="collapse" aria-expanded="false" data-bs-target=".collapse-business-territory" aria-controls="collapse-business-territory">
+                        <i class="bi bi-chevron-compact-down"></i>
+                        <i class="bi bi-chevron-compact-up"></i>
                     </div>
                 {% endif %}
             {% endfor %}
@@ -153,17 +147,16 @@
             </div>
         </div>
     {% endif %}
-</div> <!-- end of row -->
 
-<div class="row">
-    <div id="consultant_rate_graph_content" class="col-lg-12"></div>
+
+    <div id="consultant_rate_graph_content" class="col-12"></div>
     <script type="text/javascript">
     $(document).ready(function() {
         $('#consultant_rate_graph_content').load("{% url 'staffing:graph_consultant_rates' consultant.id %}")
      });
     </script>
-</div>
 
+</div> <!-- end of row -->
 <script type="text/javascript">
 //$(document).ready(function() {
     function displayConsultantGraph () {
@@ -279,5 +272,9 @@
                           $("#pydici-blocks").masonry({"percentPosition": true, columnWidth:1});
                          }, 10);
 
+    // recompute layout when collapsing or uncollapsing block
+    $(".collapse-business-territory").last().bind('hidden.bs.collapse shown.bs.collapse', function () {
+      $('#pydici-blocks').masonry("layout");
+    });
 //});
 </script>

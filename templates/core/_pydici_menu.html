@@ -187,7 +187,7 @@
                   {% endfor %}
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{{ request.path }}?subsidiary_id=0">
-                    {% if not current_subsidiary %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}{% trans 'all subsidiaries' %}
+                    {% if not current_subsidiary %}<i class="bi bi-check"></i> {% endif %}{% trans 'all subsidiaries' %}
                 </a></li>
               </ul>
             </div>

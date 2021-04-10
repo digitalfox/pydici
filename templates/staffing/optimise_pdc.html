@@ -15,7 +15,7 @@
     {% crispy form %}
     {% crispy formset formset_helper %}
     <div class="pull-left">
-        <button type="submit" class="btn btn-primary" name="action_solve"><span class="glyphicon glyphicon-cog"></span> {% trans 'Solve' %}</button>
+        <button type="submit" class="btn btn-primary" name="action_solve"><i class="bi bi-gear"></i> {% trans 'Solve' %}</button>
         {% if results and not errors %}
             <button type="submit" class="btn btn-danger" name="action_update" onclick='return confirm("{% trans "Do you really want to update forecast? This cannot be undone" %}")'>
             {% trans 'Update forecast according to prevision' %}</button>

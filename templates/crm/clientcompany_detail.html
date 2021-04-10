@@ -17,7 +17,7 @@
 <h1><a href="{% url 'crm:company' company.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ company }}</a> ({{ company.code }})</h1>
 {% if company.web %}{{ company.web|urlize }}<br/><br/>{% endif %}
 {% if data_for_other_subsidiaries %}
-    <div class="alert alert-info"><span class="glyphicon glyphicon-warning-sign"></span> {% blocktrans %}Displayed data is filtered for {{ current_subsidiary }} but
+    <div class="alert alert-info"><i class="bi bi-exclamation-triangle"></i> {% blocktrans %}Displayed data is filtered for {{ current_subsidiary }} but
         {{ company }} company also have data for other subsidiaries. <a href="{{ request.path }}?subsidiary_id=0">Click here</a> to display all unfiltered data {% endblocktrans %}</div>
 {% endif %}
 

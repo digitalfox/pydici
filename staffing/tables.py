@@ -29,8 +29,8 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
     order_columns = columns
     max_display_length = 500
     archiving_template = get_template("staffing/_mission_table_archive_column.html")
-    ko_sign = mark_safe("""<span class="glyphicon glyphicon-warning-sign" style="color:red"></span>""")
-    ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"></span>""")
+    ko_sign = mark_safe("""<i class="bi bi-exclamation-triangle" style="color:red"></i>""")
+    ok_sign = mark_safe("""<i class="bi bi-check" style="color:green"></i>""")
 
     def _filter_on_subsidiary(self, qs):
         subsidiary = get_subsidiary_from_session(self.request)
