@@ -33,7 +33,7 @@
                         {% if form.initial.staffing_date %}
                            <tr><th style="backround-color:white" colspan=9>
                                 <a href="#" class="month_header" id="header_{{ year_month }}">
-                                    <span class="glyphicon glyphicon-menu-right {% if not form.initial.staffing_date or year_month >= current_month or form.errors %}rotate90{% endif %}"></span>
+                                    <i class="{% if not form.initial.staffing_date or year_month >= current_month or form.errors %}bi-chevron-compact-down{% else %}bi-chevron-compact-right{% endif %}"></i>
                                     {{ form.initial.staffing_date|date:"F Y" }}
                                 </a>
                             </th></tr>
