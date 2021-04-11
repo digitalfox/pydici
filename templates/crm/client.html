@@ -7,6 +7,14 @@
 
 {% block content %}
 
+<nav aria-label="breadcrumb" class="mt-3">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'crm:company' client.organisation.company.id %}" class='pydici-tooltip'  title="{% trans 'click to edit...' %}">{{ client.organisation.company }}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'crm:client_organisation_change' client.organisation.id %}" class='pydici-tooltip'  title="{% trans 'click to edit...' %}">{{ client.organisation }}</a></li>
+    <li class="breadcrumb-item active">{{ client }}</li>
+  </ol>
+</nav>
+
 {% crispy form form.helper %}
 
 {% include "core/_datepicker.html" %}

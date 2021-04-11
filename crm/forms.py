@@ -141,7 +141,7 @@ class ClientForm(PydiciCrispyModelForm):
                             "crm:administrative_contact_add"))),
                 css_class="col-md-6"),
             get_address_column(),
-            css_class="row"),
+            css_class="row my-2"),
             "active",
             self.submit)
         self.inline_helper.layout = Layout(
@@ -175,7 +175,7 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
                                                                     "<a href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                                                         "crm:company")), css_class="col-md-6"),
                                         get_address_column(),
-                                        css_class="row"),
+                                        css_class="row my-2"),
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Client organisation"),
                                                     Row(Column("name"),
@@ -198,7 +198,7 @@ class CompanyForm(PydiciCrispyModelForm):
         super(CompanyForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(
             Div(Column("name", "code", "businessOwner", "vat_id", "web", "legal_description", css_class="col-md-6"),
-                get_address_column(show_banner=False), css_class="row"),
+                get_address_column(show_banner=False), css_class="row my-2"),
             self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Company"),
                                                     Row(Column("name"), Column("code")),
