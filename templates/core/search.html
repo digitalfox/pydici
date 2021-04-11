@@ -6,7 +6,7 @@
 
 <div id="search-results">
 <div class="row">
-    <div class="col-lg-12">
+    <div class="col-12">
         {% if query %}
             {% if consultants or companies or leads or missions or contacts or bills %}
                 <h1>{% blocktrans with query|escape as value %}Search results for <em>{{ value }}</em>:{% endblocktrans %}</h1>
@@ -24,9 +24,9 @@
     {% if consultants %}
         <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <h2>{% trans "Consultants"%}</h2>
-            <ul>
+            <ul class="row icon-list">
             {% for consultant in consultants %}
-                <li>{% include "people/__consultant_name.html" %}</li>
+                <li class="bi bi-person-fill">{% include "people/__consultant_name.html" %}</li>
             {% endfor %}
             </ul>
         </div>
@@ -35,9 +35,9 @@
     {% if contacts %}
         <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <h2>{% trans "Contacts"%}</h2>
-            <ul>
+            <ul class="row icon-list">
             {% for contact in contacts %}
-                <li><a href="{% url 'crm:contact_detail' contact.id %}">{{ contact }} ({{ contact.company }})</a></li>
+                <li class="bi bi-person-fill"><a href="{% url 'crm:contact_detail' contact.id %}">{{ contact }} ({{ contact.company }})</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -46,9 +46,9 @@
     {% if companies %}
         <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <h2>{% trans "Companies"%}</h2>
-            <ul>
+            <ul class="row icon-list">
             {% for company in companies %}
-                <li><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
+                <li class="bi bi-people"><a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -57,56 +57,66 @@
     {% if tags %}
         <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <h2>{% trans "Tags"%}</h2>
-            <ul>
+            <ul class="row icon-list">
             {% for tag in tags %}
-                <li class="col-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a></li>
+                <li class="col-12 col-sm-12 col-md-6 col-lg-4 bi bi-tag"><a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a></li>
             {% endfor %}
             </ul>
         </div>
     {% endif %}
 </div>
 
+{% if leads %}
 <div class="row">
-    {% if leads %}
-        <h2 class="col-lg-12">{% trans "Leads" %}</h2>
-        <ul>
+    <div class="col-12">
+        <h2>{% trans "Leads" %}</h2>
+        <ul class="row icon-list">
         {% for lead in leads %}
-            <li class="col-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id|default:_("no deal id") }})</a></li>
+            <li class="col-12 col-sm-12 col-md-6 col-lg-4 bi bi-chevron-right"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id|default:_("no deal id") }})</a></li>
         {% endfor %}
         </ul>
-    {% endif %}
+    </div>
 </div>
+{% endif %}
 
+{% if active_missions %}
 <div class="row">
-    {% if active_missions %}
+    <div class="col-12">
         <h2 class="col-lg-12">{% trans "Actives missions" %}</h2>
-        <ul>
+        <ul class="row icon-list">
         {% for mission in active_missions %}
-            <li class="col-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.full_name }}</a></li>
+            <li class="col-12 col-sm-12 col-md-6 col-lg-4 bi bi-chevron-right"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.full_name }}</a></li>
         {% endfor %}
         </ul>
-    {% endif %}
+    </div>
 </div>
+{% endif %}
 
+{% if archived_missions %}
 <div class="row">
-    {% if archived_missions %}
+    <div class="col-12">
         <h2 class="col-lg-12">{% trans "Archived missions" %}</h2>
-        <ul>
+        <ul class="row icon-list">
         {% for mission in archived_missions %}
-            <li class="col-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.full_name }}</a></li>
+            <li class="col-12 col-sm-12 col-md-6 col-lg-4 bi bi-chevron-right"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.full_name }}</a></li>
         {% endfor %}
         </ul>
-    {% endif %}
+    </div>
 </div>
+{% endif %}
 
 
 {% if bills %}
-    <h2>{% trans "Client Bills" %}</h2>
-    <ul>
-    {% for bill in bills %}
-        <li><a href="{% url 'billing:client_bill' bill.id %}?return_to={{ request.get_full_path }}">{{ bill }} - {{ bill.lead }} ({{ bill.get_state_display }})</a></li>
-    {% endfor %}
-    </ul>
+    <div class="row">
+        <div class="col-12">
+            <h2>{% trans "Client Bills" %}</h2>
+            <ul class="row icon-list">
+            {% for bill in bills %}
+                <li class="col-12 col-sm-12 col-md-6 col-lg-4 bi bi-file-earmark-text"><a href="{% url 'billing:client_bill' bill.id %}?return_to={{ request.get_full_path }}">{{ bill }} - {{ bill.lead }} ({{ bill.get_state_display }})</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endif %}
 
 </div> {# end of search results #}
