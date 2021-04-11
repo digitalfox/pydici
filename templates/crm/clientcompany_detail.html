@@ -237,28 +237,26 @@
             </div>
         </div>
     </div> <!-- end of dashboard tab -->
+
     <div id="tab-structure" class="tab-pane fade" role="tabpanel">
-        <h2>{% trans "Company structure" %}</h2>
+        <h2 class="mt-2">{% trans "Company structure" %}</h2>
         <div class="row">
-            <ul class="list-group">
             {% for clientorganisation in company.clientorganisation_set.all %}
-                <div class="col-sm-12 col-md-6 col-lg-4" style="margin-top:20px">
-                <li class="list-group-item disabled"><a href="{% url 'crm:client_organisation_change' clientorganisation.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ clientorganisation }}</a> {% include "crm/_client_picto.html" %}</li>
-                {% for client in clientorganisation.client_set.all %}
-                    <li class="list-group-item"><a href="{% url 'crm:client_change' client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ client.contact|default_if_none:_("undefined") }}</a> {% include "crm/_client_picto.html" %}</li>
-                {% endfor %}
+                <div class="my-2 col-lg-3 col-sm-6 col-12">
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-secondary"><a href="{% url 'crm:client_organisation_change' clientorganisation.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ clientorganisation }}</a> {% include "crm/_client_picto.html" %}</li>
+                        {% for client in clientorganisation.client_set.all %}
+                            <li class="list-group-item"><a href="{% url 'crm:client_change' client.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ client.contact|default_if_none:_("undefined") }}</a> {% include "crm/_client_picto.html" %}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             {% endfor %}
-            </ul>
         </div>
-
     </div>
 
-
-
     <div id="tab-leads" class="tab-pane fade" role="tabpanel">
-        <h2>{% trans "Current active missions" %}</h2>
-        <table id="mission_table" class="table table-striped table-hover table-sm table-bordered" cellspacing="0" width="100%">
+        <h2 class="mt-2">{% trans "Current active missions" %}</h2>
+        <table id="mission_table" class="table table-striped table-hover table-sm table-bordered">
         <thead>
             <tr>
                 <th>{% trans "name" %}</th>
@@ -282,11 +280,8 @@
             {% endwith %}
         {% endwith %}
 
-
-
-
-        <h2>{% trans "Leads" %}</h2>
-        <table id="lead_table" class="table table-striped table-hover table-sm table-bordered" cellspacing="0" width="100%">
+        <h2 class="mt-4">{% trans "Leads" %}</h2>
+        <table id="lead_table" class="table table-striped table-hover table-sm table-bordered">
         <thead>
             <tr>
                 <th>{% trans "client" %}</th>
@@ -313,7 +308,7 @@
     
     <div id="tab-consultants" class="tab-pane fade" role="tabpanel">
     {% if consultants %}
-        <h2>{% trans "Business owner for this company:" %}</h2>
+        <h2 class="mt-2">{% trans "Business owner for this company:" %}</h2>
             <ul>
                 <li>{% if company.businessOwner %}{% with consultant=company.businessOwner %}{% include "people/__consultant_name.html" %}{% endwith %}
                     {% else %} <a href="{% url 'crm:company' company.id %}">{% trans "To be defined" %}</a>
@@ -335,27 +330,25 @@
     </div>
 
     <div id="tab-contacts" class="tab-pane fade" role="tabpanel">
-        <br/>
-        <h2>{% trans "Business contacts" %}</h2>
+        <h2 class="mt-2">{% trans "Business contacts" %}</h2>
         {% with business_contacts as contacts %}
         {% with "business_contacts_table" as table_id %}
              {% include "crm/_contact_list.html" %}
              {% include "core/_datatables-dj-tables.html" %}
         {% endwith %}
         {% endwith %}
-        <br/><br/>
-        <h2>{% trans "Mission contacts" %}</h2>
+
+        <h2 class="mt-4">{% trans "Mission contacts" %}</h2>
         {% with mission_contacts as contacts %}
         {% with "mission_contacts_table" as table_id %}
              {% include "crm/_contact_list.html" %}
              {% include "core/_datatables-dj-tables.html" %}
         {% endwith %}
         {% endwith %}
+
+        <h2 class="mt-4">{% trans "Administrative contacts" %}</h2>
         
-        <br/><br/>
-        <h2>{% trans "Administrative contacts" %}</h2>
-        
-        <table class="table table-hover table-striped table-sm table-bordered" id="admin_contacts_table" width="100%">
+        <table class="table table-hover table-striped table-sm table-bordered" id="admin_contacts_table">
             <thead>
             <tr>
                 <th>{% trans "Name" %}</th>
@@ -395,7 +388,7 @@
              {% include "core/_datatables-dj-tables.html" %}
         {% endwith %}
         {% if pydici_feature.contacts_write %}
-        <br/><a class="btn btn-primary" href="{% url 'crm:administrative_contact_add' %}?company={{ company.id|safe }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
+            <a class="btn btn-primary my-2" href="{% url 'crm:administrative_contact_add' %}?company={{ company.id|safe }}&return_to={{ request.get_full_path }}">{% trans "New administrative contact" %}</a></i>
         {% endif %}
     </div>
 

@@ -2,12 +2,10 @@
 {# designed to be loaded in ajax as a tab #}
 {# context : leads #}
 
-<ul>
 {% for lead in leads %}
     {% ifequal lead.state "WON" %}
-        <h2><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
+        <h2 class="mt-4"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
             {% include "billing/_lead_billing.html" %}
-            <br/>
     {% endifequal %}
 {% endfor %}
-</ul>
+

@@ -9,7 +9,7 @@
     <h2 class="py-2">{% trans "Client billing control" %}</h2>
 
 
-    <div id="pivotable-output-{{ lead.id|unlocalize }}" style="margin-top: 10px;"></div>
+    <div id="pivotable-output-{{ lead.id|unlocalize }}"></div>
 
     <script type="text/javascript">
 
@@ -89,7 +89,7 @@
                     <td>{{ bill.supplier }}</td>
                     <td>{{ bill.supplier_bill_id }}</td>
                     <td>{{ bill.get_state_display }}</td>
-                    <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
+                    <td>{{ bill.amount|floatformat:-2 }}</td>
                     <td>{{ bill.creation_date }}</td>
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date|default_if_none:"" }}</td>

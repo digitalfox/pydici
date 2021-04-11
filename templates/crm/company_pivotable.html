@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load pydici_filters %}
 
-        <h2>{% trans "Pivot table for company " %} {{ company }}</h2>
+<h2 class="mt-2">{% trans "Pivot table for company " %} {{ company }}</h2>
 
         <div id="type-selector" class="btn-group" role="group">
             <button class="btn btn-primary active" onclick="done_by_client();">{% trans "Done by client" %}</button>
@@ -9,12 +9,13 @@
             &nbsp;
             <input id="startDate" name="startDate" class="datepicker dateinput" placeholder="{% trans 'From' %}">
             <input id="endDate" name="endDate" class="datepicker dateinput" placeholder="{% trans 'To' %}">
-
-
         </div>
 
-        <div id="pivotable-output" style="margin-top: 10px;"></div>
-
+        <div class="row my-2">
+            <div class="col-12">
+                <div id="pivotable-output"></div>
+            </div>
+        </div>
         {% with output as "pivotable-output" %}
             {% include "core/_pivotable_body.html" %}
         {% endwith %}
