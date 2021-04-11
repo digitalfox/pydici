@@ -30,7 +30,7 @@ from core.models import GroupFeature, Parameter
 COLORS = ["#1f77b4", "#ff7f0e", "#d62728", "#DAEBFF", "#FFE32C", "#AAFF86", "#D972FF", "#FF8D8F", "#6BE7FF", "#FF1616"]
 
 # Tables 2 css to hide columns on small devices
-TABLES2_HIDE_COL_MD = {"td": {"class": "hidden-xs hidden-sm hidden-md"}, "th": {"class": "hidden-xs hidden-sm hidden-md"}}
+TABLES2_HIDE_COL_MD = {"td": {"class": "d-none d-lg-table-cell"}, "th": {"class": "d-none d-lg-table-cell"}}
 
 
 def send_lead_mail(lead, request, fromAddr=None, fromName=""):

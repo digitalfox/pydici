@@ -35,8 +35,8 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
     date_template = get_template("core/_date_column.html")
     receipt_template = get_template("expense/_receipt_column.html")
     state_template = get_template("expense/_expense_state_column.html")
-    ko_sign = mark_safe("""<span class="glyphicon glyphicon-remove" style="color:red"><span class="visuallyhidden">No</span></span>""")
-    ok_sign = mark_safe("""<span class="glyphicon glyphicon-ok" style="color:green"><span class="visuallyhidden">Yes</span></span>""")
+    ko_sign = mark_safe("""<i class="bi bi-x" style="color:red"><span class="visuallyhidden">No</span></i>""")
+    ok_sign = mark_safe("""<i class="bi bi-check" style="color:green"><span class="visuallyhidden">Yes</span></i>""")
 
     def get_initial_queryset(self):
         expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
@@ -145,20 +145,20 @@ class ExpenseWorkflowTable(ExpenseTable):
     def render_transitions(self, record):
         result = []
         for transition in self.transitionsData[record.id]:
-            result.append("""<a role='button' title='%s' class='btn btn-primary btn-xs' href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
+            result.append("""<a role='button' title='%s' class='btn btn-primary btn-sm' href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
                           % (expense_transition_to_state_display(transition), reverse("expense:update_expense_state", args=[record.id, transition]), expense_transition_to_state_display(transition)[0:2]))
         if self.expenseEditPerm[record.id]:
-            result.append("<a role='button' title='%s' class='btn btn-primary btn-xs' href='%s'>%s</a>"
+            result.append("<a role='button' title='%s' class='btn btn-primary btn-sm' href='%s'>%s</a>"
                           % (smart_str(_("Edit")),
                              reverse("expense:expenses", kwargs={"expense_id": record.id}),
                              # Translators: Ed is the short term for Edit
                              smart_str(_("Ed"))))
-            result.append("<a role='button' title='%s' class='btn btn-primary btn-xs' href='%s'>%s</a>" %
+            result.append("<a role='button' title='%s' class='btn btn-primary btn-sm' href='%s'>%s</a>" %
                           (smart_str(_("Delete")),
                            reverse("expense:expense_delete", kwargs={"expense_id": record.id}),
                            # Translators: De is the short term for Delete
                            smart_str(_("De"))))
-        result.append("<a role='button' title='%s' class='btn btn-primary btn-xs' href='%s'>%s</a>" %
+        result.append("<a role='button' title='%s' class='btn btn-primary btn-sm' href='%s'>%s</a>" %
                       (smart_str(_("Clone")),
                        reverse("expense:clone_expense", kwargs={"clone_from": record.id}),
                        # Translators: Cl is the short term for Clone
@@ -204,6 +204,7 @@ class ExpensePaymentTable(tables.Table):
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-sm", "id": "expense_payment_table"}
         order_by = "-id"
         orderable = False
+
 
 class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
     """Expense payment table backend for datatable"""

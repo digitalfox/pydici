@@ -405,10 +405,6 @@ div.ui-tooltip {
     width: 100%;
 }
 
-.modal-xxl {
-        width:80%;
-        margin-left: 10%;
-   }
 
 /* Fix select2 issue in actionset popover */
 /*.force_child_span_inline {
@@ -532,6 +528,13 @@ body {
 .form-select:focus, .form-control:focus {
     box-shadow: 0 0 0 .25rem rgba(244,141,51,.3);
     border-color: rgba(244,141,51, 0.9);
+}
+
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--selected, .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected="true"],
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--highlighted{
+    //background-color: #8F6749;
+    background-color: rgba(244,141,51);
+    color: #fff;
 }
 
 .navbar-brand {

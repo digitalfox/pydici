@@ -15,31 +15,31 @@
 
 
     {% if modify_expense %}
-        <h1>{% trans "Modify the expense" %}</h1>
+        <h1 class="mt-2">{% trans "Modify the expense" %}</h1>
     {% else %}
-        <h1>{% trans "Add an expense" %}</h1>
+        <h1 class="mt-2">{% trans "Add an expense" %}</h1>
     {% endif %}
 
      {% crispy form form.helper %}
 
 
-<br/><hr/>
+<hr/>
 
 
 {% if user_expense_table.data %}
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-12">
             <h1>{% trans "My expenses" %}</h1>
                 {% render_table user_expense_table %}
                 {% with "user_expense_workflow_table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
         </div>
     </div>
-    <br/><hr/>
+    <hr/>
 {% endif %}
 
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
     {% if managed_expense_table.data %}
         <h1>{% trans "Expenses I manage" %}</h1>
             {% render_table managed_expense_table %}
@@ -48,9 +48,9 @@
     </div>
 </div>
 
-<br/><hr/>
+<hr/>
 
-    <a href="{% url 'expense:expenses_history' %}" class="btn btn-primary">{% trans "Expenses history" %}</a>
+    <a href="{% url 'expense:expenses_history' %}" class="btn btn-primary mb-2"><i class="bi bi-clock-history"></i> {% trans "Expenses history" %}</a>
 
 {% include "core/_datepicker.html" %}
 
