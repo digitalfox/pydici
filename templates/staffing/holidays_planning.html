@@ -6,13 +6,19 @@
 
 {% block content %}
 
-<h1>
-<ul class="pager" style="text-align:left">
-    <li class="pydici-tooltip" title="{% trans 'Previous month' %}"><a href="{% url 'staffing:holidays_planning' year=previous_month|date:'Y' month=previous_month|date:'m' %}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-    {% trans "Holidays planning" %} {{ month|date:"F Y"}}
-    <li class="pydici-tooltip" title="{% trans 'Next month' %}"><a href="{% url 'staffing:holidays_planning' year=next_month|date:'Y' month=next_month|date:'m' %}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-</ul>
-</h1>
+<div class="my-3 d-flex flex-row">
+<h1 class="mx-3 align-self-center my-0">{% trans "Holidays planning" %} {{ month|date:"F Y"}}</h1>
+    <nav class="mx-3">
+    <ul class="pagination my-0">
+        <li class="page-item pydici-tooltip" title="{% trans 'Previous months' %}">
+            <a class ="page-link" href="{% url 'staffing:holidays_planning' year=previous_month|date:'Y' month=previous_month|date:'m' %}"><i class="bi bi-arrow-left-circle"></i></a>
+        </li>
+        <li class="page-item pydici-tooltip" title="{% trans 'Next months' %}">
+            <a class="page-link " href="{% url 'staffing:holidays_planning' year=next_month|date:'Y' month=next_month|date:'m' %}"><i class="bi bi-arrow-right-circle"></i></a>
+        </li>
+    </ul>
+    </nav>
+</div>
 
 <div class="table-responsive">
     <table class="table table-hover table-pydici-extra-condensed table-holidays">
@@ -37,7 +43,7 @@
                     <td class="holidays-consultant-name">
                         {% with consultant=item %}{% include "people/__consultant_name.html" %}{% endwith %}
                     </td>
-                {% else %}<td class="timesheet-day" style='background:{{ item }}'>  </td>{% endif %}
+                {% else %}<td class="timesheet-day {{ item }}">  </td>{% endif %}
             {% endfor %}
         </tr>
         {% endfor %}

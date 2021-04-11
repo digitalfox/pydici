@@ -209,6 +209,19 @@ input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
                                   supported by Chrome and Opera */
 }
 
+td.no-holidays {
+    background: lightgrey;
+    z-index:-1;
+}
+td.holidays-weekend {
+    background: #F6F6F6;
+    z-index:-1;
+}
+td.in-holidays {
+    background: #56160C;
+    z-index:-1;
+}
+
 @font-face {
     font-family: 'circlesmedium';
     src: url('../fonts/circles/circles-webfont.eot');

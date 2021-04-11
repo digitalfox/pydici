@@ -41,9 +41,9 @@
     {% endif %}
     </div>
 
-    <h2><a href="{% url 'crm:company_detail' lead.client.organisation.company.id %}">{{ lead.client.organisation }}</a>
+    <h2><a href="{% url 'crm:company_detail' lead.client.organisation.company.id %}" class='pydici-tooltip'  title="{% trans 'click to edit...' %}">{{ lead.client.organisation }}</a>
         {% with lead.client as client %}{% include "crm/_client_picto.html" %}{% endwith %}
-        - <a href="{% url 'leads:lead' lead.id|unlocalize %}" class='changelink' title='Cliquez pour modifier ce lead'>{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
+        - <a href="{% url 'leads:lead' lead.id|unlocalize %}" class='pydici-tooltip'  title="{% trans 'click to edit...' %}">{{ lead.name }}</a> ({{ lead.get_state_display }})</h2>
 
 <div>
     <!-- Nav tabs -->

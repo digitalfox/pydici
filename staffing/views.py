@@ -1291,11 +1291,11 @@ def holidays_planning(request, year=None, month=None):
                                                       consultant=consultant, mission__nature="HOLIDAYS", charge__gt=0).values_list("working_date", flat=True)
         for day in days:
             if day.isoweekday() in (6, 7) or day in holidays_days:
-                consultantData.append("lightgrey")
+                consultantData.append("no-holidays")
             elif day in consultantHolidays:
-                consultantData.append("#56160C")
+                consultantData.append("in-holidays")
             else:
-                consultantData.append("#F6F6F6")
+                consultantData.append("holidays-weekend")
         data.append(consultantData)
     return render(request, "staffing/holidays_planning.html",
                   {"days": days,
