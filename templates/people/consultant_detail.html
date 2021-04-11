@@ -16,18 +16,18 @@
                 {{ turnover_variation|floatformat:-2 }}%)</li>
             </ul>
             <div class="row">
-                <div class="col-md-2 col-sm-6 col-xs-6">
+                <div class="col-md-2 col-sm-6 col-6">
                     <center><h4>{% trans "prod rate (&#37;)" %}</h4></center>
                     <div id="consultant_prod_rate"></div>
                 </div>
-                <div class="col-md-2 col-sm-6 col-xs-6">
+                <div class="col-md-2 col-sm-6 col-6">
                     <center><h4>{% trans "daily rate (€)" %}</h4></center>
                     <div id="consultant_daily_rate"></div>
                 </div>
-                <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="col-md-4 col-sm-6 col-12">
                     <div id="consultant_timesheet_status"></div>
                 </div>
-                <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="col-md-4 col-sm-6 col-12">
                     <div id="consultant_forecast_status"></div>
                 </div>
             </div>
@@ -35,7 +35,7 @@
     </div>
 
     {% if tasks %}
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
         <div class="pydici-block">
             <h3 class="pydici-block-title">{% trans "Things to do right now !" %}</h3>
             <ul class="icon-list">
@@ -47,7 +47,7 @@
     </div>
     {% endif %}
 
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
         <div class="pydici-block">
             {% if consultant.manager %}
                 {% ifnotequal consultant.manager consultant %}
@@ -66,7 +66,7 @@
     </div>
 
     {% if staled_missions %}
-    <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="col-md-4 col-sm-6 col-12">
         <div class="pydici-block">
                 <h3 class="pydici-block-title">{% trans "Staled missions (to be updated or archived)" %}</h3>
                 <ul class="row icon-list">
@@ -81,7 +81,7 @@
 
     {% with consultant.pending_actions|slice:":20" as actions %}
         {% if actions %}
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-md-4 col-sm-6 col-12">
                 <div class="pydici-block" id="consultant_actions">
                     <h3 class="pydici-block-title">{% trans "Pending actions" %}</h3>
                         {% include "actionset/_consultant_actions.html" %}
@@ -92,7 +92,7 @@
 
 {% if business_territory %}
 
-    <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="col-md-4 col-sm-6 col-12">
         <div class="pydici-block">
             <h3 class="pydici-block-title">{% trans "Business territory" %}</h3>
             <ul class="row icon-list">
@@ -111,7 +111,7 @@
 
 {% endif %}
     
-    <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="col-md-4 col-sm-6 col-12">
         <div class="pydici-block">
             <h3 class="pydici-block-title">{% trans "Current missions" %}</h3>
             <ul class="row icon-list">
@@ -123,7 +123,7 @@
 	</div>
 
     {% if leads_as_responsible %}
-        <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="col-md-4 col-sm-6 col-12">
             <div class="pydici-block">
                     <h3 class="pydici-block-title">{% trans "Current leads as responsible" %}</h3>
                     <ul class="row icon-list">
@@ -136,7 +136,7 @@
     {% endif %}
 
     {% if leads_as_staffee %}
-        <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="col-md-4 col-sm-6 col-12">
             <div class="pydici-block">
                     <h3 class="pydici-block-title">{% trans "Current leads as resource" %}</h3>
                     <ul class="icon-list">

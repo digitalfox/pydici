@@ -183,7 +183,6 @@ class Contact(models.Model):
     def companies_html(self):
         return self.companies(html=True)
 
-
     def relationData(self):
         """Compute relational data in json format usable by Dagre / D3 library"""
         nodes = GNodes()
@@ -198,7 +197,7 @@ class Contact(models.Model):
             # Mission relations
             for missionContact in self.missioncontact_set.all():
                 for mission in missionContact.mission_set.all():
-                    missionNode = GNode("mission-%s" % mission.id, """<span class='glyphicon-svg glyphicon-cog'></span>
+                    missionNode = GNode("mission-%s" % mission.id, """<i class="bi bi-gear"></i> 
                                                                       <span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>""" % (mission.short_name(),
                                                                                                                                                           mission.get_absolute_url(),
                                                                                                                                                           mission.mission_id()))
@@ -212,7 +211,7 @@ class Contact(models.Model):
             for client in self.client_set.all():
                 if client.lead_set.count() < 5 :
                     for lead in client.lead_set.all():
-                        leadNode = GNode("lead-%s" % lead.id, """<span class="glyphicon-svg glyphicon-euro"></span>
+                        leadNode = GNode("lead-%s" % lead.id, """<i class="bi bi-calculator"></i>
                                                                  <span class='graph-tooltip' title='%s'><a href='%s'>%s&nbsp;</a></span>""" % (str(lead),
                                                                                                                                                lead.get_absolute_url(),
                                                                                                                                                lead.deal_id))
@@ -233,7 +232,7 @@ class Contact(models.Model):
                     leadsId = "-".join([str(l.id) for l in leads])
                     leadsTitle = str(client.organisation)
                     leadsLabel = _("%s leads" % len(leads))
-                    leadsNode = GNode("leads-%s" % leadsId, """<span class='glyphicon-svg glyphicon-euro'></span>
+                    leadsNode = GNode("leads-%s" % leadsId, """<i class="bi bi-calculator"></i>
                                                                <span class='graph-tooltip' title='%s'>&nbsp;%s&nbsp;</span>""" % (leadsTitle, leadsLabel))
                     nodes.add(leadsNode)
                     edges.append(GEdge(me,leadsNode, color=leadColor))

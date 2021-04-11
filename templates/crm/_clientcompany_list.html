@@ -4,7 +4,7 @@
 
 {% load i18n %}
 
-<h1>{% trans "All companies list" %}</h1>
+<h1 class="mt-2">{% trans "All companies list" %}</h1>
 <ul class="row">
 {% for company in companies %}
     {% with first_letter=company.name|slice:"1" %}
@@ -14,7 +14,7 @@
         <ul class="row">
     {% endifchanged %}
     {% endwith %}
-    <li class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+    <li class="col-6 col-sm-4 col-md-3 col-lg-2">
         <a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a>
     </li>
 {% endfor %}

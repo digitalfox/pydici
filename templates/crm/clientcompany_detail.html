@@ -14,8 +14,8 @@
 
 {% block content %}
 
-<h1><a href="{% url 'crm:company' company.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ company }}</a> ({{ company.code }})</h1>
-{% if company.web %}{{ company.web|urlize }}<br/><br/>{% endif %}
+<h1 class="mt-2"><a href="{% url 'crm:company' company.id %}" class='pydici-tooltip' title="{% trans 'click to edit...' %}">{{ company }}</a> ({{ company.code }})</h1>
+{% if company.web %}{{ company.web|urlize }}{% endif %}
 {% if data_for_other_subsidiaries %}
     <div class="alert alert-info"><i class="bi bi-exclamation-triangle"></i> {% blocktrans %}Displayed data is filtered for {{ current_subsidiary }} but
         {{ company }} company also have data for other subsidiaries. <a href="{{ request.path }}?subsidiary_id=0">Click here</a> to display all unfiltered data {% endblocktrans %}</div>
@@ -29,116 +29,110 @@
 <div>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="company-tabs">
-        <li class="active"><a data-bs-toggle="tab" href="#tab-dashboard"><i class="bi bi-house"></i> {% trans "Dashboard" %}</a></li>
-        <li><a data-bs-toggle="tab" href="#tab-structure"><span class="glyphicon glyphicon-equalizer"></span> {% trans "Structure" %}</a></li>
-        <li><a data-bs-toggle="tab" href="#tab-leads"><i class="bi bi-list-ul"></i> {% trans "Leads" %}</a></li>
-        <li><a data-bs-toggle="tab" href="#tab-consultants"><i class="bi bi-person"></i> {% trans "Consultants" %}</a></li>
-        <li><a data-bs-toggle="tab" href="#tab-contacts"><i class="bi bi-envelope"></i> {% trans "Client contacts" %}</a></li>
-        <li><a data-bs-toggle="tab" href="#tab-rates-margin" data-tab-url="{% url 'crm:company_rates_margin' company.id %}"><span class="glyphicon glyphicon-shopping-cart"></span> {% trans "Rates and margin" %}</a></li>
-        <li><a data-bs-toggle="tab" href="#tab-billing" data-tab-url="{% url 'crm:company_billing' company.id %}"><i class="bi bi-calculator"></i> {% trans "Billing" %}</a></li>
-        <li><a data-bs-toggle="tab" href="#tab-reporting" data-tab-url="{% url 'crm:company_pivotable' company.id %}"><i class="bi bi-graph-up"></i> {% trans "Reporting" %}</a></li>
-        <li><a data-bs-toggle="tab" href="#tab-all-companies"><span class="glyphicon glyphicon-folder-open"></span> {% trans "All companies list" %}</a></li>
+        <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-dashboard"><i class="bi bi-house"></i> {% trans "Dashboard" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-structure"><i class="bi bi-diagram-3"></i> {% trans "Structure" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-leads"><i class="bi bi-list-ul"></i> {% trans "Leads" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-consultants"><i class="bi bi-person"></i> {% trans "Consultants" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-contacts"><i class="bi bi-envelope"></i> {% trans "Client contacts" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-rates-margin" data-tab-url="{% url 'crm:company_rates_margin' company.id %}"><i class="bi bi-tag"></i> {% trans "Rates and margin" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-billing" data-tab-url="{% url 'crm:company_billing' company.id %}"><i class="bi bi-calculator"></i> {% trans "Billing" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'crm:company_pivotable' company.id %}"><i class="bi bi-graph-up"></i> {% trans "Reporting" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-all-companies"><i class="bi bi-folder2-open"></i> {% trans "All companies list" %}</button></li>
     </ul>
 </div>
 
 <div class="tab-content">
-    <div id="tab-dashboard" class="tab-pane active fade in">
-        <div class="row">
-            &nbsp;
-        </div>
-        <div class="row">
+    <div id="tab-dashboard" class="tab-pane active fade show" role="tabpanel">
+
+        <div class="row my-2">
             <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+                <div class="card">
+                    <div class="card-header">
                         <div class="row">
-                            <div class="col-xs-3">
-                                <span class="glyphicon glyphicon-list gi-4x"></span>
+                            <div class="col-3">
+                                <i class="bi bi-list-ul" style="font-size: 4rem"></i>
                             </div>
-                            <div class="col-xs-9 text-right">
+                            <div class="col-9 align-right">
                                 <div class="huge">{{ lead_count }}</div>
                                 <div>{% trans "leads" %}</div>
                             </div>
                         </div>
                     </div>
                     <a href="#tab-leads">
-                        <div class="panel-footer">
-                            <span class="pull-left">{% trans "View Details" %}</span>
-                            <span class="pull-right">
-                                <i class="glyphicon glyphicon-search"></i>
-                            </span>
-                            <div class="clearfix"></div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col-6">{% trans "View Details" %}</div>
+                                <div class="col-6 text-end"><i class="bi bi-search"></i></div>
+                            </div>
                         </div>
                     </a>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+                <div class="card">
+                    <div class="card-header">
                         <div class="row">
-                            <div class="col-xs-3">
-                                <span class="glyphicon glyphicon-user gi-4x"></span>
+                            <div class="col-3">
+                                <i class="bi bi-people" style="font-size: 4rem"></i>
                             </div>
-                            <div class="col-xs-9 text-right">
+                            <div class="col-9 align-right">
                                 <div class="huge">{{ consultants.count }}</div>
                                 <div>{% trans "consultants involved" %}</div>
                             </div>
                         </div>
                     </div>
                     <a href="#tab-consultants">
-                        <div class="panel-footer">
-                            <span class="pull-left">{% trans "View Details" %}</span>
-                            <span class="pull-right">
-                                <i class="glyphicon glyphicon-search"></i>
-                            </span>
-                            <div class="clearfix"></div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col-6">{% trans "View Details" %}</div>
+                                <div class="col-6 text-end"><i class="bi bi-search"></i></div>
+                            </div>
                         </div>
                     </a>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+                <div class="card">
+                    <div class="card-header">
                         <div class="row">
-                            <div class="col-xs-3">
-                                <span class="glyphicon glyphicon-envelope gi-4x"></span>
+                            <div class="col-3">
+                                <i class="bi bi-envelope" style="font-size: 4rem"></i>
                             </div>
-                            <div class="col-xs-9 text-right">
+                            <div class="col-9 align-right">
                                 <div class="huge">{{ contacts_count }}</div>
                                 <div>{% trans "contacts" %}</div>
                             </div>
                         </div>
                     </div>
                     <a href="#tab-contacts">
-                        <div class="panel-footer">
-                            <span class="pull-left">{% trans "View Details" %}</span>
-                            <span class="pull-right">
-                                <i class="glyphicon glyphicon-search"></i>
-                            </span>
-                            <div class="clearfix"></div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col-6">{% trans "View Details" %}</div>
+                                <div class="col-6 text-end"><i class="bi bi-search"></i></div>
+                            </div>
                         </div>
                     </a>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+                <div class="card">
+                    <div class="card-header">
                         <div class="row">
-                            <div class="col-xs-3">
-                                <span class="glyphicon glyphicon-euro gi-4x"></span>
+                            <div class="col-3">
+                                <i class="bi bi-calculator" style="font-size: 4rem"></i>
                             </div>
-                            <div class="col-xs-9 text-right">
+                            <div class="col-9 align-right">
                                 <div class="huge" title="{% trans 'billed turnover'%}">{{ sales }} k€</div>
                                 <div>{{ sales_last_year }} k€ {% trans "during last 12 months" %}</div>
                             </div>
                         </div>
                     </div>
                     <a href="#tab-billing">
-                        <div class="panel-footer">
-                            <span class="pull-left">{% trans "View Details" %}</span>
-                            <span class="pull-right">
-                                <i class="glyphicon glyphicon-search"></i>
-                            </span>
-                            <div class="clearfix"></div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col-6">{% trans "View Details" %}</div>
+                                <div class="col-6 text-end"><i class="bi bi-search"></i></div>
+                            </div>
                         </div>
                     </a>
                 </div>
@@ -231,11 +225,9 @@
             </div>
             {% endif %}
         </div> <!-- end of second dashabord row -->
-        <div class="row">
-            &nbsp;
-        </div>
-        <div class="row">
-            <div class="col-md-12">
+
+        <div class="row mt-4">
+            <div class="col-12">
                 <div id="graph_company_business_activity_content"></div>
                 <script type="text/javascript">
                 $(document).ready(function() {
@@ -245,7 +237,7 @@
             </div>
         </div>
     </div> <!-- end of dashboard tab -->
-    <div id="tab-structure" class="tab-pane fade in">
+    <div id="tab-structure" class="tab-pane fade" role="tabpanel">
         <h2>{% trans "Company structure" %}</h2>
         <div class="row">
             <ul class="list-group">
@@ -264,7 +256,7 @@
 
 
 
-    <div id="tab-leads" class="tab-pane fade in">
+    <div id="tab-leads" class="tab-pane fade" role="tabpanel">
         <h2>{% trans "Current active missions" %}</h2>
         <table id="mission_table" class="table table-striped table-hover table-sm table-bordered" cellspacing="0" width="100%">
         <thead>
@@ -319,7 +311,7 @@
 
     </div>
     
-    <div id="tab-consultants" class="tab-pane fade">
+    <div id="tab-consultants" class="tab-pane fade" role="tabpanel">
     {% if consultants %}
         <h2>{% trans "Business owner for this company:" %}</h2>
             <ul>
@@ -342,7 +334,7 @@
     {% endif %}
     </div>
 
-    <div id="tab-contacts" class="tab-pane fade">
+    <div id="tab-contacts" class="tab-pane fade" role="tabpanel">
         <br/>
         <h2>{% trans "Business contacts" %}</h2>
         {% with business_contacts as contacts %}
@@ -407,13 +399,13 @@
         {% endif %}
     </div>
 
-    <div id="tab-rates-margin" class="tab-pane fade"></div>
+    <div id="tab-rates-margin" class="tab-pane fade" role="tabpanel"></div>
 
-    <div id="tab-billing" class="tab-pane fade"></div>
+    <div id="tab-billing" class="tab-pane fade" role="tabpanel"></div>
 
-    <div id="tab-reporting" class="tab-pane fade"></div>
+    <div id="tab-reporting" class="tab-pane fade" role="tabpanel"></div>
 
-    <div id="tab-all-companies" class="tab-pane fade">
+    <div id="tab-all-companies" class="tab-pane fade" role="tabpanel">
         {% include "crm/_clientcompany_list.html" %}
     </div>
 

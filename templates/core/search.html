@@ -22,7 +22,7 @@
 
 <div class="row">
     {% if consultants %}
-        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <h2>{% trans "Consultants"%}</h2>
             <ul>
             {% for consultant in consultants %}
@@ -33,7 +33,7 @@
     {% endif %}
 
     {% if contacts %}
-        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <h2>{% trans "Contacts"%}</h2>
             <ul>
             {% for contact in contacts %}
@@ -44,7 +44,7 @@
     {% endif %}
 
     {% if companies %}
-        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <h2>{% trans "Companies"%}</h2>
             <ul>
             {% for company in companies %}
@@ -55,11 +55,11 @@
     {% endif %}
 
     {% if tags %}
-        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-12">
             <h2>{% trans "Tags"%}</h2>
             <ul>
             {% for tag in tags %}
-                <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a></li>
+                <li class="col-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -71,7 +71,7 @@
         <h2 class="col-lg-12">{% trans "Leads" %}</h2>
         <ul>
         {% for lead in leads %}
-            <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id|default:_("no deal id") }})</a></li>
+            <li class="col-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id|default:_("no deal id") }})</a></li>
         {% endfor %}
         </ul>
     {% endif %}
@@ -82,7 +82,7 @@
         <h2 class="col-lg-12">{% trans "Actives missions" %}</h2>
         <ul>
         {% for mission in active_missions %}
-            <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.full_name }}</a></li>
+            <li class="col-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.full_name }}</a></li>
         {% endfor %}
         </ul>
     {% endif %}
@@ -93,7 +93,7 @@
         <h2 class="col-lg-12">{% trans "Archived missions" %}</h2>
         <ul>
         {% for mission in archived_missions %}
-            <li class="col-xs-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.full_name }}</a></li>
+            <li class="col-12 col-sm-12 col-md-6 col-lg-4"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.full_name }}</a></li>
         {% endfor %}
         </ul>
     {% endif %}

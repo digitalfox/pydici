@@ -6,7 +6,7 @@
 {% for mission_contact in mission_contacts %}
     {% ifchanged mission_contact.company %}
         {% if not loop.first %}</table>{% endif %}
-        <h3><a href="{% url 'crm:company_detail' mission_contact.company.id %}">{{ mission_contact.company }}</a></h3>
+        <h3 class="mt-2"><a href="{% url 'crm:company_detail' mission_contact.company.id %}">{{ mission_contact.company }}</a></h3>
         <table class="table table-hover table-striped table-sm">
          <tr>
             <th>{% trans "Name" %}</th>
