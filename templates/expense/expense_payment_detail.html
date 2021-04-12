@@ -18,7 +18,7 @@
 {% block content %}
 
 {% if expense_table.data %}
-<h1>{% trans "Expenses of payment n°" %}{{ expense_payment.id }} ({{ expense_payment.payment_date }})</h1>
+<h2>{% trans "Expenses of payment n°" %}{{ expense_payment.id }} ({{ expense_payment.payment_date }})</h2>
     {% render_table expense_table %}
     {% with "expense_table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
     

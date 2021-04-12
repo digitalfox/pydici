@@ -9,7 +9,7 @@
     {% include "core/_pivotable_header.html" %}
 {% endblock %}
 
-{% block bodyattr %} data-bs-spy="scroll" data-bs-target="#billing-toc" data-bs-offset="0" style="position: relative;" {% endblock %}
+{% block bodyattr %} data-bs-spy="scroll" data-bs-target="#billing-toc" data-bs-offset="10" style="position: relative;" {% endblock %}
 {% block content %}
 
 
@@ -32,21 +32,23 @@
 
 <div class="row">
 
-<div class="col-lg-4 order-1 order-lg-2">
+<div class="col-lg-3 order-1 order-lg-2">
     <div id="billing-toc" class="sticky-lg-top">
         <nav class="navbar navbar-light bg-light">
               <nav class="nav nav-pills flex-column">
                   <a href="#client-timespent" class="nav-link">{% trans "Pre billing for time spent missions" %}</a>
                   <nav class="nav nav-pills flex-column">
                       {% for lead, lead_data in time_spent_billing %}
-                        <a href="#lead-{{ lead.id|unlocalize }}" class="nav-link ms-3 py-0">{{ lead }}</a>
+                        {% ifchanged lead.client.organisation.company %}
+                            <a href="#company-{{ lead.client.organisation.company.id|unlocalize }}" class="nav-link ms-3 py-0">{{ lead.client.organisation.company }}</a>
+                        {% endifchanged %}
                       {% endfor %}
                   </nav>
                   <a href="#client-fixedprice" class="nav-link">{% trans "Pre billing for fixed price missions" %}</a>
                   <nav class="nav nav-pills flex-column">
                       {% for mission in fixed_price_missions %}
-                        {% ifchanged mission.lead %}
-                            <a href="#lead-{{ mission.lead.id|unlocalize }}" class="nav-link ms-3 py-0">{{ mission }}</a>
+                        {% ifchanged mission.lead.client.organisation.company %}
+                            <a href="#company-{{ mission.lead.client.organisation.company.id|unlocalize }}" class="nav-link ms-3 py-0">{{ mission.lead.client.organisation.company }}</a>
                         {% endifchanged %}
                       {% endfor %}
                   </nav>
@@ -56,15 +58,16 @@
     </div>
 </div>
 
-<div class="col-lg-8 order-2 order-lg-1">
-<h1 id="client-timespent" class="mt-3">{% trans "Pre billing for time spent missions" %} ({{ start_date }} - {{ end_date }})</h1>
+<div class="col-lg-9 order-2 order-lg-1">
+<h2 id="client-timespent" class="mt-3">{% trans "Pre billing for time spent missions" %} ({{ start_date }} - {{ end_date }})</h2>
 
 {% for lead, lead_data in time_spent_billing %}
-    <h2 id="lead-{{ lead.id|unlocalize }}" class="mt-2"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
+    {% ifchanged lead.client.organisation.company.id %}<span id="company-{{ lead.client.organisation.company.id|unlocalize }}"></span>{% endifchanged %}
+    <h4 class="mt-2"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h4>
     {% for mission, mission_data in lead_data.1.items %}
-        <h5 class="mt-2"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }})</a></h5>
+        <h5 class="mt-2"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }}</a></h5>
         <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-8">
+            <div class="col-lg-7 col-md-8 col-sm-12 col-12">
                 <table class="table table-sm table-striped table-hover">
                     <tr><th>{% trans "consultant" %}</th><th>{% trans "days" %}</th><th>{% trans "rate" %}</th><th>{% trans "total" %}</th></tr>
                     {% for consultant, charge, rate, total in mission_data.1 %}
@@ -77,43 +80,46 @@
                     <tr><th>{% trans "total" %}</th><td></td><td></td><th>{{ mission_data.0|floatformat:"-2" }} €</th></tr>
                 </table>
             </div>
+            <div class="col-lg-5 col-md-4 col-6">
+                <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
+            </div>
         </div>
-        <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
+
     {% endfor %}
      {% ifequal lead.mission_set.count 1 %}
         <h4></h4>
      {% else %}
         <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
-        <p><strong>{% trans "Total:" %} {{ lead_data.0|floatformat:-2}} €</strong></p>
+        <p class="mt-2"><strong>{% trans "Total:" %} {{ lead_data.0|floatformat:-2}} €</strong></p>
      {% endifequal %}
      <p><strong>{% trans "Still to be billed" %}: {{ lead.still_to_be_billed|floatformat:-2 }} €</strong></p>
      <hr/>
 {% endfor %}
 
-<h1 id="client-fixedprice" class="mt-3">{% trans "Pre billing for fixed price missions" %} ({{ start_date }} - {{ end_date }})</h1>
+<h2 id="client-fixedprice" class="mt-3">{% trans "Pre billing for fixed price missions" %} ({{ start_date }} - {{ end_date }})</h2>
 {% for mission in fixed_price_missions %}
+    {% ifchanged mission.lead.client.organisation.company.id %}<span id="company-{{ mission.lead.client.organisation.company.id|unlocalize }}"></span>{% endifchanged %}
     {% ifchanged mission.lead %}
-        <h2 id="lead-{{ mission.lead.id|unlocalize }}" class="mt-2">{{ mission.lead }} ({{ mission.lead.deal_id }})</h2>
+        <h3 class="mt-4">{{ mission.lead }} ({{ mission.lead.deal_id }})</h3>
         {% with mission.lead as lead %}{% include "billing/_lead_billing.html" %}{% endwith %}
-        <h3 class="mt-3">{% trans "Fixed price mission(s)" %}</h3>
+        <h4 class="mt-3">{% trans "Fixed price mission(s)" %}</h4>
     {% endifchanged %}
-    <p><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }}) : </a>
+    <p><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }} : </a>
         {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
     </p>
     <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.3" target="_blank">{% trans "Bill 30% for this mission" %}</a>
     <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.7" target="_blank">{% trans "Bill 70% for this mission" %}</a>
-
+    <hr/>
 {% endfor %}
 
-
-<h1 id="internal" class="mt-3">{% trans "Internal billing" %}</h1>
+<h2 id="internal" class="mt-3">{% trans "Internal billing" %}</h2>
 {% for internal_subsidiaries, subsidiary_internal_billing in internal_billing.items %}
-    <h1 class="mt-3">{% blocktrans with from=internal_subsidiaries.0 to=internal_subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} ({{ start_date }} - {{ end_date }})</h1>
+    <h3 class="mt-3">{% blocktrans with from=internal_subsidiaries.0 to=internal_subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} ({{ start_date }} - {{ end_date }})</h3>
 
     {% for lead, lead_data in subsidiary_internal_billing %}
-        <h2 class="mt-2"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
+        <h4 class="mt-2"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h4>
         {% for mission, mission_data in lead_data.1.items %}
-            <h5 class="mt-2"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }})</a></h5>
+            <h5 class="mt-2"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }}</a></h5>
             <div class="row">
                 <div class="col-lg-4 col-md-6 col-sm-8">
                     <table class="table table-sm table-striped table-hover">
@@ -133,18 +139,18 @@
          {% ifnotequal lead.mission_set.count 1 %}
             <h4>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</h4>
          {% endifnotequal %}
-         <a class="btn btn-primary" href="">{% trans "Add an internal bill" %}</a>
+         <button type="button" class="btn btn-primary" disabled>{% trans "Add an internal bill" %}</button>
          <hr/>
     {% endfor %}
 {% endfor %}
 
 {% if undefined_billing_mode_missions %}
     <hr>
-    <h1 id="undefined_billing_mode_missions" class="alert alert-danger">{% trans "Missions without defined billing mode" %} ({{ start_date }} - {{ end_date }})</h1>
+    <h2 id="undefined_billing_mode_missions" class="alert alert-danger">{% trans "Missions without defined billing mode" %} ({{ start_date }} - {{ end_date }})</h2>
     {% for mission in undefined_billing_mode_missions %}
         {% ifchanged mission.lead %}
             <hr/>
-            <h2>{{ mission.lead }} ({{ mission.lead.deal_id }})</h2>
+            <h4>{{ mission.lead }} ({{ mission.lead.deal_id }})</h4>
         {% endifchanged %}
         <p><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }} ({{ mission.mission_id }}) : </a>
         {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)

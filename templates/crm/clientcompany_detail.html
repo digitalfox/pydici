@@ -143,10 +143,10 @@
             {% with data=leads_stat %}
                 {% include "crm/__leads_state_donut.html" %}
             {% endwith %}
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-lg-3 col-md-6 col-sm-6 align-self-center">
                 <div id="leads_won_rate"></div>
                 <p>&nbsp;</p>
-                <h3><div class="text-center">{% trans "Overall won lead rate: " %}{{ overall_won_rate|floatformat:-1 }}&nbsp;%</div></h3>
+                <h5><div class="text-center">{% trans "Overall won lead rate: " %}{{ overall_won_rate|floatformat:-1 }}&nbsp;%</div></h5>
                 <script type="text/javascript">
                     $(document).ready(function() {
                         // Display gauge of lead won rate

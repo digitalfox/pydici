@@ -6,10 +6,11 @@
 
     {% with data=lead.billing_control_data %}
 
-    <h2 class="py-2">{% trans "Client billing control" %}</h2>
+    <h4 class="py-2">{% trans "Client billing control" %}</h4>
 
-
-    <div id="pivotable-output-{{ lead.id|unlocalize }}"></div>
+    <div class="table-responsive">
+        <div id="pivotable-output-{{ lead.id|unlocalize }}"></div>
+    </div>
 
     <script type="text/javascript">
 
@@ -28,7 +29,7 @@
 
     {% endwith %}
 
-    <h2 class="pt-3">{% trans "Clients bills" %}</h2>
+    <h4 class="pt-3">{% trans "Clients bills" %}</h4>
     {% with lead.clientbill_set.all as client_bills %}
     {% if client_bills %}
     <table class="table table-hover table-striped table-sm">
@@ -67,7 +68,7 @@
             <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
     {% endif %}
 
-    <h2 class="pt-3">{% trans "Suppliers bills" %}</h2>
+    <h4 class="pt-3">{% trans "Suppliers bills" %}</h4>
     {% with lead.supplierbill_set.all as supplier_bills %}
     {% if supplier_bills %}
     <table class="table table-hover table-striped table-sm">

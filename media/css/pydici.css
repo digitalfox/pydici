@@ -82,10 +82,15 @@ a.disabled-items {
 }
 
 /* Titles */
-h1 { font-size:20px; }
-h2 { font-size:18px; }
-h3 { font-size:16px; }
-h4 { font-size:14px; }
+h1 { font-size:1.8rem; }
+h2 { font-size:1.5rem; }
+h3 { font-size:1.25rem; }
+h4 { font-size:1.1rem; }
+h5 { font-size:1rem; }
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    font-weight: 350;
+}
 
 
 /* Add alias (kind of..) on alert-error to please django admin message std class */
@@ -495,7 +500,7 @@ body {
     border-color: #adadad;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,.btn-primary:disabled {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad;
@@ -550,6 +555,11 @@ body {
 .page-link,.page-link:hover {
     color: #333
 }
+
+.dropdown-header {
+    padding: .25rem 1rem;
+}
+
 /* override bootstrap datepicker default */
 .datepicker {
     padding: .375rem .75rem; // bootstrap default

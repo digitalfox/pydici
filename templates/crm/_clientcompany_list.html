@@ -4,7 +4,7 @@
 
 {% load i18n %}
 
-<h1 class="mt-2">{% trans "All companies list" %}</h1>
+<h2 class="mt-2">{% trans "All companies list" %}</h2>
 <ul class="row">
 {% for company in companies %}
     {% with first_letter=company.name|slice:"1" %}
