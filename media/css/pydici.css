@@ -152,6 +152,7 @@ textarea { vertical-align:top !important; }
 input[type=text], input[type=password], textarea, select, .vTextField { border:1px solid #ccc; background: white;}
 input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
 
+.pydici-bill-input > input, .pydici-bill-input > span > span > span { font-size: 0.8rem !important;}
 
 .pydici-mission-timesheet > thead > tr > th, .pydici-mission-timesheet > tbody > tr > th, .pydici-mission-timesheet > tfoot > tr > th, .pydici-mission-timesheet > thead > tr > td, .pydici-mission-timesheet > tbody > tr > td, .pydici-mission-timesheet > tfoot > tr > td  { border-right:1px solid #DDDDDD;}
 .pydici-mission-timesheet {  border-left:1px solid #DDDDDD; border-bottom:1px solid #DDDDDD;}

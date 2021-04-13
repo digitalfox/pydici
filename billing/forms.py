@@ -7,9 +7,8 @@ Bill form setup
 
 from datetime import date, timedelta
 
-from django.forms import models, ModelForm
+from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
 from django.forms.models import BaseInlineFormSet, ModelChoiceField
 from django.forms.fields import DateField, TypedChoiceField
 from django.forms.widgets import DateInput
@@ -17,7 +16,7 @@ from django.forms.utils import ValidationError
 from django.utils import formats
 
 
-from crispy_forms.layout import Layout, Div, Column
+from crispy_forms.layout import Layout, Div, Column, Row
 from crispy_forms.bootstrap import TabHolder, Tab
 from crispy_forms.helper import FormHelper
 from django_select2.forms import Select2Widget
@@ -36,7 +35,8 @@ from core.utils import nextMonth
 
 
 class BillingDateChoicesField(TypedChoiceField):
-    widget = Select2Widget(attrs={'data-placeholder':_("Select a month...")})
+    widget = Select2Widget(attrs={'data-placeholder':_("Select a month..."), "data-theme": "bootstrap-5"})
+
     def __init__(self, *args, **kwargs):
         minDate = kwargs.pop("minDate", date.today() - timedelta(30*11))
         nMonth = kwargs.pop("nMonth", 12)
@@ -63,19 +63,19 @@ class ClientBillForm(PydiciCrispyModelForm):
         widgets = { "lead": LeadChoices,
                     "expenses": ChargeableExpenseMChoices}
 
-
     def __init__(self, *args, **kwargs):
         super(ClientBillForm, self).__init__(*args, **kwargs)
         self.helper.form_tag = False
         self.helper.layout = Layout(Div(TabHolder(Tab(_("Description"),
-                                                      Column("lead", "bill_id", "state", css_class="col-md-6"),
-                                                      Column("comment", "client_comment", "anonymize_profile", "include_timesheet", css_class="col-md-6"), ),
+                                                      Row(Column("lead"), Column("comment")),
+                                                      Row(Column("bill_id"), Column("client_comment")),
+                                                      Row(Column("state"), Column("anonymize_profile", "include_timesheet"))),
                                                   Tab(_("Amounts"),
                                                       Column("amount", "vat", "amount_with_vat", css_class="col-md-6")),
                                                   Tab(_("Dates"), Column("creation_date", "due_date", "payment_date",
                                                                          css_class="col-md-6"), ),
                                                   Tab(_("Advanced"), Column("client_deal_id", "lang", "bill_file",
-                                                                         css_class="col-md-6"), ),
+                                                                            css_class="col-md-6"), ),
                                                   css_class="row")))
 
     def clean_amount(self):
@@ -106,8 +106,8 @@ class SupplierBillForm(PydiciCrispyModelForm):
 class BillDetailInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillDetailInlineFormset, self).add_fields(form, index)
-        form.fields["mission"] = ModelChoiceField(widget=LeadMissionChoices(lead=self.instance.lead, attrs={'data-width': '15em'}), queryset=Mission.objects)
-        form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices, queryset=Consultant.objects, required=False)
+        form.fields["mission"] = ModelChoiceField(widget=LeadMissionChoices(lead=self.instance.lead), queryset=Mission.objects)
+        form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices(attrs={"data-allow-clear": False}), queryset=Consultant.objects, required=False)
         form.fields["month"] = BillingDateChoicesField(required=False)
 
     def clean(self):
@@ -129,6 +129,7 @@ class BillDetailFormSetHelper(FormHelper):
         super(BillDetailFormSetHelper, self).__init__(*args, **kwargs)
         self.form_method = 'post'
         self.form_tag = False
+        self.field_class = "pydici-bill-input"
         self.template = 'bootstrap5/table_inline_formset.html'
 
 
@@ -173,6 +174,7 @@ class BillExpenseFormSetHelper(FormHelper):
         super(BillExpenseFormSetHelper, self).__init__(*args, **kwargs)
         self.form_method = 'post'
         self.form_tag = False
+        self.field_class = "pydici-bill-input"
         self.template = 'bootstrap5/table_inline_formset.html'
 
 

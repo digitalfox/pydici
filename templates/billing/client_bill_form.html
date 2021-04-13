@@ -10,15 +10,15 @@
 
 <form action="{%if bill_id %}{% url 'billing:client_bill' bill_id=bill_id %}{% endif %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <h2>{% trans "Bill header" %}</h2>
+    <h2 class="mt-2">{% trans "Bill header" %}</h2>
     {% crispy bill_form %}
     <hr>
     {% if detail_formset %}
         <h2>{% trans "Bill mission detail" %}</h2>
-        {% with detail_formset as formset %}{% include "bootstrap3/errors_formset.html" %}{% endwith %}
+        {% with detail_formset as formset %}{% include "bootstrap5/errors_formset.html" %}{% endwith %}
         {% crispy detail_formset detail_formset_helper %}
         <h2>{% trans "Bill expense detail" %}</h2>
-        {% with expense_formset as formset %}{% include "bootstrap3/errors_formset.html" %}{% endwith %}
+        {% with expense_formset as formset %}{% include "bootstrap5/errors_formset.html" %}{% endwith %}
         {% crispy expense_formset expense_formset_helper %}
     {% endif %}
     <div class="form-actions">
