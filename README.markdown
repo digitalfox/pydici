@@ -23,6 +23,8 @@ Sébastien Renard (Sebastien.Renard@digitalfox.org).
 Pydici can be installed as any Django project. Just drop the code somewhere
 and setup Apache.
 
+Python version >= 3.6 is required
+
 To install all python prerequisites, please do the following: pip install -r requirements.txt. It is strongly advised to use a virtual env.
 
 ## Detailed Installation

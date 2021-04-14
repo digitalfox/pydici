@@ -1,19 +1,28 @@
-{% extends "core/pydici.html" %}
 {% load i18n %}
 {% load pydici_filters %}
+{% load staticfiles %}
+<!DOCTYPE html><html lang="{{ LANGUAGE_CODE|default:"en-us" }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="pydici">
+    <meta name="author" content="Sebastien Renard">
 
-{% block pydici-menu %}{% endblock %}
-{% block messages %}{% endblock %}
-{% block pydici_rss %}{% endblock %}
+    <title>{{ bill.lead.subsidiary.commercial_name }}</title>
 
-{% block extracss %}
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+    <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/pydici-pdf.css" rel="stylesheet">
-{% endblock %}
 
-{% block content %}
+
+
+  </head>
+
+  <body>
 
 <div class="row">
-    <div class="col-5">
+    <div class="col-xs-5">
         <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ bill.lead.subsidiary.code}}.png" height=40/><br/><br/>
         {{ bill.lead.subsidiary.commercial_name }}<br/>
         {{ bill.lead.subsidiary.billing_address|linebreaksbr }}
@@ -28,7 +37,7 @@
         {% endif %}
         {% trans "Our contact: " %}{{ bill.lead.responsible }}<br/>
     </div>
-    <div class="col-offset-1 col-6">
+    <div class="col-offset-1 col-xs-6">
         <div class="well small-margin"><div class="lead small-margin text-uppercase">
             <strong>
                 {% if bill.amount_with_vat > 0 %}
@@ -177,4 +186,6 @@
 <footer> <!-- footer contents will be repeated and overlapped on each page until </table> is not reached -->
     <small><em>{{ bill.lead.subsidiary.legal_description|linebreaksbr }}</em></small>
 </footer>
-{% endblock %}
+
+  </body>
+</html>

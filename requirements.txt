@@ -11,7 +11,7 @@ Django-Select2==7.4.2
 python-memcached==1.59
 django-datatables-view==1.19.1
 django-background-tasks==1.1.13
-WeasyPrint==51
+WeasyPrint==52.4
 django-weasyprint==1.0.1
 bleach==3.3.0
 Markdown==3.2.2
