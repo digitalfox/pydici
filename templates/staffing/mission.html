@@ -119,7 +119,7 @@
                 </div>
                 <div class="col-md-7">
                     {% if mission.lead.description %}
-                        <h2>{% trans "Leads description" %}</h2>
+                        <h2>{% trans "Lead's description" %}</h2>
                         <div class="card card-body bg-light">{{ mission.lead.description|urlize|pydici_simple_format|linebreaksbr }}</div>
                     {% endif %}
                     {% if mission.lead.administrative_notes %}
