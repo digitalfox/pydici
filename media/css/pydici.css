@@ -131,12 +131,7 @@ h5 { font-size:1rem; }
     padding-left: 5px;
 }
 
-/* FORM DEFAULTS */
-input, textarea, select { margin:2px 0; padding:2px 3px; vertical-align:middle; font-weight:normal; font-size:11px; }
-textarea { vertical-align:top !important; }
-input[type=text], input[type=password], textarea, select, .vTextField { border:1px solid #ccc; background: white;}
-input:focus, textarea:focus { border:1px solid #C54B00; background:#F6F6F6; }
-
+/* Reduce font size for bill form */
 .pydici-bill-input > input, .pydici-bill-input > span > span > span { font-size: 0.8rem !important;}
 
 .pydici-mission-timesheet > thead > tr > th, .pydici-mission-timesheet > tbody > tr > th, .pydici-mission-timesheet > tfoot > tr > th, .pydici-mission-timesheet > thead > tr > td, .pydici-mission-timesheet > tbody > tr > td, .pydici-mission-timesheet > tfoot > tr > td  { border-right:1px solid #DDDDDD;}
@@ -277,13 +272,6 @@ td.in-holidays {
     border-collapse: collapse;
 }
 
-/* To be removed ? Need to be checked */
-ul.errorlist { margin:0 !important; padding:0 !important; }
-.errorlist li { font-size:12px !important; display:block; padding:4px 5px 4px 25px; margin:0 0 3px 0; border:1px solid red; color:white; background:red url(../img/icon_alert.gif) 5px .3em no-repeat; }
-td ul.errorlist { margin:0 !important; padding:0 !important; }
-td ul.errorlist li { margin:0 !important; }
-.form-row .object-tools { margin-top:5px; margin-bottom:5px; float:none; height:2em; padding-left:3.5em; }
-
 /* Text frame */
 .tag_banner {
     background:#F6F6F6;
@@ -309,18 +297,6 @@ td ul.errorlist li { margin:0 !important; }
 .hide {
     display: none;
 }
-
-/* a slightly modified version of bootstrap glyphicon class that can be embeded in an svg. */
-.glyphicon-svg {
-    top: 1px;
-    display: inline-block;
-    font-family: 'Glyphicons Halflings';
-    font-style: normal;
-    font-weight: 400;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
 
 div.ui-tooltip {
     max-width: 800px;
