@@ -59,12 +59,12 @@
     <tr>
         <th></th>
         {% for month in months %}
-            <th class="align-right" style="border-left:1px solid #C3C3C3;">{% trans "done" %}</th>
-            <th class="align-right">{% trans "objective" %}</th>
+            <th class="text-end" style="border-left:1px solid #C3C3C3;">{% trans "done" %}</th>
+            <th class="text-end">{% trans "objective" %}</th>
         {% endfor %}
     </tr>
     {% for consultant, charges in data %}
-        <tr class="align-right" {% if not consultant %}style="font-weight: bold"{% endif %}>
+        <tr class="text-end" {% if not consultant %}style="font-weight: bold"{% endif %}>
             {% if consultant %}
                 <td style="text-align:left">
                     {% include "people/__consultant_name.html" %}</td>

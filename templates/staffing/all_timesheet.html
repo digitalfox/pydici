@@ -11,12 +11,12 @@
 
 <div class="row"><br/></div>
 
-<div class="table-responsive table-pydici-all-timehseets">
+<div class="table-responsive table-pydici-all-timesheets">
 {% if charges %}
     <table class="table table-striped">
     {% for charge in charges %}
         {% if forloop.first %}
-            <thead class="sticky-header">
+            <thead class="table-pydici-all-timesheets-sticky-header">
                 <tr>
                     <th>{{ charge|join:"</th><th>" }}</th>
                 </tr>
