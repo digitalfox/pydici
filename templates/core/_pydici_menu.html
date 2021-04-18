@@ -12,7 +12,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         {% if user.is_staff and pydici_feature.menubar %}
             <ul class="navbar-nav me-auto mb-2 mb-lg-0"> {# left main menu #}
-                {% cache 1 menu request.user.id request.session.subsidiary_id %} {# XXXXX put to 3600 #}
+                {% cache 3600 menu request.user.id request.session.subsidiary_id %}
                     {% if pydici_feature.leads %}
                       <li class="nav-item dropdown">
                           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -177,7 +177,7 @@
                             </ul>
                         </li>
                     {% endif %}
-                
+
                     {% if pydici_feature.reports %}
                         <li><a class="nav-link" href="{% url 'core:dashboard' %}">{% trans "Management dashboard" %}</a></li>
                     {% endif %}
