@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-15 20:41+0200\n"
-"PO-Revision-Date: 2021-04-15 20:41+0200\n"
+"POT-Creation-Date: 2021-04-18 22:29+0200\n"
+"PO-Revision-Date: 2021-04-18 22:29+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -410,14 +410,14 @@ msgstr "organisation client"
 #: billing/utils.py:152 leads/views.py:673 staffing/views.py:1730
 #: staffing/views.py:1757 staffing/views.py:1773 staffing/views.py:1774
 #: templates/billing/client_billing_control_pivotable.html:61
-#: templates/leads/leads_pivotable.html:60
-#: templates/leads/leads_pivotable.html:69
-#: templates/staffing/turnover_pivotable.html:77
+#: templates/leads/leads_pivotable.html:63
+#: templates/leads/leads_pivotable.html:72
+#: templates/staffing/turnover_pivotable.html:76
 msgid "client company"
 msgstr "entreprise"
 
 #: billing/utils.py:153 leads/views.py:677 staffing/views.py:1733
-#: templates/staffing/turnover_pivotable.html:68
+#: templates/staffing/turnover_pivotable.html:67
 msgid "broker"
 msgstr "apporteur"
 
@@ -443,9 +443,9 @@ msgstr "Direct"
 #: templates/core/risks.html:53 templates/crm/clientcompany_detail.html:263
 #: templates/crm/clientcompany_detail.html:290
 #: templates/leads/lead_pivotable.html:38 templates/leads/leads.html:18
-#: templates/leads/leads_pivotable.html:54
-#: templates/leads/leads_pivotable.html:61
-#: templates/leads/leads_pivotable.html:68
+#: templates/leads/leads_pivotable.html:57
+#: templates/leads/leads_pivotable.html:64
+#: templates/leads/leads_pivotable.html:71
 #: templates/leads/leads_to_bill.html:18
 #: templates/staffing/lunch_tickets_pivotable.html:45
 #: templates/staffing/lunch_tickets_pivotable.html:51
@@ -457,19 +457,19 @@ msgstr "Direct"
 #: templates/staffing/rates_report.html:44
 #: templates/staffing/rates_report.html:50
 #: templates/staffing/rates_report.html:58
-#: templates/staffing/turnover_pivotable.html:56
-#: templates/staffing/turnover_pivotable.html:62
-#: templates/staffing/turnover_pivotable.html:69
-#: templates/staffing/turnover_pivotable.html:76
-#: templates/staffing/turnover_pivotable.html:92
+#: templates/staffing/turnover_pivotable.html:55
+#: templates/staffing/turnover_pivotable.html:61
+#: templates/staffing/turnover_pivotable.html:68
+#: templates/staffing/turnover_pivotable.html:75
+#: templates/staffing/turnover_pivotable.html:91
 msgid "subsidiary"
 msgstr "filiale"
 
 #: billing/utils.py:155 billing/utils.py:185 leads/views.py:676
 #: staffing/views.py:1731 templates/crm/clientcompany_detail.html:264
 #: templates/crm/clientcompany_detail.html:291 templates/leads/leads.html:19
-#: templates/leads/leads_pivotable.html:54
-#: templates/leads/leads_pivotable.html:61
+#: templates/leads/leads_pivotable.html:57
+#: templates/leads/leads_pivotable.html:64
 #: templates/leads/leads_to_bill.html:19 templates/staffing/missions.html:28
 msgid "responsible"
 msgstr "responsable"
@@ -519,9 +519,9 @@ msgstr "montant"
 #: templates/staffing/lunch_tickets_pivotable.html:58
 #: templates/staffing/lunch_tickets_pivotable.html:64
 #: templates/staffing/missions_report.html:78
-#: templates/staffing/turnover_pivotable.html:57
-#: templates/staffing/turnover_pivotable.html:63
-#: templates/staffing/turnover_pivotable.html:85
+#: templates/staffing/turnover_pivotable.html:56
+#: templates/staffing/turnover_pivotable.html:62
+#: templates/staffing/turnover_pivotable.html:84
 msgid "month"
 msgstr "Mois"
 
@@ -554,7 +554,7 @@ msgstr "mission"
 #: billing/utils.py:167 billing/utils.py:178 billing/utils.py:186
 #: staffing/models.py:397 staffing/views.py:1732
 #: templates/billing/client_billing_control_pivotable.html:68
-#: templates/staffing/turnover_pivotable.html:91
+#: templates/staffing/turnover_pivotable.html:90
 msgid "billing mode"
 msgstr "mode de facturation"
 
@@ -975,7 +975,7 @@ msgstr "Société"
 #: templates/crm/_clientcompany_rates_margin.html:15
 #: templates/crm/_clientcompany_rates_margin.html:48
 #: templates/leads/lead_detail.html:136
-#: templates/people/subcontractor_detail.html:9
+#: templates/people/subcontractor_detail.html:8
 msgid "Contact"
 msgstr "Contact"
 
@@ -1212,9 +1212,8 @@ msgid "You must define a lead if expense is chargeable"
 msgstr "Vous devez définir une affaire si les frais sont refacturables"
 
 #: expense/forms.py:102 expense/models.py:150
-#: templates/core/_pydici_menu.html:92 templates/core/_pydici_menu.html:93
-#: templates/core/_pydici_menu.html:135 templates/core/_pydici_menu.html:204
-#: templates/staffing/mission.html:43
+#: templates/core/_pydici_menu.html:140 templates/core/_pydici_menu.html:143
+#: templates/core/_pydici_menu.html:233 templates/staffing/mission.html:43
 msgid "Expenses"
 msgstr "Notes de frais"
 
@@ -1272,7 +1271,7 @@ msgstr "Catégorie de dépenses"
 msgid "Expense categories"
 msgstr "Catégories de dépenses"
 
-#: expense/models.py:93 templates/core/_pydici_menu.html:94
+#: expense/models.py:93 templates/core/_pydici_menu.html:144
 msgid "Expenses payment"
 msgstr "Remboursement de frais"
 
@@ -1320,9 +1319,9 @@ msgid "Paid with corporate card"
 msgstr "Payé avec la carte société"
 
 #: expense/models.py:114 leads/views.py:678
-#: templates/leads/leads_pivotable.html:48
-#: templates/leads/leads_pivotable.html:63
-#: templates/leads/leads_pivotable.html:71
+#: templates/leads/leads_pivotable.html:51
+#: templates/leads/leads_pivotable.html:66
+#: templates/leads/leads_pivotable.html:74
 msgid "state"
 msgstr "état"
 
@@ -1552,8 +1551,8 @@ msgstr "Propal. envoyée"
 msgid "Negotiation"
 msgstr "En négo."
 
-#: leads/models.py:53 templates/leads/leads_pivotable.html:63
-#: templates/leads/leads_pivotable.html:71
+#: leads/models.py:53 templates/leads/leads_pivotable.html:66
+#: templates/leads/leads_pivotable.html:74
 msgid "Won"
 msgstr "Gagnée"
 
@@ -1696,7 +1695,7 @@ msgstr "durée moyenne sur 6 mois"
 msgid "%s leads in progress"
 msgstr "%s affaires en cours"
 
-#: leads/views.py:651 templates/leads/leads_pivotable.html:55
+#: leads/views.py:651 templates/leads/leads_pivotable.html:58
 msgid "sales (interval)"
 msgstr "prix (interval)"
 
@@ -1717,15 +1716,15 @@ msgstr "nom"
 #: templates/crm/company_pivotable.html:49
 #: templates/crm/company_pivotable.html:55
 #: templates/leads/lead_pivotable.html:39
-#: templates/leads/leads_pivotable.html:49
+#: templates/leads/leads_pivotable.html:52
 msgid "date"
 msgstr "date"
 
-#: leads/views.py:679 templates/leads/leads_pivotable.html:64
+#: leads/views.py:679 templates/leads/leads_pivotable.html:67
 msgid "billed (€)"
 msgstr "facturé (€)"
 
-#: leads/views.py:680 templates/leads/leads_pivotable.html:72
+#: leads/views.py:680 templates/leads/leads_pivotable.html:75
 msgid "Over budget margin (€)"
 msgstr "Marge au delà du budget (€)"
 
@@ -1817,7 +1816,7 @@ msgstr "Factures fournisseurs à valider"
 
 #: people/utils.py:96 templates/leads/lead_detail.html:280
 #: templates/people/consultant_detail.html:86
-#: templates/people/subcontractor_detail.html:16
+#: templates/people/subcontractor_detail.html:15
 #: templates/staffing/mission.html:207
 msgid "Pending actions"
 msgstr "Actions en attente"
@@ -2228,7 +2227,7 @@ msgstr "Nb de personne / mission"
 msgid "mission_per_people_score"
 msgstr "Nb mission / personne"
 
-#: staffing/optim.py:287 templates/leads/leads_pivotable.html:18
+#: staffing/optim.py:287 templates/leads/leads_pivotable.html:19
 #: templates/staffing/missions_report.html:36
 #: templates/staffing/turnover_pivotable.html:21
 msgid "All"
@@ -2340,7 +2339,7 @@ msgstr "feuille-de-temps.csv"
 #: templates/billing/bill.html:173 templates/leads/lead_detail.html:255
 #: templates/staffing/mission_timesheet.html:38
 #: templates/staffing/mission_timesheet.html:117
-#: templates/staffing/prod_report.html:72
+#: templates/staffing/prod_report.html:79
 msgid "Total"
 msgstr "Total"
 
@@ -2441,7 +2440,7 @@ msgstr ""
 
 #: staffing/views.py:1750 staffing/views.py:1757
 #: templates/billing/graph_yearly_billing.html:37
-#: templates/staffing/turnover_pivotable.html:87
+#: templates/staffing/turnover_pivotable.html:86
 msgid "turnover (€)"
 msgstr "Chiffre d'affaire (€)"
 
@@ -2454,11 +2453,11 @@ msgid "internal subcontractor turnover (€)"
 msgstr "CA sous-traitants internes (€)"
 
 #: staffing/views.py:1753 staffing/views.py:1767
-#: templates/staffing/turnover_pivotable.html:58
-#: templates/staffing/turnover_pivotable.html:64
-#: templates/staffing/turnover_pivotable.html:72
-#: templates/staffing/turnover_pivotable.html:80
-#: templates/staffing/turnover_pivotable.html:93
+#: templates/staffing/turnover_pivotable.html:57
+#: templates/staffing/turnover_pivotable.html:63
+#: templates/staffing/turnover_pivotable.html:71
+#: templates/staffing/turnover_pivotable.html:79
+#: templates/staffing/turnover_pivotable.html:92
 msgid "own turnover (€)"
 msgstr "Chiffre d'affaire propre (€)"
 
@@ -2467,7 +2466,7 @@ msgid "fiscal year"
 msgstr "Année fiscale"
 
 #: staffing/views.py:1774 staffing/views.py:1776
-#: templates/staffing/turnover_pivotable.html:84
+#: templates/staffing/turnover_pivotable.html:83
 msgid "top client company"
 msgstr "top entreprise"
 
@@ -2617,7 +2616,7 @@ msgstr ""
 "\n"
 "Cordialement\n"
 
-#: templates/billing/_lead_billing.html:9 templates/core/_pydici_menu.html:144
+#: templates/billing/_lead_billing.html:9 templates/core/_pydici_menu.html:175
 msgid "Client billing control"
 msgstr "Contrôle facturation client"
 
@@ -2725,7 +2724,7 @@ msgstr "Frais"
 msgid "Amount (with VAT)"
 msgstr "Montant (TTC)"
 
-#: templates/billing/bill_review.html:10 templates/core/_pydici_menu.html:140
+#: templates/billing/bill_review.html:10 templates/core/_pydici_menu.html:172
 msgid "Bills review"
 msgstr "Revue des factures"
 
@@ -2877,7 +2876,7 @@ msgstr "Balance par mode de facturation"
 #: templates/crm/company_pivotable.html:56
 #: templates/leads/lead_pivotable.html:40
 #: templates/leads/lead_pivotable.html:46
-#: templates/leads/leads_pivotable.html:72
+#: templates/leads/leads_pivotable.html:75
 #: templates/staffing/missions_report.html:67
 #: templates/staffing/missions_report.html:73
 #: templates/staffing/missions_report.html:79
@@ -2888,28 +2887,28 @@ msgstr "Somme"
 #: templates/billing/client_billing_control_pivotable.html:64
 #: templates/billing/client_billing_control_pivotable.html:70
 #: templates/core/risks.html:43 templates/core/risks.html:49
-#: templates/core/risks.html:58 templates/leads/leads_pivotable.html:64
+#: templates/core/risks.html:58 templates/leads/leads_pivotable.html:67
 #: templates/staffing/lunch_tickets_pivotable.html:47
 #: templates/staffing/lunch_tickets_pivotable.html:53
 #: templates/staffing/lunch_tickets_pivotable.html:59
 #: templates/staffing/lunch_tickets_pivotable.html:65
 #: templates/staffing/rate_objective_report.html:43
-#: templates/staffing/turnover_pivotable.html:58
-#: templates/staffing/turnover_pivotable.html:64
-#: templates/staffing/turnover_pivotable.html:72
-#: templates/staffing/turnover_pivotable.html:80
-#: templates/staffing/turnover_pivotable.html:87
-#: templates/staffing/turnover_pivotable.html:93
+#: templates/staffing/turnover_pivotable.html:57
+#: templates/staffing/turnover_pivotable.html:63
+#: templates/staffing/turnover_pivotable.html:71
+#: templates/staffing/turnover_pivotable.html:79
+#: templates/staffing/turnover_pivotable.html:86
+#: templates/staffing/turnover_pivotable.html:92
 msgid "Integer Sum"
 msgstr "Somme en entiers"
 
 #: templates/billing/client_bills_archive.html:5
-#: templates/core/_pydici_menu.html:99
+#: templates/core/_pydici_menu.html:161
 msgid "All client bills"
 msgstr "Toutes les factures clients"
 
 #: templates/billing/client_bills_in_creation.html:5
-#: templates/core/_pydici_menu.html:101
+#: templates/core/_pydici_menu.html:163
 msgid "Client bills in creation"
 msgstr "Factures clients en cours de création"
 
@@ -2942,7 +2941,7 @@ msgstr "Montant de l'encours de facturation (€)"
 msgid "growth (%%)"
 msgstr "croissance (%%)"
 
-#: templates/billing/payment_delay.html:4 templates/core/_pydici_menu.html:141
+#: templates/billing/payment_delay.html:4 templates/core/_pydici_menu.html:173
 msgid "Payment delay review"
 msgstr "Délais de règlement"
 
@@ -2967,7 +2966,7 @@ msgstr "Préparation de la facturation"
 msgid "Only my leads"
 msgstr "Uniquement mes affaires"
 
-#: templates/billing/pre_billing.html:24 templates/core/_pydici_menu.html:25
+#: templates/billing/pre_billing.html:24 templates/core/_pydici_menu.html:35
 #: templates/leads/graph_bar_jqp.html:57 templates/leads/leads.html:11
 msgid "All leads"
 msgstr "Toutes les affaires"
@@ -3055,7 +3054,7 @@ msgid "Supplier bill"
 msgstr "Facture fournisseur"
 
 #: templates/billing/supplier_bills_archive.html:5
-#: templates/core/_pydici_menu.html:103
+#: templates/core/_pydici_menu.html:165
 msgid "All supplier bills"
 msgstr "Toutes les factures fournisseurs"
 
@@ -3132,259 +3131,277 @@ msgstr "Changements"
 msgid "DATETIME_FORMAT"
 msgstr "j F Y, G:i"
 
-#: templates/core/_pydici_menu.html:20 templates/core/_pydici_menu.html:32
-#: templates/core/search.html:72 templates/crm/__leads_state_donut.html:22
+#: templates/core/_pydici_menu.html:19
+msgid "Business"
+msgstr "Commerce"
+
+#: templates/core/_pydici_menu.html:22 templates/leads/review.html:10
+msgid "Current leads review"
+msgstr "Revue des affaires en cours"
+
+#: templates/core/_pydici_menu.html:23
+msgid "New lead"
+msgstr "Nouvelle affaire"
+
+#: templates/core/_pydici_menu.html:24
+msgid "Leads tag management"
+msgstr "Gestion des étiquettes des affaires"
+
+#: templates/core/_pydici_menu.html:27
+msgid "Rates Reporting"
+msgstr "Rapports sur les taux"
+
+#: templates/core/_pydici_menu.html:28
+msgid "Rate objectives report"
+msgstr "Rapport des taux objectifs"
+
+#: templates/core/_pydici_menu.html:29 templates/staffing/rates_report.html:11
+msgid "Production rates and daily rates report"
+msgstr "Rapport des taux de production et taux journalier"
+
+#: templates/core/_pydici_menu.html:30
+msgid "Rate ranking"
+msgstr "Classement des taux"
+
+#: templates/core/_pydici_menu.html:33
+msgid "Leads Reporting"
+msgstr "Rapports sur les affaires"
+
+#: templates/core/_pydici_menu.html:38 templates/leads/leads_pivotable.html:10
+#: templates/leads/leads_pivotable.html:13
+msgid "Leads pivot table"
+msgstr "Tableau croisé des affaires"
+
+#: templates/core/_pydici_menu.html:39
+msgid "Week summary mail (html)"
+msgstr "Courriel de bilan hebdomadaire (html)"
+
+#: templates/core/_pydici_menu.html:40
+msgid "Week summary mail (text)"
+msgstr "Courriel de bilan hebdomadaire (texte)"
+
+#: templates/core/_pydici_menu.html:42 templates/core/_pydici_menu.html:108
+msgid "Extractions"
+msgstr "Extractions"
+
+#: templates/core/_pydici_menu.html:43
+msgid "Active leads (csv)"
+msgstr "Affaires en cours (csv)"
+
+#: templates/core/_pydici_menu.html:44
+msgid "All leads (csv)"
+msgstr "Toutes les affaires (csv)"
+
+#: templates/core/_pydici_menu.html:49 templates/core/search.html:72
+#: templates/crm/__leads_state_donut.html:22
 #: templates/crm/clientcompany_detail.html:34
 #: templates/crm/clientcompany_detail.html:283 templates/leads/leads.html:6
 msgid "Leads"
 msgstr "Affaires"
 
-#: templates/core/_pydici_menu.html:23 templates/leads/review.html:10
-msgid "Current leads review"
-msgstr "Revue des affaires en cours"
+#: templates/core/_pydici_menu.html:54
+msgid "Planning"
+msgstr "Planification"
 
-#: templates/core/_pydici_menu.html:27
-msgid "New lead"
-msgstr "Nouvelle affaire"
-
-#: templates/core/_pydici_menu.html:28
-msgid "Leads tag management"
-msgstr "Gestion des étiquettes des affaires"
-
-#: templates/core/_pydici_menu.html:37 templates/leads/lead_detail.html:52
-#: templates/people/consultant.html:38
-msgid "Missions"
-msgstr "Missions"
-
-#: templates/core/_pydici_menu.html:41 templates/staffing/pdc_review.html:11
+#: templates/core/_pydici_menu.html:58 templates/staffing/pdc_review.html:11
 msgid "Workload schedule"
 msgstr "Plan de charge"
 
-#: templates/core/_pydici_menu.html:43 templates/staffing/missions.html:9
+#: templates/core/_pydici_menu.html:61
+msgid "Optimise workload schedule"
+msgstr "Optimiser le plan de charge"
+
+#: templates/core/_pydici_menu.html:62
+msgid "Mass staffing"
+msgstr "Staffing en masse"
+
+#: templates/core/_pydici_menu.html:65
+msgid "My workfload schedule"
+msgstr "Mon plan de charge"
+
+#: templates/core/_pydici_menu.html:75 templates/leads/lead_detail.html:54
+#: templates/staffing/mission.html:47
+msgid "Actions"
+msgstr "Actions"
+
+#: templates/core/_pydici_menu.html:76
+msgid "Actionset catalog"
+msgstr "Liste des trains d'action"
+
+#: templates/core/_pydici_menu.html:78
+msgid "On going actions"
+msgstr "Actions en cours"
+
+#: templates/core/_pydici_menu.html:82 templates/core/_pydici_menu.html:128
+#: templates/core/_pydici_menu.html:146 templates/core/_pydici_menu.html:171
+#: templates/crm/clientcompany_detail.html:39
+#: templates/leads/lead_detail.html:56 templates/staffing/mission.html:45
+msgid "Reporting"
+msgstr "Rapports"
+
+#: templates/core/_pydici_menu.html:83 templates/staffing/missions.html:9
 #: templates/staffing/missions.html:19
 msgid "Active missions"
 msgstr "Liste des missions actives"
 
-#: templates/core/_pydici_menu.html:53
-msgid "Mass staffing"
-msgstr "Staffing en masse"
+#: templates/core/_pydici_menu.html:91
+msgid "Operations control"
+msgstr "Contrôle des opérations"
 
-#: templates/core/_pydici_menu.html:54
-msgid "Optimise workload schedule"
-msgstr "Optimiser le plan de charge"
+#: templates/core/_pydici_menu.html:94 templates/staffing/prod_report.html:15
+msgid "Staff production"
+msgstr "Production des équipes"
 
-#: templates/core/_pydici_menu.html:62 templates/core/_pydici_menu.html:77
-msgid "Third parties"
-msgstr "Tiers"
+#: templates/core/_pydici_menu.html:95
+msgid "Turnover analysis"
+msgstr "Analyse du CA"
 
-#: templates/core/_pydici_menu.html:65
-msgid "All clients"
-msgstr "Tous les clients"
+#: templates/core/_pydici_menu.html:97
+msgid "Time tracking"
+msgstr "Suivi des temps"
 
-#: templates/core/_pydici_menu.html:66
-msgid "Contact address directory"
-msgstr "Carnet d'adresses"
+#: templates/core/_pydici_menu.html:98
+msgid "All people timesheet"
+msgstr "Feuille de temps globale"
 
-#: templates/core/_pydici_menu.html:67 templates/leads/lead.html:19
-msgid "New client"
-msgstr "Nouveau client"
-
-#: templates/core/_pydici_menu.html:69
-#: templates/staffing/mission_contacts.html:42
-msgid "New mission contact"
-msgstr "Nouveau contact mission"
-
-#: templates/core/_pydici_menu.html:70
-msgid "New business broker"
-msgstr "Nouvel apporteur d'affaires"
-
-#: templates/core/_pydici_menu.html:71
-#: templates/crm/clientcompany_detail.html:391
-msgid "New administrative contact"
-msgstr "Nouveau contact administratif"
-
-#: templates/core/_pydici_menu.html:72
-msgid "New supplier"
-msgstr "Nouveau fournisseur"
-
-#: templates/core/_pydici_menu.html:83
-msgid "Management"
-msgstr "Gestion"
-
-#: templates/core/_pydici_menu.html:86
+#: templates/core/_pydici_menu.html:99
 #: templates/staffing/holidays_planning.html:5
 #: templates/staffing/holidays_planning.html:10
 msgid "Holidays planning"
 msgstr "Planning des congés"
 
-#: templates/core/_pydici_menu.html:87
-msgid "Actionset catalog"
-msgstr "Liste des trains d'action"
-
-#: templates/core/_pydici_menu.html:89
-msgid "On going actions"
-msgstr "Actions en cours"
-
-#: templates/core/_pydici_menu.html:97 templates/core/_pydici_menu.html:139
-#: templates/crm/clientcompany_detail.html:38
-#: templates/leads/lead_detail.html:53 templates/staffing/mission.html:48
-msgid "Billing"
-msgstr "Facturation"
-
-#: templates/core/_pydici_menu.html:98
-msgid "Pre billing"
-msgstr "Pré facturation"
-
 #: templates/core/_pydici_menu.html:100
-msgid "New client bill"
-msgstr "Nouvelle facture client"
-
-#: templates/core/_pydici_menu.html:104
-msgid "New supplier bill"
-msgstr "Nouvelle facture fournisseur"
-
-#: templates/core/_pydici_menu.html:114
-msgid "Reports"
-msgstr "Rapports"
-
-#: templates/core/_pydici_menu.html:117
-msgid "Operationnal reporting"
-msgstr "Rapports opérationnels"
-
-#: templates/core/_pydici_menu.html:118 templates/core/dashboard.html:10
-msgid "Management dashboard"
-msgstr "Tableau de bord de gestion"
-
-#: templates/core/_pydici_menu.html:119 templates/staffing/prod_report.html:17
-msgid "Staff production"
-msgstr "Production des équipes"
-
-#: templates/core/_pydici_menu.html:120
-msgid "Fixed price missions"
-msgstr "Missions au forfait"
-
-#: templates/core/_pydici_menu.html:121
-msgid "Turnover analysis"
-msgstr "Analyse du CA"
-
-#: templates/core/_pydici_menu.html:122 templates/leads/leads_pivotable.html:10
-#: templates/leads/leads_pivotable.html:13
-msgid "Leads pivot table"
-msgstr "Tableau croisé des affaires"
-
-#: templates/core/_pydici_menu.html:124 templates/staffing/pdc_review.html:97
-#: templates/staffing/pdc_review.html:132
-msgid "Rates"
-msgstr "Taux"
-
-#: templates/core/_pydici_menu.html:125
-msgid "Rate objectives report"
-msgstr "Rapport des taux objectifs"
-
-#: templates/core/_pydici_menu.html:126 templates/staffing/rates_report.html:11
-msgid "Production rates and daily rates report"
-msgstr "Rapport des taux de production et taux journalier"
-
-#: templates/core/_pydici_menu.html:127
-msgid "Rate ranking"
-msgstr "Classement des taux"
-
-#: templates/core/_pydici_menu.html:129
-msgid "Time management"
-msgstr "Gestion du temps"
-
-#: templates/core/_pydici_menu.html:130
-msgid "All people timesheet"
-msgstr "Feuille de temps globale"
-
-#: templates/core/_pydici_menu.html:131
 #: templates/staffing/missions_report.html:20
 msgid "Holiday pivot table"
 msgstr "Tableau croisé des congés"
 
-#: templates/core/_pydici_menu.html:132
+#: templates/core/_pydici_menu.html:101
 #: templates/staffing/missions_report.html:14
 #: templates/staffing/missions_report.html:22
 msgid "Non productive missions pivot table"
 msgstr "Tableau croisé des missions non productives"
 
-#: templates/core/_pydici_menu.html:133
+#: templates/core/_pydici_menu.html:102
 #: templates/staffing/lunch_tickets_pivotable.html:10
 #: templates/staffing/lunch_tickets_pivotable.html:13
 msgid "Lunch tickets pivot table"
 msgstr "Tableau croisé des tickets resto"
 
-#: templates/core/_pydici_menu.html:136
+#: templates/core/_pydici_menu.html:104
+msgid "Risk management"
+msgstr "Gestion des risques"
+
+#: templates/core/_pydici_menu.html:105 templates/core/risks.html:10
+msgid "Risks synthesis"
+msgstr "Synthèse des risques"
+
+#: templates/core/_pydici_menu.html:106
+msgid "Fixed price missions"
+msgstr "Missions au forfait"
+
+#: templates/core/_pydici_menu.html:109
+msgid "Financial control"
+msgstr "Contrôle de gestion"
+
+#: templates/core/_pydici_menu.html:117 templates/core/_pydici_menu.html:134
+msgid "Third parties"
+msgstr "Tiers"
+
+#: templates/core/_pydici_menu.html:120 templates/leads/lead.html:19
+msgid "New client"
+msgstr "Nouveau client"
+
+#: templates/core/_pydici_menu.html:122
+#: templates/staffing/mission_contacts.html:42
+msgid "New mission contact"
+msgstr "Nouveau contact mission"
+
+#: templates/core/_pydici_menu.html:123
+msgid "New business broker"
+msgstr "Nouvel apporteur d'affaires"
+
+#: templates/core/_pydici_menu.html:124
+#: templates/crm/clientcompany_detail.html:391
+msgid "New administrative contact"
+msgstr "Nouveau contact administratif"
+
+#: templates/core/_pydici_menu.html:125
+msgid "New supplier"
+msgstr "Nouveau fournisseur"
+
+#: templates/core/_pydici_menu.html:129
+msgid "All clients"
+msgstr "Tous les clients"
+
+#: templates/core/_pydici_menu.html:130
+msgid "Contact address directory"
+msgstr "Carnet d'adresses"
+
+#: templates/core/_pydici_menu.html:147
 #: templates/expense/chargeable_expenses.html:5
 msgid "Chargeable expenses review"
 msgstr "Revue des notes de frais refacturables"
 
-#: templates/core/_pydici_menu.html:137
+#: templates/core/_pydici_menu.html:148
 #: templates/expense/expense_archive.html:6
 #: templates/expense/expense_payments.html:68
 #: templates/expense/expenses.html:52
 msgid "Expenses history"
 msgstr "Historique des notes de frais"
 
-#: templates/core/_pydici_menu.html:142 templates/core/risks.html:10
-msgid "Risks synthesis"
-msgstr "Synthèse des risques"
+#: templates/core/_pydici_menu.html:156
+#: templates/crm/clientcompany_detail.html:38
+#: templates/leads/lead_detail.html:53 templates/staffing/mission.html:48
+msgid "Billing"
+msgstr "Facturation"
 
-#: templates/core/_pydici_menu.html:143 templates/leads/leads_to_bill.html:6
+#: templates/core/_pydici_menu.html:160
+msgid "Pre billing"
+msgstr "Pré facturation"
+
+#: templates/core/_pydici_menu.html:162
+msgid "New client bill"
+msgstr "Nouvelle facture client"
+
+#: templates/core/_pydici_menu.html:166
+msgid "New supplier bill"
+msgstr "Nouvelle facture fournisseur"
+
+#: templates/core/_pydici_menu.html:174 templates/leads/leads_to_bill.html:6
 #: templates/leads/leads_to_bill.html:11
 msgid "Leads still to be billed"
 msgstr "Affaires à facturer"
 
-#: templates/core/_pydici_menu.html:146
-msgid "Extractions"
-msgstr "Extractions"
+#: templates/core/_pydici_menu.html:182 templates/core/dashboard.html:10
+msgid "Management dashboard"
+msgstr "Tableau de bord de gestion"
 
-#: templates/core/_pydici_menu.html:147
-msgid "Active leads (csv)"
-msgstr "Affaires en cours (csv)"
-
-#: templates/core/_pydici_menu.html:148
-msgid "All leads (csv)"
-msgstr "Toutes les affaires (csv)"
-
-#: templates/core/_pydici_menu.html:149
-msgid "Week summary mail (html)"
-msgstr "Courriel de bilan hebdomadaire (html)"
-
-#: templates/core/_pydici_menu.html:150
-msgid "Week summary mail (text)"
-msgstr "Courriel de bilan hebdomadaire (texte)"
-
-#: templates/core/_pydici_menu.html:151
-msgid "Financial control"
-msgstr "Contrôle de gestion"
-
-#: templates/core/_pydici_menu.html:158
+#: templates/core/_pydici_menu.html:187
 msgid "Help"
 msgstr "Aide"
 
-#: templates/core/_pydici_menu.html:161
+#: templates/core/_pydici_menu.html:190
 msgid "Admin console"
 msgstr "Console d'administration"
 
-#: templates/core/_pydici_menu.html:162
+#: templates/core/_pydici_menu.html:191
 msgid "Help page"
 msgstr "Page d'aide"
 
-#: templates/core/_pydici_menu.html:172
+#: templates/core/_pydici_menu.html:201
 msgid "search"
 msgstr "chercher"
 
-#: templates/core/_pydici_menu.html:179 templates/core/_pydici_menu.html:190
+#: templates/core/_pydici_menu.html:208 templates/core/_pydici_menu.html:219
 msgid "all subsidiaries"
 msgstr "toutes filiales"
 
-#: templates/core/dashboard.html:15
+#: templates/core/dashboard.html:14
 msgid "Commercial activity"
 msgstr "Activité commerciale"
 
-#: templates/core/dashboard.html:35 templates/staffing/pdc_review.html:145
-#: templates/staffing/prod_report.html:88
+#: templates/core/dashboard.html:37 templates/staffing/pdc_review.html:145
+#: templates/staffing/prod_report.html:93
 msgid "Production rates and daily rates review"
 msgstr "Suivi du taux de production et des TJM"
 
@@ -3392,15 +3409,15 @@ msgstr "Suivi du taux de production et des TJM"
 msgid "Billing review and done work"
 msgstr "Suivi de la facturation comparé au travail réalisé/engagé"
 
-#: templates/core/dashboard.html:57
+#: templates/core/dashboard.html:55
 msgid "Sales repartition per client"
 msgstr "Répartition du chiffre d'affaire facturé par client"
 
-#: templates/core/dashboard.html:86
+#: templates/core/dashboard.html:81
 msgid "People count"
 msgstr "Nombre de personnes"
 
-#: templates/core/dashboard.html:96
+#: templates/core/dashboard.html:90
 msgid "Billing per subsidiary per year"
 msgstr "Facturation par filiale et par an"
 
@@ -3661,11 +3678,6 @@ msgstr "Contacts clients"
 #: templates/crm/clientcompany_detail.html:37
 msgid "Rates and margin"
 msgstr "Taux et marges"
-
-#: templates/crm/clientcompany_detail.html:39
-#: templates/leads/lead_detail.html:56 templates/staffing/mission.html:45
-msgid "Reporting"
-msgstr "Rapports"
 
 #: templates/crm/clientcompany_detail.html:57
 msgid "leads"
@@ -4051,9 +4063,9 @@ msgstr "Ajouter ou modifier une affaire"
 msgid "Lead detail"
 msgstr "Détail de l'affaire"
 
-#: templates/leads/lead_detail.html:54 templates/staffing/mission.html:47
-msgid "Actions"
-msgstr "Actions"
+#: templates/leads/lead_detail.html:52 templates/people/consultant.html:38
+msgid "Missions"
+msgstr "Missions"
 
 #: templates/leads/lead_detail.html:55 templates/staffing/mission.html:44
 msgid "Documents"
@@ -4250,19 +4262,19 @@ msgstr "Mission par date"
 msgid "Mission by consultant"
 msgstr "Mission par consultant"
 
-#: templates/leads/leads_pivotable.html:22
+#: templates/leads/leads_pivotable.html:24
 msgid "Lead per state"
 msgstr "Affaires par état"
 
-#: templates/leads/leads_pivotable.html:23
+#: templates/leads/leads_pivotable.html:25
 msgid "Lead per price interval"
 msgstr "Affaires par interval de prix"
 
-#: templates/leads/leads_pivotable.html:24
+#: templates/leads/leads_pivotable.html:26
 msgid "Billing per client"
 msgstr "Facturation par client"
 
-#: templates/leads/leads_pivotable.html:25
+#: templates/leads/leads_pivotable.html:27
 msgid "Margin over budget"
 msgstr "Marge au delà du budget"
 
@@ -4360,7 +4372,7 @@ msgid "Change"
 msgstr "Modifier"
 
 #: templates/people/consultant_detail.html:4
-#: templates/people/subcontractor_detail.html:4
+#: templates/people/subcontractor_detail.html:3
 msgid "This consultant does not work anymore for the company"
 msgstr "Ce consultant ne travaille plus pour la société"
 
@@ -4413,7 +4425,7 @@ msgid "Business territory"
 msgstr "Territoire commercial"
 
 #: templates/people/consultant_detail.html:116
-#: templates/people/subcontractor_detail.html:32
+#: templates/people/subcontractor_detail.html:31
 msgid "Current missions"
 msgstr "Missions actuelles"
 
@@ -4422,7 +4434,7 @@ msgid "Current leads as responsible"
 msgstr "Affaires en tant que responsable"
 
 #: templates/people/consultant_detail.html:141
-#: templates/people/subcontractor_detail.html:42
+#: templates/people/subcontractor_detail.html:41
 msgid "Current leads as resource"
 msgstr "Affaires en tant que ressource"
 
@@ -4492,7 +4504,7 @@ msgstr "taux de prod. (%%)"
 msgid "people count"
 msgstr "nombre de personnes"
 
-#: templates/people/subcontractor_detail.html:23
+#: templates/people/subcontractor_detail.html:22
 #: templates/staffing/pdc_review.html:94
 msgid "Clients"
 msgstr "Clients"
@@ -4515,7 +4527,7 @@ msgstr ""
 
 #: templates/staffing/_consultant_prod_tooltip.html:1
 #: templates/staffing/_consultant_prod_tooltip.html:2
-#: templates/staffing/prod_report.html:63
+#: templates/staffing/prod_report.html:70
 msgid "objective"
 msgstr "objectif"
 
@@ -4530,13 +4542,13 @@ msgstr "Feuille de temps globale pour "
 
 #: templates/staffing/all_timesheet.html:8
 #: templates/staffing/holidays_planning.html:13
-#: templates/staffing/pdc_review.html:19 templates/staffing/prod_report.html:16
+#: templates/staffing/pdc_review.html:19 templates/staffing/prod_report.html:19
 msgid "Previous months"
 msgstr "Mois précédents"
 
 #: templates/staffing/all_timesheet.html:10
 #: templates/staffing/holidays_planning.html:16
-#: templates/staffing/pdc_review.html:22 templates/staffing/prod_report.html:18
+#: templates/staffing/pdc_review.html:22 templates/staffing/prod_report.html:24
 msgid "Next months"
 msgstr "Mois suivants"
 
@@ -4910,7 +4922,7 @@ msgid "Click to show past timesheet"
 msgstr "Cliquez pour afficher les feuilles de temps passées"
 
 #: templates/staffing/mission_timesheet.html:181
-#: templates/staffing/prod_report.html:62
+#: templates/staffing/prod_report.html:69
 msgid "done"
 msgstr "réalisé"
 
@@ -5038,6 +5050,10 @@ msgstr "cngs"
 msgid "avai."
 msgstr "disp"
 
+#: templates/staffing/pdc_review.html:97 templates/staffing/pdc_review.html:132
+msgid "Rates"
+msgstr "Taux"
+
 #: templates/staffing/pdc_review.html:106
 #, python-format
 msgid "%(manager)s staff"
@@ -5082,29 +5098,38 @@ msgstr "Tableau croisé du chiffre d'affaire"
 msgid "Based on timesheet activity"
 msgstr "Calculé à partir des feuilles de temps"
 
-#: templates/staffing/turnover_pivotable.html:27
+#: templates/staffing/turnover_pivotable.html:26
 msgid "Turnover per month (graphique)"
 msgstr "CA par mois (graphique)"
 
-#: templates/staffing/turnover_pivotable.html:28
+#: templates/staffing/turnover_pivotable.html:27
 msgid "Turnover per month (tableau)"
 msgstr "CA par mois (tableau)"
 
-#: templates/staffing/turnover_pivotable.html:29
+#: templates/staffing/turnover_pivotable.html:28
 msgid "Turnover per broker"
 msgstr "CA par apporteur"
 
-#: templates/staffing/turnover_pivotable.html:30
+#: templates/staffing/turnover_pivotable.html:29
 msgid "Turnover per client company"
 msgstr "CA par société client"
 
-#: templates/staffing/turnover_pivotable.html:31
+#: templates/staffing/turnover_pivotable.html:30
 msgid "Turnover for top client company"
 msgstr "CA par top société client"
 
-#: templates/staffing/turnover_pivotable.html:32
+#: templates/staffing/turnover_pivotable.html:31
 msgid "Turnover per billing mode"
 msgstr "CA par mode de facturation"
+
+#~ msgid "Management"
+#~ msgstr "Gestion"
+
+#~ msgid "Reports"
+#~ msgstr "Rapports"
+
+#~ msgid "Operationnal reporting"
+#~ msgstr "Rapports opérationnels"
 
 #~ msgid "Print"
 #~ msgstr "Imprimer"
