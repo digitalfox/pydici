@@ -11,17 +11,26 @@
 
 {% block content %}
 
-	<h1>
-    <ul class="pager" style="text-align:left">
-    	<li class="pydici-tooltip" title="{% trans 'Previous months' %}"><a href="{% url 'staffing:prod_report' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-    	{% trans "Staff production" %}
-    	<li class="pydici-tooltip" title="{% trans 'Next months' %}" ><a href="{% url 'staffing:prod_report' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-    </ul>
-	</h1>
-
+<div class="my-3 d-flex flex-row">
+    <h2 class="mx-3 align-self-center my-0">{% trans "Staff production" %}</h2>
+    <nav class="mx-3">
+        <ul class="pagination my-0">
+            <li class="page-item">
+                <a class ="page-link" title="{% trans 'Previous months' %}" href="{% url 'staffing:prod_report' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/">
+                    <i class="bi bi-arrow-left-circle"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" title="{% trans 'Next months' %}" <a href="{% url 'staffing:prod_report' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/">
+                    <i class="bi bi-arrow-right-circle"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
 <!-- buttons bar -->
-<div class="row">
+<div class="row mb-2">
     <div class="col-lg-12">
         <!-- Scope  button -->
         <div class="btn-group">
@@ -42,9 +51,7 @@
     </div>
 </div>
 
-<div class="row"><br/></div>
-
-<div class="row">
+<div class="row mb-3">
     <div class="col-md-12">
     <div class="table-responsive">
 
@@ -81,11 +88,9 @@
     </div>
 </div>
 
-<div class="row"><br/></div>
-
 <div class="row">
     <div class="col-lg-12">
-        <h1>{% trans "Production rates and daily rates review" %}</h1>
+        <h2>{% trans "Production rates and daily rates review" %}</h2>
         
         <div id="graph_timesheet_rates_bar_content"></div>
         <script type="text/javascript">

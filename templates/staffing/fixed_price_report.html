@@ -31,11 +31,11 @@
                             <td>{{ mission.mission_id }}</td>
                             <td>{{ mission.subsidiary }}</td>
                             <td>{% with consultant=mission.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}</td>
-                            <td style="text-align:right">{{ mission.price|floatformat:-1 }}</td>
-                            <td style="text-align:right">{{ done }}</td>
-                            <td style="text-align:right;{% if current_margin < 0 %}background-color:#E76F6F{% endif %}">{{ current_remaining }}</td>
-                            <td style="text-align:right;{% if current_margin < 0 %}background-color:#E76F6F{% endif %}">{{ target_remaining }}</td>
-                            <td style="text-align:right;{% if target_margin < 0 %}background-color:#E76F6F{% endif %}">{{ margin }}</td>
+                            <td class="text-end">{{ mission.price|floatformat:-1 }}</td>
+                            <td class="text-end">{{ done }}</td>
+                            <td class="text-end" style="{% if current_remaining < 0 %}background-color:#E76F6F{% endif %}">{{ current_remaining }}</td>
+                            <td class="text-end" style="{% if target_remaining < 0 %}background-color:#E76F6F{% endif %}">{{ target_remaining }}</td>
+                            <td class="text-end" style="{% if margin < 0 %}background-color:#E76F6F{% endif %}">{{ margin }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

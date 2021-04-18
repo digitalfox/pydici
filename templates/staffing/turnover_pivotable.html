@@ -14,16 +14,15 @@
         <p>{% trans "Based on timesheet activity" %}</p>
 
         <div class="row">
-            <div id="date-selector" class="btn-group" role="group">
+            <div id="date-selector" class="btn-group col-lg-8 col-12" role="group">
                 {% for year in years %}
                     <a class="btn btn-primary {% ifequal year selected_year %}active{% endifequal %}" href="{% url 'staffing:turnover_pivotable_year' year %}?{{scope_current_filter}}">{{ year }}</a>
                 {% endfor %}
                     <a class="btn btn-primary {% ifequal 'all' selected_year %}active{% endifequal %}" href="{% url 'staffing:turnover_pivotable_all' %}?{{scope_current_filter}}">{% trans "All" %}</a>
             </div>
         </div>
-        <div class="row">&nbsp;</div>
-        <div class="row">
-            <div id="type-selector" class="btn-group" role="group">
+        <div class="row mt-2">
+            <div id="type-selector" class="btn-group col-lg-8 col-12" role="group">
                 <button class="btn btn-primary active" onclick="turnover_per_month_graph();">{% trans "Turnover per month (graphique)" %}</button>
                 <button class="btn btn-primary" onclick="turnover_per_month_table();">{% trans "Turnover per month (tableau)" %}</button>
                 <button class="btn btn-primary" onclick="turnover_per_broker();">{% trans "Turnover per broker" %}</button>
@@ -33,7 +32,7 @@
             </div>
         </div>
 
-        <div id="pivotable-output" style="margin-top: 10px;"></div>
+        <div id="pivotable-output" class="mt-2"></div>
 
         {% with output as "pivotable-output" %}
             {% include "core/_pivotable_body.html" %}
@@ -97,5 +96,4 @@
             turnover_per_month_graph();
 
         </script>
-
 {% endblock %}
