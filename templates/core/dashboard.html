@@ -10,52 +10,50 @@
 {% block title %}{% trans "Management dashboard" %}{% endblock %}
 
 {% block content %}
-<div class="content-large">
 
 <center><h1>{% trans "Commercial activity" %}</h1></center>
 <div id="graph_bar_jqp"></div>
 <script type="text/javascript">
 $('#graph_bar_jqp').load('{% url 'leads:graph_bar_jqp' %}?{{scope_current_filter}}')
 </script>
-<br/>
-<div id="graph_leads_activity_content" class="col-lg-12"></div>
+
+
+<div id="graph_leads_activity_content" class="col-lg-12 mt-3"></div>
 <script type="text/javascript">
     $('#graph_leads_activity_content').load('{% url 'leads:graph_leads_activity' %}?{{ scope_current_filter }}')
 </script>
-<br/>&nbsp;<br/>
-<div id="graph_leads_pipe_content" class="col-lg-6"></div>
-<script type="text/javascript">
-    $('#graph_leads_pipe_content').load('{% url 'leads:graph_leads_pipe' %}?{{ scope_current_filter }}')
-</script>
-<div id="graph_won_rate_content" class="col-lg-6"></div>
-<script type="text/javascript">
-    $('#graph_won_rate_content').load('{% url 'leads:graph_leads_won_rate' %}?{{ scope_current_filter }}')
-</script>
 
-<center><h1>{% trans "Production rates and daily rates review" %}</h1></center>
+<div class="row mt-3">
+    <div id="graph_leads_pipe_content" class="col-lg-6"></div>
+    <script type="text/javascript">
+        $('#graph_leads_pipe_content').load('{% url 'leads:graph_leads_pipe' %}?{{ scope_current_filter }}')
+    </script>
+    <div id="graph_won_rate_content" class="col-lg-6"></div>
+    <script type="text/javascript">
+        $('#graph_won_rate_content').load('{% url 'leads:graph_leads_won_rate' %}?{{ scope_current_filter }}')
+    </script>
+</div>
+
+<center><h1 class="mt-3">{% trans "Production rates and daily rates review" %}</h1></center>
     <div id="graph_timesheet_rates_bar_content"></div>
     <script type="text/javascript">
     $('#graph_timesheet_rates_bar_content').load('{% url 'staffing:graph_timesheet_rates_bar' %}?{{scope_current_filter}}')
     </script>
-    <br/>
-    <div id="graph_profile_rates_content"></div>
+
+    <div id="graph_profile_rates_content" class="mt-3"></div>
     <script type="text/javascript">
     $('#graph_profile_rates_content').load('{% url 'staffing:graph_profile_rates' %}?{{scope_current_filter}}')
     </script>
 
-<br/>
-
-<center><h1>{% trans "Billing review and done work" %}</h1></center>
+<center><h1 class="mt-3">{% trans "Billing review and done work" %}</h1></center>
     <div id="graph_billing_jqp_content"></div>
     <script type="text/javascript">
     $('#graph_billing_jqp_content').load('{% url 'billing:graph_billing_jqp' %}?{{scope_current_filter}}')
     </script>
 
-<br/>
-<div style="clear:both;"></div>
 
-<center><h1>{% trans "Sales repartition per client" %}</h1></center>
-<div class="row">
+<center><h1 class="mt-3">{% trans "Sales repartition per client" %}</h1></center>
+<div class="row mt-3">
     <div id="graph_company_sales" class="col-md-6"></div>
     <div id="graph_company_lastyear_sales" class="col-md-6"></div>
 </div>
@@ -68,7 +66,7 @@ $('#graph_bar_jqp').load('{% url 'leads:graph_bar_jqp' %}?{{scope_current_filter
         $('#graph_company_lastyear_sales').load('{% url 'crm:graph_company_lastyear_sales' %}')
     {% endif %}
 </script>
-<div class="row">
+<div class="row mt-3">
     {% if subsidiaries.count > 1 and not current_subsidiary %}
         {% for subsidiary in subsidiaries %}
             <div id="graph_company_lastyear_sales_{{ subsidiary.id }}" class="col-md-4"></div>
@@ -79,11 +77,8 @@ $('#graph_bar_jqp').load('{% url 'leads:graph_bar_jqp' %}?{{scope_current_filter
     {% endif %}
 </div>
 
-<div style="clear:both;"></div>
 
-<br/>
-
-<center><h1>{% trans "People count" %}</h1></center>
+<center><h1 class="mt-3">{% trans "People count" %}</h1></center>
 <div id="people_count_graph_content" class="col-lg-12"></div>
 <script type="text/javascript">
 $(document).ready(function() {
@@ -91,17 +86,13 @@ $(document).ready(function() {
  });
 </script>
 
-<br/>
 
-    <center><h1>{% trans "Billing per subsidiary per year" %}</h1></center>
-    <div id="yearly_billing_graph_content" class="col-lg-12"></div>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        $('#yearly_billing_graph_content').load("{% url 'billing:graph_yearly_billing' %}?{{scope_current_filter}}")
-     });
-    </script>
+<center><h1 class="mt-3">{% trans "Billing per subsidiary per year" %}</h1></center>
+<div id="yearly_billing_graph_content" class="col-lg-12"></div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#yearly_billing_graph_content').load("{% url 'billing:graph_yearly_billing' %}?{{scope_current_filter}}")
+ });
+</script>
 
-
-
-</div>
 {% endblock %}
