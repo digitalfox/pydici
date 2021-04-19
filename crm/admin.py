@@ -29,7 +29,6 @@ class CompanyAdmin(ReturnToAppAdmin):
     search_fields = ("name", "code", "businessOwner__name")
     list_filter = ("businessOwner",)
     ordering = ("name",)
-    form = CompanyForm
 
 
 class ContactAdmin(ReturnToAppAdmin):
@@ -37,21 +36,18 @@ class ContactAdmin(ReturnToAppAdmin):
     ordering = ("name",)
     search_fields = ["name", "email", "function", "client__organisation__company__name",
                      "client__organisation__name"]
-    form = ContactForm
 
 
 class BusinessBrokerAdmin(ReturnToAppAdmin):
     list_display = ("company", "contact")
     ordering = ("company", "contact")
     search_fields = ["company__name", "contact__name"]
-    form = BusinessBrokerForm
 
 
 class SupplierAdmin(ReturnToAppAdmin):
     list_display = ("company", "contact")
     ordering = ("company", "contact")
     search_fields = ["company__name", "contact__name"]
-    form = SupplierForm
 
 
 class AdministrativeFunctionAdmin(ReturnToAppAdmin):
@@ -62,14 +58,12 @@ class AdministrativeContactAdmin(ReturnToAppAdmin):
     list_display = ("company", "function", "contact", "phone")
     list_display_links = ("company", "function", "contact")
     list_filter = ["function", ]
-    form = AdministrativeContactForm
 
 
 class MissionContactAdmin(ReturnToAppAdmin):
     list_display = ("company", "contact")
     ordering = ("company", "contact")
     search_fields = ["company__name", "contact__name"]
-    form = MissionContactForm
 
 
 class ClientOrganisationAdmin(ReturnToAppAdmin):
@@ -78,7 +72,6 @@ class ClientOrganisationAdmin(ReturnToAppAdmin):
     list_display_links = ("company", "name",)
     ordering = ("name",)
     search_fields = ("name",)
-    form = ClientOrganisationForm
 
 
 class ClientOrganisationAdminInline(admin.TabularInline):
@@ -90,7 +83,6 @@ class ClientAdmin(ReturnToAppAdmin):
     ordering = ("organisation",)
     search_fields = ("organisation__company__name", "organisation__name", "contact__name")
     list_filter = ("expectations", "alignment", "active")
-    form = ClientForm
 
 
 admin.site.register(Subsidiary, SubsidiaryAdmin)

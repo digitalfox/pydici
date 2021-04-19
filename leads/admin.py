@@ -36,10 +36,10 @@ class LeadAdmin(ReturnToAppAdmin):
                      "client__organisation__name",
                      "staffing__trigramme", "staffing__name",
                      "deal_id", "client_deal_id"]
-    form = LeadForm
 
     def save_model(self, request, obj, form, change):
         form.save_m2m()  # Save many to many relations
         postSaveLead(request, obj, [])
+
 
 admin.site.register(Lead, LeadAdmin)

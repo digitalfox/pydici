@@ -24,7 +24,6 @@ class BillAdmin(ReturnToAppAdmin):
 
 
 class ClientBillAdmin(BillAdmin):
-    form = ClientBillForm
     fieldsets = [
                  (_("Description"), {"fields": ["lead", "bill_id", "bill_file"]}),
                  (_("Amounts"), {"fields": ["amount", "vat", "amount_with_vat", ]}),
@@ -35,7 +34,6 @@ class ClientBillAdmin(BillAdmin):
 
 
 class SupplierBillAdmin(BillAdmin):
-    form = SupplierBillForm
     search_fields = BillAdmin.search_fields + ["supplier__contact__name", "supplier__company__name"]
     list_display = list(BillAdmin.list_display)  # Copy list before changing it
     list_display.insert(2, "supplier")

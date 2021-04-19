@@ -1,54 +1,9 @@
 {% extends "admin/base.html" %}
-{% load i18n %}
 
-{% block title %}{{ title }} | {% trans 'Django site admin' %}{% endblock %}
-
-
-{% block stylesheet %}{% endblock %}
-
-{% block extrastyle %}
-<link href="{{ MEDIA_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="{{ MEDIA_URL }}css/iconic.css" rel="stylesheet">
-<link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css" rel="stylesheet">
-<link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
-<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" type="text/css" media="screen" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" type="text/css" media="screen" rel="stylesheet">
-{% endblock %}
-
-{% block extrahead %}
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.js"></script>
-{% ifequal LANGUAGE_CODE "fr-fr" %}
-    <!--<script type="text/javascript" src="{{ MEDIA_URL }}js/select2_locale_fr.js"></script>-->
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap-datepicker.fr.js"></script>
-{% endifequal %}
-{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block branding %}
-{% include "core/_pydici_menu.html" %}
+<h1><a href="{% url 'core:index' %}">Pydici</a></h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}
-
-{% block messages %}
-    {% include "core/_messages.html" %}
-{% endblock %}
-
-
-{% block footer %}
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
-        <script type="text/javascript">
-            $(document).ready(function() {
-                // Disable django admin tool-bar and breadcrumbs
-                $('#user-tools').hide();
-                $('.breadcrumbs').hide();
-                $('.django-select2').djangoSelect2({ "theme": "bootstrap-5",  "width": "80em"});
-                });
-        </script>
-
-{% endblock %}

@@ -31,7 +31,6 @@ class ConsultantAdmin(ReturnToAppAdmin):
         (None, {"fields": ["name", "trigramme", "active", "productive", "company", "profil", "manager", "staffing_manager", "telegram_alias"]}),
         (_("For subcontractors"), {"fields": ["subcontractor", "subcontractor_company"]}),
         ]
-    form = ConsultantForm
 
 
 class ConsultantProfileAdmin(ReturnToAppAdmin):

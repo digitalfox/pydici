@@ -26,12 +26,8 @@ class MissionAdmin(ReturnToAppAdmin):
     ordering = ("lead", "description")
     date_hierarchy = "update_date"
     list_filter = ["nature", "probability", "subsidiary", "active", "archived_date"]
-
     actions = None
-
     fields = ("lead", "description", "nature", "probability", "deal_id", "subsidiary", "analytic_code", "active")
-
-    form = MissionAdminForm
 
 
 class HolidayAdmin(admin.ModelAdmin):
@@ -45,7 +41,6 @@ class FinancialConditionAdmin(ReturnToAppAdmin):
     search_fileds = ("mission__lead__name", "mission__description", "mission__deal_id", "mission__lead__client__organisation__company__name",
                      "mission__lead__client__contact__name", "consultant__name", "consultant__trigramme")
     actions = None
-    form = FinancialConditionAdminForm
 
 
 admin.site.register(AnalyticCode, AnalyticCodeAdmin)
