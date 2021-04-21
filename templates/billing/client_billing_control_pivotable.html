@@ -11,10 +11,10 @@
 
 {% block content %}
 
-<h3>{% trans "Client billing control pivot table" %}</h3>
+<h2 class="mt-2">{% trans "Client billing control pivot table" %}</h2>
 <p>{% trans "Based on timesheet activity and clients bills" %}</p>
 
-<div class="row col-md-12">
+<div class="row col-12 col-lg-8">
     <div id="type-selector" class="btn-group" role="group">
         <button class="btn btn-primary active" onclick="balance_per_month_table();">{% trans "Balance per month (table)" %}</button>
         <button class="btn btn-primary" onclick="balance_per_month_bargraph();">{% trans "Balance per month (bargraph)" %}</button>

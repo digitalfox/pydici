@@ -44,9 +44,10 @@
     <div id="tab-timesheet" class="tab-pane fade" role="tabpanel"></div>
     <div id="tab-staffing" class="tab-pane fade" role="tabpanel"></div>
     <div id="tab-missions" class="tab-pane fade" role="tabpanel">
-        <div class="py-2">
+        <div class="row py-2">
             <h2>{% trans "Consultant's missions" %}</h2>
-            <table id="consultant_missions" class="table table-hover table-striped table-sm" cellspacing="0" width="100%">
+            <div class="col-12">
+            <table id="consultant_missions" class="pydici-tables2 table table-hover table-striped table-sm" style="width:100%">
                 <thead>
                     <tr><th>{% trans "Name" %}</th>
                         <th>{% trans "Mission id" %}</th>
@@ -65,6 +66,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% with "consultant_missions" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
         </div>
     </div>

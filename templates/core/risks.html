@@ -10,7 +10,7 @@
 {% block title %}{% trans "Risks synthesis" %}{% endblock %}
 
 {% block content %}
-        <h2>{% trans "Risks synthesis " %}</h2>
+        <h2 class="mt-2">{% trans "Risks synthesis " %}</h2>
 
         <div id="type-selector" class="btn-group" role="group">
             <button class="btn btn-primary active" onclick="array();">{% trans "Risks per client (array)" %}</button>
@@ -62,6 +62,4 @@
             // default
             array();
         </script>
-
-
 {% endblock %}

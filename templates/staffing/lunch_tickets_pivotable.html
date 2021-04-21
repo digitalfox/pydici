@@ -13,7 +13,7 @@
         <h2>{% trans "Lunch tickets pivot table" %}</h2>
 
         <div class="row">
-            <div id="type-selector" class="btn-group" role="group">
+            <div id="type-selector" class="btn-group col-lg-8 col-12" role="group">
                 <button class="btn btn-primary active" onclick="deserved_consultant_tickets();">{% trans "Deserved tickets per consultant" %}</button>
                 <button class="btn btn-primary" onclick="deserved_subsidiary_tickets();">{% trans "Deserved tickets per subsidiary" %}</button>
                 <button class="btn btn-primary" onclick="days_without_tickets();">{% trans "days without tickets" %}</button>
@@ -65,10 +65,8 @@
                 drawPivot(data, rows, cols, "Table", '{% trans "Integer Sum" %}', ["{% trans 'days without tickets previous month' %}"]);
             }
 
-
             // default
             deserved_consultant_tickets();
 
         </script>
-
 {% endblock %}

@@ -5,11 +5,24 @@
 
 {% block content %}
 
-<h2><a href="{% url 'staffing:all_timesheet' year=previous_date|date:'Y' month=previous_date|date:'m' %}" title="{% trans 'Previous months' %}"><img src="{{ MEDIA_URL }}pydici/fg.png" border=0/></a>
-{% trans "All people timesheet for " %} {{ month|date:"F Y"}}
-<a href="{% url 'staffing:all_timesheet' year=next_date|date:'Y' month=next_date|date:'m' %}" title="{% trans 'Next months' %}"><img src="{{ MEDIA_URL }}pydici/fd.png" border=0/></a></h2>
+<div class="my-3 d-flex flex-row">
+    <h2 class="mx-3 align-self-center my-0">{% trans "All people timesheet for " %} {{ month|date:"F Y"}}</h2>
+    <nav class="mx-3">
+        <ul class="pagination my-0">
+            <li class="page-item">
+                <a class ="page-link" title="{% trans 'Previous months' %}" href="{% url 'staffing:all_timesheet' year=previous_date|date:'Y' month=previous_date|date:'m' %}">
+                    <i class="bi bi-arrow-left-circle"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" title="{% trans 'Next months' %}" href="{% url 'staffing:all_timesheet' year=next_date|date:'Y' month=next_date|date:'m' %}">
+                    <i class="bi bi-arrow-right-circle"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
-<div class="row"><br/></div>
 
 <div class="table-responsive table-pydici-all-timesheets">
 {% if charges %}
