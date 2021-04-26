@@ -316,6 +316,9 @@ class MissionForm(PydiciCrispyModelForm):
     def clean(self):
         if self.cleaned_data["management_mode"] == "ELASTIC" and self.cleaned_data["billing_mode"] == "FIXED_PRICE":
             raise ValidationError(_("Fixed price mission cannot be elastic by definition"))
+        if self.cleaned_data["nature"] == "NONPROD" and not self.cleaned_data["analytic_code"]:
+            raise ValidationError(_("Analytics code must be defined for non production missions"))
+        return self.cleaned_data
 
     class Meta:
         model = Mission
