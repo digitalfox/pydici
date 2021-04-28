@@ -266,7 +266,7 @@ def financial_control(request, start_date=None, end_date=None):
         missionRow.append(mission.analytic_code.description if mission.analytic_code else "")
         missionRow.append(mission.billing_mode or "")
         missionRow.append(mission.price or 0)
-        missionRow.extend(mission.done_work())
+        missionRow.extend(mission.done_work_period(None, end_date))
         last_timesheet = Timesheet.objects.filter(mission=mission).aggregate(Max("working_date"))["working_date__max"]
         missionRow.append(last_timesheet.isoformat() if last_timesheet else "")
         return missionRow
