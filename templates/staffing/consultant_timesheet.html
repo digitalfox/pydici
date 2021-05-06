@@ -3,28 +3,44 @@
 
 <div id="pydici-ajax-form-content-consultant-timesheet">
 
-    <div class="row py-2">
+    <div class="my-3 d-flex flex-row">
     {% if week %}
-        <div class="col-1 align-self-center text-end" title="{% trans 'Previous week' %}">
-            <i class="bi bi-arrow-left-circle timesheet-nav-btn {% if not previous_date_enabled %} timesheet-nav-btn-disabled{% endif %}" id="previous-week"></i>
-        </div>
-        <div class="col-6 col-lg-4 col-xl-3 align-self-center text-center">{% trans "Timesheet" %} {{ month|date:"F Y"}} - {% trans "week " %} {{ week }}</div>
-        <div class="col-1 align-self-center text-start" title="{% trans 'Next week' %}">
-            <i class="bi bi-arrow-right-circle timesheet-nav-btn" id="next-week"></i>
-        </div>
+        <h4 class="col-6 col-lg-4 col-xl-3 align-self-center my-0">{% trans "Timesheet" %} {{ month|date:"F Y"}} - {% trans "week " %} {{ week }}</h4>
+        <nav class="col-3 align-self-center">
+        <ul class="pagination my-0">
+            <li class="page-item">
+                <a id="previous-week" class ="page-link" title="{% trans 'Previous week' %}" href="#">
+                    <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a id="next-week" class="page-link" title="{% trans 'Next week' %}" href="#">
+                    <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
+                </a>
+            </li>
+        </ul>
+        </nav>
     {% else %}
-        <div class="col-1 align-self-center text-end" title="{% trans 'Previous month' %}">
-            <i class="bi bi-arrow-left-circle timesheet-nav-btn{% if not previous_date_enabled %} timesheet-nav-btn-disabled{% endif %}" id="previous-month"></i>
-        </div>
-        <div class="col-6 col-lg-4 col-xl-2 align-self-center text-center">{% trans "Timesheet" %} {{ month|date:"F Y"}}</div>
-        <div class="col-1 align-self-center text-start" title="{% trans 'Next month' %}">
-            <i class="bi bi-arrow-right-circle timesheet-nav-btn" id="next-month"></i>
-        </div>
+        <h4 class="col-6 col-lg-4 col-xl-2 align-self-center my-0">{% trans "Timesheet" %} {{ month|date:"F Y"}}</h4>
+        <nav class="col-3 align-self-center">
+        <ul class="pagination my-0">
+            <li class="page-item">
+                <a id="previous-month" class ="page-link" title="{% trans 'Previous month' %}" href="#">
+                    <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a id="next-month" class="page-link" title="{% trans 'Next month' %}" href="#">
+                    <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
+                </a>
+            </li>
+        </ul>
+        </nav>
     {% endif %}
     {% if week %}
-        <div class="col-4"><button id="switch-month" class="btn btn-primary">{% trans "Switch to month mode" %}</button></div>
+        <div class="col-3 align-self-center my-0"><button id="switch-month" class="btn btn-primary">{% trans "Switch to month mode" %}</button></div>
     {% else %}
-        <div class="col-4"><button id="switch-week" class="btn btn-primary">{% trans "Switch to week mode" %}</button></div>
+        <div class="col-3 align-self-center my-0"><button id="switch-week" class="btn btn-primary align-self-center my-0">{% trans "Switch to week mode" %}</button></div>
     {% endif %}
     </div>
 
