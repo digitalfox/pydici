@@ -8,14 +8,14 @@
 <ul class="more-items icon-list">
 {% for action in actions %}
     <div id="action_{{ action.id|unlocalize }}">
-        <li class="bi bi-check2-square"><a href="#" data-toggle="modal" data-target="#action_tooltip_{{ action.id|unlocalize }}">{{ action.short_name }}</a></li>
+        <li class="bi bi-check2-square"><a href="#" data-bs-toggle="modal" data-bs-target="#action_tooltip_{{ action.id|unlocalize }}">{{ action.short_name }}</a></li>
     </div>
     <div id="action_tooltip_{{ action.id|unlocalize }}" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 class="modal-title" id="myModalLabel"><strong>{{ action.action }}</strong></h4>
+                        <h4 class="modal-title" id="myModalLabel">{{ action.action }}</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         {% if action.action.description %}<p><em>{{ action.action.description|urlize }}</em></p><br/>{% endif %}
