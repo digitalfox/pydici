@@ -540,6 +540,13 @@ body {
     padding: .25rem 1rem;
 }
 
+td a:visited, td a:link, td a:active {
+    text-decoration: none;
+}
+td a:hover {
+    text-decoration: underline;
+}
+
 /* override bootstrap datepicker default */
 .datepicker {
     padding: .375rem .75rem; // bootstrap default
