@@ -34,8 +34,8 @@
     <div class="col-lg-12">
         <!-- Scope  button -->
         <div class="btn-group">
-          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{ scope }} <span class="caret"></span>
+          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ scope }}
           </button>
           <ul class="dropdown-menu">
               {% for scope_type, scope_filter, scope_label in scopes %}
@@ -44,7 +44,7 @@
                         <li><hr class="dropdown-divider"></li>
                     {% endif %}
                 {% endifchanged %}
-                <li><a href="{% url 'staffing:prod_report' year=end_date|date:'Y' month=end_date|date:'m' %}/?{{scope_filter}}">{{ scope_label }}</a></li>
+                <li><a class="dropdown-item" href="{% url 'staffing:prod_report' year=end_date|date:'Y' month=end_date|date:'m' %}/?{{scope_filter}}">{{ scope_label }}</a></li>
               {% endfor %}
           </ul>
         </div>
