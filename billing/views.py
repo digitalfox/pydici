@@ -331,6 +331,7 @@ def client_bill(request, bill_id=None):
                 missions = lead.mission_set.all()  # take all missions
             if request.GET.get("mission"):
                 missions = [Mission.objects.get(id=request.GET.get("mission"))]
+                print(request.GET)
             if missions:
                 bill = ClientBill.objects.create(lead=missions[0].lead)
                 bill.save()
