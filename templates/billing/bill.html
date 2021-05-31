@@ -133,10 +133,10 @@
     {% if bill.client_comment %}
         <div class="alert alert-info" style="display: inline-block"><p>{{ bill.client_comment}}</p></div>
     {% endif %}
-    {% if bill.amount_with_vat > 0 %}
-        <p><small>{{  bill.lead.subsidiary.payment_description|linebreaksbr }}</small></p>
-        <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
-    {% endif %}
+
+    <p><small>{{  bill.lead.subsidiary.payment_description|linebreaksbr }}</small></p>
+    <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
+
 </div>
 
 {% if bill.billexpense_set.count %}
