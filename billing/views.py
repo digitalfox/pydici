@@ -331,7 +331,6 @@ def client_bill(request, bill_id=None):
                 missions = lead.mission_set.all()  # take all missions
             if request.GET.get("mission"):
                 missions = [Mission.objects.get(id=request.GET.get("mission"))]
-                print(request.GET)
             if missions:
                 bill = ClientBill.objects.create(lead=missions[0].lead)
                 bill.save()
@@ -381,7 +380,6 @@ def clientbill_delete(request, bill_id):
             messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
             redirect_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
     except Exception as e:
-        print(e)
         messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
 
     return HttpResponseRedirect(redirect_url)
@@ -435,7 +433,6 @@ def supplierbill_delete(request, bill_id):
             messages.add_message(request, messages.WARNING, _("Can't remove a bill in state %s. You may cancel it" % bill.get_state_display()))
             redirect_url = reverse_lazy("billing:supplier_bill", args=[bill.id, ])
     except Exception as e:
-        print(e)
         messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
 
     return HttpResponseRedirect(redirect_url)

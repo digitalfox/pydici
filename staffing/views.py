@@ -1115,7 +1115,7 @@ def all_timesheet(request, year=None, month=None):
         # Simple consultant list
         data = list(consultants)
     else:
-        data = [mark_safe("<a href='%s?year=%s;month=%s;#tab-timesheet' class='pydici-tooltip' title='%s'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme]),
+        data = [mark_safe("<a href='%s?year=%s&month=%s#tab-timesheet' class='pydici-tooltip' title='%s'>%s</a>" % (reverse("people:consultant_home", args=[consultant.trigramme]),
                                                                                    month.year,
                                                                                    month.month,
                                                                                    escape(consultant.name),

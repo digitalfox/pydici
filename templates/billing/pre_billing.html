@@ -81,7 +81,7 @@
                 </table>
             </div>
             <div class="col-lg-5 col-md-4 col-6">
-                <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
+                <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }}&start_date={{start_date|date:'Ym'}}&end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this mission" %}</a>
             </div>
         </div>
 
@@ -89,7 +89,7 @@
      {% ifequal lead.mission_set.count 1 %}
         <h4></h4>
      {% else %}
-        <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }};start_date={{start_date|date:'Ym'}};end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
+        <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }}&start_date={{start_date|date:'Ym'}}&end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
         <p class="mt-2"><strong>{% trans "Total:" %} {{ lead_data.0|floatformat:-2}} €</strong></p>
      {% endifequal %}
      <p><strong>{% trans "Still to be billed" %}: {{ lead.still_to_be_billed|floatformat:-2 }} €</strong></p>
@@ -107,8 +107,8 @@
     <p><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }} : </a>
         {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
     </p>
-    <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.3" target="_blank">{% trans "Bill 30% for this mission" %}</a>
-    <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }};proportion=0.7" target="_blank">{% trans "Bill 70% for this mission" %}</a>
+    <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }}&proportion=0.3" target="_blank">{% trans "Bill 30% for this mission" %}</a>
+    <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }}&proportion=0.7" target="_blank">{% trans "Bill 70% for this mission" %}</a>
     <hr/>
 {% endfor %}
 

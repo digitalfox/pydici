@@ -63,7 +63,7 @@ def warn_for_imcomplete_timesheet(warn_surbooking=False, days=None, month=None):
         missions = consultant.timesheet_missions(month=currentMonth)
         timesheet_data, timesheet_total, warning = gatherTimesheetData(consultant, missions, currentMonth)
         url = get_parameter("HOST") + reverse("people:consultant_home", args=[consultant.trigramme])
-        url += "?year=%s;month=%s" % (currentMonth.year, currentMonth.month)
+        url += "?year=%s&month=%s" % (currentMonth.year, currentMonth.month)
         url += "#tab-timesheet"
 
         # Truncate if day parameter was given

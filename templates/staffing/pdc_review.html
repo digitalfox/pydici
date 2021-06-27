@@ -17,10 +17,10 @@
     <nav class="mx-3">
     <ul class="pagination my-0">
         <li class="page-item pydici-tooltip" title="{% trans 'Previous months' %}">
-            <a class ="page-link" href="{% url 'staffing:pdcreview' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}"><i class="bi bi-arrow-left-circle"></i></a>
+            <a class ="page-link" href="{% url 'staffing:pdcreview' year=previous_slice_date|date:'Y' month=previous_slice_date|date:'m' %}/?groupby={{groupby}}&projection={{projection}}"><i class="bi bi-arrow-left-circle"></i></a>
         </li>
         <li class="page-item pydici-tooltip" title="{% trans 'Next months' %}">
-            <a class="page-link " href="{% url 'staffing:pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}};projection={{projection}}"><i class="bi bi-arrow-right-circle"></i></a>
+            <a class="page-link " href="{% url 'staffing:pdcreview' year=next_slice_date|date:'Y' month=next_slice_date|date:'m' %}/?groupby={{groupby}}&projection={{projection}}"><i class="bi bi-arrow-right-circle"></i></a>
         </li>
     </ul>
     </nav>
@@ -37,7 +37,7 @@
           </button>
           <ul class="dropdown-menu">
               {% for projection_key, projection_data in projections.items %}
-                <li><a class="dropdown-item" href="{% url 'staffing:pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}};projection={{projection_key}};{{scope_current_filter}}" title="{{projection_data|last}}">{{ projection_data|first }}</a></li>
+                <li><a class="dropdown-item" href="{% url 'staffing:pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}}&projection={{projection_key}}&{{scope_current_filter}}" title="{{projection_data|last}}">{{ projection_data|first }}</a></li>
               {% endfor %}
           </ul>
         </div>
@@ -48,7 +48,7 @@
           </button>
           <ul class="dropdown-menu">
               {% for group_key, group_label in groups.items %}
-                <li><a class="dropdown-item" href="{% url 'staffing:pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{group_key}};projection={{projection}};{{scope_current_filter}}">{{ group_label }}</a></li>
+                <li><a class="dropdown-item" href="{% url 'staffing:pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{group_key}}&projection={{projection}}&{{scope_current_filter}}">{{ group_label }}</a></li>
               {% endfor %}
           </ul>
         </div>
@@ -64,7 +64,7 @@
                         <li><hr class="dropdown-divider"></li>
                     {% endif %}
                 {% endifchanged %}
-                <li><a class="dropdown-item" href="{% url 'staffing:pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{group_key}};projection={{projection}};{{scope_filter}}">{{ scope_label }}</a></li>
+                <li><a class="dropdown-item" href="{% url 'staffing:pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{group_key}}&projection={{projection}}&{{scope_filter}}">{{ scope_label }}</a></li>
               {% endfor %}
           </ul>
         </div>
