@@ -326,6 +326,7 @@ def create_next_year_std_missions(current, target, dryrun=True, start_date=None,
                               billing_mode="TIME_SPENT",
                               probability=100,
                               probability_auto=False,
+                              analytic_code=m.analytic_code,
                               start_date=start_date,
                               end_date=end_date)
         print("Creating new mission %s" % new_mission)

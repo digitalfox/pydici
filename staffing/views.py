@@ -128,8 +128,8 @@ def missions(request, onlyActive=True):
     return render(request, "staffing/missions.html",
                   {"all": not onlyActive,
                    "data_url": data_url,
-                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 6, 7] },
-                                                             { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7]}],
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 7, 8] },
+                                                             { className: "hidden-xs hidden-sm hidden-md", "targets": [6, 7,8]}],
                                              "order": [[0, "asc"]] ''',
                    "user": request.user})
 

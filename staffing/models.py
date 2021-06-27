@@ -364,6 +364,7 @@ class Mission(models.Model):
     def pivotable_data(self, startDate=None, endDate=None):
         """Compute raw data for pivot table on that mission"""
         #TODO: factorize with staffing.views.mission_timesheet
+        #TODO: denormalize by adding done/planned as a type column and move days/amount in values columns
         data = []
         mission_id = self.mission_id()
         mission_name = self.short_name()
@@ -374,7 +375,7 @@ class Mission(models.Model):
 
         # Gather timesheet and staffing (Only consider data up to current month)
         timesheets = Timesheet.objects.filter(mission=self).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
-        staffings = Staffing.objects.filter(mission=self).filter(staffing_date__lt=nextMonth(current_month)).order_by("staffing_date")
+        staffings = Staffing.objects.filter(mission=self).filter(staffing_date__gte=nextMonth(current_month)).order_by("staffing_date")
         if startDate:
             timesheets = timesheets.filter(working_date__gte=startDate)
             staffings = staffings.filter(staffing_date__gte=startDate)
