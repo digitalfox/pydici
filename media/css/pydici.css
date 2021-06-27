@@ -497,6 +497,17 @@ body {
     border-color: rgba(244,141,51, 0.9);
 }
 
+.form-check-input:checked {
+    background-color: rgba(244,141,51, 0.9);
+    border-color: rgba(244,141,51);
+}
+
+.form-check-input:focus {
+    border-color: rgba(244,141,51);
+    outline: 0;
+    box-shadow: 0 0 0 .25rem rgba(244,141,51,.5);
+}
+
 .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--selected, .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected="true"],
 .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--highlighted,
 .nav-pills .nav-link.active {
