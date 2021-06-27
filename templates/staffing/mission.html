@@ -20,13 +20,13 @@
     {% include "core/_init_tabs.html" %}
 {% endwith %}
 
-<h1>
+<h2>
 {% if mission.lead.client %}
     <a href="{% url 'crm:company_detail' mission.lead.client.organisation.company.id %}">{{ mission.lead.client.organisation }}</a>
     {% with mission.lead.client as client %}{% include "crm/_client_picto.html" %}{% endwith %} :
 {% endif %}
     <a href="{% url 'staffing:mission_update' mission.id %}?return_to={% url 'staffing:mission_home' mission.id %}" class='changelink' >{{ mission.short_name }}</a>
-</h1>
+</h2>
 
 <div>
     <!-- Nav tabs -->
@@ -57,6 +57,7 @@
                    {% if mission.no_more_staffing_since %}
                        <div class="col-md-6">
                             <div id="mission_no_staffing_warning" class="alert alert-warning">
+                                <i class="bi bi-eye"></i>
                                {% trans "This mission has no staffing in future" %}.
                                {% if mission.lead %}<strong>{% trans "Still to be billed" %}: {{ mission.lead.still_to_be_billed|floatformat:-2 }} €. </strong>{% endif %}
                                 <button onClick="$.get('{% url 'staffing:deactivate_mission' mission.id %}', process_mission_archive)"
@@ -65,7 +66,10 @@
                        </div>
                    {% else %}
                        {% if mission.no_staffing_update_since %}
-                           <div class="col-md-6"><div class="alert alert-warning">{% trans "Staffing has not been updated recently" %}</div></div>
+                           <div class="col-md-6"><div class="alert alert-warning">
+                               <i class="bi bi-eye"></i>
+                               {% trans "Staffing has not been updated recently" %}
+                           </div></div>
                        {% endif %}
                    {% endif %}
              {% else %}
