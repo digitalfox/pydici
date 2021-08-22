@@ -36,23 +36,29 @@
     <div id="billing-toc" class="sticky-lg-top">
         <nav class="navbar navbar-light bg-light">
               <nav class="nav nav-pills flex-column">
-                  <a href="#client-timespent" class="nav-link">{% trans "Pre billing for time spent missions" %}</a>
-                  <nav class="nav nav-pills flex-column">
-                      {% for lead, lead_data in time_spent_billing %}
-                        {% ifchanged lead.client.organisation.company %}
-                            <a href="#company-{{ lead.client.organisation.company.id|unlocalize }}" class="nav-link ms-3 py-0">{{ lead.client.organisation.company }}</a>
-                        {% endifchanged %}
-                      {% endfor %}
-                  </nav>
-                  <a href="#client-fixedprice" class="nav-link">{% trans "Pre billing for fixed price missions" %}</a>
-                  <nav class="nav nav-pills flex-column">
-                      {% for mission in fixed_price_missions %}
-                        {% ifchanged mission.lead.client.organisation.company %}
-                            <a href="#company-{{ mission.lead.client.organisation.company.id|unlocalize }}" class="nav-link ms-3 py-0">{{ mission.lead.client.organisation.company }}</a>
-                        {% endifchanged %}
-                      {% endfor %}
-                  </nav>
-                  <a href="#internal" class="nav-link">{% trans "Pre billing between subsidiaries" %}</a>
+                  {% if time_spent_billing %}
+                      <a href="#client-timespent" class="nav-link">{% trans "Pre billing for time spent missions" %}</a>
+                      <nav class="nav nav-pills flex-column">
+                          {% for lead, lead_data in time_spent_billing %}
+                            {% ifchanged lead.client.organisation.company %}
+                                <a href="#ts-company-{{ lead.client.organisation.company.id|unlocalize }}" class="nav-link ms-3 py-0">{{ lead.client.organisation.company }}</a>
+                            {% endifchanged %}
+                          {% endfor %}
+                      </nav>
+                  {% endif %}
+                  {% if fixed_price_missions %}
+                      <a href="#client-fixedprice" class="nav-link">{% trans "Pre billing for fixed price missions" %}</a>
+                      <nav class="nav nav-pills flex-column">
+                          {% for mission in fixed_price_missions %}
+                            {% ifchanged mission.lead.client.organisation.company %}
+                                <a href="#fp-company-{{ mission.lead.client.organisation.company.id|unlocalize }}" class="nav-link ms-3 py-0">{{ mission.lead.client.organisation.company }}</a>
+                            {% endifchanged %}
+                          {% endfor %}
+                      </nav>
+                  {% endif %}
+                  {% if internal_billing %}
+                    <a href="#internal" class="nav-link">{% trans "Pre billing between subsidiaries" %}</a>
+                  {% endif %}
               </nav>
         </nav>
     </div>
@@ -62,7 +68,7 @@
 <h2 id="client-timespent" class="mt-3">{% trans "Pre billing for time spent missions" %} ({{ start_date }} - {{ end_date }})</h2>
 
 {% for lead, lead_data in time_spent_billing %}
-    {% ifchanged lead.client.organisation.company.id %}<span id="company-{{ lead.client.organisation.company.id|unlocalize }}"></span>{% endifchanged %}
+    {% ifchanged lead.client.organisation.company.id %}<span id="ts-company-{{ lead.client.organisation.company.id|unlocalize }}"></span>{% endifchanged %}
     <h4 class="mt-2"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h4>
     {% for mission, mission_data in lead_data.1.items %}
         <h5 class="mt-2"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }}</a></h5>
@@ -98,7 +104,7 @@
 
 <h2 id="client-fixedprice" class="mt-3">{% trans "Pre billing for fixed price missions" %} ({{ start_date }} - {{ end_date }})</h2>
 {% for mission in fixed_price_missions %}
-    {% ifchanged mission.lead.client.organisation.company.id %}<span id="company-{{ mission.lead.client.organisation.company.id|unlocalize }}"></span>{% endifchanged %}
+    {% ifchanged mission.lead.client.organisation.company.id %}<span id="fp-company-{{ mission.lead.client.organisation.company.id|unlocalize }}"></span>{% endifchanged %}
     {% ifchanged mission.lead %}
         <h3 class="mt-4">{{ mission.lead }} ({{ mission.lead.deal_id }})</h3>
         {% with mission.lead as lead %}{% include "billing/_lead_billing.html" %}{% endwith %}
@@ -112,6 +118,7 @@
     <hr/>
 {% endfor %}
 
+{% if internal_billing %}
 <h2 id="internal" class="mt-3">{% trans "Internal billing" %}</h2>
 {% for internal_subsidiaries, subsidiary_internal_billing in internal_billing.items %}
     <h3 class="mt-3">{% blocktrans with from=internal_subsidiaries.0 to=internal_subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} ({{ start_date }} - {{ end_date }})</h3>
@@ -143,6 +150,7 @@
          <hr/>
     {% endfor %}
 {% endfor %}
+{% endif %}
 
 {% if undefined_billing_mode_missions %}
     <hr>
