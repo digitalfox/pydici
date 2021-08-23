@@ -20,7 +20,7 @@
     {% include "core/_init_tabs.html" %}
 {% endwith %}
 
-<h2>
+<h2 class="mt-2">
 {% if mission.lead.client %}
     <a href="{% url 'crm:company_detail' mission.lead.client.organisation.company.id %}">{{ mission.lead.client.organisation }}</a>
     {% with mission.lead.client as client %}{% include "crm/_client_picto.html" %}{% endwith %} :
