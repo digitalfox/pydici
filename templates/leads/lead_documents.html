@@ -2,12 +2,10 @@
 {% load i18n %}
 
 {% for directory, docs in documents %}
-<div class="row mt-2">
-    <h2><a href='{{ lead_doc_url}}/{{ directory }}/'>{{ directory }}</a></h2>
+    <h2 class="row mt-2"><a href='{{ lead_doc_url}}/{{ directory }}/'>{{ directory }}</a></h2>
     <ul>
     {% for doc, url in docs %}
         <li><a href="{{ url }}">{{ doc }}</a></li>
     {% endfor %}
     </ul>
-</div>
 {% endfor %}
