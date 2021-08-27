@@ -226,10 +226,6 @@ def lead_expenses(request, lead_id):
     except Lead.DoesNotExist:
         expenses = []
         lead = None
-    if "csv" in request.GET:
-        expenseTable = ExpenseTable(expenses, orderable=True)
-        RequestConfig(request, paginate={"per_page": 50}).configure(expenseTable)
-        return tableToCSV(expenseTable, filename="expenses.csv")
     return render(request, "expense/expense_list.html",
                   {"expenses": expenses,
                    "lead": lead,

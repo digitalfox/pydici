@@ -43,9 +43,7 @@
 {% endfor %}
 </tbody>
 </table>
-{% if lead %}
-    <a href="{% url 'expense:lead_expenses' lead.id %}?csv" class="btn btn-primary">{% trans "Export expenses in a spreadsheet" %}</a>
-{% endif %}
+
 {% with "expenses-table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
 {% else %}
     {% trans "No expense" %}
