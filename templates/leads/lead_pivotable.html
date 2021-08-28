@@ -59,10 +59,10 @@
                     var param = "";
                     var fromDate = $("#startDate").datepicker("getDate");
                     var toDate   = $("#endDate").datepicker("getDate");
-                    if (!isNaN(fromDate.getTime())) {
+                    if (fromDate !== null && !isNaN(fromDate.getTime())) {
                         param += "start=" + yyyymmdd(fromDate);
                     }
-                    if (!isNaN(toDate.getTime())) {
+                    if (toDate !== null && !isNaN(toDate.getTime())) {
                         param += "&end=" + yyyymmdd(toDate);
                     }
                     $('#tab-reporting').load("{% url 'leads:lead_pivotable' lead.id %}?"+param);
