@@ -223,6 +223,10 @@ $(document).ready(function(){
     $('.pdc-tooltip').on("click", function(){
         $('.pdc-tooltip').not(this).popover('hide'); //all but this
     });
+    /* bind close button */
+    $(document).on("click", ".popover .close" , function(){
+        $(this).parents(".popover").popover('hide');
+    });
 
     $('#buttons-projection label').tooltip({
         "container": "body"
