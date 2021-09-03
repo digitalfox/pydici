@@ -171,9 +171,10 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ClientOrganisationForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column("name", AppendedText("company",
-                                                                    "<a href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
-                                                                        "crm:company")), css_class="col-md-6"),
+        self.helper.layout = Layout(Div(Column("name", FieldWithButtons("company",
+                                                                        HTML("""<a role='button' class='btn btn-primary' href='%s' target='_blank'>
+                                                                                <i class='bi bi-plus'></i></a>""" % reverse("crm:company"))),
+                                               css_class="col-md-6"),
                                         get_address_column(),
                                         css_class="row my-2"),
                                     self.submit)
