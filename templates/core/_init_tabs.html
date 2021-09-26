@@ -9,7 +9,6 @@ $(document).ready(function() {
 
     // Display a tab and load its content with ajax if data-tab-url is defined
     function displayBsTab(tab, href) {
-        tab.show();
         var url = tab.attr("data-tab-url");
         if (url) {
             $(href).load(url,function(result) {
@@ -49,7 +48,11 @@ $(document).ready(function() {
         var url = window.location.toString();
         // Push tab hash in history else if we are already on it
         if (!url.match(hash)) {
-            history.pushState(null, null, hash);
+            if (hash=='#' + tabprefix + 'tab-home' || !url.match(tabprefix)) {
+                history.replaceState(null, null, hash);
+            } else {
+                history.pushState(null, null, hash);
+            }
         }
     });
 
