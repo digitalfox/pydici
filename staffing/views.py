@@ -1600,7 +1600,7 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
             LogEntry.objects.log_action(
                 user_id=self.request.user.pk, content_type_id=ContentType.objects.get_for_model(self.object).pk,
                 object_id=self.object.pk, object_repr=force_text(self.object), action_flag=CHANGE,
-                change_message=_("Field %s has been changed to %s. ") % (field, form.cleaned_data[field]))
+                change_message=_("Field %(field)s has been changed to %(value)s") % ({"field": field, "value": form.cleaned_data[field]}))
         return super().form_valid(form)
 
 
