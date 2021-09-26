@@ -1539,11 +1539,19 @@ def mission_update(request):
             if value in billingModes:
                 mission.billing_mode = value
                 mission.save()
+                LogEntry.objects.log_action(
+                    user_id=request.user.pk, content_type_id=ContentType.objects.get_for_model(mission).pk,
+                    object_id=mission.pk, object_repr=force_text(mission), action_flag=CHANGE,
+                    change_message=_("Billing mode has been set to %s") % dict(Mission.BILLING_MODES)[value])
                 return HttpResponse(billingModes[value])
         elif attribute == "management_mode":
             if value in managementModes:
                 mission.management_mode = value
                 mission.save()
+                LogEntry.objects.log_action(
+                    user_id=request.user.pk, content_type_id=ContentType.objects.get_for_model(mission).pk,
+                    object_id=mission.pk, object_repr=force_text(mission), action_flag=CHANGE,
+                    change_message=_("Management mode has been set to %s") % dict(Mission.MANAGEMENT_MODES)[value])
                 return HttpResponse(managementModes[value])
         elif attribute == "probability":
             value = int(value)
@@ -1586,6 +1594,14 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 
     def get_success_url(self):
         return self.request.GET.get('return_to', False) or reverse_lazy("staffing:mission_home", args=[self.object.id, ])
+
+    def form_valid(self, form):
+        for field in form.changed_data:
+            LogEntry.objects.log_action(
+                user_id=self.request.user.pk, content_type_id=ContentType.objects.get_for_model(self.object).pk,
+                object_id=self.object.pk, object_repr=force_text(self.object), action_flag=CHANGE,
+                change_message=_("Field %s has been changed to %s. ") % (field, form.cleaned_data[field]))
+        return super().form_valid(form)
 
 
 @pydici_non_public
