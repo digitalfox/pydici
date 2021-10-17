@@ -235,7 +235,7 @@ class Lead(models.Model):
         return actionStates.select_related()
 
     def billing_control_data(self):
-        return  get_client_billing_control_pivotable_data(filter_on_lead=self)
+        return get_client_billing_control_pivotable_data(filter_on_lead=self)
 
     def pending_actions(self):
         """returns pending actions for this lead and its missions"""

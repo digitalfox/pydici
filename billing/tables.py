@@ -115,14 +115,21 @@ class ClientBillInCreationTableDT(BillTableDT):
 
 class ClientBillArchiveTableDT(BillTableDT):
     """Client bill archive"""
-    columns = ("bill_id", "subsidiary", "lead","creation_date", "payment_date", "state", "amount", "amount_with_vat", "comment", "file")
+    columns = ("bill_id", "subsidiary", "deal_id", "lead", "creation_date", "payment_date", "state", "amount", "amount_with_vat", "comment", "file")
     order_columns = columns
     max_display_length = 500
 
     def get_initial_queryset(self):
         qs = ClientBill.objects.exclude(state__in=("0_DRAFT", "0_PROPOSED"))
+        qs = qs.select_related("lead")
         qs = self._filter_on_subsidiary(qs)
         return qs
+
+    def render_column(self, row, column):
+        if column == "deal_id":
+            return row.lead.deal_id
+        else:
+            return super(ClientBillArchiveTableDT, self).render_column(row, column)
 
 
 class SupplierBillArchiveTableDT(BillTableDT):

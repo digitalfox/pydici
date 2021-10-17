@@ -538,7 +538,7 @@ def client_bills_archive(request):
     """Review all client bill """
     return render(request, "billing/client_bills_archive.html",
                   {"data_url": reverse('billing:client_bills_archive_DT'),
-                   "datatable_options": ''' "lengthMenu": [ 10, 25, 50, 100, 500 ], "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [1, 9] }]  ''',
+                   "datatable_options": ''' "lengthMenu": [ 10, 25, 50, 100, 500 ], "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [1, 2, 10] }]  ''',
                    "user": request.user})
 
 
