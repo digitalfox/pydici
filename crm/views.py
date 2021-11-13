@@ -40,7 +40,7 @@ from billing.models import ClientBill
 class ContactReturnToMixin(object):
     """Mixin class to return to contact detail if return_to args is not provided"""
     def get_success_url(self):
-        if self.model in (MissionContact, BusinessBroker):
+        if self.model in (MissionContact, BusinessBroker, Supplier):
             target = self.object.contact.id
         else:
             target = self.object.id
