@@ -4,7 +4,6 @@ Database access layer for pydici expense module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-
 from time import strftime
 from os.path import join, dirname, split
 import mimetypes
@@ -53,8 +52,8 @@ class ExpenseStorage(FileSystemStorage):
 # This utils function is here and not in utils module
 # to avoid circular import loop, as utils module import Expense models
 def expense_receipt_path(instance, filename):
-    """Format full path of expense receipt"""
-    return join(settings.PYDICI_ROOTDIR, "data", "expense",
+    """Format path of expense receipt"""
+    return join("data", "expense",
                 strftime("%Y"), strftime("%m"), instance.user.username,
                 "%s_%s" % (strftime("%d-%H%M%S"), sanitizeName(filename)))
 
