@@ -168,9 +168,6 @@ WSGI_APPLICATION = "pydici.wsgi.application"
 ALLOWED_HOSTS = ("localhost",)
 
 INTERNAL_IPS = ('127.0.0.1',)
-DEBUG_TOOLBAR_CONFIG = {"DISABLE_PANELS": "debug_toolbar.panels.redirects.RedirectsPanel",
-                        "JQUERY_URL": "https://code.jquery.com/jquery-3.3.1.min.js"
-                        }
 
 if PYDICI_PREFIX:
     LOGIN_URL = "/%s/forbiden" % PYDICI_PREFIX
