@@ -29,7 +29,7 @@
                 <a class ="page-link" href="{% url 'leads:detail' previous_lead.id|unlocalize %}"><i class="bi bi-arrow-left-circle"></i></a>
             </li>
 	    {% endif %}
-            <li class="page-item"><div class="page-link">{{ active_rank }} / {{ active_count }}</div></li>
+            <li class="page-item"><div class="page-link">{{ active_rank }}&nbsp;/&nbsp;{{ active_count }}</div></li>
 	    {% if next_lead %}
             <li class="page-item">
                 <a class="page-link" href="{% url 'leads:detail' next_lead.id|unlocalize %}"><i class="bi bi-arrow-right-circle"></i></a>
