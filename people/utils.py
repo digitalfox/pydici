@@ -46,7 +46,7 @@ def get_team_scopes(subsidiary, team):
     return scopes, scope_current_filter, scope_current_url_filter
 
 
-def compute_consultant_tasks(consultant):
+def compute_consultant_tasks(consultant, include_actions=True):
     """gather all tasks consultant should do
     @:return: list of (task_name, count, link, priority(1-3))"""
     tasks = []
@@ -89,11 +89,12 @@ def compute_consultant_tasks(consultant):
         tasks.append((_("Supplier bills to review"), supplier_bills_count, reverse("billing:bill_review")+"#supplier_soondue_bills", supplier_bills_priority))
 
     # Actions
-    actions = consultant.pending_actions()
-    actions_count = actions.count()
-    if actions_count:
-        actions_priority = get_task_priority(actions_count, (10, 20))
-        tasks.append((_("Pending actions"), actions_count, "#consultant_actions", actions_priority))
+    if include_actions:
+        actions = consultant.pending_actions()
+        actions_count = actions.count()
+        if actions_count:
+            actions_priority = get_task_priority(actions_count, (10, 20))
+            tasks.append((_("Pending actions"), actions_count, "#consultant_actions", actions_priority))
 
     return tasks
 

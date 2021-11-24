@@ -23,6 +23,7 @@ logging.basicConfig(
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler
+import telegram.error
 
 # # Setup django envt & django imports
 PYDICI_DIR = abspath(join(dirname(__file__), pardir))
@@ -212,14 +213,17 @@ def alert_consultant(context):
         return
     cache.set(cache_key, 1, 3600*24)  # Keep track 24 hours that this user has been alerted
 
-    tasks = compute_consultant_tasks(consultant)
+    tasks = compute_consultant_tasks(consultant, include_actions=False)
     if tasks:
         task_name, task_count, task_link, task_priority = random.choice(tasks)
         url = get_parameter("HOST") + task_link
         msg = _("Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n%(link)s") % {"task_name": task_name,
                                                                                                      "task_count": task_count,
                                                                                                      "link": url}
-        context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
+        try:
+            context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
+        except telegram.error.BadRequest as e:
+            logger.error("Cannot send message to %s. Error message: %s" % (consultant, e))
 
 
 def call_for_timesheet(context):
