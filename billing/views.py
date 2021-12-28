@@ -116,26 +116,31 @@ def bill_review(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-def bill_payment_delay(request):
-    """Report on client bill payment delay"""
-    # List of tuple (company, avg delay in days)
-    directDelays = list()  # for direct client
-    indirectDelays = list()  # for client with paying authority
-    for company in Company.objects.all():
-        # Direct delays
-        bills = ClientBill.objects.filter(lead__client__organisation__company=company, lead__paying_authority__isnull=True, state="2_PAID")
-        res = [i.payment_delay() for i in bills]
-        if res:
-            directDelays.append((company, sum(res) / len(res)))
-        # Indirect delays
-        bills = ClientBill.objects.filter(lead__paying_authority__company=company, state="2_PAID")
-        res = [i.payment_delay() for i in bills]
-        if res:
-            indirectDelays.append((company, sum(res) / len(res)))
-
+#@cache_page(60 * 60 * 24)
+def bill_delay(request):
+    """Report on client bill creation and payment delay"""
+    data = []
+    subsidiary = get_subsidiary_from_session(request)
+    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(365)), state__in=("1_SENT", "2_PAID"))
+    if subsidiary:
+        bills = bills.filter(lead__subsidiary=subsidiary)
+    bills = bills.select_related("lead__responsible", "lead__subsidiary", "lead__client__organisation__company",
+                                 "lead__paying_authority__company", "lead__paying_authority__contact")
+    bills = bills.prefetch_related("billdetail_set__mission")
+    for bill in bills:
+        data.append(
+            {_("Lead"): bill.lead.deal_id,
+             _("Responsible"): bill.lead.responsible.name,
+             _("Subsidiary"): bill.lead.subsidiary.name,
+             _("client company"): bill.lead.client.organisation.company.name,
+             _("Paying authority"): str(bill.lead.paying_authority or "null"),
+             _("creation lag"): bill.creation_lag() or "null",
+             _("payment delay"): bill.payment_delay(),
+             _("payment wait"): bill.payment_wait(),
+             _("creation date"): bill.creation_date.replace(day=1).isoformat()}
+        )
     return render(request, "billing/payment_delay.html",
-                  {"direct_delays": directDelays,
-                   "indirect_delays": indirectDelays,
+                  {"data": data,
                    "user": request.user},)
 
 
@@ -196,6 +201,7 @@ def bill_file(request, bill_id=0, nature="client"):
         pass
 
     return response
+
 
 class Bill(PydiciNonPublicdMixin, TemplateView):
     template_name = 'billing/bill.html'

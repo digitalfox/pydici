@@ -12,7 +12,7 @@ import billing.tables as t
 
 billing_urls = [url(r'^bill_review$', v.bill_review, name="bill_review"),
                 url(r'^client_billing_control$', v.client_billing_control_pivotable, name='client_billing_control_pivotable'),
-                url(r'^bill_delay$', v.bill_payment_delay, name="bill_payment_delay"),
+                url(r'^bill_delay$', v.bill_delay, name="bill_delay"),
                 url(r'^bill/(?P<bill_id>\d+)/mark_bill_paid$', v.mark_bill_paid, name="mark_bill_paid"),
                 url(r'^file/(?P<nature>.+)/(?P<bill_id>\d+)$', v.bill_file, name="bill_file"),
                 url(r'^pdf/(?P<bill_id>\d+)$', v.BillPdf.as_view(), name="bill_pdf"),

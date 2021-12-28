@@ -173,7 +173,7 @@
                                     <li><hr class="dropdown-divider"></li>
                                     <li class="dropdown-header">{% trans "Reporting" %}</li>
                                     <li><a class="dropdown-item" href="{% url 'billing:bill_review' %}">{% trans "Bills review" %}</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'billing:bill_payment_delay' %}">{% trans "Payment delay review" %}</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'billing:bill_delay' %}">{% trans "Payment delay review" %}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'leads:leads_to_bill' %}">{% trans "Leads still to be billed" %}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'billing:client_billing_control_pivotable' %}">{% trans "Client billing control" %}</a></li>
                                 {% endif %}

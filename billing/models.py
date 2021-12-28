@@ -12,7 +12,7 @@ import os.path
 from decimal import Decimal
 
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Min, Max
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.core.files.storage import FileSystemStorage
@@ -25,7 +25,7 @@ from people.models import Consultant
 from expense.models import Expense
 from crm.models import Supplier
 from billing.utils import compute_bill, get_bill_id_from_path
-from core.utils import sanitizeName
+from core.utils import sanitizeName, nextMonth
 from core.models import CLIENT_BILL_LANG
 
 
@@ -88,6 +88,7 @@ class AbstractBill(models.Model):
             return str(self.id)
 
     def payment_wait(self):
+        """Time between payment and due date"""
         if self.payment_date:
             wait = self.payment_date - self.due_date
         else:
@@ -95,11 +96,34 @@ class AbstractBill(models.Model):
         return wait.days
 
     def payment_delay(self):
+        """Time between creation and payment"""
         if self.payment_date:
             wait = self.payment_date - self.creation_date
         else:
             wait = date.today() - self.creation_date
         return wait.days
+
+    def creation_lag(self):
+        """Time between bill creation and earliest possible date. Worst case is considered when bill has multiple detail lines"""
+        lag = []
+        if self.billdetail_set.count() == 0:
+            # Either bill has no detail (in creation, only expenses...) or is in old format with no details
+            return None
+        for detail in self.billdetail_set.all():
+            if detail.mission.billing_mode == "FIXED_PRICE":
+                bills = list(self.lead.clientbill_set.all().order_by("creation_date"))
+                idx = bills.index(self)  # rank of bill in lead bills
+                mission_boundaries = detail.mission.timesheet_set.aggregate(Min("working_date"), Max("working_date"))
+                if idx == 0:  # first bill
+                    if mission_boundaries["working_date__min"]:
+                        lag.append(self.creation_date - mission_boundaries["working_date__min"])
+                elif idx == len(bills) - 1:  # last bill
+                    if mission_boundaries["working_date__max"]:
+                        lag.append(self.creation_date - mission_boundaries["working_date__max"])
+            else:  # timespent mission
+                lag.append(self.creation_date - nextMonth(detail.month))
+        if lag:
+            return max(lag).days
 
     def bill_file_url(self):
         """Return url if file exists, else #"""
@@ -122,7 +146,6 @@ class AbstractBill(models.Model):
                 os.makedirs(os.path.dirname(self.bill_file.path), exist_ok=True) # Create dir if needed (it should)
                 os.rename(old_file_path, self.bill_file.path)  # Move file
                 super(AbstractBill, self).save(*args, **kwargs)  # Save it again with new path
-
 
     class Meta:
         abstract = True
