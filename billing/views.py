@@ -116,12 +116,12 @@ def bill_review(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-#@cache_page(60 * 60 * 24)
+@cache_page(60 * 60 * 24)
 def bill_delay(request):
     """Report on client bill creation and payment delay"""
     data = []
     subsidiary = get_subsidiary_from_session(request)
-    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(365)), state__in=("1_SENT", "2_PAID"))
+    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(2*365)), state__in=("1_SENT", "2_PAID"))
     if subsidiary:
         bills = bills.filter(lead__subsidiary=subsidiary)
     bills = bills.select_related("lead__responsible", "lead__subsidiary", "lead__client__organisation__company",
