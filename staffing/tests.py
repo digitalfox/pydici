@@ -168,6 +168,11 @@ class OptimTest(TestCase):
                           "M4": 40000,
                          }
 
+    missions_boundaries = {"M1": {"start": None, "end": None},
+                           "M2": {"start": "feb", "end": None},
+                           "M3": {"start": None, "end": "mar"},
+                           "M4": {"start": None, "end": None}}
+
     consultants_freetime = {"SRE": {"jan": 15, "feb": 18, "mar": 13},
                             "JCF": {"jan": 10, "feb": 15, "mar": 20},
                             "MFR": {"jan": 20, "feb": 20, "mar": 20},
@@ -183,8 +188,8 @@ class OptimTest(TestCase):
 
     def test_optim(self):
         solver, status, scores, staffing = solve_pdc(self.consultants, self.senior_consultants, self.missions, self.months,
-                                                     self.missions_charge, self.missions_remaining, self.consultants_freetime,
-                                                     self.predefined_assignment, self.exclusions,
+                                                     self.missions_charge, self.missions_remaining, self.missions_boundaries,
+                                                     self.consultants_freetime, self.predefined_assignment, self.exclusions,
                                                      self.consultants_rates, solver_param={})
         display_solver_solution(solver, scores, staffing, self.consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime)
         self.assertEqual((sum(solver.Value(score) for score in scores)), 63)

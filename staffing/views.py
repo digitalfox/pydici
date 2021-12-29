@@ -1636,6 +1636,7 @@ def optimise_pdc(request):
             missions_charge = {}
             predefined_assignment = {}
             exclusions = {}
+            missions_boundaries = {}
             missions = []
             missions_id = []
             for mission_form in formset.cleaned_data:
@@ -1643,6 +1644,8 @@ def optimise_pdc(request):
                     missions_charge[mission_form["mission"].mission_id()] = {month[1]:mission_form["charge_%s" % month[1]] or 0 for month in staffing_dates}
                     missions_id.append(mission_form["mission"].mission_id())
                     missions.append(mission_form["mission"])
+                    missions_boundaries[mission_form["mission"].mission_id()] = {"start": formats.date_format(mission_form["mission"].start_date, format="b y") if mission_form["mission"].start_date else None,
+                                                                                 "end": formats.date_format(mission_form["mission"].end_date, format="b y") if mission_form["mission"].end_date else None}
                     if mission_form["predefined_assignment"]:
                         predefined_assignment[mission_form["mission"].mission_id()] = [c.trigramme for c in mission_form["predefined_assignment"]]
                         if not set(c.trigramme for c in mission_form["predefined_assignment"]).issubset(set(c.trigramme for c in form.cleaned_data["consultants"])):
@@ -1659,7 +1662,7 @@ def optimise_pdc(request):
                 solver, status, scores, staffing = solve_pdc([c.trigramme for c in form.cleaned_data["consultants"]],
                                                               [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level > 2],
                                                               missions_id, [month[1] for month in staffing_dates],
-                                                              missions_charge, missions_remaining, consultants_freetime,
+                                                              missions_charge, missions_remaining, missions_boundaries, consultants_freetime,
                                                               predefined_assignment, exclusions, consultant_rates, solver_param)
                 if status:
                     scores_data = [(score.Name(), solver.Value(score)) for score in scores]

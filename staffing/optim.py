@@ -19,8 +19,8 @@ from core.utils import working_days, to_int_or_round
 from staffing.models import Holiday, Staffing
 
 
-def solve_pdc(consultants, senior_consultants, missions, months, missions_charge, missions_remaining, consultants_freetime,
-              predefined_assignment, exclusions, consultants_rates, solver_param=None):
+def solve_pdc(consultants, senior_consultants, missions, months, missions_charge, missions_remaining, missions_boundaries,
+              consultants_freetime, predefined_assignment, exclusions, consultants_rates, solver_param=None):
     # default value
     if solver_param is None:
         solver_param = {}
@@ -133,6 +133,13 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     for mission, excluded_consultants in exclusions.items():
         for consultant in excluded_consultants:
             model.AddBoolAnd([staffing_b_all[consultant][mission].Not()])
+
+    # Respect mission boundaries
+    for mission in missions:
+        for i, month in enumerate(months):
+            if (missions_boundaries[mission]["start"] and i < months.index(missions_boundaries[mission]["start"])) or \
+                    (missions_boundaries[mission]["end"] and i >= months.index(missions_boundaries[mission]["end"])):
+                model.Add(staffing[consultant][mission][month] == 0)
 
     # define score components
     planning_score_items = []
