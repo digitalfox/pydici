@@ -274,7 +274,8 @@ class MissionForm(PydiciCrispyModelForm):
                                                AppendedText("price", "k€"), "billing_mode", "management_mode", "subsidiary", "responsible", "probability", "probability_auto", "active",
                                                css_class="col-md-6"),
                                         Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "analytic_code", "nature",
-                                               Field("start_date", css_class="datepicker"), Field("end_date", css_class="datepicker"), "contacts",
+                                               Field("start_date", placeholder=_("Forbid forecast before this date"), css_class="datepicker"),
+                                               Field("end_date", placeholder=_("Forbid forecast after this date"), css_class="datepicker"), "contacts",
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
@@ -481,11 +482,14 @@ class MissionOptimiserForm(forms.Form):
 
     def clean(self):
         mission = self.cleaned_data.get("mission")
-        if mission and sum(self.cleaned_data["charge_%s" % month[1]] or 0 for month in self.staffing_dates) == 0:
+        min_date = mission.start_date or date(2000, 1, 1)
+        max_date = mission.end_date or date(2100, 1, 1)
+        mission_staffing_dates = [i for i in self.staffing_dates if i[0] >= min_date and (i[0] < max_date)]
+        if mission and sum(self.cleaned_data["charge_%s" % month[1]] or 0 for month in mission_staffing_dates) == 0:
             # Charge is not defined. Get it from staffing
-            charge = Staffing.objects.filter(mission=mission, staffing_date__gte=self.staffing_dates[0][0]).aggregate(Sum("charge"))["charge__sum"] or 0
+            charge = Staffing.objects.filter(mission=mission, staffing_date__gte=mission_staffing_dates[0][0]).aggregate(Sum("charge"))["charge__sum"] or 0
             if charge > 0:
-                for month in self.staffing_dates:
+                for month in mission_staffing_dates:
                     c = Staffing.objects.filter(mission=mission, staffing_date=month[0]).aggregate(
                         Sum("charge"))["charge__sum"]
                     self.cleaned_data["charge_%s" % month[1]] = int(c or 0)  # Solver only work with integer
@@ -497,11 +501,17 @@ class MissionOptimiserForm(forms.Form):
                     avg_rate = (sum(rates) / len(rates) / 1000) or 1 # default to 1K€ per day
                     days = int(remaining / avg_rate)
                     duration = sqrt(days / 20) * 2  # Guess duration with square root of man.month charge as a max. Take the double for safety
-                    for i, month in enumerate(self.staffing_dates):
+                    for i, month in enumerate(mission_staffing_dates):
                         if i > duration or i > 7 or duration == 0:
                             # Stop planning after guessed duration of 8 month
                             break
                         self.cleaned_data["charge_%s" % month[1]] = int(days / duration)
+        # Ensure user do not try to forecast outside mission window
+        for m in [i for i in self.cleaned_data if i.startswith("charge_")]:
+            if self.cleaned_data[m] == 0:
+                continue  # no need to warn for zero day forecast
+            if m[len("charge_"):] not in [i[1] for i in mission_staffing_dates]:
+                raise ValidationError(_("You cannot forecast outside mission defined window (%s - %s)" % (mission.start_date or "-", mission.end_date or "-")))
 
         return self.cleaned_data
 
