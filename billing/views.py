@@ -121,7 +121,8 @@ def bill_delay(request):
     """Report on client bill creation and payment delay"""
     data = []
     subsidiary = get_subsidiary_from_session(request)
-    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(2*365)), state__in=("1_SENT", "2_PAID"))
+    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(2*365)), state__in=("1_SENT", "2_PAID"),
+                                      amount__gt=0)
     if subsidiary:
         bills = bills.filter(lead__subsidiary=subsidiary)
     bills = bills.select_related("lead__responsible", "lead__subsidiary", "lead__client__organisation__company",
@@ -134,6 +135,7 @@ def bill_delay(request):
              _("Subsidiary"): bill.lead.subsidiary.name,
              _("client company"): bill.lead.client.organisation.company.name,
              _("Paying authority"): str(bill.lead.paying_authority or "null"),
+             _("Billing mode"): ",".join(list(set([d.mission.get_billing_mode_display() or "NA" for d in bill.billdetail_set.all()] or ["NA"]))),
              _("creation lag"): bill.creation_lag() or "null",
              _("payment delay"): bill.payment_delay(),
              _("payment wait"): bill.payment_wait(),

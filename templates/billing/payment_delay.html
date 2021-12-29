@@ -19,6 +19,7 @@
         <button class="btn btn-primary" onclick="payment_wait_by_company();">{% trans "Wait by company" %}</button>
         <button class="btn btn-primary" onclick="payment_delay_by_broker();">{% trans "Delay by paying authority" %}</button>
         <button class="btn btn-primary" onclick="payment_wait_by_broker();">{% trans "Wait by paying authority" %}</button>
+        <button class="btn btn-primary" onclick="wait_over_time();">{% trans "Wait over time" %}</button>
         <button class="btn btn-primary" onclick="lag_by_responsible();">{% trans "Creation lag by responsible" %}</button>
         <button class="btn btn-primary" onclick="lag_over_time();">{% trans "Creation lag over time" %}</button>
     </div>
@@ -46,7 +47,7 @@
 
     // Preset definition
     function payment_delay_by_company() {
-        var rows = ["{% trans 'client company' %}"];
+        var rows = ["{% trans 'client company' %}", "{% trans 'Billing mode' %}"];
         var cols = ["{% trans 'Subsidiary' %}"];
         var options = {};
         options["rowOrder"] = "value_z_to_a";
@@ -54,7 +55,7 @@
     }
 
     function payment_wait_by_company() {
-        var rows = ["{% trans 'client company' %}"];
+        var rows = ["{% trans 'client company' %}", "{% trans 'Billing mode' %}"];
         var cols = ["{% trans 'Subsidiary' %}"];
         var options = {};
         options["rowOrder"] = "value_z_to_a";
@@ -62,7 +63,7 @@
     }
 
     function payment_delay_by_broker() {
-        var rows = ["{% trans 'Paying authority' %}"];
+        var rows = ["{% trans 'Paying authority' %}", "{% trans 'Billing mode' %}"];
         var cols = ["{% trans 'Subsidiary' %}"];
         var options = {};
         options["rowOrder"] = "value_z_to_a";
@@ -70,12 +71,19 @@
     }
 
     function payment_wait_by_broker() {
-        var rows = ["{% trans 'Paying authority' %}"];
+        var rows = ["{% trans 'Paying authority' %}", "{% trans 'Billing mode' %}"];
         var cols = ["{% trans 'Subsidiary' %}"];
         var options = {};
         options["rowOrder"] = "value_z_to_a";
         drawPivot(data, rows, cols, "Table", '{% trans "Average" %}', ["{% trans 'payment wait' %}"], options);
     }
+
+    function wait_over_time() {
+        var rows = ["{% trans 'Subsidiary' %}"];
+        var cols = ["{% trans 'creation date' %}"];
+        drawPivot(data, rows, cols, "Line Chart", '{% trans "Average" %}', ["{% trans 'payment wait' %}"]);
+    }
+
 
     function lag_by_responsible() {
         var rows = ["{% trans 'Responsible' %}", "{% trans 'client company' %}", "{% trans 'Lead' %}"];
