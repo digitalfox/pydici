@@ -145,7 +145,7 @@ def mission_home(request, mission_id):
 
 
 @pydici_non_public
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@cache_control(no_store=True)
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
     if (request.user.has_perm("staffing.add_staffing") and
@@ -191,7 +191,7 @@ def mission_staffing(request, mission_id):
 
 @pydici_non_public
 @pydici_feature("staffing")
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@cache_control(no_store=True)
 def consultant_staffing(request, consultant_id):
     """Edit consultant staffing"""
     consultant = Consultant.objects.get(id=consultant_id)
@@ -225,7 +225,7 @@ def consultant_staffing(request, consultant_id):
 
 @pydici_non_public
 @pydici_feature("staffing_mass")
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@cache_control(no_cache=True)
 def mass_staffing(request):
     """Massive staffing form"""
     staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=24)]
@@ -688,7 +688,7 @@ def deactivate_mission(request, mission_id):
                         content_type="application/json")
 
 
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@cache_control(no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
     """Consultant timesheet"""
     management_mode_error = None
@@ -741,7 +741,8 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
             forecastTotal[staffing.mission.id] = staffing.charge
 
     # Missions with already defined timesheet or forecasted for this month
-    missions = set(list(consultant.forecasted_missions(month=month)) + list(consultant.timesheet_missions(month=month)))
+    missions = set(list(consultant.forecasted_missions(month=month).select_related("lead__client__organisation__company")) +
+                   list(consultant.timesheet_missions(month=month).select_related("lead__client__organisation__company")))
     missions = sortMissions(missions)
 
     # Add zero forecast for mission with active timesheet but no more forecast
