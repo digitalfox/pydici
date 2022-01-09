@@ -16,7 +16,7 @@ from collections import defaultdict, OrderedDict
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils.encoding import force_text
 from django.db.models import Sum, Count, Min, Q
 from django.views.decorators.cache import cache_page

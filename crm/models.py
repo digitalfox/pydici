@@ -10,8 +10,8 @@ from datetime import date, timedelta
 from django.db import models
 from django.db.models import Sum, Q, F, Avg
 from django.apps import apps
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext, pgettext
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import  gettext, pgettext
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
@@ -305,14 +305,14 @@ class Client(AbstractAddress):
     """A client is defined by a contact and the organisation where he works at the moment"""
     EXPECTATIONS = (
             ('1_NONE', pgettext("feminine", "None")),
-            ('2_DECREASING', ugettext("Decreasing")),
-            ('3_FLAT', ugettext("Flat")),
-            ('4_INCREASING', ugettext("Increasing")),
+            ('2_DECREASING',  gettext("Decreasing")),
+            ('3_FLAT',  gettext("Flat")),
+            ('4_INCREASING',  gettext("Increasing")),
            )
     ALIGNMENT = (
-            ("1_RESTRAIN", ugettext("To restrain")),
-            ("2_STANDARD", ugettext("Standard")),
-            ("3_STRATEGIC", ugettext("Strategic")),
+            ("1_RESTRAIN",  gettext("To restrain")),
+            ("2_STANDARD",  gettext("Standard")),
+            ("3_STRATEGIC",  gettext("Strategic")),
                  )
     organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Company : Organisation"), on_delete=models.CASCADE)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.SET_NULL)

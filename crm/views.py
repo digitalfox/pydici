@@ -14,7 +14,7 @@ from django.views.decorators.cache import cache_page
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
 from django.contrib import messages
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.html import escape
 from django.urls import reverse_lazy, reverse

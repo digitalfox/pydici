@@ -11,7 +11,7 @@ from datetime import date, datetime
 
 from django.conf import settings
 from django.db import transaction
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils import formats
 from django.core.cache import cache
 

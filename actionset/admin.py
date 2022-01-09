@@ -6,7 +6,7 @@ Django administration setup
 """
 
 from django.contrib import admin
-from django.utils.translation import ugettext
+from django.utils.translation import  gettext
 
 from actionset.models import ActionSet, Action, ActionState
 
@@ -31,8 +31,8 @@ class ActionAdmin(admin.ModelAdmin):
 
 class ActionStateAdmin(admin.ModelAdmin):
     list_display = ("action", "user", "target", "state", "creation_date", "update_date")
-    fieldsets = [(ugettext("Action state"), {"fields": ["action", "user", "state"]}),
-                 (ugettext("Target object"), {"fields": ["target_type", "target_id"]})]
+    fieldsets = [( gettext("Action state"), {"fields": ["action", "user", "state"]}),
+                 ( gettext("Target object"), {"fields": ["target_type", "target_id"]})]
     search_fields = ["action__actionset__name", "action__name", "user"]
     actions = None
     list_filter = ["state", "user"]

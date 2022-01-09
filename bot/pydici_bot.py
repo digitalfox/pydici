@@ -38,7 +38,7 @@ os.chdir(PYDICI_DIR)
 from django.core.wsgi import get_wsgi_application
 from django.db.models import Sum
 from django.db import transaction, close_old_connections
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.conf import settings
 from django.core.cache import cache
 

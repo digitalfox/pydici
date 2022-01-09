@@ -14,7 +14,7 @@ import os
 from django.apps import apps
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.conf import settings
 from django.core.files.base import ContentFile
 

@@ -8,7 +8,7 @@ Bill form setup
 from datetime import date, timedelta
 
 from django.forms import ModelForm
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.forms.models import BaseInlineFormSet, ModelChoiceField
 from django.forms.fields import DateField, TypedChoiceField
 from django.forms.widgets import DateInput

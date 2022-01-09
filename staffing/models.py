@@ -8,8 +8,8 @@ Database access layer for pydici staffing module
 from django.db import models
 from django.db.models import Sum, Min, F, Q
 from django.db.models.functions import TruncMonth
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext, pgettext
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import  gettext, pgettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.contrib.admin.models import ContentType, LogEntry
@@ -38,21 +38,21 @@ class AnalyticCode(models.Model):
 
 class Mission(models.Model):
     MISSION_NATURE = (
-            ('PROD', ugettext("Productive")),
-            ('NONPROD', ugettext("Unproductive")),
-            ('HOLIDAYS', ugettext("Holidays")))
+            ('PROD',  gettext("Productive")),
+            ('NONPROD',  gettext("Unproductive")),
+            ('HOLIDAYS',  gettext("Holidays")))
     PROBABILITY = (
-            (0, ugettext("Null (0 %)")),
-            (25, ugettext("Low (25 %)")),
-            (50, ugettext("Normal (50 %)")),
-            (75, ugettext("High (75 %)")),
-            (100, ugettext("Certain (100 %)")))
+            (0,  gettext("Null (0 %)")),
+            (25,  gettext("Low (25 %)")),
+            (50,  gettext("Normal (50 %)")),
+            (75,  gettext("High (75 %)")),
+            (100,  gettext("Certain (100 %)")))
     BILLING_MODES = (
-            ('FIXED_PRICE', ugettext("Fixed price")),
-            ('TIME_SPENT', ugettext("Time spent")))
+            ('FIXED_PRICE',  gettext("Fixed price")),
+            ('TIME_SPENT',  gettext("Time spent")))
     MANAGEMENT_MODES = (
-        ('LIMITED', ugettext("Limited")),
-        ('ELASTIC', ugettext("Elastic")),
+        ('LIMITED',  gettext("Limited")),
+        ('ELASTIC',  gettext("Elastic")),
         ('NONE', pgettext("masculine", "None")))
     lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"), on_delete=models.CASCADE)
     deal_id = models.CharField(_("Mission id"), max_length=100, blank=True)
@@ -391,16 +391,16 @@ class Mission(models.Model):
             staffing_data = dict(staffings.filter(consultant=consultant).values_list("staffing_date").annotate(Sum("charge")).order_by("staffing_date"))
 
             for month in set(timesheetMonths + staffingMonths):
-                data.append({ugettext("mission id"): mission_id,
-                             ugettext("mission name"): mission_name,
-                             ugettext("consultant"): consultant_name,
-                             ugettext("subsidiary"): subsidiary,
-                             ugettext("billing mode"): billing_mode,
-                             ugettext("date"): month.strftime("%Y/%m"),
-                             ugettext("done (days)"): timesheet_data.get(month, 0),
-                             ugettext("done (€)"): timesheet_data.get(month, 0) * consultant_rates[consultant][0],
-                             ugettext("forecast (days)"): staffing_data.get(month, 0),
-                             ugettext("forecast (€)"): staffing_data.get(month, 0) * consultant_rates[consultant][0]})
+                data.append({ gettext("mission id"): mission_id,
+                              gettext("mission name"): mission_name,
+                              gettext("consultant"): consultant_name,
+                              gettext("subsidiary"): subsidiary,
+                              gettext("billing mode"): billing_mode,
+                              gettext("date"): month.strftime("%Y/%m"),
+                              gettext("done (days)"): timesheet_data.get(month, 0),
+                              gettext("done (€)"): timesheet_data.get(month, 0) * consultant_rates[consultant][0],
+                              gettext("forecast (days)"): staffing_data.get(month, 0),
+                              gettext("forecast (€)"): staffing_data.get(month, 0) * consultant_rates[consultant][0]})
         return data
 
     def get_change_history(self):

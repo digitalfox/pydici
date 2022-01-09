@@ -15,7 +15,7 @@ from django.conf import settings
 from django.forms.models import BaseInlineFormSet
 from django.forms import ChoiceField, ModelChoiceField
 from django.utils.html import escape
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.db.models import Sum

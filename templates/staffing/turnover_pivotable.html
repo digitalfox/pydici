@@ -16,9 +16,9 @@
         <div class="row">
             <div id="date-selector" class="btn-group col-lg-8 col-12" role="group">
                 {% for year in years %}
-                    <a class="btn btn-primary {% ifequal year selected_year %}active{% endifequal %}" href="{% url 'staffing:turnover_pivotable_year' year %}?{{scope_current_filter}}">{{ year }}</a>
+                    <a class="btn btn-primary {% if year == selected_year %}active{% endif %}" href="{% url 'staffing:turnover_pivotable_year' year %}?{{scope_current_filter}}">{{ year }}</a>
                 {% endfor %}
-                    <a class="btn btn-primary {% ifequal 'all' selected_year %}active{% endifequal %}" href="{% url 'staffing:turnover_pivotable_all' %}?{{scope_current_filter}}">{% trans "All" %}</a>
+                    <a class="btn btn-primary {% if 'all' == selected_year %}active{% endif %}" href="{% url 'staffing:turnover_pivotable_all' %}?{{scope_current_filter}}">{% trans "All" %}</a>
             </div>
         </div>
         <div class="row mt-2">

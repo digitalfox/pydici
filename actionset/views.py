@@ -9,7 +9,7 @@ import json
 
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 
 from actionset.models import ActionSet, ActionState

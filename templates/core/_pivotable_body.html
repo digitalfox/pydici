@@ -3,7 +3,7 @@
 {# context: derivedAttributes #}
 
 <script type="text/javascript">
- var lang = {% ifequal LANGUAGE_CODE "fr-fr" %}'fr'{% else %}'en'{% endifequal %};
+ var lang = {% if LANGUAGE_CODE == "fr-fr" %}'fr'{% else %}'en'{% endif %};
 
  function drawPivot(data, rows, cols, rendererName, aggregatorName, vals, options) {
      var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.c3_renderers, $.pivotUtilities.export_renderers);

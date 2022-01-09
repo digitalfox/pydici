@@ -6,7 +6,7 @@
 
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.urls import reverse
 
 from staffing.models import Staffing, Mission

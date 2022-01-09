@@ -6,7 +6,7 @@ Django administration setup
 """
 
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from billing.models import ClientBill, SupplierBill
 from billing.forms import ClientBillForm, SupplierBillForm

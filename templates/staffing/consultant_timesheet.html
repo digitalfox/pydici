@@ -86,9 +86,9 @@
                 <tr><td></td>
                 {% for i in warning %}
                     <td>
-                    {% ifequal i 0 %}<img src="{{ MEDIA_URL }}/img/icon_success.gif"/>{% endifequal %}
-                    {% ifequal i 1 %}<img src="{{ MEDIA_URL }}/img/icon_alert.gif"/>  {% endifequal %}
-                    {% ifequal i 2 %}<img src="{{ MEDIA_URL }}/img/icon-no.gif"/>  {% endifequal %}
+                    {% if i == 0 %}<img src="{{ MEDIA_URL }}/img/icon_success.gif"/>{% endif %}
+                    {% if i == 1 %}<img src="{{ MEDIA_URL }}/img/icon_alert.gif"/>  {% endif %}
+                    {% if i == 2 %}<img src="{{ MEDIA_URL }}/img/icon-no.gif"/>  {% endif %}
                     </td>
                 {% endfor %}
                 </tr>
@@ -131,9 +131,9 @@
     {% if next_week < week %}
         $("#next-week").parent().hide();
     {% endif %}
-    {% ifequal week 1 %}
+    {% if week == 1 %}
         $("#previous-week").parent().hide();
-    {% endifequal %}
+    {% endif %}
 {% else %}
     {% if previous_date_enabled %}
         $('#previous-month').on("click", function () {

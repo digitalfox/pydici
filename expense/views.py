@@ -13,7 +13,7 @@ import decimal
 from django_tables2 import RequestConfig
 
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.urls import reverse
 from django.db.models import Q, Count
 from django.shortcuts import render, redirect

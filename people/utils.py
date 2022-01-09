@@ -10,7 +10,7 @@ appropriate to live in People models or view
 from datetime import datetime
 
 from django.db.models import Count, Min
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.urls import reverse
 
 from people.models import Consultant

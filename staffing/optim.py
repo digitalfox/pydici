@@ -10,8 +10,8 @@ from datetime import datetime
 from ortools.sat.python import cp_model
 
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
-from django.utils.translation import ugettext_noop
+from django.utils.translation import gettext as _
+from django.utils.translation import  gettext_noop
 from django.utils.html import escape
 from django.db import transaction
 
@@ -197,12 +197,12 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     solver.parameters.max_time_in_seconds = 10.0  # Limit to 10 secs
     status = solver.Solve(model) in (cp_model.OPTIMAL, cp_model.FEASIBLE)
     # Declare status and score string to make them translatable
-    ugettext_noop("FEASIBLE")
-    ugettext_noop("OPTIMAL")
-    ugettext_noop("planning_score")
-    ugettext_noop("freetime_score")
-    ugettext_noop("people_per_mission_score")
-    ugettext_noop("mission_per_people_score")
+    gettext_noop("FEASIBLE")
+    gettext_noop("OPTIMAL")
+    gettext_noop("planning_score")
+    gettext_noop("freetime_score")
+    gettext_noop("people_per_mission_score")
+    gettext_noop("mission_per_people_score")
     return solver, status, [planning_score, freetime_score, people_per_mission_score, mission_per_people_score], staffing
 
 

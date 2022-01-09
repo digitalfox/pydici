@@ -184,3 +184,6 @@ SELECT2_CACHE_BACKEND = 'select2'
 SELECT2_JS = ''
 SELECT2_CSS = ''
 TAGGIT_LIMIT = 200
+
+# since django 3.2, default PK field has changed from autofield (integer) to bigint. Set here previous default.
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

@@ -14,7 +14,7 @@ from django.db.models import Q, Sum, Min, Max
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.html import strip_tags
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.core.cache import cache
 from django.conf import settings
 

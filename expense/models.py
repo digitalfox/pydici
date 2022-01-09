@@ -14,8 +14,8 @@ from decimal import Decimal
 from django.db import models
 from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import  gettext
 from django.contrib.auth.models import User
 from django.conf import settings
 
@@ -33,10 +33,10 @@ EXPENSE_STATES = (
 )
 
 EXPENSE_TRANSITION_TO_STATES = (
-    ("VALIDATED", ugettext("Validate")),
-    ("REJECTED", ugettext("Reject")),
-    ("NEEDS_INFORMATION", ugettext("Ask for information")),
-    ("CONTROLLED", ugettext("Control")),
+    ("VALIDATED",  gettext("Validate")),
+    ("REJECTED",  gettext("Reject")),
+    ("NEEDS_INFORMATION",  gettext("Ask for information")),
+    ("CONTROLLED",  gettext("Control")),
 )
 
 class ExpenseStorage(FileSystemStorage):

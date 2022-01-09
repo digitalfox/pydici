@@ -5,7 +5,7 @@ Pydici staffing tables
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.template.loader import get_template
 from django.db.models import Q
 from django.utils.safestring import mark_safe

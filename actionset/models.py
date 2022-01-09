@@ -6,8 +6,8 @@ Database access layer for pydici action set module
 """
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import  gettext
 from django.apps import apps
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -19,11 +19,11 @@ from core.utils import cacheable
 class ActionSet(models.Model):
     """Set of action that needs to be done when triggered by a process"""
     ACTIONSET_TRIGGERS = (
-            ('NEW_LEAD', ugettext("When a lead is created")),
-            ('WON_LEAD', ugettext("When a lead is won")),
-            ('NEW_MISSION', ugettext("When a mission is created")),
-            ('ARCHIVED_MISSION', ugettext("When mission is archived")),
-            ('NEW_CONSULTANT', ugettext("When a consultant is created")),
+            ('NEW_LEAD',  gettext("When a lead is created")),
+            ('WON_LEAD',  gettext("When a lead is won")),
+            ('NEW_MISSION',  gettext("When a mission is created")),
+            ('ARCHIVED_MISSION',  gettext("When mission is archived")),
+            ('NEW_CONSULTANT',  gettext("When a consultant is created")),
            )
     name = models.CharField(_("Name"), max_length=50)
     description = models.TextField(_("Description"), blank=True)

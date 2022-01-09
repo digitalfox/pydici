@@ -9,8 +9,8 @@ import os
 
 from django.db import models
 from datetime import datetime, date, timedelta
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import  gettext
 from django.contrib.admin.models import LogEntry, ContentType
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -46,14 +46,14 @@ class LeadManager(models.Manager):
 class Lead(models.Model):
     """A commercial lead"""
     STATES = (
-            ('QUALIF', ugettext("Qualifying")),
-            ('WRITE_OFFER', ugettext("Writting offer")),
-            ('OFFER_SENT', ugettext("Offer sent")),
-            ('NEGOTIATION', ugettext("Negotiation")),
-            ('WON', ugettext("Won")),
-            ('LOST', ugettext("Lost")),
-            ('FORGIVEN', ugettext("Forgiven")),
-            ('SLEEPING', ugettext("Sleeping")),
+            ('QUALIF',  gettext("Qualifying")),
+            ('WRITE_OFFER',  gettext("Writting offer")),
+            ('OFFER_SENT',  gettext("Offer sent")),
+            ('NEGOTIATION',  gettext("Negotiation")),
+            ('WON',  gettext("Won")),
+            ('LOST',  gettext("Lost")),
+            ('FORGIVEN',  gettext("Forgiven")),
+            ('SLEEPING',  gettext("Sleeping")),
            )
     name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)

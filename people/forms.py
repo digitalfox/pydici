@@ -6,7 +6,7 @@ People form setup
 """
 
 from django.forms import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget

@@ -29,7 +29,7 @@
                             </p><br/>
                         {% endif %}{% endblock %}
                         {% block action_user %}<p><strong>{% trans "User: " %}</strong>{{ action.user }}</p><br/>{% endblock %}
-                        {% ifequal request.user action.user %}
+                        {% if request.user == action.user %}
                         <div>
                             <button type="button" class="btn btn-primary"
                               onClick="$.get('{% url 'actionset:update_action_state' action.id|unlocalize 'DONE' %}',
@@ -47,7 +47,7 @@
                            {% for field in action.delegateForm %}<div class="force_child_span_inline">{{ field }}</div>{% endfor %}
                            
                          </div>
-                         {% endifequal %}
+                         {% endif %}
                     </div>
                 </div>
             </div>

@@ -7,7 +7,7 @@ appropriate to live in Lead models or view
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.utils.translation import ugettext
+from django.utils.translation import  gettext
 from django.contrib import messages
 from django.contrib.admin.models import LogEntry, ADDITION, ContentType
 from django.utils.encoding import force_text
@@ -84,9 +84,9 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             fromAddr = request.user.email or "noreply@noreply.com"
             send_lead_mail(lead, request, fromAddr=fromAddr,
                            fromName="%s %s" % (request.user.first_name, request.user.last_name))
-            messages.add_message(request, messages.INFO, ugettext("Lead sent to business mailing list"))
+            messages.add_message(request, messages.INFO,  gettext("Lead sent to business mailing list"))
         except Exception as e:
-            messages.add_message(request, messages.ERROR, ugettext("Failed to send mail: %s") % e)
+            messages.add_message(request, messages.ERROR,  gettext("Failed to send mail: %s") % e)
 
     if settings.TELEGRAM_IS_ENABLED:
         try:
@@ -94,7 +94,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             sticker = None
             url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
             if created:
-                msg = ugettext("New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
+                msg =  gettext("New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
                 sticker = settings.TELEGRAM_STICKERS.get("happy")
                 chat_group = "new_leads"
             elif state_changed:
@@ -103,7 +103,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
                     change = "%s (%s)" % (lead.get_change_history()[0].change_message, lead.get_change_history()[0].user)
                 except:
                     change = ""
-                msg = ugettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
+                msg =  gettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
                 if lead.state == "WON":
                     sticker = settings.TELEGRAM_STICKERS.get("happy")
                 elif lead.state in ("LOST", "FORGIVEN"):
@@ -118,7 +118,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
                 if sticker:
                     bot.sendSticker(chat_id=chat_id, sticker=sticker)
         except Exception as e:
-            messages.add_message(request, messages.ERROR, ugettext("Failed to send telegram notification: %s") % e)
+            messages.add_message(request, messages.ERROR,  gettext("Failed to send telegram notification: %s") % e)
 
     # Compute leads probability
     if sync:
@@ -145,7 +145,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
     if lead.mission_set.count() == 0:
         if lead.state in ("OFFER_SENT", "NEGOTIATION", "WON"):
             create_default_mission(lead)
-            messages.add_message(request, messages.INFO, ugettext("A mission has been initialized for this lead."))
+            messages.add_message(request, messages.INFO,  gettext("A mission has been initialized for this lead."))
 
     for mission in lead.mission_set.all():
         if mission.subsidiary != lead.subsidiary:
@@ -155,12 +155,12 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             mission.probability = 100
             mission.active = True
             mission.save()
-            messages.add_message(request, messages.INFO, ugettext("Mission's probability has been set to 100%"))
+            messages.add_message(request, messages.INFO,  gettext("Mission's probability has been set to 100%"))
         elif lead.state in ("LOST", "FORGIVEN", "SLEEPING"):
             mission.probability = 0
             mission.active = False
             mission.save()
-            messages.add_message(request, messages.INFO, ugettext("According mission has been archived"))
+            messages.add_message(request, messages.INFO,  gettext("According mission has been archived"))
 
 
 @background

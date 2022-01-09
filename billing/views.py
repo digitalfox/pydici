@@ -17,7 +17,7 @@ import logging
 
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils import translation
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.db.models import Sum, Q, F, Min, Max, Count

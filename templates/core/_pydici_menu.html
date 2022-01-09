@@ -208,7 +208,7 @@
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                   {% for subsidiary in subsidiaries %}
-                        <li ><a class="dropdown-item {% ifequal subsidiary.id request.session.subsidiary_id %}bi-check{% endifequal %}"
+                        <li ><a class="dropdown-item {% if subsidiary.id == request.session.subsidiary_id %}bi-check{% endif %}"
                                 href="{{ request.path }}?subsidiary_id={{ subsidiary.id }}">
                                 {{ subsidiary }}
                         </a></li>

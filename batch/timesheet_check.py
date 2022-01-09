@@ -27,7 +27,7 @@ os.chdir(PYDICI_DIR)
 from django.urls import reverse
 from django.core.mail import send_mass_mail
 from django.core.wsgi import get_wsgi_application
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.template.loader import get_template
 
 # Init and model loading

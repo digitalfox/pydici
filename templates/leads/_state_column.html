@@ -5,9 +5,9 @@
 {% if proba %}
     <div class='proba text-nowrap' data-bs-toggle='tooltip' data-bs-content='<table style="margin:0" class="table table-striped table-sm">{% for code, state, score in proba %}<tr><td>{{state }}</td><td>{{ score }} %</td></tr>{% endfor %}</table>'>
         <i
-            {% ifequal proba.0.0 "WON" %}style="color:green" class="bi bi-check-circle"{% endifequal %}
-            {% ifequal proba.0.0 "LOST" %}style="color:red" class="bi bi-x-circle"{% endifequal %}
-            {% ifequal proba.0.0 "FORGIVEN" %}style="color:orange" class="bi bi-dash-circle"{% endifequal %}
+            {% if proba.0.0 == "WON" %}style="color:green" class="bi bi-check-circle"{% endif %}
+            {% if proba.0.0 == "LOST" %}style="color:red" class="bi bi-x-circle"{% endif %}
+            {% if proba.0.0 == "FORGIVEN" %}style="color:orange" class="bi bi-dash-circle"{% endif %}
             >
         </i><small> {{proba.0.2}}&nbsp;%</small>
     </div>

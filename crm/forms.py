@@ -5,8 +5,8 @@ CRM form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import  gettext
 from django.utils.encoding import smart_text
 from django.urls import reverse
 
@@ -53,7 +53,7 @@ class ClientChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
         if obj.active:
             return smart_text(str(obj))
         else:
-            return smart_text(ugettext("%s (inactive)" % obj))
+            return smart_text( gettext("%s (inactive)" % obj))
 
 
 class ThirdPartyChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):

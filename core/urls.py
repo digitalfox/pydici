@@ -4,15 +4,15 @@
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.conf.urls import url
+from django.conf.urls  import re_path
 import core.views as v
 
-core_urls = [url(r'^$', v.index, name='index'),
-             url(r'^search$', v.search, name='search'),
-             url(r'^dashboard$', v.dashboard, name='dashboard'),
-             url(r'^risks$', v.risk_reporting, name='risk_reporting'),
-             url(r'^forbiden$', v.forbiden, name='forbiden'),
-             url(r'^financial-control//?$', v.financial_control, name="financial_control"),
-             url(r'^financial-control/(?P<start_date>\d{6})/?$', v.financial_control, name="financial_control"),
-             url(r'^financial-control/(?P<start_date>\d{6})/(?P<end_date>\d{6})/?$', v.financial_control, name="financial_control")
+core_urls = [ re_path(r'^$', v.index, name='index'),
+              re_path(r'^search$', v.search, name='search'),
+              re_path(r'^dashboard$', v.dashboard, name='dashboard'),
+              re_path(r'^risks$', v.risk_reporting, name='risk_reporting'),
+              re_path(r'^forbiden$', v.forbiden, name='forbiden'),
+              re_path(r'^financial-control//?$', v.financial_control, name="financial_control"),
+              re_path(r'^financial-control/(?P<start_date>\d{6})/?$', v.financial_control, name="financial_control"),
+              re_path(r'^financial-control/(?P<start_date>\d{6})/(?P<end_date>\d{6})/?$', v.financial_control, name="financial_control")
             ]

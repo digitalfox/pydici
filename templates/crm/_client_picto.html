@@ -3,13 +3,13 @@
 {% load i18n %}
 
 <i class="pydici-tooltip bi
-             {% ifequal client.expectations '1_NONE' %}bi-x-circle{% endifequal %}
-             {% ifequal client.expectations '2_DECREASING' %}bi-arrow-down-right-circle{% endifequal %}
-             {% ifequal client.expectations '3_FLAT' %}bi-arrow-right-circle{% endifequal %}
-             {% ifequal client.expectations '4_INCREASING' %}bi-arrow-up-right-circle{% endifequal %}"
+             {% if client.expectations == '1_NONE' %}bi-x-circle{% endif %}
+             {% if client.expectations == '2_DECREASING' %}bi-arrow-down-right-circle{% endif %}
+             {% if client.expectations == '3_FLAT' %}bi-arrow-right-circle{% endif %}
+             {% if client.expectations == '4_INCREASING' %}bi-arrow-up-right-circle{% endif %}"
       title="{% trans 'Expectations: ' %}{{ client.get_expectations_display }}"></i>
 
 <i class="pydici-tooltip bi
-             {% ifequal client.alignment '1_RESTRAIN' %}bi-exclamation-triangle{% endifequal %}
-             {% ifequal client.alignment '3_STRATEGIC' %}bi-star{% endifequal %}"
+             {% if client.alignment == '1_RESTRAIN' %}bi-exclamation-triangle{% endif %}
+             {% if client.alignment == '3_STRATEGIC' %}bi-star{% endif %}"
       title="{% trans 'Business alignment: ' %}{{ client.get_alignment_display }}"></i>

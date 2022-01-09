@@ -33,7 +33,7 @@
         <td>{% trans "k€" %}</td>
     </tr>
     {% for consultant, timesheet, staffing, estimated, timesheetAmount, staffingAmount ,timesheetRate, staffingRate in mission_data %}
-        {% ifequal consultant None %}
+        {% if consultant is None %}
             <tr align="right" style="font-weight:bold">
             <td>{% trans "Total" %}</td>
             <td>{{ timesheet|join:"</td><td>" }}</td>
@@ -69,7 +69,7 @@
             <td>{{ staffing|join:"</td><td>" }}</td>
             <td class="table-separator"></td>
             <td>{{ estimated|join:"</td><td>" }}</td>
-        {% endifequal %}
+        {% endif %}
         </tr>
     {% endfor %}
 
@@ -86,10 +86,10 @@
                 <h2>{% trans "Profitability" %}</h2>
                 <table class="table table-hover">
                     <tr><td>{% trans "Sold" %}</td>
-                    <td>{% if mission.price %}{{ mission.price }}  k€ {% ifequal mission.billing_mode "TIME_SPENT" %}{% trans "(maximum)" %}{% endifequal %}
+                    <td>{% if mission.price %}{{ mission.price }}  k€ {% if mission.billing_mode == "TIME_SPENT" %}{% trans "(maximum)" %}{% endif %}
                         {% else %} <a href="{% url 'staffing:mission_update' mission.id %}?return_to={% url 'staffing:mission_home' mission.id %}#goto_tab-timesheet">{% trans "To be defined" %}</a>
                         {% endif %}</td></tr>
-                    {% ifequal mission.billing_mode "FIXED_PRICE" %}
+                    {% if mission.billing_mode == "FIXED_PRICE" %}
                         <tr><td>{% trans "Average daily rate" %}</td><td>{{ avg_daily_rate }}  €</td></tr>
                         {% if forecasted_unused < 0 %}
                             <tr><td>{% trans "Overtaking" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Done and forecasted days with defined rate overtake mision price{% endblocktrans %}"></i></td><td>{{ forecasted_unused }} k€</td></tr>
@@ -100,7 +100,7 @@
                     {% else %}
                         <tr><td>{% trans "Currently unused" %}</td><td>{{ current_unused }} k€</td></tr>
                         <tr><td>{% trans "Forecasted unused" %}{% if forecasted_unused < 0 %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Consider mission price update to reflect reality or use elastic management mode for this mission{% endblocktrans %}"></i>{% endif %}</td><td>{{ forecasted_unused }} k€</td></tr>
-                    {% endifequal %}
+                    {% endif %}
                 </table>
             </div>
 

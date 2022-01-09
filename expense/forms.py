@@ -8,8 +8,8 @@ import copy
 
 from django import forms
 from django.forms.widgets import TextInput, Textarea
-from django.utils.translation import ugettext as _
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy
 from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
@@ -87,7 +87,7 @@ class ExpenseForm(forms.ModelForm):
             for extension in valid_extensions:
                 if self.cleaned_data["receipt"].name.lower().endswith(extension):
                     return self.cleaned_data["receipt"]
-            raise ValidationError(ugettext_lazy("Use a valid extension (%s)") % ", ".join(valid_extensions))
+            raise ValidationError(gettext_lazy("Use a valid extension (%s)") % ", ".join(valid_extensions))
 
 
     def clean(self):
