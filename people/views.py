@@ -224,7 +224,11 @@ def consultant_deactivation(request):
             raise Exception("Only superuser can deactivate user")
         with transaction.atomic():
             try:
-                User.objects.get(username=request.POST["trigramme"]).delete()
+                u = User.objects.get(username=request.POST["trigramme"])
+                u.is_active = False
+                u.is_staff = False
+                u.is_superuser = False
+                u.save()
             except User.DoesNotExist:
                 pass
             consultant = Consultant.objects.get(trigramme=request.POST["trigramme"].upper())
