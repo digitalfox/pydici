@@ -18,7 +18,7 @@ function yyyymm(dateIn) {
 
 $(document).ready(function() {
     $('input.datepicker').datepicker(
-            {language: {% if LANGUAGE_CODE=="fr-fr" %}'fr'{% else %}'en'{% endif %},
+            {language: {% if LANGUAGE_CODE == "fr-fr" %}'fr'{% else %}'en'{% endif %},
              autoclose: true,
              orientation: 'top',
              todayHighlight: true});
