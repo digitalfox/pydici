@@ -105,7 +105,7 @@
     	    {% ifchanged consultant.staffing_manager %}
     	        <tr><th colspan="18">{% blocktrans with consultant.staffing_manager as manager %}{{manager}} staff{% endblocktrans %}</th></tr>
     	    {% endifchanged %}
-    	{% end %}
+    	{% endif %}
         {% if groupby == "level" %}
             {% ifchanged consultant.profil %}
                 <tr><th>{{consultant.profil}}</th></tr>
