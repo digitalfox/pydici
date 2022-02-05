@@ -52,6 +52,7 @@ class PydiciCrispyBaseForm(object):
         self.inline_helper.form_tag = False
         self.submit = Submit("Submit", _("Save"))
         self.submit.field_classes = "btn btn-primary my-2"
+        self.helper.attrs["novalidate"] = ""  # Deactivate native browser validation
 
 
 class PydiciCrispyModelForm(PydiciCrispyBaseForm, forms.ModelForm):
