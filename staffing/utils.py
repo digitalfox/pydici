@@ -114,6 +114,7 @@ def saveTimesheetData(consultant, month, data, oldData):
                 timesheet.delete()
 
 
+@transaction.atomic
 def saveFormsetAndLog(formset, request):
     """Save the given staffing formset and log last user"""
     now = datetime.now()

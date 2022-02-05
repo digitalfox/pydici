@@ -24,7 +24,7 @@ from django.utils.encoding import force_text
 from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import TruncMonth
-from django.db import connections, transaction
+from django.db import connections, transaction, IntegrityError
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats
@@ -210,8 +210,12 @@ def consultant_staffing(request, consultant_id):
     if request.method == "POST":
         formset = StaffingFormSet(request.POST, instance=consultant)
         if formset.is_valid():
-            saveFormsetAndLog(formset, request)
-            formset = StaffingFormSet(instance=consultant)  # Recreate a new form for next update
+            try:
+                saveFormsetAndLog(formset, request)
+                formset = StaffingFormSet(instance=consultant)  # Recreate a new form for next update
+            except IntegrityError as e:
+                # Corner case when user update one line that clash with constraint on another line that is removed on the same time
+                formset.management_form.add_error("", e)
     else:
         formset = StaffingFormSet(instance=consultant)  # An unbound form
 

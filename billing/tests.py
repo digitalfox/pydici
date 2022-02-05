@@ -7,7 +7,6 @@ Test cases for billing module
 
 from django.test import TestCase, TransactionTestCase
 from django.db import IntegrityError
-from django.db.models import Min, Max
 
 from crm.models import Supplier, Client
 from billing.models import SupplierBill, ClientBill, BillDetail
