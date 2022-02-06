@@ -1,5 +1,5 @@
 django>=3.2.11<3.3.0
-django_tables2==2.3.1
+django_tables2==2.4.1
 django-taggit==2.1.0
 django-taggit-templatetags2==1.6.1
 django-extensions==3.1.5
