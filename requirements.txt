@@ -8,7 +8,7 @@ django-debug-toolbar==3.2.4
 django-crispy-forms==1.13.0
 crispy-bootstrap5==0.6
 Django-Select2==7.9.0
-python-memcached==1.59
+pymemcache==3.5.1
 django-datatables-view==1.19.1
 django-background-tasks==1.2.5
 WeasyPrint==52.4

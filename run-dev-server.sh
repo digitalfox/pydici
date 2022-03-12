@@ -1,5 +1,5 @@
 #!/bin/sh
 killall memcached 
-/usr/sbin/memcached -l 127.0.0.1 -d 
+/usr/sbin/memcached -l 127.0.0.1 -d -I 32m  -m 128
 python -Wd manage.py runserver_plus 8888 $*
 killall memcached 
