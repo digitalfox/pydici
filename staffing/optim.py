@@ -137,8 +137,8 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
     # Respect mission boundaries
     for mission in missions:
         for i, month in enumerate(months):
-            if (missions_boundaries[mission]["start"] and i < months.index(missions_boundaries[mission]["start"])) or \
-                    (missions_boundaries[mission]["end"] and i >= months.index(missions_boundaries[mission]["end"])):
+            if (missions_boundaries[mission]["start"] in months and i < months.index(missions_boundaries[mission]["start"])) or \
+                    (missions_boundaries[mission]["end"] in months and i >= months.index(missions_boundaries[mission]["end"])):
                 model.Add(staffing[consultant][mission][month] == 0)
 
     # define score components
