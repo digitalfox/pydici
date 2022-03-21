@@ -276,7 +276,9 @@
 
         {% with "mission_table" as table_id %}
             {% with mission_data_url as data_url %}
-                {% include "core/_datatables.html" %}
+                {% with mission_datatable_options as datatable_options %}
+                    {% include "core/_datatables.html" %}
+                {% endwith %}
             {% endwith %}
         {% endwith %}
 
