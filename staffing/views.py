@@ -234,6 +234,7 @@ def mass_staffing(request):
     """Massive staffing form"""
     staffing_dates = [(i, formats.date_format(i, format="YEAR_MONTH_FORMAT")) for i in staffingDates(format="datetime", n=24)]
     now = datetime.now().replace(microsecond=0)  # Remove useless microsecond that pollute form validation in callback
+    subsidiary = get_subsidiary_from_session(request)
     if request.method == 'POST':  # If the form has been submitted...
         form = MassStaffingForm(request.POST, staffing_dates=staffing_dates)
         if form.is_valid():  # All validation rules pass
@@ -241,6 +242,8 @@ def mass_staffing(request):
             if form.cleaned_data["all_consultants"]:
                 # Get all active, productive non subcontractors consultants
                 consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
+                if subsidiary:
+                    consultants = consultants.filter(company=subsidiary)
             else:
                 # Use selected consultants
                 consultants = form.cleaned_data["consultants"]
