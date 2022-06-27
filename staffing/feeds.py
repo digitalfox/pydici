@@ -77,4 +77,4 @@ class ArchivedMission(Feed):
             return item.lead.responsible
 
     def items(self):
-        return Mission.objects.filter(active=False).order_by('-update_date')[:50]
+        return Mission.objects.filter(active=False).order_by('-archived_date')[:50]
