@@ -8,11 +8,12 @@ from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import gettext as _
 
+from core.decorator import PydiciNonPublicFeedMixin
 from leads.models import Consultant, Lead
 from django.urls import reverse
 
 
-class LeadFeed(Feed):
+class LeadFeed(PydiciNonPublicFeedMixin, Feed):
     feed_type = Atom1Feed
     description_template = "leads/lead_mail.html"
     title_template = "leads/feed_title.txt"

@@ -42,6 +42,12 @@ class PydiciNonPublicdMixin(object):
         return super(PydiciNonPublicdMixin, self).dispatch(request, *args, **kwargs)
 
 
+class PydiciNonPublicFeedMixin(object):
+    @method_decorator(pydici_non_public)
+    def __call__(self, request, *args, **kwargs):
+        return super(PydiciNonPublicFeedMixin, self).__call__(request, *args, **kwargs)
+
+
 def pydici_subcontractor(function=None):
     """
     Decorator for views that restrict access to subcontractor users or internal users. It relies on consultant subcontractor flag

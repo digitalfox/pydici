@@ -9,11 +9,12 @@ from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import gettext as _
 from django.urls import reverse
 
+from core.decorator import PydiciNonPublicFeedMixin
 from staffing.models import Staffing, Mission
 from people.models import Consultant
 
 
-class StaffingFeed(Feed):
+class StaffingFeed(PydiciNonPublicFeedMixin, Feed):
     feed_type = Atom1Feed
     description_template = "staffing/feed_staffing_content.html"
     title_template = "staffing/feed_staffing_title.txt"
@@ -58,7 +59,7 @@ class MyLatestStaffing(StaffingFeed):
             return []
 
 
-class ArchivedMission(Feed):
+class ArchivedMission(PydiciNonPublicFeedMixin, Feed):
     feed_type = Atom1Feed
     # description_template = "staffing/feed_content.html"
     # title_template = "staffing/feed_title.txt"
