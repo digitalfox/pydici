@@ -24,7 +24,8 @@
                 <button class="btn btn-primary active" onclick="lead_per_state();">{% trans "Lead per state" %}</button>
                 <button class="btn btn-primary" onclick="price_interval();">{% trans "Lead per price interval" %}</button>
                 <button class="btn btn-primary" onclick="billing_per_client();">{% trans "Billing per client" %}</button>
-                <button class="btn btn-primary" onclick="margin_over_budget();">{% trans "Margin over budget" %}</button>
+                <button class="btn btn-primary" onclick="margin_over_budget_graph();">{% trans "Margin over budget (graph)" %}</button>
+                <button class="btn btn-primary" onclick="margin_over_budget_table();">{% trans "Margin over budget (table)" %}</button>
             </div>
         </div>
 
@@ -67,12 +68,20 @@
                 drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "billed (€)" %}'], options);
             }
 
-            function margin_over_budget() {
+            function margin_over_budget_graph() {
                 var rows = ["{% trans 'subsidiary' %}"];
                 var cols = ["{% trans 'client company' %}"];
                 var options = {}
                 options['inclusions'] = { {% trans "state" %}: ['{% trans "Won" %}'] };
                 drawPivot(data, rows, cols, "Horizontal Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "Over budget margin (€)" %}'], options);
+            }
+
+            function margin_over_budget_table() {
+                var rows = ["{% trans 'client company' %}", "{% trans 'deal id' %}"];
+                var cols = ["{% trans 'subsidiary' %}"];
+                var options = {}
+                options['inclusions'] = { {% trans "state" %}: ['{% trans "Won" %}'] };
+                drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ['{% trans "Over budget margin (€)" %}'], options);
             }
 
             // default

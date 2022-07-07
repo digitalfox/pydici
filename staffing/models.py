@@ -22,7 +22,7 @@ from people.models import Consultant
 from crm.models import MissionContact, Subsidiary
 from actionset.utils import launchTrigger
 from actionset.models import ActionState
-from core.utils import disable_for_loaddata, cacheable, nextMonth
+from core.utils import disable_for_loaddata, cacheable, nextMonth, get_parameter
 
 
 class AnalyticCode(models.Model):
@@ -312,9 +312,9 @@ class Mission(models.Model):
             for month in timesheetMonths:
                 n_days = timesheet_data.get(month, 0)
                 if consultant.subcontractor:
-                    # Compute objective margin on sold rate
+                    # Compute objective margin on sold rate after removing standard subcontractor budget margin
                     if consultant_rates[consultant][0] and consultant_rates[consultant][1]:
-                        result[consultant] += n_days * (consultant_rates[consultant][0] - consultant_rates[consultant][1])
+                        result[consultant] += n_days * (consultant_rates[consultant][0] * (1 - get_parameter("SUBCONTRACTOR_BUDGET_MARGIN")/100) - consultant_rates[consultant][1])
                 else:
                     # Compute objective margin on rate objective for this period
                     objectiveRate = consultant.get_rate_objective(working_date=month, rate_type="DAILY_RATE")
@@ -326,7 +326,7 @@ class Mission(models.Model):
                 if consultant.subcontractor:
                     # Compute objective margin on sold rate
                     if consultant_rates[consultant][0] and consultant_rates[consultant][1]:
-                        result[consultant] += n_days * (consultant_rates[consultant][0] - consultant_rates[consultant][1])
+                        result[consultant] += n_days * (consultant_rates[consultant][0] * (1 - get_parameter("SUBCONTRACTOR_BUDGET_MARGIN")/100) - consultant_rates[consultant][1])
                 else:
                     # Compute objective margin on rate objective for this period
                     objectiveRate = consultant.get_rate_objective(working_date=month, rate_type="DAILY_RATE")
