@@ -52,7 +52,10 @@
                     <td>{{ bill.due_date }}</td>
                     <td>{{ bill.payment_date|default_if_none:"" }}</td>
                     <td>{{ bill.comment|default_if_none:"" }}</td>
-                    <td><a href='{{ bill.bill_file_url }}'><i class="bi bi-file-earmark-text"></i></a></td>
+                    <td>{% if bill.state != '0_DRAFT' and bill.state != '0_PROPOSED' %}
+                            <a href='{{ bill.bill_file_url }}'><i class="bi bi-file-earmark-text"></i></a>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
     </table>
