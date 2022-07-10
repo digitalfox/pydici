@@ -59,10 +59,10 @@ def search(request):
     """Very simple search function on all major pydici objects"""
 
     words = request.GET.get("q", "")
-    words = words.split()
+    words = words.split()[:10]  # limits search to 10 words
     consultants = companies = contacts = leads = active_missions = archived_missions = bills = tags = None
     max_record = 50
-    more_record = False  # Wether we have more records
+    more_record = False  # Whether we have more records
     subsidiary = get_subsidiary_from_session(request)
 
     if len(words) == 1:
