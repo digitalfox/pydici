@@ -4,7 +4,7 @@
     margin-left: 10mm;
     margin-right: 10mm;
     margin-top: 10mm;
-    margin-bottom: 20mm;
+    margin-bottom: 0mm;
 }
 
 body
@@ -15,9 +15,9 @@ footer
 {
     position        : fixed;
     width           : 100%;
-    bottom          : 0;
-    margin-bottom   : -15mm;
-    height          : 15mm;
+    bottom          : -20mm;
+    margin-bottom   : 10mm;
+    height          : 30mm;
     text-align      : center;
     font-size       : 10px;
 }
