@@ -423,12 +423,6 @@ def tableToCSV(table, filename="data.csv"):
     return response
 
 
-def internal_error(request):
-    """Custom internal error view.
-    Like the default builtin one, but with context to allow proper menu display with correct media path"""
-    return render(request, "500.html")
-
-
 def forbiden(request):
     """When access is denied..."""
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':

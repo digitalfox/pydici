@@ -33,9 +33,6 @@ from core.urls import core_urls
 
 from core.views import PydiciSelect2View, PydiciSelect2SubcontractorView
 
-# Overide internal server error view
-handler500 = "core.views.internal_error"
-
 pydici_patterns = [ re_path(r'^admin/', admin.site.urls),]
 
 # Help page
