@@ -1,23 +1,31 @@
-{% extends "core/pydici.html" %}
 {% load i18n %}
 {% load pydici_filters %}
+{% load static %}
+<!DOCTYPE html><html lang="{{ LANGUAGE_CODE|default:"en-us" }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="pydici">
+    <meta name="author" content="Sebastien Renard">
 
-{% block pydici-menu %}{% endblock %}
-{% block messages %}{% endblock %}
-{% block pydici_rss %}{% endblock %}
+    <title>{{ bill.lead.subsidiary.commercial_name }}</title>
 
-{% block extracss %}
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+    <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/pydici-pdf.css" rel="stylesheet">
+
     <style type="text/css">
       @page { size: A4 landscape; }
     </style>
-{% endblock %}
+  </head>
 
-{% block content %}
+  <body>
 
 <div class="row">
-    <div class="col-2">
-        <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ mission.subsidiary.code}}.png"/><br/><br/>
+    <div class="col-xs-3">
+        <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ mission.subsidiary.code}}.png" height=40/><br/><br/>
+
     </div>
     <div class="col-8">
         <h3>{{ mission.full_name }}</h3>
@@ -42,4 +50,5 @@
     </table>
 </div>
 
-{% endblock %}
+  </body>
+</html>
