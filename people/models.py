@@ -186,8 +186,10 @@ class Consultant(models.Model):
 
     def team(self, exclude_self=True, only_active=False, staffing=False, subsidiary=False):
         """Returns Consultant team as a list of consultant. Default is directly managed team
-        @:param staffing: consider only consultant who has self as staffing manager
-        @:param subsidiary: take all subsidiary whomever is manager"""
+        :param staffing: consider staffing manager instead of hierarchical manager
+        :param subsidiary: take all subsidiary whomever is manager
+        :param exclude_self:
+        :param only_active:"""
         if subsidiary:
             team = Consultant.objects.filter(company=self.company)
         elif staffing:

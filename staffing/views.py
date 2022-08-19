@@ -87,9 +87,10 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
     except Consultant.DoesNotExist:
         return TIMESHEET_ACCESS_NOT_ALLOWED
 
-    if user_consultant.id == consultant.id or consultant in user_consultant.team():
-        # User is accessing his own timesheet and timesheet of his team
-        # A consultant can only edit his own timesheet on current month and 3 days after
+    if (user_consultant.id == consultant.id or  # own timesheet
+            consultant in user_consultant.team() or  # team timesheet
+            (user_has_feature(user, "timesheet_subsidiary") and user_consultant.company == consultant.company)):  # subsidiary timesheet
+        # A consultant can only edit timesheet on current month and few days after
         if ontime_editing:
             return TIMESHEET_ACCESS_READ_WRITE
         else:
@@ -99,7 +100,7 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
     if user_consultant.subcontractor:
         return TIMESHEET_ACCESS_NOT_ALLOWED
 
-    # A user with timesheet_subcontractor can managed subcontractor  timesheet
+    # A user with timesheet_subcontractor can manage subcontractor timesheet
     if consultant.subcontractor and user_has_feature(user, "timesheet_subcontractor"):
         if ontime_editing:
             return TIMESHEET_ACCESS_READ_WRITE
