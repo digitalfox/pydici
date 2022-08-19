@@ -167,7 +167,7 @@ def mission_staffing(request, mission_id):
     if request.method == "POST":
         if readOnly:
             # Readonly users should never go here !
-            return HttpResponseRedirect(reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbidden"))
         formset = StaffingFormSet(request.POST, instance=mission)
         if formset.is_valid():
             saveFormsetAndLog(formset, request)
@@ -201,7 +201,7 @@ def consultant_staffing(request, consultant_id):
             request.user.has_perm("staffing.delete_staffing")):
         # Only forbid access if the user try to edit someone else staffing
         if request.user.username.upper() != consultant.trigramme:
-            return HttpResponseRedirect(reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbidden"))
 
     StaffingFormSet = inlineformset_factory(Consultant, Staffing,
                                             form=StaffingForm,
@@ -729,7 +729,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         previous_week = 0
         next_week = 0
 
-    notAllowed = HttpResponseRedirect(reverse("core:forbiden"))
+    notAllowed = HttpResponseRedirect(reverse("core:forbidden"))
 
     consultant = Consultant.objects.get(id=consultant_id)
 
@@ -768,7 +768,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         if readOnly:
             # We should never go here as validate button is not displayed when read only...
             # This is just a security control
-            return HttpResponseRedirect(reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbidden"))
         form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
                              forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
         if form.is_valid():  # All validation rules pass

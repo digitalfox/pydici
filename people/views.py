@@ -31,7 +31,7 @@ def _consultant_home(request, consultant):
     if not request.user.is_staff:
         if consultant.trigramme.lower() != request.user.username.lower():
             # subcontactor cannot see other people page
-            return HttpResponseRedirect(reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbidden"))
 
     return render(request, 'people/consultant.html',
                   {"consultant": consultant,

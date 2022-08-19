@@ -423,13 +423,14 @@ def tableToCSV(table, filename="data.csv"):
     return response
 
 
-def forbiden(request):
+def forbidden(request):
     """When access is denied..."""
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        # Ajax request, use stripped forbiden page
-        template = "core/_access_forbiden.html"
+        # Ajax request, use stripped forbidden page
+        template = "core/_access_forbidden.html"
     else:
-        # Standard request, use full forbiden page with menu
-        template = "core/forbiden.html"
+        # Standard request, use complete forbidden page with menu
+        template = "core/forbidden.html"
     return render(request, template,
-                  {"admins": settings.ADMINS, })
+                  {"admins": settings.ADMINS, },
+                  status=403)

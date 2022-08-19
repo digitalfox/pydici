@@ -162,9 +162,9 @@ ALLOWED_HOSTS = ("localhost",)
 INTERNAL_IPS = ('127.0.0.1',)
 
 if PYDICI_PREFIX:
-    LOGIN_URL = "/%s/forbiden" % PYDICI_PREFIX
+    LOGIN_URL = "/%s/forbidden" % PYDICI_PREFIX
 else:
-    LOGIN_URL = "/forbiden"
+    LOGIN_URL = "/forbidden"
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

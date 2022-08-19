@@ -37,7 +37,7 @@ def expense(request, expense_id):
     expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
 
     if not expense_requester:
-        return HttpResponseRedirect(reverse("core:forbiden"))
+        return HttpResponseRedirect(reverse("core:forbidden"))
 
     consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
     user_team = consultant.user_team(exclude_self=False)
@@ -51,7 +51,7 @@ def expense(request, expense_id):
         if not (expense.user == request.user or \
                 expense.user in user_team or \
                 (expense_subsidiary_manager and users_are_in_same_company(expense.user, request.user))):
-            return HttpResponseRedirect(reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbidden"))
 
     return render(request, "expense/expense.html",
                   {"expense": expense,
@@ -67,7 +67,7 @@ def expenses(request, expense_id=None, clone_from=None):
     expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
 
     if not expense_requester:
-        return HttpResponseRedirect(reverse("core:forbiden"))
+        return HttpResponseRedirect(reverse("core:forbidden"))
 
     consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
     subcontractor = None
@@ -176,7 +176,7 @@ def expense_delete(request, expense_id):
     expense = None
     expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
     if not expense_requester:
-        return HttpResponseRedirect(reverse("core:forbiden"))
+        return HttpResponseRedirect(reverse("core:forbidden"))
 
     try:
         if expense_id:
@@ -327,7 +327,7 @@ def expense_payments(request, expense_payment_id=None):
     if request.method == "POST":
         if readOnly:
             # A bad user is playing with urls...
-            return HttpResponseRedirect(reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbidden"))
         form = ExpensePaymentForm(request.POST)
         if form.is_valid():
             if expense_payment_id:
@@ -374,12 +374,12 @@ def expense_payment_detail(request, expense_payment_id):
     """Display detail of this expense payment"""
     expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
     if not expense_requester:
-        return HttpResponseRedirect(reverse("core:forbiden"))
+        return HttpResponseRedirect(reverse("core:forbidden"))
     try:
         if expense_payment_id:
             expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
         if not (expensePayment.user() == request.user or expense_paymaster or expense_administrator):
-            return HttpResponseRedirect(reverse("core:forbiden"))
+            return HttpResponseRedirect(reverse("core:forbidden"))
 
     except ExpensePayment.DoesNotExist:
         messages.add_message(request, messages.ERROR, _("Expense payment %s does not exist" % expense_payment_id))

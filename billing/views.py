@@ -171,7 +171,7 @@ def validate_supplier_bill(request, bill_id):
         bill.save()
         return HttpResponseRedirect(reverse("billing:bill_review"))
     else:
-        return HttpResponseRedirect(reverse("core:forbiden"))
+        return HttpResponseRedirect(reverse("core:forbidden"))
 
 
 @pydici_non_public
@@ -273,7 +273,7 @@ def client_bill(request, bill_id=None):
     billDetailFormSet = None
     billExpenseFormSet = None
     billing_management_feature = "billing_management"
-    forbiden = HttpResponseRedirect(reverse("core:forbiden"))
+    forbidden = HttpResponseRedirect(reverse("core:forbidden"))
     if bill_id:
         try:
             bill = ClientBill.objects.get(id=bill_id)
@@ -288,9 +288,9 @@ def client_bill(request, bill_id=None):
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
         # First, ensure user is allowed to manipulate the bill
         if bill and bill.state not in wip_status and not user_has_feature(request.user, billing_management_feature):
-            return forbiden
+            return forbidden
         if form.data["state"] not in wip_status and not user_has_feature(request.user, billing_management_feature):
-            return forbiden
+            return forbidden
         # Now, process form
         if bill and bill.state in wip_status:
             billDetailFormSet = BillDetailFormSet(request.POST, instance=bill)
