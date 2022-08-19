@@ -431,6 +431,10 @@ def forbidden(request):
     else:
         # Standard request, use complete forbidden page with menu
         template = "core/forbidden.html"
+    if settings.DEBUG:
+        status = 200  # Needed to trigger userswitch middleware
+    else:
+        status = 403  # Regular forbidden return code
     return render(request, template,
                   {"admins": settings.ADMINS, },
-                  status=403)
+                  status=status)

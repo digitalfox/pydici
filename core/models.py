@@ -41,6 +41,7 @@ _FEATURES_CHOICES = (
     ("timesheet_all", _("Timesheet, all: Access to all timesheets of all users")),
     ("timesheet_current_month", _("Timesheet, current month: Access to current month timesheets of all users")),
     ("timesheet_subcontractor", _("Timesheet management of subcontractor")),
+    ("timesheet_subsidiary", _("Timesheet management (R/W) of all user own subsidiary")),
     ("billing_management", _("Manage bills, allow to mark bills sent, paid etc.")),
     ("billing_request", _("Create bills and proposed them to billing team ")),
     ("expense", _("Expense request")),
