@@ -1074,6 +1074,7 @@ def mission_csv_timesheet_grouped(request, mission, consultants, start=None, end
 
     return response
 
+
 class MissionTimesheetReportPdf(PydiciNonPublicdMixin, WeasyTemplateView):
     template_name = 'staffing/mission_timesheet_report.html'
 
@@ -1086,10 +1087,10 @@ class MissionTimesheetReportPdf(PydiciNonPublicdMixin, WeasyTemplateView):
                                                           end=self.kwargs.get("end"))
         return context
 
-
     @method_decorator(pydici_feature("reports"))
     def dispatch(self, *args, **kwargs):
         return super(MissionTimesheetReportPdf, self).dispatch(*args, **kwargs)
+
 
 @pydici_non_public
 @pydici_feature("reports")

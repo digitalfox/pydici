@@ -13,7 +13,6 @@ from io import BytesIO
 import os
 
 from os.path import basename
-import logging
 
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -27,10 +26,6 @@ from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 
-# Silent weasyprint logger
-logger = logging.getLogger("weasyprint")
-if not logger.handlers:
-    logger.addHandler(logging.NullHandler())
 
 from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
 from PyPDF2 import PdfFileMerger, PdfFileReader
@@ -45,7 +40,6 @@ from staffing.views import MissionTimesheetReportPdf
 from crm.models import Subsidiary
 from crm.utils import get_subsidiary_from_session
 from core.utils import get_fiscal_years_from_qs, get_parameter, user_has_feature
-from crm.models import Company
 from core.utils import COLORS, sortedValues, nextMonth, previousMonth
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
 from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm

@@ -153,8 +153,7 @@ INSTALLED_APPS = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS.extend(('debug_toolbar',
-            ))
+    INSTALLED_APPS.extend(['debug_toolbar'])
 
 WSGI_APPLICATION = "pydici.wsgi.application"
 ALLOWED_HOSTS = ("localhost",)
@@ -179,3 +178,31 @@ TAGGIT_LIMIT = 200
 
 # since django 3.2, default PK field has changed from autofield (integer) to bigint. Set here previous default.
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'null_handler': {
+            'level': 'ERROR',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'root': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'weasyprint': {
+            'level': 'ERROR',
+            'handlers': ['null_handler'],
+        },
+        'fontTools': {
+            'level': 'ERROR',
+            'handlers': ['null_handler'],
+        },
+    }
+}
