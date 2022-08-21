@@ -1,0 +1,35 @@
+version: "3"
+services:
+  memcached:
+    image: memcached
+    command: memcached -l 0.0.0.0 -I 32m  -m 128
+    ports:
+      - "11211:11211"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+  mysql:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+  django:
+    build: .
+    command: python manage.py runserver_plus 0.0.0.0:8888
+    volumes:
+      - .:/code
+    ports:
+      - "8888:8888"
+    depends_on:
+      - memcached
+      - redis
+      - mysql
+  celery:
+    build: .
+    command: celery -A pydici worker -l INFO
+    volumes:
+      - .:/code
+    depends_on:
+      - django

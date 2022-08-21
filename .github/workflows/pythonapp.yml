@@ -4,23 +4,9 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-        
     steps:
-    - uses: niden/actions-memcached@v7
-    - uses: actions/checkout@v1
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.9
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r requirements-sklearn.txt
-        pip install -r requirements-nextcloudtag.txt
+    - uses: actions/checkout@v2
     - name: Test with django test
       run: |
-        sudo systemctl start mysql.service
-        python manage.py test
+        docker-compose run django python manage.py test
