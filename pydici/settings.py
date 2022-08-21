@@ -22,12 +22,12 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': 'memcached:11211',
 
     },
     'select2': {
         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': 'memcached:11211',
         'TIMEOUT': 60*15,
     },
 
@@ -149,7 +149,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'django_select2',
-    'background_task',
 ]
 
 if DEBUG:

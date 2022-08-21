@@ -4,16 +4,16 @@ django-taggit==2.1.0
 django-taggit-templatetags2==1.6.1
 django-extensions==3.2.0
 django-debug-toolbar==3.6.0
--e git+https://github.com//harpb/django-userswitch#egg=django-userswitch
+git+https://github.com//harpb/django-userswitch#egg=django-userswitch
 django-crispy-forms==1.14.0
 crispy-bootstrap5==0.6
 Django-Select2==7.9.0
 pymemcache==3.5.1
 django-datatables-view==1.20.0
-django-background-tasks==1.2.5
 WeasyPrint==56.1
 django-weasyprint==2.2.0
 bleach==5.0.1
 Markdown==3.4.1
 pypdf2==2.10.2
 ortools>=9.3.0,<9.4.0
+celery[redis]==5.2.7

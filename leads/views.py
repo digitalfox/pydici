@@ -311,10 +311,10 @@ def add_tag(request):
             answer["tag_created"] = False
         lead.tags.add(tagName)
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
-            compute_leads_state(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
-        compute_lead_similarity()  # update lead similarity model in background
+            compute_leads_state.delay(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
+        compute_lead_similarity.delay()  # update lead similarity model in background
         if settings.NEXTCLOUD_TAG_IS_ENABLED:
-            tag_leads_files([lead.id])  # Update lead tags from lead files
+            tag_leads_files.delay([lead.id])  # Update lead tags from lead files
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
         answer["tag_url"] = reverse("leads:tag", args=[tag.id, ])
         answer["tag_remove_url"] = reverse("leads:remove_tag", args=[tag.id, lead.id])
@@ -336,10 +336,10 @@ def remove_tag(request, tag_id, lead_id):
         lead = Lead.objects.get(id=lead_id)
         lead.tags.remove(tag)
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
-            compute_leads_state(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
-        compute_lead_similarity()  # update lead similarity model in background
+            compute_leads_state.delay(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
+        compute_lead_similarity.delay()  # update lead similarity model in background
         if settings.NEXTCLOUD_TAG_IS_ENABLED:
-            remove_lead_tag(lead.id, tag.id)  # Remove the lead tag from the lead files
+            remove_lead_tag.delay(lead.id, tag.id)  # Remove the lead tag from the lead files
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         answer["error"] = True
     return HttpResponse(json.dumps(answer), content_type="application/json")
@@ -360,7 +360,7 @@ def manage_tags(request):
             for tag in tags[1:]:
                 TaggedItem.objects.filter(tag=tag).update(tag=target_tag)
                 if settings.NEXTCLOUD_TAG_IS_ENABLED:
-                    merge_lead_tag(target_tag.name, tag.name)
+                    merge_lead_tag.delay(target_tag.name, tag.name)
                 tag.delete()
 
     return render(request, "leads/manage_tags.html",

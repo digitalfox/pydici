@@ -264,7 +264,7 @@ class LeadNextcloudTagTestCase(TestCase):
             lead2.tags.add("A test tag")
 
             # The function to be tested
-            tag_leads_files.now([lead1.id, lead2.id])
+            tag_leads_files([lead1.id, lead2.id])
 
             # Test the 6 lead file tags of lead 1
             expected_tags1 = [
@@ -295,7 +295,7 @@ class LeadNextcloudTagTestCase(TestCase):
                 self.assertListEqual(collect_file_tags(connection, 30+i), [])
 
             # Now remove a tag
-            remove_lead_tag.now(lead1.id, tag1.id)
+            remove_lead_tag(lead1.id, tag1.id)
 
             # Test that it is actually removed on lead 1
             expected_tags1 = [
@@ -314,7 +314,7 @@ class LeadNextcloudTagTestCase(TestCase):
                 self.assertEqual(expected_tag, collect_file_tags(connection, 20+i))
 
             # Test the merge of the two tags
-            merge_lead_tag.now("A test tag", "Another tag")
+            merge_lead_tag("A test tag", "Another tag")
 
             # Test that lead 1 has "A test tag" rather than "Another tag" (as lead 2 in fact...)
             for i, expected_tag in enumerate(expected_tags2):

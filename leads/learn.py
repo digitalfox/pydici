@@ -10,7 +10,7 @@ from datetime import datetime, date, timedelta
 import re
 import zlib
 import pickle
-from background_task import background
+from celery import shared_task
 
 HAVE_SCIKIT = True
 try:
@@ -321,7 +321,7 @@ def predict_state(model, features):
 
 
 def predict_tags(lead):
-    model = compute_leads_tags.now()
+    model = compute_leads_tags()
     if model is None:
         # cannot compute model (ex. not enough data, no scikit...)
         return []
@@ -345,7 +345,7 @@ def predict_tags(lead):
 
 
 def predict_similar(lead):
-    model = compute_lead_similarity.now()
+    model = compute_lead_similarity()
     leads_ids = cache.get(SIMILARITY_LEADS_IDS_CACHE_KEY)
     scaler = cache.get(SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY)
     similar_leads = []
@@ -365,7 +365,7 @@ def predict_similar(lead):
     return similar_leads
 
 ############# Entry points for computation ##########################
-@background
+@shared_task
 def compute_leads_state(relearn=True, leads_id=None):
     """Learn state from past leads and compute state probal for current leads. This function is intended to be run async
     as it could last few seconds.
@@ -408,7 +408,7 @@ def compute_leads_state(relearn=True, leads_id=None):
                     mission.probability = proba
                     mission.save()
 
-@background
+@shared_task
 def compute_leads_tags():
     """Learn tags from past leads and cache model"""
 
@@ -432,7 +432,7 @@ def compute_leads_tags():
     return model
 
 
-@background
+@shared_task
 def compute_lead_similarity():
     """Compute a model to find similar leads and cache it"""
 

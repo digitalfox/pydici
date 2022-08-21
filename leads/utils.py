@@ -16,8 +16,8 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.db.models import Count
 
-from background_task import background
 from taggit.models import Tag
+from celery import shared_task
 
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from staffing.models import Mission
@@ -122,9 +122,9 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
 
     # Compute leads probability
     if sync:
-        compute = compute_leads_state.now  # Select synchronous flavor of computation function
+        compute = compute_leads_state  # Select synchronous flavor of computation function
     else:
-        compute = compute_leads_state
+        compute = compute_leads_state.delay  # Use Celery
 
     if lead.state in ("WON", "LOST", "SLEEPING", "FORGIVEN"):
         # Remove leads proba, no more needed
@@ -163,7 +163,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             messages.add_message(request, messages.INFO,  gettext("According mission has been archived"))
 
 
-@background
+@shared_task
 def tag_leads_files(leads_id):
     """Tag all files of given leads.
     Can be called from tag views (when adding tags) or tag batch (for new files or initial sync)"""
@@ -232,7 +232,7 @@ def tag_leads_files(leads_id):
             connection.close()
 
 
-@background
+@shared_task
 def remove_lead_tag(lead_id, tag_id):
     """ Remove tag on given lead"""
     connection = None
@@ -281,7 +281,7 @@ def remove_lead_tag(lead_id, tag_id):
             connection.close()
 
 
-@background
+@shared_task
 def merge_lead_tag(target_tag_name, old_tag_name):
     """Propagate a tag merge on nextcloud tag system"""
     connection = None
