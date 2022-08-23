@@ -69,15 +69,6 @@ STATIC_ROOT = os.path.join(PYDICI_ROOTDIR, "static")
 ADMIN_MEDIA_PREFIX = '/media/'
 
 
-MIDDLEWARE = [
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'core.middleware.ScopeMiddleware',
-]
-
-
 ROOT_URLCONF = 'pydici.urls'
 
 TEMPLATES = [{

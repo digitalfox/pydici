@@ -11,9 +11,15 @@ DEBUG = True
 
 SECRET_KEY = "very-very-secret-dev-key"
 
-
-MIDDLEWARE.extend(['userswitch.middleware.UserSwitchMiddleware',
-                   'debug_toolbar.middleware.DebugToolbarMiddleware'])
+MIDDLEWARE = [
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'core.middleware.ScopeMiddleware',
+    'userswitch.middleware.UserSwitchMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
 
 TEMPLATES[0]["OPTIONS"]["debug"] = True
 
