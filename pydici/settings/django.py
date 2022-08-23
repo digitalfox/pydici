@@ -53,11 +53,7 @@ MEDIA_ROOT = ""
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-if PYDICI_PREFIX:
-    MEDIA_URL = "/%s/media/" % PYDICI_PREFIX
-else:
-    # Needed for empty prefix (equivalent to "/")
-    MEDIA_URL = "/media/"
+MEDIA_URL = "/media/"
 
 # STATICFILES_DIRS = (os.path.join(PYDICI_ROOTDIR, 'media'),)
 STATIC_URL = '/static/'
@@ -124,12 +120,6 @@ INSTALLED_APPS = [
 
 
 WSGI_APPLICATION = "pydici.wsgi.application"
-
-if PYDICI_PREFIX:
-    LOGIN_URL = "/%s/forbidden" % PYDICI_PREFIX
-else:
-    LOGIN_URL = "/forbidden"
-
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"

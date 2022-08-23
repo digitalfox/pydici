@@ -81,11 +81,5 @@ pydici_patterns.extend([ re_path("", include((core_urls, "core"), namespace="cor
                         ])
 
 
-# Application prefix
-if settings.PYDICI_PREFIX:
-    pydici_prefix = r'^%s/' % settings.PYDICI_PREFIX
-else:
-    pydici_prefix = ''
-
 # Define URL patterns
-urlpatterns = [ re_path(pydici_prefix, include(pydici_patterns))]
+urlpatterns = [re_path("", include(pydici_patterns))]
