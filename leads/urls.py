@@ -4,7 +4,7 @@
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.conf.urls  import re_path
+from django.urls import re_path
 from leads.tables import LeadTableDT, ActiveLeadTableDT, RecentArchivedLeadTableDT, ClientCompanyLeadTableDT, LeadToBill, TagTableDT
 import leads.views as v
 

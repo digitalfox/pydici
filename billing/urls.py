@@ -4,7 +4,7 @@
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.conf.urls import re_path
+from django.urls import re_path
 
 import billing.views as v
 import billing.tables as t

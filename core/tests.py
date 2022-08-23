@@ -131,6 +131,7 @@ PYDICI_AJAX_PAGES = (
 PYDICI_FIXTURES = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
 
+
 class SimpleTest(TestCase):
     fixtures = PYDICI_FIXTURES
 
