@@ -25,14 +25,19 @@ Python version >= 3.9 is required
 
 To install all python prerequisites, please do the following: pip install -r requirements.txt. It is strongly advised to use a virtual env.
 
+For development (and only for development), a docker-compose file can be used :
+
+    docker-compose up
+
 ## Detailed Installation
 
 Drop source code in a directory readable by your apache user
    git clone https://github.com/digitalfox/pydici.git
 
 Create a virtual env in a directory readable by your apache user and activate it
-   virtual-env venv
-   . venv/bin/activate
+
+     virtual-env venv
+    . venv/bin/activate
 
 Install prerequisites :
 
@@ -48,7 +53,9 @@ Create tables with :
 
 Generate a new secret key with ./manage.py generate_secret_key and put it in pydici/settings.py
 
-Collect static files with ./manage.py collectstatic
+Collect static files with :
+
+    ./manage.py collectstatic
 
 Setup your apache virtual env:
 
@@ -58,14 +65,7 @@ Setup your apache virtual env:
 - add Alias to /media and /static
 - define auth backend. By default, pydici is designed to work with an http front end authentication. Look at https://docs.djangoproject.com/en/dev/howto/auth-remote-user/
 
-Setup in cron (or your favorite scheduler) the followings tasks (adapt the schedule and options to your needs):
-
-    5 2  * * *      <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/manage.py clearsessions                    # Purge expired sessions in database
-    0 6 1 * *       <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/batch/timesheet_check.py                   # Warn for incomplete and surbooking timesheet for past month
-    0 6 2-31 * *    <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/batch/timesheet_check.py -w                # Warn for incomplete timesheet for past month
-    0 6 21-31 * *   <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/batch/timesheet_check.py -m current -d 20  # Warn for incomplete timesheet on current month for 20th first days
-    0 * * * *       <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/manage.py process_tasks -d 3600            # Process tasks for 1 hour
-
+Periodic tasks are ran by Celery. Scheduling setup is in settins/pydici_celery.py
 
 ## Updating an existing installation
 
@@ -131,5 +131,5 @@ On target:
     create empty database and play migrations
     ./manage.py loaddata dump.json
 
-# Hosting, support, professional services, custom developpement
+# Hosting, support, professional services, custom development
 See http://www.enioka.com/pydici-web/
