@@ -28,7 +28,7 @@ services:
       - mysql
   celery:
     build: .
-    command: celery -A pydici worker -l INFO
+    command: celery -A pydici worker -B -l INFO
     volumes:
       - .:/code
     depends_on:
