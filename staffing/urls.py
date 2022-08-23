@@ -7,6 +7,7 @@
 from django.urls import re_path
 import staffing.views as v
 import staffing.tables as t
+import staffing.api as a
 
 staffing_urls = [ re_path(r'^pdcreview/?$', v.pdc_review, name='pdcreview-index'),
                   re_path(r'^pdcreview/(?P<year>\d+)/(?P<month>\d+)/?$', v.pdc_review, name='pdcreview'),
@@ -57,4 +58,7 @@ staffing_urls = [ re_path(r'^pdcreview/?$', v.pdc_review, name='pdcreview-index'
                   re_path(r'^graph/profile-rates/?$', v.graph_profile_rates, name="graph_profile_rates"),
                   re_path(r'^graph/profile-rates/team/(?P<team_id>\d+)$', v.graph_profile_rates, name="graph_profile_rates"),
                   re_path(r'^graph/rates/consultant/(?P<consultant_id>\d+)', v.graph_consultant_rates, name="graph_consultant_rates"),
+                  re_path(r'^api/mission_list/?$', a.mission_list, name="mission_list"),
+                  re_path(r'^api/mission_list/(?P<start_date>\d{6})/?$', a.mission_list, name="mission_list"),
+                  re_path(r'^api/mission_list/(?P<start_date>\d{6})/(?P<end_date>\d{6})/?$', a.mission_list, name="mission_list"),
                 ]
