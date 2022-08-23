@@ -18,3 +18,5 @@ node_modules/
 .DS_Store
 .vscode/
 notebooks/
+celerybeat-schedule
+package-lock.json
