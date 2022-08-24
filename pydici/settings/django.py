@@ -117,6 +117,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'django_select2',
     'django_celery_results',
+    'django_celery_beat',
 ]
 
 
@@ -166,3 +167,4 @@ CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "default"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_RESULT_EXTENDED = True
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

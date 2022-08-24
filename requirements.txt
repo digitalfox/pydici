@@ -19,3 +19,4 @@ ortools>=9.3.0,<9.4.0
 celery[redis]==5.2.7
 django-split-settings==1.1.0
 django-celery-results==2.4.0
+django-celery-beat==2.3.0
