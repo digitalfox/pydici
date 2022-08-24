@@ -57,6 +57,3 @@ NEXTCLOUD_DB_PWD = "root"
 NEXTCLOUD_DB_FILE_STORAGE = 1
 # Don't tag file of those types to prevent tag clutter in search
 NEXTCLOUD_DB_EXCLUDE_TYPES = ["httpd/unix-directory", "application/octet-stream"]
-
-# Celery configuration
-CELERY_BROKER_URL = "redis://redis"

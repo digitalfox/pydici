@@ -116,6 +116,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'django_select2',
+    'django_celery_results',
 ]
 
 
@@ -158,3 +159,10 @@ LOGGING = {
         },
     }
 }
+
+# Celery configuration
+CELERY_BROKER_URL = "redis://redis"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "default"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_RESULT_EXTENDED = True
