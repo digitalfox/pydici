@@ -2,8 +2,6 @@
 # Django settings for pydici project.
 
 import os
-from .pydici_settings import *
-DEBUG = True
 
 ADMINS = (
      ('Sébastien Renard', 'sebastien@digitalfox.org'),
@@ -35,16 +33,8 @@ CACHES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
-# TIME_ZONE = 'America/Chicago'
 TIME_ZONE = 'Europe/Paris'
 
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'fr-fr'
 LOCALE_PATHS = (os.path.join(PYDICI_ROOTDIR, "locale"),)
 
@@ -63,11 +53,7 @@ MEDIA_ROOT = ""
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-if PYDICI_PREFIX:
-    MEDIA_URL = "/%s/media/" % PYDICI_PREFIX
-else:
-    # Needed for empty prefix (equivalent to "/")
-    MEDIA_URL = "/media/"
+MEDIA_URL = "/media/"
 
 # STATICFILES_DIRS = (os.path.join(PYDICI_ROOTDIR, 'media'),)
 STATIC_URL = '/static/'
@@ -78,21 +64,6 @@ STATIC_ROOT = os.path.join(PYDICI_ROOTDIR, "static")
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '-)^_522$p_b6ckz_94&o_en4th6ug&gxpe$!@f^6fjim0j=_)p'
-
-
-MIDDLEWARE = [
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'core.middleware.ScopeMiddleware',
-]
-
-if DEBUG:
-    MIDDLEWARE.extend(['userswitch.middleware.UserSwitchMiddleware',
-                               'debug_toolbar.middleware.DebugToolbarMiddleware'])
 
 ROOT_URLCONF = 'pydici.urls'
 
@@ -114,10 +85,6 @@ TEMPLATES = [{
                                ),
                 },
 }]
-
-if DEBUG:
-    TEMPLATES[0]["OPTIONS"]["debug"] = True
-
 
 PYDICI_APPS = [
     'core',
@@ -151,25 +118,11 @@ INSTALLED_APPS = [
     'django_select2',
 ]
 
-if DEBUG:
-    INSTALLED_APPS.extend(['debug_toolbar'])
 
 WSGI_APPLICATION = "pydici.wsgi.application"
-ALLOWED_HOSTS = ("localhost",)
-
-INTERNAL_IPS = ('127.0.0.1',)
-
-if PYDICI_PREFIX:
-    LOGIN_URL = "/%s/forbidden" % PYDICI_PREFIX
-else:
-    LOGIN_URL = "/forbidden"
-
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-CRISPY_FAIL_SILENTLY = not DEBUG
 SELECT2_CACHE_BACKEND = 'select2'
 SELECT2_JS = ''
 SELECT2_CSS = ''
