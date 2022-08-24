@@ -20,3 +20,4 @@ node_modules/
 notebooks/
 celerybeat-schedule
 package-lock.json
+dump.rdb
