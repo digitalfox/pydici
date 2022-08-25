@@ -42,7 +42,8 @@ def remove_default_tasks(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('core', '0011_alter_groupfeature_feature'),
+        ("core", "0011_alter_groupfeature_feature"),
+        ("django_celery_beat", "0016_alter_crontabschedule_timezone")
     ]
 
     operations = [
