@@ -9,7 +9,6 @@ Celery initialisation
 import os
 
 from celery import Celery, signature
-from celery.schedules import crontab
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pydici.settings")
@@ -19,22 +18,3 @@ app.config_from_object("django.conf:settings", namespace='CELERY')
 
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
-
-
-# Define periodic tasks
-@app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    # Warn users about incomplete timesheet
-    #TODO: change this to django-celery-beat configuration and move it into single migration file for initial configuration
-    sender.add_periodic_task(crontab(hour=6, minute=0, day_of_month="1"),
-                             signature("staffing.tasks.warn_for_incomplete_timesheet",
-                                       kargs={"warn_overbooking": True, "days": None, "month": "last"}),
-                             name="Warn users for incomplete timesheet and overbooking on last month")
-    sender.add_periodic_task(crontab(hour=6, minute=0, day_of_week="0-5"),
-                             signature("staffing.tasks.warn_for_incomplete_timesheet",
-                                       kargs={"warn_overbooking": False, "days": None, "month": "last"}),
-                             name="Warn users for incomplete timesheet on last month")
-    sender.add_periodic_task(crontab(hour=6, minute=0, day_of_month="21-31"),
-                             signature("staffing.tasks.warn_for_incomplete_timesheet",
-                                       kargs={"warn_overbooking": False, "days": 20, "month": "current"}),
-                             name="Warn users for incomplete timesheet on current month")
