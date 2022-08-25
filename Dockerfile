@@ -1,5 +1,8 @@
 # syntax=docker/dockerfile:1
 FROM python:3.9
+RUN useradd -m pydici
+USER pydici
+ENV PATH="/home/pydici/.local/bin/:$PATH"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 WORKDIR /code
