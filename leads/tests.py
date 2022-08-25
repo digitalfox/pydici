@@ -18,7 +18,7 @@ from people.models import Consultant
 from leads.models import Lead
 from staffing.models import Mission
 from crm.models import Subsidiary, BusinessBroker, Client
-from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME, PREFIX
+from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
 from leads import learn as leads_learn
 from leads.utils import postSaveLead, getLeadDirs, connect_to_nextcloud_db
 
@@ -47,7 +47,7 @@ class LeadModelTest(TestCase):
         self.assertEqual(len(lead.update_date_strf()), 14)
         self.assertEqual(lead.staffing_list(), "SRE, (JCF)")
         self.assertEqual(lead.short_description(), "A wonderfull lead th...")
-        self.assertEqual(reverse("leads:detail", args=[4]), PREFIX + "/leads/4/")
+        self.assertEqual(reverse("leads:detail", args=[4]), "/leads/4/")
 
         url = "".join(urlsplit(reverse("leads:detail", args=[lead.id]))[2:])
         response = self.client.get(url)
