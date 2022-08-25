@@ -13,6 +13,8 @@ services:
     image: mariadb
     ports:
       - "3306:3306"
+    volumes:
+      - ./scripts/grant_test.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       MARIADB_ROOT_PASSWORD: root
       MARIADB_DATABASE: pydici

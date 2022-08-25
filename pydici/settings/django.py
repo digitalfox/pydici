@@ -11,11 +11,14 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'pydici.db',
-        'TEST': {'NAME': '/dev/shm/myproject-djangotestdb.sqlite' },
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'pydici',
+        'USER': 'pydici',
+        'PASSWORD': 'pydici',
+        'HOST': 'mariadb'
     }
 }
+
 
 CACHES = {
     'default': {
