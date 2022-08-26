@@ -2,6 +2,7 @@
 # Django settings for pydici project.
 
 import os
+import sys
 
 ADMINS = (
      ('Sébastien Renard', 'sebastien@digitalfox.org'),
@@ -11,11 +12,14 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'pydici.db',
-        'TEST': {'NAME': '/dev/shm/myproject-djangotestdb.sqlite' },
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "pydici",
+        'USER': "pydici" if "test" not in sys.argv else "root",
+        'PASSWORD': "pydici" if "test" not in sys.argv else "root",
+        'HOST': "mariadb",
     }
 }
+
 
 CACHES = {
     'default': {
@@ -53,11 +57,7 @@ MEDIA_ROOT = ""
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-if PYDICI_PREFIX:
-    MEDIA_URL = "/%s/media/" % PYDICI_PREFIX
-else:
-    # Needed for empty prefix (equivalent to "/")
-    MEDIA_URL = "/media/"
+MEDIA_URL = "/media/"
 
 # STATICFILES_DIRS = (os.path.join(PYDICI_ROOTDIR, 'media'),)
 STATIC_URL = '/static/'
@@ -67,15 +67,6 @@ STATIC_ROOT = os.path.join(PYDICI_ROOTDIR, "static")
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
-
-
-MIDDLEWARE = [
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'core.middleware.ScopeMiddleware',
-]
 
 
 ROOT_URLCONF = 'pydici.urls'
@@ -129,16 +120,12 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'django_select2',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 
 WSGI_APPLICATION = "pydici.wsgi.application"
-
-if PYDICI_PREFIX:
-    LOGIN_URL = "/%s/forbidden" % PYDICI_PREFIX
-else:
-    LOGIN_URL = "/forbidden"
-
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
@@ -177,3 +164,11 @@ LOGGING = {
         },
     }
 }
+
+# Celery configuration
+CELERY_BROKER_URL = "redis://redis"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "default"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_RESULT_EXTENDED = True
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

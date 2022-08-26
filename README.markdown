@@ -17,28 +17,39 @@ Sébastien Renard (Sebastien.Renard@digitalfox.org).
 
 
 # INSTALLATION
+## Production pre requisites:
+* python >= 3.9
+* mariadb (tested with 10.X)
+* memcached
+* redis
 
 Pydici can be installed as any Django project. Just drop the code somewhere
-and setup Apache.
+and setup your favorite wsgi server (apache/mod_wsgi, gunicorn, uwsgi etc.).
 
-Python version >= 3.9 is required
+## Development environment
 
 To install all python prerequisites, please do the following: pip install -r requirements.txt. It is strongly advised to use a virtual env.
+You will need a running mysql or mariadb with a database named pydici (see pydici/settings.py for default credential)
+
+For development (and only for development), a docker-compose file can be used with mariadb, redis, memcached setup :
+
+    docker-compose up
 
 ## Detailed Installation
 
-Drop source code in a directory readable by your apache user
+Drop source code in a directory readable by your wsgi server user 
    git clone https://github.com/digitalfox/pydici.git
 
 Create a virtual env in a directory readable by your apache user and activate it
-   virtual-env venv
-   . venv/bin/activate
+
+     virtual-env venv
+    . venv/bin/activate
 
 Install prerequisites :
 
     pip install -r <path to pydici source code>/requirements.txt
 
-Setup your favorite database (mysql/mariaDB or postgresql) and create a schema/base (with UTF-8 character set please) with a valid user that can create/alter/select/delete/update its objects.
+Setup your favorite database (mysql/mariaDB or postgresql, mariadb is recommended) and create a schema/base (with UTF-8 character set please) with a valid user that can create/alter/select/delete/update its objects.
 
 Configure your database in pydici/settings.py. Look at django docs to understand the various database options.
 
@@ -48,7 +59,9 @@ Create tables with :
 
 Generate a new secret key with ./manage.py generate_secret_key and put it in pydici/settings.py
 
-Collect static files with ./manage.py collectstatic
+Collect static files with :
+
+    ./manage.py collectstatic
 
 Setup your apache virtual env:
 
@@ -56,56 +69,22 @@ Setup your apache virtual env:
 - activate ssl
 - active mod_expires
 - add Alias to /media and /static
-- define auth backend. By default, pydici is designed to work with an http front end authentication. Look at https://docs.djangoproject.com/en/dev/howto/auth-remote-user/
+- define auth backend. 
+  - By default, pydici is designed to work with an http front end authentication. Look at https://docs.djangoproject.com/en/dev/howto/auth-remote-user/
+  - In debug mode, django userswitch is provided, go to /admin/ and select user in droplist
 
-Setup in cron (or your favorite scheduler) the followings tasks (adapt the schedule and options to your needs):
+Periodic tasks are ran by Celery. Scheduling setup is in settins/pydici_celery.py
 
-    5 2  * * *      <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/manage.py clearsessions                    # Purge expired sessions in database
-    0 6 1 * *       <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/batch/timesheet_check.py                   # Warn for incomplete and surbooking timesheet for past month
-    0 6 2-31 * *    <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/batch/timesheet_check.py -w                # Warn for incomplete timesheet for past month
-    0 6 21-31 * *   <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/batch/timesheet_check.py -m current -d 20  # Warn for incomplete timesheet on current month for 20th first days
-    0 * * * *       <path to pydici>/venv/python -W ignore::DeprecationWarning <path to pydici>/manage.py process_tasks -d 3600            # Process tasks for 1 hour
+## Creating initial database
 
-
-## Updating an existing installation
-
-After pulling the latest changes, you need to update the database.
-
-There are three possible situations, depending on whether your installation uses Django Migration, uses South or does not use a migration system at all. 
-Your installation uses South if there is a `south_migrationhistory`
-
-1. Your installation already uses Django Migration. Run these commands:
+To create the initial database:
 
         ./manage.py migrate
 
-2. Your installation uses South:
+Or with docker, on development environment : 
 
-    Firstly you need to checkout the last pydici version using South "pydici/master", then run these commands:
+      docker exec pydici_django_1 python manage.py migrate
 
-        ./manage.py syncdb
-        ./manage.py migrate
-
-    After that you can update to to a newer version of pydici then :
-
-        ./manage.py migrate auth
-        ./manage.py migrate contenttypes
-        ./manage.py migrate --fake  # for internal pydici apps
-
-    Once this is done, future updates will be handled as situation #1.
-
-3. Your installation does not use Django Migration or South yet.
-
-    Firstly you need to checkout the last pydici version using South "pydici/master", then run these commands:
-
-        ./manage.py syncdb
-        ./manage.py migrate --all 0001 --fake
-        ./manage.py migrate
-
-    After that you can update to to a newer version of pydici by running:
-
-        ./manage.py migrate --fake
-
-    Once this is done, future updates will be handled just like situation #1.
 
 ## Notes about scikit learn
 Scikit learn is a machine learning framework for python. It is an optional Pydici deps that can predict leads tags and state.
@@ -128,8 +107,11 @@ On source:
 
 On target:
 
-    create empty database and play migrations
+    # create empty database and play migrations (see above)
     ./manage.py loaddata dump.json
+    # or with docker : 
+    docker exec pydici_django_1 python manage.py loaddata dump.json 
 
-# Hosting, support, professional services, custom developpement
+
+# Hosting, support, professional services, custom development
 See http://www.enioka.com/pydici-web/

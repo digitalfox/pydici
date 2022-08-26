@@ -9,12 +9,15 @@ services:
     image: redis
     ports:
       - "6379:6379"
-  mysql:
-    image: mysql
+  mariadb:
+    image: mariadb
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: pydici
+      MARIADB_USER: pydici
+      MARIADB_PASSWORD: pydici
   django:
     build: .
     command: python manage.py runserver_plus 0.0.0.0:8888
@@ -25,10 +28,10 @@ services:
     depends_on:
       - memcached
       - redis
-      - mysql
+      - mariadb
   celery:
     build: .
-    command: celery -A pydici worker -l INFO
+    command: celery -A pydici worker -B -l INFO
     volumes:
       - .:/code
     depends_on:

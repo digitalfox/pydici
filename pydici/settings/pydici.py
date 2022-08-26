@@ -7,11 +7,6 @@ import os
 # Root dir
 PYDICI_ROOTDIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir, os.path.pardir)
 
-# Application prefix without leading or trailing slash
-# Ex. if defined to 'pydici', index url will be http://my-site.com/pydici/
-# Use '' for no prerix. Index url will be http://my-site.com/
-PYDICI_PREFIX = "pydici"
-
 # Default VAT (Value Added Tax) rate (in %) used for billing.
 # Can be overrode for each bill. This is just the default proposed value on form
 # Value **must** be quoted as a string
@@ -54,7 +49,7 @@ TELEGRAM_STICKERS = {
 NEXTCLOUD_TAG_IS_ENABLED = True  # Wether to enable or not Nextcloud tag add/remove by Pydici
 # Nextcloud DB connection settings
 NEXTCLOUD_DB_DATABASE = "nextcloud"
-NEXTCLOUD_DB_HOST = "mysql"
+NEXTCLOUD_DB_HOST = "mariadb"
 NEXTCLOUD_DB_USER= "root"
 NEXTCLOUD_DB_PWD = "root"
 # Filter on a nextcloud particular storage. Get it with "SELECT * FROM oc_storages" and using the one that
@@ -62,6 +57,3 @@ NEXTCLOUD_DB_PWD = "root"
 NEXTCLOUD_DB_FILE_STORAGE = 1
 # Don't tag file of those types to prevent tag clutter in search
 NEXTCLOUD_DB_EXCLUDE_TYPES = ["httpd/unix-directory", "application/octet-stream"]
-
-# Celery configuration
-CELERY_BROKER_URL = "redis://redis"

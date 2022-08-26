@@ -25,7 +25,6 @@ from subprocess import Popen, PIPE
 
 
 TEST_USERNAME = "sre"
-PREFIX = "/" + settings.PYDICI_PREFIX
 PYDICI_PAGES = ("/",
                 "/search",
                 "/search?q=lala",
@@ -143,10 +142,10 @@ class SimpleTest(TestCase):
         self.client.force_login(self.test_user)
         error_msg = "Failed to test url %s (got %s instead of 200"
         for page in PYDICI_PAGES:
-            response = self.client.get(PREFIX + page)
+            response = self.client.get(page)
             self.assertEqual(response.status_code, 200, error_msg % (page, response.status_code))
         for page in PYDICI_AJAX_PAGES:
-            response = self.client.get(PREFIX + page, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+            response = self.client.get(page, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
             self.assertEqual(response.status_code, 200, error_msg % (page, response.status_code))
 
     def test_page_with_args(self):
@@ -155,13 +154,13 @@ class SimpleTest(TestCase):
                             ("/search", {"q": "sre"}),
                             ("/search", {"q": "a+e"})
                             ):
-            response = self.client.get(PREFIX + page, args)
+            response = self.client.get(page, args)
             self.assertEqual(response.status_code, 200,
                                  "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
 
     def test_redirect(self):
         self.client.force_login(self.test_user)
-        response = self.client.get(PREFIX + "/help")
+        response = self.client.get("/help")
         self.assertEqual(response.status_code, 301)
         for page in ("/staffing/mission/newfromdeal/1/",
                      "/staffing/mission/newfromdeal/2/",
@@ -173,20 +172,20 @@ class SimpleTest(TestCase):
                      "/staffing/timesheet/mission/3/",
                      "/people/detail/consultant/1/",
                      ):
-            response = self.client.get(PREFIX + page)
+            response = self.client.get(page)
             self.assertEqual(response.status_code, 302)
 
     def test_not_found_page(self):
         self.client.force_login(self.test_user)
-        for page in (PREFIX + "/leads/234/",
-                     PREFIX + "/leads/sendmail/434/"):
+        for page in ("/leads/234/",
+                     "/leads/sendmail/434/"):
             response = self.client.get(page)
             self.assertEqual(response.status_code, 404,
                                  "Failed to test url %s (got %s instead of 404" % (page, response.status_code))
 
     def test_pdc_review(self):
         self.client.force_login(self.test_user)
-        url = PREFIX + "/staffing/pdcreview/2009/07"
+        url = "/staffing/pdcreview/2009/07"
         for arg in ({}, {"projected": ""}, {"groupby": "manager"}, {"groupby": "position"},
                     {"n_month": "5"}, {"n_month": "50"}):
             response = self.client.get(url, arg)
@@ -272,7 +271,7 @@ class JsTest(StaticLiveServerTestCase):
         setup_test_user_features()
         self.test_user = User.objects.get(username=TEST_USERNAME)
         self.client.force_login(self.test_user)
-        urls = ",".join([self.live_server_url + PREFIX + page for page in PYDICI_PAGES])
+        urls = ",".join([self.live_server_url + page for page in PYDICI_PAGES])
         test_filename = os.path.join(os.path.dirname(__file__), 'tests.js')
         self.assertTrue(run_casper(test_filename, self.client, verbose=False, urls = urls), "At least one Casper test failed. See above the detailed log.")
 
