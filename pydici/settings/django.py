@@ -2,6 +2,7 @@
 # Django settings for pydici project.
 
 import os
+import sys
 
 ADMINS = (
      ('Sébastien Renard', 'sebastien@digitalfox.org'),
@@ -12,14 +13,10 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pydici',
-        'USER': 'pydici',
-        'PASSWORD': 'pydici',
-        'HOST': 'mariadb',
-        'TEST': {
-            'USER': 'root',
-            'PASSWORD': 'root',
-        }
+        'NAME': "pydici",
+        'USER': "pydici" if "test" not in sys.argv else "root",
+        'PASSWORD': "pydici" if "test" not in sys.argv else "root",
+        'HOST': "mariadb",
     }
 }
 
