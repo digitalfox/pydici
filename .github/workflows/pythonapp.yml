@@ -9,4 +9,4 @@ jobs:
     - uses: actions/checkout@v2
     - name: Test with django test
       run: |
-        docker-compose run django python manage.py test
+        docker-compose run --use-aliases django python manage.py test
