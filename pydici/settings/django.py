@@ -15,7 +15,11 @@ DATABASES = {
         'NAME': 'pydici',
         'USER': 'pydici',
         'PASSWORD': 'pydici',
-        'HOST': 'mariadb'
+        'HOST': 'mariadb',
+        'TEST': {
+            'USER': 'root',
+            'PASSWORD': 'root',
+        }
     }
 }
 
