@@ -1,4 +1,4 @@
-# coding:utf-8
+    # coding:utf-8
 """
 Staffing form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
@@ -28,7 +28,7 @@ from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget,
 from django.utils import formats
 
 
-from staffing.models import Mission, FinancialCondition, Staffing
+from staffing.models import Mission, FinancialCondition, Staffing, MarketingProduct
 from people.models import Consultant
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 from people.forms import ConsultantChoices, ConsultantMChoices
@@ -52,6 +52,18 @@ class MissionMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
 
     def get_queryset(self):
         return Mission.objects.filter(active=True)
+
+
+class MarketingProductChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
+    model = MarketingProduct
+    search_fields = ["code", "description"]
+
+    def __init__(self, *args, **kwargs):
+        self.subsidiary = kwargs.pop("subsidiary", None)
+        super(MarketingProductChoices, self).__init__(*args, **kwargs)
+
+    def get_queryset(self):
+        return MarketingProduct.objects.filter(active=True, subsidiary=self.subsidiary)
 
 
 class LeadMissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
@@ -270,15 +282,20 @@ class MissionForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MissionForm, self).__init__(*args, **kwargs)
+        self.fields["marketing_product"] = ModelChoiceField(widget=MarketingProductChoices(subsidiary=self.instance.subsidiary), queryset=MarketingProduct.objects.filter(subsidiary=self.instance.subsidiary))
         self.helper.layout = Layout(Div(Column(Field("description", placeholder=_("Name of this mission. Leave blank when leads has only one mission")),
                                                AppendedText("price", "k€"), "billing_mode", "management_mode", "subsidiary", "responsible", "probability", "probability_auto", "active",
                                                css_class="col-md-6"),
-                                        Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "analytic_code", "nature",
+                                        Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "nature", "analytic_code", "marketing_product",
                                                Field("start_date", placeholder=_("Forbid forecast before this date"), css_class="datepicker"),
                                                Field("end_date", placeholder=_("Forbid forecast after this date"), css_class="datepicker"), "contacts",
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
+
+    def add_fields(self, form, index):
+        super(MissionForm, self).add_fields(form, index)
+        form.fields["marketing_product"] = MarketingProductChoices(subsidiary=self.instance.subsidiary)
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
@@ -326,8 +343,8 @@ class MissionForm(PydiciCrispyModelForm):
     class Meta:
         model = Mission
         exclude = ['archived_date', 'lead']
-        widgets = { "contacts": MissionContactMChoices,
-                    "responsible": ConsultantChoices}
+        widgets = {"contacts": MissionContactMChoices,
+                   "responsible": ConsultantChoices}
 
 
 class FinancialConditionAdminForm(forms.ModelForm):

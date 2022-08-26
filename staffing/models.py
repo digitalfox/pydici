@@ -36,6 +36,22 @@ class AnalyticCode(models.Model):
             return self.code
 
 
+class MarketingProduct(models.Model):
+    code = models.CharField(max_length=100, unique=True)
+    description = models.CharField(_("Description"), max_length=100, blank=True, null=True)
+    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
+    active = models.BooleanField(_("Active"), default=True)
+
+    def __str__(self):
+        if self.description:
+            return "%s (%s - %s)" % (self.code, self.description, self.subsidiary)
+        else:
+            return self.code
+
+    class Meta:
+        unique_together = [["code", "subsidiary"]]
+
+
 class Mission(models.Model):
     MISSION_NATURE = (
             ('PROD',  gettext("Productive")),
@@ -70,6 +86,7 @@ class Mission(models.Model):
     archived_date = models.DateTimeField(_("Archived date"), blank=True, null=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
     analytic_code = models.ForeignKey(AnalyticCode, verbose_name=_("analytic code"), blank=True, null=True, on_delete=models.SET_NULL)
+    marketing_product = models.ForeignKey(MarketingProduct, verbose_name=_("marketing product"), blank=True, null=True, on_delete=models.SET_NULL)
     start_date = models.DateField(_("Start date"), blank=True, null=True)
     end_date = models.DateField(_("End date"), blank=True, null=True)
 
