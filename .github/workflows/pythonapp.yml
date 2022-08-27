@@ -6,7 +6,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Test with django test
-      run: |
-        docker-compose run --use-aliases --service-ports django python manage.py test
+    - uses: actions/checkout@v3
+    - name: Launch pydici (mariadb, memcached, redis, django and celery)
+      run: docker-compose up -d
+    - name: setup fs right
+      run: sudo chown -R $USER:$USER data && sudo chmod 777 -R data
+    - name: Run tests
+      run: docker exec -e RUNNING_IN_GH=1 pydici_django_1 /code/run-test.sh
