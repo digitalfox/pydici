@@ -140,7 +140,7 @@ class SimpleTest(TestCase):
 
     def test_basic_page(self):
         self.client.force_login(self.test_user)
-        error_msg = "Failed to test url %s (got %s instead of 200"
+        error_msg = "Failed to test url %s (got %s instead of 200)"
         for page in PYDICI_PAGES:
             response = self.client.get(page)
             self.assertEqual(response.status_code, 200, error_msg % (page, response.status_code))
@@ -150,13 +150,12 @@ class SimpleTest(TestCase):
 
     def test_page_with_args(self):
         self.client.force_login(self.test_user)
-        for page, args in  (("/search", {"q": "a"}),
-                            ("/search", {"q": "sre"}),
-                            ("/search", {"q": "a+e"})
-                            ):
+        for page, args in (("/search", {"q": "a"}),
+                           ("/search", {"q": "coucou"}),
+                           ("/search", {"q": "a+e"})):
             response = self.client.get(page, args)
             self.assertEqual(response.status_code, 200,
-                                 "Failed to test url %s (got %s instead of 200" % (page, response.status_code))
+                             "Failed to test url %s (got %s instead of 200)" % (page, response.status_code))
 
     def test_redirect(self):
         self.client.force_login(self.test_user)
