@@ -310,11 +310,15 @@ def main():
         timesheet_time = time(19, tzinfo=pytz.timezone(settings.TIME_ZONE))
     updater.job_queue.run_daily(call_for_timesheet, timesheet_time)
 
-    # Start the Bot
-    updater.start_polling()
+    try:
+        # Start the Bot
+        updater.start_polling()
 
-    # Run the bot until Ctrl-C or SIGINT,SIGTERM or SIGABRT.
-    updater.idle()
+        # Run the bot until Ctrl-C or SIGINT,SIGTERM or SIGABRT.
+        updater.idle()
+    except telegram.error.Unauthorized:
+        logger.error("Unauthorized. Please check TELEGRAM_TOKEN settings")
+        exit(1)
 
 
 if __name__ == '__main__':
