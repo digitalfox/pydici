@@ -227,7 +227,7 @@ class LeadNextcloudTagTestCase(TestCase):
                           "VALUES (%s, %s, %s, %s, %s, 6)"
             for i in range(1, 3):
                 lead = Lead.objects.get(id=i)
-                (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
+                (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False, create_dirs=False)
                 # Create 6 files per lead, 2 in each lead directory
                 # With <file_id> like <lead_id> in first digit, and <file_id> in second digit
                 files = [

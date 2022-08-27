@@ -242,8 +242,11 @@ def sanitizeName(name):
     return unicodedata.normalize('NFKD', name)
 
 
-def getLeadDirs(lead, with_prefix=True):
+def getLeadDirs(lead, with_prefix=True, create_dirs=True):
     """Get documents directories relative to this lead
+    :param lead: lead instance
+    :param with_prefix: add DOCUMENT_PROJECT_PATH prefix to dirs (bool)
+    :param create_dirs: create dirs on filesystem if needed
     @return: client_dir, lead_dir, business_dir, input_dir, delivery_dir"""
 
     if not settings.DOCUMENT_PROJECT_PATH:
@@ -266,12 +269,12 @@ def getLeadDirs(lead, with_prefix=True):
     if with_prefix:
         client_dir = os.path.join(settings.DOCUMENT_PROJECT_PATH, client_dir)
 
-    if not os.path.exists(client_dir):
+    if not os.path.exists(client_dir) and create_dirs:
         os.makedirs(client_dir, exist_ok=True)
 
     lead_dir = os.path.join(client_dir,
                             settings.DOCUMENT_PROJECT_LEAD_DIR.format(name=slugify(lead.name), deal_id=lead.deal_id))
-    if not os.path.exists(lead_dir):
+    if os.path.exists(client_dir) and not os.path.exists(lead_dir):
         # Look if an alternative path exists with proper lead code
         for path in os.listdir(client_dir):
             if isinstance(path, bytes):

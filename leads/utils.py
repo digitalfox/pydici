@@ -177,7 +177,7 @@ def tag_leads_files(leads_id):
             # Get all the lead tags
             tags = lead.tags.all().values_list('name', flat=True)
             # Get document directories
-            (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
+            (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False, create_dirs=False)
             tag_id_list = []
             for tag in tags:
                 # Get the tag id in nextcloud database
@@ -252,7 +252,7 @@ def remove_lead_tag(lead_id, tag_id):
             nextcloud_tag_id = rows[0][0]
 
         # Get document directories
-        (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False)
+        (client_dir, lead_dir, business_dir, input_dir, delivery_dir) = getLeadDirs(lead, with_prefix=False, create_dirs=False)
         # Find all files of the lead, except input
         cursor.execute(GET_FILES_ID_BY_DIR, (business_dir+'%',
                                              ",".join(settings.NEXTCLOUD_DB_EXCLUDE_TYPES),
