@@ -59,11 +59,14 @@ class MarketingProductChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     search_fields = ["code", "description"]
 
     def __init__(self, *args, **kwargs):
-        self.subsidiary = kwargs.pop("subsidiary", None)
+        self.mission = kwargs.pop("mission", None)
         super(MarketingProductChoices, self).__init__(*args, **kwargs)
 
     def get_queryset(self):
-        return MarketingProduct.objects.filter(active=True, subsidiary=self.subsidiary)
+        if self.mission.nature == "PROD":
+            return MarketingProduct.objects.filter(active=True, subsidiary=self.mission.subsidiary)
+        else:
+            return MarketingProduct.objects.none()
 
 
 class LeadMissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
@@ -282,7 +285,9 @@ class MissionForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MissionForm, self).__init__(*args, **kwargs)
-        self.fields["marketing_product"] = ModelChoiceField(widget=MarketingProductChoices(subsidiary=self.instance.subsidiary), queryset=MarketingProduct.objects.filter(subsidiary=self.instance.subsidiary))
+        self.fields["marketing_product"] = ModelChoiceField(widget=MarketingProductChoices(mission=self.instance),
+                                                            queryset=MarketingProduct.objects.filter(subsidiary=self.instance.subsidiary),
+                                                            required=False)
         self.helper.layout = Layout(Div(Column(Field("description", placeholder=_("Name of this mission. Leave blank when leads has only one mission")),
                                                AppendedText("price", "k€"), "billing_mode", "management_mode", "subsidiary", "responsible", "probability", "probability_auto", "active",
                                                css_class="col-md-6"),
@@ -295,7 +300,6 @@ class MissionForm(PydiciCrispyModelForm):
 
     def add_fields(self, form, index):
         super(MissionForm, self).add_fields(form, index)
-        form.fields["marketing_product"] = MarketingProductChoices(subsidiary=self.instance.subsidiary)
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
