@@ -36,3 +36,12 @@ services:
       - .:/code
     depends_on:
       - django
+  bot:
+    build: .
+    environment:
+      TELEGRAM_TOKEN: $TELEGRAM_TOKEN
+    command: python bot/pydici_bot.py
+    volumes:
+      - .:/code
+    depends_on:
+      - django
