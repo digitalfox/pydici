@@ -49,9 +49,9 @@ casper.on('resource.received', function(resource) {
 casper.echo("Let's start");
 // Let's run on all URLS
 casper.start().eachThen(urls, function(response) {
-  casper.thenOpen(response.data, function(response) {
-    casper.echo('Opened ' + response.url);
-    casper.test.assertEqual(response.status, 200, "Checking status 200 Ok");
+  this.thenOpen(response.data, function(response) {
+    this.echo('Opened ' + response.url);
+    this.test.assertEqual(response.status, 200, "Checking status 200 Ok");
   });
 });
 

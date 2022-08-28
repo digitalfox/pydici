@@ -34,3 +34,7 @@ DEBUG_TOOLBAR_CONFIG = {  # use settings.DEBUG instead of DEBUG to allow django 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 CRISPY_FAIL_SILENTLY = False
+
+# Use to allow LiveServerTestCase to work in serialized_rollback mode in order to preserve migration data during tests
+TEST_NON_SERIALIZED_APPS = ['django.contrib.contenttypes',
+                            'django.contrib.auth']

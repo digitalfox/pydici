@@ -262,9 +262,12 @@ class UtilsTest(TestCase):
         p.save()
         self.assertEqual(get_parameter(p.key), p.value)
 
+
 class JsTest(StaticLiveServerTestCase):
     """Test page through fake browser (phantomjs) to check that javascript stuff is going well"""
+    serialized_rollback = True
     fixtures = PYDICI_FIXTURES
+
     def test_missing_resource_and_js_errors(self):
         # Add a check to skip if casperjs is not available
         setup_test_user_features()
@@ -272,7 +275,7 @@ class JsTest(StaticLiveServerTestCase):
         self.client.force_login(self.test_user)
         urls = ",".join([self.live_server_url + page for page in PYDICI_PAGES])
         test_filename = os.path.join(os.path.dirname(__file__), 'tests.js')
-        self.assertTrue(run_casper(test_filename, self.client, verbose=False, urls = urls), "At least one Casper test failed. See above the detailed log.")
+        self.assertTrue(run_casper(test_filename, self.client, verbose=False, urls=urls), "At least one Casper test failed. See above the detailed log.")
 
 
 
