@@ -491,6 +491,9 @@ def graph_leads_pipe(request):
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
 
+    if leads.count() == 0:
+        return HttpResponse('')
+
     for lead in leads:
         month = lead.creation_date.replace(day=1).date()
         input_count[month] = input_count.get(month, 0) + 1
