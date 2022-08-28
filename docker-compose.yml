@@ -20,6 +20,7 @@ services:
       MARIADB_PASSWORD: pydici
   django:
     build: .
+    image: digitalfox/pydici:latest
     command: python manage.py runserver_plus 0.0.0.0:8888
     volumes:
       - .:/code
@@ -30,14 +31,14 @@ services:
       - redis
       - mariadb
   celery:
-    build: .
+    image: digitalfox/pydici:latest
     command: celery -A pydici worker -B -l INFO
     volumes:
       - .:/code
     depends_on:
       - django
   bot:
-    build: .
+    image: digitalfox/pydici:latest
     environment:
       TELEGRAM_TOKEN: $TELEGRAM_TOKEN
     command: python bot/pydici_bot.py
