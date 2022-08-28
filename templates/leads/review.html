@@ -99,7 +99,9 @@
         $(document).ready(function() {
             // display proba popover
             $(".dataTable").on('draw.dt', function() {
+                if ($(".proba")[0]) {
                     $(".proba").popover({'trigger': 'hover', 'html': true, sanitize: false});
+                }
                 });
         });
     </script>

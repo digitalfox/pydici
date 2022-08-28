@@ -2022,6 +2022,9 @@ def graph_consultant_rates(request, consultant_id):
     timesheets = Timesheet.objects.filter(consultant=consultant, charge__gt=0, working_date__gte=startDate, working_date__lt=nextMonth(date.today()))
     kdates = list(timesheets.dates("working_date", "month"))
 
+    if len(kdates) == 0:
+        return HttpResponse("")
+
     # Avg daily rate / month and objective rate
     for refDate in kdates:
         next_month = nextMonth(refDate)
