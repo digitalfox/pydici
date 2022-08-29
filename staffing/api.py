@@ -29,7 +29,8 @@ def mission_list(request, start_date=None, end_date=None):
     missions = missions.distinct()[:500]  # Limit data to avoid stupid things
     data = []
     for mission in missions:
-        data.append({"description": mission.description,
+        data.append({"lead_id": mission.lead.deal_id if mission.lead else None,
+                     "description": mission.description,
                      "billing_mode": mission.billing_mode,
                      "nature": mission.nature,
                      "management_mode": mission.management_mode,
@@ -38,6 +39,8 @@ def mission_list(request, start_date=None, end_date=None):
                      "responsible": mission.responsible.trigramme if mission.responsible else None,
                      "price": mission.price,
                      "analytic_code": mission.mission_analytic_code(),
+                     "marketing_product_code": mission.marketing_product.code if mission.marketing_product else None,
+                     "marketing_product_description": mission.marketing_product.description if mission.marketing_product else None,
                      "archived": not mission.active,
                      "archived_date": mission.archived_date,
                      "start_date": mission.start_date,
