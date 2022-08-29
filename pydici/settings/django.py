@@ -68,7 +68,6 @@ STATIC_ROOT = os.path.join(PYDICI_ROOTDIR, "static")
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
 
-
 ROOT_URLCONF = 'pydici.urls'
 
 TEMPLATES = [{
@@ -126,6 +125,8 @@ INSTALLED_APPS = [
 
 
 WSGI_APPLICATION = "pydici.wsgi.application"
+
+LOGIN_URL = "/forbidden"  # URL used to redirect users without enough rights
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
