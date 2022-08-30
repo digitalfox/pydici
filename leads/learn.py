@@ -156,8 +156,8 @@ def processTarget(targets):
 def get_lead_tag_data(lead):
     """Extract lead data needed to predict tag"""
     return " ".join([str(lead.client.organisation), str(lead.responsible),
-                                      str(lead.subsidiary), str(lead.name),
-                                      str(lead.staffing_list()), str(lead.description)])
+                     str(lead.subsidiary), str(lead.name),
+                     str(lead.staffing_list()), str(lead.description)])
 
 
 def extract_leads_tag(leads, include_leads=False):
@@ -177,6 +177,7 @@ def extract_leads_tag(leads, include_leads=False):
             else:
                 features.append(lead_info)
     return (features, targets)
+
 
 ############# Model definition ##########################
 def get_state_model():
@@ -287,6 +288,7 @@ def gridCV_state_model():
     eval_state_model(g.best_estimator_)
     return g
 
+
 def score_tag_lead(model, X, y):
     """Score function used to cross validated tag model"""
     lead_id_match = re.compile("(\d+)\s.*")
@@ -321,7 +323,7 @@ def predict_state(model, features):
 
 
 def predict_tags(lead):
-    model = compute_leads_tags()
+    model = compute_leads_tags(return_model=True)
     if model is None:
         # cannot compute model (ex. not enough data, no scikit...)
         return []
@@ -337,7 +339,7 @@ def predict_tags(lead):
             best_proba.append(tag)
         except IndexError:
             break  # No more tag for this lead
-        except (Tag.DoesNotExist,Tag.MultipleObjectsReturned):
+        except (Tag.DoesNotExist, Tag.MultipleObjectsReturned):
             # Tag was removed or two tag with same name (bad data before data cleaning)
             pass
 
@@ -345,7 +347,7 @@ def predict_tags(lead):
 
 
 def predict_similar(lead):
-    model = compute_lead_similarity()
+    model = compute_lead_similarity(return_model=True)
     leads_ids = cache.get(SIMILARITY_LEADS_IDS_CACHE_KEY)
     scaler = cache.get(SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY)
     similar_leads = []
@@ -363,6 +365,7 @@ def predict_similar(lead):
         except IndexError:
             print("While searching for lead similarity, some lead disapeared !")
     return similar_leads
+
 
 ############# Entry points for computation ##########################
 @shared_task
@@ -409,8 +412,9 @@ def compute_leads_state(relearn=True, leads_id=None):
                     mission.save()
 
 @shared_task
-def compute_leads_tags():
-    """Learn tags from past leads and cache model"""
+def compute_leads_tags(return_model=False):
+    """Learn tags from past leads and cache model
+    :param return_model: return computed model. Default is False because model is not serializable as celery result"""
 
     if not HAVE_SCIKIT:
         return
@@ -429,12 +433,14 @@ def compute_leads_tags():
     else:
         model = pickle.loads(zlib.decompress(model))
 
-    return model
+    if return_model:
+        return model
 
 
 @shared_task
-def compute_lead_similarity():
-    """Compute a model to find similar leads and cache it"""
+def compute_lead_similarity(return_model=False):
+    """Compute a model to find similar leads and cache it
+    :param return_model: return computed model. Default is False because model is not serializable as celery result"""
 
     if not HAVE_SCIKIT:
         return
@@ -454,4 +460,5 @@ def compute_lead_similarity():
         cache.set(SIMILARITY_LEADS_IDS_CACHE_KEY,[i.id for i in leads] , 3600 * 24* 7)
         cache.set(SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY, scaler, 3600 * 24 * 7)
 
-    return model
+    if return_model:
+        return model
