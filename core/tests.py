@@ -34,7 +34,6 @@ PYDICI_PAGES = ("/",
                 "/admin/",
                 "/leads/csv/all",
                 "/leads/csv/active",
-                "/leads/sendmail/2/",
                 "/leads/mail/text",
                 "/leads/mail/html",
                 "/leads/review",
@@ -177,7 +176,7 @@ class SimpleTest(TestCase):
     def test_not_found_page(self):
         self.client.force_login(self.test_user)
         for page in ("/leads/234/",
-                     "/leads/sendmail/434/"):
+                     "/staffing/mission/5435/"):
             response = self.client.get(page)
             self.assertEqual(response.status_code, 404,
                                  "Failed to test url %s (got %s instead of 404" % (page, response.status_code))

@@ -125,7 +125,7 @@ def lead(request, lead_id=None):
     try:
         if lead_id:
             lead = Lead.objects.get(id=lead_id)
-            old_lead_description  = lead.description
+            old_lead_description = lead.description
     except Lead.DoesNotExist:
         pass
 
@@ -236,21 +236,6 @@ def csv_export(request, target):
 
 @pydici_non_public
 @pydici_feature("leads")
-def mail_lead(request, lead_id=0):
-    try:
-        lead = Lead.objects.get(id=lead_id)
-    except Lead.DoesNotExist:
-        raise Http404
-    try:
-        send_lead_mail(lead)
-        return HttpResponse(_("Lead %(id)s was sent to %(mail)s !") % {"id": lead_id,
-                                                                       "mail": get_parameter("LEAD_MAIL_TO")})
-    except Exception as e:
-        return HttpResponse(_("Failed to send mail: %s") % e)
-
-
-@pydici_non_public
-@pydici_feature("leads")
 def review(request):
     return render(request, "leads/review.html",
                   {"active_data_url": reverse('leads:active_lead_table_DT'),
@@ -300,10 +285,7 @@ def tag(request, tag_id):
 @permission_required("leads.change_lead")
 def add_tag(request):
     """Add a tag to a lead. Create the tag if needed"""
-    answer = {}
-    answer["tag_created"] = True  # indicate if a tag was reused or created
-    answer["tag_url"] = ""  # url on tag
-    answer["tag_name"] = ""  # tag name
+    answer = {"tag_created": True, "tag_url": "", "tag_name": ""}
     if request.POST["tag"]:
         tagName = capitalize(request.POST["tag"])
         lead = Lead.objects.get(id=int(request.POST["lead_id"]))
@@ -328,9 +310,7 @@ def add_tag(request):
 @permission_required("leads.change_lead")
 def remove_tag(request, tag_id, lead_id):
     """Remove a tag to a lead"""
-    answer = {}
-    answer["error"] = False
-    answer["id"] = tag_id
+    answer = {"error": False, "id": tag_id}
     try:
         tag = Tag.objects.get(id=tag_id)
         lead = Lead.objects.get(id=lead_id)
@@ -355,7 +335,7 @@ def manage_tags(request):
         tags = []
         for tag_id in tags_to_merge.split(","):
             tags.append(Tag.objects.get(id=tag_id.split("-")[1]))
-        if tags and len(tags)>1 :
+        if tags and len(tags) > 1:
             target_tag = tags[0]
             for tag in tags[1:]:
                 TaggedItem.objects.filter(tag=tag).update(tag=target_tag)

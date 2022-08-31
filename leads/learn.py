@@ -109,8 +109,9 @@ def extract_leads_state(leads):
     features = []
     targets = []
     if isinstance(leads, QuerySet):
-        leads = leads.select_related("subsidiary", "client", "client__organisation", "client__organisation__company", "responsible",
-                             "responsible__company", "responsible__manager", "business_broker", "paying_authority")
+        leads = leads.select_related("subsidiary", "client", "client__organisation", "client__organisation__company",
+                                     "responsible", "responsible__company", "responsible__manager", "business_broker",
+                                     "paying_authority")
         leads = leads.prefetch_related("tags")
     for lead in leads:
         try:
@@ -119,14 +120,12 @@ def extract_leads_state(leads):
             targets.append(target)
         except Exception as e:
             print("Cannot process lead %s (%s)" % (lead.id, e))
-    return (features, targets)
+    return features, targets
 
 
 def get_lead_similarity_data(lead):
     """Get features of given lead to compute its similarity with others. Raise Exception if lead data cannot be extracted (ie. incomplete)"""
-    feature = {}
-    feature["subsidiary"] = str(lead.subsidiary)
-    feature["sales"] = float(lead.sales or 0)
+    feature = {"subsidiary": str(lead.subsidiary), "sales": float(lead.sales or 0)}
     for tag in lead.tags.all():
         feature["tag_%s" % tag.slug] = "yes"
     return feature
@@ -176,7 +175,7 @@ def extract_leads_tag(leads, include_leads=False):
                 features.append("%s %s" % (lead.id, lead_info))
             else:
                 features.append(lead_info)
-    return (features, targets)
+    return features, targets
 
 
 ############# Model definition ##########################
@@ -255,13 +254,13 @@ def test_tag_model():
 
 def gridCV_tag_model():
     """Perform a grid search cross validation to find best parameters"""
-    parameters=  {'clf__alpha': (0.1, 0.01, 0.001, 0.0001, 1e-05),
-     'clf__loss': ('log', 'modified_huber', 'squared_hinge'),
-     'clf__penalty': ('none', 'l2', 'l1', 'elasticnet'),
-     'vect__min_df': (1, 2, 3, 4, 5),
-     'vect__norm': ('l1', 'l2'),
-     'vect__sublinear_tf': (True, False),
-     }
+    parameters = {'clf__alpha': (0.1, 0.01, 0.001, 0.0001, 1e-05),
+                  'clf__loss': ('log', 'modified_huber', 'squared_hinge'),
+                  'clf__penalty': ('none', 'l2', 'l1', 'elasticnet'),
+                  'vect__min_df': (1, 2, 3, 4, 5),
+                  'vect__norm': ('l1', 'l2'),
+                  'vect__sublinear_tf': (True, False),
+                  }
 
     learn_leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2).select_related()
     features, targets = extract_leads_tag(learn_leads, include_leads=True)
@@ -274,12 +273,12 @@ def gridCV_tag_model():
 
 def gridCV_state_model():
     """Perform a grid search cross validation to find best parameters"""
-    parameters= {
-                 'clf__criterion': ("gini", "entropy"),
-                 'clf__min_samples_split': (2, 3, 5, 8, 10, 12),
-                 'clf__min_samples_leaf': (1, 2, 3, 5),
-                 'clf__class_weight': ("balanced", "balanced_subsample")
-                }
+    parameters = {
+        'clf__criterion': ("gini", "entropy"),
+        'clf__min_samples_split': (2, 3, 5, 8, 10, 12),
+        'clf__min_samples_leaf': (1, 2, 3, 5),
+        'clf__class_weight': ("balanced", "balanced_subsample")
+    }
     learn_leads = Lead.objects.filter(state__in=list(STATES.keys()))
     features, targets = extract_leads_state(learn_leads)
     model = get_state_model()

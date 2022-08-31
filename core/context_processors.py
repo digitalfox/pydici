@@ -51,7 +51,6 @@ def scope(request):
         scope_current_filter = "subsidiary_id=%s" % current_subsidiary.id
     else:
         scope_current_filter = ""
-        scope_current_url_filter = ""
     return {"subsidiaries": s,
             "current_subsidiary": current_subsidiary,
             "scope_current_filter": scope_current_filter}

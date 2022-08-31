@@ -29,7 +29,7 @@ To check for access from a template, use `{% if pydici_feature.<feature_name> %}
 _FEATURES_CHOICES = (
     ("3rdparties", _("3rd Parties: Access to the 'Third parties' menu")),
     ("contacts_write", _("Contacts, write access: Allow adding, editing, removing contacts")),
-    ("leads", _("Leads: Access to the 'Leads' menu")),
+    ("leads", _("Leads: Create and modify leads. Access to business menu")),
     ("leads_list_all", _("Leads, list all: Access to the 'Leads > All leads' menu entry")),
     ("leads_profitability", _("Leads, profitability: Access to the 'Profitability' information in lead description")),
     ("management", _("Management: Access to the 'Management' menu")),

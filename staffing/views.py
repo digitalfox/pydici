@@ -138,7 +138,10 @@ def missions(request, onlyActive=True):
 @pydici_non_public
 def mission_home(request, mission_id):
     """Home page of mission description - this page loads all others mission sub-pages"""
-    mission = Mission.objects.get(id=mission_id)
+    try:
+        mission = Mission.objects.get(id=mission_id)
+    except Mission.DoesNotExist:
+        raise Http404
     return render(request, 'staffing/mission.html',
                   {"mission": mission,
                    "enable_doc_tab": bool(settings.DOCUMENT_PROJECT_PATH),
