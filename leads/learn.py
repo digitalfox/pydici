@@ -372,12 +372,12 @@ def predict_similar(lead):
 def compute_leads_state(relearn=True, leads_id=None):
     """Learn state from past leads and compute state probal for current leads. This function is intended to be run async
     as it could last few seconds.
-    @:param learn; if true (default) learn again from leads, else, use previous computation if available
+    @:param relearn; if true (default) learn again from leads, else, use previous computation if available
     @:param leads_id: estimate those leads. All current leads if None. Parameter is a list of id to ease serialisation"""
     if not HAVE_SCIKIT:
         return
 
-    # only predict probal for in-progress leads
+    # only predict proba for in-progress leads
     current_leads = Lead.objects.exclude(state__in=list(STATES.keys()))
 
     # only work on given leads
@@ -403,7 +403,7 @@ def compute_leads_state(relearn=True, leads_id=None):
 
     for lead, score in zip(current_leads, predict_state(model, current_features)):
         for state, proba in list(score.items()):
-            s, created = StateProba.objects.get_or_create(lead=lead, state=state, defaults={"score":0})
+            s, created = StateProba.objects.get_or_create(lead=lead, state=state, defaults={"score": 0})
             s.score = proba
             s.save()
             if state == "WON":
@@ -411,16 +411,18 @@ def compute_leads_state(relearn=True, leads_id=None):
                     mission.probability = proba
                     mission.save()
 
+
 @shared_task
-def compute_leads_tags(return_model=False):
+def compute_leads_tags(relearn=False, return_model=False):
     """Learn tags from past leads and cache model
+    :param relearn: force to recompute model even if valid model is in cache (default is False)
     :param return_model: return computed model. Default is False because model is not serializable as celery result"""
 
     if not HAVE_SCIKIT:
         return
 
     model = cache.get(TAG_MODEL_CACHE_KEY)
-    if model is None:
+    if relearn or model is None:
         # Learn from leads with at least 2 tags
         learn_leads = Lead.objects.annotate(n_tags=Count("tags")).filter(n_tags__gte=2)
         if learn_leads.count() < 5:
@@ -438,8 +440,9 @@ def compute_leads_tags(return_model=False):
 
 
 @shared_task
-def compute_lead_similarity(return_model=False):
+def compute_lead_similarity(relearn=False, return_model=False):
     """Compute a model to find similar leads and cache it
+    :param relearn: force to recompute model even if valid model is in cache (default is False)
     :param return_model: return computed model. Default is False because model is not serializable as celery result"""
 
     if not HAVE_SCIKIT:
@@ -457,7 +460,7 @@ def compute_lead_similarity(return_model=False):
         model = get_similarity_model()
         model.fit(learn_features)
         cache.set(SIMILARITY_MODEL_CACHE_KEY, model, 3600 * 24 * 7)
-        cache.set(SIMILARITY_LEADS_IDS_CACHE_KEY,[i.id for i in leads] , 3600 * 24* 7)
+        cache.set(SIMILARITY_LEADS_IDS_CACHE_KEY,[i.id for i in leads] , 3600 * 24 * 7)
         cache.set(SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY, scaler, 3600 * 24 * 7)
 
     if return_model:
