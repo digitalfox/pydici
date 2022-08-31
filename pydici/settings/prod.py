@@ -20,3 +20,5 @@ MIDDLEWARE = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.RemoteUserBackend',
 ]
+
+MEDIA_ROOT = PYDICI_ROOTDIR
