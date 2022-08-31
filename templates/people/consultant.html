@@ -58,7 +58,7 @@
                 <tbody>
                     {% for mission in consultant.current_missions %}
                         <tr {%cycle 'class="row1"' 'class="row2"' %}>
-                            <th scope="row"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></th>
+                            <td scope="row"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></td>
                             <td>{{ mission.mission_id }}</td>
                             <td>{{ mission.probability }} %</td>
                             <td scope="row"><a href="{% url 'staffing:mission_update' mission.id %}?return_to={% url 'people:consultant_home' consultant.trigramme %}#goto_tab-missions" title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}' class='changelink'><em>{% trans "Change" %}</em></a></td>
