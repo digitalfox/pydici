@@ -8,7 +8,7 @@ import os
 
 from split_settings.tools import optional, include
 
-env = os.environ.get("PYDICI_ENV", "dev")
+env = os.environ.get("PYDICI_ENV", "prod")
 
 if env not in ("dev", "prod"):
     print("You need to set PYDICI_ENV environment variable to 'dev' or 'prod'")

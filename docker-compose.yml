@@ -26,6 +26,8 @@ services:
       - .:/code
     ports:
       - "8888:8888"
+    environment:
+      PYDICI_ENV: "dev"
     depends_on:
       - memcached
       - redis
@@ -35,6 +37,8 @@ services:
     command: celery -A pydici worker -B -l INFO
     volumes:
       - .:/code
+    environment:
+      PYDICI_ENV: "dev"
     depends_on:
       - django
   bot:
@@ -44,5 +48,7 @@ services:
     command: python bot/pydici_bot.py
     volumes:
       - .:/code
+    environment:
+      PYDICI_ENV: "dev"
     depends_on:
       - django
