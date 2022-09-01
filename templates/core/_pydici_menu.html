@@ -10,7 +10,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        {% if user.is_staff and pydici_feature.menubar %}
+        {% if pydici_feature.internal_access and pydici_feature.menubar %}
             <ul class="navbar-nav me-auto mb-2 mb-lg-0"> {# left main menu #}
                 {% cache 3600 menu request.user.id request.session.subsidiary_id %}
                     {% if pydici_feature.reports %}
@@ -186,7 +186,9 @@
                             {% trans "Help" %}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "Admin console" %}</a></li>
+                            {% if user.is_staff %}
+                                <li><a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "Admin console" %}</a></li>
+                            {% endif %}
                             <li><a class="dropdown-item" href="{% url 'help' %}">{% trans "Help page" %}</a></li>
                             <li>{{ foo|get_admin_mail }}</li>
                         </ul>
@@ -223,8 +225,8 @@
 
         {% endif %} {# end if internal user menu #}
 
-        {# Simple menu for subcontractor (non staff) #}
-        {% if not user.is_staff %}
+        {# Simple menu for subcontractor (non internal user) #}
+        {% if not pydici_feature.internal_access %}
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {% with user.username|link_to_timesheet as link %}
                         {% if link %}<li class="nav-item">{{ link }}</li>{% endif %}

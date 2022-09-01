@@ -33,7 +33,7 @@ def consultant_provisioning(request):
             user.first_name = request.POST["firstname"]
             user.last_name = request.POST["lastname"]
             user.email = request.POST["email"]
-            user.is_staff = True
+            user.is_staff = False
             for group in request.POST.getlist("groups"):
                 user.groups.add(Group.objects.get(name=group))
             user.save()

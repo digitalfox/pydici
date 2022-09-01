@@ -27,6 +27,7 @@ To check if a user has access to a feature from Python code, use
 To check for access from a template, use `{% if pydici_feature.<feature_name> %}`."""
 
 _FEATURES_CHOICES = (
+    ("internal_access", _("Provides basic access for company users. Every user except subcontractor should have this.")),
     ("3rdparties", _("3rd Parties: Access to the 'Third parties' menu")),
     ("contacts_write", _("Contacts, write access: Allow adding, editing, removing contacts")),
     ("leads", _("Leads: Create and modify leads. Access to business menu")),

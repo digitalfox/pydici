@@ -20,15 +20,15 @@ from crm.models import Company
 from crm.utils import get_subsidiary_from_session
 from staffing.models import Holiday
 from core.decorator import pydici_non_public
-from core.utils import working_days, previousMonth, nextMonth, COLORS
+from core.utils import working_days, previousMonth, nextMonth, COLORS, user_has_feature
 from people.utils import compute_consultant_tasks
 from crm.models import Subsidiary
 
 
 def _consultant_home(request, consultant):
-    if not request.user.is_staff:
+    if not user_has_feature(request.user, "internal_access"):
         if consultant.trigramme.lower() != request.user.username.lower():
-            # subcontactor cannot see other people page
+            # subcontractor cannot see other people page
             return HttpResponseRedirect(reverse("core:forbidden"))
 
     return render(request, 'people/consultant.html',

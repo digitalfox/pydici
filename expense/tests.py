@@ -16,8 +16,6 @@ from expense.models import Expense, ExpenseCategory, ExpensePayment
 from expense.utils import expense_next_states, can_edit_expense
 
 
-
-
 class WorkflowTest(TestCase):
     """Test pydici workflows"""
     fixtures = PYDICI_FIXTURES
@@ -110,7 +108,7 @@ class WorkflowTest(TestCase):
                                    category=category, amount=123, chargeable=False,
                                    creation_date=date.today(), expense_date=date.today())
 
-        # gba is not his manager the subsidiary manager, so he should be able to manage its expense
+        # gba is not his manager but the subsidiary manager, so he should be able to manage its expense
         states = expense_next_states(e, gba)
         self.assertIn("VALIDATED", states)
         self.assertIn("NEEDS_INFORMATION", states)

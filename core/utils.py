@@ -228,7 +228,7 @@ def sortedValues(data):
 
 def sampleList(data, maxLength):
     """Sample data list enough to reduce it to maxLength"""
-    while (len(data) > maxLength):
+    while len(data) > maxLength:
         step = int(1 + len(data) / maxLength)
         nData = []
         for i in range(0, len(data), step):
@@ -251,7 +251,7 @@ def getLeadDirs(lead, with_prefix=True, create_dirs=True):
 
     if not settings.DOCUMENT_PROJECT_PATH:
         # If project path is not defined, not needs to go further
-        return (None, None, None, None, None)
+        return None, None, None, None, None
 
     # Compose the path without the prefix, useful for nextcloud for instance
     client_dir = os.path.join(settings.DOCUMENT_PROJECT_CLIENT_DIR.format(name=slugify(lead.client.organisation.company.name),
@@ -387,7 +387,6 @@ def _get_user_features(user):
 
     Results are cached to reduce the number of SQL queries.
     """
-    #BUG: crash with anonymous user. Should check that user is authenticated first (and before)
     key = "core._get_user_features_" + user.username
     res = cache.get(key)
     if res is None:

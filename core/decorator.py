@@ -14,7 +14,7 @@ from django.utils.decorators import method_decorator
 from django.apps import apps
 
 
-from core.utils import user_has_features
+from core.utils import user_has_features, user_has_feature
 
 
 def _setify(value):
@@ -30,7 +30,7 @@ def pydici_non_public(function=None):
     it relies on the staff user flag and is mostly used to allow external people like
     subcontractors to access only to homepage and timesheet page
     """
-    actual_decorator = user_passes_test(lambda u: u.is_staff, login_url=None)
+    actual_decorator = user_passes_test(lambda u: not u.is_anonymous and user_has_feature(u, "internal_access"))
     if function:
         return actual_decorator(function)
     return actual_decorator
@@ -53,7 +53,10 @@ def pydici_subcontractor(function=None):
     Decorator for views that restrict access to subcontractor users or internal users. It relies on consultant subcontractor flag
     """
     Consultant = apps.get_model("people", "Consultant")
-    actual_decorator = user_passes_test(lambda u: Consultant.objects.get(trigramme__iexact=u.username).subcontractor or u.is_staff, login_url=None)
+    actual_decorator = user_passes_test(lambda u: not u.is_anonymous and (
+                                                  Consultant.objects.get(trigramme__iexact=u.username).subcontractor or
+                                                  user_has_feature(u, "internal_access")),
+                                        login_url=None)
     if function:
         return actual_decorator(function)
     return actual_decorator
