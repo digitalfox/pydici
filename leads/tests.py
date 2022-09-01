@@ -26,6 +26,7 @@ from urllib.parse import urlsplit
 import os.path
 from decimal import Decimal
 from datetime import date, datetime
+from unittest.mock import patch, call
 
 
 class LeadModelTest(TestCase):
@@ -112,11 +113,13 @@ class LeadModelTest(TestCase):
             lead.checkDeliveryDoc()
             lead.checkBusinessDoc()
 
+
+@patch("celery.app.task.Task.delay")
 class LeadLearnTestCase(TestCase):
     """Test lead state proba learn"""
     fixtures = PYDICI_FIXTURES
 
-    def test_state_model(self):
+    def test_state_model(self, mock_celery):
         if not leads_learn.HAVE_SCIKIT:
             return
         r1 = Consultant.objects.get(id=1)
@@ -125,10 +128,10 @@ class LeadLearnTestCase(TestCase):
         c2 = Client.objects.get(id=1)
         for i in range(20):
             a = create_lead()
-            if a.id%2:
+            if a.id % 2:
                 a.state = "WON"
                 a.sales = a.id
-                a.client= c1
+                a.client = c1
                 a.responsible = r1
             else:
                 a.state = "FORGIVEN"
@@ -139,7 +142,7 @@ class LeadLearnTestCase(TestCase):
         leads_learn.eval_state_model()
         self.assertGreater(leads_learn.test_state_model(), 0.8, "Proba is too low")
 
-    def test_tag_model(self):
+    def test_tag_model(self, mock_celery):
         if not leads_learn.HAVE_SCIKIT:
             return
         for lead in Lead.objects.all():
@@ -147,8 +150,7 @@ class LeadLearnTestCase(TestCase):
             lead.tags.add("camembert")
         self.assertGreater(leads_learn.test_tag_model(), 0.8, "Probal is too low")
 
-
-    def test_too_few_lead(self):
+    def test_too_few_lead(self, mock_celery):
         lead = create_lead()
         f = RequestFactory()
         request = f.get("/")
@@ -158,8 +160,18 @@ class LeadLearnTestCase(TestCase):
         lead = create_lead()
         postSaveLead(request, lead, [], sync=True)  # Learn model cannot exist, but it should not raise error
 
+    def test_celery_jobs_are_called(self, mock_celery):
+        lead = create_lead()
+        f = RequestFactory()
+        request = f.get("/")
+        request.user = User.objects.get(id=1)
+        request.session = {}
+        request._messages = default_storage(request)
+        lead = create_lead()
+        postSaveLead(request, lead, [])
+        mock_celery.assert_has_calls([call(relearn=False, leads_id=[lead.id]), call(), call()])
 
-    def test_mission_proba(self):
+    def test_mission_proba(self, mock_celery):
         for i in range(5):
             # Create enough data to allow learn model to exist
             a = create_lead()
