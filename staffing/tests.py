@@ -86,8 +86,8 @@ class StaffingViewsTest(TestCase):
         setup_test_user_features()
         self.test_user = User.objects.get(username=TEST_USERNAME)
 
-
     def test_mission_timesheet(self):
+        # TODO: this test fails when executed on the first day on the month
         self.client.force_login(self.test_user)
         current_month = date.today().replace(day=1)
         next_month = nextMonth(current_month)

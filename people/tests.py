@@ -61,7 +61,7 @@ class PeopleModelTest(TestCase):
         self.assertQuerysetEqual(c.pending_actions(), [])
 
     def test_turnover(self):
-        current_month = date.today().replace(day=1)
+        current_month = previousMonth(date.today().replace(day=1))
         next_month = nextMonth(current_month)
         previous_month = previousMonth(current_month)
         lead = Lead.objects.get(id=1)
