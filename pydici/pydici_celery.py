@@ -8,7 +8,9 @@ Celery initialisation
 
 import os
 
-from celery import Celery, signature
+from django.core.mail import mail_admins
+from celery import Celery
+from celery.signals import task_failure
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pydici.settings")
@@ -18,3 +20,11 @@ app.config_from_object("django.conf:settings", namespace='CELERY')
 
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
+
+
+@task_failure.connect()
+def email_on_task_crash(**kwargs):
+    """Simple mail alert on task crash"""
+    subject = "Pydici task error in {sender.name}".format(**kwargs).replace("\n", " ")
+    message = "{sender.name} was called with {args} / {kwargs} and failed with error message:\n\n{einfo}".format(**kwargs)
+    mail_admins(subject, message)
