@@ -7,7 +7,7 @@ django-debug-toolbar==3.6.0
 git+https://github.com//harpb/django-userswitch#egg=django-userswitch
 django-crispy-forms==1.14.0
 crispy-bootstrap5==0.6
-Django-Select2==7.9.0
+Django-Select2==7.10.0
 pymemcache==3.5.1
 django-datatables-view==1.20.0
 WeasyPrint==56.1
