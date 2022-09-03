@@ -212,7 +212,7 @@ def test_state_model():
     return scores.mean()
 
 
-def eval_state_model(model=None):
+def eval_state_model(model=None, verbose=True):
     """Display confusion matrix and classif report state model"""
     target_names = list(STATES.items())
     target_names.sort(key=lambda x: x[1])
@@ -224,18 +224,21 @@ def eval_state_model(model=None):
         model = get_state_model()
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
-    print(confusion_matrix(y_test, y_pred))
-    print(classification_report(y_test, y_pred))
+    if verbose:
+        print(confusion_matrix(y_test, y_pred))
+        print(classification_report(y_test, y_pred))
     feature_names = model.named_steps["vect"].get_feature_names()
     coef = model.named_steps["clf"].feature_importances_
     max_coef = max(coef)
     coef = [round(i*100/max_coef) for i in coef]
     top = list(zip(feature_names, coef))
     top.sort(key=lambda x: x[1], reverse=True)
-    for i, j in top[:30]:
-        print("%s\t\t=> %s" % (i, j))
+    if verbose:
+        for i, j in top[:30]:
+            print("%s\t\t=> %s" % (i, j))
     m = pickle.dumps(model)
-    print("size %s - compressed %s" % (len(m) / (1024 * 1024), len(zlib.compress(m)) / (1024 * 1024)))
+    if verbose:
+        print("size %s - compressed %s" % (len(m) / (1024 * 1024), len(zlib.compress(m)) / (1024 * 1024)))
     return model
 
 

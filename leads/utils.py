@@ -61,7 +61,7 @@ def create_default_mission(lead):
     return mission
 
 
-def postSaveLead(request, lead, updated_fields, created=False, state_changed=False, sync=False):
+def postSaveLead(request, lead, updated_fields, created=False, state_changed=False):
     mail = False
     if lead.send_email:
         mail = True
@@ -94,7 +94,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             sticker = None
             url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
             if created:
-                msg =  gettext("New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
+                msg = gettext("New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
                 sticker = settings.TELEGRAM_STICKERS.get("happy")
                 chat_group = "new_leads"
             elif state_changed:
@@ -103,7 +103,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
                     change = "%s (%s)" % (lead.get_change_history()[0].change_message, lead.get_change_history()[0].user)
                 except:
                     change = ""
-                msg =  gettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
+                msg = gettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
                 if lead.state == "WON":
                     sticker = settings.TELEGRAM_STICKERS.get("happy")
                 elif lead.state in ("LOST", "FORGIVEN"):
@@ -111,7 +111,7 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
                 chat_group = "leads_update"
             else:
                 # No notification
-                chat_group = ""
+                chat_group = msg = ""
 
             for chat_id in settings.TELEGRAM_CHAT.get(chat_group, []):
                 bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
@@ -121,19 +121,14 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             messages.add_message(request, messages.ERROR,  gettext("Failed to send telegram notification: %s") % e)
 
     # Compute leads probability
-    if sync:
-        compute = compute_leads_state  # Select synchronous flavor of computation function
-    else:
-        compute = compute_leads_state.delay  # Use Celery
-
     if lead.state in ("WON", "LOST", "SLEEPING", "FORGIVEN"):
         # Remove leads proba, no more needed
         lead.stateproba_set.all().delete()
         # Learn again. This new lead will now be used to training
-        compute(relearn=True)
+        compute_leads_state.delay(relearn=True)
     else:
         # Just update proba for this lead with its new features
-        compute(relearn=False, leads_id=[lead.id,])
+        compute_leads_state.delay(relearn=False, leads_id=[lead.id, ])
 
     # Update lead tags
     compute_leads_tags.delay()
