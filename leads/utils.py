@@ -29,7 +29,7 @@ if settings.TELEGRAM_IS_ENABLED:
     import telegram
 
 if settings.NEXTCLOUD_TAG_IS_ENABLED:
-    import mysql.connector
+    import MySQLdb
 
 # Nextcloud database queries
 GET_TAG_ID = "SELECT id FROM oc_systemtag WHERE name=%s"
@@ -44,6 +44,7 @@ GET_FILES_ID_BY_TAG = "SELECT objectid FROM oc_systemtag_object_mapping WHERE sy
 TAG_FILE = "INSERT INTO oc_systemtag_object_mapping (objectid, objecttype, systemtagid) VALUES (%(file_id)s, %(object_type)s, %(tag_id)s) " \
            "ON DUPLICATE KEY UPDATE objectid=objectid"
 UNTAG_FILE = "DELETE FROM oc_systemtag_object_mapping WHERE objectid=%(file_id)s AND objecttype=%(object_type)s AND systemtagid=%(tag_id)s"
+
 
 def create_default_mission(lead):
     mission = Mission(lead=lead)
@@ -252,7 +253,7 @@ def remove_lead_tag(lead_id, tag_id):
         cursor.execute(GET_FILES_ID_BY_DIR, (business_dir+'%',
                                              ",".join(settings.NEXTCLOUD_DB_EXCLUDE_TYPES),
                                              settings.NEXTCLOUD_DB_FILE_STORAGE))
-        lead_files = cursor.fetchall()
+        lead_files = list(cursor.fetchall())
         cursor.execute(GET_FILES_ID_BY_DIR, (delivery_dir+'%',
                                              ",".join(settings.NEXTCLOUD_DB_EXCLUDE_TYPES),
                                              settings.NEXTCLOUD_DB_FILE_STORAGE))
@@ -314,10 +315,10 @@ def merge_lead_tag(target_tag_name, old_tag_name):
 def connect_to_nextcloud_db():
     """Create a connexion to nextcloud database"""
     try:
-        connection = mysql.connector.connect(host=settings.NEXTCLOUD_DB_HOST, database=settings.NEXTCLOUD_DB_DATABASE,
-                                             user=settings.NEXTCLOUD_DB_USER, password=settings.NEXTCLOUD_DB_PWD)
+        connection = MySQLdb.connect(host=settings.NEXTCLOUD_DB_HOST, database=settings.NEXTCLOUD_DB_DATABASE,
+                                     user=settings.NEXTCLOUD_DB_USER, password=settings.NEXTCLOUD_DB_PWD)
         return connection
-    except mysql.connector.Error as e:
+    except MySQLdb.Error as e:
         raise e
 
 

@@ -495,9 +495,9 @@ def collect_file_tags(connection, file_id):
 
 def create_nextcloud_test_db():
     """Create if needed, test database for nextcloud"""
-    import mysql
-    connection = mysql.connector.connect(host=settings.NEXTCLOUD_DB_HOST,
-                                         user=settings.NEXTCLOUD_DB_USER, password=settings.NEXTCLOUD_DB_PWD)
+    import MySQLdb
+    connection = MySQLdb.connect(host=settings.NEXTCLOUD_DB_HOST,
+                                 user=settings.NEXTCLOUD_DB_USER, password=settings.NEXTCLOUD_DB_PWD)
     cursor = connection.cursor()
     cursor.execute("""create database if not exists %s""" % settings.NEXTCLOUD_DB_DATABASE)
     cursor.close()

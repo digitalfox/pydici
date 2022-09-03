@@ -1,7 +1,10 @@
 Pydici is a software for consulting/IT services company to manage:
-- commercial leads workflow (from business detection to sales and simple CRM)
+- commercial leads workflow (from business detection to sales)
+- Simple CRM
 - workload schedule to forecast people activity
-- operation management: timesheet, margin control, billing
+- operation management: timesheet, margin control,
+- billing
+- optional integration with Nextcloud to manage files
 
 It is written in Python using the Django framework.
 
