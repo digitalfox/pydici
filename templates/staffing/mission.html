@@ -32,7 +32,7 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="mission-tabs">
         <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home"><i class="bi bi-house"></i> {% trans "Description" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-consultants"><i class="bi bi-person"></i> {% trans "Consultants" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-consultants" data-tab-url="{% url 'staffing:mission_consultants' mission.id %}"><i class="bi bi-person"></i> {% trans "Consultants" %}</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-contacts" data-tab-url="{% url 'staffing:mission_contacts' mission.id %}"><i class="bi bi-envelope"></i> {% trans "Contacts" %}</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-other-missions" id="tabheader-other-missions"><i class="bi bi-list-ul"></i> {% trans "Other missions" %}</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-timesheet" data-tab-url="{% url 'staffing:mission_timesheet' mission.id %}"><i class="bi bi-clock"></i> {% trans "Timesheet" %}</button></li>
@@ -139,27 +139,7 @@
 
     </div>
 
-    <div id="tab-consultants" class="tab-pane fade" role="tabpanel">
-	    <h2 class="mt-2">{% trans "Consultants currently implicated in this mission" %}</h2>
-	    <div class="col-lg-6 col-md-8 col-sm-12">
-	    <table class="table table-striped table-sm">
-	    <tr>
-            <th>{% trans "Consultant" %}</th>
-            <th style="text-align:right;">{% trans "Daily rate (€)" %}</th>
-            <th style="text-align:right;">{% trans "Buy rate (€)" %}</th>
-            <th style="text-align:right;">{% trans "Objective rate (€)" %}</th>
-        </tr>
-	    {% for consultant, rate in mission.consultant_rates.items %}
-	        <tr>
-	            <td>{% include "people/__consultant_name.html" %}</td>
-	            <td align="right"><div id="sold-{{ mission.id|unlocalize }}-{{ consultant.id|unlocalize }}" class="jeditable-rate" >{{ rate.0|unlocalize }}</div></td>
-	            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id|unlocalize }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1|unlocalize }}</div>{% endif %}</td>
-                <td align="right">{{ consultant.get_rate_objective.rate|unlocalize }}</td>
-	        </tr>
-	    {% endfor %}
-	    </table>
-	    </div>
-    </div>
+    <div id="tab-consultants" class="tab-pane fade" role="tabpanel"></div>
 
     <div id="tab-contacts" class="tab-pane fade" role="tabpanel"></div>
     
@@ -239,18 +219,6 @@
 <!--
 $(document).ready(function() {
 {% if mission.active %}
-    $(".jeditable-rate").editable("{% url 'staffing:mission_consultant_rate' %}", {
-        indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
-        tooltip   : "{% trans 'click to edit...' %}",
-        event     : "click",
-        style     : "inherit",
-        data: function(value, settings) {
-            /* remove unbreakable space */
-            var retval = value.replace(/&nbsp;/gi, '');
-            return retval;
-          }
-    });
-
     $(".jeditable-mission-update").editable("{% url 'staffing:mission_inline_update' %}", {
         indicator : "<img src='{{ MEDIA_URL }}img/ajax-loader.gif'/>",
         tooltip   : "{% trans 'click to edit...' %}",

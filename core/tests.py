@@ -121,7 +121,8 @@ PYDICI_AJAX_PAGES = (
                 "/staffing/timesheet/mission/1/?csv_grouped",
                 "/staffing/forecast/mission/1/",
                 "/staffing/missions/consultant/1/",
-                "/staffing/missions/consultant/6/"
+                "/staffing/missions/consultant/6/",
+                "/staffing/mission/1/consultants",
                 "/leads/graph/bar-jqp",
                 "/crm/company/graph/sales",
                 "/crm/company/graph/sales/lastyear",

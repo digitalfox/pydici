@@ -150,6 +150,12 @@ def mission_home(request, mission_id):
 
 
 @pydici_non_public
+def mission_consultants(request, mission_id):
+    mission = Mission.objects.get(id=mission_id)
+    return render(request, "staffing/mission_consultants.html", {"mission": mission })
+
+
+@pydici_non_public
 @cache_control(no_store=True)
 def mission_staffing(request, mission_id):
     """Edit mission staffing"""
