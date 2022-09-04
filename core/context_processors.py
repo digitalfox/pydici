@@ -6,10 +6,7 @@ Pydici core context processors
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from collections import defaultdict
-from importlib import import_module
-
-from django.conf import settings
+from django.core.cache import cache
 
 from core.utils import user_has_feature
 from crm.models import Subsidiary
@@ -45,7 +42,10 @@ def feature(request):
 
 def scope(request):
     """Returns scope information context"""
-    s = Subsidiary.objects.filter(mission__nature="PROD").distinct()
+    s = cache.get("ACTIVE_SUBSIDIARIES")
+    if not s:
+        s = Subsidiary.objects.filter(mission__nature="PROD").distinct()
+        cache.set("ACTIVE_SUBSIDIARIES", s, 3600*24)
     current_subsidiary = get_subsidiary_from_session(request)
     if current_subsidiary:
         scope_current_filter = "subsidiary_id=%s" % current_subsidiary.id
