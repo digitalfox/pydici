@@ -3,20 +3,26 @@
 {# Fragment of page to be included in a mission_home tab #}
 
 <h2 class="mt-2">{% trans "Consultants currently implicated in this mission" %}</h2>
-    <div class="col-lg-6 col-md-8 col-sm-12">
+    <div class="col-lg-8 col-md-12 col-sm-12">
     <table class="table table-striped table-sm">
     <tr>
         <th>{% trans "Consultant" %}</th>
         <th style="text-align:right;">{% trans "Daily rate (€)" %}</th>
         <th style="text-align:right;">{% trans "Buy rate (€)" %}</th>
-        <th style="text-align:right;">{% trans "Objective rate (€)" %}</th>
+        {% for date in objective_dates %}
+            <th style="text-align:right;">{% blocktranslate with d=date|date:"M Y" %}Objective {{ d }} (€){% endblocktranslate %}</th>
+        {% endfor %}
     </tr>
-    {% for consultant, rate in mission.consultant_rates.items %}
+    {% for consultant, rate in rates.items %}
         <tr>
             <td>{% include "people/__consultant_name.html" %}</td>
-            <td align="right"><div id="sold-{{ mission.id|unlocalize }}-{{ consultant.id|unlocalize }}" class="jeditable-rate" >{{ rate.0|unlocalize }}</div></td>
-            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id|unlocalize }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.1|unlocalize }}</div>{% endif %}</td>
-            <td align="right">{{ consultant.get_rate_objective.rate|unlocalize }}</td>
+            <td align="right"><div id="sold-{{ mission.id|unlocalize }}-{{ consultant.id|unlocalize }}" class="jeditable-rate" >{{ rate.0.0|unlocalize }}</div></td>
+            <td align="right">{% if consultant.subcontractor %}<div id="bought-{{ mission.id|unlocalize }}-{{ consultant.id }}" style="display:inline" class="jeditable-rate">{{ rate.0.1|unlocalize }}</div>{% endif %}</td>
+            {% with o_rates=rate.1 %}
+                {% for date, o_rate in o_rates %}
+                    <td align="right">{{ o_rate|default_if_none:"-" }}</td>
+                {% endfor %}
+            {% endwith %}
         </tr>
     {% endfor %}
     </table>

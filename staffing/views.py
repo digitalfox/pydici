@@ -152,7 +152,19 @@ def mission_home(request, mission_id):
 @pydici_non_public
 def mission_consultants(request, mission_id):
     mission = Mission.objects.get(id=mission_id)
-    return render(request, "staffing/mission_consultants.html", {"mission": mission })
+    rates = {}
+    objective_rates = mission.consultant_objective_rates()
+    for consultant, rate in mission.consultant_rates().items():
+        rates[consultant] = (rate, objective_rates.get(consultant))
+    try:
+        objective_dates = [i[0] for i in list(objective_rates.values())[0]]
+    except IndexError:
+        # No consultant or no objective on mission timeframe
+        objective_dates = []
+    return render(request, "staffing/mission_consultants.html",
+                  {"mission": mission,
+                   "objective_dates": objective_dates,
+                   "rates": rates})
 
 
 @pydici_non_public

@@ -6,10 +6,10 @@ Database access layer for pydici staffing module
 """
 
 from django.db import models
-from django.db.models import Sum, Min, F, Q
+from django.db.models import Sum, Min, Max, F, Q
 from django.db.models.functions import TruncMonth
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import  gettext, pgettext
+from django.utils.translation import gettext, pgettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.contrib.admin.models import ContentType, LogEntry
@@ -173,8 +173,38 @@ class Mission(models.Model):
             rates[condition.consultant] = (condition.daily_rate, condition.bought_daily_rate)
         # Put 0 for consultant forecasted on this mission but without defined daily rate
         for consultant in self.consultants():
-            if not consultant in rates:
+            if consultant not in rates:
                 rates[consultant] = (0, 0)
+        return rates
+
+    def consultant_objective_rates(self):
+        """:return: dict with consultant as key and list of starting date / objective rate on mission time span"""
+        # TODO: add cache
+        rates = {}
+        # Get all consultants, with staffing, timesheet and even just financial conditions
+        consultants = Consultant.objects.filter(financialcondition__mission=self).union(self.consultants())
+        mission_timeframe = self.timesheet_set.aggregate(Min("working_date"), Max("working_date"))
+        mission_timeframe.update(self.staffing_set.aggregate(Min("staffing_date"), Max("staffing_date")))
+        try:
+            start = min([i for i in [mission_timeframe["working_date__min"], mission_timeframe["staffing_date__min"]] if i is not None])
+            end = max([i for i in [mission_timeframe["working_date__max"], mission_timeframe["staffing_date__max"]] if i is not None])
+        except ValueError:  # Empty list
+            start = date.today()
+            end = date.today()
+        current = start
+        exit_condition = False
+        while True:
+            for consultant in consultants:
+                if consultant not in rates:
+                    rates[consultant] = []
+                objective_rate = consultant.get_rate_objective(current, rate_type="DAILY_RATE")
+                rates[consultant].append([current, objective_rate.rate if objective_rate else None])
+            if exit_condition or current == end:
+                break
+            current += timedelta(366)  # guess what, some years have more than 365 days.
+            if current > end:
+                current = end
+                exit_condition = True
         return rates
 
     def defined_rates(self):
