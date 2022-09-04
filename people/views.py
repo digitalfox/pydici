@@ -56,9 +56,8 @@ def consultant_detail(request, consultant_id):
         consultant = Consultant.objects.get(id=consultant_id)
         staff = consultant.team(only_active=True)
         month = date.today().replace(day=1)
-        # Compute consultant current mission based on forecast and responsability
-        missions = consultant.active_missions().filter(nature="PROD").filter(lead__state="WON")
-        missions |= consultant.responsible_missions()
+        # Compute consultant current production mission based on forecast and responsibility
+        missions = consultant.current_missions().filter(nature="PROD")
         # Identify staled missions that may need new staffing or archiving
         staled_missions = [m for m in missions if m.no_more_staffing_since()]
         # Consultant clients and missions
