@@ -19,17 +19,16 @@ from people.models import Consultant
 from crm.models import Company
 from crm.utils import get_subsidiary_from_session
 from staffing.models import Holiday
-from core.decorator import pydici_non_public
+from core.decorator import pydici_non_public, pydici_subcontractor
 from core.utils import working_days, previousMonth, nextMonth, COLORS, user_has_feature
-from people.utils import compute_consultant_tasks
+from people.utils import compute_consultant_tasks, subcontractor_is_user
 from crm.models import Subsidiary
 
 
 def _consultant_home(request, consultant):
-    if not user_has_feature(request.user, "internal_access"):
-        if consultant.trigramme.lower() != request.user.username.lower():
-            # subcontractor cannot see other people page
-            return HttpResponseRedirect(reverse("core:forbidden"))
+    if not subcontractor_is_user(consultant, request.user):
+        # subcontractor cannot see other people page
+        return HttpResponseRedirect(reverse("core:forbidden"))
 
     return render(request, 'people/consultant.html',
                   {"consultant": consultant,
@@ -158,6 +157,7 @@ def consultant_detail(request, consultant_id):
                    "user": request.user})
 
 
+@pydici_subcontractor
 def subcontractor_detail(request, consultant_id):
     """This is the subcontractor home page"""
     try:

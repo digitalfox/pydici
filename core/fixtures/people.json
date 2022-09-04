@@ -85,7 +85,8 @@
             "name": "Alex",
             "company": 2,
             "profil": 2,
-            "manager": 1
+            "manager": 1,
+            "subcontractor": true
         }
     },
     {

@@ -17,6 +17,7 @@ from people.models import Consultant
 from billing.models import ClientBill, SupplierBill
 from expense.models import Expense
 from staffing.models import Mission
+from core.utils import user_has_feature
 
 
 def get_team_scopes(subsidiary, team):
@@ -111,5 +112,13 @@ def get_task_priority(value, threshold):
 
 def users_are_in_same_company(user1, user2):
     """Returns true if user1 and user2 according Consultant belongs to the same company"""
-    return Consultant.objects.get(trigramme=user1.username.upper()).company == \
-           Consultant.objects.get(trigramme=user2.username.upper()).company
+    return (Consultant.objects.get(trigramme=user1.username.upper()).company ==
+            Consultant.objects.get(trigramme=user2.username.upper()).company)
+
+
+def subcontractor_is_user(consultant, user):
+    """Ensure given subcontractor consultant is really the user. Used to limit consultant page to self for subcontractors"""
+    if not user_has_feature(user, "internal_access"):
+        if consultant.trigramme.lower() != user.username.lower():
+            return False
+    return True

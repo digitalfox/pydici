@@ -46,7 +46,7 @@ from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlin
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
     to_int_or_round, COLORS, cumulateList, user_has_feature, get_parameter, \
     get_fiscal_years_from_qs, get_fiscal_year
-from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
+from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, pydici_subcontractor
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, \
     timesheet_report_data, timesheet_report_data_grouped, check_missions_limited_mode
@@ -54,6 +54,7 @@ from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, Mis
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from people.utils import get_team_scopes
 from crm.utils import get_subsidiary_from_session
+from people.utils import subcontractor_is_user
 
 
 TIMESTRING_FORMATTER = {
@@ -229,6 +230,17 @@ def consultant_staffing(request, consultant_id):
                    "staffing_dates": staffingDates(),
                    "current_month": datetime.today().strftime("%Y%m"),
                    "user": request.user})
+
+
+@pydici_subcontractor
+def consultant_missions(request, consultant_id):
+    """List of current consultant mission"""
+    consultant = Consultant.objects.get(id=consultant_id)
+    if not subcontractor_is_user(consultant, request.user):
+        # subcontractor cannot see other people page
+        return HttpResponseRedirect(reverse("core:forbidden"))
+
+    return render(request, "staffing/consultant_missions.html", {"consultant": consultant})
 
 
 @pydici_non_public
