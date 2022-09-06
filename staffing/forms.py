@@ -91,7 +91,7 @@ class LeadMissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
 
 
 class StaffingDateChoicesField(ChoiceField):
-    widget = Select2Widget(attrs={'data-placeholder':_("Select a month...")})
+    widget = Select2Widget(attrs={'data-placeholder': _("Select a month...")})
 
     def __init__(self, *args, **kwargs):
         minDate = kwargs.pop("minDate", None)
@@ -133,11 +133,8 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     def get_queryset(self):
         if not hasattr(self, '_queryset'):
             qs = super(ConsultantStaffingInlineFormset, self).get_queryset()
-            if date.today().day > 5:
-                self.lowerDayBound = date.today().replace(day=1)
-            else:
-                lastDayOfPreviousMonth = date.today().replace(day=1) + timedelta(-1)
-                self.lowerDayBound = lastDayOfPreviousMonth.replace(day=1)
+            lastDayOfPreviousMonth = date.today().replace(day=1) + timedelta(-1)
+            self.lowerDayBound = lastDayOfPreviousMonth.replace(day=1)
 
             qs = qs.filter(mission__active=True,  # Remove archived mission
                            staffing_date__gte=self.lowerDayBound)  # Remove past missions
