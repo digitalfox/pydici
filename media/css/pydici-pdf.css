@@ -4,22 +4,21 @@
     margin-left: 10mm;
     margin-right: 10mm;
     margin-top: 10mm;
-    margin-bottom: 0mm;
+    margin-bottom: 20mm;
 }
 
 body
 {
     font-size       : 10px;
 }
-footer
-{
-    position        : fixed;
-    width           : 100%;
-    bottom          : -20mm;
-    margin-bottom   : 10mm;
-    height          : 30mm;
-    text-align      : center;
-    font-size       : 10px;
+
+div.footer {
+    display: block;
+    text-align: center;
+    font-size: 8px;
+    width: 100%;
+    position: fixed;
+    bottom: -15mm;
 }
 
 .receipt {
