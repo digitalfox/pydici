@@ -22,7 +22,7 @@
 
 <div>
     <!-- Nav tabs -->
-    {% cache 3600 consultant_menu request.user.id %}
+    {% cache 3600 consultant_menu consultant.id %}
     <ul class="nav nav-tabs" id="consultant-tabs">
         {% if consultant.subcontractor %}
             <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home" data-tab-url="{% url 'people:subcontractor_detail' consultant.id %}"><i class="bi bi-house"></i> {% trans "Home" %}</button></li>
