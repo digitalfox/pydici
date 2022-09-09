@@ -72,6 +72,12 @@
                            </div></div>
                        {% endif %}
                    {% endif %}
+                   {% if mission.nature == "PROD" and not mission.marketing_product %}
+                            <div class="col-md-6"><div class="alert alert-warning">
+                               <i class="bi bi-cart"></i>
+                               {% trans "Marketing product is not yet defined" %}
+                           </div></div>
+                   {% endif %}
              {% else %}
                     <div class="col-md-6"><div class="alert alert-info">{% trans "This mission is archived" %}</div></div>
              {% endif %}
