@@ -25,7 +25,7 @@ class MissionsViewsMixin(PydiciNonPublicdMixin, PydiciFeatureMixin):
 
 class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
     """Missions tables backend for datatables"""
-    columns = ("pk", "subsidiary", "responsible", "nature", "mission_id", "price", "billing_mode", "no_forecast", "old_forecast", "archived_date")
+    columns = ("pk", "subsidiary", "responsible", "nature", "mission_id", "price", "billing_mode", "marketing_product", "no_forecast", "old_forecast", "archived_date")
     order_columns = columns
     max_display_length = 500
     archiving_template = get_template("staffing/_mission_table_archive_column.html")
@@ -60,7 +60,8 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
                            Q(lead__client__contact__name__icontains=search) |
                            Q(lead__client__organisation__company__name__icontains=search) |
                            Q(lead__client__organisation__name__iexact=search) |
-                           Q(lead__deal_id__icontains=search)
+                           Q(lead__deal_id__icontains=search) |
+                           Q(marketing_product__description__icontains=search)
                            ).distinct()
         return qs
 
@@ -81,6 +82,8 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
             return self.archiving_template.render(context={"row": row}, request=self.request)
         elif column == "mission_id":
             return row.mission_id()
+        elif column == "marketing_product":
+            return row.marketing_product.code if row.marketing_product else _("To be defined")
         else:
             return super(MissionsTableDT, self).render_column(row, column)
 
