@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-05 22:56+0200\n"
-"PO-Revision-Date: 2022-09-05 22:56+0200\n"
+"POT-Creation-Date: 2022-09-09 23:20+0200\n"
+"PO-Revision-Date: 2022-09-09 23:20+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -794,7 +794,7 @@ msgstr "Ça fait plaisir de se revoir !"
 msgid "I very pleased to meet you !"
 msgstr "Très heureux de faire ta connaissance !"
 
-#: core/forms.py:53 expense/forms.py:68 staffing/forms.py:211
+#: core/forms.py:53 expense/forms.py:68 staffing/forms.py:208
 #: templates/billing/client_bill_form.html:29
 #: templates/billing/supplier_bill_form.html:20
 #: templates/crm/client-popup.html:11
@@ -1130,8 +1130,8 @@ msgstr "Fax"
 msgid "Function"
 msgstr "Fonction"
 
-#: crm/models.py:170 staffing/forms.py:560 staffing/forms.py:561
-#: staffing/forms.py:562 staffing/forms.py:563
+#: crm/models.py:170 staffing/forms.py:557 staffing/forms.py:558
+#: staffing/forms.py:559 staffing/forms.py:560
 #: templates/leads/lead_mail.html:10 templates/leads/lead_mail.txt:11
 #: templates/leads/lead_mail.txt:19 templates/leads/mail.html:9
 #: templates/leads/mail.html:11
@@ -1187,8 +1187,8 @@ msgstr "Croissance"
 msgid "To restrain"
 msgstr "À restreindre"
 
-#: crm/models.py:314 staffing/forms.py:560 staffing/forms.py:561
-#: staffing/forms.py:562 staffing/forms.py:563
+#: crm/models.py:314 staffing/forms.py:557 staffing/forms.py:558
+#: staffing/forms.py:559 staffing/forms.py:560
 msgid "Standard"
 msgstr "Standard"
 
@@ -1542,7 +1542,7 @@ msgstr "Nom de l'affaire. Ne pas inclure le nom du client"
 msgid "Next commercial action to be done"
 msgstr "Prochaine action commercial à prendre"
 
-#: leads/forms.py:96 staffing/forms.py:294
+#: leads/forms.py:96 staffing/forms.py:291
 msgid "Leave blank to auto generate"
 msgstr "Laissez vide pour auto générer"
 
@@ -1902,126 +1902,126 @@ msgstr ""
 msgid "Invalid date format"
 msgstr "Format de date incorrect"
 
-#: staffing/forms.py:151
+#: staffing/forms.py:148
 msgid "Select a mission to add forecast..."
 msgstr "Choisir une mission pour ajouter des prévisions..."
 
-#: staffing/forms.py:179
+#: staffing/forms.py:176
 msgid "Select a consultant to add forecast..."
 msgstr "Choisir un consultant pour ajouter une prévision..."
 
-#: staffing/forms.py:192
+#: staffing/forms.py:189
 #, python-format
 msgid "Staffing must be after %s"
 msgstr "La prévision de charge doit être après le %s"
 
-#: staffing/forms.py:195
+#: staffing/forms.py:192
 #, python-format
 msgid "Staffing must be before %s"
 msgstr "La prévision de charge doit être avant le %s"
 
-#: staffing/forms.py:205 templates/staffing/pdc_detail.html:8
+#: staffing/forms.py:202 templates/staffing/pdc_detail.html:8
 msgid "Charge"
 msgstr "Charge"
 
-#: staffing/forms.py:206 templates/billing/_lead_billing.html:43
+#: staffing/forms.py:203 templates/billing/_lead_billing.html:43
 #: templates/billing/_lead_billing.html:87 templates/expense/expense.html:80
 #: templates/expense/expense_archive.html:35
 msgid "Comment"
 msgstr "Remarques"
 
-#: staffing/forms.py:207
+#: staffing/forms.py:204
 msgid "All active consultants"
 msgstr "Toutes les consultants actifs"
 
-#: staffing/forms.py:208
+#: staffing/forms.py:205
 msgid "Staffing dates"
 msgstr "Dates de staffing"
 
-#: staffing/forms.py:245
+#: staffing/forms.py:242
 #, python-format
 msgid "mission id: %s"
 msgstr "n° de mission : %s"
 
-#: staffing/forms.py:266 staffing/views.py:1204
+#: staffing/forms.py:263 staffing/views.py:1204
 msgid "Days without lunch ticket"
 msgstr "Jours sans ticket restaurant"
 
-#: staffing/forms.py:291
+#: staffing/forms.py:288
 msgid "Name of this mission. Leave blank when leads has only one mission"
 msgstr ""
 "Nom de cette mission. Laissez vide pour les affaires avec une seule mission"
 
-#: staffing/forms.py:295
+#: staffing/forms.py:292
 msgid "Forbid forecast before this date"
 msgstr "Interdire les prévisions avant cette date"
 
-#: staffing/forms.py:296
+#: staffing/forms.py:293
 msgid "Forbid forecast after this date"
 msgstr "Interdire les prévisions après cette date"
 
-#: staffing/forms.py:311
+#: staffing/forms.py:308
 msgid "Cannot add price to mission without lead"
 msgstr "Impossible d'ajouter un montant à une mission sans affaire"
 
-#: staffing/forms.py:314
+#: staffing/forms.py:311
 msgid "Mission's lead has no sales price. Define lead sales price."
 msgstr ""
 "L'affaire de cette mission n'a pas de prix de vente. Il faut en définir un "
 "au préalable."
 
-#: staffing/forms.py:323
+#: staffing/forms.py:320
 #, python-format
 msgid "Only %s k€ are remaining on this lead. Define a lower price"
 msgstr ""
 "Il ne reste que %s k€ sur cette affaire. Choisissez un montant plus faible"
 
-#: staffing/forms.py:331
+#: staffing/forms.py:328
 msgid "start date must be prior to en date"
 msgstr "La date de début doit précéder la date de fin"
 
-#: staffing/forms.py:342
+#: staffing/forms.py:339
 msgid "Fixed price mission cannot be elastic by definition"
 msgstr "Un forfait ne peut être en mode élastique par définition"
 
-#: staffing/forms.py:344
+#: staffing/forms.py:341
 msgid "Analytics code must be defined for non production missions"
 msgstr ""
 "Les codes analytiques doivent être définis pour les missions non productive"
 
-#: staffing/forms.py:367
+#: staffing/forms.py:364
 msgid "Bought daily rate must be positive and lower than daily rate"
 msgstr ""
 "Le taux journalier d'achat doit être positif et inférieur au taux journalier "
 "moyen"
 
-#: staffing/forms.py:369
+#: staffing/forms.py:366
 msgid "Bought daily rate must be defined for subcontractor"
 msgstr "Le taux journalier d'achat doit être défini pour les sous-traitants"
 
-#: staffing/forms.py:372
+#: staffing/forms.py:369
 msgid "Bought daily rate must be only be defined for subcontractor"
 msgstr ""
 "Le taux journalier d'achat doit être défini uniquement pour les sous-"
 "traitants"
 
-#: staffing/forms.py:467
+#: staffing/forms.py:464
 msgid "Select mission to plan"
 msgstr "Choisir une mission à planifier"
 
-#: staffing/forms.py:470
+#: staffing/forms.py:467
 msgid "Predefined assignment"
 msgstr "Assignation fixe"
 
-#: staffing/forms.py:473
+#: staffing/forms.py:470
 msgid "Exclusions"
 msgstr "Exclusions"
 
-#: staffing/forms.py:480
+#: staffing/forms.py:477
 msgid "Mission has no budget remaining"
 msgstr "La mission n'a plus de budget"
 
-#: staffing/forms.py:500
+#: staffing/forms.py:497
 #, python-format
 msgid ""
 "Remaining budget (%s k€) is too low for at least one day of each predefined "
@@ -2030,57 +2030,57 @@ msgstr ""
 "Le budget restant (%s k€) est trop faible pour faire au moins un jour de "
 "chaque profil assigné"
 
-#: staffing/forms.py:535
+#: staffing/forms.py:532
 #, python-format
 msgid "You cannot forecast outside mission defined window (%s - %s)"
 msgstr "Vous ne pouvez pas faire de prévision hors de la période %s - %s"
 
-#: staffing/forms.py:557
+#: staffing/forms.py:554
 msgid "staffing projection freetime"
 msgstr "Projection pour dispo"
 
-#: staffing/forms.py:557
+#: staffing/forms.py:554
 msgid "full"
 msgstr "complète"
 
-#: staffing/forms.py:557
+#: staffing/forms.py:554
 msgid "balanced"
 msgstr "pondérée"
 
-#: staffing/forms.py:557
+#: staffing/forms.py:554
 msgid "none"
 msgstr "aucune"
 
-#: staffing/forms.py:558
+#: staffing/forms.py:555
 msgid "Senior min. quota (%)"
 msgstr "Quota mini expérimenté (%)"
 
-#: staffing/forms.py:559
+#: staffing/forms.py:556
 msgid "Newbie min. quota (%)"
 msgstr "Quota mini débutants (%)"
 
-#: staffing/forms.py:560
+#: staffing/forms.py:557
 msgid "Mission planning weight"
 msgstr "Importance du respect planning mission"
 
-#: staffing/forms.py:560 staffing/forms.py:561 staffing/forms.py:562
-#: staffing/forms.py:563
+#: staffing/forms.py:557 staffing/forms.py:558 staffing/forms.py:559
+#: staffing/forms.py:560
 msgid "High"
 msgstr "Haute"
 
-#: staffing/forms.py:561
+#: staffing/forms.py:558
 msgid "Consultant free time weight"
 msgstr "Importance minimisation temps disponible"
 
-#: staffing/forms.py:562
+#: staffing/forms.py:559
 msgid "People per mission weight"
 msgstr "Importance nb de personne / mission"
 
-#: staffing/forms.py:563
+#: staffing/forms.py:560
 msgid "Mission per people weight"
 msgstr "Importance  nb mission / personne"
 
-#: staffing/forms.py:582
+#: staffing/forms.py:579
 #, python-format
 msgid ""
 "%s %% senior profile is required but no senior consultant has been selected"
@@ -2088,7 +2088,7 @@ msgstr ""
 "%s %% de profil expérimenté est exigé mais aucun consultant expérimenté n'a "
 "été sélectionné"
 
-#: staffing/forms.py:588
+#: staffing/forms.py:585
 #, python-format
 msgid ""
 "%s %% newbie profile is required but no newbie consultant has been selected"
@@ -2096,7 +2096,7 @@ msgstr ""
 "%s %% de profil débutant est exigé mais aucun consultant débutant n'a été "
 "sélectionné"
 
-#: staffing/forms.py:593
+#: staffing/forms.py:590
 msgid "Sum of newbie and senior quota cannot exceed 100%"
 msgstr "La somme des quotas de débutants et seniors ne peut excéder 100 %"
 
@@ -2302,6 +2302,19 @@ msgstr "Tous"
 #: templates/staffing/missions.html:16
 msgid "All missions"
 msgstr "Toutes les missions"
+
+#: staffing/tables.py:86 templates/billing/bill_review.html:239
+#: templates/core/index.html:25 templates/core/index.html:50
+#: templates/core/index.html:74 templates/core/index.html:98
+#: templates/crm/clientcompany_detail.html:316
+#: templates/leads/lead_detail.html:151 templates/leads/lead_detail.html:197
+#: templates/leads/lead_mail.html:8 templates/leads/lead_mail.html:12
+#: templates/leads/lead_mail.txt:9 templates/leads/lead_mail.txt:13
+#: templates/leads/mail.html:8 templates/leads/mail.txt:7
+#: templates/leads/mail.txt:8 templates/staffing/mission.html:113
+#: templates/staffing/mission_timesheet.html:90
+msgid "To be defined"
+msgstr "À définir"
 
 #: staffing/tasks.py:80
 msgid "[pydici] Your timesheet is not correct"
@@ -2889,18 +2902,6 @@ msgstr "Délai de règlement"
 #: templates/billing/bill_review.html:231
 msgid "Done work (€)"
 msgstr "Montant réalisé (€)"
-
-#: templates/billing/bill_review.html:239 templates/core/index.html:25
-#: templates/core/index.html:50 templates/core/index.html:74
-#: templates/core/index.html:98 templates/crm/clientcompany_detail.html:316
-#: templates/leads/lead_detail.html:151 templates/leads/lead_detail.html:197
-#: templates/leads/lead_mail.html:8 templates/leads/lead_mail.html:12
-#: templates/leads/lead_mail.txt:9 templates/leads/lead_mail.txt:13
-#: templates/leads/mail.html:8 templates/leads/mail.txt:7
-#: templates/leads/mail.txt:8 templates/staffing/mission.html:113
-#: templates/staffing/mission_timesheet.html:90
-msgid "To be defined"
-msgstr "À définir"
 
 #: templates/billing/bill_review.html:251
 msgid "Supplier over due bills"
@@ -3891,17 +3892,17 @@ msgid "amount (k€)"
 msgstr "prix (k€)"
 
 #: templates/crm/clientcompany_detail.html:268
-#: templates/staffing/missions.html:33
+#: templates/staffing/missions.html:34
 msgid "Forecast in future"
 msgstr "Prévisions dans le futur"
 
 #: templates/crm/clientcompany_detail.html:269
-#: templates/staffing/missions.html:34
+#: templates/staffing/missions.html:35
 msgid "Up to date forecast"
 msgstr "Prévisions mise à jour récemment"
 
 #: templates/crm/clientcompany_detail.html:270
-#: templates/staffing/missions.html:35
+#: templates/staffing/missions.html:36
 msgid "Archiving"
 msgstr "Archivage"
 
@@ -4925,7 +4926,7 @@ msgstr "Description de l'affaire"
 msgid "Other missions linked to this lead"
 msgstr "Autres missions liées à cette affaire"
 
-#: templates/staffing/mission.html:239 templates/staffing/missions.html:53
+#: templates/staffing/mission.html:239 templates/staffing/missions.html:54
 msgid "Archiving failed"
 msgstr "Échec de l'archivage"
 
@@ -5068,6 +5069,10 @@ msgstr "N'afficher que les missions actives"
 #: templates/staffing/missions.html:20
 msgid "Also display inactive missions"
 msgstr "Afficher également les missions archivées"
+
+#: templates/staffing/missions.html:33
+msgid "product"
+msgstr "produit"
 
 #: templates/staffing/missions_report.html:12
 msgid "Holidays pivot table"
