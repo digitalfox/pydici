@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-09 23:20+0200\n"
-"PO-Revision-Date: 2022-09-09 23:20+0200\n"
+"POT-Creation-Date: 2022-09-09 23:38+0200\n"
+"PO-Revision-Date: 2022-09-09 23:38+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -575,7 +575,7 @@ msgstr "Montant réalisé"
 #: templates/core/index.html:87 templates/leads/lead_detail.html:151
 #: templates/leads/review.html:42 templates/leads/review.html:75
 #: templates/staffing/fixed_price_report.html:18
-#: templates/staffing/mission.html:92
+#: templates/staffing/mission.html:98
 msgid "Responsible"
 msgstr "Responsable"
 
@@ -592,7 +592,7 @@ msgstr "Responsable"
 #: templates/billing/supplier_bills_archive.html:14
 #: templates/leads/lead_detail.html:148 templates/leads/review.html:41
 #: templates/leads/review.html:74 templates/staffing/fixed_price_report.html:17
-#: templates/staffing/mission.html:89
+#: templates/staffing/mission.html:95
 msgid "Subsidiary"
 msgstr "Filiale"
 
@@ -608,7 +608,7 @@ msgstr "Organisme payeur"
 #: templates/billing/payment_delay.html:66
 #: templates/billing/payment_delay.html:74
 #: templates/billing/payment_delay.html:89 templates/leads/lead_detail.html:233
-#: templates/staffing/mission.html:113 templates/staffing/mission.html:157
+#: templates/staffing/mission.html:119 templates/staffing/mission.html:163
 msgid "Billing mode"
 msgstr "Mode de facturation"
 
@@ -953,7 +953,7 @@ msgstr "Clé"
 msgid "Value"
 msgstr "Valeur"
 
-#: core/models.py:81 staffing/models.py:76 templates/staffing/mission.html:86
+#: core/models.py:81 staffing/models.py:76 templates/staffing/mission.html:92
 msgid "Type"
 msgstr "Type"
 
@@ -1621,7 +1621,7 @@ msgid "Sleeping"
 msgstr "En sommeil"
 
 #: leads/models.py:60 templates/leads/lead_detail.html:214
-#: templates/staffing/mission.html:133
+#: templates/staffing/mission.html:139
 msgid "Administrative notes"
 msgstr "Commentaires administratifs"
 
@@ -1866,7 +1866,7 @@ msgstr "Factures fournisseurs à valider"
 #: people/utils.py:98 templates/leads/lead_detail.html:280
 #: templates/people/consultant_detail.html:86
 #: templates/people/subcontractor_detail.html:15
-#: templates/staffing/mission.html:194
+#: templates/staffing/mission.html:200
 msgid "Pending actions"
 msgstr "Actions en attente"
 
@@ -2153,11 +2153,11 @@ msgstr "Aucun"
 #: templates/crm/clientcompany_detail.html:266
 #: templates/staffing/consultant_missions.html:11
 #: templates/staffing/fixed_price_report.html:16
-#: templates/staffing/mission.html:95 templates/staffing/missions.html:30
+#: templates/staffing/mission.html:101 templates/staffing/missions.html:30
 msgid "Mission id"
 msgstr "N° de mission"
 
-#: staffing/models.py:78 templates/staffing/mission.html:116
+#: staffing/models.py:78 templates/staffing/mission.html:122
 msgid "Management mode"
 msgstr "Mode de gestion"
 
@@ -2222,7 +2222,7 @@ msgstr "prévu (€)"
 #: staffing/models.py:465 staffing/views.py:890 staffing/views.py:1166
 #: staffing/views.py:1265 templates/leads/lead_detail.html:228
 #: templates/staffing/consultant_staffing.html:11
-#: templates/staffing/mission.html:152 templates/staffing/optimise_pdc.html:84
+#: templates/staffing/mission.html:158 templates/staffing/optimise_pdc.html:84
 #: templates/staffing/optimise_pdc.html:109
 #: templates/staffing/pdc_detail.html:8
 msgid "Mission"
@@ -2311,7 +2311,7 @@ msgstr "Toutes les missions"
 #: templates/leads/lead_mail.html:8 templates/leads/lead_mail.html:12
 #: templates/leads/lead_mail.txt:9 templates/leads/lead_mail.txt:13
 #: templates/leads/mail.html:8 templates/leads/mail.txt:7
-#: templates/leads/mail.txt:8 templates/staffing/mission.html:113
+#: templates/leads/mail.txt:8 templates/staffing/mission.html:119
 #: templates/staffing/mission_timesheet.html:90
 msgid "To be defined"
 msgstr "À définir"
@@ -2451,7 +2451,7 @@ msgid "Past done days"
 msgstr "Jours réalisés dans le passé"
 
 #: staffing/views.py:1266 templates/billing/bill_review.html:230
-#: templates/leads/lead_detail.html:230 templates/staffing/mission.html:154
+#: templates/leads/lead_detail.html:230 templates/staffing/mission.html:160
 #: templates/staffing/mission_timesheet.html:12
 msgid "Done days"
 msgstr "Jours réalisés"
@@ -3774,7 +3774,7 @@ msgstr "Ajouter ou modifier un client"
 #: templates/crm/clientcompany_detail.html:249
 #: templates/expense/_make_vat_editable.html:8
 #: templates/leads/lead_detail.html:44 templates/leads/lead_detail.html:46
-#: templates/staffing/mission.html:224
+#: templates/staffing/mission.html:230
 #: templates/staffing/mission_consultants.html:37
 msgid "click to edit..."
 msgstr "Cliquez pour modifier..."
@@ -3872,7 +3872,7 @@ msgid "Company structure"
 msgstr "Structure de la société"
 
 #: templates/crm/clientcompany_detail.html:249
-#: templates/staffing/mission.html:98
+#: templates/staffing/mission.html:104
 msgid "undefined"
 msgstr "À définir"
 
@@ -4249,7 +4249,7 @@ msgstr "Rien"
 msgid "Profitability"
 msgstr "Rentabilité"
 
-#: templates/leads/lead_detail.html:195 templates/staffing/mission.html:110
+#: templates/leads/lead_detail.html:195 templates/staffing/mission.html:116
 #: templates/staffing/mission_timesheet.html:88
 msgid "Sold"
 msgstr "Vendu"
@@ -4284,17 +4284,17 @@ msgstr "Affaires similaires"
 msgid "Missions of this lead:"
 msgstr "Missions de cette affaire : "
 
-#: templates/leads/lead_detail.html:229 templates/staffing/mission.html:153
+#: templates/leads/lead_detail.html:229 templates/staffing/mission.html:159
 msgid "id"
 msgstr "n°"
 
-#: templates/leads/lead_detail.html:231 templates/staffing/mission.html:155
+#: templates/leads/lead_detail.html:231 templates/staffing/mission.html:161
 msgid "Done work (k€)"
 msgstr "Montant réalisé (k€)"
 
 #: templates/leads/lead_detail.html:232
 #: templates/staffing/fixed_price_report.html:19
-#: templates/staffing/mission.html:156
+#: templates/staffing/mission.html:162
 msgid "Sold (k€)"
 msgstr "Vendu (k€)"
 
@@ -4307,11 +4307,11 @@ msgid "A mission is created once a commercial proposal has been sent."
 msgstr ""
 "Une mission est créée une fois que la proposition commerciale est envoyée."
 
-#: templates/leads/lead_detail.html:285 templates/staffing/mission.html:199
+#: templates/leads/lead_detail.html:285 templates/staffing/mission.html:205
 msgid "Done actions"
 msgstr "Actions réalisées"
 
-#: templates/leads/lead_detail.html:290 templates/staffing/mission.html:204
+#: templates/leads/lead_detail.html:290 templates/staffing/mission.html:210
 msgid "No action done"
 msgstr "Aucune action réalisée"
 
@@ -4684,7 +4684,7 @@ msgid "Consultant's missions"
 msgstr "Missions du consultant"
 
 #: templates/staffing/consultant_missions.html:12
-#: templates/staffing/mission.html:119
+#: templates/staffing/mission.html:125
 msgid "Probability"
 msgstr "Probabilité"
 
@@ -4898,35 +4898,39 @@ msgstr "Archiver cette mission"
 msgid "Staffing has not been updated recently"
 msgstr "Les prévisions n'ont pas été mises à jour récemment"
 
-#: templates/staffing/mission.html:76
+#: templates/staffing/mission.html:78
+msgid "Marketing product is not yet defined"
+msgstr "Le produit marketing de cette mission n'est pas défini"
+
+#: templates/staffing/mission.html:82
 msgid "This mission is archived"
 msgstr "Cette mission est archivée"
 
-#: templates/staffing/mission.html:98
+#: templates/staffing/mission.html:104
 msgid "Marketing product"
 msgstr "Produit marketing"
 
-#: templates/staffing/mission.html:101
+#: templates/staffing/mission.html:107
 msgid "Analytic code"
 msgstr "Code analytique"
 
-#: templates/staffing/mission.html:106
+#: templates/staffing/mission.html:112
 msgid "Client lead id"
 msgstr "Référence affaire client"
 
-#: templates/staffing/mission.html:122
+#: templates/staffing/mission.html:128
 msgid "Lead of this mission"
 msgstr "Affaire de cette mission"
 
-#: templates/staffing/mission.html:129
+#: templates/staffing/mission.html:135
 msgid "Lead's description"
 msgstr "Description de l'affaire"
 
-#: templates/staffing/mission.html:148
+#: templates/staffing/mission.html:154
 msgid "Other missions linked to this lead"
 msgstr "Autres missions liées à cette affaire"
 
-#: templates/staffing/mission.html:239 templates/staffing/missions.html:54
+#: templates/staffing/mission.html:245 templates/staffing/missions.html:54
 msgid "Archiving failed"
 msgstr "Échec de l'archivage"
 
