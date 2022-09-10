@@ -100,9 +100,11 @@
                     <tr>
                         <th>{% trans "Mission id" %}</th><td>{{ mission.mission_id }}</td>
                     </tr>
-                    <tr>
-                        <th>{% trans "Marketing product" %}</th><td>{{ mission.marketing_product|default_if_none:_("undefined") }}</td>
-                    </tr>
+                    {% if mission.nature == "PROD" %}
+                        <tr>
+                            <th>{% trans "Marketing product" %}</th><td>{{ mission.marketing_product|default_if_none:_("undefined") }}</td>
+                        </tr>
+                    {% endif %}
                     <tr>
                         <th>{% trans "Analytic code" %}</th><td>{{ mission.mission_analytic_code }}</td>
                     </tr>

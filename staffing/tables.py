@@ -83,7 +83,10 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
         elif column == "mission_id":
             return row.mission_id()
         elif column == "marketing_product":
-            return row.marketing_product.code if row.marketing_product else _("To be defined")
+            if row.nature == "PROD":
+                return row.marketing_product.code if row.marketing_product else _("To be defined")
+            else:
+                return "-"
         else:
             return super(MissionsTableDT, self).render_column(row, column)
 
