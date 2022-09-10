@@ -367,10 +367,10 @@ class CycleTimesheetField(forms.ChoiceField):
                    0.75: "6",
                    1: "0"}
 
-    def __init__(self, choices=(), required=True, widget=None, label=None,
+    def __init__(self, required=True, widget=None, label=None,
                  initial=None, help_text=None, *args, **kwargs):
         super(CycleTimesheetField, self).__init__(required=required, widget=widget, label=label,
-                                             initial=initial, help_text=help_text, *args, **kwargs)
+                                                  initial=initial, help_text=help_text, *args, **kwargs)
         self.choices = self.TS_VALUES.items()
         self.widget.attrs.setdefault("size", 1)  # Reduce default size
         self.widget.attrs.setdefault("readonly", 1)  # Avoid direct input for mobile
