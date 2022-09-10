@@ -268,15 +268,6 @@ class TimesheetForm(forms.Form):
             self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
 
 
-class MissionAdminForm(PydiciCrispyModelForm):
-    """ Form used only on admin"""
-
-    class Meta:
-        model = Mission
-        fields = ("lead",)
-        widgets = {"lead": LeadChoices}
-
-
 class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""
 
@@ -346,29 +337,6 @@ class MissionForm(PydiciCrispyModelForm):
         exclude = ['archived_date', 'lead']
         widgets = {"contacts": MissionContactMChoices,
                    "responsible": ConsultantChoices}
-
-
-class FinancialConditionAdminForm(forms.ModelForm):
-    """Form used to validate financial condition bought price field in admin"""
-    class Meta:
-        model = FinancialCondition
-        fields = "__all__"
-
-    def clean_bought_daily_rate(self):
-        """Ensure bought daily rate is defined only for subcontractor"""
-        if self.instance.consultant.subcontractor:
-            if self.cleaned_data["bought_daily_rate"]:
-                if 0 < self.cleaned_data["bought_daily_rate"] < self.cleaned_data["daily_rate"]:
-                    return self.cleaned_data["bought_daily_rate"]
-                else:
-                    raise ValidationError(_("Bought daily rate must be positive and lower than daily rate"))
-            else:
-                raise ValidationError(_("Bought daily rate must be defined for subcontractor"))
-        else:
-            if self.cleaned_data["bought_daily_rate"]:
-                raise ValidationError(_("Bought daily rate must be only be defined for subcontractor"))
-            else:
-                return self.cleaned_data["bought_daily_rate"]
 
 
 class MissionContactsForm(forms.ModelForm):
