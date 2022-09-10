@@ -42,6 +42,8 @@ def send_lead_mail(lead, request, fromAddr=None, fromName=""):
     """
     if not fromAddr:
         fromAddr = get_parameter("MAIL_FROM")
+    if fromName:
+        fromAddr = f"{fromName} <{fromAddr}>"
     url = get_parameter("HOST") + reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
     subject = "[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
     msgText = get_template("leads/lead_mail.txt").render(request=request, context={"obj": lead,
