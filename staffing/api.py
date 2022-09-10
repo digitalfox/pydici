@@ -12,6 +12,7 @@ from core.utils import previousMonth
 from core.decorator import pydici_non_public, pydici_feature
 from staffing.models import Mission
 
+
 @pydici_non_public
 @pydici_feature("reports")
 def mission_list(request, start_date=None, end_date=None):

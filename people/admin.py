@@ -9,13 +9,12 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 from people.models import SalesMan, Consultant, ConsultantProfile, RateObjective
-from people.forms import ConsultantForm
 from core.admin import ReturnToAppAdmin
 
 
 class SalesManAdmin(ReturnToAppAdmin):
     list_display = ("name", "company", "trigramme", "email", "phone", "active")
-    odering = ("name")
+    ordering = ("name",)
     list_filter = ["active", ]
     search_fields = ["name", "trigramme"]
     actions = None

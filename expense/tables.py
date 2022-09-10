@@ -208,7 +208,7 @@ class ExpensePaymentTable(tables.Table):
 
 class ExpensePaymentTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
     """Expense payment table backend for datatable"""
-    pydici_feature = set(["reports"])
+    pydici_feature = {"reports"}
     columns = ["pk", "user",  "amount", "payment_date", "modification"]
     order_columns = columns
     max_display_length = 500

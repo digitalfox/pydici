@@ -48,8 +48,8 @@ def expense(request, expense_id):
         raise Http404
 
     if not (expense_administrator or expense_paymaster):
-        if not (expense.user == request.user or \
-                expense.user in user_team or \
+        if not (expense.user == request.user or
+                expense.user in user_team or
                 (expense_subsidiary_manager and users_are_in_same_company(expense.user, request.user))):
             return HttpResponseRedirect(reverse("core:forbidden"))
 

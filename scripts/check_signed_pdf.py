@@ -28,9 +28,9 @@ for dirpath, dirnames, filenames in os.walk("."):
             reader = PdfReader(os.path.join(dirpath, filename))
             pdf.append(reader.metadata.creator or "unknown")
         except PdfReadError:
-            pdf.append(("unreadable pdf"))
+            pdf.append("unreadable pdf")
         except AttributeError:
-            pdf.append(("unreadable file"))
+            pdf.append("unreadable file")
     pdf_count = len(pdf)
     microsoft_pdf_count = len([i for i in pdf if "Microsoft" in i])
     if pdf_count < 2:

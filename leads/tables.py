@@ -23,7 +23,7 @@ from crm.utils import get_subsidiary_from_session
 
 class LeadsViewsReadMixin(PydiciNonPublicdMixin, PydiciFeatureMixin):
     """Internal access to leads data for CB views"""
-    pydici_feature = set(["leads_list_all", "leads"])
+    pydici_feature = {"leads_list_all", "leads"}
 
 
 class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
@@ -119,8 +119,8 @@ class RecentArchivedLeadTableDT(ActiveLeadTableDT):
 
 class TagTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
     """Tag tables backend for datatables"""
-    pydici_feature = set(["leads_list_all", "leads"])
-    columns = ["select", "name",]
+    pydici_feature = {"leads_list_all", "leads"}
+    columns = ["select", "name"]
     order_columns = columns
 
     def render_column(self, row, column):

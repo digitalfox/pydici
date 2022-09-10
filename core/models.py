@@ -64,7 +64,7 @@ class GroupFeature(models.Model):
                                choices=_FEATURES_CHOICES)
 
     class Meta:
-        unique_together = (('group', 'feature'))
+        unique_together = ('group', 'feature')
 
     def __str__(self):
         return str(self.group) + '-' + str(self.feature)

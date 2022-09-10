@@ -77,8 +77,8 @@ def compact_text(text):
     """Compact text by removing extra space and extra lines. BTW, it also squash carriage returns.
     @param text: text to compact
     @return: compacted text"""
-    EXTRA_SPACE = re.compile("[ ]+(?![\*\-])")
-    EXTRA_NLINE = re.compile("\n\s*\n+")
+    EXTRA_SPACE = re.compile(r"[ ]+(?![\*\-])")
+    EXTRA_NLINE = re.compile(r"\n\s*\n+")
     text = text.replace("\r", "")
     text = EXTRA_SPACE.sub(" ", text)
     text = EXTRA_NLINE.sub("\n\n", text)
@@ -293,7 +293,7 @@ def getLeadDirs(lead, with_prefix=True, create_dirs=True):
     delivery_dir = os.path.join(lead_dir,
                                 settings.DOCUMENT_PROJECT_DELIVERY_DIR)
 
-    return (client_dir, lead_dir, business_dir, input_dir, delivery_dir)
+    return client_dir, lead_dir, business_dir, input_dir, delivery_dir
 
 
 def createProjectTree(lead):

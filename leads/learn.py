@@ -73,7 +73,7 @@ def get_lead_state_data(lead):
     feature["client_company_last_year_no_sales"] = int(feature["client_company_last_year_sales"] == 0)
     feature["client_company_last_three_year_sales"] = float(list(bills.filter(creation_date__lt=lead.creation_date, creation_date__gt=(lead.creation_date - timedelta(360*3))).aggregate(Sum("amount")).values())[0] or 0)
     feature["client_contact"] = str(lead.client.contact)
-    feature["no_client_contact"] = int(lead.client.contact == None)
+    feature["no_client_contact"] = int(lead.client.contact is None)
     feature["client_contact_count"] = Lead.objects.filter(client__contact = lead.client.contact, creation_date__lt=lead.creation_date).count()
     feature["client_company_business_owner"] = str(lead.client.organisation.company.businessOwner)
     if lead.start_date:
@@ -164,7 +164,6 @@ def extract_leads_tag(leads, include_leads=False):
     @:param include_leads : add leads id at the begining of features for model testing purpose"""
     features = []
     targets = []
-    used_leads = []
     if isinstance(leads, QuerySet):
         leads = leads.select_related("responsible", "client__organisation", "subsidiary")
     for lead in leads:
@@ -214,9 +213,6 @@ def test_state_model():
 
 def eval_state_model(model=None, verbose=True):
     """Display confusion matrix and classif report state model"""
-    target_names = list(STATES.items())
-    target_names.sort(key=lambda x: x[1])
-    target_names = [i[0] for i in target_names]
     leads = Lead.objects.filter(state__in=list(STATES.keys()))
     features, targets = extract_leads_state(leads)
     X_train, X_test, y_train, y_test = train_test_split(features, processTarget(targets), test_size=0.3)
@@ -293,7 +289,7 @@ def gridCV_state_model():
 
 def score_tag_lead(model, X, y):
     """Score function used to cross validated tag model"""
-    lead_id_match = re.compile("(\d+)\s.*")
+    lead_id_match = re.compile(r"(\d+)\s.*")
     ok = 0.0
     leads = cache.get("ALL_LEADS")
     if leads is None:
@@ -305,7 +301,7 @@ def score_tag_lead(model, X, y):
             lead = leads[int(lead_id)]
             predict = model.predict([features])[0]
             if str(predict).lower() in [str(t).lower() for t in lead.tags.all()]:
-                ok +=1
+                ok += 1
         except Exception as e:
             print("Failed to score lead %s: %s" % (lead_id, e))
 
@@ -451,7 +447,7 @@ def compute_lead_similarity(relearn=False, return_model=False):
         return
 
     model = cache.get(SIMILARITY_MODEL_CACHE_KEY)
-    if model is None:
+    if relearn or model is None:
         leads = Lead.objects.all().select_related("subsidiary")
         if leads.count() < 5:
             # Cannot learn anything with so few data

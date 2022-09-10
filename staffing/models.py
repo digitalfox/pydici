@@ -276,7 +276,7 @@ class Mission(models.Model):
             days += charge
             if consultant_id in rates:
                 amount += charge * rates[consultant_id]
-        return (days, amount)
+        return days, amount
 
     @cacheable("Mission.forecasted_work%(id)s", 10)
     def forecasted_work(self):
@@ -296,7 +296,6 @@ class Mission(models.Model):
         for consultant_id, charge in staffings:
             days += charge  # Add forecasted days
             current_month_balance = current_month_staffing.get(consultant_id, 0) - current_month_done.get(consultant_id, 0)
-            charge_adjustement = 0
             if current_month_balance > 0:
                 charge_adjustement = -current_month_done.get(consultant_id, 0)  # leave remaining forecast
             else:
@@ -308,7 +307,7 @@ class Mission(models.Model):
             # Negative forecast, means no forecast.
             days = 0
             amount = 0
-        return (days, amount)
+        return days, amount
 
     def forecasted_work_k(self):
         """Same as forecasted_work, but with amount in keur"""

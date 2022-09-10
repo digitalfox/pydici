@@ -10,7 +10,7 @@ import os
 from django.db import models
 from datetime import datetime, date, timedelta
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import  gettext
+from django.utils.translation import gettext
 from django.contrib.admin.models import LogEntry, ContentType
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -34,6 +34,7 @@ SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
 class LeadManager(models.Manager):
     PASSIVE_STATES = ("LOST", "FORGIVEN", "WON", "SLEEPING")
+
     def active(self):
         today = datetime.today()
         delay = timedelta(days=1)
@@ -89,7 +90,7 @@ class Lead(models.Model):
 
     def save(self, force_insert=False, force_update=False):
         self.description = compact_text(self.description)
-        self.administrative_notes= compact_text(self.administrative_notes)
+        self.administrative_notes = compact_text(self.administrative_notes)
         if self.deal_id == "":
             # First, client company code
             deal_id = str(self.client.organisation.company.code)
@@ -156,7 +157,7 @@ class Lead(models.Model):
             days += mDays
             amount += mAmount
 
-        return (days, amount)
+        return days, amount
 
     def done_work_k(self):
         """Same as done_work, but with amount in keur"""
@@ -321,7 +322,7 @@ def leadSignalHandler(sender, **kwargs):
         # Default to admin
         targetUser = User.objects.filter(is_superuser=True)[0]
 
-    if  kwargs.get("created", False):  # New Lead
+    if kwargs.get("created", False):  # New Lead
         launchTrigger("NEW_LEAD", [targetUser, ], lead)
         createProjectTree(lead)
         client.active = True
@@ -333,6 +334,7 @@ def leadSignalHandler(sender, **kwargs):
                                           target_type=ContentType.objects.get_for_model(Lead)
                                           ).exists():
             launchTrigger("WON_LEAD", [targetUser, ], lead)
+
 
 # Signal connection to throw actionset
 post_save.connect(leadSignalHandler, sender=Lead)

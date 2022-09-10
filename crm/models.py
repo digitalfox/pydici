@@ -281,7 +281,7 @@ class BusinessBroker(models.Model):
     class Meta:
         ordering = ["company", "contact"]
         verbose_name = _("Business broker")
-        unique_together = (("company", "contact",))
+        unique_together = ("company", "contact",)
 
 
 class Supplier(models.Model):
@@ -298,7 +298,7 @@ class Supplier(models.Model):
     class Meta:
         ordering = ["company", "contact"]
         verbose_name = _("Supplier")
-        unique_together = (("company", "contact",))
+        unique_together = ("company", "contact",)
 
 
 class Client(AbstractAddress):
@@ -386,7 +386,7 @@ class Client(AbstractAddress):
         else:
             consultantMargin_pc = 0
             subcontractorMargin_pc = 0
-        return ((consultantMargin, consultantMargin_pc), (subcontractorMargin, subcontractorMargin_pc))
+        return (consultantMargin, consultantMargin_pc), (subcontractorMargin, subcontractorMargin_pc)
 
     def fixedPriceMissionMargin(self, subsidiary=None):
         """Compute total fixed price margin in €  mission for this client. Only finished mission (ie archived) are
@@ -416,7 +416,7 @@ class Client(AbstractAddress):
 
     def getActiveLeads(self):
         """@return: list (qs) of active leads for this client"""
-        return self.lead_set.exclude(state__in=(("LOST", "FORGIVEN", "SLEEPING")))
+        return self.lead_set.exclude(state__in=("LOST", "FORGIVEN", "SLEEPING"))
 
     def getActiveMissions(self):
         """@return: list of active missions for this client"""
@@ -443,7 +443,7 @@ class Client(AbstractAddress):
     class Meta:
         ordering = ["organisation", "contact"]
         verbose_name = _("Client")
-        unique_together = (("organisation", "contact",))
+        unique_together = ("organisation", "contact",)
 
 
 class MissionContact(models.Model):
@@ -461,7 +461,7 @@ class MissionContact(models.Model):
     class Meta:
         ordering = ["company", "contact"]
         verbose_name = _("Mission contact")
-        unique_together = (("company", "contact",))
+        unique_together = ("company", "contact",)
 
 
 class AdministrativeFunction(models.Model):
@@ -522,4 +522,4 @@ class AdministrativeContact(models.Model):
     class Meta:
         verbose_name = _("Administrative contact")
         ordering = ("company", "contact")
-        unique_together = (("company", "contact",))
+        unique_together = ("company", "contact",)

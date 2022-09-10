@@ -191,7 +191,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                     mission_fixed_price_data[_("month")] = billDetail.bill.creation_date.replace(day=1).isoformat()
                     mission_fixed_price_data[_("type")] = _("Service bill")
                     mission_fixed_price_data[_("amount")] = -float(billDetail.amount or 0)
-                    data.append((mission_fixed_price_data))
+                    data.append(mission_fixed_price_data)
             # Add done work and time spent bills
             consultants = Consultant.objects.filter(timesheet__mission=mission).distinct()
             for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):
