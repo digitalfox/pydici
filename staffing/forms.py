@@ -161,14 +161,14 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
         """that adds the field in, overwriting the previous default field"""
         super(MissionStaffingInlineFormset, self).add_fields(form, index)
         if self.instance.start_date:
-           minDate = self.instance.start_date.replace(day=1)
+            minDate = self.instance.start_date.replace(day=1)
         else:
-           minDate = self.instance.staffing_start_date()
-           if minDate:
-               minDate = max(minDate, date.today()-timedelta(365))
-               minDate = min(minDate, date.today())
-           else:
-               minDate = None
+            minDate = self.instance.staffing_start_date()
+            if minDate:
+                minDate = max(minDate, date.today() - timedelta(365))
+                minDate = min(minDate, date.today())
+            else:
+                minDate = None
         if self.instance.end_date:
             maxDate = self.instance.end_date.replace(day=1)
         else:
@@ -273,8 +273,8 @@ class MissionAdminForm(PydiciCrispyModelForm):
 
     class Meta:
         model = Mission
-        fields = ('lead',)
-        widgets = { "lead" : LeadChoices }
+        fields = ("lead",)
+        widgets = {"lead": LeadChoices}
 
 
 class MissionForm(PydiciCrispyModelForm):
