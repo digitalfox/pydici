@@ -329,7 +329,8 @@ def create_next_year_std_missions(current, target, dryrun=True, start_date=None,
                               probability_auto=False,
                               analytic_code=m.analytic_code,
                               start_date=start_date,
-                              end_date=end_date)
+                              end_date=end_date,
+                              min_charge_per_day=m.min_charge_per_day)
         print("Creating new mission %s" % new_mission)
         if not dryrun:
             new_mission.save()
@@ -337,10 +338,25 @@ def create_next_year_std_missions(current, target, dryrun=True, start_date=None,
 
 def check_missions_limited_mode(missions):
     """Ensure that after a timesheet update we don't violate management mode policy
-    @return list of missions that do not conform to policy"""
+    :return list of missions that do not conform to policy"""
     offending_missions = []
     for mission in missions:
         if mission.management_mode == "LIMITED":
             if mission.remaining(mode="current") < 0:
                 offending_missions.append(mission)
+    return offending_missions
+
+
+def check_missions_min_charge(missions, month):
+    """Ensure that after a timesheet update on this month we don't violate minimum charge per day requirement
+    :return list of missions that do not conform to policy"""
+    offending_missions = []
+    for mission in missions:
+        if mission.min_charge_per_day == 0:
+            continue
+        ts = Timesheet.objects.filter(mission=mission, working_date__gte=month, working_date__lt=nextMonth(month),
+                                      charge__gt=0, charge__lt=mission.min_charge_per_day)
+        if ts.exists():
+            offending_missions.append(mission)
+
     return offending_missions

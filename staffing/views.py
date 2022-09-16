@@ -49,7 +49,7 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, pydici_subcontractor
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, \
-    timesheet_report_data, timesheet_report_data_grouped, check_missions_limited_mode
+    timesheet_report_data, timesheet_report_data_grouped, check_missions_limited_mode, check_missions_min_charge
 from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from people.utils import get_team_scopes
@@ -749,7 +749,6 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         today = 0
 
     forecastTotal = {}  # forecast charge (value) per mission (key is mission.id)
-    missions = set()  # Set of all consultant missions for this month
     days = daysOfMonth(month, week=week)  # List of days in month
 
     if week:
@@ -810,11 +809,19 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                 sid = transaction.savepoint()
                 # Process the data in form.cleaned_data
                 saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
-                offending_missions = check_missions_limited_mode(missions)
-                if offending_missions:  # Rollback timesheet update
+                limited_mode_offending_missions = check_missions_limited_mode(missions)
+                min_charge_offending_missions = check_missions_min_charge(missions, month)
+                # Rollback timesheet update if any mission don't pass checks
+                if limited_mode_offending_missions:
                     transaction.savepoint_rollback(sid)
-                    management_mode_error =  _("Timesheet exceeds mission price and management is set as 'limited' (%s)") % ", ".join([str(m) for m in offending_missions])
-                else: # No violation, we can commit timesheet
+                    management_mode_error = _(
+                        "Timesheet exceeds mission price and management is set as 'limited' (%s)") % ", ".join(
+                        [str(m) for m in limited_mode_offending_missions])
+                elif min_charge_offending_missions:
+                    transaction.savepoint_rollback(sid)
+                    management_mode_error = _("Charge cannot be below minimum threshold  (%s)") % ", ".join(
+                        [f"{m} : {m.min_charge_per_day} " for m in min_charge_offending_missions])
+                else:  # No violation, we can commit timesheet
                     transaction.savepoint_commit(sid)
                 # Recreate a new form for next update and compute again totals
                 timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)

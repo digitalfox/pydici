@@ -89,6 +89,7 @@ class Mission(models.Model):
     marketing_product = models.ForeignKey(MarketingProduct, verbose_name=_("marketing product"), blank=True, null=True, on_delete=models.SET_NULL)
     start_date = models.DateField(_("Start date"), blank=True, null=True)
     end_date = models.DateField(_("End date"), blank=True, null=True)
+    min_charge_per_day = models.FloatField(_("Min charge per day"), default=0)
 
     def __str__(self):
         if self.description and not self.lead:
@@ -319,7 +320,7 @@ class Mission(models.Model):
         @:parameter mode: can be current (default) to compute remaining as of today or target to compute remaning at mission end (with forecasted work)"""
         if self.price:
             done_days, done_amount = self.done_work_k()
-            if mode=="current":
+            if mode == "current":
                 return float(self.price) - done_amount
             else: # Target
                 forecasted_days, forecasted_amount = self.forecasted_work_k()

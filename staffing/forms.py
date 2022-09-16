@@ -213,7 +213,7 @@ class MassStaffingForm(forms.Form):
 
 
 class TimesheetForm(forms.Form):
-    """Consultant timesheet form"""
+    """Consultant timesheet form. Checks are done on view side because it required to save data on db"""
     def __init__(self, *args, **kwargs):
         days = kwargs.pop("days", None)
         missions = kwargs.pop("missions", None)
@@ -280,7 +280,8 @@ class MissionForm(PydiciCrispyModelForm):
                                                css_class="col-md-6"),
                                         Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "nature", "analytic_code", "marketing_product",
                                                Field("start_date", placeholder=_("Forbid forecast before this date"), css_class="datepicker"),
-                                               Field("end_date", placeholder=_("Forbid forecast after this date"), css_class="datepicker"), "contacts",
+                                               Field("end_date", placeholder=_("Forbid forecast after this date"), css_class="datepicker"),
+                                               "contacts", "min_charge_per_day",
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
