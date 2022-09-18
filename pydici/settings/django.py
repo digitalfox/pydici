@@ -121,6 +121,7 @@ INSTALLED_APPS = [
     'django_select2',
     'django_celery_results',
     'django_celery_beat',
+    'auditlog',
 ]
 
 
@@ -176,3 +177,23 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_ENABLE_UTC = False
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 CELERY_TIMEZONE = 'Europe/Paris'
+
+# Audit log configuration
+AUDITLOG_INCLUDE_TRACKING_MODELS = (
+    {
+        "model": "leads.Lead",
+        "exclude_fields": ["id", "description", "administrative_notes", "send_email", "tagged_items", "update_date", "creation_date"],
+        "m2m_fields": ["staffing"],
+    },
+    # {
+    #     "model": "<appname>.<model1>",
+    #     "include_fields": ["field1", "field2"],
+    #     "exclude_fields": ["field3", "field4"],
+    #     "mapping_fields": {
+    #         "field1": "FIELD",
+    #     },
+    #     "mask_fields": ["field5", "field6"],
+    #     "m2m_fields": ["field7", "field8"],
+    # },
+    # "<appname>.<model3>",
+)

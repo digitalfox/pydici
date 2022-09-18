@@ -161,3 +161,18 @@ def pydici_simple_format(value, arg=None):
     value = bleach.clean(markdown.markdown(value, tab_length=2, extensions=[SaneListExtension(),]), tags=markdown_tags, attributes=markdown_attrs)
 
     return mark_safe(value)
+
+
+@register.filter
+def is_real_change(value, arg=None):
+    """Ensure given change contains a real change we should display to user"""
+    if len(value) != 2:  # Don't inspect m2m changes
+        return True
+    old, new = value
+    if old in ("", "None") and new in ("", "None"):
+        return False
+    try:
+        return float(old) != float(new)
+    except ValueError as e:
+        return True
+    return True

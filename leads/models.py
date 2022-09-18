@@ -19,6 +19,7 @@ from django.urls import reverse
 from django.conf import settings
 
 from taggit.managers import TaggableManager
+from auditlog.models import AuditlogHistoryField
 
 from core.utils import compact_text
 from crm.models import Client, BusinessBroker, Subsidiary
@@ -83,6 +84,7 @@ class Lead(models.Model):
     external_id = models.CharField(max_length=200, default=None, blank=True, null=True, unique=True)
 
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
+    history = AuditlogHistoryField()
 
     @cacheable("Lead.__str__%(id)s", 3)
     def __str__(self):
