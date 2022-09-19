@@ -21,3 +21,4 @@ notebooks/
 celerybeat-schedule
 package-lock.json
 dump.rdb
+pydici/settings/local.py
