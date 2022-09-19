@@ -11,7 +11,7 @@ from django.db import models
 from datetime import datetime, date, timedelta
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext
-from django.contrib.admin.models import LogEntry, ContentType
+from django.contrib.admin.models import ContentType
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q, Sum
@@ -141,13 +141,6 @@ class Lead(models.Model):
             return True
         else:
             return False
-
-    def get_change_history(self):
-        """Return object history action as an action List"""
-        actionList = LogEntry.objects.filter(object_id=self.id,
-                                             content_type__app_label="leads")
-        actionList = actionList.select_related().order_by('-action_time')
-        return actionList
 
     def done_work(self):
         """Compute done work according to timesheet for all missions of this lead

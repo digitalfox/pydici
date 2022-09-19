@@ -95,11 +95,10 @@ def get_lead_state_data(lead):
         feature["staffing_%s" % staf.trigramme] = "yes"
     for tag in lead.tags.all():
         feature["tag_%s" % tag.slug] = "yes"
-    history = lead.get_change_history()
-    feature["history_changes"] = history.count()
+    feature["history_changes"] = lead.history.count()
     if feature["history_changes"] > 1:
-        history_boundaries = history.aggregate(Min("action_time"), Max("action_time"))
-        feature["history_length"] = (history_boundaries["action_time__max"] - history_boundaries["action_time__min"]).days
+        history_boundaries = lead.history.aggregate(Min("timestamp"), Max("timestamp"))
+        feature["history_length"] = (history_boundaries["timestamp__max"] - history_boundaries["timestamp__min"]).days
 
     return feature, lead.state
 
