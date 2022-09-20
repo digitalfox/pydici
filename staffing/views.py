@@ -16,7 +16,6 @@ from django.core.cache import cache
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import permission_required
-from django.contrib.admin.models import LogEntry, CHANGE, ContentType
 from django.forms.models import inlineformset_factory
 from django.forms import formset_factory
 from django.utils.translation import gettext as _
@@ -36,6 +35,7 @@ from django.conf import settings
 from django.template.loader import get_template
 
 from django_weasyprint import WeasyTemplateView
+from auditlog.models import LogEntry
 
 from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
 from people.models import Consultant, Subsidiary, RateObjective
@@ -715,14 +715,6 @@ def deactivate_mission(request, mission_id):
         mission = Mission.objects.get(id=mission_id)
         mission.active = False
         mission.save()
-        LogEntry.objects.log_action(
-            user_id=request.user.pk,
-            content_type_id=ContentType.objects.get_for_model(mission).pk,
-            object_id=mission.pk,
-            object_repr=force_text(mission),
-            action_flag=CHANGE,
-            change_message=_("Mission has been archived"),
-        )
     except Mission.DoesNotExist:
         error = True
     return HttpResponse(json.dumps({"error": error, "id": mission_id}),
@@ -1534,20 +1526,14 @@ def mission_consultant_rate(request):
                                                                       defaults={"daily_rate": 0})
         value = request.POST["value"].replace(" ", "")
         if sold == "sold":
-            msg = _("Sold daily rate changed from %(old)s to %(new)s") % {"old": condition.daily_rate, "new": value }
+            change = {_(f"daily rate for {consultant}"): [condition.daily_rate, value]}
             condition.daily_rate = value
         else:
-            msg = _("Bought daily rate changed from %(old)s to %(new)s") % {"old": condition.bought_daily_rate, "new": value }
+            change = {_(f"bought daily rate for {consultant}"): [condition.daily_rate, value]}
             condition.bought_daily_rate = value
         condition.save()
-        LogEntry.objects.log_action(
-            user_id=request.user.pk,
-            content_type_id=ContentType.objects.get_for_model(mission).pk,
-            object_id=mission.pk,
-            object_repr=force_text(mission),
-            action_flag=CHANGE,
-            change_message=msg,
-        )
+        LogEntry.objects.log_create(instance=mission, actor=request.user, action=LogEntry.Action.UPDATE, changes=json.dumps(change))
+
         return HttpResponse(request.POST["value"])
     except (Mission.DoesNotExist, Consultant.DoesNotExist):
         return HttpResponse(_("Mission or consultant does not exist"))
@@ -1589,19 +1575,10 @@ def mission_update(request):
             if value in billingModes:
                 mission.billing_mode = value
                 mission.save()
-                LogEntry.objects.log_action(
-                    user_id=request.user.pk, content_type_id=ContentType.objects.get_for_model(mission).pk,
-                    object_id=mission.pk, object_repr=force_text(mission), action_flag=CHANGE,
-                    change_message=_("Billing mode has been set to %s") % dict(Mission.BILLING_MODES)[value])
-                return HttpResponse(billingModes[value])
         elif attribute == "management_mode":
             if value in managementModes:
                 mission.management_mode = value
                 mission.save()
-                LogEntry.objects.log_action(
-                    user_id=request.user.pk, content_type_id=ContentType.objects.get_for_model(mission).pk,
-                    object_id=mission.pk, object_repr=force_text(mission), action_flag=CHANGE,
-                    change_message=_("Management mode has been set to %s") % dict(Mission.MANAGEMENT_MODES)[value])
                 return HttpResponse(managementModes[value])
         elif attribute == "probability":
             value = int(value)
@@ -1618,7 +1595,7 @@ def mission_update(request):
 @pydici_non_public
 def mission_contacts(request, mission_id):
     """Mission contacts: business, work, administrative
-    This views is intented to be called in ajax"""
+    This views is intended to be called in ajax"""
 
     mission = Mission.objects.get(id=mission_id)
     if request.method == "POST":
@@ -1644,14 +1621,6 @@ class MissionUpdate(PydiciNonPublicdMixin, UpdateView):
 
     def get_success_url(self):
         return self.request.GET.get('return_to', False) or reverse_lazy("staffing:mission_home", args=[self.object.id, ])
-
-    def form_valid(self, form):
-        for field in form.changed_data:
-            LogEntry.objects.log_action(
-                user_id=self.request.user.pk, content_type_id=ContentType.objects.get_for_model(self.object).pk,
-                object_id=self.object.pk, object_repr=force_text(self.object), action_flag=CHANGE,
-                change_message=_("Field %(field)s has been changed to %(value)s") % ({"field": field, "value": form.cleaned_data[field]}))
-        return super().form_valid(form)
 
 
 @pydici_non_public

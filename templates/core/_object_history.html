@@ -45,7 +45,7 @@
                 {% if value|length == 2 and value|is_real_change %}
                   <tr>
                     <td>{{ change.timestamp }}</td>
-                    <td>{{ change.actor.username }}{% if change.actor.first_name %} ({{ change.actor.first_name }} {{ change.actor.last_name }}){% endif %}</td>
+                    <td>{% if change.actor.first_name %}{{ change.actor.first_name }} {{ change.actor.last_name }}{% else %}{{ change.actor.username }}{% endif %}</td>
                     <td>{{ key }}</td>
                     <td>{% if value.0 == "None" %}-{% else %}{{ value.0 }}{% endif %}</td>
                     <td>{{ value.1 }}</td>
@@ -54,7 +54,7 @@
             {% empty %} {# migrated old style log do not have change_dict/change_display_dict defined #}
                 <tr>
                     <td>{{ change.timestamp }}</td>
-                    <td>{{ change.actor.username }}{% if change.actor.first_name %} ({{ change.actor.first_name }} {{ change.actor.last_name }}){% endif %}</td>
+                    <td>{% if change.actor.first_name %}{{ change.actor.first_name }} {{ change.actor.last_name }}{% else %}{{ change.actor.username }}{% endif %}</td>
                     <td>-</td>
                     <td>-</td>
                     <td>{{ change.changes }}</td>
