@@ -468,6 +468,9 @@ class MissionOptimiserForm(forms.Form):
 
     def clean(self):
         mission = self.cleaned_data.get("mission")
+        if not mission:
+            # Mission has been discarded by previous check, no need to check further
+            return self.cleaned_data
         min_date = mission.start_date or date(2000, 1, 1)
         max_date = mission.end_date or date(2100, 1, 1)
         mission_staffing_dates = [i for i in self.staffing_dates if i[0] >= min_date and (i[0] < max_date)]
