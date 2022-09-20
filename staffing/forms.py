@@ -497,7 +497,8 @@ class MissionOptimiserForm(forms.Form):
             if self.cleaned_data[m] == 0:
                 continue  # no need to warn for zero day forecast
             if m[len("charge_"):] not in [i[1] for i in mission_staffing_dates]:
-                raise ValidationError(_("You cannot forecast outside mission defined window (%s - %s)" % (mission.start_date or "-", mission.end_date or "-")))
+                raise ValidationError(_("You cannot forecast outside mission defined window (%(start)s - %(end)s)") % {"start": mission.start_date or "∞",
+                                                                                                                       "end": mission.end_date or "∞"})
 
         return self.cleaned_data
 
