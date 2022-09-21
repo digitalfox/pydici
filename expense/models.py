@@ -17,7 +17,8 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import  gettext
 from django.contrib.auth.models import User
-from django.conf import settings
+
+from auditlog.models import AuditlogHistoryField
 
 from leads.models import Lead
 from core.utils import sanitizeName
@@ -38,6 +39,7 @@ EXPENSE_TRANSITION_TO_STATES = (
     ("NEEDS_INFORMATION",  gettext("Ask for information")),
     ("CONTROLLED",  gettext("Control")),
 )
+
 
 class ExpenseStorage(FileSystemStorage):
     def url(self, name):
@@ -111,6 +113,8 @@ class Expense(models.Model):
     workflow_in_progress = models.BooleanField(default=True)
     expensePayment = models.ForeignKey(ExpensePayment, blank=True, null=True, on_delete=models.SET_NULL)
     state = models.CharField(_("state"), choices=EXPENSE_STATES, default="REQUESTED", max_length=20)
+
+    history = AuditlogHistoryField()
 
     def __str__(self):
         if self.lead:

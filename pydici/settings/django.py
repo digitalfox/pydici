@@ -189,4 +189,8 @@ AUDITLOG_INCLUDE_TRACKING_MODELS = (
         "model": "staffing.Mission",
         "exclude_fields": ["id", "probability", "probability_auto", "update_date", ]
     },
+    {
+        "model": "expense.Expense",
+        "exclude_fields": ["id", "creation_date", "update_date", "workflow_in_progress", "expensePayment"]
+    }
 )

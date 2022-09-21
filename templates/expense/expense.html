@@ -97,6 +97,10 @@
     </div>
 </div>
 
+{% with object=expense %}
+    {% include "core/_object_history.html" %}
+{% endwith %}
+
 
 {% if can_edit_vat %}
     {% include "expense/_make_vat_editable.html" %}

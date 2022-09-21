@@ -173,6 +173,6 @@ def is_real_change(value, arg=None):
         return False
     try:
         return float(old) != float(new)
-    except ValueError as e:
+    except (ValueError, TypeError) as e:
         return True
-    return True
+
