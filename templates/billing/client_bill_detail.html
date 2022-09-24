@@ -1,0 +1,74 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load l10n %}
+{% load pydici_filters %}
+
+{% block title %}{% trans "Client bill detail" %}{% endblock %}
+
+
+{% block content %}
+
+<h2>
+    {% blocktrans with id=bill.bill_id %}Bill n° {{ id }}{% endblocktrans %}
+    {% if can_edit %}<a href="{% url 'expense:expenses' expense.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>{% endif %}
+</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-hover table-striped table-sm">
+            <tr>
+                <th>{% trans "Client" %}</th>
+                <td>{{ bill.lead.client }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Lead" %}</th>
+                <td>{{ bill.lead.name }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Bill id" %}</th>
+                <td>{{ bill.bill_id }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Client deal id" %}</th>
+                <td>{{ bill.client_deal_id }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Amount" %}</th>
+                <td>{{ bill.amount }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Amount with VAT" %}</th>
+                <td>{{ bill.amount_with_vat }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Creation date" %}</th>
+                <td>{{ bill.creation_date }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "State" %}</th>
+                <td>{{ bill.get_state_display }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Comment" %}</th>
+                <td>{{ bill.comment }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Client Comment" %}</th>
+                <td>{{ bill.client_comment }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <div class="bill-file">
+            {{ bill.bill_data|safe }}
+        </div>
+    </div>
+</div>
+
+{% with object=bill %}
+    {% include "core/_object_history.html" %}
+{% endwith %}
+
+
+{% endblock %}

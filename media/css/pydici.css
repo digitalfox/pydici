@@ -363,7 +363,7 @@ div.ui-tooltip {
 /* C3 graph specific style */
 #consultant_rate_graph .c3-line { stroke-width: 2px; }
 
-/* Expense image in modal */
+/* Expense image in modal or inline */
 .expense-receipt object {
     width: 100%;
     height: 400px;
@@ -371,6 +371,13 @@ div.ui-tooltip {
 .expense-receipt img {
     width: 100%;
 }
+
+/* bill pdf inline */
+.bill-file object {
+    width: 100%;
+    height: 400px;
+}
+
 
 
 /* Fix select2 issue in actionset popover */

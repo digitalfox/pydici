@@ -370,6 +370,15 @@ def client_bill(request, bill_id=None):
 
 @pydici_non_public
 @pydici_feature("billing_request")
+def client_bill_detail(request, bill_id):
+    """Display detailed bill information, metadata and bill pdf"""
+    bill = ClientBill.objects.get(id=bill_id)
+    return render(request, "billing/client_bill_detail.html",
+                  {"bill": bill})
+
+
+@pydici_non_public
+@pydici_feature("billing_request")
 def clientbill_delete(request, bill_id):
     """Delete client bill in early stage"""
     redirect_url = reverse("billing:client_bills_in_creation")

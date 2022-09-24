@@ -122,9 +122,8 @@ class Expense(models.Model):
         else:
             return "%s (%s) - %s € - %s" % (self.description, self.expense_date, self.amount, self.get_state_display())
 
-
     def receipt_data(self):
-        """Return receipt data in formated way to be included inline in a html page"""
+        """Return receipt data in formatted way to be included inline in a html page"""
         response = ""
         if self.receipt:
             content_type = self.receipt_content_type()
