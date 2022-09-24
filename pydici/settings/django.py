@@ -192,5 +192,10 @@ AUDITLOG_INCLUDE_TRACKING_MODELS = (
     {
         "model": "expense.Expense",
         "exclude_fields": ["id", "creation_date", "update_date", "workflow_in_progress", "expensePayment"]
+    },
+    {
+        "model": "billing.ClientBill",
+        "exclude_fields": ["id", "creation_date", "update_date", "workflow_in_progress", "expensePayment"],
+        "m2m_fields": ["expenses"],
     }
 )

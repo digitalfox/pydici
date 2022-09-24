@@ -20,6 +20,8 @@ from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
 from django.conf import settings
 
+from auditlog.models import AuditlogHistoryField
+
 from leads.models import Lead
 from staffing.models import Mission, Timesheet
 from people.models import Consultant
@@ -171,6 +173,8 @@ class ClientBill(AbstractBill):
     client_comment = models.CharField(_("Client comments"), max_length=500, blank=True, null=True)
     client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
 
+    history = AuditlogHistoryField()
+
     def client(self):
         if self.lead.paying_authority:
             return "%s via %s" % (self.lead, self.lead.paying_authority.short_name())
@@ -214,7 +218,7 @@ class ClientBill(AbstractBill):
         return response
 
     def get_absolute_url(self):
-        return reverse("billing:client_bill", args=[self.id,])
+        return reverse("billing:client_bill_detail", args=[self.id,])
 
     def save(self, *args, **kwargs):
         if not self.lang:

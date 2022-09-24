@@ -10,8 +10,8 @@
 {% block content %}
 
 <h2>
-    {% blocktrans with id=bill.bill_id %}Bill n° {{ id }}{% endblocktrans %}
-    {% if can_edit %}<a href="{% url 'expense:expenses' expense.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>{% endif %}
+    {% blocktrans with id=bill.bill_id %}Bill n°{{ id }}{% endblocktrans %}
+    {% if pydici_feature.billing_management %}<a href="{% url 'billing:client_bill' bill.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>{% endif %}
 </h2>
 
 <div class="row">
