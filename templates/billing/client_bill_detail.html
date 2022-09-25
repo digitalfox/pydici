@@ -19,11 +19,11 @@
         <table class="table table-hover table-striped table-sm">
             <tr>
                 <th>{% trans "Client" %}</th>
-                <td>{{ bill.lead.client }}</td>
+                <td><a href="{% url 'crm:company_detail' bill.lead.client.organisation.company.id %}">{{ bill.lead.client }}</a></td>
             </tr>
             <tr>
                 <th>{% trans "Lead" %}</th>
-                <td>{{ bill.lead.name }}</td>
+                <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.lead.name }}</a></td>
             </tr>
             <tr>
                 <th>{% trans "Bill id" %}</th>
@@ -51,11 +51,11 @@
             </tr>
             <tr>
                 <th>{% trans "Comment" %}</th>
-                <td>{{ bill.comment }}</td>
+                <td>{{ bill.comment|default_if_none:"" }}</td>
             </tr>
             <tr>
                 <th>{% trans "Client Comment" %}</th>
-                <td>{{ bill.client_comment }}</td>
+                <td>{{ bill.client_comment|default_if_none:"" }}</td>
             </tr>
         </table>
     </div>
