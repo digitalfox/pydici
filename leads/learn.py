@@ -233,7 +233,7 @@ def eval_state_model(model=None, verbose=True):
             print("%s\t\t=> %s" % (i, j))
     m = pickle.dumps(model)
     if verbose:
-        print("size %s - compressed %s" % (len(m) / (1024 * 1024), len(zlib.compress(m)) / (1024 * 1024)))
+        print("size %s - compressed %s" % (len(m) / (1024 * 1024), len(zlib.compress(m, level=1)) / (1024 * 1024)))
     return model
 
 
@@ -245,7 +245,7 @@ def test_tag_model():
     model.fit(test_features, test_targets)
     scores = cross_val_score(model, test_features, test_targets, scoring=score_tag_lead, cv=3)
     m = pickle.dumps(model)
-    print("size %s - compressed %s" % (len(m)/(1024*1024), len(zlib.compress(m))/(1024*1024)))
+    print("size %s - compressed %s" % (len(m)/(1024*1024), len(zlib.compress(m, level=1))/(1024*1024)))
     print(("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2)))
     return scores.mean()
 
@@ -428,7 +428,7 @@ def compute_leads_tags(relearn=False, return_model=False):
         features, targets = extract_leads_tag(learn_leads)
         model = get_tag_model()
         model.fit(features, targets)
-        cache.set(TAG_MODEL_CACHE_KEY, zlib.compress(pickle.dumps(model)), 3600*24*7)
+        cache.set(TAG_MODEL_CACHE_KEY, zlib.compress(pickle.dumps(model, level=1)), 3600*24*7)
     else:
         model = pickle.loads(zlib.decompress(model))
 
