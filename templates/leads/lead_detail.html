@@ -54,7 +54,7 @@
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-actions"><i class="bi bi-check2-square"></i> {% trans "Actions" %}</button></li>
         {% if enable_doc_tab %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-documents" data-tab-url="{% url 'leads:lead_documents' lead.id|unlocalize %}"><i class="bi bi-file-earmark-text"></i> {% trans "Documents" %}</button></li>{% endif %}
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' lead.id|unlocalize %}"><i class="bi bi-graph-up"></i> {% trans "Reporting" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-history"><i class="bi bi-clock-history"></i> {% trans "History" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-history", data-tab-url="{% url 'core:object_history' 'lead' lead.id %}"><i class="bi bi-clock-history"></i> {% trans "History" %}</button></li>
     </ul>
 </div>
 
@@ -299,11 +299,7 @@
     <div id="tab-reporting" class="tab-pane fade" role="tabpanel"></div>
 
 
-    <div id="tab-history" class="tab-pane fade" role="tabpanel">
-        {% with history_list=lead.get_change_history %}
-            {% include "core/_object_history.html" %}
-        {% endwith %}
-    </div>
+    <div id="tab-history" class="tab-pane fade" role="tabpanel"></div>
 
 </div> {# End of all tabs #}
 

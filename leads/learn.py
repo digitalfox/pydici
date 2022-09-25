@@ -95,11 +95,10 @@ def get_lead_state_data(lead):
         feature["staffing_%s" % staf.trigramme] = "yes"
     for tag in lead.tags.all():
         feature["tag_%s" % tag.slug] = "yes"
-    history = lead.get_change_history()
-    feature["history_changes"] = history.count()
+    feature["history_changes"] = lead.history.count()
     if feature["history_changes"] > 1:
-        history_boundaries = history.aggregate(Min("action_time"), Max("action_time"))
-        feature["history_length"] = (history_boundaries["action_time__max"] - history_boundaries["action_time__min"]).days
+        history_boundaries = lead.history.aggregate(Min("timestamp"), Max("timestamp"))
+        feature["history_length"] = (history_boundaries["timestamp__max"] - history_boundaries["timestamp__min"]).days
 
     return feature, lead.state
 
@@ -190,7 +189,7 @@ def get_state_model():
 
 def get_tag_model():
         model = Pipeline([("vect", TfidfVectorizer(stop_words=FR_STOP_WORDS.split(), min_df=2, sublinear_tf=False)),
-                           ("clf", SGDClassifier(loss="log", penalty="l1", max_iter=1000, tol=0.01))])
+                           ("clf", SGDClassifier(loss="log_loss", penalty="l1", max_iter=1000, tol=0.01))])
         return model
 
 
@@ -223,7 +222,7 @@ def eval_state_model(model=None, verbose=True):
     if verbose:
         print(confusion_matrix(y_test, y_pred))
         print(classification_report(y_test, y_pred))
-    feature_names = model.named_steps["vect"].get_feature_names()
+    feature_names = model.named_steps["vect"].get_feature_names_out()
     coef = model.named_steps["clf"].feature_importances_
     max_coef = max(coef)
     coef = [round(i*100/max_coef) for i in coef]
@@ -232,9 +231,9 @@ def eval_state_model(model=None, verbose=True):
     if verbose:
         for i, j in top[:30]:
             print("%s\t\t=> %s" % (i, j))
-    m = pickle.dumps(model)
+    m = pickle.dumps(model, protocol=5)
     if verbose:
-        print("size %s - compressed %s" % (len(m) / (1024 * 1024), len(zlib.compress(m)) / (1024 * 1024)))
+        print("size %s - compressed %s" % (len(m) / (1024 * 1024), len(zlib.compress(m, level=1)) / (1024 * 1024)))
     return model
 
 
@@ -245,8 +244,8 @@ def test_tag_model():
     model = get_tag_model()
     model.fit(test_features, test_targets)
     scores = cross_val_score(model, test_features, test_targets, scoring=score_tag_lead, cv=3)
-    m = pickle.dumps(model)
-    print("size %s - compressed %s" % (len(m)/(1024*1024), len(zlib.compress(m))/(1024*1024)))
+    m = pickle.dumps(model, protocol=5)
+    print("size %s - compressed %s" % (len(m)/(1024*1024), len(zlib.compress(m, level=1))/(1024*1024)))
     print(("Score : %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2)))
     return scores.mean()
 
@@ -254,7 +253,7 @@ def test_tag_model():
 def gridCV_tag_model():
     """Perform a grid search cross validation to find best parameters"""
     parameters = {'clf__alpha': (0.1, 0.01, 0.001, 0.0001, 1e-05),
-                  'clf__loss': ('log', 'modified_huber', 'squared_hinge'),
+                  'clf__loss': ('log_loss', 'modified_huber', 'squared_hinge'),
                   'clf__penalty': ('none', 'l2', 'l1', 'elasticnet'),
                   'vect__min_df': (1, 2, 3, 4, 5),
                   'vect__norm': ('l1', 'l2'),
@@ -429,7 +428,7 @@ def compute_leads_tags(relearn=False, return_model=False):
         features, targets = extract_leads_tag(learn_leads)
         model = get_tag_model()
         model.fit(features, targets)
-        cache.set(TAG_MODEL_CACHE_KEY, zlib.compress(pickle.dumps(model)), 3600*24*7)
+        cache.set(TAG_MODEL_CACHE_KEY, zlib.compress(pickle.dumps(model, protocol=5), level=1), 3600*24*7)
     else:
         model = pickle.loads(zlib.decompress(model))
 

@@ -7,17 +7,20 @@ Database access layer for pydici billing module
 from datetime import date, datetime, timedelta
 from time import strftime
 
-from os.path import join, dirname
+from os.path import join
 import os.path
 from decimal import Decimal
+from base64 import b64encode
+from io import BytesIO
 
 from django.db import models
 from django.db.models import Sum, Min, Max
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import  gettext
 from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
 from django.conf import settings
+
+from auditlog.models import AuditlogHistoryField
 
 from leads.models import Lead
 from staffing.models import Mission, Timesheet
@@ -170,6 +173,8 @@ class ClientBill(AbstractBill):
     client_comment = models.CharField(_("Client comments"), max_length=500, blank=True, null=True)
     client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
 
+    history = AuditlogHistoryField()
+
     def client(self):
         if self.lead.paying_authority:
             return "%s via %s" % (self.lead, self.lead.paying_authority.short_name())
@@ -199,8 +204,21 @@ class ClientBill(AbstractBill):
         """Returns total of this bill without taxes and expenses"""
         return list(self.billdetail_set.aggregate(Sum("amount")).values())[0] or 0
 
+    def bill_data(self):
+        """Return bill data in formatted way to be included inline in a html page"""
+        response = ""
+        if self.bill_file:
+            data = BytesIO()
+            for chunk in self.bill_file.chunks():
+                data.write(chunk)
+
+            data = b64encode(data.getvalue()).decode()
+            response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
+
+        return response
+
     def get_absolute_url(self):
-        return reverse("billing:client_bill", args=[self.id,])
+        return reverse("billing:client_bill_detail", args=[self.id,])
 
     def save(self, *args, **kwargs):
         if not self.lang:

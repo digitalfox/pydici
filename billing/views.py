@@ -299,11 +299,11 @@ def client_bill(request, bill_id=None):
             if bill.state in wip_status:
                 success_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
             else:
-                success_url = request.GET.get('return_to', False) or reverse_lazy("crm:company_detail", args=[bill.lead.client.organisation.company.id, ]) + "#goto_tab-billing"
+                success_url = request.GET.get('return_to', False) or reverse_lazy("billing:client_bill_detail", args=[bill.id, ])
                 if bill.bill_file:
                     if form.changed_data == ["state"] and billDetailFormSet is None and billExpenseFormSet is None:
                         # only state has change. No need to regenerate bill file.
-                        messages.add_message(request, messages.INFO, _("Bill state has beed updated"))
+                        messages.add_message(request, messages.INFO, _("Bill state has been updated"))
                     elif "bill_file" in form.changed_data:
                         # a file has been provided by user himself. We must not generate a file and overwrite it.
                         messages.add_message(request, messages.WARNING, _("Using custom user file to replace current bill"))
@@ -366,6 +366,15 @@ def client_bill(request, bill_id=None):
                    "can_delete": bill.state in wip_status if bill else False,
                    "can_preview": bill.state in wip_status if bill else False,
                    "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("billing_request")
+def client_bill_detail(request, bill_id):
+    """Display detailed bill information, metadata and bill pdf"""
+    bill = ClientBill.objects.get(id=bill_id)
+    return render(request, "billing/client_bill_detail.html",
+                  {"bill": bill})
 
 
 @pydici_non_public

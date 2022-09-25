@@ -45,7 +45,7 @@
         </tr>
             {% for bill in client_bills %}
                 <tr>
-                    <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
+                    <td><a href="{% url 'billing:client_bill_detail' bill.id %}">{{ bill }}</a></td>
                     <td>{{ bill.get_state_display }}</td>
                     <td>{{ bill.amount|floatformat:-2 }}</td>
                     <td>{{ bill.creation_date }}</td>

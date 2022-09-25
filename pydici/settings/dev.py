@@ -19,6 +19,7 @@ MIDDLEWARE = [
     'core.middleware.ScopeMiddleware',
     'userswitch.middleware.UserSwitchMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'auditlog.middleware.AuditlogMiddleware',
 ]
 
 TEMPLATES[0]["OPTIONS"]["debug"] = True

@@ -48,11 +48,7 @@
         <tbody>
         {% for bill in overdue_bills %}
             <tr>
-                {% if billing_management %}
-                    <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
-                {% else %}
-                    <td>{{ bill }}</td>
-                {% endif %}
+                <td><a href="{% url 'billing:client_bill_detail' bill.id %}">{{ bill }}</a></td>
                 <td>{{ bill.lead.subsidiary }}</td>
                 <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td>{{ bill.lead.responsible }}</td>
@@ -99,11 +95,7 @@
         <tbody>
         {% for bill in soondue_bills %}
             <tr>
-                {% if billing_management %}
-                    <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
-                {% else %}
-                    <td>{{ bill }}</td>
-                {% endif %}
+                <td><a href="{% url 'billing:client_bill_detail' bill.id %}">{{ bill }}</a></td>
                 <td>{{ bill.lead.subsidiary }}</td>
                 <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
@@ -148,11 +140,7 @@
         <tbody>
         {% for bill in litigious_bills %}
             <tr>
-                {% if billing_management %}
-                    <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
-                {% else %}
-                    <td>{{ bill }}</td>
-                {% endif %}
+                <td><a href="{% url 'billing:client_bill_detail' bill.id %}">{{ bill }}</a></td>
                 <td>{{ bill.lead.subsidiary }}</td>
                 <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>
@@ -198,11 +186,7 @@
         <tbody>
         {% for bill in recent_bills %}
             <tr>
-                {% if billing_management %}
-                    <td><a href="{% url 'billing:client_bill' bill.id %}">{{ bill }}</a></td>
-                {% else %}
-                    <td>{{ bill }}</td>
-                {% endif %}
+                <td><a href="{% url 'billing:client_bill_detail' bill.id %}">{{ bill }}</a></td>
                 <td>{{ bill.lead.subsidiary }}</td>
                 <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.client }}</a></td>
                 <td style="text-align: right">{{ bill.amount|floatformat:-2 }}</td>

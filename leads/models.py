@@ -11,7 +11,7 @@ from django.db import models
 from datetime import datetime, date, timedelta
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext
-from django.contrib.admin.models import LogEntry, ContentType
+from django.contrib.admin.models import ContentType
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q, Sum
@@ -19,6 +19,7 @@ from django.urls import reverse
 from django.conf import settings
 
 from taggit.managers import TaggableManager
+from auditlog.models import AuditlogHistoryField
 
 from core.utils import compact_text
 from crm.models import Client, BusinessBroker, Subsidiary
@@ -83,6 +84,7 @@ class Lead(models.Model):
     external_id = models.CharField(max_length=200, default=None, blank=True, null=True, unique=True)
 
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
+    history = AuditlogHistoryField()
 
     @cacheable("Lead.__str__%(id)s", 3)
     def __str__(self):
@@ -139,13 +141,6 @@ class Lead(models.Model):
             return True
         else:
             return False
-
-    def get_change_history(self):
-        """Return object history action as an action List"""
-        actionList = LogEntry.objects.filter(object_id=self.id,
-                                             content_type__app_label="leads")
-        actionList = actionList.select_related().order_by('-action_time')
-        return actionList
 
     def done_work(self):
         """Compute done work according to timesheet for all missions of this lead

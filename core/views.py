@@ -12,11 +12,13 @@ import json
 from django.shortcuts import render
 from django.db.models import Q, Sum, Min, Max
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
+from django.utils.translation import pgettext
 from django.core.cache import cache
 from django.conf import settings
+from django.apps import apps
 
 from django_select2.views import AutoResponseView
 from taggit.models import Tag
@@ -30,7 +32,7 @@ from staffing.models import Mission, FinancialCondition, Staffing, Timesheet
 from billing.models import ClientBill
 from expense.models import Expense
 from people.views import consultant_home
-from core.utils import nextMonth, previousMonth, get_fiscal_year
+from core.utils import nextMonth, previousMonth, get_fiscal_year, user_has_feature
 
 
 
@@ -438,3 +440,27 @@ def forbidden(request):
     return render(request, template,
                   {"admins": settings.ADMINS, },
                   status=status)
+
+
+def object_history(request, object_type, object_id):
+    """Fragment page that display given object history"""
+    # placeholder for log translation
+    pgettext("noun", "add")
+    pgettext("noun", "delete")
+    # Key is object type and value (Model class, required feature name)
+    history_models = {"lead": [apps.get_model("leads", "Lead"), "leads"],
+                      "mission": [apps.get_model("staffing", "Mission"), "staffing"],
+                      "clientbill": [apps.get_model("billing", "ClientBill"), "billing_request"],
+                      "supplierbill": [apps.get_model("billing", "SupplierBill"), "billing_request"],
+                      "expense": [apps.get_model("expense", "Expense"), "expense"]
+                      }
+
+    model, feature = history_models[object_type]
+    if not user_has_feature(request.user, feature):
+        return forbidden(request)
+
+    try:
+        o = model.objects.get(id=object_id)
+    except model.DoesNotExist:
+        raise Http404
+    return render(request, "core/_object_history.html", {"object": o})

@@ -18,32 +18,8 @@
 <b>{% trans "Action: " %}</b>{% if obj.action %}{{ obj.action }}{% else %}{% trans "Nothing" %}{% endif %}<br>
 
 
-{% with obj.get_change_history as action_list %}
-{% if action_list %}
-    <br/>
-    <h2>{% trans "Change history" %}</h2>
-    <table id="change-history">
-        <thead>
-        <tr>
-            <th scope="col">{% trans 'Date/time' %}</th>
-            <th scope="col">{% trans 'User' %}</th>
-            <th scope="col">{% trans 'Action' %}</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for action in action_list %}
-        <tr>
-            <th scope="row">{{ action.action_time|date:_("DATETIME_FORMAT") }}</th>
-            <td>{{ action.user.username }}{% if action.user.first_name %} ({{ action.user.first_name }} {{ action.user.last_name }}){% endif %}</td>
-            <td>{{ action.change_message }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-{% endif %}
+{% with object=obj %}
+    {% include "core/_object_history.html" %}
 {% endwith %}
-
-
-
 
 <br><i><a href='{{ lead_url }}'>{% trans "Change this lead" %}</a></i>

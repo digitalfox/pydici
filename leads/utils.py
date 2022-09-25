@@ -7,10 +7,9 @@ appropriate to live in Lead models or view
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+from datetime import datetime, timedelta
 from django.utils.translation import  gettext
 from django.contrib import messages
-from django.contrib.admin.models import LogEntry, ADDITION, ContentType
-from django.utils.encoding import force_text
 from django.urls import reverse
 from django.conf import settings
 from django.utils.safestring import mark_safe
@@ -23,6 +22,7 @@ from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_si
 from staffing.models import Mission
 from leads.models import StateProba, Lead
 from core.utils import send_lead_mail, get_parameter, getLeadDirs
+from core.templatetags.pydici_filters import is_real_change
 
 
 if settings.TELEGRAM_IS_ENABLED:
@@ -70,16 +70,6 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
 
     lead.save()
 
-    # Log it
-    LogEntry.objects.log_action(
-        user_id         = request.user.pk,
-        content_type_id = ContentType.objects.get_for_model(lead).pk,
-        object_id       = lead.pk,
-        object_repr     = force_text(lead),
-        action_flag     = ADDITION,
-        change_message  = ", ".join(updated_fields),
-    )
-
     if mail:
         try:
             fromAddr = request.user.email or "noreply@noreply.com"
@@ -101,9 +91,11 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
             elif state_changed:
                 # Only notify when lead state changed to avoid useless spam
                 try:
-                    change = "%s (%s)" % (lead.get_change_history()[0].change_message, lead.get_change_history()[0].user)
-                except:
                     change = ""
+                    for log in lead.history.filter(timestamp__gt=datetime.now()-timedelta(1/24)):
+                        change += f"{log.changes_str} ({log.actor})\n"
+                except:
+                    pass
                 msg = gettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
                 if lead.state == "WON":
                     sticker = settings.TELEGRAM_STICKERS.get("happy")

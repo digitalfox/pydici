@@ -9,6 +9,7 @@ from itertools import chain
 
 from django.db.models import Q
 from django.utils.safestring import mark_safe
+from django.urls import reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
@@ -81,6 +82,8 @@ class BillTableDT(PydiciNonPublicdMixin, BillingRequestMixin, BaseDatatableView)
             return mark_safe("""<a href='%s'><i class="bi bi-file-earmark-text"></i></a>""" % row.bill_file_url())
         elif column == "subsidiary":
             return str(row.lead.subsidiary)
+        elif column == "comment":
+            return row.comment
         else:
             return super(BillTableDT, self).render_column(row, column)
 
@@ -109,6 +112,8 @@ class ClientBillInCreationTableDT(BillTableDT):
             responsibles = set(chain(*responsibles))  # flatten it
             responsibles = Consultant.objects.filter(id__in=responsibles)
             return ", ".join([str(c) for c in responsibles])
+        elif column == "bill_id":  # Use edit link instead of default detail display
+            return "<a href='%s'>%s</a>" % (reverse("billing:client_bill", args=[row.id]), row.bill_id)
         else:
             return super(ClientBillInCreationTableDT, self).render_column(row, column)
 

@@ -12,8 +12,10 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext, pgettext
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
-from django.contrib.admin.models import ContentType, LogEntry
+from django.contrib.admin.models import ContentType
 from django.urls import reverse
+
+from auditlog.models import AuditlogHistoryField
 
 from datetime import datetime, date, timedelta
 
@@ -90,6 +92,8 @@ class Mission(models.Model):
     start_date = models.DateField(_("Start date"), blank=True, null=True)
     end_date = models.DateField(_("End date"), blank=True, null=True)
     min_charge_per_day = models.FloatField(_("Min charge per day"), default=0)
+
+    history = AuditlogHistoryField()
 
     def __str__(self):
         if self.description and not self.lead:
@@ -449,13 +453,6 @@ class Mission(models.Model):
                               gettext("forecast (days)"): staffing_data.get(month, 0),
                               gettext("forecast (€)"): staffing_data.get(month, 0) * consultant_rates[consultant][0]})
         return data
-
-    def get_change_history(self):
-        """Return object history action as an action List"""
-        actionList = LogEntry.objects.filter(object_id=self.id,
-                                              content_type__app_label="staffing")
-        actionList = actionList.select_related().order_by('-action_time')
-        return actionList
 
     def get_absolute_url(self):
         return reverse('staffing:mission_home', args=[str(self.id)])

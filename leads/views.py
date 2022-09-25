@@ -105,7 +105,6 @@ def detail(request, lead_id):
                    "next_lead": next_lead,
                    "previous_lead": previous_lead,
                    "link_root": reverse("core:index"),
-                   "action_list": lead.get_change_history(),
                    "completion_url": reverse("leads:tags", args=[lead.id, ]),
                    "suggested_tags": suggestedTags,
                    "similar_leads": predict_similar(lead),
