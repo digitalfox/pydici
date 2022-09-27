@@ -524,13 +524,16 @@ class OptimiserForm(forms.Form):
 
         self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.filter(active=True), required=False)
         self.fields["projections"] = forms.ChoiceField(label=_("staffing projection freetime"), choices=(("full", _("full")), ("balanced", _("balanced")), ("none", _("none"))), initial="balanced")
+        self.fields["director_quota"] = forms.IntegerField(label=_("Director min. quota (%)"), initial=10, min_value=0, max_value=100)
         self.fields["senior_quota"] = forms.IntegerField(label=_("Senior min. quota (%)"), initial=20, min_value=0, max_value=100)
-        self.fields["newbie_quota"] = forms.IntegerField(label=_("Newbie min. quota (%)"), initial=30, min_value=0, max_value=100)
+        self.fields["newbie_quota"] = forms.IntegerField(label=_("Newbie min. quota (%)"), initial=40, min_value=0, max_value=100)
         self.fields["planning_weight"] = forms.ChoiceField(label=_("Mission planning weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
         self.fields["freetime_weight"] = forms.ChoiceField(label=_("Consultant free time weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
         self.fields["people_per_mission_weight"] = forms.ChoiceField(label=_("People per mission weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
         self.fields["mission_per_people_weight"] = forms.ChoiceField(label=_("Mission per people weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
-        self.helper.layout = Layout(Div(Column(Row(Column("senior_quota", css_class="col-md-4"), Column("newbie_quota", css_class="col-md-4"), Column("projections", css_class="col-md-4")), "consultants",  css_class="col-md-6"),
+        self.helper.layout = Layout(Div(Column(Row(Column("director_quota", css_class="col-md-3"), Column("senior_quota", css_class="col-md-3"),
+                                                   Column("newbie_quota", css_class="col-md-3"), Column("projections", css_class="col-md-3")),
+                                               "consultants",  css_class="col-md-6"),
                                         Column(Row(Column("planning_weight", "people_per_mission_weight", css_class="col-md-6"),
                                                    Column("freetime_weight", "mission_per_people_weight", css_class="col-md-6")),
                                                css_class="col-md-6"),
@@ -545,19 +548,28 @@ class OptimiserForm(forms.Form):
             self.cleaned_data["consultants"] = consultants
         return self.cleaned_data["consultants"]
 
+    def clean_director_quota(self):
+        levels = [c.profil.level for c in self.cleaned_data["consultants"]]
+        if self.cleaned_data.get("consultants") and self.cleaned_data["director_quota"] > 0:
+            if max(levels) < 6:
+                raise ValidationError(_("%s %% director profile is required but no director has been selected") % self.cleaned_data["director_quota"])
+        return self.cleaned_data["director_quota"]
+
     def clean_senior_quota(self):
+        levels = [c.profil.level for c in self.cleaned_data["consultants"]]
         if self.cleaned_data.get("consultants") and self.cleaned_data["senior_quota"] > 0:
-            if not max([c.profil.level for c in self.cleaned_data["consultants"]]) > 2:
+            if len([i for i in levels if 2 < i < 6]) == 0:
                 raise ValidationError(_("%s %% senior profile is required but no senior consultant has been selected") % self.cleaned_data["senior_quota"])
         return self.cleaned_data["senior_quota"]
 
     def clean_newbie_quota(self):
+        levels = [c.profil.level for c in self.cleaned_data["consultants"]]
         if self.cleaned_data.get("consultants") and self.cleaned_data["newbie_quota"] > 0:
-            if not min([c.profil.level for c in self.cleaned_data["consultants"]]) <= 2:
+            if min(levels) > 2:
                 raise ValidationError(_("%s %% newbie profile is required but no newbie consultant has been selected") % self.cleaned_data["newbie_quota"])
         return self.cleaned_data["newbie_quota"]
 
     def clean(self):
-        if self.cleaned_data.get("newbie_quota", 0) + self.cleaned_data.get("senior_quota", 0) > 100:
-            raise ValidationError(_("Sum of newbie and senior quota cannot exceed 100%"))
+        if self.cleaned_data.get("newbie_quota", 0) + self.cleaned_data.get("senior_quota", 0) + self.cleaned_data.get("director_quota", 0) > 100:
+            raise ValidationError(_("Sum of profiles quotas cannot exceed 100%"))
         return self.cleaned_data

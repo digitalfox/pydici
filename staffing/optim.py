@@ -19,17 +19,19 @@ from core.utils import working_days, to_int_or_round
 from staffing.models import Holiday, Staffing
 
 
-def solve_pdc(consultants, senior_consultants, missions, months, missions_charge, missions_remaining, missions_boundaries,
+def solve_pdc(consultants, senior_consultants, director_consultants, missions, months, missions_charge, missions_remaining, missions_boundaries,
               consultants_freetime, predefined_assignment, exclusions, consultants_rates, solver_param=None):
     # default value
     if solver_param is None:
         solver_param = {}
+    director_quota = solver_param.get("director_quota", 10)
     senior_quota = solver_param.get("senior_quota", 20)
-    newbie_quota = solver_param.get("newbie_quota", 30)
+    newbie_quota = solver_param.get("newbie_quota", 40)
     planning_weight = solver_param.get("planning_weight", 1)
     mission_per_people_weight = solver_param.get("mission_per_people_weight", 1)
     people_per_mission_weight = solver_param.get("people_per_mission_weight", 1)
     freetime_weight = solver_param.get("freetime_weight", 1)
+    newbie_consultants = [c for c in consultants if c not in senior_consultants and c not in director_consultants]
     # CP-SAT model
     model = cp_model.CpModel()
     # variable we are searching
@@ -103,13 +105,16 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
         model.Add(sum(s) >= mission_total - staffing_mission_global_delta[mission])
         model.Add(sum(s) <= mission_total + staffing_mission_global_delta[mission])
 
-    # Each mission should have a noob and senior quota each month
+    # Each mission should have a noob, senior and director quota each month
     for mission in missions:
         for month in months:
-            charge = sum(staffing[consultant][mission][month] for consultant in consultants if consultant not in senior_consultants)
-            lead_charge = sum(staffing[consultant][mission][month] for consultant in senior_consultants)
-            model.Add((charge + lead_charge) * newbie_quota <= charge * 100)
-            model.Add((charge + lead_charge) * senior_quota <= lead_charge * 100)
+            newbie_charge = sum(staffing[consultant][mission][month] for consultant in newbie_consultants)
+            senior_charge = sum(staffing[consultant][mission][month] for consultant in senior_consultants)
+            director_charge = sum(staffing[consultant][mission][month] for consultant in director_consultants)
+            total_charge = newbie_charge + senior_charge + director_charge
+            model.Add(total_charge * newbie_quota <= newbie_charge * 100)
+            model.Add(total_charge * senior_quota <= senior_charge * 100)
+            model.Add(total_charge * director_quota <= director_charge * 100)
 
     # All missions are done, but not overshoot
     for mission in missions:
@@ -166,8 +171,8 @@ def solve_pdc(consultants, senior_consultants, missions, months, missions_charge
         for month in months:
             # optimise freetime and mission per people only if we have stuff to do
             if sum(missions_charge[mission][month] for mission in missions) > 0:
-                # reduce free time for newbies, not for senior consultants
-                if consultant not in senior_consultants and freetime_weight > 0:
+                # reduce free time for newbies only
+                if consultant in newbie_consultants and freetime_weight > 0:
                     charge = sum(staffing[consultant][mission][month] for mission in missions)
                     freetime_score_items.append(consultants_freetime[consultant][month] - charge)
                 # limit number of mission per people

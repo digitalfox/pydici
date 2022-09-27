@@ -6,6 +6,9 @@ Test cases for staffing
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+from unittest import mock
+from io import StringIO
+
 from django.test import TestCase
 from django.core.cache import cache
 from django.urls import reverse
@@ -151,8 +154,9 @@ class StaffingViewsTest(TestCase):
 
 
 class OptimTest(TestCase):
-    consultants = ["SRE", "JCF", "MFR"]
-    senior_consultants = ["SRE", "JCF"]
+    consultants = ["SRE", "JCF", "MFR", "TCO"]
+    senior_consultants = ["MFR"]
+    director_consultants = ["SRE", "JCF"]
     missions = ["M1", "M2", "M3", "M4"]
     months = ["jan", "feb", "mar"]
 
@@ -176,10 +180,12 @@ class OptimTest(TestCase):
     consultants_freetime = {"SRE": {"jan": 15, "feb": 18, "mar": 13},
                             "JCF": {"jan": 10, "feb": 15, "mar": 20},
                             "MFR": {"jan": 20, "feb": 20, "mar": 20},
+                            "TCO": {"jan": 20, "feb": 20, "mar": 20},
                             }
     consultants_rates = {"SRE": {"M1": 1500, "M2": 1450, "M3": 1500, "M4": 1800},
                          "JCF": {"M1": 1600, "M2": 1350, "M3": 1500, "M4": 1700},
                          "MFR": {"M1": 1000, "M2": 950, "M3": 1200, "M4": 1400},
+                         "TCO": {"M1": 1000, "M2": 950, "M3": 1200, "M4": 1400},
                         }
 
     predefined_assignment = {"M4": ["JCF", ]}
@@ -187,9 +193,11 @@ class OptimTest(TestCase):
     exclusions = {"M3": ["JCF", ]}
 
     def test_optim(self):
-        solver, status, scores, staffing = solve_pdc(self.consultants, self.senior_consultants, self.missions, self.months,
+        solver, status, scores, staffing = solve_pdc(self.consultants, self.senior_consultants, self.director_consultants,
+                                                     self.missions, self.months,
                                                      self.missions_charge, self.missions_remaining, self.missions_boundaries,
                                                      self.consultants_freetime, self.predefined_assignment, self.exclusions,
                                                      self.consultants_rates, solver_param={})
-        display_solver_solution(solver, scores, staffing, self.consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime)
-        self.assertEqual((sum(solver.Value(score) for score in scores)), 63)
+        with mock.patch('sys.stdout', new=StringIO()):
+            display_solver_solution(solver, scores, staffing, self.consultants, self.missions, self.months, self.missions_charge, self.consultants_freetime)
+        self.assertEqual((sum(solver.Value(score) for score in scores)), 87)
