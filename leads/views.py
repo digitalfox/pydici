@@ -116,7 +116,6 @@ def detail(request, lead_id):
 def lead(request, lead_id=None):
     """Lead creation or modification"""
     lead = None
-    updated_fields = []
     state_changed = False
     blacklist_fields = ["creation_date", "tags"]
     max_length = 50
@@ -136,24 +135,8 @@ def lead(request, lead_id=None):
             form = LeadForm(request.POST)
             created = True
         if form.is_valid():
-            changed_fields = form.changed_data
-            for field_name, field in list(form.fields.items()):
-                if field_name in changed_fields and field_name not in blacklist_fields:
-                    if field_name == "state":
-                        state_changed = True
-                    value = form.cleaned_data[field_name]
-                    if field_name == "description":
-                        if compact_text(value) == old_lead_description:
-                            # Don't consider description field as changed if content is the same
-                            continue
-                    if isinstance(value, (list, QuerySet)):
-                        value = ", ".join([str(i) for i in value])
-                    else:
-                        value = force_text(value)
-                    value = value if len(value)<=max_length else value[0:max_length-3]+'...'
-                    updated_fields.append("%s: %s" % (force_text(field.label or field_name), value))
             lead = form.save()
-            postSaveLead(request, lead, updated_fields, created=created, state_changed=state_changed)
+            postSaveLead(request, lead, created=created, state_changed=state_changed)
             return HttpResponseRedirect(reverse("leads:detail", args=[lead.id]))
     else:
         if lead:

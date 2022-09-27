@@ -62,7 +62,7 @@ def create_default_mission(lead):
     return mission
 
 
-def postSaveLead(request, lead, updated_fields, created=False, state_changed=False):
+def postSaveLead(request, lead, created=False, state_changed=False):
     mail = False
     if lead.send_email:
         mail = True
@@ -90,12 +90,9 @@ def postSaveLead(request, lead, updated_fields, created=False, state_changed=Fal
                 chat_group = "new_leads"
             elif state_changed:
                 # Only notify when lead state changed to avoid useless spam
-                try:
-                    change = ""
-                    for log in lead.history.filter(timestamp__gt=datetime.now()-timedelta(1/24)):
-                        change += f"{log.changes_str} ({log.actor})\n"
-                except:
-                    pass
+                change = ""
+                for log in lead.history.filter(timestamp__gt=datetime.now()-timedelta(1/24)):
+                    change += f"{log.changes_str} ({log.actor})\n"
                 msg = gettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
                 if lead.state == "WON":
                     sticker = settings.TELEGRAM_STICKERS.get("happy")
