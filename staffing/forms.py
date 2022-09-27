@@ -474,7 +474,7 @@ class MissionOptimiserForm(forms.Form):
         min_date = mission.start_date or date(2000, 1, 1)
         max_date = mission.end_date or date(2100, 1, 1)
         mission_staffing_dates = [i for i in self.staffing_dates if i[0] >= min_date and (i[0] < max_date)]
-        if mission and sum(self.cleaned_data["charge_%s" % month[1]] or 0 for month in mission_staffing_dates) == 0:
+        if mission and mission_staffing_dates and sum(self.cleaned_data["charge_%s" % month[1]] or 0 for month in mission_staffing_dates) == 0:
             # Charge is not defined. Get it from staffing
             charge = Staffing.objects.filter(mission=mission, staffing_date__gte=mission_staffing_dates[0][0]).aggregate(Sum("charge"))["charge__sum"] or 0
             if charge > 0:
