@@ -1575,6 +1575,7 @@ def mission_update(request):
             if value in billingModes:
                 mission.billing_mode = value
                 mission.save()
+                return HttpResponse(billingModes[value])
         elif attribute == "management_mode":
             if value in managementModes:
                 mission.management_mode = value
