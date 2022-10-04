@@ -136,6 +136,7 @@ def lead(request, lead_id=None):
             created = True
         if form.is_valid():
             lead = form.save()
+            state_changed = "state" in form.changed_data
             postSaveLead(request, lead, created=created, state_changed=state_changed)
             return HttpResponseRedirect(reverse("leads:detail", args=[lead.id]))
     else:
