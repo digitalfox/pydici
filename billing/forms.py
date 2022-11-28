@@ -74,7 +74,7 @@ class ClientBillForm(PydiciCrispyModelForm):
                                                       Column("amount", "vat", "amount_with_vat", css_class="col-md-6")),
                                                   Tab(_("Dates"), Column("creation_date", "due_date", "payment_date",
                                                                          css_class="col-md-6"), ),
-                                                  Tab(_("Advanced"), Column("client_deal_id", "lang", "bill_file",
+                                                  Tab(_("Advanced"), Column("client_deal_id", "lang", "allow_duplicate_expense", "bill_file",
                                                                             css_class="col-md-6"), ),
                                                   css_class="row")))
 
@@ -148,7 +148,10 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         super(BillExpenseInlineFormset, self).add_fields(form, index)
         qs = Expense.objects.filter(lead=self.instance.lead, chargeable=True)
-        qs_widget = qs.filter(billexpense__isnull=True)  # Don't propose an expense already billed
+        if self.instance.allow_duplicate_expense:
+            qs_widget = qs
+        else:
+            qs_widget = qs.filter(billexpense__isnull=True)  # Don't propose an expense already billed
         form.fields["expense"] = ModelChoiceField(label=_("Expense"), required=False, widget=ExpenseChoices(queryset=qs_widget), queryset=qs)
         form.fields["expense_date"] = DateField(label=_("Expense date"), required=False, widget=DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
 
@@ -159,7 +162,7 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
             return
         expenses = []
         for form in self.forms:
-            expense  = form.cleaned_data.get("expense", None)
+            expense = form.cleaned_data.get("expense", None)
             if expense:
                 expense = expense.id
             else:
