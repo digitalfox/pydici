@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-28 21:23+0100\n"
-"PO-Revision-Date: 2022-11-28 18:33+0100\n"
+"POT-Creation-Date: 2022-11-29 08:44+0100\n"
+"PO-Revision-Date: 2022-11-29 08:50+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -413,12 +413,12 @@ msgstr "organisation client"
 #: templates/leads/leads_pivotable.html:64
 #: templates/leads/leads_pivotable.html:73
 #: templates/leads/leads_pivotable.html:80
-#: templates/staffing/turnover_pivotable.html:76
+#: templates/staffing/turnover_pivotable.html:77
 msgid "client company"
 msgstr "entreprise"
 
 #: billing/utils.py:153 leads/views.py:643 staffing/views.py:1774
-#: templates/staffing/turnover_pivotable.html:67
+#: templates/staffing/turnover_pivotable.html:68
 msgid "broker"
 msgstr "apporteur"
 
@@ -459,11 +459,11 @@ msgstr "Direct"
 #: templates/staffing/rates_report.html:44
 #: templates/staffing/rates_report.html:50
 #: templates/staffing/rates_report.html:58
-#: templates/staffing/turnover_pivotable.html:55
-#: templates/staffing/turnover_pivotable.html:61
-#: templates/staffing/turnover_pivotable.html:68
-#: templates/staffing/turnover_pivotable.html:75
-#: templates/staffing/turnover_pivotable.html:91
+#: templates/staffing/turnover_pivotable.html:56
+#: templates/staffing/turnover_pivotable.html:62
+#: templates/staffing/turnover_pivotable.html:69
+#: templates/staffing/turnover_pivotable.html:76
+#: templates/staffing/turnover_pivotable.html:92
 msgid "subsidiary"
 msgstr "filiale"
 
@@ -521,9 +521,10 @@ msgstr "montant"
 #: templates/staffing/lunch_tickets_pivotable.html:58
 #: templates/staffing/lunch_tickets_pivotable.html:64
 #: templates/staffing/missions_report.html:78
-#: templates/staffing/turnover_pivotable.html:56
-#: templates/staffing/turnover_pivotable.html:62
-#: templates/staffing/turnover_pivotable.html:84
+#: templates/staffing/turnover_pivotable.html:57
+#: templates/staffing/turnover_pivotable.html:63
+#: templates/staffing/turnover_pivotable.html:85
+#: templates/staffing/turnover_pivotable.html:98
 msgid "month"
 msgstr "Mois"
 
@@ -557,7 +558,7 @@ msgstr "mission"
 #: staffing/models.py:449 staffing/views.py:1773
 #: templates/billing/client_billing_control_pivotable.html:68
 #: templates/staffing/missions.html:32
-#: templates/staffing/turnover_pivotable.html:90
+#: templates/staffing/turnover_pivotable.html:91
 msgid "billing mode"
 msgstr "mode de facturation"
 
@@ -2556,18 +2557,19 @@ msgstr ""
 "exclusions ou relâchez les contraintes de ratio d'expérience."
 
 #: staffing/views.py:1776 templates/staffing/mission.html:105
+#: templates/staffing/turnover_pivotable.html:97
 msgid "Marketing product"
 msgstr "Produit marketing"
 
 #: staffing/views.py:1776
-#, fuzzy
 #| msgid "undefined"
 msgid "Undefined"
 msgstr "À définir"
 
 #: staffing/views.py:1792 staffing/views.py:1799
 #: templates/billing/graph_yearly_billing.html:37
-#: templates/staffing/turnover_pivotable.html:86
+#: templates/staffing/turnover_pivotable.html:87
+#: templates/staffing/turnover_pivotable.html:100
 msgid "turnover (€)"
 msgstr "Chiffre d'affaire (€)"
 
@@ -2580,11 +2582,11 @@ msgid "internal subcontractor turnover (€)"
 msgstr "CA sous-traitants internes (€)"
 
 #: staffing/views.py:1795 staffing/views.py:1809
-#: templates/staffing/turnover_pivotable.html:57
-#: templates/staffing/turnover_pivotable.html:63
-#: templates/staffing/turnover_pivotable.html:71
-#: templates/staffing/turnover_pivotable.html:79
-#: templates/staffing/turnover_pivotable.html:92
+#: templates/staffing/turnover_pivotable.html:58
+#: templates/staffing/turnover_pivotable.html:64
+#: templates/staffing/turnover_pivotable.html:72
+#: templates/staffing/turnover_pivotable.html:80
+#: templates/staffing/turnover_pivotable.html:93
 msgid "own turnover (€)"
 msgstr "Chiffre d'affaire propre (€)"
 
@@ -2593,7 +2595,7 @@ msgid "fiscal year"
 msgstr "Année fiscale"
 
 #: staffing/views.py:1816 staffing/views.py:1818
-#: templates/staffing/turnover_pivotable.html:83
+#: templates/staffing/turnover_pivotable.html:84
 msgid "top client company"
 msgstr "top entreprise"
 
@@ -3022,12 +3024,13 @@ msgstr "Somme"
 #: templates/staffing/lunch_tickets_pivotable.html:59
 #: templates/staffing/lunch_tickets_pivotable.html:65
 #: templates/staffing/rate_objective_report.html:43
-#: templates/staffing/turnover_pivotable.html:57
-#: templates/staffing/turnover_pivotable.html:63
-#: templates/staffing/turnover_pivotable.html:71
-#: templates/staffing/turnover_pivotable.html:79
-#: templates/staffing/turnover_pivotable.html:86
-#: templates/staffing/turnover_pivotable.html:92
+#: templates/staffing/turnover_pivotable.html:58
+#: templates/staffing/turnover_pivotable.html:64
+#: templates/staffing/turnover_pivotable.html:72
+#: templates/staffing/turnover_pivotable.html:80
+#: templates/staffing/turnover_pivotable.html:87
+#: templates/staffing/turnover_pivotable.html:93
+#: templates/staffing/turnover_pivotable.html:100
 msgid "Integer Sum"
 msgstr "Somme en entiers"
 
@@ -5304,6 +5307,11 @@ msgstr "CA par top société client"
 #: templates/staffing/turnover_pivotable.html:31
 msgid "Turnover per billing mode"
 msgstr "CA par mode de facturation"
+
+#: templates/staffing/turnover_pivotable.html:32
+#| msgid "marketing product"
+msgid "Turnover per marketing product"
+msgstr "CA par produit marketing"
 
 #~ msgid "Mission has been archived"
 #~ msgstr "La mission a été archivée"
