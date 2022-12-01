@@ -163,6 +163,7 @@
 	        <th>{% trans "Done work (k€)" %}</th>
 	        <th>{% trans "Sold (k€)" %}</th>
 	        <th>{% trans "Billing mode" %}</th>
+            <th>{% trans "product" %}</th>
         </tr>
         {% for sister_mission in mission.sister_missions %}
         <tr>
@@ -170,8 +171,9 @@
 	        <td>{{ sister_mission.mission_id }}</td>
 	        <td>{{ sister_mission.done_work_k.0 }}</td>
 	        <td>{{ sister_mission.done_work_k.1|floatformat }}</td>
-	        <td>{{ sister_mission.price }}</td>
+	        <td>{{ sister_mission.price|default:_("To be defined") }}</td>
 	        <td>{{ sister_mission.get_billing_mode_display }}</td>
+            <td>{% if sister_mission.nature == "PROD" %}{{ sister_mission.marketing_product.description|default:_("To be defined") }}{% endif %}</td>
         </tr>
         {% endfor %}
         </table>

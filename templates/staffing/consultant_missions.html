@@ -10,6 +10,7 @@
             <tr><th>{% trans "Name" %}</th>
                 <th>{% trans "Mission id" %}</th>
                 <th>{% trans "Probability" %}</th>
+                <th>{% trans "product" %}</th>
                 <th></th>
             </tr>
         </thead>
@@ -19,6 +20,7 @@
                     <td scope="row"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></td>
                     <td>{{ mission.mission_id }}</td>
                     <td>{{ mission.probability }} %</td>
+                    <td>{% if mission.nature == "PROD" %}{{ mission.marketing_product.description|default:_("To be defined") }}{% endif %}</td>
                     <td scope="row"><a href="{% url 'staffing:mission_update' mission.id %}?return_to={% url 'people:consultant_home' consultant.trigramme %}#goto_tab-missions" title='{% blocktrans %}Change {{ mission }}{% endblocktrans %}' class='changelink'><em>{% trans "Change" %}</em></a></td>
                 </tr>
             {% endfor %}

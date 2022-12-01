@@ -231,6 +231,7 @@
                 <th>{% trans "Done work (k€)" %}</th>
                 <th>{% trans "Sold (k€)" %}</th>
                 <th>{% trans "Billing mode" %}</th>
+                <th>{% trans "product" %}</th>
             </tr>
             {% for mission in lead.mission_set.all %}
             <tr>
@@ -238,8 +239,9 @@
                 <td>{{ mission.mission_id }}</td>
                 <td>{{ mission.done_work_k.0 }}</td>
                 <td>{{ mission.done_work_k.1|floatformat }}</td>
-                <td>{{ mission.price }}</td>
+                <td>{{ mission.price|default:_("To be defined") }}</td>
                 <td>{{ mission.get_billing_mode_display }}</td>
+                <td>{% if mission.nature == "PROD" %}{{ mission.marketing_product.description|default:_("To be defined") }}{% endif %}</td>
             </tr>
             {% endfor %}
             {% ifnotequal lead.mission_set.count 1 %}
