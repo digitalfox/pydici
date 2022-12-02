@@ -131,7 +131,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
     Consultant = apps.get_model("people", "Consultant")
 
     data = []
-    bill_state = ("1_SENT", "2_PAID")  # Only consider clients bills in those status
+    bill_state = ("1_SENT", "2_PAID")  # Only consider clients bills in those statuses
     leads = Lead.objects.all()
     if filter_on_subsidiary:
         leads = leads.filter(subsidiary=filter_on_subsidiary)
@@ -144,7 +144,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
         leads = leads.filter(mission__active=True).distinct()
 
     leads = leads.select_related("client__organisation__company",
-                         "business_broker__company", "subsidiary")
+                                 "business_broker__company", "subsidiary")
 
     for lead in leads:
         lead_data = {_("deal id"): lead.deal_id,
@@ -154,7 +154,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                      _("subsidiary") :str(lead.subsidiary),
                      _("responsible"): str(lead.responsible),
                      _("consultant"): "-"}
-        # Add legacy bills non related to specific mission (ie. not using pydici billing, just header and pdf payload)
+        # Add legacy bills non-related to specific mission (i.e. not using pydici billing, just header and pdf payload)
         legacy_bills = ClientBill.objects.filter(lead=lead, state__in=bill_state).annotate(Count("billdetail"), Count("billexpense")).filter(billdetail__count=0, billexpense__count=0)
         for legacy_bill in legacy_bills:
             legacy_bill_data = lead_data.copy()
@@ -180,6 +180,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                 data.append(expense_data)
         # Add new-style client bills and done work per mission
         for mission in lead.mission_set.all().select_related("responsible"):
+            done_work_total = 0  # Track total done work across month and consultant to ensure it does not exceed fixed price amount
             mission_data = lead_data.copy()
             mission_data[_("mission")] = mission.short_name()
             mission_data[_("responsible")] = str(mission.responsible or mission.lead.responsible)
@@ -201,6 +202,13 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                     turnover = float(mission.done_work_period(month, next_month, include_external_subcontractor=True,
                                                             include_internal_subcontractor=True,
                                                             filter_on_consultant=consultant)[1])
+                    if mission.billing_mode == "FIXED_PRICE":
+                        if done_work_total >= 1000 * mission.price:
+                            turnover = 0  # Sorry, no more money on this one
+                        else:
+                            turnover = min(turnover, float(1000 * mission.price) - done_work_total)
+                        done_work_total += turnover
+
                     mission_month_consultant_data[_("consultant")] = str(consultant)
                     mission_month_consultant_data[_("month")] = month.isoformat()
                     mission_month_consultant_data[_("amount")] = turnover
