@@ -20,3 +20,4 @@ django-celery-beat==2.3.0
 mysqlclient==2.1.1
 python-telegram-bot==13.13
 django-auditlog==2.1.1
+factur-x==2.3

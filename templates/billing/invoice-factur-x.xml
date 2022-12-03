@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- pydici ERP - Factur-X compliant XML file to be embedded in PDF/A3 invoice file
+     {# Context : bill (ClientBill) #}
+     {% load l10n %}
+-->
+
+<rsm:CrossIndustryInvoice
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
+        xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
+        xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"
+        xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100">
+
+    <rsm:ExchangedDocumentContext>
+        <ram:BusinessProcessSpecifiedDocumentContextParameter>
+            <ram:ID>A1</ram:ID>
+        </ram:BusinessProcessSpecifiedDocumentContextParameter>
+        <ram:GuidelineSpecifiedDocumentContextParameter>
+            <ram:ID>urn:factur-x.eu:1p0:minimum</ram:ID>
+        </ram:GuidelineSpecifiedDocumentContextParameter>
+    </rsm:ExchangedDocumentContext>
+
+    <rsm:ExchangedDocument>
+        <ram:ID>{{ bill.bill_id }}</ram:ID>
+        <ram:TypeCode><!-- 380 is standard invoice, 381 is credit note -->
+            {% if bill.amount_with_vat > 0 %}
+            380
+            {% else %}
+            381
+            {% endif %}
+        </ram:TypeCode>
+        <ram:IssueDateTime>
+            <udt:DateTimeString format="102">{{ bill.creation_date|date:'Ymd' }}</udt:DateTimeString>
+        </ram:IssueDateTime>
+    </rsm:ExchangedDocument>
+
+    <rsm:SupplyChainTradeTransaction>
+        <ram:ApplicableHeaderTradeAgreement>
+            <ram:BuyerReference>{{ bill.client_deal_id }}</ram:BuyerReference>
+            <ram:SellerTradeParty>
+                <ram:Name>{{ bill.lead.subsidiary.commercial_name }}</ram:Name>
+                <ram:SpecifiedLegalOrganization>
+                    <!-- #TODO: should be legal id. Not yet present in data model -->
+                    <ram:ID schemeID="0002">{{ bill.lead.subsidiary.vat_id }}</ram:ID>
+                </ram:SpecifiedLegalOrganization>
+                <ram:PostalTradeAddress>
+                    <!-- #TODO: current model do not have ISO 2 letter country -->
+                    <ram:CountryID>FR</ram:CountryID>
+                </ram:PostalTradeAddress>
+                <ram:SpecifiedTaxRegistration>
+                    <ram:ID schemeID="VA">{{ bill.lead.subsidiary.vat_id }}</ram:ID>
+                </ram:SpecifiedTaxRegistration>
+            </ram:SellerTradeParty>
+            <ram:BuyerTradeParty>
+                <ram:Name>{{ bill.client.billing_name }}</ram:Name>
+                <ram:SpecifiedLegalOrganization>
+                    <!-- #TODO: should be legal id. Not yet present in data model -->
+                    <ram:ID schemeID="0002">{{ bill.client.vat_id }}</ram:ID>
+                </ram:SpecifiedLegalOrganization>
+            </ram:BuyerTradeParty>
+            <ram:BuyerOrderReferencedDocument>
+                <ram:IssuerAssignedID>{{ bill.client_deal_id }}</ram:IssuerAssignedID>
+            </ram:BuyerOrderReferencedDocument>
+        </ram:ApplicableHeaderTradeAgreement>
+
+        <ram:ApplicableHeaderTradeDelivery/>
+
+        <ram:ApplicableHeaderTradeSettlement>
+            <ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode>
+            <ram:SpecifiedTradeSettlementHeaderMonetarySummation>
+                <ram:TaxBasisTotalAmount>{{ bill.amount|unlocalize }}</ram:TaxBasisTotalAmount>
+                <ram:TaxTotalAmount currencyID="EUR">{{ bill.vat_amount|unlocalize }}</ram:TaxTotalAmount>
+                <ram:GrandTotalAmount>{{ bill.amount_with_vat|unlocalize }}</ram:GrandTotalAmount>
+                <ram:DuePayableAmount>{{ bill.amount_with_vat|unlocalize }}</ram:DuePayableAmount>
+            </ram:SpecifiedTradeSettlementHeaderMonetarySummation>
+        </ram:ApplicableHeaderTradeSettlement>
+
+    </rsm:SupplyChainTradeTransaction>
+
+</rsm:CrossIndustryInvoice>
