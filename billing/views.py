@@ -251,8 +251,8 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
                     merger.append(BytesIO(response.rendered_content))
             merger.write(target)
             target.seek(0)  # Be kind, rewind
-            # Make it PDF/A-1B compliant
-            cmd = "gs -q -dPDFA -dBATCH -dNOPAUSE -dPDFSETTINGS=/printer -sColorConversionStrategy=UseDeviceIndependentColor -sColorConversionStrategy=UseDeviceIndependentColor -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=3 -sOutputFile=- -"
+            # Make it PDF/A-3B compliant
+            cmd = "gs -q -dPDFA=3 -dBATCH -dNOPAUSE -sColorConversionStrategy=UseDeviceIndependentColor -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- -"
             try:
                 gs_in = tempfile.TemporaryFile()
                 gs_out = tempfile.TemporaryFile()
