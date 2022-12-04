@@ -25,10 +25,12 @@ from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.utils.decorators import method_decorator
+from django.template.loader import get_template
 
 
 from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
 from PyPDF2 import PdfFileMerger, PdfFileReader
+import facturx
 
 from billing.utils import get_billing_info, update_client_bill_from_timesheet, update_client_bill_from_proportion, \
     bill_pdf_filename, get_client_billing_control_pivotable_data, generate_bill_pdf
@@ -247,7 +249,17 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
                     merger.append(BytesIO(response.rendered_content))
             merger.write(target)
             target.seek(0)  # Be kind, rewind
-            return target
+            # Add factur-x information
+            facturx_xml = get_template("billing/invoice-factur-x.xml").render({"bill": bill})
+            facturx_xml = facturx_xml.encode("utf-8")
+            pdf_metadata = {
+                "author": "enioka",
+                "keywords": "Factur-X, Invoice, pydici",
+                "title": "enioka Invoice %s" % bill.bill_id,
+                "subject": "Factur-X invoice %s dated %s issued by enioka" % (bill.bill_id, bill.creation_date),
+            }
+            facturx_pdf = facturx.generate_facturx_from_binary(target.read(), facturx_xml, pdf_metadata=pdf_metadata, lang=bill.lang)
+            return facturx_pdf
         finally:
             translation.activate(old_lang)
 
