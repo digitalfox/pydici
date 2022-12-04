@@ -234,7 +234,7 @@ def generate_bill_pdf(bill, request):
     fake_http_request = request
     fake_http_request.method = "GET"
     response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
-    pdf = response.rendered_content.read()
+    pdf = response.rendered_content
     filename = bill_pdf_filename(bill)
     content = ContentFile(pdf, name=filename)
     bill.bill_file.save(filename, content)
