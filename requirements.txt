@@ -7,7 +7,7 @@ crispy-bootstrap5==0.6
 Django-Select2==7.10.0
 pymemcache==3.5.1
 django-datatables-view==1.20.0
-WeasyPrint==56.1
+WeasyPrint==57.1
 django-weasyprint==2.2.0
 bleach==5.0.1
 Markdown==3.4.1
