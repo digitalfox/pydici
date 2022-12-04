@@ -25,6 +25,7 @@ Sébastien Renard (Sebastien.Renard@digitalfox.org).
 * mariadb (tested with 10.X)
 * memcached
 * redis
+* ghostscript
 
 Pydici can be installed as any Django project. Just drop the code somewhere
 and setup your favorite wsgi server (apache/mod_wsgi, gunicorn, uwsgi etc.).
