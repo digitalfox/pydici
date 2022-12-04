@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM python:3.9
-RUN apt-get update && apt-get -y install gettext
+RUN apt-get update && apt-get -y install gettext ghostscript
 # Stuff for casperjs / phantomjs tests
 COPY --from=vitr/casperjs /opt/casperjs/ /opt/casperjs
 COPY --from=vitr/casperjs /usr/local/bin/phantomjs /usr/local/bin/phantomjs

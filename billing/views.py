@@ -11,6 +11,8 @@ from collections import defaultdict
 import json
 from io import BytesIO
 import os
+import subprocess
+import tempfile
 
 from os.path import basename
 
@@ -249,19 +251,32 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
                     merger.append(BytesIO(response.rendered_content))
             merger.write(target)
             target.seek(0)  # Be kind, rewind
-            # Add factur-x information
-            facturx_xml = get_template("billing/invoice-factur-x.xml").render({"bill": bill})
-            facturx_xml = facturx_xml.encode("utf-8")
-            pdf_metadata = {
-                "author": "enioka",
-                "keywords": "Factur-X, Invoice, pydici",
-                "title": "enioka Invoice %s" % bill.bill_id,
-                "subject": "Factur-X invoice %s dated %s issued by enioka" % (bill.bill_id, bill.creation_date),
-            }
-            facturx_pdf = facturx.generate_facturx_from_binary(target.read(), facturx_xml, pdf_metadata=pdf_metadata, lang=bill.lang)
-            return facturx_pdf
+            # Make it PDF/A-1B compliant
+            cmd = "gs -q -dPDFA -dBATCH -dNOPAUSE -dPDFSETTINGS=/printer -sColorConversionStrategy=UseDeviceIndependentColor -sColorConversionStrategy=UseDeviceIndependentColor -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=3 -sOutputFile=- -"
+            try:
+                gs_in = tempfile.TemporaryFile()
+                gs_out = tempfile.TemporaryFile()
+                gs_in.write(target.getvalue())
+                target.close()
+                gs_in.seek(0)
+                subprocess.run(cmd.split(), stdin=gs_in, stdout=gs_out)
+                gs_out.seek(0)
+                # Add factur-x information
+                facturx_xml = get_template("billing/invoice-factur-x.xml").render({"bill": bill})
+                facturx_xml = facturx_xml.encode("utf-8")
+                pdf_metadata = {
+                    "author": "enioka",
+                    "keywords": "Factur-X, Invoice, pydici",
+                    "title": "enioka Invoice %s" % bill.bill_id,
+                    "subject": "Factur-X invoice %s dated %s issued by enioka" % (bill.bill_id, bill.creation_date),
+                }
+                facturx_pdf = facturx.generate_from_binary(gs_out.read(), facturx_xml, pdf_metadata=pdf_metadata, lang=bill.lang)
+            finally:
+                gs_out.close()
+                gs_in.close()
         finally:
             translation.activate(old_lang)
+        return facturx_pdf
 
 
 class BillPdf(Bill, WeasyTemplateView):
