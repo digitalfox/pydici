@@ -43,13 +43,20 @@ class AbstractAddress(models.Model):
     class Meta:
         abstract = True
 
-class AbstractCompany(AbstractAddress):
+
+class AbstractLegalInformation(models.Model):
+    legal_description = models.TextField("Legal description", blank=True, null=True)
+    legal_id = models.CharField(max_length=30, blank=True, null=True, verbose_name=_("Legal id"))
+    vat_id = models.CharField(max_length=30, blank=True, null=True, verbose_name=_("VAT id"))
+
+    class Meta:
+        abstract = True
+
+class AbstractCompany(AbstractAddress, AbstractLegalInformation):
     """Abstract Company base class for subsidiary, client/supplier/broker/.. company"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
     code = models.CharField(_("Code"), max_length=3, unique=True)
     web = models.URLField(blank=True, null=True)
-    legal_description = models.TextField("Legal description", blank=True, null=True)
-    vat_id = models.CharField(max_length=30, blank=True, null=True, verbose_name=_("VAT id"))
 
     def __str__(self):
         return str(self.name)
@@ -115,7 +122,7 @@ class Company(AbstractCompany):
         ordering = ["name", ]
 
 
-class ClientOrganisation(AbstractAddress):
+class ClientOrganisation(AbstractAddress, AbstractLegalInformation):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
     company = models.ForeignKey(Company, verbose_name=_("Client company"), on_delete=models.CASCADE)
@@ -134,6 +141,14 @@ class ClientOrganisation(AbstractAddress):
             return super(ClientOrganisation, self).billing_address()
         else:
             return self.company.billing_address()
+
+    def save(self, **kwargs):
+        if not self.legal_id:
+            self.legal_id = self.company.legal_id
+        if not self.vat_id:
+            self.vat_id = self.company.vat_id
+
+        super(ClientOrganisation, self).save(kwargs)
 
     def get_absolute_url(self):
         return reverse("crm:client_organisation", args=[self.id, ])
