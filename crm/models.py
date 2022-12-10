@@ -126,6 +126,11 @@ class ClientOrganisation(AbstractAddress, AbstractLegalInformation):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
     company = models.ForeignKey(Company, verbose_name=_("Client company"), on_delete=models.CASCADE)
+    billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
+    billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True,
+                                        verbose_name=_("Billing contact"), on_delete=models.SET_NULL)
+    billing_lang = models.CharField(_("Billing language"), max_length=10, choices=CLIENT_BILL_LANG,
+                                    default=settings.LANGUAGE_CODE)
 
     def __str__(self):
         return "%s : %s " % (self.company, self.name)
@@ -334,9 +339,6 @@ class Client(AbstractAddress):
     expectations = models.CharField(max_length=30, choices=EXPECTATIONS, default=EXPECTATIONS[2][0], verbose_name=_("Expectations"))
     alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
     active = models.BooleanField(_("Active"), default=True)
-    billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
-    billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True, verbose_name=_("Billing contact"), on_delete=models.SET_NULL)
-    billing_lang = models.CharField(_("Billing language"), max_length=10, choices=CLIENT_BILL_LANG, default=settings.LANGUAGE_CODE)
 
     def __str__(self):
         if self.contact:

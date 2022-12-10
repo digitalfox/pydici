@@ -131,21 +131,13 @@ class ClientForm(PydiciCrispyModelForm):
                                      "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                          "crm:contact_create"))),
                 "alignment",
-                "billing_lang",
-                "billing_name",
-                FieldWithButtons(
-                    "billing_contact",
-                    HTML(
-                        "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
-                            "crm:administrative_contact_add"))),
                 css_class="col-md-6"),
             get_address_column(),
             css_class="row my-2"),
             "active",
             self.submit)
         self.inline_helper.layout = Layout(
-            Div(Column(Field("billing_name", placeholder=_("Leave blank to use standard name")),
-                       FieldWithButtons("organisation",
+            Div(Column(FieldWithButtons("organisation",
                                         HTML(
                                             """<a role='button' class='btn btn-primary' href='#' onclick='$("#organisationForm").show("slow"); $("#organisation_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
                                         css_id="organisation_input_group"),
@@ -154,8 +146,7 @@ class ClientForm(PydiciCrispyModelForm):
                                             """<a role='button' class='btn btn-primary' href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
                                         css_id="contact_input_group"),
                        css_class="col-md-6"),
-                Column("billing_lang",
-                       "alignment",
+                Column("alignment",
                        "expectations",
                        css_class="col-md-6"),
                 css_class="row"))
@@ -174,15 +165,26 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
                                                                                 <i class='bi bi-plus'></i></a>""" % reverse("crm:company"))),
                                                Field("vat_id", placeholder=_("Leave blank to use company vat id")),
                                                Field("legal_id", placeholder=_("Leave blank to use company legal id")),
+                                               "billing_lang",
+                                               "billing_name",
+                                               FieldWithButtons(
+                                                   "billing_contact",
+                                                   HTML(
+                                                       "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
+                                                           "crm:administrative_contact_add"))),
                                                css_class="col-md-6"),
                                         get_address_column(),
                                         css_class="row my-2"),
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Client organisation"),
-                                                    Row(Column("name"),
-                                                        Column(FieldWithButtons("company", HTML(
-                                                               """<a role='button' class='btn btn-primary' href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
-                                                                            css_id="company_input_group"))),
+                                                    Row(Column("name",
+                                                               FieldWithButtons("company", HTML(
+                                                                   """<a role='button' class='btn btn-primary' href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
+                                                                                css_id="company_input_group")),
+                                                        Column(Field("billing_name",
+                                                                     placeholder=_("Leave blank to use standard name")),
+                                                               "billing_lang"),
+                                                        ),
                                                     css_class="collapse", css_id="organisationForm"))
 
 

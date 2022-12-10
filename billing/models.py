@@ -223,7 +223,7 @@ class ClientBill(AbstractBill):
 
     def save(self, *args, **kwargs):
         if not self.lang:
-            self.lang = self.lead.client.billing_lang
+            self.lang = self.lead.client.organisation.billing_lang
         if self.client_deal_id == "" and self.lead.client_deal_id:
             self.client_deal_id = self.lead.client_deal_id
         if self.state in ("0_DRAFT", "0_PROPOSED"):
