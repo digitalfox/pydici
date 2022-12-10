@@ -55,7 +55,7 @@
                 <ram:Name>{{ bill.client.billing_name }}</ram:Name>
                 <ram:SpecifiedLegalOrganization>
                     <!-- #TODO: should be legal id. Not yet present in data model -->
-                    <ram:ID schemeID="0002">{{ bill.client.vat_id }}</ram:ID>
+                    <ram:ID schemeID="0002">{{ bill.client.organisation.vat_id }}</ram:ID>
                 </ram:SpecifiedLegalOrganization>
             </ram:BuyerTradeParty>
             <ram:BuyerOrderReferencedDocument>

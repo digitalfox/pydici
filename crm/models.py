@@ -337,7 +337,6 @@ class Client(AbstractAddress):
     billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
     billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True, verbose_name=_("Billing contact"), on_delete=models.SET_NULL)
     billing_lang = models.CharField(_("Billing language"), max_length=10, choices=CLIENT_BILL_LANG, default=settings.LANGUAGE_CODE)
-    vat_id = models.CharField(max_length=30, blank=True, null=True,  verbose_name=_("VAT id"))
 
     def __str__(self):
         if self.contact:

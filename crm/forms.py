@@ -131,7 +131,6 @@ class ClientForm(PydiciCrispyModelForm):
                                      "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                          "crm:contact_create"))),
                 "alignment",
-                Field("vat_id", placeholder=_("Leave blank to use company vat id")),
                 "billing_lang",
                 "billing_name",
                 FieldWithButtons(
@@ -155,8 +154,7 @@ class ClientForm(PydiciCrispyModelForm):
                                             """<a role='button' class='btn btn-primary' href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
                                         css_id="contact_input_group"),
                        css_class="col-md-6"),
-                Column(Field("vat_id", placeholder=_("Leave blank to use company vat id")),
-                       "billing_lang",
+                Column("billing_lang",
                        "alignment",
                        "expectations",
                        css_class="col-md-6"),
@@ -174,7 +172,8 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
         self.helper.layout = Layout(Div(Column("name", FieldWithButtons("company",
                                                                         HTML("""<a role='button' class='btn btn-primary' href='%s' target='_blank'>
                                                                                 <i class='bi bi-plus'></i></a>""" % reverse("crm:company"))),
-                                               "vat_id", "legal_id",
+                                               Field("vat_id", placeholder=_("Leave blank to use company vat id")),
+                                               Field("legal_id", placeholder=_("Leave blank to use company legal id")),
                                                css_class="col-md-6"),
                                         get_address_column(),
                                         css_class="row my-2"),
