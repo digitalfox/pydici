@@ -40,8 +40,7 @@
             <ram:SellerTradeParty>
                 <ram:Name>{{ bill.lead.subsidiary.commercial_name }}</ram:Name>
                 <ram:SpecifiedLegalOrganization>
-                    <!-- #TODO: should be legal id. Not yet present in data model -->
-                    <ram:ID schemeID="0002">{{ bill.lead.subsidiary.vat_id }}</ram:ID>
+                    <ram:ID schemeID="0002">{{ bill.lead.subsidiary.legal_id }}</ram:ID>
                 </ram:SpecifiedLegalOrganization>
                 <ram:PostalTradeAddress>
                     <!-- #TODO: current model do not have ISO 2 letter country -->
@@ -54,8 +53,7 @@
             <ram:BuyerTradeParty>
                 <ram:Name>{{ bill.client.billing_name }}</ram:Name>
                 <ram:SpecifiedLegalOrganization>
-                    <!-- #TODO: should be legal id. Not yet present in data model -->
-                    <ram:ID schemeID="0002">{{ bill.client.organisation.vat_id }}</ram:ID>
+                    <ram:ID schemeID="0002">{{ bill.client.organisation.legal_id }}</ram:ID>
                 </ram:SpecifiedLegalOrganization>
             </ram:BuyerTradeParty>
             <ram:BuyerOrderReferencedDocument>
