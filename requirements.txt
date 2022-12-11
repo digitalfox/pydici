@@ -21,3 +21,4 @@ mysqlclient==2.1.1
 python-telegram-bot==13.13
 django-auditlog==2.1.1
 factur-x==2.3
+django-countries==7.4.2

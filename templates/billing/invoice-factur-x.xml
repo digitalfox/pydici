@@ -43,8 +43,7 @@
                     <ram:ID schemeID="0002">{{ bill.lead.subsidiary.legal_id }}</ram:ID>
                 </ram:SpecifiedLegalOrganization>
                 <ram:PostalTradeAddress>
-                    <!-- #TODO: current model do not have ISO 2 letter country -->
-                    <ram:CountryID>FR</ram:CountryID>
+                    <ram:CountryID>{{ bill.lead.subsidiary.billing_country }}</ram:CountryID>
                 </ram:PostalTradeAddress>
                 <ram:SpecifiedTaxRegistration>
                     <ram:ID schemeID="VA">{{ bill.lead.subsidiary.vat_id }}</ram:ID>

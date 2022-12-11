@@ -16,9 +16,11 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.conf import settings
+
+from django_countries.fields import CountryField
+
 from core.utils import GEdge, GEdges, GNode, GNodes
 from core.models import CLIENT_BILL_LANG
-
 from crm.utils import get_clients_rate_ranking
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
@@ -28,11 +30,11 @@ class AbstractAddress(models.Model):
     street = models.TextField(_("Street"), blank=True, null=True)
     city = models.CharField(_("City"), max_length=200, blank=True, null=True)
     zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
-    country = models.CharField(_("Country"), max_length=50, blank=True, null=True)
+    country = CountryField(_("Country"), null=True, blank=True)
     billing_street = models.TextField(_("Street"), blank=True, null=True)
     billing_city = models.CharField(_("City"), max_length=200, blank=True, null=True)
     billing_zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
-    billing_country = models.CharField(_("Country"), max_length=50, blank=True, null=True)
+    billing_country = CountryField(_("Country"), null=True, blank=True)
 
     def main_address(self):
         return "%s\n%s %s\n%s" % (self.street, self.zipcode, self.city, self.country)
