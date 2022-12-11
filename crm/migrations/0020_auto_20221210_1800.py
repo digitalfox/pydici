@@ -7,7 +7,7 @@ from django.conf import settings
 
 def forwards(apps, schema_editor):
     Client = apps.get_model("crm", "Client")
-    for client in Client.objects.exclude(billing_name=""):
+    for client in Client.objects.all():
         client.organisation.billing_name = client.billing_name
         client.organisation.save()
 
@@ -23,19 +23,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(forwards),
-        migrations.RemoveField(
-            model_name='client',
-            name='billing_contact',
-        ),
-        migrations.RemoveField(
-            model_name='client',
-            name='billing_lang',
-        ),
-        migrations.RemoveField(
-            model_name='client',
-            name='billing_name',
-        ),
         migrations.AddField(
             model_name='clientorganisation',
             name='billing_contact',
@@ -50,5 +37,18 @@ class Migration(migrations.Migration):
             model_name='clientorganisation',
             name='billing_name',
             field=models.CharField(blank=True, max_length=200, null=True, verbose_name='Name used for billing'),
+        ),
+        migrations.RunPython(forwards),
+        migrations.RemoveField(
+            model_name='client',
+            name='billing_contact',
+        ),
+        migrations.RemoveField(
+            model_name='client',
+            name='billing_lang',
+        ),
+        migrations.RemoveField(
+            model_name='client',
+            name='billing_name',
         ),
     ]
