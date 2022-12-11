@@ -135,23 +135,12 @@ class ClientOrganisation(AbstractAddress, AbstractLegalInformation):
     def __str__(self):
         return "%s : %s " % (self.company, self.name)
 
-    def main_address(self):
-        if self.city:
-            return super(ClientOrganisation, self).main_address()
-        else:
-            return self.company.main_address()
-
-    def billing_address(self):
-        if self.billing_city:
-            return super(ClientOrganisation, self).billing_address()
-        else:
-            return self.company.billing_address()
-
     def save(self, **kwargs):
-        if not self.legal_id:
-            self.legal_id = self.company.legal_id
-        if not self.vat_id:
-            self.vat_id = self.company.vat_id
+        heritage_from_company = ("legal_id", "vat_id", "street", "city", "zipcode", "country",
+                                 "billing_street", "billing_city", "billing_zipcode", "billing_country",)
+        for attr in heritage_from_company:
+            if not getattr(self, attr):
+                setattr(self, attr, getattr(self.company, attr))
 
         super(ClientOrganisation, self).save(kwargs)
 
@@ -321,7 +310,7 @@ class Supplier(models.Model):
         unique_together = ("company", "contact",)
 
 
-class Client(AbstractAddress):
+class Client(models.Model):
     """A client is defined by a contact and the organisation where he works at the moment"""
     EXPECTATIONS = (
             ('1_NONE', pgettext("feminine", "None")),
@@ -442,16 +431,10 @@ class Client(AbstractAddress):
         return missions
 
     def main_address(self):
-        if self.city:
-            return super(Client, self).main_address()
-        else:
-            return self.organisation.main_address()
+        return self.organisation.main_address()
 
     def billing_address(self):
-        if self.billing_city:
-            return super(Client, self).billing_address()
-        else:
-            return self.organisation.billing_address()
+        return self.organisation.billing_address()
 
     def get_absolute_url(self):
         return reverse("crm:company_detail", args=[self.organisation.company.id, ])

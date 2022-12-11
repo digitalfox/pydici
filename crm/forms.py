@@ -25,7 +25,7 @@ from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 
 def get_address_column(show_banner=True):
     if show_banner:
-        banner = HTML(_("<em>Leave address blank to use company or organisation address</em>"))
+        banner = HTML(_("<em>Leave address blank to use company address</em>"))
     else:
         banner = None
     col = Column(banner,
@@ -125,14 +125,14 @@ class ClientForm(PydiciCrispyModelForm):
                     HTML(
                         "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                             "crm:client_organisation"))),
-                "expectations",
                 FieldWithButtons("contact",
                                  HTML(
                                      "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                          "crm:contact_create"))),
-                "alignment",
                 css_class="col-md-6"),
-            get_address_column(),
+            Column(
+                "expectations", "alignment",
+                css_class="col-md-6"),
             css_class="row my-2"),
             "active",
             self.submit)
