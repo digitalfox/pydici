@@ -12,7 +12,6 @@ import os
 import codecs
 from collections import defaultdict, OrderedDict
 
-
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -33,7 +32,7 @@ from leads.utils import post_save_lead, leads_state_stat
 from leads.tasks import tag_leads_files, remove_lead_tag, merge_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
-from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years_from_qs, to_int_or_round
+from core.utils import capitalize, getLeadDirs, createProjectTree, get_fiscal_years_from_qs, to_int_or_round
 from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
 
@@ -114,14 +113,9 @@ def detail(request, lead_id):
 def lead(request, lead_id=None):
     """Lead creation or modification"""
     lead = None
-    state_changed = False
-    blacklist_fields = ["creation_date", "tags"]
-    max_length = 50
-    old_lead_description = ""
     try:
         if lead_id:
             lead = Lead.objects.get(id=lead_id)
-            old_lead_description = lead.description
     except Lead.DoesNotExist:
         pass
 
@@ -160,7 +154,7 @@ def lead_documents(request, lead_id):
     documents = []  # List of name/url docs grouped by type
     clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
     if clientDir is None:
-        # Documents mechanism is disabled. This view should never been called..
+        # Documents mechanism is disabled. This view should never be called.
         raise Http404
 
     lead_url_dir = settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
