@@ -20,7 +20,9 @@ from staffing.models import Mission
 from crm.models import Subsidiary, BusinessBroker, Client
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
 from leads import learn as leads_learn
-from leads.utils import post_save_lead, getLeadDirs, connect_to_nextcloud_db
+from leads.utils import post_save_lead
+from leads.tasks import connect_to_nextcloud_db
+from core.utils import getLeadDirs
 
 from urllib.parse import urlsplit
 import os.path
@@ -259,7 +261,7 @@ class LeadNextcloudTagTestCase(TestCase):
     def test_tag_and_remove_tag_file(self):
         if not settings.NEXTCLOUD_TAG_IS_ENABLED:
             return
-        from leads.utils import connect_to_nextcloud_db, tag_leads_files, remove_lead_tag, merge_lead_tag, GET_TAG_ID
+        from leads.tasks import connect_to_nextcloud_db, tag_leads_files, remove_lead_tag, merge_lead_tag, GET_TAG_ID
         connection = None
         try:
             connection = connect_to_nextcloud_db()

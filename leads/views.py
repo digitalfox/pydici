@@ -17,11 +17,9 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import gettext as _
-from django.utils.encoding import force_text
 from django.db.models import Sum, Count, Min, Q
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
-from django.db.models.query import QuerySet
 from django.db.models.functions import TruncMonth
 from django.conf import settings
 
@@ -32,7 +30,7 @@ from crm.utils import get_subsidiary_from_session
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import post_save_lead, leads_state_stat
-from leads.utils import tag_leads_files, remove_lead_tag, merge_lead_tag
+from leads.tasks import tag_leads_files, remove_lead_tag, merge_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
 from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years_from_qs, to_int_or_round
