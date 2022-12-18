@@ -10,13 +10,13 @@ import smtplib
 
 from django.conf import settings
 from django.urls import reverse
-from django.utils.translation import  gettext
+from django.utils.translation import gettext, pgettext
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 
 from celery import shared_task
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
-from core.utils import get_parameter
+from core.utils import get_parameter, audit_log_is_real_change
 from leads.models import Lead
 
 if settings.TELEGRAM_IS_ENABLED:
@@ -69,7 +69,12 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
             # Only notify when lead state changed to avoid useless spam
             change = ""
             for log in lead.history.filter(timestamp__gt=datetime.now()-timedelta(1/24)):
-                change += f"{log.changes_str} ({log.actor})\n"
+                for key, value in log.changes_display_dict.items():
+                    if audit_log_is_real_change(value) and len(value) == 2:
+                        change += f"{key}: {value[0]} → {value[1]} ({log.actor})\n"
+                for key, value in log.changes_dict.items(): # Second loop for m2m
+                    if len(value) == 3: # m2m changes
+                        change += f"{key}: {pgettext('noun', value['operation'])} {', '.join(value['objects'])}\n"
             msg = gettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
             if lead.state == "WON":
                 sticker = settings.TELEGRAM_STICKERS.get("happy")

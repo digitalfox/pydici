@@ -442,3 +442,16 @@ def moving_average(items, n, round_digits=None):
                 r = round(r, round_digits)
             result.append(r)
     return result
+
+
+def audit_log_is_real_change(value):
+    """Ensure given change contains a real change we should display to user"""
+    if len(value) != 2:  # Don't inspect m2m changes
+        return True
+    old, new = value
+    if old in ("", "None") and new in ("", "None"):
+        return False
+    try:
+        return float(old) != float(new)
+    except (ValueError, TypeError) as e:
+        return True
