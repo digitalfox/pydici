@@ -15,9 +15,7 @@ from functools import wraps
 import json
 from decimal import Decimal
 
-from django.template.loader import get_template
 from django.template.defaultfilters import slugify
-from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
 from django.core.cache import cache
 from django.db.models import Max, Min
@@ -31,28 +29,6 @@ COLORS = ["#1f77b4", "#ff7f0e", "#d62728", "#DAEBFF", "#FFE32C", "#AAFF86", "#D9
 
 # Tables 2 css to hide columns on small devices
 TABLES2_HIDE_COL_MD = {"td": {"class": "d-none d-lg-table-cell"}, "th": {"class": "d-none d-lg-table-cell"}}
-
-
-def send_lead_mail(lead, request, fromAddr=None, fromName=""):
-    """ Send a mail with lead detailed description.
-    @param lead: the lead to send by mail
-    @type lead: leads.lead instance
-    @param request: http request of user - used to determine full URL
-    @raise exception: if SMTP errors occurs. It is up to the caller to catch that.
-    """
-    if not fromAddr:
-        fromAddr = get_parameter("MAIL_FROM")
-    if fromName:
-        fromAddr = f"{fromName} <{fromAddr}>"
-    url = get_parameter("HOST") + reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
-    subject = "[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
-    msgText = get_template("leads/lead_mail.txt").render(request=request, context={"obj": lead,
-                                                                                  "lead_url": url})
-    msgHtml = get_template("leads/lead_mail.html").render(request=request, context={"obj": lead,
-                                                                                   "lead_url": url})
-    msg = EmailMultiAlternatives(subject, msgText, fromAddr, [get_parameter("LEAD_MAIL_TO"), ])
-    msg.attach_alternative(msgHtml, "text/html")
-    msg.send()
 
 
 def capitalize(sentence):

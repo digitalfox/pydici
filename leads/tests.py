@@ -20,7 +20,7 @@ from staffing.models import Mission
 from crm.models import Subsidiary, BusinessBroker, Client
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
 from leads import learn as leads_learn
-from leads.utils import postSaveLead, getLeadDirs, connect_to_nextcloud_db
+from leads.utils import post_save_lead, getLeadDirs, connect_to_nextcloud_db
 
 from urllib.parse import urlsplit
 import os.path
@@ -157,7 +157,7 @@ class LeadLearnTestCase(TestCase):
         request.session = {}
         request._messages = default_storage(request)
         lead = create_lead()
-        postSaveLead(request, lead)  # Learn model cannot exist, but it should not raise error
+        post_save_lead(request, lead)  # Learn model cannot exist, but it should not raise error
 
     @patch("celery.app.task.Task.delay")
     def test_celery_jobs_are_called(self, mock_celery):
@@ -167,7 +167,7 @@ class LeadLearnTestCase(TestCase):
         request.session = {}
         request._messages = default_storage(request)
         lead = create_lead()
-        postSaveLead(request, lead)
+        post_save_lead(request, lead)
         mock_celery.assert_has_calls([call(relearn=False, leads_id=[lead.id]), call(), call()])
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
@@ -188,7 +188,7 @@ class LeadLearnTestCase(TestCase):
         lead = create_lead()
         lead.state = "OFFER_SENT"
         lead.save()
-        postSaveLead(request, lead)
+        post_save_lead(request, lead)
         mission = lead.mission_set.all()[0]
         if leads_learn.HAVE_SCIKIT:
             self.assertEqual(mission.probability, lead.stateproba_set.get(state="WON").score)
@@ -196,7 +196,7 @@ class LeadLearnTestCase(TestCase):
             self.assertEqual(mission.probability, 50)
         lead.state = "WON"
         lead.save()
-        postSaveLead(request, lead)
+        post_save_lead(request, lead)
         mission = Mission.objects.get(id=mission.id)  # reload it
         self.assertEqual(mission.probability, 100)
 

@@ -7,13 +7,12 @@ appropriate to live in Lead models or view
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import datetime, timedelta
 from django.utils.translation import  gettext
 from django.contrib import messages
-from django.urls import reverse
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.db.models import Count
+
 
 from taggit.models import Tag
 from celery import shared_task
@@ -21,12 +20,8 @@ from celery import shared_task
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from staffing.models import Mission
 from leads.models import StateProba, Lead
-from core.utils import send_lead_mail, get_parameter, getLeadDirs
-from core.templatetags.pydici_filters import is_real_change
-
-
-if settings.TELEGRAM_IS_ENABLED:
-    import telegram
+from core.utils import getLeadDirs
+from leads.tasks import lead_notify
 
 if settings.NEXTCLOUD_TAG_IS_ENABLED:
     import MySQLdb
@@ -62,53 +57,18 @@ def create_default_mission(lead):
     return mission
 
 
-def postSaveLead(request, lead, created=False, state_changed=False):
-    mail = False
+def post_save_lead(request, lead, created=False, state_changed=False):
+    send_mail = False
     if lead.send_email:
-        mail = True
+        send_mail = True
         lead.send_email = False
 
     lead.save()
 
-    if mail:
-        try:
-            fromAddr = request.user.email or "noreply@noreply.com"
-            send_lead_mail(lead, request, fromAddr=fromAddr,
-                           fromName="%s %s" % (request.user.first_name, request.user.last_name))
-            messages.add_message(request, messages.INFO,  gettext("Lead sent to business mailing list"))
-        except Exception as e:
-            messages.add_message(request, messages.ERROR,  gettext("Failed to send mail: %s") % e)
-
-    if settings.TELEGRAM_IS_ENABLED:
-        try:
-            bot = telegram.bot.Bot(token=settings.TELEGRAM_TOKEN)
-            sticker = None
-            url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
-            if created:
-                msg = gettext("New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
-                sticker = settings.TELEGRAM_STICKERS.get("happy")
-                chat_group = "new_leads"
-            elif state_changed:
-                # Only notify when lead state changed to avoid useless spam
-                change = ""
-                for log in lead.history.filter(timestamp__gt=datetime.now()-timedelta(1/24)):
-                    change += f"{log.changes_str} ({log.actor})\n"
-                msg = gettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
-                if lead.state == "WON":
-                    sticker = settings.TELEGRAM_STICKERS.get("happy")
-                elif lead.state in ("LOST", "FORGIVEN"):
-                    sticker = settings.TELEGRAM_STICKERS.get("sad")
-                chat_group = "leads_update"
-            else:
-                # No notification
-                chat_group = msg = ""
-
-            for chat_id in settings.TELEGRAM_CHAT.get(chat_group, []):
-                bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
-                if sticker:
-                    bot.sendSticker(chat_id=chat_id, sticker=sticker)
-        except Exception as e:
-            messages.add_message(request, messages.ERROR,  gettext("Failed to send telegram notification: %s") % e)
+    # Notify (mail, telegram...) about it
+    lead_notify.delay(lead.id, send_mail=send_mail,
+                      from_addr=request.user.email, from_name="%s %s" % (request.user.first_name, request.user.last_name),
+                      created=created, state_changed=state_changed)
 
     # Compute leads probability
     if lead.state in ("WON", "LOST", "SLEEPING", "FORGIVEN"):
@@ -146,7 +106,6 @@ def postSaveLead(request, lead, created=False, state_changed=False):
             mission.active = False
             mission.save()
             messages.add_message(request, messages.INFO,  gettext("According mission has been archived"))
-
 
 @shared_task
 def tag_leads_files(leads_id):
