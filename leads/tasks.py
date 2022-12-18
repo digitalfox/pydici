@@ -6,6 +6,7 @@ Module that handle asynchronous tasks
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 from datetime import datetime, timedelta
+import smtplib
 
 from django.conf import settings
 from django.urls import reverse
@@ -29,8 +30,8 @@ def learning_warmup():
     compute_leads_tags.delay(relearn=True)
     compute_lead_similarity.delay(relearn=True)
 
-@shared_task
-def lead_mail_notify(lead_id, from_addr=None, from_name=None):
+@shared_task(bind=True)
+def lead_mail_notify(self, lead_id, from_addr=None, from_name=None):
     """Notify (mail, telegram) about lead creation or status update"""
     lead = Lead.objects.get(id=lead_id)
 
@@ -45,12 +46,18 @@ def lead_mail_notify(lead_id, from_addr=None, from_name=None):
     msgHtml = get_template("leads/lead_mail.html").render(context={"obj": lead, "lead_url": url})
     msg = EmailMultiAlternatives(subject, msgText, from_addr, [get_parameter("LEAD_MAIL_TO"), ])
     msg.attach_alternative(msgHtml, "text/html")
-    msg.send()
+    try:
+        msg.send()
+    except smtplib.SMTPException as e:
+        raise self.retry(exc=e)
 
-@shared_task
-def lead_telegram_notify(lead_id, created=False, state_changed=False):
+
+@shared_task(bind=True)
+def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
     lead = Lead.objects.get(id=lead_id)
-    if settings.TELEGRAM_IS_ENABLED:
+    if not settings.TELEGRAM_IS_ENABLED:
+        return
+    try:
         bot = telegram.bot.Bot(token=settings.TELEGRAM_TOKEN)
         sticker = None
         url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
@@ -77,4 +84,6 @@ def lead_telegram_notify(lead_id, created=False, state_changed=False):
             bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
             if sticker:
                 bot.sendSticker(chat_id=chat_id, sticker=sticker)
+    except telegram.TelegramError as e:
+        raise self.retry(exc=e)
 
