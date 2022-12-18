@@ -30,18 +30,26 @@ def learning_warmup():
     compute_lead_similarity.delay(relearn=True)
 
 @shared_task
-def lead_notify(lead_id, send_mail=False, from_addr=None, from_name=None, created=False, state_changed=False):
+def lead_mail_notify(lead_id, from_addr=None, from_name=None):
     """Notify (mail, telegram) about lead creation or status update"""
     lead = Lead.objects.get(id=lead_id)
-    if send_mail:
-        url = get_parameter("HOST") + reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
-        subject = "[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
-        msgText = get_template("leads/lead_mail.txt").render(context={"obj": lead, "lead_url": url})
-        msgHtml = get_template("leads/lead_mail.html").render(context={"obj": lead, "lead_url": url})
-        msg = EmailMultiAlternatives(subject, msgText, from_addr, [get_parameter("LEAD_MAIL_TO"), ])
-        msg.attach_alternative(msgHtml, "text/html")
-        msg.send()
 
+    if not from_addr:
+        pass
+    if from_name:
+       from_addr = f"{from_name} <{from_addr}>"
+
+    url = get_parameter("HOST") + reverse("leads:lead", args=[lead.id, ]) + "?return_to=" + lead.get_absolute_url()
+    subject = "[AVV] %s : %s (%s)" % (lead.client.organisation, lead.name, lead.deal_id)
+    msgText = get_template("leads/lead_mail.txt").render(context={"obj": lead, "lead_url": url})
+    msgHtml = get_template("leads/lead_mail.html").render(context={"obj": lead, "lead_url": url})
+    msg = EmailMultiAlternatives(subject, msgText, from_addr, [get_parameter("LEAD_MAIL_TO"), ])
+    msg.attach_alternative(msgHtml, "text/html")
+    msg.send()
+
+@shared_task
+def lead_telegram_notify(lead_id, created=False, state_changed=False):
+    lead = Lead.objects.get(id=lead_id)
     if settings.TELEGRAM_IS_ENABLED:
         bot = telegram.bot.Bot(token=settings.TELEGRAM_TOKEN)
         sticker = None

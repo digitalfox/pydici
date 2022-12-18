@@ -21,7 +21,7 @@ from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_si
 from staffing.models import Mission
 from leads.models import StateProba, Lead
 from core.utils import getLeadDirs
-from leads.tasks import lead_notify
+from leads.tasks import lead_mail_notify, lead_telegram_notify
 
 if settings.NEXTCLOUD_TAG_IS_ENABLED:
     import MySQLdb
@@ -58,17 +58,13 @@ def create_default_mission(lead):
 
 
 def post_save_lead(request, lead, created=False, state_changed=False):
-    send_mail = False
     if lead.send_email:
-        send_mail = True
+        lead_mail_notify.delay(lead.id, from_addr=request.user.email,
+                               from_name="%s %s" % (request.user.first_name, request.user.last_name))
         lead.send_email = False
+        lead.save()
 
-    lead.save()
-
-    # Notify (mail, telegram...) about it
-    lead_notify.delay(lead.id, send_mail=send_mail,
-                      from_addr=request.user.email, from_name="%s %s" % (request.user.first_name, request.user.last_name),
-                      created=created, state_changed=state_changed)
+    lead_telegram_notify.delay(lead.id, created=created, state_changed=state_changed)
 
     # Compute leads probability
     if lead.state in ("WON", "LOST", "SLEEPING", "FORGIVEN"):
