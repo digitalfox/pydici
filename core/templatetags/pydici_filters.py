@@ -22,6 +22,7 @@ from django.conf import settings
 
 from people.models import Consultant
 from leads.models import Lead
+from core.utils import audit_log_is_real_change
 
 register = template.Library()
 
@@ -165,14 +166,4 @@ def pydici_simple_format(value, arg=None):
 
 @register.filter
 def is_real_change(value, arg=None):
-    """Ensure given change contains a real change we should display to user"""
-    if len(value) != 2:  # Don't inspect m2m changes
-        return True
-    old, new = value
-    if old in ("", "None") and new in ("", "None"):
-        return False
-    try:
-        return float(old) != float(new)
-    except (ValueError, TypeError) as e:
-        return True
-
+    return audit_log_is_real_change(value)

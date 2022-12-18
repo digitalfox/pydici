@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from leads.models import Lead
 
 from leads.forms import LeadForm
-from leads.utils import postSaveLead
+from leads.utils import post_save_lead
 from core.admin import ReturnToAppAdmin
 
 
@@ -39,7 +39,7 @@ class LeadAdmin(ReturnToAppAdmin):
 
     def save_model(self, request, obj, form, change):
         form.save_m2m()  # Save many to many relations
-        postSaveLead(request, obj)
+        post_save_lead(request, obj)
 
 
 admin.site.register(Lead, LeadAdmin)

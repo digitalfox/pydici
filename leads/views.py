@@ -27,11 +27,11 @@ from django.conf import settings
 
 from taggit.models import Tag, TaggedItem
 
-from core.utils import send_lead_mail, sortedValues, COLORS, get_parameter, moving_average, nextMonth
+from core.utils import sortedValues, COLORS, get_parameter, moving_average, nextMonth
 from crm.utils import get_subsidiary_from_session
 from leads.models import Lead
 from leads.forms import LeadForm
-from leads.utils import postSaveLead, leads_state_stat
+from leads.utils import post_save_lead, leads_state_stat
 from leads.utils import tag_leads_files, remove_lead_tag, merge_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
@@ -137,7 +137,7 @@ def lead(request, lead_id=None):
         if form.is_valid():
             lead = form.save()
             state_changed = "state" in form.changed_data
-            postSaveLead(request, lead, created=created, state_changed=state_changed)
+            post_save_lead(request, lead, created=created, state_changed=state_changed)
             return HttpResponseRedirect(reverse("leads:detail", args=[lead.id]))
     else:
         if lead:

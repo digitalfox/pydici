@@ -107,7 +107,7 @@ If you want to run javascript tests, you need to install node, phantomjs and cas
 ## Migrate data from environment
 On source:
 
-    ./manage.py dumpdata -o dump.json -e contenttypes -e auth.Permission -e admin.LogEntry --natural-foreign
+    ./manage.py dumpdata -o dump.json -e contenttypes -e auth.Permission -e admin.LogEntry -e auditlog --natural-foreign
 
 On target:
 
@@ -116,6 +116,9 @@ On target:
     # or with docker : 
     docker exec pydici_django_1 python manage.py loaddata dump.json 
 
+Note that, loading may fail due to auditlog tracking process done during data loading. In that case, just disable it
+temporary by changing the name of the AUDITLOG_INCLUDE_TRACKING_MODELS config key in
+in pydici/settings/django.py
 
 # Hosting, support, professional services, custom development
 See http://www.enioka.com/pydici-web/
