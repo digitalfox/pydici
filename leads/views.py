@@ -19,7 +19,9 @@ from django.utils.translation import gettext as _
 from django.db.models import Sum, Count, Min, Q
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
+from django.contrib.contenttypes.models import ContentType
 from django.db.models.functions import TruncMonth
+from django.db import transaction
 from django.conf import settings
 
 from taggit.models import Tag, TaggedItem
@@ -303,21 +305,24 @@ def remove_tag(request, tag_id, lead_id):
 @pydici_non_public
 @pydici_feature("leads")
 @permission_required("leads.change_lead")
+@transaction.atomic
 def manage_tags(request):
     """Manage (rename, merge, remove) tags"""
     tags_to_merge = request.GET.get("tags_to_merge", None)
+    ct = ContentType.objects.get_for_model(Lead)
     if tags_to_merge:
         tags = []
         for tag_id in tags_to_merge.split(","):
             tags.append(Tag.objects.get(id=tag_id.split("-")[1]))
         if tags and len(tags) > 1:
             target_tag = tags[0]
+            object_ids = list(TaggedItem.objects.filter(tag__in=tags[1:]).values_list("object_id", flat=True))
             for tag in tags[1:]:
-                TaggedItem.objects.filter(tag=tag).update(tag=target_tag)
                 if settings.NEXTCLOUD_TAG_IS_ENABLED:
                     merge_lead_tag.delay(target_tag.name, tag.name)
                 tag.delete()
-
+            for object_id in object_ids:
+                TaggedItem.objects.update_or_create(content_type=ct, object_id=object_id, tag=target_tag)
     return render(request, "leads/manage_tags.html",
                   {"data_url": reverse('leads:tag_table_DT'),
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
