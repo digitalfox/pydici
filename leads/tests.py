@@ -81,20 +81,24 @@ class LeadModelTest(TestCase):
         self.assertEqual(lead.deal_id, "%s%s02" % deal_id)  # 01 is already used
 
     def test_save_lead_and_active_client(self):
+        request = create_fake_request()
         lead = Lead.objects.get(id=1)
         lead.state = "LOST"
         lead.save()
+        post_save_lead(request, lead, created=False, state_changed=True)
         lead = Lead.objects.get(id=1)
-        self.assertTrue(lead.client.active)  # There's still anotger active lead for this client
+        self.assertTrue(lead.client.active)  # There's still another active lead for this client
         otherLead = Lead.objects.get(id=3)
         otherLead.state = "SLEEPING"
         otherLead.save()
+        post_save_lead(request, otherLead, created=False, state_changed=True)
         lead = Lead.objects.get(id=1)
         self.assertFalse(lead.client.active)
         newLead = Lead()
         newLead.subsidiary_id = 1
         newLead.client = lead.client
         newLead.save()
+        post_save_lead(request, newLead, created=True, state_changed=True)
         lead = Lead.objects.get(id=1)
         self.assertTrue(lead.client.active)  # A new lead on this client should mark it as active again
 
@@ -153,27 +157,24 @@ class LeadLearnTestCase(TestCase):
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_too_few_lead(self):
-        f = RequestFactory()
-        request = f.get("/")
-        request.user = User.objects.get(id=1)
-        request.session = {}
-        request._messages = default_storage(request)
+        request = create_fake_request()
         lead = create_lead()
         post_save_lead(request, lead)  # Learn model cannot exist, but it should not raise error
 
     @patch("celery.app.task.Task.delay")
     def test_celery_jobs_are_called(self, mock_celery):
-        f = RequestFactory()
-        request = f.get("/")
-        request.user = User.objects.get(id=1)
-        request.session = {}
-        request._messages = default_storage(request)
+        request = create_fake_request()
         lead = create_lead()
-        post_save_lead(request, lead)
-        mock_celery.assert_has_calls([call(relearn=False, leads_id=[lead.id]), call(), call()])
+        post_save_lead(request, lead, created=True)
+        mock_celery.assert_has_calls([call(lead.id, created=True),
+                                      call(lead.id, from_addr=request.user.email, from_name="%s %s" % (request.user.first_name, request.user.last_name)),
+                                      call(lead.id, created=True, state_changed=False),
+                                      call(relearn=False, leads_id=[lead.id]),
+                                      call(relearn=True), call(relearn=True)])
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_mission_proba(self):
+        request = create_fake_request()
         for i in range(5):
             # Create enough data to allow learn model to exist
             a = create_lead()
@@ -182,11 +183,6 @@ class LeadLearnTestCase(TestCase):
         lead = Lead.objects.get(id=1)
         lead.state="LOST"  # Need more than one target class to build a solver
         lead.save()
-        f = RequestFactory()
-        request = f.get("/")
-        request.user = User.objects.get(id=1)
-        request.session = {}
-        request._messages = default_storage(request)
         lead = create_lead()
         lead.state = "OFFER_SENT"
         lead.save()
@@ -504,3 +500,12 @@ def create_nextcloud_test_db():
     cursor.execute("""create database if not exists %s""" % settings.NEXTCLOUD_DB_DATABASE)
     cursor.close()
     connection.close()
+
+def create_fake_request(user_id=1, path="/"):
+    """Create fake request to """
+    f = RequestFactory()
+    request = f.get(path)
+    request.user = User.objects.get(id=user_id)
+    request.session = {}
+    request._messages = default_storage(request)
+    return request

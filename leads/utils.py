@@ -15,7 +15,8 @@ from django.db.models import Count
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from staffing.models import Mission
 from leads.models import StateProba, Lead
-from leads.tasks import lead_mail_notify, lead_telegram_notify
+from leads.tasks import lead_mail_notify, lead_telegram_notify, lead_actions
+from core.utils import createProjectTree
 
 
 def create_default_mission(lead):
@@ -35,6 +36,20 @@ def create_default_mission(lead):
 
 
 def post_save_lead(request, lead, created=False, state_changed=False):
+    # If this was the last active mission of its client and not more active lead, flag client as inactive
+    if len(lead.client.getActiveMissions()) == 0 and len(lead.client.getActiveLeads().exclude(state="WON")) == 0:
+        lead.client.active = False
+        lead.client.save()
+
+    # create project directories and mark client as active
+    if created:
+        createProjectTree(lead)
+        lead.client.active = True
+        lead.client.save()
+
+    # Launch actions
+    lead_actions.delay(lead.id, created=created)
+
     if lead.send_email:
         lead_mail_notify.delay(lead.id, from_addr=request.user.email,
                                from_name="%s %s" % (request.user.first_name, request.user.last_name))

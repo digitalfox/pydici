@@ -298,38 +298,3 @@ class StateProba(models.Model):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE)
     state = models.CharField(_("State"), max_length=30, choices=Lead.STATES)
     score = models.IntegerField(_("Score"))
-
-
-# Signal handling to throw actionset and document tree creation
-@disable_for_loaddata
-def leadSignalHandler(sender, **kwargs):
-    """Signal handler for new/updated leads"""
-    lead = kwargs["instance"]
-    targetUser = None
-    client = lead.client
-    # If this was the last active mission of its client and not more active lead, flag client as inactive
-    if len(client.getActiveMissions()) == 0 and len(client.getActiveLeads().exclude(state="WON")) == 0:
-        client.active = False
-        client.save()
-    if lead.responsible:
-        targetUser = lead.responsible.get_user()
-    if not targetUser:
-        # Default to admin
-        targetUser = User.objects.filter(is_superuser=True)[0]
-
-    if kwargs.get("created", False):  # New Lead
-        launchTrigger("NEW_LEAD", [targetUser, ], lead)
-        createProjectTree(lead)
-        client.active = True
-        client.save()
-    if lead.state == "WON":
-        # Ensure actionset has not already be fired for this lead and this user
-        if not ActionState.objects.filter(user=targetUser,
-                                          target_id=lead.id,
-                                          target_type=ContentType.objects.get_for_model(Lead)
-                                          ).exists():
-            launchTrigger("WON_LEAD", [targetUser, ], lead)
-
-
-# Signal connection to throw actionset
-post_save.connect(leadSignalHandler, sender=Lead)
