@@ -46,9 +46,16 @@ class ActionSet(models.Model):
 
 class Action(models.Model):
     """Single action"""
+    ACTION_TRIGGER_DOWN = (('ARCHIVED_MISSION', gettext("When mission is archived")),
+                           ('RATES_DEFINED', gettext("When rates are defined")),
+                           ('FORECASTING_ALMOST_DONE', gettext("When forecasting it mostly done")),
+                           ('FIRST_BILL_REQUESTED', gettext("When the first bill has been requested")),
+                           ('DELIVERY_DOC_STORED', gettext("When at least one delivery document is stored")),
+                           )
     name = models.CharField(_("Name"), max_length=100)
     description = models.TextField(_("Description"), blank=True)
     actionset = models.ForeignKey(ActionSet, on_delete=models.CASCADE)
+    trigger_down = models.CharField(_("Trigger down"), max_length=50, choices=ACTION_TRIGGER_DOWN, blank=True, null=True)
 
     def __str__(self):
         return "%s/%s" % (self.actionset, self.name)
