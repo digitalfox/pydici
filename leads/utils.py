@@ -54,10 +54,10 @@ def post_save_lead(request, lead, created=False, state_changed=False):
         compute_leads_state.delay(relearn=False, leads_id=[lead.id, ])
 
     # Update lead tags
-    compute_leads_tags.delay()
+    compute_leads_tags.delay(relearn=True)
 
     # update lead similarity model
-    compute_lead_similarity.delay()
+    compute_lead_similarity.delay(relearn=True)
 
     # Create or update mission  if needed
     if lead.mission_set.count() == 0:
