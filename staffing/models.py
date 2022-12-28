@@ -229,8 +229,8 @@ class Mission(models.Model):
         return rates
 
     def defined_rates(self):
-        """@return: True if all rates are defined for consultants forecasted or that already consume time for this mission. Else False"""
-        return not bool([i[0] for i in self.consultant_rates().values()].count(0))
+        """:return: True if all rates are defined for consultants forecasted or that already consume time for this mission. Else False"""
+        return set(self.consultants()).issubset(set(Consultant.objects.filter(financialcondition__mission=self)))
 
     @cacheable("Mission.mission_id%(id)s", 120)
     def mission_id(self):

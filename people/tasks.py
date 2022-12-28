@@ -25,6 +25,7 @@ def compute_consultant_tasks(consultant_id):
     Tasks computed:
     - expenses that require reviews (workflow action)
     - missions without defined billing mode
+    - missions with missing financial conditions
     - client bills in draft mode
     - supplier bills to be validated
     """
@@ -59,6 +60,13 @@ def compute_consultant_tasks(consultant_id):
     if missions_without_billing_mode_count > 0:
         tasks.append((_("Mission without billing mode"), missions_without_billing_mode_count,
                       reverse("staffing:mission_home", args=[missions_without_billing_mode[0].id]), 3))
+
+    # Missions with missing financial conditions
+    missions_with_missing_fc = [ m for m in Mission.objects.filter(active=True, responsible=consultant) if not m.defined_rates()]
+    missions_with_missing_fc_count = len(missions_with_missing_fc)
+    if missions_with_missing_fc_count > 0:
+        tasks.append((_("Consultants rates are not fully defined"), missions_with_missing_fc_count,
+                      reverse("staffing:mission_home", args=[missions_with_missing_fc[0].id]), 3))
 
     # Client bills to reviews
     bills = ClientBill.objects.filter(state="0_DRAFT", billdetail__mission__responsible=consultant).distinct()
