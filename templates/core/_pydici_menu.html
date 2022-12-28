@@ -74,12 +74,6 @@
                                 {% if link %}<li>{{ link }}</li>{% endif %}
                             {% endwith %}
                           {% endif %}
-                          <li><hr class="dropdown-divider"></li>
-                          <li class="dropdown-header">{% trans "Actions" %}</li>
-                          <li><a class="dropdown-item" href="{% url 'actionset:actionset_catalog' %}">{% trans "Actionset catalog" %}</a></li>
-                          {% if perms.actionset.change_actionstate %}
-                          <li><a class="dropdown-item" href="{% url 'admin:actionset_actionstate_changelist' %}">{% trans "On going actions" %}</a></li>
-                          {% endif %}
                           {% if pydici_feature.reports %}
                             <li><hr class="dropdown-divider"></li>
                             <li class="dropdown-header">{% trans "Reporting" %}</li>

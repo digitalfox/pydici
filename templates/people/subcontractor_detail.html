@@ -9,15 +9,6 @@
 	   <p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{{ consultant.manager.full_name }}{% endifnotequal %}{% endif %}</p>
 	</div>
 
-    {% with consultant.pending_actions as actions %}
-    {% if actions %}
-    <div class="col-md-4 col-sm-6">
-        <h3>{% trans "Pending actions" %}</h3>
-            {% include "actionset/_consultant_actions.html" %}
-    </div>
-    {% endif %}
-    {% endwith %}
-
     <div class="col-md-4 col-sm-6">
 	<h3>{% trans "Clients" %}</h3>
 	<ul>

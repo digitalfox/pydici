@@ -166,8 +166,7 @@ class LeadLearnTestCase(TestCase):
         request = create_fake_request()
         lead = create_lead()
         post_save_lead(request, lead, created=True)
-        mock_celery.assert_has_calls([call(lead.id, created=True),
-                                      call(lead.id, from_addr=request.user.email, from_name="%s %s" % (request.user.first_name, request.user.last_name)),
+        mock_celery.assert_has_calls([call(lead.id, from_addr=request.user.email, from_name="%s %s" % (request.user.first_name, request.user.last_name)),
                                       call(lead.id, created=True, state_changed=False),
                                       call(relearn=False, leads_id=[lead.id]),
                                       call(relearn=True), call(relearn=True)])

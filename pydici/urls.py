@@ -27,7 +27,6 @@ from crm.urls import crm_urls
 from people.urls import people_urls
 from staffing.urls import staffing_urls
 from billing.urls import billing_urls
-from actionset.urls import actionset_urls
 from expense.urls import expense_urls
 from leads.urls import leads_urls
 from core.urls import core_urls
@@ -76,7 +75,6 @@ pydici_patterns.extend([re_path("", include((core_urls, "core"), namespace="core
                         re_path("crm/", include((crm_urls, "crm"), namespace="crm")),
                         re_path("staffing/", include((staffing_urls, "staffing"), namespace="staffing")),
                         re_path("billing/", include((billing_urls, "billing"), namespace="billing")),
-                        re_path("actionset/", include((actionset_urls, "actionset"), namespace="actionset")),
                         re_path("expense/", include((expense_urls, "expense"), namespace="expense")),
                         re_path("leads/", include((leads_urls, "lead"), namespace="leads"))
                         ])

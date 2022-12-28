@@ -24,8 +24,6 @@ from auditlog.models import AuditlogHistoryField
 from core.utils import compact_text
 from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
-from actionset.models import ActionState
-from actionset.utils import launchTrigger
 from billing.utils import get_client_billing_control_pivotable_data
 from core.utils import createProjectTree, disable_for_loaddata, getLeadDirs, cacheable
 
@@ -221,25 +219,8 @@ class Lead(models.Model):
         to_bill += float(list(self.expense_set.filter(chargeable=True).aggregate(Sum("amount")).values())[0] or 0)
         return to_bill - float(self.billed())
 
-    def actions(self):
-        """Returns actions for this lead and its missions"""
-        actionStates = ActionState.objects.filter(Q(target_id=self.id,
-                                                    target_type=ContentType.objects.get_for_model(self)) |
-                                                  Q(target_id__in=self.mission_set.values("id"),
-                                                    target_type=ContentType.objects.get(app_label="staffing", model="mission")))
-
-        return actionStates.select_related()
-
     def billing_control_data(self):
         return get_client_billing_control_pivotable_data(filter_on_lead=self)
-
-    def pending_actions(self):
-        """returns pending actions for this lead and its missions"""
-        return self.actions().filter(state="TO_BE_DONE")
-
-    def done_actions(self):
-        """returns done actions for this lead and its missions"""
-        return self.actions().exclude(state="TO_BE_DONE")
 
     def checkDeliveryDoc(self):
         """Ensure delivery doc are put on file server if lead is won and archived

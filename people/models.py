@@ -10,15 +10,12 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models import F, Sum
 from django.apps import apps
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
 from django.urls import reverse
 
 from datetime import date, timedelta
 
-from core.utils import capitalize, disable_for_loaddata, cacheable, previousMonth, working_days
+from core.utils import capitalize, cacheable, previousMonth, working_days
 from crm.models import Subsidiary, Supplier
-from actionset.models import ActionState
-from actionset.utils import launchTrigger
 
 CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY = "Consultant.is_in_holidays%(id)s"
 TIMESHEET_IS_UP_TO_DATE_CACHE_KEY = "Consultant.timesheet_is_up_to_date%(id)s"
@@ -208,10 +205,6 @@ class Consultant(models.Model):
         users = [c.get_user() for c in self.team(exclude_self=exclude_self, only_active=only_active, staffing=staffing, subsidiary=subsidiary)]
         return [u for u in users if u is not None]
 
-    def pending_actions(self):
-        """Returns pending actions"""
-        return ActionState.objects.filter(user=self.get_user(), state="TO_BE_DONE").select_related().prefetch_related("target")
-
     def done_days(self):
         """Returns numbers of days worked up to today (according his timesheet) for current month"""
         from staffing.models import Timesheet  # Do that here to avoid circular imports
@@ -307,28 +300,3 @@ class SalesMan(models.Model):
         ordering = ["name", ]
         verbose_name = _("Salesman")
         verbose_name_plural = _("Salesmen")
-
-
-# Signal handling to throw actionset
-# noinspection PyUnusedLocal
-@disable_for_loaddata
-def consultant_signal_handler(sender, **kwargs):
-    """Signal handler for new consultant"""
-
-    if not kwargs.get("created", False):
-        return
-
-    consultant = kwargs["instance"]
-    targetUser = None
-    if consultant.manager:
-        targetUser = consultant.manager.get_user()
-
-    if not targetUser:
-        # Default to admin
-        targetUser = User.objects.filter(is_superuser=True)[0]
-
-    launchTrigger("NEW_CONSULTANT", [targetUser, ], consultant)
-
-
-# Signal connection to throw actionset
-post_save.connect(consultant_signal_handler, sender=Consultant)

@@ -21,8 +21,6 @@ from taggit.models import Tag
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from core.utils import get_parameter, audit_log_is_real_change, getLeadDirs
 from leads.models import Lead
-from actionset.utils import launchTrigger
-from actionset.models import ActionState
 
 if settings.TELEGRAM_IS_ENABLED:
     import telegram
@@ -276,21 +274,3 @@ def merge_lead_tag(target_tag_name, old_tag_name):
     finally:
         if connection:
             connection.close()
-
-@shared_task
-def lead_actions(lead_id, created=False):
-    """Launch new actions and dismiss old ones"""
-    lead = Lead.objects.get(id=lead_id)
-    if lead.responsible:
-        action_target_user = lead.responsible.get_user()
-    else:
-        action_target_user = None
-    if created and action_target_user:  # New Lead
-        launchTrigger("NEW_LEAD", [action_target_user, ], lead)
-    if lead.state == "WON" and action_target_user:
-        # Ensure actionset has not already be fired for this lead and this user
-        if not ActionState.objects.filter(user=action_target_user,
-                                          target_id=lead.id,
-                                          target_type=ContentType.objects.get_for_model(Lead)
-                                          ).exists():
-            launchTrigger("WON_LEAD", [action_target_user, ], lead)

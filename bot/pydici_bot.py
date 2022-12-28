@@ -213,7 +213,7 @@ def alert_consultant(context):
         return
     cache.set(cache_key, 1, 3600*24)  # Keep track 24 hours that this user has been alerted
 
-    tasks = compute_consultant_tasks(consultant, include_actions=False)
+    tasks = compute_consultant_tasks(consultant)
     if tasks:
         task_name, task_count, task_link, task_priority = random.choice(tasks)
         url = get_parameter("HOST") + task_link

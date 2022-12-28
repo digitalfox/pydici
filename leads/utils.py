@@ -15,7 +15,7 @@ from django.db.models import Count
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from staffing.models import Mission
 from leads.models import StateProba, Lead
-from leads.tasks import lead_mail_notify, lead_telegram_notify, lead_actions
+from leads.tasks import lead_mail_notify, lead_telegram_notify
 from core.utils import createProjectTree
 
 
@@ -46,9 +46,6 @@ def post_save_lead(request, lead, created=False, state_changed=False):
         createProjectTree(lead)
         lead.client.active = True
         lead.client.save()
-
-    # Launch actions
-    lead_actions.delay(lead.id, created=created)
 
     if lead.send_email:
         lead_mail_notify.delay(lead.id, from_addr=request.user.email,

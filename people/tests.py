@@ -56,9 +56,6 @@ class PeopleModelTest(TestCase):
         self.assertEqual(c.user_team(), team)
         self.assertEqual(c.user_team(exclude_self=False), team + [User.objects.get(username="sre"),])
 
-    def test_pending_action(self):
-        c = Consultant.objects.get(trigramme="SRE")
-        self.assertQuerysetEqual(c.pending_actions(), [])
 
     def test_turnover(self):
         current_month = previousMonth(date.today().replace(day=1))

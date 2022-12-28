@@ -22,8 +22,6 @@ from datetime import datetime, date, timedelta
 from leads.models import Lead
 from people.models import Consultant
 from crm.models import MissionContact, Subsidiary
-from actionset.utils import launchTrigger
-from actionset.models import ActionState
 from core.utils import disable_for_loaddata, cacheable, nextMonth, get_parameter
 
 
@@ -385,24 +383,6 @@ class Mission(models.Model):
                         result[consultant] += n_days * (consultant_rates[consultant][0] - objectiveRate.rate)
         return result
 
-    def actions(self):
-        """Returns actions for this mission and its lead"""
-        actionStates = ActionState.objects.filter(target_id=self.id,
-                                                 target_type=ContentType.objects.get_for_model(self))
-        if self.lead:
-            actionStates = actionStates | ActionState.objects.filter(target_id=self.lead.id,
-                                                                     target_type=ContentType.objects.get(app_label="leads", model="lead"))
-
-        return actionStates.select_related()
-
-    def pending_actions(self):
-        """returns pending actions for this mission and its lead"""
-        return self.actions().filter(state="TO_BE_DONE")
-
-    def done_actions(self):
-        """returns done actions for this mission and its lead"""
-        return self.actions().exclude(state="TO_BE_DONE")
-
     @cacheable("Mission.staffing_start_date%(id)s", 10)
     def staffing_start_date(self):
         """Starting date (=oldiest) staffing date of this mission. None if no staffing"""
@@ -537,31 +517,17 @@ class FinancialCondition(models.Model):
         verbose_name = _("Financial condition")
 
 
-# Signal handling to throw actionset
+# Signal handling
 @disable_for_loaddata
 def missionSignalHandler(sender, **kwargs):
     """Signal handler for new/updated missions"""
     mission = kwargs["instance"]
-    targetUser = None
-    if mission.lead and mission.lead.responsible:
-        targetUser = mission.lead.responsible.get_user()
-    else:
-        # try to pick up one of staffee
-        for consultant in mission.consultants():
-            targetUser = consultant.get_user()
-            if targetUser:
-                break
-    if not targetUser:
-        # Default to admin
-        targetUser = User.objects.filter(is_superuser=True)[0]
 
     if not mission.active:
         # Mission is archived. Remove all staffing
         if not mission.archived_date:
             mission.archived_date = datetime.now()
             mission.save()
-            if mission.lead and mission.lead.state == "WON":
-                launchTrigger("ARCHIVED_MISSION", [targetUser, ], mission)
 
         for staffing in mission.staffing_set.all():
             staffing.delete()
@@ -571,13 +537,6 @@ def missionSignalHandler(sender, **kwargs):
             if len(client.getActiveMissions()) == 0 and len(client.getActiveLeads().exclude(state="WON")) == 0:
                 client.active = False
                 client.save()
-    # Handle actionset stuff :
-    if not mission.nature == "PROD":
-        # Don't throw actions for non prod missions
-        return
 
-    if  kwargs.get("created", False):
-        launchTrigger("NEW_MISSION", [targetUser, ], mission)
-
-# Signal connection to throw actionset
+# Signal connection to activate/passivate clients
 post_save.connect(missionSignalHandler, sender=Mission)

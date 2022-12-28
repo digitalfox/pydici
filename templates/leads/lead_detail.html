@@ -51,7 +51,6 @@
         <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-description"><i class="bi bi-house"></i> {% trans "Description" %}</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-missions"><i class="bi bi-list-ul"></i> {% trans "Missions" %}</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-billing" data-tab-url="{% url 'billing:lead_billing' lead.id|unlocalize %}"><i class="bi bi-calculator"></i> {% trans "Billing" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-actions"><i class="bi bi-check2-square"></i> {% trans "Actions" %}</button></li>
         {% if enable_doc_tab %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-documents" data-tab-url="{% url 'leads:lead_documents' lead.id|unlocalize %}"><i class="bi bi-file-earmark-text"></i> {% trans "Documents" %}</button></li>{% endif %}
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' lead.id|unlocalize %}"><i class="bi bi-graph-up"></i> {% trans "Reporting" %}</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-history", data-tab-url="{% url 'core:object_history' 'lead' lead.id %}"><i class="bi bi-clock-history"></i> {% trans "History" %}</button></li>
@@ -277,23 +276,6 @@
 
 
     <div id="tab-billing" class="tab-pane fade" role="tabpanel"></div>
-
-    <div id="tab-actions" class="tab-pane fade" role="tabpanel">
-        <h2 class="py-2">{% trans "Pending actions" %}</h2>
-            {% with lead.pending_actions as actions %}
-                {% include "actionset/_lead_mission_actions.html" %}
-            {% endwith %}
-
-        <h2 class="py-2">{% trans "Done actions" %}</h2>
-            <ul>
-            {% for action in lead.done_actions %}
-                <li>{{ action.action.name }} - {{ action.get_state_display }} ({{ action.update_date }})</li>
-            {% empty %}
-                {% trans "No action done" %}
-            {% endfor %}
-            </ul>
-    </div>
-
 
     {% if enable_doc_tab %}<div id="tab-documents" class="tab-pane fade" role="tabpanel"></div>{% endif %}
 

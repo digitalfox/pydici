@@ -44,7 +44,6 @@
             {% if enable_doc_tab %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-documents" data-tab-url="{% url 'leads:lead_documents' mission.lead.id %}"><i class="bi bi-file-earmark-text"></i> {% trans "Documents" %}</button></li>{% endif %}
             <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' mission.lead.id %}"><i class="bi bi-graph-up"></i> {% trans "Reporting" %}</button></li>
         {% endif %}
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-actions"><i class="bi bi-check2-square"></i> {% trans "Actions" %}{% if pending_actions %} ({{ pending_actions.count }}){% endif %}</button></li>
         {% if mission.lead %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-billing" data-tab-url="{% url 'billing:lead_billing' mission.lead.id %}"><i class="bi bi-calculator"></i> {% trans "Billing" %}</button></li>{% endif %}
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-history", data-tab-url="{% url 'core:object_history' 'mission' mission.id %}"><i class="bi bi-clock-history"></i> {% trans "History" %}</button></li>
     </ul>
@@ -199,22 +198,6 @@
     <div id="tab-reporting" class="tab-pane fade" role="tabpanel"></div>
     
     <div id="tab-billing" class="tab-pane fade" role="tabpanel"></div>
-
-    <div id="tab-actions" class="tab-pane fade" role="tabpanel">
-    <h2 class="mt-2">{% trans "Pending actions" %}</h2>
-    {% with mission.pending_actions as actions %}
-        {% include "actionset/_lead_mission_actions.html" %}
-    {% endwith %}
-
-    <h2>{% trans "Done actions" %}</h2>
-    <ul>
-    {% for action in mission.done_actions %}
-        <li>{{ action.action.name }} - {{ action.get_state_display }} ({{ action.user.first_name }} {{ action.user.last_name }}, {{ action.update_date }})</li>
-    {% empty %}
-        {% trans "No action done" %}
-    {% endfor %}
-    </ul>
-    </div>
 
     <div id="tab-history" class="tab-pane fade"></div>
 
