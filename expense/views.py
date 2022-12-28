@@ -25,7 +25,6 @@ from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpens
 from leads.models import Lead
 from people.models import Consultant
 from core.decorator import pydici_non_public, pydici_feature, pydici_subcontractor
-from core.views import tableToCSV
 from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm
 from people.utils import users_are_in_same_company
 

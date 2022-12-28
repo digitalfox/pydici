@@ -22,6 +22,8 @@ from auditlog.models import AuditlogHistoryField
 
 from leads.models import Lead
 from core.utils import sanitizeName
+from people.tasks import compute_consultant_tasks
+from people.models import Consultant
 
 
 EXPENSE_STATES = (
@@ -121,6 +123,12 @@ class Expense(models.Model):
             return "%s (%s %s %s) - %s € - %s" % (self.description, self.lead, self.lead.deal_id, self.expense_date, self.amount, self.get_state_display())
         else:
             return "%s (%s) - %s € - %s" % (self.description, self.expense_date, self.amount, self.get_state_display())
+
+    def save(self, *args, **kwargs):
+        super(Expense, self).save(*args, **kwargs)
+        consultant = Consultant.objects.get(trigramme__iexact=self.user.username)
+        if consultant.manager:
+            compute_consultant_tasks.delay(consultant.manager.id)  # update manager tasks
 
     def receipt_data(self):
         """Return receipt data in formatted way to be included inline in a html page"""

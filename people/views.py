@@ -21,7 +21,7 @@ from crm.utils import get_subsidiary_from_session
 from staffing.models import Holiday
 from core.decorator import pydici_non_public, pydici_subcontractor
 from core.utils import working_days, previousMonth, nextMonth, COLORS, user_has_feature
-from people.utils import compute_consultant_tasks, subcontractor_is_user
+from people.utils import get_consultant_tasks, subcontractor_is_user
 from crm.models import Subsidiary
 
 
@@ -153,7 +153,7 @@ def consultant_detail(request, consultant_id):
                    "forecasting_balance": forecasting_balance,
                    "month_turnover": monthTurnover,
                    "turnover_variation": turnoverVariation,
-                   "tasks": compute_consultant_tasks(consultant),
+                   "tasks": get_consultant_tasks(consultant),
                    "user": request.user})
 
 

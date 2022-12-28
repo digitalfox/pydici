@@ -19,6 +19,7 @@ from crm.models import Subsidiary, Supplier
 
 CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY = "Consultant.is_in_holidays%(id)s"
 TIMESHEET_IS_UP_TO_DATE_CACHE_KEY = "Consultant.timesheet_is_up_to_date%(id)s"
+CONSULTANT_TASKS_CACHE_KEY = "CONSULTANT_TASKS_%s"
 
 
 class ConsultantProfile(models.Model):

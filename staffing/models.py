@@ -10,9 +10,6 @@ from django.db.models import Sum, Min, Max, F, Q
 from django.db.models.functions import TruncMonth
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext, pgettext
-from django.db.models.signals import post_save
-from django.contrib.auth.models import User
-from django.contrib.admin.models import ContentType
 from django.urls import reverse
 
 from auditlog.models import AuditlogHistoryField
@@ -22,7 +19,8 @@ from datetime import datetime, date, timedelta
 from leads.models import Lead
 from people.models import Consultant
 from crm.models import MissionContact, Subsidiary
-from core.utils import disable_for_loaddata, cacheable, nextMonth, get_parameter
+from core.utils import cacheable, nextMonth, get_parameter
+from people.tasks import compute_consultant_tasks
 
 
 class AnalyticCode(models.Model):
@@ -104,13 +102,33 @@ class Mission(models.Model):
                 return name
 
     def save(self, *args, **kwargs):
+        update_tasks = kwargs.pop("update_tasks", True)
         super(Mission, self).save(*args, **kwargs)
+        if not self.active:
+            # Mission is archived. Remove all staffing
+            if not self.archived_date:
+                self.archived_date = datetime.now()
+                self.save()
+
+            for staffing in self.staffing_set.all():
+                staffing.delete()
+            if self.lead:
+                # If this was the last active mission of its client and not more active lead, flag client as inactive
+                client = self.lead.client
+                if len(client.getActiveMissions()) == 0 and len(client.getActiveLeads().exclude(state="WON")) == 0:
+                    client.active = False
+                    client.save()
+
         # update lead price if needed
         if self.lead and self.lead.sales:
             all_mission_price = self.lead.mission_set.aggregate(Sum("price"))["price__sum"] or 0
             if all_mission_price > self.lead.sales:
                 self.lead.sales = all_mission_price
                 self.lead.save()
+
+        # update mission responsible tasks
+        if self.responsible and update_tasks:
+            compute_consultant_tasks.delay(self.responsible.id)
 
     def short_name(self):
         """Name with deal name, mission desc and id. No client name"""
@@ -515,28 +533,3 @@ class FinancialCondition(models.Model):
     class Meta:
         unique_together = (("consultant", "mission", "daily_rate"),)
         verbose_name = _("Financial condition")
-
-
-# Signal handling
-@disable_for_loaddata
-def missionSignalHandler(sender, **kwargs):
-    """Signal handler for new/updated missions"""
-    mission = kwargs["instance"]
-
-    if not mission.active:
-        # Mission is archived. Remove all staffing
-        if not mission.archived_date:
-            mission.archived_date = datetime.now()
-            mission.save()
-
-        for staffing in mission.staffing_set.all():
-            staffing.delete()
-        if mission.lead:
-            # If this was the last active mission of its client and not more active lead, flag client as inactive
-            client = mission.lead.client
-            if len(client.getActiveMissions()) == 0 and len(client.getActiveLeads().exclude(state="WON")) == 0:
-                client.active = False
-                client.save()
-
-# Signal connection to activate/passivate clients
-post_save.connect(missionSignalHandler, sender=Mission)

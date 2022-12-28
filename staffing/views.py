@@ -19,7 +19,6 @@ from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.forms import formset_factory
 from django.utils.translation import gettext as _
-from django.utils.encoding import force_text
 from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import TruncMonth
