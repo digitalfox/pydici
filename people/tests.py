@@ -37,6 +37,7 @@ class PeopleModelTest(TestCase):
         self.assertEqual(list(c.active_missions()), list(Mission.objects.filter(id=1)))
 
     def test_get_user(self):
+        cache.clear()  # avoid bad computation due to rates cache with previous values
         c = Consultant.objects.get(trigramme="SRE")
         u = User.objects.get(username="sre")
         self.assertEqual(c.get_user(), u)

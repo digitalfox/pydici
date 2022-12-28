@@ -9,13 +9,13 @@ from datetime import date
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from core.tests import PYDICI_FIXTURES
 from expense.models import Expense, ExpenseCategory, ExpensePayment
 from expense.utils import expense_next_states, can_edit_expense
 
-
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class WorkflowTest(TestCase):
     """Test pydici workflows"""
     fixtures = PYDICI_FIXTURES

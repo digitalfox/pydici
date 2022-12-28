@@ -31,6 +31,8 @@ from datetime import date, datetime
 from unittest.mock import patch, call
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(TELEGRAM_IS_ENABLED=False)
 class LeadModelTest(TestCase):
     fixtures = PYDICI_FIXTURES
 
@@ -119,7 +121,7 @@ class LeadModelTest(TestCase):
             lead.checkDeliveryDoc()
             lead.checkBusinessDoc()
 
-
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class LeadLearnTestCase(TestCase):
     """Test lead state proba learn"""
     fixtures = PYDICI_FIXTURES
@@ -155,7 +157,7 @@ class LeadLearnTestCase(TestCase):
             lead.tags.add("camembert")
         self.assertGreater(leads_learn.test_tag_model(), 0.8, "Probal is too low")
 
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+
     def test_too_few_lead(self):
         request = create_fake_request()
         lead = create_lead()
@@ -171,7 +173,6 @@ class LeadLearnTestCase(TestCase):
                                       call(relearn=False, leads_id=[lead.id]),
                                       call(relearn=True), call(relearn=True)])
 
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_mission_proba(self):
         request = create_fake_request()
         for i in range(5):
@@ -199,6 +200,7 @@ class LeadLearnTestCase(TestCase):
 
 
 @override_settings(NEXTCLOUD_DB_DATABASE="nextcloud_test")
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class LeadNextcloudTagTestCase(TestCase):
     """Test lead tag on nextcloud file"""
     fixtures = PYDICI_FIXTURES
