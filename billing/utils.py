@@ -184,7 +184,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
             done_work_total = 0  # Track total done work across month and consultant to ensure it does not exceed fixed price amount
             mission_data = lead_data.copy()
             mission_data[_("mission")] = mission.short_name()
-            mission_data[_("responsible")] = str(mission.responsible or mission.lead.responsible)
+            mission_data[_("responsible")] = str(mission.lead.responsible)
             mission_data[_("billing mode")] = mission.get_billing_mode_display()
             # Add fixed price bills
             if mission.billing_mode == "FIXED_PRICE":
