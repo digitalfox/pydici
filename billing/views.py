@@ -575,6 +575,10 @@ def lead_billing(request, lead_id):
 def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_on_company=None, filter_on_lead=None):
     """Check lead/mission billing."""
     subsidiary = get_subsidiary_from_session(request)
+    month_to_exc_from_my_leads = [date.today().replace(day=1)]
+    for i in range(6):
+        month_to_exc_from_my_leads.append(nextMonth(month_to_exc_from_my_leads[-1]))
+    month_to_exc_from_my_leads = [m.isoformat() for m in month_to_exc_from_my_leads]
     data = get_client_billing_control_pivotable_data(filter_on_subsidiary=filter_on_subsidiary or subsidiary,
                                                      filter_on_company=filter_on_company,
                                                      filter_on_lead=filter_on_lead,
@@ -582,6 +586,7 @@ def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_
     return render(request, "billing/client_billing_control_pivotable.html",
                   {"data": data,
                    "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
+                   "month_to_exc_from_my_leads": month_to_exc_from_my_leads,
                    "derivedAttributes": "{}"})
 
 

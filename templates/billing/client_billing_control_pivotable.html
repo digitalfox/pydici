@@ -50,6 +50,7 @@
         var cols = ["{% trans 'type' %}"];
         var options = {};
         options['inclusions'] = { {% trans "responsible" %}: ['{{ consultant.name }}'] };
+        options['exclusions'] = { {% trans "month" %}: {{ month_to_exc_from_my_leads|safe }} };
         drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ["{% trans 'amount' %}"], options);
     }
 
