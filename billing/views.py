@@ -581,6 +581,7 @@ def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_
                                                      only_active=True)
     return render(request, "billing/client_billing_control_pivotable.html",
                   {"data": data,
+                   "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
                    "derivedAttributes": "{}"})
 
 

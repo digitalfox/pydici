@@ -16,7 +16,8 @@
 
 <div class="row col-12 col-lg-8">
     <div id="type-selector" class="btn-group" role="group">
-        <button class="btn btn-primary active" onclick="balance_per_month_table();">{% trans "Balance per month (table)" %}</button>
+        <button class="btn btn-primary active" onclick="balance_per_month_table();">{% trans "My leads" %}</button>
+        <button class="btn btn-primary" onclick="balance_per_month_table();">{% trans "Balance per month (table)" %}</button>
         <button class="btn btn-primary" onclick="balance_per_month_bargraph();">{% trans "Balance per month (bargraph)" %}</button>
         <button class="btn btn-primary" onclick="balance_per_client();">{% trans "Balance per client" %}</button>
         <button class="btn btn-primary" onclick="balance_per_billing_mode();">{% trans "Balance per billing mode" %}</button>
@@ -44,6 +45,14 @@
     var data = {{ data|safe }};
 
     // Preset definition
+    function my_leads() {
+        var rows = ["{% trans 'client company' %}", "{% trans 'lead id' %}"];
+        var cols = ["{% trans 'type' %}"];
+        var options = {};
+        options['inclusions'] = { {% trans "responsible" %}: ['{{ consultant.name }}'] };
+        drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ["{% trans 'amount' %}"], options);
+    }
+
     function balance_per_month_table() {
         var rows = ["{% trans 'month' %}"];
         var cols = ["{% trans 'subsidiary' %}", "{% trans 'type' %}"];
@@ -71,7 +80,7 @@
     }
 
     // default
-    balance_per_month_table();
+    my_leads();
 
 </script>
 
