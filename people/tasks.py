@@ -8,7 +8,7 @@ Module that handle asynchronous tasks
 
 from datetime import datetime
 
-from django.db.models import Min
+from django.db.models import Min, Sum, Q
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.core.cache import cache
@@ -35,6 +35,7 @@ def compute_consultant_tasks(consultant_id):
     SupplierBill = apps.get_model("billing", "SupplierBill")
     ClientBill = apps.get_model("billing", "ClientBill")
     Consultant = apps.get_model("people", "Consultant")
+    Lead = apps.get_model("leads", "Lead")
 
     consultant = Consultant.objects.get(id=consultant_id)
 
@@ -68,6 +69,20 @@ def compute_consultant_tasks(consultant_id):
         tasks.append((_("Consultants rates are not fully defined"), missions_with_missing_fc_count,
                       reverse("staffing:mission_home", args=[missions_with_missing_fc[0].id]), 3))
 
+    # Done work without billing
+    still_to_be_billed = 0
+    still_to_be_billed_count = 0
+    still_to_be_billed_leads = []
+    for lead in Lead.objects.filter(responsible=consultant, mission__active=True).distinct():
+        amount = lead.still_to_be_billed(include_fixed_price=False, include_current_month=False)
+        if amount > 0:
+            still_to_be_billed += int(amount)
+            still_to_be_billed_count += 1
+            still_to_be_billed_leads.append(lead)
+    if still_to_be_billed_count > 0:
+        tasks.append((_("%s € missing billing for past months") % still_to_be_billed, still_to_be_billed_count,
+                      reverse("lead:detail", args=[still_to_be_billed_leads[0].id])+"#goto_tab-billing", 3))
+
     # Client bills to reviews
     bills = ClientBill.objects.filter(state="0_DRAFT", billdetail__mission__responsible=consultant).distinct()
     bills_count = bills.count()
@@ -92,7 +107,7 @@ def compute_consultant_tasks(consultant_id):
 def compute_all_consultants_tasks():
     """Compute all active consultant tasks and cache results"""
     Consultant = apps.get_model("people", "Consultant")
-    for consultant in Consultant.objects(active=True, subcontractor=False):
+    for consultant in Consultant.objects.filter(active=True, subcontractor=False):
         compute_consultant_tasks(consultant.id)
 
 def get_task_priority(value, threshold):

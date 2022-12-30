@@ -17,6 +17,7 @@ from datetime import date, timedelta
 from core.utils import capitalize, cacheable, previousMonth, working_days
 from crm.models import Subsidiary, Supplier
 
+
 CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY = "Consultant.is_in_holidays%(id)s"
 TIMESHEET_IS_UP_TO_DATE_CACHE_KEY = "Consultant.timesheet_is_up_to_date%(id)s"
 CONSULTANT_TASKS_CACHE_KEY = "CONSULTANT_TASKS_%s"
@@ -61,22 +62,27 @@ class Consultant(models.Model):
         self.trigramme = self.trigramme.upper()
         super(Consultant, self).save(*args, **kwargs)
 
+    def active_leads(self):
+        """:return: active leads whose consultant is responsible for"""
+        Lead = apps.get_model("leads", "Lead")  # Get Lead with get_model to avoid circular imports
+        return Lead.objects.active().filter(responsible=self)
+
     def active_missions(self):
-        """Returns consultant active missions based on forecast staffing"""
+        """:return: consultant active missions based on forecast staffing"""
         Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         return Mission.objects.filter(active=True).filter(staffing__consultant=self).distinct().select_related("lead__client__organisation__company")
 
     def responsible_missions(self):
-        """Returns consultant active missions whose she is responsible of"""
+        """:return: consultant active missions whose he is responsible for"""
         Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         return Mission.objects.filter(active=True).filter(responsible=self).distinct().select_related("lead__client__organisation__company")
 
     def current_missions(self):
-        """Returns active and responsible missions"""
+        """:return: active and responsible missions"""
         return self.active_missions() | self.responsible_missions()
 
     def forecasted_missions(self, month=None):
-        """Returns consultant active missions on given month based on forecasted staffing
+        """:return: consultant active missions on given month based on forecasted staffing
         If month is not defined, current month is used"""
         Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
 

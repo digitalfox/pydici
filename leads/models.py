@@ -205,14 +205,17 @@ class Lead(models.Model):
         """Total amount billed for this lead"""
         return list(self.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0
 
-    @cacheable("Lead.__still_to_be_billed__%(id)s", 3)
-    def still_to_be_billed(self):
+    def still_to_be_billed(self, include_current_month=True, include_fixed_price=True):
         """Amount that still need to be billed"""
         to_bill = 0
+        if include_current_month:
+            end = date.today()
+        else:
+            end = date.today().replace(day=1)
         for mission in self.mission_set.all():
-            if mission.billing_mode == "TIME_SPENT":
-                to_bill += float(mission.done_work()[1])
-            else:
+            if mission.billing_mode == "TIME_SPENT" or mission.billing_mode is None:
+                to_bill += float(mission.done_work_period(None, end)[1])
+            elif mission.billing_mode == "FIXED_PRICE" and include_fixed_price:
                 # TODO: sum as well subcontractor bills for fixed priced mission
                 if mission.price:
                     to_bill += float(mission.price * 1000)

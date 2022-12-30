@@ -59,10 +59,6 @@ def consultant_detail(request, consultant_id):
         missions = consultant.current_missions().filter(nature="PROD")
         # Identify staled missions that may need new staffing or archiving
         staled_missions = [m for m in missions if m.no_more_staffing_since()]
-        # Consultant clients and missions
-        business_territory = Company.objects.filter(businessOwner=consultant)
-        leads_as_responsible = set(consultant.lead_responsible.active())
-        leads_as_staffee = consultant.lead_set.active()
         # Timesheet donut data
         holidays = [h.day for h in Holiday.objects.all()]
         month_days = working_days(month, holidays, upToToday=False)
@@ -134,9 +130,9 @@ def consultant_detail(request, consultant_id):
                    "staff": staff,
                    "missions": missions,
                    "staled_missions": staled_missions,
-                   "business_territory": business_territory,
-                   "leads_as_responsible": leads_as_responsible,
-                   "leads_as_staffee": leads_as_staffee,
+                   "business_territory": Company.objects.filter(businessOwner=consultant),
+                   "leads_as_responsible": consultant.active_leads(),
+                   "leads_as_staffee": consultant.lead_set.active(),
                    "done_days": done_days,
                    "late": late,
                    "to_be_done": to_be_done,
