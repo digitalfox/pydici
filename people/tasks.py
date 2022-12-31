@@ -81,7 +81,7 @@ def compute_consultant_tasks(consultant_id):
             still_to_be_billed_leads.append(lead)
     if still_to_be_billed_count > 0:
         tasks.append((_("%s € missing billing for past months") % still_to_be_billed, still_to_be_billed_count,
-                      reverse("billing:client_billing_control_pivotable"), 3))
+                      reverse("billing:client_billing_control_pivotable")+"?focus=%s" % consultant.name, 3))
 
     # Client bills to reviews
     bills = ClientBill.objects.filter(state="0_DRAFT", billdetail__mission__responsible=consultant).distinct()
