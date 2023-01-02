@@ -70,6 +70,13 @@ def compute_consultant_tasks(consultant_id):
         tasks.append((_("Consultants rates are not fully defined"), missions_with_missing_fc_count,
                       reverse("staffing:mission_home", args=[missions_with_missing_fc[0].id]), 3))
 
+    # Mission with missing marketing product
+    missions_with_missing_mktg_pdt = Mission.objects.filter(active=True, responsible=consultant, marketing_product__isnull=True)
+    missions_with_missing_mktg_pdt_count = missions_with_missing_mktg_pdt.count()
+    if missions_with_missing_mktg_pdt_count > 0:
+        tasks.append((_("Mission marketing product is missing"), missions_with_missing_mktg_pdt_count,
+                      reverse("staffing:mission_home", args=[missions_with_missing_mktg_pdt[0].id]), 1))
+
     # Done work without billing
     still_to_be_billed = 0
     still_to_be_billed_count = 0
