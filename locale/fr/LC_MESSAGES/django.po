@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-02 21:24+0100\n"
-"PO-Revision-Date: 2023-01-02 21:24+0100\n"
+"POT-Creation-Date: 2023-01-02 22:31+0100\n"
+"PO-Revision-Date: 2023-01-02 22:31+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -1811,16 +1811,20 @@ msgstr "Mission sans mode de facturation défini"
 msgid "Consultants rates are not fully defined"
 msgstr "Les taux journaliers ne sont pas tous définis"
 
-#: people/tasks.py:84
+#: people/tasks.py:77
+msgid "Mission marketing product is missing"
+msgstr "Mission sans produit marketing défini"
+
+#: people/tasks.py:91
 #, python-format
 msgid "%s € missing billing for past months"
 msgstr "%s € de facturation sont manquants les mois passés"
 
-#: people/tasks.py:93 templates/billing/bill_review.html:13
+#: people/tasks.py:100 templates/billing/bill_review.html:13
 msgid "Bills to review"
 msgstr "Factures à revoir"
 
-#: people/tasks.py:101
+#: people/tasks.py:108
 msgid "Supplier bills to review"
 msgstr "Factures fournisseurs à valider"
 
