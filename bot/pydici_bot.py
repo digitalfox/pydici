@@ -206,11 +206,11 @@ def alert_consultant(context):
     if consultant.is_in_holidays():
         # don't bother people during holidays
         return
-    cache_key = "BOT_ALERT_CONSULTANT_LAST_24H_%s" % consultant.trigramme
+    cache_key = "BOT_ALERT_CONSULTANT_LAST_PERIOD_%s" % consultant.trigramme
     if cache.get(cache_key):
         # don't persecute people :-)
         return
-    cache.set(cache_key, 1, 3600*24)  # Keep track 24 hours that this user has been alerted
+    cache.set(cache_key, 1, 3600*12)  # Keep track 12 hours that this user has been alerted
 
     tasks = consultant.get_tasks()
     if tasks:
@@ -218,7 +218,7 @@ def alert_consultant(context):
         url = get_parameter("HOST") + task_link
         msg = _("Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n%(link)s") % {"task_name": task_name,
                                                                                                      "task_count": task_count,
-                                                                                                     "link": url}
+                                                                                                     "link": url.replace(" ", "%20")}
         try:
             context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
         except telegram.error.BadRequest as e:
