@@ -48,7 +48,6 @@ application = get_wsgi_application()
 
 # Pydici imports
 from people.models import Consultant
-from people.utils import get_consultant_tasks
 from staffing.models import Mission, Timesheet, Holiday
 from core.utils import get_parameter
 
@@ -213,7 +212,7 @@ def alert_consultant(context):
         return
     cache.set(cache_key, 1, 3600*24)  # Keep track 24 hours that this user has been alerted
 
-    tasks = get_consultant_tasks(consultant)
+    tasks = consultant.get_tasks()
     if tasks:
         task_name, task_count, task_link, task_priority = random.choice(tasks)
         url = get_parameter("HOST") + task_link

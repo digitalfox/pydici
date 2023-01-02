@@ -11,11 +11,13 @@ from django.db.models import F, Sum
 from django.apps import apps
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.core.cache import cache
 
 from datetime import date, timedelta
 
 from core.utils import capitalize, cacheable, previousMonth, working_days
 from crm.models import Subsidiary, Supplier
+from people.tasks import compute_consultant_tasks
 
 
 CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY = "Consultant.is_in_holidays%(id)s"
@@ -272,6 +274,16 @@ class Consultant(models.Model):
             td = list(Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values())[0] or 0
             result.append(wd - td)
         return result
+
+    def get_tasks(self):
+        """gather all tasks consultant should do
+        :return: list of (task_name, count, link, priority(1-3))"""
+        tasks = cache.get(CONSULTANT_TASKS_CACHE_KEY % self.id)
+        if tasks is not None:
+            return tasks
+        else:
+            # we should never have a cache miss on that on normal production mode. Just in case, compute it synchronously
+            return compute_consultant_tasks(self.id)
 
 
 class RateObjective(models.Model):
