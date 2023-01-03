@@ -203,7 +203,7 @@ class Lead(models.Model):
     @cacheable("Lead.__billed__%(id)s", 3)
     def billed(self):
         """Total amount billed for this lead"""
-        return list(self.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0
+        return list(self.clientbill_set.filter(state__in=("0_PROPOSED", "1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0
 
     def still_to_be_billed(self, include_current_month=True, include_fixed_price=True):
         """Amount that still need to be billed"""
