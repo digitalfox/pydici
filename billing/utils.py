@@ -131,7 +131,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
     Consultant = apps.get_model("people", "Consultant")
 
     data = []
-    bill_state = ("1_SENT", "2_PAID")  # Only consider clients bills in those statuses
+    bill_state = ("0_PROPOSED", "1_SENT", "2_PAID")  # Only consider clients bills in those statuses
     leads = Lead.objects.all()
     if filter_on_subsidiary:
         leads = leads.filter(subsidiary=filter_on_subsidiary)
