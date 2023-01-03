@@ -67,8 +67,8 @@
 
     {% else %}
             <p>{% trans "No bill yet" %}</p>
-            <p><strong>{% trans "Still to be billed" %}: {{ lead.still_to_be_billed|floatformat:-2 }} €</strong></p>
     {% endif %}
+    <p><strong>{% trans "Still to be billed" %}: {{ lead.still_to_be_billed|floatformat:-2 }} €</strong></p>
     {% endwith %}
 
     {% if pydici_feature.billing_request %}
