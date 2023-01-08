@@ -415,7 +415,7 @@ def compute_leads_state(relearn=True, leads_id=None):
             if state == "WON":
                 for mission in lead.mission_set.filter(probability_auto=True):
                     mission.probability = proba
-                    mission.save()
+                    mission.save(update_tasks=False)  # don't update tasks to avoid useless flood
 
 
 @shared_task

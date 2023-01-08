@@ -24,8 +24,6 @@ from auditlog.models import AuditlogHistoryField
 from core.utils import compact_text
 from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
-from actionset.models import ActionState
-from actionset.utils import launchTrigger
 from billing.utils import get_client_billing_control_pivotable_data
 from core.utils import createProjectTree, disable_for_loaddata, getLeadDirs, cacheable
 
@@ -205,41 +203,27 @@ class Lead(models.Model):
     @cacheable("Lead.__billed__%(id)s", 3)
     def billed(self):
         """Total amount billed for this lead"""
-        return list(self.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0
+        return list(self.clientbill_set.filter(state__in=("0_PROPOSED", "1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0
 
-    @cacheable("Lead.__still_to_be_billed__%(id)s", 3)
-    def still_to_be_billed(self):
+    def still_to_be_billed(self, include_current_month=True, include_fixed_price=True):
         """Amount that still need to be billed"""
         to_bill = 0
+        if include_current_month:
+            end = date.today()
+        else:
+            end = date.today().replace(day=1)
         for mission in self.mission_set.all():
-            if mission.billing_mode == "TIME_SPENT":
-                to_bill += float(mission.done_work()[1])
-            else:
+            if mission.billing_mode == "TIME_SPENT" or mission.billing_mode is None:
+                to_bill += float(mission.done_work_period(None, end)[1])
+            elif mission.billing_mode == "FIXED_PRICE" and include_fixed_price:
                 # TODO: sum as well subcontractor bills for fixed priced mission
                 if mission.price:
                     to_bill += float(mission.price * 1000)
         to_bill += float(list(self.expense_set.filter(chargeable=True).aggregate(Sum("amount")).values())[0] or 0)
         return to_bill - float(self.billed())
 
-    def actions(self):
-        """Returns actions for this lead and its missions"""
-        actionStates = ActionState.objects.filter(Q(target_id=self.id,
-                                                    target_type=ContentType.objects.get_for_model(self)) |
-                                                  Q(target_id__in=self.mission_set.values("id"),
-                                                    target_type=ContentType.objects.get(app_label="staffing", model="mission")))
-
-        return actionStates.select_related()
-
     def billing_control_data(self):
         return get_client_billing_control_pivotable_data(filter_on_lead=self)
-
-    def pending_actions(self):
-        """returns pending actions for this lead and its missions"""
-        return self.actions().filter(state="TO_BE_DONE")
-
-    def done_actions(self):
-        """returns done actions for this lead and its missions"""
-        return self.actions().exclude(state="TO_BE_DONE")
 
     def checkDeliveryDoc(self):
         """Ensure delivery doc are put on file server if lead is won and archived
@@ -298,38 +282,3 @@ class StateProba(models.Model):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE)
     state = models.CharField(_("State"), max_length=30, choices=Lead.STATES)
     score = models.IntegerField(_("Score"))
-
-
-# Signal handling to throw actionset and document tree creation
-@disable_for_loaddata
-def leadSignalHandler(sender, **kwargs):
-    """Signal handler for new/updated leads"""
-    lead = kwargs["instance"]
-    targetUser = None
-    client = lead.client
-    # If this was the last active mission of its client and not more active lead, flag client as inactive
-    if len(client.getActiveMissions()) == 0 and len(client.getActiveLeads().exclude(state="WON")) == 0:
-        client.active = False
-        client.save()
-    if lead.responsible:
-        targetUser = lead.responsible.get_user()
-    if not targetUser:
-        # Default to admin
-        targetUser = User.objects.filter(is_superuser=True)[0]
-
-    if kwargs.get("created", False):  # New Lead
-        launchTrigger("NEW_LEAD", [targetUser, ], lead)
-        createProjectTree(lead)
-        client.active = True
-        client.save()
-    if lead.state == "WON":
-        # Ensure actionset has not already be fired for this lead and this user
-        if not ActionState.objects.filter(user=targetUser,
-                                          target_id=lead.id,
-                                          target_type=ContentType.objects.get_for_model(Lead)
-                                          ).exists():
-            launchTrigger("WON_LEAD", [targetUser, ], lead)
-
-
-# Signal connection to throw actionset
-post_save.connect(leadSignalHandler, sender=Lead)

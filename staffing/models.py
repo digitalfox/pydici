@@ -10,9 +10,6 @@ from django.db.models import Sum, Min, Max, F, Q
 from django.db.models.functions import TruncMonth
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext, pgettext
-from django.db.models.signals import post_save
-from django.contrib.auth.models import User
-from django.contrib.admin.models import ContentType
 from django.urls import reverse
 
 from auditlog.models import AuditlogHistoryField
@@ -22,9 +19,8 @@ from datetime import datetime, date, timedelta
 from leads.models import Lead
 from people.models import Consultant
 from crm.models import MissionContact, Subsidiary
-from actionset.utils import launchTrigger
-from actionset.models import ActionState
-from core.utils import disable_for_loaddata, cacheable, nextMonth, get_parameter
+from core.utils import cacheable, nextMonth, get_parameter
+from people.tasks import compute_consultant_tasks
 
 
 class AnalyticCode(models.Model):
@@ -106,13 +102,33 @@ class Mission(models.Model):
                 return name
 
     def save(self, *args, **kwargs):
+        update_tasks = kwargs.pop("update_tasks", True)
         super(Mission, self).save(*args, **kwargs)
+        if not self.active:
+            # Mission is archived. Remove all staffing
+            if not self.archived_date:
+                self.archived_date = datetime.now()
+                self.save()
+
+            for staffing in self.staffing_set.all():
+                staffing.delete()
+            if self.lead:
+                # If this was the last active mission of its client and not more active lead, flag client as inactive
+                client = self.lead.client
+                if len(client.getActiveMissions()) == 0 and len(client.getActiveLeads().exclude(state="WON")) == 0:
+                    client.active = False
+                    client.save()
+
         # update lead price if needed
         if self.lead and self.lead.sales:
             all_mission_price = self.lead.mission_set.aggregate(Sum("price"))["price__sum"] or 0
             if all_mission_price > self.lead.sales:
                 self.lead.sales = all_mission_price
                 self.lead.save()
+
+        # update mission responsible tasks
+        if self.responsible and update_tasks:
+            compute_consultant_tasks.delay(self.responsible.id)
 
     def short_name(self):
         """Name with deal name, mission desc and id. No client name"""
@@ -213,8 +229,8 @@ class Mission(models.Model):
         return rates
 
     def defined_rates(self):
-        """@return: True if all rates are defined for consultants forecasted or that already consume time for this mission. Else False"""
-        return not bool([i[0] for i in self.consultant_rates().values()].count(0))
+        """:return: True if all rates are defined for consultants forecasted or that already consume time for this mission. Else False"""
+        return set(self.consultants()).issubset(set(Consultant.objects.filter(financialcondition__mission=self)))
 
     @cacheable("Mission.mission_id%(id)s", 120)
     def mission_id(self):
@@ -385,24 +401,6 @@ class Mission(models.Model):
                         result[consultant] += n_days * (consultant_rates[consultant][0] - objectiveRate.rate)
         return result
 
-    def actions(self):
-        """Returns actions for this mission and its lead"""
-        actionStates = ActionState.objects.filter(target_id=self.id,
-                                                 target_type=ContentType.objects.get_for_model(self))
-        if self.lead:
-            actionStates = actionStates | ActionState.objects.filter(target_id=self.lead.id,
-                                                                     target_type=ContentType.objects.get(app_label="leads", model="lead"))
-
-        return actionStates.select_related()
-
-    def pending_actions(self):
-        """returns pending actions for this mission and its lead"""
-        return self.actions().filter(state="TO_BE_DONE")
-
-    def done_actions(self):
-        """returns done actions for this mission and its lead"""
-        return self.actions().exclude(state="TO_BE_DONE")
-
     @cacheable("Mission.staffing_start_date%(id)s", 10)
     def staffing_start_date(self):
         """Starting date (=oldiest) staffing date of this mission. None if no staffing"""
@@ -535,49 +533,3 @@ class FinancialCondition(models.Model):
     class Meta:
         unique_together = (("consultant", "mission", "daily_rate"),)
         verbose_name = _("Financial condition")
-
-
-# Signal handling to throw actionset
-@disable_for_loaddata
-def missionSignalHandler(sender, **kwargs):
-    """Signal handler for new/updated missions"""
-    mission = kwargs["instance"]
-    targetUser = None
-    if mission.lead and mission.lead.responsible:
-        targetUser = mission.lead.responsible.get_user()
-    else:
-        # try to pick up one of staffee
-        for consultant in mission.consultants():
-            targetUser = consultant.get_user()
-            if targetUser:
-                break
-    if not targetUser:
-        # Default to admin
-        targetUser = User.objects.filter(is_superuser=True)[0]
-
-    if not mission.active:
-        # Mission is archived. Remove all staffing
-        if not mission.archived_date:
-            mission.archived_date = datetime.now()
-            mission.save()
-            if mission.lead and mission.lead.state == "WON":
-                launchTrigger("ARCHIVED_MISSION", [targetUser, ], mission)
-
-        for staffing in mission.staffing_set.all():
-            staffing.delete()
-        if mission.lead:
-            # If this was the last active mission of its client and not more active lead, flag client as inactive
-            client = mission.lead.client
-            if len(client.getActiveMissions()) == 0 and len(client.getActiveLeads().exclude(state="WON")) == 0:
-                client.active = False
-                client.save()
-    # Handle actionset stuff :
-    if not mission.nature == "PROD":
-        # Don't throw actions for non prod missions
-        return
-
-    if  kwargs.get("created", False):
-        launchTrigger("NEW_MISSION", [targetUser, ], mission)
-
-# Signal connection to throw actionset
-post_save.connect(missionSignalHandler, sender=Mission)

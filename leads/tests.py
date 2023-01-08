@@ -20,7 +20,9 @@ from staffing.models import Mission
 from crm.models import Subsidiary, BusinessBroker, Client
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
 from leads import learn as leads_learn
-from leads.utils import post_save_lead, getLeadDirs, connect_to_nextcloud_db
+from leads.utils import post_save_lead
+from leads.tasks import connect_to_nextcloud_db
+from core.utils import getLeadDirs
 
 from urllib.parse import urlsplit
 import os.path
@@ -29,6 +31,8 @@ from datetime import date, datetime
 from unittest.mock import patch, call
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(TELEGRAM_IS_ENABLED=False)
 class LeadModelTest(TestCase):
     fixtures = PYDICI_FIXTURES
 
@@ -79,20 +83,24 @@ class LeadModelTest(TestCase):
         self.assertEqual(lead.deal_id, "%s%s02" % deal_id)  # 01 is already used
 
     def test_save_lead_and_active_client(self):
+        request = create_fake_request()
         lead = Lead.objects.get(id=1)
         lead.state = "LOST"
         lead.save()
+        post_save_lead(request, lead, created=False, state_changed=True)
         lead = Lead.objects.get(id=1)
-        self.assertTrue(lead.client.active)  # There's still anotger active lead for this client
+        self.assertTrue(lead.client.active)  # There's still another active lead for this client
         otherLead = Lead.objects.get(id=3)
         otherLead.state = "SLEEPING"
         otherLead.save()
+        post_save_lead(request, otherLead, created=False, state_changed=True)
         lead = Lead.objects.get(id=1)
         self.assertFalse(lead.client.active)
         newLead = Lead()
         newLead.subsidiary_id = 1
         newLead.client = lead.client
         newLead.save()
+        post_save_lead(request, newLead, created=True, state_changed=True)
         lead = Lead.objects.get(id=1)
         self.assertTrue(lead.client.active)  # A new lead on this client should mark it as active again
 
@@ -113,7 +121,7 @@ class LeadModelTest(TestCase):
             lead.checkDeliveryDoc()
             lead.checkBusinessDoc()
 
-
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class LeadLearnTestCase(TestCase):
     """Test lead state proba learn"""
     fixtures = PYDICI_FIXTURES
@@ -149,29 +157,24 @@ class LeadLearnTestCase(TestCase):
             lead.tags.add("camembert")
         self.assertGreater(leads_learn.test_tag_model(), 0.8, "Probal is too low")
 
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+
     def test_too_few_lead(self):
-        f = RequestFactory()
-        request = f.get("/")
-        request.user = User.objects.get(id=1)
-        request.session = {}
-        request._messages = default_storage(request)
+        request = create_fake_request()
         lead = create_lead()
         post_save_lead(request, lead)  # Learn model cannot exist, but it should not raise error
 
     @patch("celery.app.task.Task.delay")
     def test_celery_jobs_are_called(self, mock_celery):
-        f = RequestFactory()
-        request = f.get("/")
-        request.user = User.objects.get(id=1)
-        request.session = {}
-        request._messages = default_storage(request)
+        request = create_fake_request()
         lead = create_lead()
-        post_save_lead(request, lead)
-        mock_celery.assert_has_calls([call(relearn=False, leads_id=[lead.id]), call(), call()])
+        post_save_lead(request, lead, created=True)
+        mock_celery.assert_has_calls([call(lead.id, from_addr=request.user.email, from_name="%s %s" % (request.user.first_name, request.user.last_name)),
+                                      call(lead.id, created=True, state_changed=False),
+                                      call(relearn=False, leads_id=[lead.id]),
+                                      call(relearn=True), call(relearn=True)])
 
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_mission_proba(self):
+        request = create_fake_request()
         for i in range(5):
             # Create enough data to allow learn model to exist
             a = create_lead()
@@ -180,11 +183,6 @@ class LeadLearnTestCase(TestCase):
         lead = Lead.objects.get(id=1)
         lead.state="LOST"  # Need more than one target class to build a solver
         lead.save()
-        f = RequestFactory()
-        request = f.get("/")
-        request.user = User.objects.get(id=1)
-        request.session = {}
-        request._messages = default_storage(request)
         lead = create_lead()
         lead.state = "OFFER_SENT"
         lead.save()
@@ -202,6 +200,7 @@ class LeadLearnTestCase(TestCase):
 
 
 @override_settings(NEXTCLOUD_DB_DATABASE="nextcloud_test")
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class LeadNextcloudTagTestCase(TestCase):
     """Test lead tag on nextcloud file"""
     fixtures = PYDICI_FIXTURES
@@ -259,7 +258,7 @@ class LeadNextcloudTagTestCase(TestCase):
     def test_tag_and_remove_tag_file(self):
         if not settings.NEXTCLOUD_TAG_IS_ENABLED:
             return
-        from leads.utils import connect_to_nextcloud_db, tag_leads_files, remove_lead_tag, merge_lead_tag, GET_TAG_ID
+        from leads.tasks import connect_to_nextcloud_db, tag_leads_files, remove_lead_tag, merge_lead_tag, GET_TAG_ID
         connection = None
         try:
             connection = connect_to_nextcloud_db()
@@ -502,3 +501,12 @@ def create_nextcloud_test_db():
     cursor.execute("""create database if not exists %s""" % settings.NEXTCLOUD_DB_DATABASE)
     cursor.close()
     connection.close()
+
+def create_fake_request(user_id=1, path="/"):
+    """Create fake request to """
+    f = RequestFactory()
+    request = f.get(path)
+    request.user = User.objects.get(id=user_id)
+    request.session = {}
+    request._messages = default_storage(request)
+    return request

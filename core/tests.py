@@ -6,7 +6,7 @@ Test cases
 """
 
 # Python/Django test modules
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import Group, User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
@@ -133,6 +133,7 @@ PYDICI_FIXTURES = ["auth.json", "people.json", "crm.json",
                 "leads.json", "staffing.json", "billing.json"]
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class SimpleTest(TestCase):
     fixtures = PYDICI_FIXTURES
 

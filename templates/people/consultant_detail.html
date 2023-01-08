@@ -34,18 +34,20 @@
         </div>
     </div>
 
-    {% if tasks %}
-    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-        <div class="pydici-block">
-            <h3 class="pydici-block-title">{% trans "Things to do right now !" %}</h3>
-            <ul class="icon-list">
-            {% for name, count, link, priority in tasks %}
-                <li class="task_priority_{{priority}} bi bi-check2-square"><a href="{{ link }}">{{ name }} {% if count > 1 %}(x{{ count }}){% endif %}</a></li>
-            {% endfor %}
-            </ul>
+    {% with tasks=consultant.get_tasks %}
+        {% if tasks %}
+        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+            <div class="pydici-block">
+                <h3 class="pydici-block-title">{% trans "Things to do right now !" %}</h3>
+                <ul class="icon-list">
+                {% for name, count, link, priority in tasks %}
+                    <li class="task_priority_{{priority}} bi bi-check2-square"><a href="{{ link }}">{{ name }} {% if count > 1 %}(x{{ count }}){% endif %}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
+    {% endwith %}
 
     <div class="col-lg-4 col-md-4 col-sm-6 col-12">
         <div class="pydici-block">
@@ -77,18 +79,6 @@
         </div>
     </div>
     {% endif %}
-
-
-    {% with consultant.pending_actions|slice:":20" as actions %}
-        {% if actions %}
-            <div class="col-md-4 col-sm-6 col-12">
-                <div class="pydici-block" id="consultant_actions">
-                    <h3 class="pydici-block-title">{% trans "Pending actions" %}</h3>
-                        {% include "actionset/_consultant_actions.html" %}
-                </div>
-            </div>
-        {% endif %}
-    {% endwith %}
 
 {% if business_territory %}
 

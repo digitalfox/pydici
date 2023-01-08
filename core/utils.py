@@ -16,7 +16,6 @@ import json
 from decimal import Decimal
 
 from django.template.defaultfilters import slugify
-from django.urls import reverse
 from django.core.cache import cache
 from django.db.models import Max, Min
 from django.conf import settings

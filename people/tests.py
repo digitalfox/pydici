@@ -37,6 +37,7 @@ class PeopleModelTest(TestCase):
         self.assertEqual(list(c.active_missions()), list(Mission.objects.filter(id=1)))
 
     def test_get_user(self):
+        cache.clear()  # avoid bad computation due to rates cache with previous values
         c = Consultant.objects.get(trigramme="SRE")
         u = User.objects.get(username="sre")
         self.assertEqual(c.get_user(), u)
@@ -56,9 +57,6 @@ class PeopleModelTest(TestCase):
         self.assertEqual(c.user_team(), team)
         self.assertEqual(c.user_team(exclude_self=False), team + [User.objects.get(username="sre"),])
 
-    def test_pending_action(self):
-        c = Consultant.objects.get(trigramme="SRE")
-        self.assertQuerysetEqual(c.pending_actions(), [])
 
     def test_turnover(self):
         current_month = previousMonth(date.today().replace(day=1))

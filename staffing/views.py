@@ -19,7 +19,6 @@ from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.forms import formset_factory
 from django.utils.translation import gettext as _
-from django.utils.encoding import force_text
 from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import TruncMonth
@@ -53,6 +52,7 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
 from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from people.utils import get_team_scopes
+from people.tasks import compute_consultant_tasks
 from crm.utils import get_subsidiary_from_session
 from people.utils import subcontractor_is_user
 
@@ -1532,6 +1532,8 @@ def mission_consultant_rate(request):
             change = {_(f"bought daily rate for {consultant}"): [condition.daily_rate, value]}
             condition.bought_daily_rate = value
         condition.save()
+        if mission.responsible:
+            compute_consultant_tasks.delay(mission.responsible.id)
         LogEntry.objects.log_create(instance=mission, actor=request.user, action=LogEntry.Action.UPDATE, changes=json.dumps(change))
 
         return HttpResponse(request.POST["value"])

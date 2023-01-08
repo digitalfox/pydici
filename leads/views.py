@@ -12,17 +12,16 @@ import os
 import codecs
 from collections import defaultdict, OrderedDict
 
-
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import gettext as _
-from django.utils.encoding import force_text
 from django.db.models import Sum, Count, Min, Q
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
-from django.db.models.query import QuerySet
+from django.contrib.contenttypes.models import ContentType
 from django.db.models.functions import TruncMonth
+from django.db import transaction
 from django.conf import settings
 
 from taggit.models import Tag, TaggedItem
@@ -32,10 +31,10 @@ from crm.utils import get_subsidiary_from_session
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import post_save_lead, leads_state_stat
-from leads.utils import tag_leads_files, remove_lead_tag, merge_lead_tag
+from leads.tasks import tag_leads_files, remove_lead_tag, merge_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
-from core.utils import capitalize, getLeadDirs, createProjectTree, compact_text, get_fiscal_years_from_qs, to_int_or_round
+from core.utils import capitalize, getLeadDirs, createProjectTree, get_fiscal_years_from_qs, to_int_or_round
 from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
 
@@ -116,14 +115,9 @@ def detail(request, lead_id):
 def lead(request, lead_id=None):
     """Lead creation or modification"""
     lead = None
-    state_changed = False
-    blacklist_fields = ["creation_date", "tags"]
-    max_length = 50
-    old_lead_description = ""
     try:
         if lead_id:
             lead = Lead.objects.get(id=lead_id)
-            old_lead_description = lead.description
     except Lead.DoesNotExist:
         pass
 
@@ -162,7 +156,7 @@ def lead_documents(request, lead_id):
     documents = []  # List of name/url docs grouped by type
     clientDir, leadDir, businessDir, inputDir, deliveryDir = getLeadDirs(lead)
     if clientDir is None:
-        # Documents mechanism is disabled. This view should never been called..
+        # Documents mechanism is disabled. This view should never be called.
         raise Http404
 
     lead_url_dir = settings.DOCUMENT_PROJECT_URL_DIR + leadDir[len(settings.DOCUMENT_PROJECT_PATH):]
@@ -311,21 +305,24 @@ def remove_tag(request, tag_id, lead_id):
 @pydici_non_public
 @pydici_feature("leads")
 @permission_required("leads.change_lead")
+@transaction.atomic
 def manage_tags(request):
     """Manage (rename, merge, remove) tags"""
     tags_to_merge = request.GET.get("tags_to_merge", None)
+    ct = ContentType.objects.get_for_model(Lead)
     if tags_to_merge:
         tags = []
         for tag_id in tags_to_merge.split(","):
             tags.append(Tag.objects.get(id=tag_id.split("-")[1]))
         if tags and len(tags) > 1:
             target_tag = tags[0]
+            object_ids = list(TaggedItem.objects.filter(tag__in=tags[1:]).values_list("object_id", flat=True))
             for tag in tags[1:]:
-                TaggedItem.objects.filter(tag=tag).update(tag=target_tag)
                 if settings.NEXTCLOUD_TAG_IS_ENABLED:
                     merge_lead_tag.delay(target_tag.name, tag.name)
                 tag.delete()
-
+            for object_id in object_ids:
+                TaggedItem.objects.update_or_create(content_type=ct, object_id=object_id, tag=target_tag)
     return render(request, "leads/manage_tags.html",
                   {"data_url": reverse('leads:tag_table_DT'),
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],

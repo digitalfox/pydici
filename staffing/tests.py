@@ -9,7 +9,7 @@ Test cases for staffing
 from unittest import mock
 from io import StringIO
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.cache import cache
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -45,6 +45,7 @@ class TimeStringConversionTest(TestCase):
             self.assertEquals(output_str, input_str)
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class StaffingModelTest(TestCase):
     fixtures = PYDICI_FIXTURES
 
@@ -82,6 +83,7 @@ class StaffingModelTest(TestCase):
         self.assertEqual(mission.staffing_set.count(), 0)
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class StaffingViewsTest(TestCase):
     fixtures = PYDICI_FIXTURES
 

@@ -21,7 +21,7 @@ from crm.utils import get_subsidiary_from_session
 from staffing.models import Holiday
 from core.decorator import pydici_non_public, pydici_subcontractor
 from core.utils import working_days, previousMonth, nextMonth, COLORS, user_has_feature
-from people.utils import compute_consultant_tasks, subcontractor_is_user
+from people.utils import subcontractor_is_user
 from crm.models import Subsidiary
 
 
@@ -59,10 +59,6 @@ def consultant_detail(request, consultant_id):
         missions = consultant.current_missions().filter(nature="PROD")
         # Identify staled missions that may need new staffing or archiving
         staled_missions = [m for m in missions if m.no_more_staffing_since()]
-        # Consultant clients and missions
-        business_territory = Company.objects.filter(businessOwner=consultant)
-        leads_as_responsible = set(consultant.lead_responsible.active())
-        leads_as_staffee = consultant.lead_set.active()
         # Timesheet donut data
         holidays = [h.day for h in Holiday.objects.all()]
         month_days = working_days(month, holidays, upToToday=False)
@@ -134,9 +130,9 @@ def consultant_detail(request, consultant_id):
                    "staff": staff,
                    "missions": missions,
                    "staled_missions": staled_missions,
-                   "business_territory": business_territory,
-                   "leads_as_responsible": leads_as_responsible,
-                   "leads_as_staffee": leads_as_staffee,
+                   "business_territory": Company.objects.filter(businessOwner=consultant),
+                   "leads_as_responsible": consultant.active_leads(),
+                   "leads_as_staffee": consultant.lead_set.active(),
                    "done_days": done_days,
                    "late": late,
                    "to_be_done": to_be_done,
@@ -153,7 +149,6 @@ def consultant_detail(request, consultant_id):
                    "forecasting_balance": forecasting_balance,
                    "month_turnover": monthTurnover,
                    "turnover_variation": turnoverVariation,
-                   "tasks": compute_consultant_tasks(consultant),
                    "user": request.user})
 
 
@@ -176,6 +171,15 @@ def subcontractor_detail(request, consultant_id):
                    "leads_as_staffee": leads_as_staffee,
                    "user": request.user})
 
+@pydici_non_public
+def consultants_tasks(request):
+    """display all active consultants tasks"""
+    consultants = Consultant.objects.filter(active=True, subcontractor=False)
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        consultants = consultants.filter(company=subsidiary)
+    return render(request, "people/consultants_tasks.html",
+                  {"consultants": consultants})
 
 @pydici_non_public
 @cache_page(60 * 60 * 24)

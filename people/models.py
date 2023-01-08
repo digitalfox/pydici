@@ -10,18 +10,19 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models import F, Sum
 from django.apps import apps
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
 from django.urls import reverse
+from django.core.cache import cache
 
 from datetime import date, timedelta
 
-from core.utils import capitalize, disable_for_loaddata, cacheable, previousMonth, working_days
+from core.utils import capitalize, cacheable, previousMonth, working_days
 from crm.models import Subsidiary, Supplier
-from actionset.models import ActionState
-from actionset.utils import launchTrigger
+from people.tasks import compute_consultant_tasks
+
 
 CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY = "Consultant.is_in_holidays%(id)s"
 TIMESHEET_IS_UP_TO_DATE_CACHE_KEY = "Consultant.timesheet_is_up_to_date%(id)s"
+CONSULTANT_TASKS_CACHE_KEY = "CONSULTANT_TASKS_%s"
 
 
 class ConsultantProfile(models.Model):
@@ -63,22 +64,27 @@ class Consultant(models.Model):
         self.trigramme = self.trigramme.upper()
         super(Consultant, self).save(*args, **kwargs)
 
+    def active_leads(self):
+        """:return: active leads whose consultant is responsible for"""
+        Lead = apps.get_model("leads", "Lead")  # Get Lead with get_model to avoid circular imports
+        return Lead.objects.active().filter(responsible=self)
+
     def active_missions(self):
-        """Returns consultant active missions based on forecast staffing"""
+        """:return: consultant active missions based on forecast staffing"""
         Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         return Mission.objects.filter(active=True).filter(staffing__consultant=self).distinct().select_related("lead__client__organisation__company")
 
     def responsible_missions(self):
-        """Returns consultant active missions whose she is responsible of"""
+        """:return: consultant active missions whose he is responsible for"""
         Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
         return Mission.objects.filter(active=True).filter(responsible=self).distinct().select_related("lead__client__organisation__company")
 
     def current_missions(self):
-        """Returns active and responsible missions"""
+        """:return: active and responsible missions"""
         return self.active_missions() | self.responsible_missions()
 
     def forecasted_missions(self, month=None):
-        """Returns consultant active missions on given month based on forecasted staffing
+        """:return: consultant active missions on given month based on forecasted staffing
         If month is not defined, current month is used"""
         Mission = apps.get_model("staffing", "Mission")  # Get Mission with get_model to avoid circular imports
 
@@ -208,10 +214,6 @@ class Consultant(models.Model):
         users = [c.get_user() for c in self.team(exclude_self=exclude_self, only_active=only_active, staffing=staffing, subsidiary=subsidiary)]
         return [u for u in users if u is not None]
 
-    def pending_actions(self):
-        """Returns pending actions"""
-        return ActionState.objects.filter(user=self.get_user(), state="TO_BE_DONE").select_related().prefetch_related("target")
-
     def done_days(self):
         """Returns numbers of days worked up to today (according his timesheet) for current month"""
         from staffing.models import Timesheet  # Do that here to avoid circular imports
@@ -273,6 +275,16 @@ class Consultant(models.Model):
             result.append(wd - td)
         return result
 
+    def get_tasks(self):
+        """gather all tasks consultant should do
+        :return: list of (task_name, count, link, priority(1-3))"""
+        tasks = cache.get(CONSULTANT_TASKS_CACHE_KEY % self.id)
+        if tasks is not None:
+            return tasks
+        else:
+            # we should never have a cache miss on that on normal production mode. Just in case, compute it synchronously
+            return compute_consultant_tasks(self.id)
+
 
 class RateObjective(models.Model):
     """Consultant rates objective
@@ -307,28 +319,3 @@ class SalesMan(models.Model):
         ordering = ["name", ]
         verbose_name = _("Salesman")
         verbose_name_plural = _("Salesmen")
-
-
-# Signal handling to throw actionset
-# noinspection PyUnusedLocal
-@disable_for_loaddata
-def consultant_signal_handler(sender, **kwargs):
-    """Signal handler for new consultant"""
-
-    if not kwargs.get("created", False):
-        return
-
-    consultant = kwargs["instance"]
-    targetUser = None
-    if consultant.manager:
-        targetUser = consultant.manager.get_user()
-
-    if not targetUser:
-        # Default to admin
-        targetUser = User.objects.filter(is_superuser=True)[0]
-
-    launchTrigger("NEW_CONSULTANT", [targetUser, ], consultant)
-
-
-# Signal connection to throw actionset
-post_save.connect(consultant_signal_handler, sender=Consultant)

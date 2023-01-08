@@ -30,6 +30,7 @@ from crm.models import Supplier
 from billing.utils import compute_bill, get_bill_id_from_path
 from core.utils import sanitizeName, nextMonth
 from core.models import CLIENT_BILL_LANG
+from people.tasks import compute_consultant_tasks
 
 
 # Custom storage that hook static url to custom view
@@ -140,6 +141,9 @@ class AbstractBill(models.Model):
 
     def save(self, *args, **kwargs):
         super(AbstractBill, self).save(*args, **kwargs)  # Save it
+        if self.lead.responsible:
+            compute_consultant_tasks.delay(self.lead.responsible.id)
+
         if self.bill_file:
             bill_id = get_bill_id_from_path(self.bill_file.name)
             if bill_id == "None":
