@@ -91,7 +91,7 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
             for log in lead.history.filter(timestamp__gt=datetime.now()-timedelta(1/24)):
                 for key, value in log.changes_display_dict.items():
                     if audit_log_is_real_change(value) and len(value) == 2:
-                        change += f"{key}: {value[0]} → {value[1]} ({log.actor})\n"
+                        change += f"{key}: {value[0]} → {value[1]} ({log.actor})\n".replace("None", "-")
                 for key, value in log.changes_dict.items(): # Second loop for m2m
                     if len(value) == 3: # m2m changes
                         change += f"{key}: {pgettext('noun', value['operation'])} {', '.join(value['objects'])}\n"
