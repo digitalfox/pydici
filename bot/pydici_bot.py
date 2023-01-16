@@ -210,10 +210,10 @@ def alert_consultant(context):
     if cache.get(cache_key):
         # don't persecute people :-)
         return
-    cache.set(cache_key, 1, 3600*12)  # Keep track 12 hours that this user has been alerted
 
     tasks = consultant.get_tasks()
     if tasks:
+        cache.set(cache_key, 1, 3600 * 12)  # Keep track 12 hours that this user has been alerted
         task_name, task_count, task_link, task_priority = random.choice(tasks)
         url = get_parameter("HOST") + task_link
         msg = _("Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n%(link)s") % {"task_name": task_name,
