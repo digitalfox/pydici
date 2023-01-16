@@ -43,6 +43,7 @@ TELEGRAM_STICKERS = {
                         "happy": "BQADBAADQAADyIsGAAGMQCvHaYLU_AI",
                         "sad": "BQADBAADFQADyIsGAAEO_vKI0MR5bAI",
                     }
+TELEGRAM_CHAT_MANAGER_LEVEL = 4  # Every people with level < to his will be notified individually if concerned
 
 # Nextcloud document tag integration
 
