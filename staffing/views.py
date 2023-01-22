@@ -648,8 +648,7 @@ def prod_report(request, year=None, month=None):
                     status = all_status["ko_but_daily_rate"]
                 else:
                     status = all_status["ko"]
-            tooltip = tooltip_template.render({"daily_rate": daily_rate, "daily_rate_obj": daily_rate_obj, "prod_rate": prod_rate * 100, "prod_rate_obj": prod_rate_obj * 100})
-            consultant_data.append([status, tooltip, [formats.number_format(int(turnover)), formats.number_format(int(forecast))]]) # For each month : [status, [turnover, forceast ]]
+
             total_done[month] += turnover
             total_forecasted[month] += forecast
             if consultant_days.get("PROD", 0) > 0:
@@ -663,6 +662,13 @@ def prod_report(request, year=None, month=None):
             delta_missing_data[month] += consultant_missing_data
             delta_daily_rate[month] += consultant_delta_daily_rate
             delta_prod_rate[month] += consultant_delta_prod_rate
+            tooltip = tooltip_template.render({"daily_rate": daily_rate, "daily_rate_obj": daily_rate_obj,
+                                               "prod_rate": prod_rate * 100, "prod_rate_obj": prod_rate_obj * 100,
+                                               "prod_rate_delta": int(consultant_delta_prod_rate),
+                                               "daily_rate_delta": int(consultant_delta_daily_rate)})
+            # For each month : [status, [turnover, forecast ]]
+            consultant_data.append([status, tooltip, [formats.number_format(int(turnover)),
+                                                      formats.number_format(int(forecast))]])
 
         data.append([consultant, consultant_data])
 
