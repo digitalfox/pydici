@@ -83,6 +83,15 @@
             {% endfor %}
         </tr>
     {% endfor %}
+    <tr><td></td></tr><tr><td></td></tr>
+    {% for title, charges in delta_data %}
+        <tr class="text-end" style="font-weight: bold">
+            <td style="text-align:left">{{ title }}</td>
+            {% for status, tooltip, charge in charges %}
+                <td style="background-color:{{ status }}; border-left:1px solid #C3C3C3;"><span class="pydici-tooltip" title="{{ tooltip }}">{{ charge|join:"</span></td><td>" }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
     </table>
     </div>
     </div>
