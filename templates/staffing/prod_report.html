@@ -99,6 +99,59 @@
 
 <div class="row">
     <div class="col-lg-12">
+        <h2>{% trans "Production rates and daily rates delta" %}</h2>
+
+        <div id="graph_production_delta"></div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+                chart_company_sales_{{ only_last_year|safe }} = c3.generate({
+                    bindto: '#graph_production_delta',
+                    data: {
+                        x: 'x',
+                        columns:  {{ graph_data|safe }},
+                        names: {
+                            'prod_rate_delta': '{% trans "Prod rate delta" %}',
+                            'daily_rate_delta': '{% trans "Daily rate delta" %}',
+                            'objective_delta': '{% trans "Objective delta" %}'
+                        },
+                        colors: {
+                            'prod_rate_delta': '#1f77b4',
+                            'daily_rate_delta': '#2ca02c',
+                            'objective_delta': '#d62728'
+                        },
+                        type: 'bar',
+                        groups: [['prod_rate_delta', 'daily_rate_delta']],
+                        types: {
+                            'objective_delta': 'spline'
+                        },
+                    },
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: { format: '%Y-%m-%d' }
+                        },
+                        y: {
+                            label : {
+                                text: '{% trans "Objective delta (€)" %}',
+                                position: 'outer-middle',
+                            },
+                        },
+                    },
+                    grid: {
+                        y: {
+                            lines: [{value:0}]
+                        }
+                    },
+                });
+        }); // End of ready()
+        </script>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
         <h2>{% trans "Production rates and daily rates review" %}</h2>
         
         <div id="graph_timesheet_rates_bar_content"></div>

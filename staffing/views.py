@@ -701,6 +701,13 @@ def prod_report(request, year=None, month=None):
         missing_line_data.append([status, "", [formats.number_format(missing_data), "-"]])
     delta_data.append([_("Missing timesheet"), missing_line_data])
 
+    # Prepare graph data
+    graph_data = [["x"] + [m.isoformat() for m in months],
+                  ["prod_rate_delta"] + [int(i) for i in delta_prod_rate.values()],
+                  ["daily_rate_delta"] + [int(i) for i in delta_daily_rate.values()],
+                  ["objective_delta"] + [int(i+j) for i, j in zip(delta_daily_rate.values(), delta_prod_rate.values())],
+                  ]
+
     # Get team scopes
     scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
     if team:
@@ -711,6 +718,7 @@ def prod_report(request, year=None, month=None):
     return render(request, "staffing/prod_report.html",
                   {"data": data,
                    "delta_data": delta_data,
+                   "graph_data": graph_data,
                    "months": months,
                    "end_date": end_date,
                    "previous_slice_date": previous_slice_date,
