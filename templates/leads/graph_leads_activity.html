@@ -1,5 +1,5 @@
 {# Fragment that display leads activity stats graph to be included with a jquery load #}
-{# One must include in its extrajs block core/_c3.html to load according js/css #}
+{# One must include in its extrajs block core/_billboard.html to load according js/css #}
 {% load i18n %}
 {% load l10n %}
 
@@ -14,7 +14,7 @@
                 <script type="text/javascript">
                     $(document).ready(function() {
                         // Display new lead activity
-                            c3.generate({
+                            bb.generate({
                                 bindto: '#leads_activity',
                                 data: {
                                     columns: {{ lead_creation_rate_data | safe }},
@@ -22,6 +22,7 @@
                                 },
                                 gauge: {
                                     units: "",
+                                    type: "multi",
                                     label: {
                                         format: function (value) { return value; },
                                         },
@@ -38,7 +39,7 @@
                 <script type="text/javascript">
                     $(document).ready(function() {
                         // Display new lead activity
-                            c3.generate({
+                            bb.generate({
                                 bindto: '#leads_duration',
                                 data: {
                                     columns: {{ leads_duration_data | safe }},

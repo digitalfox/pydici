@@ -5,7 +5,7 @@
 <div id="people_count_graph"></div>
 <script type="text/javascript">
 
-    var chart = c3.generate({
+    var chart = bb.generate({
     bindto: '#people_count_graph',
     data: {
          columns: {{ graph_data | safe }},

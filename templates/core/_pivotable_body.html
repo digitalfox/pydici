@@ -6,7 +6,7 @@
  var lang = {% if LANGUAGE_CODE == "fr-fr" %}'fr'{% else %}'en'{% endif %};
 
  function drawPivot(data, rows, cols, rendererName, aggregatorName, vals, options) {
-     var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.c3_renderers, $.pivotUtilities.export_renderers);
+     var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.plotly_renderers, $.pivotUtilities.export_renderers);
      if (typeof options == "undefined") { var options = {}; }
      $("#pivotable-output").pivotUI(
          data,

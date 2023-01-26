@@ -1,10 +1,10 @@
 {# Fragment that display won rate graph to be included with a jquery load #}
-{# One must include in its extrajs block core/_c3.html to load according js/css #} {% load i18n %}
+{# One must include in its extrajs block core/_billboard.html to load according js/css #} {% load i18n %}
 
 {% if graph_data %}
 <div id="won_rate_graph"></div>
     <script type="text/javascript">
-        var chart = c3.generate({
+        var chart = bb.generate({
         bindto: '#won_rate_graph',
         data: {
              x: "x",

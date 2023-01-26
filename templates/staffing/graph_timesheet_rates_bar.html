@@ -5,7 +5,7 @@
 <div id="timesheet_rates_graph"></div>
 <script type="text/javascript">
 
-    var chart = c3.generate({
+    var chart = bb.generate({
     bindto: '#timesheet_rates_graph',
     data: {
          columns: {{ graph_data | safe }},

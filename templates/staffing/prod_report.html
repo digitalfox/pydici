@@ -4,7 +4,7 @@
 
 {% block extrajs %}
     {% include "core/_jqplot.html" %}
-    {% include "core/_c3.html" %}
+    {% include "core/_billboard.html" %}
 {% endblock %}
 
 {% block title %}{% trans "Production report" %}{% endblock %}
@@ -105,7 +105,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
 
-                chart_company_sales_{{ only_last_year|safe }} = c3.generate({
+                chart_company_sales_{{ only_last_year|safe }} = bb.generate({
                     bindto: '#graph_production_delta',
                     data: {
                         x: 'x',

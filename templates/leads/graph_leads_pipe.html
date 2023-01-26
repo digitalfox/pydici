@@ -1,12 +1,12 @@
 {# Fragment that display leads pipe graph to be included with a jquery load #}
-{# One must include in its extrajs block core/_c3.html to load according js/css #}
+{# One must include in its extrajs block core/_billboard.html to load according js/css #}
 {% load i18n %}
 {% load l10n %}
 
 {% if graph_data %}
 <div id="leads_pipe_graph"></div>
     <script type="text/javascript">
-        var chart = c3.generate({
+        var chart = bb.generate({
         bindto: '#leads_pipe_graph',
         data: {
              x: "x",

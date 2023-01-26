@@ -1,11 +1,11 @@
 {# Fragment that display leads stat/bar graph to be included with a jquery load #}
-{# One must include in its extrajs block core/_c3.html to load according js/css #} {% load i18n %}
+{# One must include in its extrajs block core/_billboard.html to load according js/css #} {% load i18n %}
 
 <div id="company_business_activity_graph"></div>
 
 
 <script type="text/javascript">
-    var company_business_activity_graph = c3.generate({
+    var company_business_activity_graph = bb.generate({
     bindto: '#company_business_activity_graph',
     data: {
          xs: {

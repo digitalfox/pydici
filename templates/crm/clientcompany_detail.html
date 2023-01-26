@@ -5,7 +5,7 @@
 
 {% block extrajs %}
     {% include "core/_jqplot.html" %}
-    {% include "core/_c3.html" %}
+    {% include "core/_billboard.html" %}
     {% include "core/_pivotable_header.html" %}
 {% endblock %}
 
@@ -150,7 +150,7 @@
                 <script type="text/javascript">
                     $(document).ready(function() {
                         // Display gauge of lead won rate
-                            var chart_leads_won_rate = c3.generate({
+                            var chart_leads_won_rate = bb.generate({
                                 bindto: '#leads_won_rate',
                                 data: {
                                     columns: [["{% trans 'Won rate' context 'short' %}", {{ won_rate|unlocalize }}]],
@@ -173,7 +173,7 @@
                 <script type="text/javascript">
                 $(document).ready(function() {
                     // Display donnut of bills statistics
-                        var chart_leads_stat = c3.generate({
+                        var chart_leads_stat = bb.generate({
                             bindto: '#bills_stat',
                             data: {
                                 columns: {{ bills_stat | safe }},
@@ -200,7 +200,7 @@
                 <script type="text/javascript">
                 $(document).ready(function() {
                     // Display donnut of supplier billing proportion
-                        var chart_supplier_stat = c3.generate({
+                        var chart_supplier_stat = bb.generate({
                             bindto: '#supplier_stat',
                             data: {
                                 columns: [['{% trans "Direct billing and supplier margin" %}', {{ direct_sales|unlocalize }}],

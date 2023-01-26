@@ -94,7 +94,7 @@ def post_save_lead(request, lead, created=False, state_changed=False):
 
 
 def leads_state_stat(leads):
-    """Compute leads statistics in compatible C3.js format"""
+    """Compute leads statistics in compatible billboard.js format"""
     states = dict(Lead.STATES)
     leads_stat = leads.values("state").order_by("state").annotate(count=Count("state"))
     leads_stat = [[mark_safe(states[s['state']]), s['count']] for s in leads_stat]  # Use state label
