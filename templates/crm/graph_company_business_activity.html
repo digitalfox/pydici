@@ -3,6 +3,7 @@
 
 <div id="company_business_activity_graph"></div>
 
+{% if graph_data %}
 
 <script type="text/javascript">
     var company_business_activity_graph = bb.generate({
@@ -70,3 +71,5 @@
     },
   });
 </script>
+
+{% endif %}

@@ -146,6 +146,7 @@
             <div class="col-lg-3 col-md-6 col-sm-6 align-self-center">
                 <div id="leads_won_rate"></div>
                 <p>&nbsp;</p>
+                {% if won_rate %}
                 <h5><div class="text-center">{% trans "Overall won lead rate: " %}{{ overall_won_rate|floatformat:-1 }}&nbsp;%</div></h5>
                 <script type="text/javascript">
                     $(document).ready(function() {
@@ -166,10 +167,12 @@
                             });
                     });
                     </script>
+                {% endif %}
             </div>
             {% if bills_stat_count %}
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div id="bills_stat"></div>
+
                 <script type="text/javascript">
                 $(document).ready(function() {
                     // Display donnut of bills statistics
@@ -196,6 +199,7 @@
                 </script>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6">
+                {% if direct_sales and supplier_billing %}
                 <div id="supplier_stat"></div>
                 <script type="text/javascript">
                 $(document).ready(function() {
@@ -222,6 +226,7 @@
                         });
                 });
                 </script>
+                {% endif %}
             </div>
             {% endif %}
         </div> <!-- end of second dashabord row -->

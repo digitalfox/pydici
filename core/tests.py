@@ -10,6 +10,7 @@ from django.test import TestCase, override_settings
 from django.contrib.auth.models import Group, User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
+from django.core.cache import cache
 
 
 # Pydici modules

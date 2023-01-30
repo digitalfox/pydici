@@ -553,10 +553,14 @@ def graph_leads_activity(request):
         leads_duration[lead.creation_date.date().replace(day=1)].append(duration)
 
     leads_duration_per_month = to_int_or_round([sum(i) / len(i) for i in sortedValues(leads_duration)], 1)
-    leads_duration_data = [["x"] + [d.isoformat() for d in sorted(leads_duration.keys())],
-                           [_("duration")] + leads_duration_per_month,
-                           [_("average duration 6 months")] + moving_average(leads_duration_per_month, 6,
-                                                                             round_digits=1)]
+    if leads_duration:
+        leads_duration_data = [["x"] + [d.isoformat() for d in sorted(leads_duration.keys())],
+                               [_("duration")] + leads_duration_per_month,
+                               [_("average duration 6 months")] + moving_average(leads_duration_per_month, 6,
+                                                                                 round_digits=1)]
+    else:
+        leads_duration_data = []
+
 
     return render(request, "leads/graph_leads_activity.html",
                   {"leads_state_data": leads_state_data,

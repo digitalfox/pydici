@@ -4,6 +4,7 @@
 
 <div class="col-lg-3 col-sm-6 col-12">
     <div id="leads_stat"></div>
+    {% if data %}
     <script type="text/javascript">
     $(document).ready(function() {
         // Display donnut of lead statistics
@@ -28,4 +29,5 @@
             });
     });
     </script>
+    {% endif %}
 </div>
