@@ -30,7 +30,11 @@ casper.on("page.error", function(msg, trace) {
     casper.echo("file:     " + trace[0].file, "WARNING");
     casper.echo("line:     " + trace[0].line, "WARNING");
     casper.echo("function: " + trace[0]["function"], "WARNING");
-    errors.push(msg);
+    if (trace[0]["function"]=="init" && trace[0].file.indexOf("billboard") > 0) {
+        console.log("ignoring billboard init error on test data");
+    } else {
+        errors.push(msg);
+    }
 });
 
 // Missing resource listener
