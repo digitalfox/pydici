@@ -37,6 +37,7 @@ from leads.learn import predict_tags, predict_similar
 from core.utils import capitalize, getLeadDirs, createProjectTree, get_fiscal_years_from_qs, to_int_or_round
 from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
+from people.tasks import compute_consultant_tasks
 
 
 @pydici_non_public
@@ -272,6 +273,7 @@ def add_tag(request):
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state.delay(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity.delay()  # update lead similarity model in background
+        compute_consultant_tasks.delay(lead.responsible.id)  # update consultants tasks in background
         if settings.NEXTCLOUD_TAG_IS_ENABLED:
             tag_leads_files.delay([lead.id])  # Update lead tags from lead files
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
