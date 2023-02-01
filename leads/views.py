@@ -430,7 +430,7 @@ def graph_leads_won_rate(request):
         graph_data.append(["won-rate-MA180"] + moving_average(won_rate, 6, round_digits=2))
 
     return render(request, "leads/graph_won_rate.html",
-              {"graph_data": json.dumps(graph_data),
+              {"graph_data": json.dumps(graph_data) if graph_data else None,
                "series_colors": COLORS,
                "user": request.user})
 
@@ -569,7 +569,7 @@ def graph_leads_activity(request):
                    "leads_state_title": _("%s leads in progress") % len(current_leads),
                    "lead_creation_rate_data": json.dumps(lead_creation_rate_data),
                    "max_creation_rate": max_creation_rate,
-                   "leads_duration_data": json.dumps(leads_duration_data),
+                   "leads_duration_data": json.dumps(leads_duration_data) if leads_duration_data else None,
                    "user": request.user})
 
 

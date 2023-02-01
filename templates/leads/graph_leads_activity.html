@@ -7,7 +7,7 @@
         {% with data=leads_state_data title=leads_state_title %}
             {% include "crm/__leads_state_donut.html" %}
         {% endwith %}
-
+        {% if max_creation_rate > 0 %}
         <div class="col-lg-3 col-sm-6 col-12 align-self-center">
                 <div id="leads_activity" class="mt-2"></div>
                 <h5 class="mt-2"><div class="text-center">{% trans "New leads per week" %}</div></h5>
@@ -33,7 +33,8 @@
                     });
                 </script>
         </div>
-    {% if leads_duration_data %}
+        {% endif %}
+        {% if leads_duration_data %}
         <div class="col-lg-6 col-12">
                 <div id="leads_duration"></div>
                 <script type="text/javascript">
@@ -75,5 +76,5 @@
                     });
                 </script>
         </div>
-     {% endif %}
+        {% endif %}
     </div> {# end of row #}
