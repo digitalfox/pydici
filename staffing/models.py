@@ -66,6 +66,7 @@ class Mission(models.Model):
             ('TIME_SPENT',  gettext("Time spent")))
     MANAGEMENT_MODES = (
         ('LIMITED',  gettext("Limited")),
+        ('LIMITED_INDIVIDUAL', gettext("Limited individual")),
         ('ELASTIC',  gettext("Elastic")),
         ('NONE', pgettext("masculine", "None")))
     lead = models.ForeignKey(Lead, null=True, blank=True, verbose_name=_("Lead"), on_delete=models.CASCADE)

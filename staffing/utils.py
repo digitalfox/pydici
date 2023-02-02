@@ -11,11 +11,12 @@ from datetime import date, datetime
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Sum
 from django.utils.translation import gettext as _
 from django.utils import formats
 from django.core.cache import cache
 
-from staffing.models import Timesheet, Mission, LunchTicket, Holiday
+from staffing.models import Timesheet, Mission, LunchTicket, Holiday, Staffing
 from core.utils import month_days, nextMonth, daysOfMonth, to_int_or_round
 from people.models import TIMESHEET_IS_UP_TO_DATE_CACHE_KEY, CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY
 
@@ -337,13 +338,34 @@ def create_next_year_std_missions(current, target, dryrun=True, start_date=None,
 
 
 def check_missions_limited_mode(missions):
-    """Ensure that after a timesheet update we don't violate management mode policy
+    """Ensure that after a timesheet update we don't violate limited management mode policy
     :return list of missions that do not conform to policy"""
     offending_missions = []
     for mission in missions:
         if mission.management_mode == "LIMITED":
             if mission.remaining(mode="current") < 0:
                 offending_missions.append(mission)
+    return offending_missions
+
+
+def check_missions_limited_individual_mode(missions, consultant, month):
+    """Ensure that after a timesheet update for this consultant on this month we don't violate individual limited management mode policy
+    :return list of missions that do not conform to policy"""
+    offending_missions = []
+    for mission in missions:
+        if mission.management_mode == "LIMITED_INDIVIDUAL":
+            try:
+                timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
+                                                     working_date__gte=month, working_date__lt=nextMonth(month))
+                timesheet = timesheet.aggregate(Sum("charge")).get("charge__sum", 0)
+                forecast = Staffing.objects.get(mission=mission, consultant=consultant, staffing_date=month).charge
+                print(timesheet)
+                print(forecast)
+
+                if forecast < timesheet:
+                    offending_missions.append(mission)
+            except (Staffing.DoesNotExist, Timesheet.DoesNotExist):
+                pass
     return offending_missions
 
 

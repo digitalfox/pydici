@@ -48,7 +48,8 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, pydici_subcontractor
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, \
-    timesheet_report_data, timesheet_report_data_grouped, check_missions_limited_mode, check_missions_min_charge
+    timesheet_report_data, timesheet_report_data_grouped, check_missions_limited_mode, check_missions_min_charge, \
+    check_missions_limited_individual_mode
 from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from people.utils import get_team_scopes
@@ -854,6 +855,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                 # Process the data in form.cleaned_data
                 saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
                 limited_mode_offending_missions = check_missions_limited_mode(missions)
+                limited_individual_mode_offending_missions = check_missions_limited_individual_mode(missions, consultant, month)
                 min_charge_offending_missions = check_missions_min_charge(missions, month)
                 # Rollback timesheet update if any mission don't pass checks
                 if limited_mode_offending_missions:
@@ -865,6 +867,10 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                     transaction.savepoint_rollback(sid)
                     management_mode_error = _("Charge cannot be below minimum threshold  (%s)") % ", ".join(
                         [f"{m} : {m.min_charge_per_day} " for m in min_charge_offending_missions])
+                elif limited_individual_mode_offending_missions:
+                    transaction.savepoint_rollback(sid)
+                    management_mode_error = _("Charge cannot exceed forecast (%s)") % ", ".join(
+                        [str(m) for m in limited_individual_mode_offending_missions])
                 else:  # No violation, we can commit timesheet
                     transaction.savepoint_commit(sid)
                 # Recreate a new form for next update and compute again totals
@@ -892,7 +898,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
             cache.delete("Mission.forecasted_work%s" % mission.id)
             cache.delete("Mission.done_work%s" % mission.id)
             if mission.management_mode == "ELASTIC":
-                # Ajust mission and lead price according to done work if needed
+                # Adjust mission and lead price according to done work if needed
                 m_days, m_amount = mission.done_work_k()
                 if not mission.price:
                     mission.price = 0  # default to 0 if not defined in elastic mode
