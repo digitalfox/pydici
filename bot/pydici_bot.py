@@ -243,8 +243,9 @@ def help(update, context):
     if consultant is None:
         return ConversationHandler.END
     msg = _("""Hello. I am just a bot you know. So I won't fake doing incredible things. Here's what can I do for you:
-    /hello nice way to meet. After this cordial introduction, I may talk to you from time to time to remind you importants things to do
+    /hello nice way to meet. After this cordial introduction, I may talk to you from time to time to remind you important things to do
     /time a fun and easy way to declare your timesheet of the day
+    /bye you will never be bothered again till you say /hello again
     """)
 
     update.message.reply_text(msg)
@@ -271,6 +272,24 @@ def hello(update, context):
     return ConversationHandler.END
 
 
+def bye(update, context):
+    """Allow to erase consultant telegram id"""
+    close_old_connections()
+    consultant = check_user_is_declared(update, context)
+    if consultant is None:
+        return ConversationHandler.END
+
+    user = update.message.from_user
+
+    if consultant.telegram_id:
+        update.message.reply_text(_("I am so sad you leave me so early... Whenever you want to come back, just say /hello and we will be happy together again !"))
+        consultant.telegram_id = None
+        consultant.save()
+    else:
+        update.message.reply_text(_("Do we met ?"))
+
+    return ConversationHandler.END
+
 def main():
     token = os.environ.get("TELEGRAM_TOKEN", settings.TELEGRAM_TOKEN)
     updater = Updater(token, use_context=True)
@@ -280,6 +299,7 @@ def main():
         entry_points=[CommandHandler('time', declare_time),
                       CommandHandler("hello", hello),
                       CommandHandler("start", hello),
+                      CommandHandler("bye", bye),
                       CommandHandler("help", help)],
         states={  # used for timesheet session only
             MISSION_SELECT: [
