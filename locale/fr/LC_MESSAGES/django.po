@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-02 11:53+0100\n"
-"PO-Revision-Date: 2023-02-02 11:53+0100\n"
+"POT-Creation-Date: 2023-02-08 22:46+0100\n"
+"PO-Revision-Date: 2023-02-08 22:46+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -705,12 +705,21 @@ msgstr ""
 "pointage non ? Clique simplement sur /time"
 
 #: bot/pydici_bot.py:245
+#, fuzzy
+#| msgid ""
+#| "Hello. I am just a bot you know. So I won't fake doing incredible things. "
+#| "Here's what can I do for you:\n"
+#| "    /hello nice way to meet. After this cordial introduction, I may talk "
+#| "to you from time to time to remind you importants things to do\n"
+#| "    /time a fun and easy way to declare your timesheet of the day\n"
+#| "    "
 msgid ""
 "Hello. I am just a bot you know. So I won't fake doing incredible things. "
 "Here's what can I do for you:\n"
 "    /hello nice way to meet. After this cordial introduction, I may talk to "
-"you from time to time to remind you importants things to do\n"
+"you from time to time to remind you important things to do\n"
 "    /time a fun and easy way to declare your timesheet of the day\n"
+"    /bye you will never be bothered again till you say /hello again\n"
 "    "
 msgstr ""
 "Salut ! Je suis un simple robot tu sais, alors je ne vais pas te faire "
@@ -722,13 +731,25 @@ msgstr ""
 "    /time une manière simple et amusante de faire son pointage du jour\n"
 "    "
 
-#: bot/pydici_bot.py:265
+#: bot/pydici_bot.py:266
 msgid "very happy to see you again !"
 msgstr "Ça fait plaisir de se revoir !"
 
-#: bot/pydici_bot.py:269
+#: bot/pydici_bot.py:270
 msgid "I very pleased to meet you !"
 msgstr "Très heureux de faire ta connaissance !"
+
+#: bot/pydici_bot.py:285
+msgid ""
+"I am so sad you leave me so early... Whenever you want to come back, just "
+"say /hello and we will be happy together again !"
+msgstr ""
+"Je suis vraiment désolé que l'on se quitte si tôt... Si tu veux revenir, dis "
+"juste /hello et nous serons de nouveau heureux ensemble !"
+
+#: bot/pydici_bot.py:289
+msgid "Do we met ?"
+msgstr "On s'est déjà vu ?"
 
 #: core/forms.py:53 expense/forms.py:68 staffing/forms.py:207
 #: templates/billing/client_bill_form.html:29
