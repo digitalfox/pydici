@@ -357,10 +357,8 @@ def check_missions_limited_individual_mode(missions, consultant, month):
             try:
                 timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
                                                      working_date__gte=month, working_date__lt=nextMonth(month))
-                timesheet = timesheet.aggregate(Sum("charge")).get("charge__sum", 0)
+                timesheet = timesheet.aggregate(Sum("charge")).get("charge__sum", 0) or 0
                 forecast = Staffing.objects.get(mission=mission, consultant=consultant, staffing_date=month).charge
-                print(timesheet)
-                print(forecast)
 
                 if forecast < timesheet:
                     offending_missions.append(mission)
