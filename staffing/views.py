@@ -1582,7 +1582,7 @@ def mission_consultant_rate(request):
         consultant = Consultant.objects.get(id=consultant_id)
         condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
                                                                       defaults={"daily_rate": 0})
-        value = request.POST["value"].replace(" ", "")
+        value = escape(request.POST["value"].replace(" ", ""))
         if sold == "sold":
             change = {_(f"daily rate for {consultant}"): [condition.daily_rate, value]}
             condition.daily_rate = value
@@ -1594,7 +1594,7 @@ def mission_consultant_rate(request):
             compute_consultant_tasks.delay(mission.responsible.id)
         LogEntry.objects.log_create(instance=mission, actor=request.user, action=LogEntry.Action.UPDATE, changes=json.dumps(change))
 
-        return HttpResponse(request.POST["value"])
+        return HttpResponse(value)
     except (Mission.DoesNotExist, Consultant.DoesNotExist):
         return HttpResponse(_("Mission or consultant does not exist"))
     except ValueError:
