@@ -151,7 +151,7 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
 
 
 class MissionStaffingInlineFormset(BaseInlineFormSet):
-    """Custom inline formset used to override fields"""
+    """Custom inline formset used to override fields and filter on time window"""
     def __init__(self, *args, **kwargs):
         kwargs["queryset"] = Staffing.objects.filter(staffing_date__gte=date.today()-timedelta(365))
         super(MissionStaffingInlineFormset, self).__init__(*args, **kwargs)
