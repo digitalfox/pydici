@@ -1,0 +1,61 @@
+{# Fragment that display leads graph to be included with a jquery load #}
+{# One must include in its extrajs block core/_billboard.html to load according js/css #} {% load i18n %}
+
+{% if graph_data %}
+    <div id="leads_bar"></div>
+    <script type="text/javascript">
+        var chart = bb.generate({
+        bindto: '#leads_bar',
+        data: {
+             json : {{ graph_data | safe }},
+             keys: {
+                value: {{ series | safe }},
+                x: "month",
+             },
+             type: 'bar',
+             types: {
+                "sales": "spline",
+                "sales_won": "spline",
+                },
+             groups: [{{ states | safe }}],
+             names: {{ series_names | safe }},
+             axes : {
+                {% for state in states %}
+                    {{state}}: "y",
+                {% endfor %}
+                sales: "y2",
+                sales_won: "y2",
+             },
+             colors: {{ series_colors | safe }},
+        },
+        grid: {
+            y: { show: true },
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    format: '%Y-%m',
+                    rotate: 45,
+                },
+            },
+            y: {
+                label : {
+                    text: "{% trans 'Number of leads' %}",
+                    position: 'outer-middle',
+                },
+            },
+            y2: {
+                 show: true,
+                 label : {
+                    text: "{% trans 'Amount (k€)' %}",
+                    position: 'outer-middle',
+                },
+            },
+        },
+        line: {
+            classes: ["line-class-sales", "line-class-sales_won"],
+        },
+      });
+    </script>
+{% endif %}

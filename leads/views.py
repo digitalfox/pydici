@@ -344,52 +344,41 @@ def tags(request, lead_id):
 
 @pydici_non_public
 @pydici_feature("leads")
-@cache_page(60 * 60 * 24)
-def graph_bar_jqp(request):
-    """Nice graph bar of lead state during time using jqplot"""
+@cache_page(60 * 60)
+def graph_leads_bar(request):
+    """Nice graph bar of lead state during time """
     data = defaultdict(list)  # Raw data collected
-    graph_data = []  # Data that will be returned to jqplot
+    graph_data = {}
 
     # Gathering data
     subsidiary = get_subsidiary_from_session(request)
     leads = Lead.objects.filter(creation_date__gt=date.today() - timedelta(3 * 365))
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
+
+    leads = leads.annotate(month=TruncMonth("creation_date")).values("month")
+    leads = leads.annotate(Count("state"), Sum("sales")).values("month", "state", "state__count", "sales__sum").order_by()
     for lead in leads:
-        # Using first day of each month as key date
-        kdate = date(lead.creation_date.year, lead.creation_date.month, 1)
-        data[kdate].append(lead)
+        month = lead["month"].isoformat()
+        if month not in graph_data:
+            graph_data[month] = {"month": month, "sales": 0, "sales_won": 0}
+        graph_data[month][lead["state"]] = lead["state__count"]
+        graph_data[month]["sales"] += float(lead["sales__sum"] or 0)
+        if lead["state"] == "WON":
+            graph_data[month]["sales_won"] += float(lead["sales__sum"] or 0)
 
-    if not data:
-        return HttpResponse('')
+    series_names = dict(Lead.STATES)
+    series_names.update({"sales": _("All leads"), "sales_won": _("Won leads")})
+    series_colors = Lead.STATES_COLOR.copy()
+    series_colors.update({"sales": "#17becf", "sales_won": "#1f77b4"})
 
-    kdates = list(data.keys())
-    kdates.sort()
-    isoKdates = [a.isoformat() for a in kdates]  # List of date as string in ISO format
-
-    # Draw a bar for each state
-    for state in Lead.STATES:
-        ydata = [len([i for i in x if i.state == state[0]]) for x in sortedValues(data)]
-        ydata_detailed = [["%s (%s)" % (i.name, i.deal_id) for i in x if i.state == state[0]] for x in sortedValues(data)]
-        graph_data.append(list(zip(isoKdates, ydata, ydata_detailed)))
-
-    # Draw lead amount by month
-    yAllLead = [float(sum([i.sales for i in x if i.sales])) for x in sortedValues(data)]
-    yWonLead = [float(sum([i.sales for i in x if (i.sales and i.state == "WON")])) for x in sortedValues(data)]
-    graph_data.append(list(zip(isoKdates, yAllLead)))
-    graph_data.append(list(zip(isoKdates, yWonLead)))
-    if kdates:
-        min_date = (kdates[0] - timedelta(30)).isoformat()
-    else:
-        min_date = ""
-
-    return render(request, "leads/graph_bar_jqp.html",
-                  {"graph_data": json.dumps(graph_data),
-                   "series_label": [i[1] for i in Lead.STATES],
-                   "series_colors": COLORS,
-                   "min_date": min_date,
+    return render(request, "leads/graph_leads_bar.html",
+                  {"graph_data": json.dumps(list(graph_data.values())),
+                   "states": [i[0] for i in Lead.STATES],
+                   "series" : [i[0] for i in Lead.STATES] + ["sales", "sales_won"],
+                   "series_names": json.dumps(series_names),
+                   "series_colors": json.dumps(series_colors),
                    "user": request.user})
-
 
 @pydici_non_public
 @pydici_feature("reports")

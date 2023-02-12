@@ -55,6 +55,16 @@ class Lead(models.Model):
             ('FORGIVEN',  gettext("Forgiven")),
             ('SLEEPING',  gettext("Sleeping")),
            )
+    STATES_COLOR = {
+        "QUALIF": "#2ca02c", # green
+        "WRITE_OFFER": "#e377c2", # pink
+        "OFFER_SENT": "#9467bd", # purple
+        "NEGOTIATION": "#17becf", # cyan
+        "WON": "#1f77b4", # blue
+        "LOST": "#d62728", # red
+        "FORGIVEN": "#ff7f0e", # orange
+        "SLEEPING": "#7f7f7f", # grey
+    }
     name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)
     administrative_notes = models.TextField(_("Administrative notes"), blank=True)

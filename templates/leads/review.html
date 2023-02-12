@@ -10,6 +10,13 @@
 {% block title %}{% trans "Current leads review" %}{% endblock %}
 
 {% block content %}
+    <div class="row mt-3">
+        <center><h1>{% trans "Commercial activity" %}</h1></center>
+        <div id="graph_leads_bar"></div>
+        <script type="text/javascript">
+        $('#graph_leads_bar').load('{% url 'leads:graph_leads_bar' %}?{{scope_current_filter}}')
+        </script>
+    </div>
 
     <div id="graph_leads_activity_content" class="col-12"></div>
     <script type="text/javascript">

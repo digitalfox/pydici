@@ -132,7 +132,7 @@ PYDICI_AJAX_PAGES = (
                 "/staffing/missions/consultant/1/",
                 "/staffing/missions/consultant/6/",
                 "/staffing/mission/1/consultants",
-                "/leads/graph/bar-jqp",
+                "/leads/graph/leads-bar",
                 "/crm/company/graph/sales",
                 "/crm/company/graph/sales/lastyear",
                 "/billing/graph/yearly-billing",

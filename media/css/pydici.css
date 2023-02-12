@@ -362,6 +362,8 @@ div.ui-tooltip {
 
 /* Billboard graph specific style */
 #consultant_rate_graph .bb-line { stroke-width: 2px; }
+#leads_bar .line-class-sales { stroke-dasharray: 2 4; stroke-width: 2px; }
+#leads_bar .line-class-sales_won { stroke-width: 3px; }
 
 /* Expense image in modal or inline */
 .expense-receipt object {
