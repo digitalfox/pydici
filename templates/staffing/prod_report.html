@@ -99,14 +99,20 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <h2>{% trans "Production rates and daily rates delta" %}</h2>
-
         <div id="graph_production_delta"></div>
         <script type="text/javascript">
             $(document).ready(function() {
 
+               var position = $("#prod_table tr>td:nth-child(2)").position();
+               var m = 90;
+               $("#graph_production_delta").css({
+                "left": position.left - m,
+                "width":  $("#graph_production_delta").width() - position.left + m
+               });
+
                 chart_company_sales_{{ only_last_year|safe }} = bb.generate({
                     bindto: '#graph_production_delta',
+                    title: {text: "{% trans 'Production rates and daily rates delta' %}"},
                     data: {
                         x: 'x',
                         columns:  {{ graph_data|safe }},
