@@ -13,6 +13,8 @@
                 data: {
                     columns: {{ data | safe }},
                     type : 'donut',
+                    colors: {{ leads_state_colors | safe }},
+                    names: {{ leads_state_names | safe }},
                 },
                 tooltip: {
                     format: {

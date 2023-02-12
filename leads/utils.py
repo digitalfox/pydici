@@ -6,10 +6,10 @@ appropriate to live in Lead models or view
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+import json
 
 from django.utils.translation import  gettext
 from django.contrib import messages
-from django.utils.safestring import mark_safe
 from django.db.models import Count
 
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
@@ -96,6 +96,5 @@ def post_save_lead(request, lead, created=False, state_changed=False):
 def leads_state_stat(leads):
     """Compute leads statistics in compatible billboard.js format"""
     states = dict(Lead.STATES)
-    leads_stat = leads.values("state").order_by("state").annotate(count=Count("state"))
-    leads_stat = [[mark_safe(states[s['state']]), s['count']] for s in leads_stat]  # Use state label
-    return leads_stat
+    leads_stat = leads.values("state").order_by("state").annotate(count=Count("state")).values_list("state", "count")
+    return json.dumps(list(leads_stat))

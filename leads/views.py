@@ -515,7 +515,6 @@ def graph_leads_activity(request):
     current_leads = Lead.objects.active()
     if subsidiary:
         current_leads = current_leads.filter(subsidiary=subsidiary)
-    leads_state_data = leads_state_stat(current_leads)
 
     leads = Lead.objects.all()
     if subsidiary:
@@ -554,8 +553,10 @@ def graph_leads_activity(request):
 
 
     return render(request, "leads/graph_leads_activity.html",
-                  {"leads_state_data": leads_state_data,
+                  {"leads_state_data": leads_state_stat(current_leads),
+                   "leads_state_names": json.dumps(dict(Lead.STATES)),
                    "leads_state_title": _("%s leads in progress") % len(current_leads),
+                   "leads_state_colors": json.dumps(Lead.STATES_COLOR),
                    "lead_creation_rate_data": json.dumps(lead_creation_rate_data),
                    "max_creation_rate": max_creation_rate,
                    "leads_duration_data": json.dumps(leads_duration_data) if leads_duration_data else None,

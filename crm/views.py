@@ -348,9 +348,6 @@ def company_detail(request, company_id):
         leads = leads.filter(subsidiary=subsidiary)
     leads = leads.order_by("client", "state", "start_date")
 
-    # Statistics on won/lost etc.
-    leads_stat = leads_state_stat(leads)
-
     # Find consultant that work (=declare timesheet) for this company
     consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct().order_by("company", "subcontractor")
     if subsidiary:
@@ -396,7 +393,10 @@ def company_detail(request, company_id):
     return render(request, "crm/clientcompany_detail.html",
                   {"company": company,
                    "lead_count": leads.count(),
-                   "leads_stat": json.dumps(leads_stat),
+                   "leads_stat": leads_state_stat(leads),
+                   "leads_state_data": leads_state_stat(leads),
+                   "leads_state_names": json.dumps(dict(Lead.STATES)),
+                   "leads_state_colors": json.dumps(Lead.STATES_COLOR),
                    "won_rate": won_rate,
                    "overall_won_rate": overall_won_rate,
                    "bills_stat": json.dumps(bills_stat),
