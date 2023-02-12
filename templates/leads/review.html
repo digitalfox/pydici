@@ -11,7 +11,7 @@
 
 {% block content %}
     <div class="row mt-3">
-        <center><h1>{% trans "Commercial activity" %}</h1></center>
+        <h1 class="text-center">{% trans "Commercial activity" %}</h1>
         <div id="graph_leads_bar"></div>
         <script type="text/javascript">
         $('#graph_leads_bar').load('{% url 'leads:graph_leads_bar' %}?{{scope_current_filter}}')
