@@ -2088,7 +2088,6 @@ def graph_consultant_rates(request, consultant_id):
     prodRateObj = []  # production rate objective for month
     isoRateDates = []  # List of date in iso format for daily rates data
     isoProdDates = []  # List of date in iso format for production rates data
-    graph_data = []  # Data that will be returned to jqplot
     consultant = Consultant.objects.get(id=consultant_id)
     startDate = (date.today() - timedelta(24 * 30)).replace(day=1)
 
