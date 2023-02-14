@@ -354,16 +354,13 @@ def check_missions_limited_individual_mode(missions, consultant, month):
     offending_missions = []
     for mission in missions:
         if mission.management_mode == "LIMITED_INDIVIDUAL":
-            try:
-                timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
-                                                     working_date__gte=month, working_date__lt=nextMonth(month))
-                timesheet = timesheet.aggregate(Sum("charge")).get("charge__sum", 0) or 0
-                forecast = Staffing.objects.get(mission=mission, consultant=consultant, staffing_date=month).charge
-
-                if forecast < timesheet:
-                    offending_missions.append(mission)
-            except (Staffing.DoesNotExist, Timesheet.DoesNotExist):
-                pass
+            timesheet = Timesheet.objects.filter(mission=mission, consultant=consultant,
+                                                 working_date__gte=month, working_date__lt=nextMonth(month))
+            timesheet = timesheet.aggregate(Sum("charge")).get("charge__sum", 0) or 0
+            forecast = Staffing.objects.filter(mission=mission, consultant=consultant, staffing_date=month)
+            forecast = forecast.aggregate(Sum("charge")).get("charge__sum", 0) or 0
+            if forecast < timesheet:
+                offending_missions.append(mission)
     return offending_missions
 
 
