@@ -139,6 +139,9 @@ TAGGIT_LIMIT = 200
 # since django 3.2, default PK field has changed from autofield (integer) to bigint. Set here previous default.
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+# mission staffing sometimes needs lots of fields: month (12) * fields (6) * people 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

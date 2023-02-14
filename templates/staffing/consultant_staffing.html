@@ -21,7 +21,7 @@
                        {% if form.initial.staffing_date %}
                             <tr><th style="backround-color:white" colspan=8>
                                 <a href="#" class="month_header" id="header_{{ year_month }}">
-                                    <i class="{% if year_month <= current_month or form.errors %}bi-chevron-compact-down{% else %}bi-chevron-compact-right{% endif %}"></i>
+                                    <i class="{% if year_month == current_month or form.errors %}bi-chevron-compact-down{% else %}bi-chevron-compact-right{% endif %}"></i>
                                     {{ form.initial.staffing_date|date:"F Y" }}
                                 </a>
                             </th></tr>
@@ -29,6 +29,15 @@
                            <tr><th style="backround-color:white" colspan=8>{% trans "New staffing:" %}</th></tr>
                        {% endif %}
                    {% endifchanged%}
+                   {% if form.non_field_errors %}
+                        <tr>
+                            <td><ul class="errorlist">
+                            {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                            {% endfor %}
+                            </ul></td>
+                        </tr>
+                   {% endif %}
                    <tr class="{%cycle 'row1' 'row2' %} {% if year_month > current_month and not form.errors %}collapse{% endif%} {{ year_month }}" %}>
                        <td>{{ form.mission }}{{ form.mission.errors }}</td>
                        <td>{{ form.staffing_date}}{{ form.staffing_date.errors }}</td>
@@ -45,15 +54,6 @@
                        {{ form.update_date.as_hidden }}
                        {{ form.last_user.as_hidden }}
                    </tr>
-                    {% if form.non_field_errors %}
-                        <tr>
-                                <td><ul class="errorlist">
-                                {% for error in form.non_field_errors %}
-                                        <li>{{ error }}</li>
-                                {% endfor %}
-                                </ul></td>
-                        </tr>
-                   {% endif %}
                 {% endwith %}
             {% endfor %}
         </table>

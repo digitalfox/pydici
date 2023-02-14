@@ -4,7 +4,7 @@ django-taggit==2.1.0
 django-taggit-templatetags2==1.6.1
 django-crispy-forms==1.14.0
 crispy-bootstrap5==0.6
-Django-Select2==7.10.0
+Django-Select2==8.1.0
 pymemcache==3.5.1
 django-datatables-view==1.20.0
 WeasyPrint==57.1

@@ -22,6 +22,7 @@ from django.utils.translation import gettext as _
 from django.utils import translation
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.db.models import Sum, Q, F, Min, Max, Count
+from django.db.models.functions import TruncMonth
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
@@ -619,99 +620,23 @@ def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_
 
 @pydici_non_public
 @pydici_feature("reports")
-@cache_page(60 * 60 * 24)
-def graph_billing_jqp(request):
-    """Nice graph bar of incomming cash from bills
-    @todo: per year, with start-end date"""
+@cache_page(60 * 60)
+def graph_billing(request):
+    """Bar graph of client bills by status"""
     subsidiary = get_subsidiary_from_session(request)
-    billsData = defaultdict(list)  # Bill graph Data
-    tsData = {}  # Timesheet done work graph data
-    staffingData = {}  # Staffing forecasted work graph data
-    wStaffingData = {}  # Weighted Staffing forecasted work graph data
-    states = ["1_SENT", "2_PAID"]
-    today = date.today()
-    start_date = today - timedelta(3 * 365)  # last three years
-    end_date = today + timedelta(6 * 30)  # No more than 6 month forecasted
-    graph_data = []  # Data that will be returned to jqplot
-
-    # Gathering billsData
-    bills = ClientBill.objects.filter(creation_date__gt=start_date, state__in=states)
+    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(3*365)), state__in=("1_SENT", "2_PAID"))
     if subsidiary:
         bills = bills.filter(lead__subsidiary=subsidiary)
     if bills.count() == 0:
         return HttpResponse()
+    bills = bills.annotate(month=TruncMonth("creation_date")).values("month")
+    bills = bills.annotate(amount_paid=Sum("amount", filter=Q(state="2_PAID")),
+                           amount_sent=Sum("amount", filter=Q(state="1_SENT")))
+    bills = bills.values("month", "amount_paid", "amount_sent").order_by()
+    bills = [{"month": b["month"].isoformat(), "amount_paid": float(b["amount_paid"] or 0)/1000, "amount_sent": float(b["amount_sent"] or 0)/1000} for b in bills]
 
-    for bill in bills:
-        # Using first day of each month as key date
-        kdate = bill.creation_date.replace(day=1)
-        billsData[kdate].append(bill)
-
-    # Collect Financial conditions as a hash for further lookup
-    financialConditions = {}  # First key is consultant id, second is mission id. Value is daily rate
-    # TODO: filter FC on timesheet date to forget old fc (perf)
-    for fc in FinancialCondition.objects.filter(mission__nature="PROD"):
-        if not fc.consultant_id in financialConditions:
-            financialConditions[fc.consultant_id] = {}  # Empty dict for missions
-        financialConditions[fc.consultant_id][fc.mission_id] = fc.daily_rate
-
-    # Collect data for done work according to timesheet data
-    timesheets = Timesheet.objects.filter(working_date__lt=today, working_date__gt=start_date, mission__nature="PROD")
-    if subsidiary:
-        timesheets = timesheets.filter(mission__subsidiary=subsidiary)
-    for ts in timesheets.select_related():
-        kdate = ts.working_date.replace(day=1)
-        if kdate not in tsData:
-            tsData[kdate] = 0  # Create key
-        tsData[kdate] += ts.charge * financialConditions.get(ts.consultant_id, {}).get(ts.mission_id, 0) / 1000
-
-    # Collect data for forecasted work according to staffing data
-    staffings = Staffing.objects.filter(staffing_date__gte=today.replace(day=1), staffing_date__lt=end_date, mission__nature="PROD")
-    if subsidiary:
-        staffings = staffings.filter(mission__subsidiary=subsidiary)
-    for staffing in staffings.select_related():
-        kdate = staffing.staffing_date.replace(day=1)
-        if kdate not in staffingData:
-            staffingData[kdate] = 0  # Create key
-            wStaffingData[kdate] = 0  # Create key
-        staffingData[kdate] += staffing.charge * financialConditions.get(staffing.consultant_id, {}).get(staffing.mission_id, 0) / 1000
-        wStaffingData[kdate] += staffing.charge * financialConditions.get(staffing.consultant_id, {}).get(staffing.mission_id, 0) * staffing.mission.probability / 100 / 1000
-
-    billKdates = list(billsData.keys())
-    billKdates.sort()
-    isoBillKdates = [a.isoformat() for a in billKdates]  # List of date as string in ISO format
-
-    # Draw a bar for each state
-    for state in states:
-        ydata = [sum([float(i.amount) / 1000 for i in x if i.state == state]) for x in sortedValues(billsData)]
-        graph_data.append(list(zip(isoBillKdates, ydata)))
-
-    # Sort keys
-    tsKdates = list(tsData.keys())
-    tsKdates.sort()
-    isoTsKdates = [a.isoformat() for a in tsKdates]  # List of date as string in ISO format
-    staffingKdates = list(staffingData.keys())
-    staffingKdates.sort()
-    isoStaffingKdates = [a.isoformat() for a in staffingKdates]  # List of date as string in ISO format
-    wStaffingKdates = list(staffingData.keys())
-    wStaffingKdates.sort()
-    isoWstaffingKdates = [a.isoformat() for a in wStaffingKdates]  # List of date as string in ISO format
-
-    # Sort values according to keys
-    tsYData = sortedValues(tsData)
-    staffingYData = sortedValues(staffingData)
-    wStaffingYData = sortedValues(wStaffingData)
-
-    # Draw done work
-    graph_data.append(list(zip(isoTsKdates, tsYData)))
-
-    # Draw forecasted work
-    graph_data.append(list(zip(isoStaffingKdates, staffingYData)))
-    graph_data.append(list(zip(isoWstaffingKdates, wStaffingYData)))
-
-    return render(request, "billing/graph_billing_jqp.html",
-                  {"graph_data": json.dumps(graph_data),
-                   "series_label": [i[1] for i in ClientBill.CLIENT_BILL_STATE if i[0] in states],
-                   "series_colors": COLORS,
+    return render(request, "billing/graph_billing.html",
+                  {"graph_data": json.dumps(bills),
                    "user": request.user})
 
 

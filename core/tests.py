@@ -11,6 +11,13 @@ from django.contrib.auth.models import Group, User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
 
+# Selenium
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromiumService
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.utils import ChromeType
+from selenium.webdriver.chrome.options import ChromiumOptions
+
 
 # Pydici modules
 from core.utils import monthWeekNumber, previousWeek, nextWeek, cumulateList, capitalize, get_parameter
@@ -32,18 +39,8 @@ PYDICI_PAGES = ("/",
                 "/leads/2/",
                 "/leads/3/",
                 "/admin/",
-                "/leads/csv/all",
-                "/leads/csv/active",
-                "/leads/mail/text",
                 "/leads/mail/html",
                 "/leads/review",
-                "/feeds/latest/",
-                "/feeds/mine/",
-                "/feeds/new/",
-                "/feeds/won/",
-                "/feeds/latestStaffing/",
-                "/feeds/myLatestStaffing/",
-                "/feeds/archivedMission/",
                 "/staffing/pdcreview/",
                 "/staffing/pdc_optim/",
                 "/staffing/pdcreview/2009/07",
@@ -64,8 +61,6 @@ PYDICI_PAGES = ("/",
                 "/staffing/timesheet/global",
                 "/staffing/timesheet/global/?csv",
                 "/staffing/timesheet/global/2010/11",
-                "/staffing/timesheet/detailed/?",
-                "/staffing/timesheet/detailed/2010/11",
                 "/staffing/holidays_report/2010",
                 "/staffing/holidays_report/2009",
                 "/staffing/holidays_report/all",
@@ -84,7 +79,7 @@ PYDICI_PAGES = ("/",
                 "/people/home/consultant/1/#tab-timesheet",
                 "/crm/company/1/detail",
                 "/crm/company/all",
-                "/billing/graph/billing-jqp",
+                "/billing/graph/billing",
                 "/billing/bill_review",
                 "/billing/bill_delay",
                 "/billing/bill/client/add",
@@ -108,6 +103,20 @@ PYDICI_PAGES = ("/",
                 "/admin/leads/lead/",
                 )
 
+PYDICI_NON_HTML_PAGES = ("/leads/csv/all",
+                         "/leads/csv/active",
+                         "/leads/mail/text",
+                         "/feeds/latest/",
+                         "/feeds/mine/",
+                         "/feeds/new/",
+                         "/feeds/won/",
+                         "/feeds/latestStaffing/",
+                         "/feeds/myLatestStaffing/",
+                         "/feeds/archivedMission/",
+                         "/staffing/timesheet/detailed/?",
+                         "/staffing/timesheet/detailed/2010/11",
+)
+
 PYDICI_AJAX_PAGES = (
                 "/staffing/forecast/consultant/1/",
                 "/staffing/timesheet/consultant/1/",
@@ -123,7 +132,7 @@ PYDICI_AJAX_PAGES = (
                 "/staffing/missions/consultant/1/",
                 "/staffing/missions/consultant/6/",
                 "/staffing/mission/1/consultants",
-                "/leads/graph/bar-jqp",
+                "/leads/graph/leads-bar",
                 "/crm/company/graph/sales",
                 "/crm/company/graph/sales/lastyear",
                 "/billing/graph/yearly-billing",
@@ -144,7 +153,7 @@ class SimpleTest(TestCase):
     def test_basic_page(self):
         self.client.force_login(self.test_user)
         error_msg = "Failed to test url %s (got %s instead of 200)"
-        for page in PYDICI_PAGES:
+        for page in PYDICI_PAGES+PYDICI_NON_HTML_PAGES:
             response = self.client.get(page)
             self.assertEqual(response.status_code, 200, error_msg % (page, response.status_code))
         for page in PYDICI_AJAX_PAGES:
@@ -266,20 +275,38 @@ class UtilsTest(TestCase):
         self.assertEqual(get_parameter(p.key), p.value)
 
 
-class JsTest(StaticLiveServerTestCase):
-    """Test page through fake browser (phantomjs) to check that javascript stuff is going well"""
+class SeleniumTestCase(StaticLiveServerTestCase):
+    """Parent class of Selenium based tests"""
+    def setUp(self):
+        options = ChromiumOptions()
+        options.headless = True
+        options.add_argument("--no-sandbox")
+        self.driver = webdriver.Chrome(
+            service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()), options=options)
+
+    def tearDown(self):
+        self.driver.close()
+
+class SimpleJsTest(SeleniumTestCase):
+    """Test page through selenium to check that javascript stuff is going well"""
     serialized_rollback = True
     fixtures = PYDICI_FIXTURES
 
     def test_missing_resource_and_js_errors(self):
-        # Add a check to skip if casperjs is not available
         setup_test_user_features()
+        urls = [self.live_server_url + page for page in PYDICI_PAGES]
         self.test_user = User.objects.get(username=TEST_USERNAME)
         self.client.force_login(self.test_user)
-        urls = ",".join([self.live_server_url + page for page in PYDICI_PAGES])
-        test_filename = os.path.join(os.path.dirname(__file__), 'tests.js')
-        self.assertTrue(run_casper(test_filename, self.client, verbose=False, urls=urls), "At least one Casper test failed. See above the detailed log.")
-
+        cookie_name = settings.SESSION_COOKIE_NAME
+        self.driver.get(urls[0])  # Need to init driver on a domain before setting cookie
+        self.driver.get_log("browser")  # pop error log
+        self.driver.add_cookie({"name": cookie_name, "value": self.client.cookies[cookie_name].value})
+        for url in urls:
+            self.driver.get(url)
+            for log in self.driver.get_log("browser"):
+                self.assertNotEqual(log["level"], "SEVERE",
+                                    f"JS error on {url}\nsource {log['source']}\n{log['message']}")
+                # print(self.driver.page_source)
 
 
 def setup_test_user_features():
@@ -291,33 +318,3 @@ def setup_test_user_features():
     test_user = User.objects.get(username=TEST_USERNAME)
     test_user.groups.add(admin_group)
     test_user.save()
-
-
-def run_casper(test_filename, client, **kwargs):
-    """Casperjs launcher"""
-    env = os.environ.copy()
-    for prefix in [os.path.abspath(os.path.curdir), os.path.expanduser("~")]:
-        env["PATH"] += ":" + os.path.join(prefix, "node_modules/.bin/")
-    verbose = kwargs.pop("verbose", False)
-    cookie_name = settings.SESSION_COOKIE_NAME
-    if cookie_name in client.cookies:
-        kwargs["cookie-name"] = cookie_name
-        kwargs["cookie-value"] = client.cookies[cookie_name].value
-    if verbose:
-        kwargs["log-level"] = "debug"
-    else:
-        kwargs["log-level"] = "error"
-    cmd = ["casperjs", "--web-security=no", "test"]
-    cmd.extend([("--%s=%s" % i) for i in kwargs.items()])
-    cmd.append(test_filename)
-    try:
-        p = Popen(cmd, stdout=PIPE, stderr=PIPE, env=env, cwd=os.path.dirname(test_filename))
-        out, err = p.communicate()
-    except OSError as e:
-        print("WARNING: casperjs is not installed or properly setup. Skipping JS Tests...")
-        print(e)
-        return True
-    if verbose or p.returncode:
-        sys.stdout.write(out.decode())
-        sys.stderr.write(err.decode())
-    return p.returncode == 0

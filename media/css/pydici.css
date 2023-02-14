@@ -281,19 +281,6 @@ td.in-holidays {
 /* jeditable clickable field - need to look like a link */
 .jeditable-vat, .jeditable-rate, .jeditable-mission-update { color: #883915; text-decoration:none; cursor:pointer; display:inline}
 
-
-/* jqplot */
-.jqplot-point-label {
-  padding: 1px 3px;
-  background-color: rgba(220, 220, 220, 0.5);
-  color: black;
-  font-size: 1em;
-}
-.jqplot-highlighter-tooltip, .jqplot-canvasOverlay-tooltip {
-    background: none repeat scroll 0 0 rgba(208, 208, 208, 0.9);
-    font-size: 1em;
-}
-
 .hide {
     display: none;
 }
@@ -360,8 +347,10 @@ div.ui-tooltip {
   }
 }
 
-/* C3 graph specific style */
-#consultant_rate_graph .c3-line { stroke-width: 2px; }
+/* Billboard graph specific style */
+#consultant_rate_graph .bb-line { stroke-width: 2px; }
+#leads_bar .line-class-sales { stroke-dasharray: 2 4; stroke-width: 2px; }
+#leads_bar .line-class-sales_won { stroke-width: 3px; }
 
 /* Expense image in modal or inline */
 .expense-receipt object {
@@ -398,9 +387,11 @@ div.ui-tooltip {
     font-size: 40px;
 }
 
-.modal {
-    z-index: 1051; /* Avoid to be above select2 search dropbox */
+/* avoid bootstrap modal to be over select2 dropdown */
+.select2-container--open {
+    z-index: 9999999
 }
+
 
 /*
  * Hide only visually, but have it available for screenreaders

@@ -1,18 +1,21 @@
-{# Fragment that display timesheet and rates graph to be included with a jquery load #}
+{# Fragment that display cilent bill graph to be included with a jquery load #}
 {# One must include in its extrajs block core/_billboard.html to load according js/css #} {% load i18n %}
 
 {% if graph_data %}
-<div id="profile_rates_graph"></div>
+    <h3 class="text-center">{% trans "Client billing history" %}</h3>
+    <div id="bills_bar"></div>
     <script type="text/javascript">
         var chart = bb.generate({
-        bindto: '#profile_rates_graph',
+        bindto: '#bills_bar',
         data: {
-             x: "x",
-             columns: {{ graph_data | safe }},
-             type: 'spline',
-        },
-        point: {
-            show: false
+             json : {{ graph_data | safe }},
+             keys: {
+                value: ["amount_sent", "amount_paid"],
+                x: "month",
+             },
+             type: 'bar',
+             groups: [["amount_sent", "amount_paid"]],
+             names: {"amount_sent": "{% trans 'sent bills' %}", "amount_paid": "{% trans 'paid bills' %}"},
         },
         grid: {
             y: { show: true },
@@ -27,7 +30,7 @@
             },
             y: {
                 label : {
-                    text: '{% trans "daily rate (€)" %}',
+                    text: "{% trans 'Billed (k€)' %}",
                     position: 'outer-middle',
                 },
             },

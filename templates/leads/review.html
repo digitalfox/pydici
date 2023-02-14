@@ -3,13 +3,19 @@
 {% load l10n %}
 
 {% block extrajs %}
-    {% include "core/_jqplot.html" %}
-    {% include "core/_c3.html" %}
+    {% include "core/_billboard.html" %}
 {% endblock %}
 
 {% block title %}{% trans "Current leads review" %}{% endblock %}
 
 {% block content %}
+    <div class="row mt-3">
+        <h1 class="text-center">{% trans "Commercial activity" %}</h1>
+        <div id="graph_leads_bar"></div>
+        <script type="text/javascript">
+        $('#graph_leads_bar').load('{% url 'leads:graph_leads_bar' %}?{{scope_current_filter}}')
+        </script>
+    </div>
 
     <div id="graph_leads_activity_content" class="col-12"></div>
     <script type="text/javascript">

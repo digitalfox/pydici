@@ -4,8 +4,7 @@
 {% load l10n %}
 
 {% block extrajs %}
-    {% include "core/_jqplot.html" %}
-    {% include "core/_c3.html" %}
+    {% include "core/_billboard.html" %}
     {% include "core/_pivotable_header.html" %}
 {% endblock %}
 
@@ -146,11 +145,12 @@
             <div class="col-lg-3 col-md-6 col-sm-6 align-self-center">
                 <div id="leads_won_rate"></div>
                 <p>&nbsp;</p>
+                {% if won_rate %}
                 <h5><div class="text-center">{% trans "Overall won lead rate: " %}{{ overall_won_rate|floatformat:-1 }}&nbsp;%</div></h5>
                 <script type="text/javascript">
                     $(document).ready(function() {
                         // Display gauge of lead won rate
-                            var chart_leads_won_rate = c3.generate({
+                            var chart_leads_won_rate = bb.generate({
                                 bindto: '#leads_won_rate',
                                 data: {
                                     columns: [["{% trans 'Won rate' context 'short' %}", {{ won_rate|unlocalize }}]],
@@ -166,14 +166,16 @@
                             });
                     });
                     </script>
+                {% endif %}
             </div>
             {% if bills_stat_count %}
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div id="bills_stat"></div>
+
                 <script type="text/javascript">
                 $(document).ready(function() {
                     // Display donnut of bills statistics
-                        var chart_leads_stat = c3.generate({
+                        var chart_leads_stat = bb.generate({
                             bindto: '#bills_stat',
                             data: {
                                 columns: {{ bills_stat | safe }},
@@ -196,11 +198,12 @@
                 </script>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6">
+                {% if direct_sales and supplier_billing %}
                 <div id="supplier_stat"></div>
                 <script type="text/javascript">
                 $(document).ready(function() {
                     // Display donnut of supplier billing proportion
-                        var chart_supplier_stat = c3.generate({
+                        var chart_supplier_stat = bb.generate({
                             bindto: '#supplier_stat',
                             data: {
                                 columns: [['{% trans "Direct billing and supplier margin" %}', {{ direct_sales|unlocalize }}],
@@ -222,6 +225,7 @@
                         });
                 });
                 </script>
+                {% endif %}
             </div>
             {% endif %}
         </div> <!-- end of second dashabord row -->

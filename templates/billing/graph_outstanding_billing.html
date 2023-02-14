@@ -4,14 +4,14 @@
 
 
 {% if graph_data %}
-    <center><h3>{% trans "Outstanding billing" %}</h3></center>
+    <h3 class="text-center">{% trans "Outstanding billing" %}</h3>
 
     <div id="outstanding_billing_graph"></div>
 
     <script type="text/javascript">
     $(document).ready(function() {
 
-        chart_outstanding_billing = c3.generate({
+        chart_outstanding_billing = bb.generate({
             bindto: '#outstanding_billing_graph',
                     data: {
              x: "x",

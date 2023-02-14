@@ -48,7 +48,8 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, pydici_subcontractor
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, \
-    timesheet_report_data, timesheet_report_data_grouped, check_missions_limited_mode, check_missions_min_charge
+    timesheet_report_data, timesheet_report_data_grouped, check_missions_limited_mode, check_missions_min_charge, \
+    check_missions_limited_individual_mode
 from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from people.utils import get_team_scopes
@@ -596,16 +597,18 @@ def prod_report(request, year=None, month=None):
 
     holidays_days = Holiday.objects.filter(day__gte=start_date, day__lte=nextMonth(end_date)).values_list("day", flat=True)
     data = []
-    totalDone = {}
-    totalForecasted = {}
+    total_done = {}
+    total_forecasted = {}
+    delta_daily_rate = {}
+    delta_prod_rate = {}
+    delta_missing_data = {}
+
+    for month in months:
+        total_done[month] = total_forecasted[month] = delta_prod_rate[month] = delta_daily_rate[month] = delta_missing_data[month] = 0
 
     for consultant in consultants:
-        consultantData = []
+        consultant_data = []
         for month in months:
-            if month not in totalDone:
-                totalDone[month] = 0
-            if month not in totalForecasted:
-                totalForecasted[month] = 0
             upperBound = min(date.today(), nextMonth(month))
             month_days = working_days(month, holidays=holidays_days, upToToday=True)
             timesheets = Timesheet.objects.filter(consultant=consultant,
@@ -618,10 +621,10 @@ def prod_report(request, year=None, month=None):
                 daily_rate_obj = consultant.get_rate_objective(working_date=month, rate_type="DAILY_RATE").rate
                 prod_rate_obj = float(
                     consultant.get_rate_objective(working_date=month, rate_type="PROD_RATE").rate) / 100
-                forecast = int(daily_rate_obj * prod_rate_obj * (month_days - consultant_days.get("HOLIDAYS",0)))
+                forecast = daily_rate_obj * prod_rate_obj * (month_days - consultant_days.get("HOLIDAYS",0))
             except AttributeError:
                 prod_rate_obj = daily_rate_obj = forecast = 0  # At least one rate objective is missing
-            turnover = int(consultant.get_turnover(month, upperBound))
+            turnover = consultant.get_turnover(month, upperBound)
             if turnover == 0 and not consultant.active:
                 forecast = 0  # Remove forecast for consultant that leave during the period
             try:
@@ -646,23 +649,71 @@ def prod_report(request, year=None, month=None):
                     status = all_status["ko_but_daily_rate"]
                 else:
                     status = all_status["ko"]
-            tooltip = tooltip_template.render({"daily_rate": daily_rate, "daily_rate_obj": daily_rate_obj, "prod_rate": prod_rate * 100, "prod_rate_obj": prod_rate_obj * 100})
-            consultantData.append([status, tooltip, [formats.number_format(turnover), formats.number_format(forecast)]]) # For each month : [status, [turnover, forceast ]]
-            totalDone[month] += turnover
-            totalForecasted[month] += forecast
-        data.append([consultant, consultantData])
+
+            total_done[month] += turnover
+            total_forecasted[month] += forecast
+            if consultant_days.get("PROD", 0) > 0:
+                consultant_delta_daily_rate = (daily_rate - daily_rate_obj) * consultant_days.get("PROD", 0)
+            else:
+                consultant_delta_daily_rate = 0
+            consultant_delta_prod_rate = (prod_rate - prod_rate_obj) * daily_rate_obj * (month_days - consultant_days.get("HOLIDAYS", 0))
+            consultant_missing_data = forecast - turnover + consultant_delta_prod_rate + consultant_delta_daily_rate
+            if turnover == 0 and not consultant.active:
+                consultant_delta_prod_rate = consultant_delta_daily_rate = consultant_missing_data = 0
+            delta_missing_data[month] += consultant_missing_data
+            delta_daily_rate[month] += consultant_delta_daily_rate
+            delta_prod_rate[month] += consultant_delta_prod_rate
+            tooltip = tooltip_template.render({"daily_rate": daily_rate, "daily_rate_obj": daily_rate_obj,
+                                               "prod_rate": prod_rate * 100, "prod_rate_obj": prod_rate_obj * 100,
+                                               "prod_rate_delta": int(consultant_delta_prod_rate),
+                                               "daily_rate_delta": int(consultant_delta_daily_rate)})
+            # For each month : [status, [turnover, forecast ]]
+            consultant_data.append([status, tooltip, [formats.number_format(int(turnover)),
+                                                      formats.number_format(int(forecast))]])
+
+        data.append([consultant, consultant_data])
 
     # Add total
-    totalData = []
+    total_data = []
     for month in months:
-        forecast = totalForecasted.get(month, 0)
-        turnover = totalDone.get(month, 0)
+        forecast = total_forecasted.get(month, 0)
+        turnover = total_done.get(month, 0)
         if forecast > turnover:
             status = all_status["ko"]
         else:
             status = all_status["ok"]
-        totalData.append([status, "", [formats.number_format(turnover), formats.number_format(forecast)]])
-    data.append([None, totalData])
+        total_data.append([status, "", [formats.number_format(int(turnover)), formats.number_format(int(forecast))]])
+    data.append([None, total_data])
+
+    # Prepare Delta data that will be appended
+    delta_data = []
+    for title, delta_rate in ((_("Prod rate delta"), delta_prod_rate),
+                             (_("Daily rate delta"), delta_daily_rate)):
+        delta_line_data = []
+        for month in months:
+            if delta_rate[month] > 0:
+                status = all_status["ok"]
+            else:
+                status = all_status["ko"]
+            delta_line_data.append([status, "", [formats.number_format(int(delta_rate[month])), "-"]])
+        delta_data.append([title, delta_line_data])
+    # Add missing data
+    missing_line_data = []
+    for month in months:
+        missing_data = int(delta_missing_data[month])
+        if missing_data == 0:
+            status = all_status["ok"]
+        else:
+            status = all_status["ko"]
+        missing_line_data.append([status, "", [formats.number_format(missing_data), "-"]])
+    delta_data.append([_("Missing timesheet"), missing_line_data])
+
+    # Prepare graph data
+    graph_data = [["x"] + [m.isoformat() for m in months],
+                  ["prod_rate_delta"] + [int(i) for i in delta_prod_rate.values()],
+                  ["daily_rate_delta"] + [int(i) for i in delta_daily_rate.values()],
+                  ["objective_delta"] + [int(i+j) for i, j in zip(delta_daily_rate.values(), delta_prod_rate.values())],
+                  ]
 
     # Get team scopes
     scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
@@ -673,6 +724,8 @@ def prod_report(request, year=None, month=None):
 
     return render(request, "staffing/prod_report.html",
                   {"data": data,
+                   "delta_data": delta_data,
+                   "graph_data": graph_data,
                    "months": months,
                    "end_date": end_date,
                    "previous_slice_date": previous_slice_date,
@@ -802,6 +855,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                 # Process the data in form.cleaned_data
                 saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
                 limited_mode_offending_missions = check_missions_limited_mode(missions)
+                limited_individual_mode_offending_missions = check_missions_limited_individual_mode(missions, consultant, month)
                 min_charge_offending_missions = check_missions_min_charge(missions, month)
                 # Rollback timesheet update if any mission don't pass checks
                 if limited_mode_offending_missions:
@@ -813,6 +867,10 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                     transaction.savepoint_rollback(sid)
                     management_mode_error = _("Charge cannot be below minimum threshold  (%s)") % ", ".join(
                         [f"{m} : {m.min_charge_per_day} " for m in min_charge_offending_missions])
+                elif limited_individual_mode_offending_missions:
+                    transaction.savepoint_rollback(sid)
+                    management_mode_error = _("Charge cannot exceed forecast (%s)") % ", ".join(
+                        [str(m) for m in limited_individual_mode_offending_missions])
                 else:  # No violation, we can commit timesheet
                     transaction.savepoint_commit(sid)
                 # Recreate a new form for next update and compute again totals
@@ -840,7 +898,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
             cache.delete("Mission.forecasted_work%s" % mission.id)
             cache.delete("Mission.done_work%s" % mission.id)
             if mission.management_mode == "ELASTIC":
-                # Ajust mission and lead price according to done work if needed
+                # Adjust mission and lead price according to done work if needed
                 m_days, m_amount = mission.done_work_k()
                 if not mission.price:
                     mission.price = 0  # default to 0 if not defined in elastic mode
@@ -1524,7 +1582,7 @@ def mission_consultant_rate(request):
         consultant = Consultant.objects.get(id=consultant_id)
         condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
                                                                       defaults={"daily_rate": 0})
-        value = request.POST["value"].replace(" ", "")
+        value = escape(request.POST["value"].replace(" ", ""))
         if sold == "sold":
             change = {_(f"daily rate for {consultant}"): [condition.daily_rate, value]}
             condition.daily_rate = value
@@ -1536,7 +1594,7 @@ def mission_consultant_rate(request):
             compute_consultant_tasks.delay(mission.responsible.id)
         LogEntry.objects.log_create(instance=mission, actor=request.user, action=LogEntry.Action.UPDATE, changes=json.dumps(change))
 
-        return HttpResponse(request.POST["value"])
+        return HttpResponse(value)
     except (Mission.DoesNotExist, Consultant.DoesNotExist):
         return HttpResponse(_("Mission or consultant does not exist"))
     except ValueError:
@@ -2030,7 +2088,6 @@ def graph_consultant_rates(request, consultant_id):
     prodRateObj = []  # production rate objective for month
     isoRateDates = []  # List of date in iso format for daily rates data
     isoProdDates = []  # List of date in iso format for production rates data
-    graph_data = []  # Data that will be returned to jqplot
     consultant = Consultant.objects.get(id=consultant_id)
     startDate = (date.today() - timedelta(24 * 30)).replace(day=1)
 

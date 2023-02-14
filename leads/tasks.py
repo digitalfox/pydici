@@ -13,7 +13,6 @@ from django.urls import reverse
 from django.utils.translation import gettext, pgettext
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
-from django.contrib.contenttypes.models import ContentType
 
 from celery import shared_task
 from taggit.models import Tag
@@ -81,6 +80,7 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
         bot = telegram.bot.Bot(token=settings.TELEGRAM_TOKEN)
         sticker = None
         url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
+        chat_consultants = []  # List of individual consultant to notify
         if created:
             msg = gettext("New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
             sticker = settings.TELEGRAM_STICKERS.get("happy")
@@ -91,7 +91,7 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
             for log in lead.history.filter(timestamp__gt=datetime.now()-timedelta(1/24)):
                 for key, value in log.changes_display_dict.items():
                     if audit_log_is_real_change(value) and len(value) == 2:
-                        change += f"{key}: {value[0]} → {value[1]} ({log.actor})\n"
+                        change += f"{key}: {value[0]} → {value[1]} ({log.actor})\n".replace("None", "-")
                 for key, value in log.changes_dict.items(): # Second loop for m2m
                     if len(value) == 3: # m2m changes
                         change += f"{key}: {pgettext('noun', value['operation'])} {', '.join(value['objects'])}\n"
@@ -101,11 +101,16 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
             elif lead.state in ("LOST", "FORGIVEN"):
                 sticker = settings.TELEGRAM_STICKERS.get("sad")
             chat_group = "leads_update"
+            if lead.responsible.profil.level < settings.TELEGRAM_CHAT_MANAGER_LEVEL and lead.responsible.telegram_id:
+                chat_consultants.append(lead.responsible.telegram_id)
+            for consultant in lead.staffing.all():
+                if consultant.profil.level < settings.TELEGRAM_CHAT_MANAGER_LEVEL and consultant.telegram_id:
+                    chat_consultants.append(consultant.telegram_id)
         else:
             # No notification
             chat_group = msg = ""
 
-        for chat_id in settings.TELEGRAM_CHAT.get(chat_group, []):
+        for chat_id in set(settings.TELEGRAM_CHAT.get(chat_group, []) + chat_consultants):
             bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
             if sticker:
                 bot.sendSticker(chat_id=chat_id, sticker=sticker)
@@ -264,7 +269,7 @@ def merge_lead_tag(target_tag_name, old_tag_name):
         cursor.executemany(MERGE_FILE_TAGS, files_to_merge)
 
         # Delete the previous tag definition
-        # TODO: Check that there is no more taggued files (example: in other nextcloud storage)
+        # TODO: Check that there is no more tagged files (example: in other nextcloud storage)
         cursor.execute(DELETE_TAG, (old_tag_id, ))
 
         # Commit the changes to the database

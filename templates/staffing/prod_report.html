@@ -3,8 +3,7 @@
 {% load i18n %}
 
 {% block extrajs %}
-    {% include "core/_jqplot.html" %}
-    {% include "core/_c3.html" %}
+    {% include "core/_billboard.html" %}
 {% endblock %}
 
 {% block title %}{% trans "Production report" %}{% endblock %}
@@ -60,7 +59,7 @@
     <tr>
         <th></th>
     	{% for month in months %}
-    	    <th colspan="2" style="border-left:1px solid #C3C3C3;"><center>{{ month|date:"F y" }}</center></th>
+    	    <th colspan="2" class="text-center" style="border-left:1px solid #C3C3C3;">{{ month|date:"F y" }}</th>
     	{% endfor %}
     </tr>
     <tr>
@@ -83,10 +82,78 @@
             {% endfor %}
         </tr>
     {% endfor %}
+    <tr><td></td></tr><tr><td></td></tr>
+    {% for title, charges in delta_data %}
+        <tr class="text-end" style="font-weight: bold">
+            <td style="text-align:left">{{ title }}</td>
+            {% for status, tooltip, charge in charges %}
+                <td style="background-color:{{ status }}; border-left:1px solid #C3C3C3;"><span class="pydici-tooltip" title="{{ tooltip }}">{{ charge|join:"</span></td><td>" }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
     </table>
     </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div id="graph_production_delta"></div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+               var position = $("#prod_table tr>td:nth-child(2)").position();
+               var m = 90;
+               $("#graph_production_delta").css({
+                "left": position.left - m,
+                "width":  $("#graph_production_delta").width() - position.left + m
+               });
+
+                chart_company_sales_{{ only_last_year|safe }} = bb.generate({
+                    bindto: '#graph_production_delta',
+                    title: {text: "{% trans 'Production rates and daily rates delta' %}"},
+                    data: {
+                        x: 'x',
+                        columns:  {{ graph_data|safe }},
+                        names: {
+                            'prod_rate_delta': "{% trans 'Prod rate delta' %}",
+                            'daily_rate_delta': "{% trans 'Daily rate delta' %}",
+                            'objective_delta': "{% trans 'Objective delta' %}"
+                        },
+                        colors: {
+                            'prod_rate_delta': '#1f77b4',
+                            'daily_rate_delta': '#2ca02c',
+                            'objective_delta': '#d62728'
+                        },
+                        type: 'bar',
+                        groups: [['prod_rate_delta', 'daily_rate_delta']],
+                        types: {
+                            'objective_delta': 'spline'
+                        },
+                    },
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: { format: '%Y-%m' }
+                        },
+                        y: {
+                            label : {
+                                text: "{% trans 'Objective delta (€)' %}",
+                                position: 'outer-middle',
+                            },
+                        },
+                    },
+                    grid: {
+                        y: {
+                            lines: [{value:0}]
+                        }
+                    },
+                });
+        }); // End of ready()
+        </script>
+    </div>
+</div>
+
 
 <div class="row">
     <div class="col-lg-12">

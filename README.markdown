@@ -98,11 +98,6 @@ Some comments:
 - You might need to add the following directive in your apache virual host file to avoid some nasty deadlock during init when using scikit learn : WSGIApplicationGroup %{GLOBAL}
 - For proper model caching, you might need to increase memcached object size (1m => 10m) as well as your python client memcache (hardcoded in lib for python-memcached...sic).
 
-## Notes about javascript tests
-If you want to run javascript tests, you need to install node, phantomjs and casperjs. Node may be included in your distribution. For the two others, here's how to install localy, without any root access:
-
-        npm install phantomjs
-        npm install casperjs
 
 ## Migrate data from environment
 On source:

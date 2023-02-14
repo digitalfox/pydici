@@ -17,11 +17,11 @@
             </ul>
             <div class="row">
                 <div class="col-md-2 col-sm-6 col-6">
-                    <center><h4>{% trans "prod rate (&#37;)" %}</h4></center>
+                    <h4 class="text-center">{% trans "prod rate (&#37;)" %}</h4>
                     <div id="consultant_prod_rate"></div>
                 </div>
                 <div class="col-md-2 col-sm-6 col-6">
-                    <center><h4>{% trans "daily rate (€)" %}</h4></center>
+                    <h4 class="text-center">{% trans "daily rate (€)" %}</h4>
                     <div id="consultant_daily_rate"></div>
                 </div>
                 <div class="col-md-4 col-sm-6 col-12">
@@ -148,9 +148,8 @@
 
 </div> <!-- end of row -->
 <script type="text/javascript">
-//$(document).ready(function() {
     function displayConsultantGraph () {
-        var chart_timesheet = c3.generate({
+        var chart_timesheet = bb.generate({
             bindto: '#consultant_timesheet_status',
             data: {
                 columns: [
@@ -175,7 +174,7 @@
         });
 
 
-        var chart_forecast = c3.generate({
+        var chart_forecast = bb.generate({
             bindto: '#consultant_forecast_status',
             data: {
                 columns: [
@@ -199,7 +198,7 @@
                 },
         });
 
-         var chart_prod_date = c3.generate({
+         var chart_prod_date = bb.generate({
             bindto: '#consultant_prod_rate',
             data: {
                 columns: [
@@ -231,7 +230,7 @@
                 },
         });
 
-        var chart_prod_date = c3.generate({
+        var chart_prod_date = bb.generate({
             bindto: '#consultant_daily_rate',
             data: {
                 columns: [
@@ -266,5 +265,4 @@
     $(".collapse-business-territory").last().bind('hidden.bs.collapse shown.bs.collapse', function () {
       $('#pydici-blocks').masonry("layout");
     });
-//});
 </script>

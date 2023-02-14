@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block extrajs %}
-    {% include "core/_c3.html" %}
+    {% include "core/_billboard.html" %}
 {% endblock %}
 
 {% block title %}{% trans "Optimise staffing" %}{% endblock %}
@@ -44,7 +44,7 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function() {
-            var chart = c3.generate({
+            var chart = bb.generate({
                 bindto: '#score_id',
                 size: {
                     height: 100,

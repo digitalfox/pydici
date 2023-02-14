@@ -4,6 +4,7 @@ Pydici people API.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+import logging
 
 from django.http import JsonResponse
 from django.db import transaction
@@ -44,10 +45,11 @@ def consultant_provisioning(request):
                                     profil = ConsultantProfile.objects.get(name=request.POST["profile"]))
             consultant.save()
             if request.headers.get("Dry-Run"):
-                raise Exception("Dry run mode. User is not created")
+                return JsonResponse({"result": "nothing", "msg": "Dry run mode. User is not created"})
         return JsonResponse({"result": "ok"})
     except Exception as e:
-        return JsonResponse({"result": "error", "msg": str(e)})
+        logging.error(f"cannot create consultant: {e}")
+        return JsonResponse({"result": "error", "msg": "exception occurs"})
 
 
 @pydici_non_public
@@ -69,8 +71,9 @@ def consultant_deactivation(request):
             consultant.active = False
             consultant.save()
             if request.headers.get("Dry-Run"):
-                raise Exception("Dry run mode. Nothing was removeed/deactivated")
+                return JsonResponse({"result": "nothing", "msg": "Dry run mode. Nothing was removed/deactivated"})
         return JsonResponse({"result": "ok"})
     except Exception as e:
-        return JsonResponse({"result": "error", "msg": str(e)})
+        logging.error(f"cannot deactivate consultant: {e}")
+        return JsonResponse({"result": "error", "msg": "exception occurs"})
 

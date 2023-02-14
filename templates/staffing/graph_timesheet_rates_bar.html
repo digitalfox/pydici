@@ -1,11 +1,11 @@
 {# Fragment that display timesheet and rates graph to be included with a jquery load #}
-{# One must include in its extrajs block core/_jqplot.html to load according js/css #} {% load i18n %}
+{% load i18n %}
 
 {% if graph_data %}
 <div id="timesheet_rates_graph"></div>
 <script type="text/javascript">
 
-    var chart = c3.generate({
+    var chart = bb.generate({
     bindto: '#timesheet_rates_graph',
     data: {
          columns: {{ graph_data | safe }},

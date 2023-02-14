@@ -6,9 +6,9 @@ Module that handle asynchronous tasks
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import datetime
+from datetime import datetime, date
 
-from django.db.models import Min
+from django.db.models import Min, Count
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.core.cache import cache
@@ -26,6 +26,8 @@ def compute_consultant_tasks(consultant_id):
     - missions with missing financial conditions
     - client bills in draft mode
     - supplier bills to be validated
+    - leads without tag
+    - leads with past due date
 
     :return: list of tasks. Task is a tuple like ("label", count, link, priority)
     """
@@ -106,6 +108,21 @@ def compute_consultant_tasks(consultant_id):
         supplier_bills_age = (now.date() - supplier_bills.aggregate(Min("creation_date"))["creation_date__min"]).days
         supplier_bills_priority = get_task_priority(supplier_bills_age, (4, 7))
         tasks.append((_("Supplier bills to review"), supplier_bills_count, reverse("billing:bill_review")+"#supplier_soondue_bills", supplier_bills_priority))
+
+    # leads without tag
+    leads_without_tag = consultant.active_leads().annotate(Count("tags")).filter(tags__count=0)
+    leads_without_tag_count = leads_without_tag.count()
+    if leads_without_tag_count > 0:
+        tasks.append((_("Leads without tag"), leads_without_tag_count,
+                      reverse("leads:detail", args=[leads_without_tag[0].id]), 1))
+
+    # leads with past due date
+    leads_with_past_due_date = consultant.active_leads().filter(due_date__lt=date.today())
+    leads_with_past_due_date_count = leads_with_past_due_date.count()
+    if leads_with_past_due_date_count > 0:
+        tasks.append((_("Leads with past due date"), leads_with_past_due_date_count,
+                      reverse("leads:detail", args=[leads_with_past_due_date[0].id]), 1))
+
 
     # update cache with computed tasks
     cache.set(CONSULTANT_TASKS_CACHE_KEY % consultant.id, tasks, 24*3600)

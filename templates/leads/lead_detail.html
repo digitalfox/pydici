@@ -7,7 +7,7 @@
 {% block title %}{{ lead }}{% endblock %}
 
 {% block extrajs %}
-    {% include "core/_c3.html" %}
+    {% include "core/_billboard.html" %}
     {% include "core/_pivotable_header.html" %}
     <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
 {% endblock %}
@@ -103,7 +103,7 @@
                         <script type="text/javascript">
                         $(document).ready(function() {
                             // Display donnut of lead statistics
-                                var chart_leads_stat = c3.generate({
+                                var chart_leads_stat = bb.generate({
                                     bindto: '#lead_proba',
                                     data: {
                                         columns: [{% for code, state, proba in lead.getStateProba %}['{{state }}', {{ proba }}], {% endfor %}],

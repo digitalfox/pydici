@@ -1,5 +1,5 @@
 {# Fragment that display leads activity stats graph to be included with a jquery load #}
-{# One must include in its extrajs block core/_c3.html to load according js/css #}
+{# One must include in its extrajs block core/_billboard.html to load according js/css #}
 {% load i18n %}
 {% load l10n %}
 
@@ -7,14 +7,14 @@
         {% with data=leads_state_data title=leads_state_title %}
             {% include "crm/__leads_state_donut.html" %}
         {% endwith %}
-
+        {% if max_creation_rate > 0 %}
         <div class="col-lg-3 col-sm-6 col-12 align-self-center">
                 <div id="leads_activity" class="mt-2"></div>
                 <h5 class="mt-2"><div class="text-center">{% trans "New leads per week" %}</div></h5>
                 <script type="text/javascript">
                     $(document).ready(function() {
                         // Display new lead activity
-                            c3.generate({
+                            bb.generate({
                                 bindto: '#leads_activity',
                                 data: {
                                     columns: {{ lead_creation_rate_data | safe }},
@@ -22,6 +22,7 @@
                                 },
                                 gauge: {
                                     units: "",
+                                    type: "multi",
                                     label: {
                                         format: function (value) { return value; },
                                         },
@@ -32,13 +33,14 @@
                     });
                 </script>
         </div>
-
+        {% endif %}
+        {% if leads_duration_data %}
         <div class="col-lg-6 col-12">
                 <div id="leads_duration"></div>
                 <script type="text/javascript">
                     $(document).ready(function() {
                         // Display new lead activity
-                            c3.generate({
+                            bb.generate({
                                 bindto: '#leads_duration',
                                 data: {
                                     columns: {{ leads_duration_data | safe }},
@@ -74,4 +76,5 @@
                     });
                 </script>
         </div>
+        {% endif %}
     </div> {# end of row #}

@@ -1,17 +1,20 @@
 {% load i18n %}
 {# display lead states as a donut #}
-{# context : "data" in compatible C3.js format and "title" of donut #}
+{# context : "data" in compatible billboard.js format and "title" of donut #}
 
 <div class="col-lg-3 col-sm-6 col-12">
     <div id="leads_stat"></div>
+    {% if data %}
     <script type="text/javascript">
     $(document).ready(function() {
         // Display donnut of lead statistics
-            var chart_leads_stat = c3.generate({
+            var chart_leads_stat = bb.generate({
                 bindto: '#leads_stat',
                 data: {
                     columns: {{ data | safe }},
                     type : 'donut',
+                    colors: {{ leads_state_colors | safe }},
+                    names: {{ leads_state_names | safe }},
                 },
                 tooltip: {
                     format: {
@@ -28,4 +31,5 @@
             });
     });
     </script>
+    {% endif %}
 </div>

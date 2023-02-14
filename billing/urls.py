@@ -37,7 +37,7 @@ billing_urls = [ re_path(r'^bill_review$', v.bill_review, name="bill_review"),
                  re_path(r'^datatable/client_bills_in_creation/data/$', t.ClientBillInCreationTableDT.as_view(), name='client_bills_in_creation_DT'),
                  re_path(r'^datatable/client_bills_archive/data/$', t.ClientBillArchiveTableDT.as_view(), name='client_bills_archive_DT'),
                  re_path(r'^datatable/supplier_bills_archive/data/$', t.SupplierBillArchiveTableDT.as_view(), name='supplier_bills_archive_DT'),
-                 re_path(r'^graph/billing-jqp$', v.graph_billing_jqp, name="graph_billing_jqp"),
+                 re_path(r'^graph/billing$', v.graph_billing, name="graph_billing"),
                  re_path(r'^graph/yearly-billing$', v.graph_yearly_billing, name="graph_yearly_billing"),
                  re_path(r'^graph/outstanding-billing$', v.graph_outstanding_billing, name="graph_outstanding_billing"),
                 ]

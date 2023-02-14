@@ -2,9 +2,8 @@
 {% load i18n %}
 
 {% block extrajs %}
-    {% include "core/_jqplot.html" %}
     <script type="text/javascript" src="{{ MEDIA_URL }}js/datatables_custom_sort.js"></script>
-    {% include "core/_c3.html" %}
+    {% include "core/_billboard.html" %}
 {% endblock %}
 
 {% block title %}{% trans "Bills review" %}{% endblock %}
@@ -351,9 +350,9 @@
         </script>
     </div>
 
-    <div id="graph_billing_jqp_content" class="my-2"></div>
+    <div id="graph_billing_content" class="my-2"></div>
     <script type="text/javascript">
-    $('#graph_billing_jqp_content').load('{% url 'billing:graph_billing_jqp' %}?{{ scope_current_filter }}')
+        $('#graph_billing_content').load('{% url 'billing:graph_billing' %}?{{ scope_current_filter }}')
     </script>
 
 {% endblock %}
