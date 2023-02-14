@@ -48,9 +48,9 @@
 </div>
 
 <h1 class="mt-3 text-center">{% trans "Billing review and done work" %}</h1>
-    <div id="graph_billing_jqp_content"></div>
+    <div id="graph_billing_content"></div>
     <script type="text/javascript">
-    $('#graph_billing_jqp_content').load('{% url 'billing:graph_billing_jqp' %}?{{scope_current_filter}}')
+    $('#graph_billing_content').load('{% url 'billing:graph_billing' %}?{{scope_current_filter}}')
     </script>
 
 
