@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-13 23:28+0100\n"
+"POT-Creation-Date: 2023-02-14 21:49+0100\n"
 "PO-Revision-Date: 2023-02-13 23:30+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -704,13 +704,6 @@ msgstr ""
 "pointage non ? Clique simplement sur /time"
 
 #: bot/pydici_bot.py:245
-#| msgid ""
-#| "Hello. I am just a bot you know. So I won't fake doing incredible things. "
-#| "Here's what can I do for you:\n"
-#| "    /hello nice way to meet. After this cordial introduction, I may talk "
-#| "to you from time to time to remind you importants things to do\n"
-#| "    /time a fun and easy way to declare your timesheet of the day\n"
-#| "    "
 msgid ""
 "Hello. I am just a bot you know. So I won't fake doing incredible things. "
 "Here's what can I do for you:\n"
@@ -727,8 +720,8 @@ msgstr ""
 "cordiale rencontre, je me permettrai de te parler de temps en temps pour te "
 "rappeler des choses importantes à faire.\n"
 "    /time une manière simple et amusante de faire son pointage du jour\n"
-"    /bye je ne te dérangerai plus jusqu'à ce que tu me dises /hello à"
-" nouveau\n"
+"    /bye je ne te dérangerai plus jusqu'à ce que tu me dises /hello à "
+"nouveau\n"
 "    "
 
 #: bot/pydici_bot.py:266
@@ -1807,8 +1800,8 @@ msgstr "taux journalier"
 
 #: people/models.py:294 staffing/views.py:1460 staffing/views.py:1987
 #: templates/staffing/_consultant_prod_tooltip.html:1
-#: templates/staffing/graph_timesheet_rates_bar.html:14
-#: templates/staffing/graph_timesheet_rates_bar.html:24
+#: templates/staffing/graph_timesheet_rates_bar.html:15
+#: templates/staffing/graph_timesheet_rates_bar.html:25
 #: templates/staffing/rates_report.html:60
 msgid "production rate"
 msgstr "taux de production"
@@ -3021,17 +3014,14 @@ msgid "Responsibles"
 msgstr "Responsables"
 
 #: templates/billing/graph_billing.html:5
-#| msgid "Client billing control"
 msgid "Client billing history"
 msgstr "Historique facturation client"
 
 #: templates/billing/graph_billing.html:18
-#| msgid "Can't find bill %s"
 msgid "paid bills"
 msgstr "factures payées"
 
 #: templates/billing/graph_billing.html:33
-#| msgid "billed (€)"
 msgid "Billed (k€)"
 msgstr "Facturé (k€)"
 
@@ -4630,7 +4620,7 @@ msgstr "manager"
 msgid "task name"
 msgstr "nom de la tâche"
 
-#: templates/people/graph_people_count.html:34
+#: templates/people/graph_people_count.html:35
 msgid "people count"
 msgstr "nombre de personnes"
 
@@ -4874,7 +4864,7 @@ msgstr "objectif de taux journalier (€)"
 msgid "prod rate objective (%%)"
 msgstr "objectif de taux de production (%%)"
 
-#: templates/staffing/graph_timesheet_rates_bar.html:44
+#: templates/staffing/graph_timesheet_rates_bar.html:45
 #, python-format
 msgid "production rate (%%)"
 msgstr "Taux de production (%%)"
