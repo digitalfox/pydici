@@ -15,6 +15,7 @@ import logging
 from datetime import date, datetime, time
 import random
 import pytz
+from asgiref.sync import sync_to_async
 
 # Enable logging
 logging.basicConfig(
@@ -22,7 +23,7 @@ logging.basicConfig(
 )
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, Application
 import telegram.error
 
 # # Setup django envt & django imports
@@ -60,14 +61,14 @@ NONPROD_BUTTON = InlineKeyboardButton(_("non productive mission?"), callback_dat
 END_TIMESHEET_BUTTON = InlineKeyboardButton(_("That's all for today !"), callback_data="END")
 
 
-def check_user_is_declared(update, context):
+async def check_user_is_declared(update, context):
     """Ensure user we are talking  with is defined in our database. If yes, return consultant object"""
     try:
         user = update.message.from_user
-        consultant = Consultant.objects.get(telegram_alias="%s" % user.name.lstrip("@"), active=True)
+        consultant = await sync_to_async(Consultant.objects.get)(telegram_alias="%s" % user.name.lstrip("@"), active=True)
         return consultant
     except Consultant.DoesNotExist:
-        update.message.reply_text(_("sorry, I don't know you"))
+        await update.message.reply_text(_("sorry, I don't know you"))
         return None
     except AttributeError:
         # User is editing a message. Don't answer
@@ -79,7 +80,7 @@ def outside_business_hours():
     now = datetime.now()
     return now.weekday() in (5, 6) or now.hour < 9 or now.hour > 19
 
-
+@sync_to_async
 def mission_keyboard(consultant, nature):
     keyboard = []
     for mission in consultant.forecasted_missions():
@@ -99,11 +100,11 @@ def time_to_declare(consultant):
         return 0
 
 
-def mission_timesheet(update, context):
+async def mission_timesheet(update, context):
     """Declare timesheet for given mission"""
     query = update.callback_query
-    query.answer()
-    mission = Mission.objects.get(id=int(query.data))
+    await query.answer()
+    mission = await sync_to_async(Mission.objects.get)(id=int(query.data))
     context.user_data["mission"] = mission
     keyboard = [
         [
@@ -114,27 +115,36 @@ def mission_timesheet(update, context):
             InlineKeyboardButton("1", callback_data="1"),
         ]
     ]
-    query.edit_message_text(
-        text=_("how much did you work on %(mission)s ? (%(time)s is remaining for today)") % {"mission": mission.short_name(),
+    await query.edit_message_text(
+        text=_("how much did you work on %(mission)s ? (%(time)s is remaining for today)") % {"mission": await sync_to_async(mission.short_name)(),
                                                                                               "time": 1 - sum(context.user_data["timesheet"].values())},
         reply_markup=InlineKeyboardMarkup(keyboard))
     return MISSION_TIMESHEET
 
 
-def end_timesheet(update, context):
+async def end_timesheet(update, context):
     """Returns `ConversationHandler.END`, which tells the  ConversationHandler that the conversation is over"""
     query = update.callback_query
-    query.answer()
+    await query.answer()
+
+    try:
+        msg = await update_timesheet(context)
+    except Exception:
+        await query.edit_message_text(text=_("Oups, cannot update your timesheet, sorry"))
+        return ConversationHandler.END
+
+    await query.edit_message_text(text=msg)
+    return ConversationHandler.END
+
+@sync_to_async
+def update_timesheet(context):
+    """Update consultant timesheet and return summary message"""
     consultant = context.user_data["consultant"]
     with transaction.atomic():
-        try:
-            Timesheet.objects.filter(consultant=consultant, working_date=date.today()).delete()
-            for mission, charge in context.user_data["timesheet"].items():
-                Timesheet.objects.create(mission=mission, consultant=consultant,
-                                         charge=charge, working_date=date.today())
-        except:
-            query.edit_message_text(text=_("Oups, cannot update your timesheet, sorry"))
-            return ConversationHandler.END
+        Timesheet.objects.filter(consultant=consultant, working_date=date.today()).delete()
+        for mission, charge in context.user_data["timesheet"].items():
+            Timesheet.objects.create(mission=mission, consultant=consultant,
+                                     charge=charge, working_date=date.today())
     msg = _("You timesheet was updated:\n")
     msg += " - "
     msg += "\n - ".join(["%s : %s" % (m.short_name(), c) for m, c in context.user_data["timesheet"].items()])
@@ -143,14 +153,13 @@ def end_timesheet(update, context):
         msg += _("\n\nWhat a day, %s declared. Time to get some rest!") % total
     elif total < 1:
         msg += _("\n\nOnly %s today. Don't you forget to declare something ?") % total
-    query.edit_message_text(text=msg)
-    return ConversationHandler.END
+    return msg
 
 
-def select_mission(update, context):
+async def select_mission(update, context):
     """Select mission to update"""
     query = update.callback_query
-    query.answer()
+    await query.answer()
     consultant = context.user_data["consultant"]
     if query.data == "NONPROD":
         context.user_data["mission_nature"] = "NONPROD"
@@ -158,25 +167,25 @@ def select_mission(update, context):
         mission = context.user_data["mission"]
         context.user_data["timesheet"][mission] = float(query.data)
 
-    keyboard = mission_keyboard(consultant, context.user_data["mission_nature"])
+    keyboard = await mission_keyboard(consultant, context.user_data["mission_nature"])
 
     if context.user_data["mission_nature"] == "PROD":
         keyboard.append([NONPROD_BUTTON, END_TIMESHEET_BUTTON])
     else:
         keyboard.append([END_TIMESHEET_BUTTON])
 
-    query.edit_message_text(text=_("On which other mission did you work today ?"), reply_markup=InlineKeyboardMarkup(keyboard))
+    await query.edit_message_text(text=_("On which other mission did you work today ?"), reply_markup=InlineKeyboardMarkup(keyboard))
     return MISSION_SELECT
 
 
-def declare_time(update, context):
+async def declare_time(update, context):
     """Start timesheet session when user type /start"""
     close_old_connections()
     if update.effective_chat.id < 0:
-        update.message.reply_text(_("I am too shy to do that in public. Let's go private :-)"))
+        await update.message.reply_text(_("I am too shy to do that in public. Let's go private :-)"))
         return ConversationHandler.END
 
-    consultant = check_user_is_declared(update, context)
+    consultant = await check_user_is_declared(update, context)
     if consultant is None:
         return ConversationHandler.END
 
@@ -184,26 +193,28 @@ def declare_time(update, context):
     context.user_data["mission_nature"] = "PROD"
     context.user_data["timesheet"] = {}
 
-    keyboard = mission_keyboard(consultant, "PROD")
+    keyboard = await mission_keyboard(consultant, "PROD")
     keyboard.append([NONPROD_BUTTON])
 
-    update.message.reply_text(_("On what did you work today ?"), reply_markup=InlineKeyboardMarkup(keyboard))
+    await update.message.reply_text(_("On what did you work today ?"), reply_markup=InlineKeyboardMarkup(keyboard))
 
     return MISSION_SELECT
 
 
-def alert_consultant(context):
+async def alert_consultant(context):
     """Randomly alert consultant about important stuff to do"""
     close_old_connections()
     if outside_business_hours():
         return
 
-    consultants = Consultant.objects.exclude(telegram_id=None).filter(active=True)
+    consultants = await sync_to_async(Consultant.objects.exclude)(telegram_id=None)
+    consultants = await sync_to_async(consultants.filter)(active=True)
+    consultants = await sync_to_async(list)(consultants)
     if not consultants:
         logger.warning("No consultant have telegram id defined. Alerting won't be possible. Bye")
         return
     consultant = random.choice(consultants)
-    if consultant.is_in_holidays():
+    if await sync_to_async(consultant.is_in_holidays)():
         # don't bother people during holidays
         return
     cache_key = "BOT_ALERT_CONSULTANT_LAST_PERIOD_%s" % consultant.trigramme
@@ -211,35 +222,36 @@ def alert_consultant(context):
         # don't persecute people :-)
         return
 
-    tasks = consultant.get_tasks()
+    tasks = await sync_to_async(consultant.get_tasks)()
     if tasks:
         cache.set(cache_key, 1, 3600 * 12)  # Keep track 12 hours that this user has been alerted
         task_name, task_count, task_link, task_priority = random.choice(tasks)
-        url = get_parameter("HOST") + task_link
+        url = await sync_to_async(get_parameter)("HOST") + task_link
         msg = _("Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n%(link)s") % {"task_name": task_name,
                                                                                                      "task_count": task_count,
                                                                                                      "link": url.replace(" ", "%20")}
         try:
-            context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
+            await context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
         except telegram.error.BadRequest as e:
             logger.error("Cannot send message to %s. Error message: %s" % (consultant, e))
 
 
-def call_for_timesheet(context):
+async def call_for_timesheet(context):
     """If needed, remind people to declare timesheet of current day"""
     close_old_connections()
     if outside_business_hours():
         return
     msg = _("""Hope the day was fine. Time to declare your timesheet no? Just click /time""")
-    for consultant in Consultant.objects.exclude(telegram_id=None).filter(active=True):
+    consultants = await sync_to_async(Consultant.objects.exclude(telegram_id=None).filter(active=True))
+    for consultant in consultants:
         if time_to_declare(consultant) > 0:
-            context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
+            await context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
 
 
-def help(update, context):
+async def help(update, context):
     """Bot help"""
     close_old_connections()
-    consultant = check_user_is_declared(update, context)
+    consultant = await check_user_is_declared(update, context)
     if consultant is None:
         return ConversationHandler.END
     msg = _("""Hello. I am just a bot you know. So I won't fake doing incredible things. Here's what can I do for you:
@@ -248,52 +260,50 @@ def help(update, context):
     /bye you will never be bothered again till you say /hello again
     """)
 
-    update.message.reply_text(msg)
+    await update.message.reply_text(msg)
 
     return ConversationHandler.END
 
 
-def hello(update, context):
+async def hello(update, context):
     """Bot introduction. Allow to receive alerts after this first meeting"""
     close_old_connections()
-    consultant = check_user_is_declared(update, context)
+    consultant = await check_user_is_declared(update, context)
     if consultant is None:
         return ConversationHandler.END
 
     user = update.message.from_user
 
     if consultant.telegram_id:
-        update.message.reply_text(_("very happy to see you again !"))
+        await update.message.reply_text(_("very happy to see you again !"))
     else:
         consultant.telegram_id = user.id
-        consultant.save()
-        update.message.reply_text(_("I very pleased to meet you !"))
+        await sync_to_async(consultant.save)()
+        await update.message.reply_text(_("I very pleased to meet you !"))
 
     return ConversationHandler.END
 
 
-def bye(update, context):
+async def bye(update, context):
     """Allow to erase consultant telegram id"""
     close_old_connections()
-    consultant = check_user_is_declared(update, context)
+    consultant = await check_user_is_declared(update, context)
     if consultant is None:
         return ConversationHandler.END
 
-    user = update.message.from_user
-
     if consultant.telegram_id:
-        update.message.reply_text(_("I am so sad you leave me so early... Whenever you want to come back, just say /hello and we will be happy together again !"))
+        await update.message.reply_text(_("I am so sad you leave me so early... Whenever you want to come back, just say /hello and we will be happy together again !"))
         consultant.telegram_id = None
-        consultant.save()
+        await sync_to_async(consultant.save)()
     else:
-        update.message.reply_text(_("Do we met ?"))
+        await update.message.reply_text(_("Do we met ?"))
 
     return ConversationHandler.END
 
 def main():
     token = os.environ.get("TELEGRAM_TOKEN", settings.TELEGRAM_TOKEN)
-    updater = Updater(token, use_context=True)
-    dispatcher = updater.dispatcher
+    application = Application.builder().token(token).build()
+    updater = application.updater
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('time', declare_time),
@@ -314,11 +324,11 @@ def main():
         fallbacks=[CommandHandler('help', help)],
     )
 
-    # Add ConversationHandler to dispatcher
-    dispatcher.add_handler(conv_handler)
+    # Add ConversationHandler to application
+    application.add_handler(conv_handler)
 
     # Add alert job
-    updater.job_queue.run_repeating(alert_consultant, get_parameter("BOT_ALERT_INTERVAL"))
+    application.job_queue.run_repeating(alert_consultant, get_parameter("BOT_ALERT_INTERVAL"))
 
     # Add call for timesheet alert
     try:
@@ -327,18 +337,15 @@ def main():
     except (TypeError, ValueError):
         logger.error("Cannot parse timesheet time. Defaulting to 19:00")
         timesheet_time = time(19, tzinfo=pytz.timezone(settings.TIME_ZONE))
-    updater.job_queue.run_daily(call_for_timesheet, timesheet_time)
+    application.job_queue.run_daily(call_for_timesheet, timesheet_time)
 
     try:
         # Start the Bot
-        updater.start_polling()
+        application.run_polling()
 
-        # Run the bot until Ctrl-C or SIGINT,SIGTERM or SIGABRT.
-        updater.idle()
-    except telegram.error.Unauthorized:
-        logger.error("Unauthorized. Please check TELEGRAM_TOKEN settings")
+    except telegram.error.Forbidden:
+        logger.error("Forbidden. Please check TELEGRAM_TOKEN settings")
         exit(1)
-
 
 if __name__ == '__main__':
     main()
