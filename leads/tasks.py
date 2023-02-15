@@ -22,7 +22,8 @@ from core.utils import get_parameter, audit_log_is_real_change, getLeadDirs
 from leads.models import Lead
 
 if settings.TELEGRAM_IS_ENABLED:
-    import telegram
+    from telegram.ext import Application as TelegramApplication
+    from telegram.error import TelegramError
 
 if settings.NEXTCLOUD_TAG_IS_ENABLED:
     import MySQLdb
@@ -77,7 +78,8 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
     if not settings.TELEGRAM_IS_ENABLED:
         return
     try:
-        bot = telegram.bot.Bot(token=settings.TELEGRAM_TOKEN)
+        application = TelegramApplication.builder().token(settings.TELEGRAM_TOKEN).build()
+        bot = application.bot
         sticker = None
         url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
         chat_consultants = []  # List of individual consultant to notify
@@ -114,7 +116,7 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
             bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
             if sticker:
                 bot.sendSticker(chat_id=chat_id, sticker=sticker)
-    except telegram.TelegramError as e:
+    except TelegramError as e:
         raise self.retry(exc=e)
 
 
