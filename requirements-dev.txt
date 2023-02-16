@@ -1,6 +1,6 @@
 django-extensions==3.2.1
 django-debug-toolbar==3.8.1
-Werkzeug==2.2.2
+Werkzeug==2.2.3
 ipython==8.10.0
 git+https://github.com//harpb/django-userswitch#egg=django-userswitch
 selenium==4.8.0
