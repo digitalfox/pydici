@@ -80,6 +80,14 @@ def outside_business_hours():
     now = datetime.now()
     return now.weekday() in (5, 6) or now.hour < 9 or now.hour > 19
 
+
+@sync_to_async
+def get_consultants():
+    """:return: list of active consultants with declared telegram id"""
+    consultants = Consultant.objects.exclude(telegram_id=None).filter(active=True)
+    return list(consultants)  # cast to list is needed to force qs evaluation in sync section
+
+
 @sync_to_async
 def mission_keyboard(consultant, nature):
     keyboard = []
@@ -89,6 +97,7 @@ def mission_keyboard(consultant, nature):
     return keyboard
 
 
+@sync_to_async()
 def time_to_declare(consultant):
     today = date.today()
     holidays = Holiday.objects.all()
@@ -207,9 +216,8 @@ async def alert_consultant(context):
     if outside_business_hours():
         return
 
-    consultants = await sync_to_async(Consultant.objects.exclude)(telegram_id=None)
-    consultants = await sync_to_async(consultants.filter)(active=True)
-    consultants = await sync_to_async(list)(consultants)
+    consultants = await get_consultants()
+
     if not consultants:
         logger.warning("No consultant have telegram id defined. Alerting won't be possible. Bye")
         return
@@ -242,10 +250,17 @@ async def call_for_timesheet(context):
     if outside_business_hours():
         return
     msg = _("""Hope the day was fine. Time to declare your timesheet no? Just click /time""")
-    consultants = await sync_to_async(Consultant.objects.exclude(telegram_id=None).filter(active=True))
+
+    consultants = await get_consultants()
+
     for consultant in consultants:
-        if time_to_declare(consultant) > 0:
-            await context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
+        if await time_to_declare(consultant) > 0:
+            try:
+                await context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
+            except telegram.error.Forbidden:
+                # We have been banned :-( Opt out user
+                consultant.telegram_id = None
+                await sync_to_async(consultant.save)()
 
 
 async def help(update, context):
