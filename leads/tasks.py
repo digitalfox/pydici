@@ -7,6 +7,7 @@ Module that handle asynchronous tasks
 """
 from datetime import datetime, timedelta
 import smtplib
+from asgiref.sync import async_to_sync
 
 from django.conf import settings
 from django.urls import reverse
@@ -113,9 +114,9 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
             chat_group = msg = ""
 
         for chat_id in set(settings.TELEGRAM_CHAT.get(chat_group, []) + chat_consultants):
-            bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
+            async_to_sync(bot.sendMessage)(chat_id=chat_id, text=msg, disable_web_page_preview=True)
             if sticker:
-                bot.sendSticker(chat_id=chat_id, sticker=sticker)
+                async_to_sync(bot.sendSticker)(chat_id=chat_id, sticker=sticker)
     except TelegramError as e:
         raise self.retry(exc=e)
 
