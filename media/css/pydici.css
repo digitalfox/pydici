@@ -574,3 +574,8 @@ td a:hover {
 .datepicker table tr td.active, .datepicker table tr td.active.disabled, .datepicker table tr td.active.disabled:hover, .datepicker table tr td.active:hover {
     background-image: unset;
 }
+
+/* ensure menu is always on top of sticky */
+.pydici-on-top {
+    z-index: 1025;
+}
