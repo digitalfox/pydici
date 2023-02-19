@@ -173,6 +173,7 @@ LOGGING = {
 CELERY_BROKER_URL = "redis://redis"
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "default"
+CELERY_TASK_DEFAULT_QUEUE = "pydici"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_RESULT_EXTENDED = True
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

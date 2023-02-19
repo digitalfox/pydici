@@ -34,7 +34,7 @@ services:
       - mariadb
   celery:
     image: digitalfox/pydici:latest
-    command: celery -A pydici worker -B -l INFO
+    command: celery -A pydici worker -B -l INFO -Q pydici
     volumes:
       - .:/code
     environment:
