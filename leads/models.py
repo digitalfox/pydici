@@ -229,7 +229,7 @@ class Lead(models.Model):
                 # TODO: sum as well subcontractor bills for fixed priced mission
                 if mission.price:
                     to_bill += float(mission.price * 1000)
-        to_bill += float(list(self.expense_set.filter(chargeable=True).aggregate(Sum("amount")).values())[0] or 0)
+        to_bill += float(list(self.expense_set.filter(chargeable=True, expense_date__lt=end).aggregate(Sum("amount")).values())[0] or 0)
         return to_bill - float(self.billed())
 
     def billing_control_data(self):

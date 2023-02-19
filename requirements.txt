@@ -18,7 +18,7 @@ django-split-settings==1.1.0
 django-celery-results==2.4.0
 django-celery-beat==2.3.0
 mysqlclient==2.1.1
-python-telegram-bot==13.13
+python-telegram-bot[job-queue]==20.1
 django-auditlog==2.1.1
 factur-x==2.3
 django-countries==7.4.2

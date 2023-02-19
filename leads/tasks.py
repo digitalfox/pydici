@@ -7,6 +7,7 @@ Module that handle asynchronous tasks
 """
 from datetime import datetime, timedelta
 import smtplib
+from asgiref.sync import async_to_sync
 
 from django.conf import settings
 from django.urls import reverse
@@ -22,7 +23,8 @@ from core.utils import get_parameter, audit_log_is_real_change, getLeadDirs
 from leads.models import Lead
 
 if settings.TELEGRAM_IS_ENABLED:
-    import telegram
+    from telegram.ext import Application as TelegramApplication
+    from telegram.error import TelegramError
 
 if settings.NEXTCLOUD_TAG_IS_ENABLED:
     import MySQLdb
@@ -77,7 +79,8 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
     if not settings.TELEGRAM_IS_ENABLED:
         return
     try:
-        bot = telegram.bot.Bot(token=settings.TELEGRAM_TOKEN)
+        application = TelegramApplication.builder().token(settings.TELEGRAM_TOKEN).build()
+        bot = application.bot
         sticker = None
         url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
         chat_consultants = []  # List of individual consultant to notify
@@ -95,7 +98,10 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
                 for key, value in log.changes_dict.items(): # Second loop for m2m
                     if len(value) == 3: # m2m changes
                         change += f"{key}: {pgettext('noun', value['operation'])} {', '.join(value['objects'])}\n"
-            msg = gettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
+            msg = gettext("Lead %(lead)s for %(subsidiary) has been updated\n%(url)s\n%(change)s") % {"lead": lead,
+                                                                                                      "subsidiary": lead.subsidiary,
+                                                                                                      "url": url,
+                                                                                                      "change": change}
             if lead.state == "WON":
                 sticker = settings.TELEGRAM_STICKERS.get("happy")
             elif lead.state in ("LOST", "FORGIVEN"):
@@ -111,10 +117,10 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
             chat_group = msg = ""
 
         for chat_id in set(settings.TELEGRAM_CHAT.get(chat_group, []) + chat_consultants):
-            bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True)
+            async_to_sync(bot.sendMessage)(chat_id=chat_id, text=msg, disable_web_page_preview=True)
             if sticker:
-                bot.sendSticker(chat_id=chat_id, sticker=sticker)
-    except telegram.TelegramError as e:
+                async_to_sync(bot.sendSticker)(chat_id=chat_id, sticker=sticker)
+    except TelegramError as e:
         raise self.retry(exc=e)
 
 
