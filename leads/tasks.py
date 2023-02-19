@@ -98,7 +98,10 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
                 for key, value in log.changes_dict.items(): # Second loop for m2m
                     if len(value) == 3: # m2m changes
                         change += f"{key}: {pgettext('noun', value['operation'])} {', '.join(value['objects'])}\n"
-            msg = gettext("Lead %(lead)s has been updated\n%(url)s\n%(change)s") % {"lead": lead, "url": url, "change": change}
+            msg = gettext("Lead %(lead)s for %(subsidiary) has been updated\n%(url)s\n%(change)s") % {"lead": lead,
+                                                                                                      "subsidiary": lead.subsidiary,
+                                                                                                      "url": url,
+                                                                                                      "change": change}
             if lead.state == "WON":
                 sticker = settings.TELEGRAM_STICKERS.get("happy")
             elif lead.state in ("LOST", "FORGIVEN"):

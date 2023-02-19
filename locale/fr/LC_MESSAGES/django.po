@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-14 21:49+0100\n"
-"PO-Revision-Date: 2023-02-13 23:30+0100\n"
+"POT-Creation-Date: 2023-02-19 15:37+0100\n"
+"PO-Revision-Date: 2023-02-19 15:36+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -623,19 +623,19 @@ msgstr "encours des factures émises"
 msgid "billing outstanding overdue"
 msgstr "encours des factures en retard"
 
-#: bot/pydici_bot.py:59
+#: bot/pydici_bot.py:60
 msgid "non productive mission?"
 msgstr "Des missions non productives ?"
 
-#: bot/pydici_bot.py:60
+#: bot/pydici_bot.py:61
 msgid "That's all for today !"
 msgstr "C'est tout pour aujourd'hui !"
 
-#: bot/pydici_bot.py:70
+#: bot/pydici_bot.py:71
 msgid "sorry, I don't know you"
 msgstr "Désolé, on ne se connaît pas"
 
-#: bot/pydici_bot.py:118
+#: bot/pydici_bot.py:128
 #, python-format
 msgid ""
 "how much did you work on %(mission)s ? (%(time)s is remaining for today)"
@@ -643,15 +643,15 @@ msgstr ""
 "combien de temps as-tu travaillé sur %(mission)s ? (il reste %(time)s à "
 "déclarer pour aujourd'hui)"
 
-#: bot/pydici_bot.py:136
+#: bot/pydici_bot.py:142
 msgid "Oups, cannot update your timesheet, sorry"
 msgstr "Oups, impossible de mettre à jour le pointage. Désolé."
 
-#: bot/pydici_bot.py:138
+#: bot/pydici_bot.py:157
 msgid "You timesheet was updated:\n"
 msgstr "Le pointage a été mis à jour :\n"
 
-#: bot/pydici_bot.py:143
+#: bot/pydici_bot.py:162
 #, python-format
 msgid ""
 "\n"
@@ -662,7 +662,7 @@ msgstr ""
 "\n"
 "Quelle journée, %s jours déclarés. Il est temps de se reposer !"
 
-#: bot/pydici_bot.py:145
+#: bot/pydici_bot.py:164
 #, python-format
 msgid ""
 "\n"
@@ -673,21 +673,21 @@ msgstr ""
 "\n"
 "Seulement %s jours aujourd'hui ? Rien n'a été oublié ?"
 
-#: bot/pydici_bot.py:168
+#: bot/pydici_bot.py:186
 msgid "On which other mission did you work today ?"
 msgstr "Sur quelle autre mission as-tu bossé aujourd'hui ?"
 
-#: bot/pydici_bot.py:176
+#: bot/pydici_bot.py:194
 msgid "I am too shy to do that in public. Let's go private :-)"
 msgstr ""
 "Je suis un peu trop timide pour faire cela en public, retrouvons nous en "
 "privé :-)"
 
-#: bot/pydici_bot.py:190
+#: bot/pydici_bot.py:208
 msgid "On what did you work today ?"
 msgstr "Sur quoi tu as bossé aujourd'hui ?"
 
-#: bot/pydici_bot.py:219
+#: bot/pydici_bot.py:238
 #, python-format
 msgid ""
 "Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n"
@@ -696,14 +696,14 @@ msgstr ""
 "Hey, pense à regarder ça : %(task_name)s (x%(task_count)s)\n"
 "%(link)s"
 
-#: bot/pydici_bot.py:233
+#: bot/pydici_bot.py:252
 msgid ""
 "Hope the day was fine. Time to declare your timesheet no? Just click /time"
 msgstr ""
 "J'espère que ta journée a été bonne. C'est le bon moment pour faire ton "
 "pointage non ? Clique simplement sur /time"
 
-#: bot/pydici_bot.py:245
+#: bot/pydici_bot.py:272
 msgid ""
 "Hello. I am just a bot you know. So I won't fake doing incredible things. "
 "Here's what can I do for you:\n"
@@ -724,15 +724,15 @@ msgstr ""
 "nouveau\n"
 "    "
 
-#: bot/pydici_bot.py:266
+#: bot/pydici_bot.py:293
 msgid "very happy to see you again !"
 msgstr "Ça fait plaisir de se revoir !"
 
-#: bot/pydici_bot.py:270
+#: bot/pydici_bot.py:297
 msgid "I very pleased to meet you !"
 msgstr "Très heureux de faire ta connaissance !"
 
-#: bot/pydici_bot.py:285
+#: bot/pydici_bot.py:310
 msgid ""
 "I am so sad you leave me so early... Whenever you want to come back, just "
 "say /hello and we will be happy together again !"
@@ -740,7 +740,7 @@ msgstr ""
 "Je suis vraiment désolé que l'on se quitte si tôt... Si tu veux revenir, dis "
 "juste /hello et nous serons de nouveau heureux ensemble !"
 
-#: bot/pydici_bot.py:289
+#: bot/pydici_bot.py:314
 msgid "Do we met ?"
 msgstr "On s'est déjà vu ?"
 
@@ -1649,7 +1649,7 @@ msgstr "Envoyer par courriel"
 msgid "Score"
 msgstr "Score"
 
-#: leads/tasks.py:85
+#: leads/tasks.py:88
 #, python-format
 msgid ""
 "New Lead !\n"
@@ -1660,14 +1660,13 @@ msgstr ""
 "%(lead)s\n"
 "%(url)s"
 
-#: leads/tasks.py:98
-#, python-format
+#: leads/tasks.py:101
 msgid ""
-"Lead %(lead)s has been updated\n"
+"Lead %(lead)s for %(subsidiary) has been updated\n"
 "%(url)s\n"
 "%(change)s"
 msgstr ""
-"L'affaire %(lead)s a été mise à jour\n"
+"L'affaire %(lead)s pour la filiale %(subsidiary)s a été mise à jour\n"
 "%(url)s\n"
 "%(change)s"
 
