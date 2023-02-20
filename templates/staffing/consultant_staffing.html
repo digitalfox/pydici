@@ -38,7 +38,7 @@
                             </ul></td>
                         </tr>
                    {% endif %}
-                   <tr class="{%cycle 'row1' 'row2' %} {% if year_month != current_month and not form.errors %}collapse{% endif%} {{ year_month }}" %}>
+                   <tr class="{%cycle 'row1' 'row2' %} {% if year_month and year_month != current_month and not form.errors %}collapse{% endif%} {{ year_month }}">
                        <td>{{ form.mission }}{{ form.mission.errors }}</td>
                        <td>{{ form.staffing_date}}{{ form.staffing_date.errors }}</td>
                        <td class="pydici_small_number">{{ form.charge }}{{ form.charge.errors }}</td>
