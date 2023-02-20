@@ -79,7 +79,7 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
     if not settings.TELEGRAM_IS_ENABLED:
         return
     try:
-        application = TelegramApplication.builder().token(settings.TELEGRAM_TOKEN).build()
+        application = TelegramApplication.builder().token(settings.TELEGRAM_TOKEN).http_version("1.1").build()
         bot = application.bot
         sticker = None
         url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
