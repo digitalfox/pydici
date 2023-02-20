@@ -317,7 +317,7 @@ async def bye(update, context):
 
 def main():
     token = os.environ.get("TELEGRAM_TOKEN", settings.TELEGRAM_TOKEN)
-    application = Application.builder().token(token).build()
+    application = Application.builder().token(token).http_version("1.1").build()
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('time', declare_time),
