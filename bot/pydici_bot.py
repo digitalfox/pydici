@@ -23,7 +23,8 @@ logging.basicConfig(
 )
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, Application
+from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler
+from telegram.ext import Application as TelegramApplication
 import telegram.error
 
 # # Setup django envt & django imports
@@ -317,7 +318,7 @@ async def bye(update, context):
 
 def main():
     token = os.environ.get("TELEGRAM_TOKEN", settings.TELEGRAM_TOKEN)
-    application = Application.builder().token(token).http_version("1.1").build()
+    application = TelegramApplication.builder().token(settings.TELEGRAM_TOKEN).http_version("1.1").get_updates_http_version("1.1").build()
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('time', declare_time),
