@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-19 15:37+0100\n"
-"PO-Revision-Date: 2023-02-19 15:36+0100\n"
+"POT-Creation-Date: 2023-02-22 20:38+0100\n"
+"PO-Revision-Date: 2023-02-22 20:38+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -319,8 +319,8 @@ msgid "client organisation"
 msgstr "organisation client"
 
 #: billing/utils.py:152 billing/views.py:131 leads/views.py:632
-#: staffing/views.py:1831 staffing/views.py:1859 staffing/views.py:1875
-#: staffing/views.py:1876
+#: staffing/views.py:1831 staffing/views.py:1863 staffing/views.py:1879
+#: staffing/views.py:1880
 #: templates/billing/client_billing_control_pivotable.html:49
 #: templates/billing/client_billing_control_pivotable.html:71
 #: templates/billing/payment_delay.html:50
@@ -345,7 +345,7 @@ msgstr "Direct"
 #: billing/utils.py:154 core/views.py:372 core/views.py:393 leads/views.py:640
 #: staffing/models.py:447 staffing/views.py:1426 staffing/views.py:1459
 #: staffing/views.py:1474 staffing/views.py:1522 staffing/views.py:1835
-#: staffing/views.py:1863 staffing/views.py:1916
+#: staffing/views.py:1867 staffing/views.py:1920
 #: templates/billing/bill_review.html:36 templates/billing/bill_review.html:84
 #: templates/billing/bill_review.html:129
 #: templates/billing/bill_review.html:175
@@ -397,7 +397,7 @@ msgstr "responsable"
 
 #: billing/utils.py:156 billing/utils.py:213 staffing/models.py:446
 #: staffing/views.py:1425 staffing/views.py:1457 staffing/views.py:1472
-#: staffing/views.py:1521 staffing/views.py:1915
+#: staffing/views.py:1521 staffing/views.py:1919
 #: templates/billing/_lead_billing.html:20
 #: templates/billing/pre_billing.html:78 templates/billing/pre_billing.html:133
 #: templates/leads/lead_pivotable.html:38
@@ -431,8 +431,8 @@ msgid "amount"
 msgstr "montant"
 
 #: billing/utils.py:162 billing/utils.py:176 billing/utils.py:193
-#: billing/utils.py:214 staffing/views.py:1519 staffing/views.py:1856
-#: staffing/views.py:1864 staffing/views.py:1914
+#: billing/utils.py:214 staffing/views.py:1519 staffing/views.py:1860
+#: staffing/views.py:1868 staffing/views.py:1918
 #: templates/billing/_lead_billing.html:21
 #: templates/billing/client_billing_control_pivotable.html:53
 #: templates/billing/client_billing_control_pivotable.html:58
@@ -623,19 +623,19 @@ msgstr "encours des factures émises"
 msgid "billing outstanding overdue"
 msgstr "encours des factures en retard"
 
-#: bot/pydici_bot.py:60
+#: bot/pydici_bot.py:61
 msgid "non productive mission?"
 msgstr "Des missions non productives ?"
 
-#: bot/pydici_bot.py:61
+#: bot/pydici_bot.py:62
 msgid "That's all for today !"
 msgstr "C'est tout pour aujourd'hui !"
 
-#: bot/pydici_bot.py:71
+#: bot/pydici_bot.py:72
 msgid "sorry, I don't know you"
 msgstr "Désolé, on ne se connaît pas"
 
-#: bot/pydici_bot.py:128
+#: bot/pydici_bot.py:129
 #, python-format
 msgid ""
 "how much did you work on %(mission)s ? (%(time)s is remaining for today)"
@@ -643,15 +643,15 @@ msgstr ""
 "combien de temps as-tu travaillé sur %(mission)s ? (il reste %(time)s à "
 "déclarer pour aujourd'hui)"
 
-#: bot/pydici_bot.py:142
+#: bot/pydici_bot.py:143
 msgid "Oups, cannot update your timesheet, sorry"
 msgstr "Oups, impossible de mettre à jour le pointage. Désolé."
 
-#: bot/pydici_bot.py:157
+#: bot/pydici_bot.py:158
 msgid "You timesheet was updated:\n"
 msgstr "Le pointage a été mis à jour :\n"
 
-#: bot/pydici_bot.py:162
+#: bot/pydici_bot.py:163
 #, python-format
 msgid ""
 "\n"
@@ -662,7 +662,7 @@ msgstr ""
 "\n"
 "Quelle journée, %s jours déclarés. Il est temps de se reposer !"
 
-#: bot/pydici_bot.py:164
+#: bot/pydici_bot.py:165
 #, python-format
 msgid ""
 "\n"
@@ -673,21 +673,21 @@ msgstr ""
 "\n"
 "Seulement %s jours aujourd'hui ? Rien n'a été oublié ?"
 
-#: bot/pydici_bot.py:186
+#: bot/pydici_bot.py:187
 msgid "On which other mission did you work today ?"
 msgstr "Sur quelle autre mission as-tu bossé aujourd'hui ?"
 
-#: bot/pydici_bot.py:194
+#: bot/pydici_bot.py:195
 msgid "I am too shy to do that in public. Let's go private :-)"
 msgstr ""
 "Je suis un peu trop timide pour faire cela en public, retrouvons nous en "
 "privé :-)"
 
-#: bot/pydici_bot.py:208
+#: bot/pydici_bot.py:209
 msgid "On what did you work today ?"
 msgstr "Sur quoi tu as bossé aujourd'hui ?"
 
-#: bot/pydici_bot.py:238
+#: bot/pydici_bot.py:239
 #, python-format
 msgid ""
 "Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n"
@@ -696,14 +696,14 @@ msgstr ""
 "Hey, pense à regarder ça : %(task_name)s (x%(task_count)s)\n"
 "%(link)s"
 
-#: bot/pydici_bot.py:252
+#: bot/pydici_bot.py:253
 msgid ""
 "Hope the day was fine. Time to declare your timesheet no? Just click /time"
 msgstr ""
 "J'espère que ta journée a été bonne. C'est le bon moment pour faire ton "
 "pointage non ? Clique simplement sur /time"
 
-#: bot/pydici_bot.py:272
+#: bot/pydici_bot.py:273
 msgid ""
 "Hello. I am just a bot you know. So I won't fake doing incredible things. "
 "Here's what can I do for you:\n"
@@ -724,15 +724,15 @@ msgstr ""
 "nouveau\n"
 "    "
 
-#: bot/pydici_bot.py:293
+#: bot/pydici_bot.py:294
 msgid "very happy to see you again !"
 msgstr "Ça fait plaisir de se revoir !"
 
-#: bot/pydici_bot.py:297
+#: bot/pydici_bot.py:298
 msgid "I very pleased to meet you !"
 msgstr "Très heureux de faire ta connaissance !"
 
-#: bot/pydici_bot.py:310
+#: bot/pydici_bot.py:311
 msgid ""
 "I am so sad you leave me so early... Whenever you want to come back, just "
 "say /hello and we will be happy together again !"
@@ -740,7 +740,7 @@ msgstr ""
 "Je suis vraiment désolé que l'on se quitte si tôt... Si tu veux revenir, dis "
 "juste /hello et nous serons de nouveau heureux ensemble !"
 
-#: bot/pydici_bot.py:314
+#: bot/pydici_bot.py:315
 msgid "Do we met ?"
 msgstr "On s'est déjà vu ?"
 
@@ -1797,7 +1797,7 @@ msgstr "Sous-traitant"
 msgid "daily rate"
 msgstr "taux journalier"
 
-#: people/models.py:294 staffing/views.py:1460 staffing/views.py:1987
+#: people/models.py:294 staffing/views.py:1460 staffing/views.py:1991
 #: templates/staffing/_consultant_prod_tooltip.html:1
 #: templates/staffing/graph_timesheet_rates_bar.html:15
 #: templates/staffing/graph_timesheet_rates_bar.html:25
@@ -2506,8 +2506,8 @@ msgstr "année"
 msgid "profil"
 msgstr "profil"
 
-#: staffing/views.py:1524 templates/billing/pre_billing.html:78
-#: templates/billing/pre_billing.html:133
+#: staffing/views.py:1524 staffing/views.py:1853
+#: templates/billing/pre_billing.html:78 templates/billing/pre_billing.html:133
 #: templates/staffing/missions_report.html:67
 #: templates/staffing/missions_report.html:73
 #: templates/staffing/missions_report.html:79
@@ -2561,22 +2561,30 @@ msgstr "Produit marketing"
 msgid "Undefined"
 msgstr "À définir"
 
-#: staffing/views.py:1852 staffing/views.py:1859
+#: staffing/views.py:1852 staffing/views.py:1863
 #: templates/billing/graph_yearly_billing.html:37
 #: templates/staffing/turnover_pivotable.html:87
 #: templates/staffing/turnover_pivotable.html:100
 msgid "turnover (€)"
 msgstr "Chiffre d'affaire (€)"
 
-#: staffing/views.py:1853
+#: staffing/views.py:1854
 msgid "external subcontractor turnover (€)"
 msgstr "CA sous-traitants externes (€)"
 
-#: staffing/views.py:1854
+#: staffing/views.py:1855
+msgid "external subcontractor days"
+msgstr "jours sous-traitants externes"
+
+#: staffing/views.py:1856
 msgid "internal subcontractor turnover (€)"
 msgstr "CA sous-traitants internes (€)"
 
-#: staffing/views.py:1855 staffing/views.py:1869
+#: staffing/views.py:1857
+msgid "internal subcontractor days"
+msgstr "jours sous-traitants internes"
+
+#: staffing/views.py:1858 staffing/views.py:1873
 #: templates/staffing/turnover_pivotable.html:58
 #: templates/staffing/turnover_pivotable.html:64
 #: templates/staffing/turnover_pivotable.html:72
@@ -2585,35 +2593,39 @@ msgstr "CA sous-traitants internes (€)"
 msgid "own turnover (€)"
 msgstr "Chiffre d'affaire propre (€)"
 
-#: staffing/views.py:1857 staffing/views.py:1865
+#: staffing/views.py:1859
+msgid "own days"
+msgstr "Jours effectif propre"
+
+#: staffing/views.py:1861 staffing/views.py:1869
 msgid "fiscal year"
 msgstr "Année fiscale"
 
-#: staffing/views.py:1876 staffing/views.py:1878
+#: staffing/views.py:1880 staffing/views.py:1882
 #: templates/staffing/turnover_pivotable.html:84
 msgid "top client company"
 msgstr "top entreprise"
 
-#: staffing/views.py:1878
+#: staffing/views.py:1882
 msgid "others"
 msgstr "autres"
 
-#: staffing/views.py:1917 staffing/views.py:1919
+#: staffing/views.py:1921 staffing/views.py:1923
 #: templates/staffing/lunch_tickets_pivotable.html:59
 msgid "days off previous month"
 msgstr "jours de congés du mois précédent"
 
-#: staffing/views.py:1918 staffing/views.py:1919
+#: staffing/views.py:1922 staffing/views.py:1923
 #: templates/staffing/lunch_tickets_pivotable.html:65
 msgid "days without tickets previous month"
 msgstr "jours sans ticket restaurant le mois précédent"
 
-#: staffing/views.py:1919 templates/staffing/lunch_tickets_pivotable.html:47
+#: staffing/views.py:1923 templates/staffing/lunch_tickets_pivotable.html:47
 #: templates/staffing/lunch_tickets_pivotable.html:53
 msgid "deserved tickets"
 msgstr "tickets mérités"
 
-#: staffing/views.py:2073
+#: staffing/views.py:2077
 msgid "Global"
 msgstr "Global"
 
