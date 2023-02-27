@@ -85,6 +85,7 @@ def outside_business_hours():
 @sync_to_async
 def get_consultants():
     """:return: list of active consultants with declared telegram id"""
+    close_old_connections()
     consultants = Consultant.objects.exclude(telegram_id=None).filter(active=True)
     return list(consultants)  # cast to list is needed to force qs evaluation in sync section
 
