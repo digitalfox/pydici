@@ -1,0 +1,34 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load cache %}
+
+{% block extrajs %}
+    <script src="{{ MEDIA_URL }}js/graphology.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/graphology-library.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/sigma.min.js"></script>
+{% endblock %}
+
+{% block title %}{% trans "Consultant network" %}{% endblock %}
+
+{% block content %}
+
+    <div id='sigma-container' style='height:600px; width:100%;'></div>
+    <script>
+      // Create graph
+      var graph = graphology.Graph.from({
+        attributes: {name: 'Consultant Graph'},
+        nodes: {{ nodes|safe }},
+        edges: {{ edges|safe }}
+      });
+
+      // Layout
+      graphologyLibrary.layout.random.assign(graph);
+      //graphologyLibrary.layoutForceAtlas2.assign(graph);
+
+      // Initialize sigma:
+      var s = new Sigma(graph, document.getElementById('sigma-container'));
+
+    </script>
+
+{% endblock %}

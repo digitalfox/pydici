@@ -7,18 +7,19 @@ Pydici people views. Http request are processed here.
 
 from datetime import date, timedelta
 import json
+import itertools
 
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext as _
-from django.db.models import Count
+from django.db.models import Count, Sum, Min, Max
 
 from people.models import Consultant
 from crm.models import Company
 from crm.utils import get_subsidiary_from_session
-from staffing.models import Holiday
+from staffing.models import Holiday, Timesheet
 from core.decorator import pydici_non_public, pydici_subcontractor
 from core.utils import working_days, previousMonth, nextMonth, COLORS, user_has_feature
 from people.utils import subcontractor_is_user
@@ -180,6 +181,69 @@ def consultants_tasks(request):
         consultants = consultants.filter(company=subsidiary)
     return render(request, "people/consultants_tasks.html",
                   {"consultants": consultants})
+
+@pydici_non_public
+def consultant_network(request):
+    """People network based on common work on missions"""
+    #TODO: filter on subsidiary, client company and tags
+    ts = Timesheet.objects.filter(mission__nature="PROD")
+
+    # Get nodes as Consultant objects and compute their lifetime across timesheet selection
+    nodes = Consultant.objects.filter(id__in=ts.order_by("consultant").values_list("consultant", flat=True))
+    nodes = {c.trigramme: c for c in nodes}
+    lifetime = {k: ts.filter(consultant=v).aggregate(Min("working_date"), Max("working_date")) for k, v in
+                nodes.items()}
+
+
+    # Regroup timesheet data by mission
+    ts = ts.values("consultant", "mission").order_by().annotate(Sum("charge"))
+    ts = ts.values("consultant__trigramme", "mission", "charge__sum", "mission__lead")
+    missions = {}
+    for t in ts:
+        if t["mission"] not in missions:
+            missions[t["mission"]] = {}
+        missions[t["mission"]][t["consultant__trigramme"]] = t["charge__sum"]
+
+
+    # Compute edges combinations
+    edges = {}
+    for mission, mission_data in missions.items():
+        for c1, c2 in itertools.combinations(mission_data.keys(), 2):
+            charge = min(mission_data[c1], mission_data[c2])
+            if (c1, c2) not in edges:
+                edges[(c1, c2)] = 0
+            #TODO: ponderate on age ? (ie. decrease charge when it was long ago)
+            edges[(c1, c2)] += charge
+            #print(f"c1={c1}\tc2={c2}\tm={mission}\t=>{charge}")
+
+    # Factorize edges
+    for (c1, c2), charge in edges.copy().items():
+        if (c2, c1) in edges:
+            edges[(c1, c2)] += edges[(c2, c1)]
+            del edges[(c2, c1)]
+
+    # Ponderate charge on consultant shared lifetime in % of the youngest
+    for (c1, c2), charge in edges.copy().items():
+        shared_lifetime = min(lifetime[c1]["working_date__max"], lifetime[c2]["working_date__max"]) - max(lifetime[c1]["working_date__min"], lifetime[c2]["working_date__min"])
+        shared_lifetime = shared_lifetime / min(lifetime[c1]["working_date__max"]-lifetime[c1]["working_date__min"], lifetime[c2]["working_date__max"]-lifetime[c2]["working_date__min"])
+        if shared_lifetime > 0:
+            edges[(c1, c2)] *= shared_lifetime
+        else: # consultant never met even if they work on the same mission
+            del edges[(c1, c2)]
+
+    # Serialize data on graphology format
+    edges = [{"key":f"{c1}=>{c2}", "source": c1, "target": c2, "attributes": {"charge": charge}} for (c1, c2), charge in edges.items()]
+
+    nodes = [{"key": k, "attributes": {"name": v.name, "company": str(v.company), "active": v.active,
+                                       "start": lifetime[k]["working_date__min"].isoformat(),
+                                       "end": lifetime[k]["working_date__max"].isoformat(),
+                                       "profil": str(v.profil)}} for k, v in nodes.items()]
+
+    return render(request, "people/consultant_network.html",
+                  {"edges": json.dumps(edges),
+                   "nodes": json.dumps(nodes),
+                   "user": request.user})
+
 
 @pydici_non_public
 @cache_page(60 * 60 * 24)

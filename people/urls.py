@@ -14,6 +14,7 @@ people_urls = [ re_path(r'^home/consultant/(?P<consultant_id>\d+)/$', v.consulta
                 re_path(r'^detail/consultant/(?P<consultant_id>\d+)/$', v.consultant_detail, name="consultant_detail"),
                 re_path(r'^detail/subcontractor/(?P<consultant_id>\d+)/$', v.subcontractor_detail, name="subcontractor_detail"),
                 re_path(r'^tasks/consultants_tasks', v.consultants_tasks, name="consultants_tasks"),
+                re_path(r'^consultant_network', v.consultant_network, name="consultant_network"),
                 re_path(r'^api/consultant_list$', a.consultant_list, name="consultant_list"),
                 re_path(r'^api/consultant_provisioning$', a.consultant_provisioning, name="consultant_provisioning"),
                 re_path(r'^api/consultant_deactivation$', a.consultant_deactivation, name="consultant_deactivation"),
