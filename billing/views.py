@@ -24,6 +24,7 @@ from django.db.models.functions import TruncMonth
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
+from django.forms.utils import ValidationError
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 
@@ -290,6 +291,8 @@ def client_bill(request, bill_id=None):
         if bill and bill.state in wip_status:
             billDetailFormSet = BillDetailFormSet(request.POST, instance=bill)
             billExpenseFormSet = BillExpenseFormSet(request.POST, instance=bill)
+            if form.data["state"] not in wip_status and (billDetailFormSet.has_changed() or billExpenseFormSet.has_changed()):
+                form.add_error("state", ValidationError(_("You can't modify bill details in that state")))
         if form.is_valid() and (billDetailFormSet is None or billDetailFormSet.is_valid()) and (billExpenseFormSet is None or billExpenseFormSet.is_valid()):
             bill = form.save()
             if billDetailFormSet:
