@@ -501,6 +501,7 @@ class Timesheet(models.Model):
     consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
     mission = models.ForeignKey(Mission, limit_choices_to={"active": True}, on_delete=models.CASCADE)
     working_date = models.DateField(_("Date"))
+    working_date.db_index = True  # Because time is in third position on uniq index defined below
     charge = models.FloatField(_("Load"), default=0)
 
     def __str__(self):
