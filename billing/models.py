@@ -245,6 +245,7 @@ class ClientBill(AbstractBill):
 
     class Meta:
         verbose_name = _("Client Bill")
+        indexes = [models.Index(fields=["state", "due_date"]),]
 
 
 class SupplierBill(AbstractBill):

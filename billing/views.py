@@ -58,9 +58,12 @@ def bill_review(request):
     subsidiary = get_subsidiary_from_session(request)
 
     # Get bills overdue, due soon, litigious and recently paid
-    overdue_bills = ClientBill.objects.filter(state="1_SENT", due_date__lte=today).select_related()
-    soondue_bills = ClientBill.objects.filter(state="1_SENT", due_date__gt=today, due_date__lte=(today + wait_warning)).select_related()
-    recent_bills = ClientBill.objects.filter(state="2_PAID").order_by("-payment_date").select_related()
+    overdue_bills = ClientBill.objects.filter(state="1_SENT", due_date__lte=today)
+    overdue_bills = overdue_bills.prefetch_related("lead__responsible", "lead__subsidiary").select_related("lead__client__contact", "lead__client__organisation__company")
+    soondue_bills = ClientBill.objects.filter(state="1_SENT", due_date__gt=today, due_date__lte=(today + wait_warning))
+    soondue_bills = soondue_bills.prefetch_related("lead__responsible", "lead__subsidiary").select_related("lead__client__contact", "lead__client__organisation__company")
+    recent_bills = ClientBill.objects.filter(state="2_PAID").order_by("-payment_date")
+    recent_bills = recent_bills.prefetch_related("lead__responsible", "lead__subsidiary").select_related("lead__client__contact", "lead__client__organisation__company")
     litigious_bills = ClientBill.objects.filter(state="3_LITIGIOUS").select_related()
     supplier_overdue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__lte=today).select_related()
     supplier_soondue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__gt=today).select_related()
