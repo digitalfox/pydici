@@ -51,10 +51,9 @@ from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelpe
 @pydici_non_public
 @pydici_feature("reports")
 def bill_review(request):
-    """Review of bills: bills overdue, due soon, or to be created"""
+    """Review of clients bills: bills overdue, due soon, or to be created"""
     today = date.today()
     wait_warning = timedelta(15)  # wait in days used to warn that a bill is due soon
-
     subsidiary = get_subsidiary_from_session(request)
 
     # Get bills overdue, due soon, litigious and recently paid
@@ -65,8 +64,6 @@ def bill_review(request):
     recent_bills = ClientBill.objects.filter(state="2_PAID").order_by("-payment_date")
     recent_bills = recent_bills.prefetch_related("lead__responsible", "lead__subsidiary").select_related("lead__client__contact", "lead__client__organisation__company")
     litigious_bills = ClientBill.objects.filter(state="3_LITIGIOUS").select_related()
-    supplier_overdue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__lte=today).select_related()
-    supplier_soondue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__gt=today).select_related()
 
     # Filter bills on subsidiary if defined
     if subsidiary:
@@ -74,8 +71,6 @@ def bill_review(request):
         soondue_bills = soondue_bills.filter(lead__subsidiary=subsidiary)
         recent_bills = recent_bills.filter(lead__subsidiary=subsidiary)
         litigious_bills = litigious_bills.filter(lead__subsidiary=subsidiary)
-        supplier_overdue_bills = supplier_overdue_bills.filter(lead__subsidiary=subsidiary)
-        supplier_soondue_bills = supplier_soondue_bills.filter(lead__subsidiary=subsidiary)
 
     # Limit recent bill to last 20 ones
     recent_bills = recent_bills[: 20]
@@ -106,11 +101,32 @@ def bill_review(request):
                    "overdue_bills_total_with_vat": overdue_bills_total_with_vat,
                    "litigious_bills_total_with_vat": litigious_bills_total_with_vat,
                    "leads_without_bill": leads_without_bill,
-                   "supplier_soondue_bills": supplier_soondue_bills,
+                   "billing_management": user_has_feature(request.user, "billing_management"),
+                   "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
+                   "user": request.user})
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def supplier_bills_validation(request):
+    """Review and validate suppliers bills"""
+    today = date.today()
+    subsidiary = get_subsidiary_from_session(request)
+    supplier_overdue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__lte=today)
+    supplier_overdue_bills = supplier_overdue_bills.prefetch_related("lead").select_related()
+    supplier_soondue_bills = SupplierBill.objects.filter(state__in=("1_RECEIVED", "1_VALIDATED"), due_date__gt=today)
+    supplier_soondue_bills = supplier_soondue_bills.prefetch_related("lead").select_related()
+
+    # Filter bills on subsidiary if defined
+    if subsidiary:
+        supplier_overdue_bills = supplier_overdue_bills.filter(lead__subsidiary=subsidiary)
+        supplier_soondue_bills = supplier_soondue_bills.filter(lead__subsidiary=subsidiary)
+    return render(request, "billing/supplier_bills_validation.html",
+                  {"supplier_soondue_bills": supplier_soondue_bills,
                    "supplier_overdue_bills": supplier_overdue_bills,
                    "billing_management": user_has_feature(request.user, "billing_management"),
                    "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
                    "user": request.user})
+
 
 
 @pydici_non_public
@@ -168,7 +184,7 @@ def validate_supplier_bill(request, bill_id):
     if consultant == bill.lead.responsible and bill.state == "1_RECEIVED":
         bill.state = "1_VALIDATED"
         bill.save()
-        return HttpResponseRedirect(reverse("billing:bill_review"))
+        return HttpResponseRedirect(reverse("billing:supplier_bills_validation"))
     else:
         return HttpResponseRedirect(reverse("core:forbidden"))
 
@@ -180,7 +196,7 @@ def mark_supplierbill_paid(request, bill_id):
     bill = SupplierBill.objects.get(id=bill_id)
     bill.state = "2_PAID"
     bill.save()
-    return HttpResponseRedirect(reverse("billing:bill_review"))
+    return HttpResponseRedirect(reverse("billing:supplier_bills_validation"))
 
 
 @pydici_non_public

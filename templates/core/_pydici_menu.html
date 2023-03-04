@@ -155,13 +155,17 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 {% if pydici_feature.billing_request %}
+                                    <li class="dropdown-header">{% trans "Client billing" %}</li>
                                     <li><a class="dropdown-item" href="{% url 'billing:pre_billing' %}">{% trans "Pre billing" %}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'billing:client_bills_archive' %}">{% trans "All client bills" %}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'billing:client_bill' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'billing:client_bills_in_creation' %}">{% trans "Client bills in creation" %}</a></li>
                                     {% if pydici_feature.billing_management %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li class="dropdown-header">{% trans "Supplier billing" %}</li>
                                         <li><a class="dropdown-item" href="{% url 'billing:supplier_bills_archive' %}">{% trans "All supplier bills" %}</a></li>
                                         <li><a class="dropdown-item" href="{% url 'billing:supplier_bill' %}">{% trans "New supplier bill" %}</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'billing:supplier_bills_validation' %}">{% trans "Supplier bill validation" %}</a></li>
                                     {% endif %}
                                 {% endif %}
                                 {% if pydici_feature.reports %}
