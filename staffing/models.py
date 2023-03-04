@@ -492,7 +492,8 @@ class Staffing(models.Model):
 
     class Meta:
         unique_together = (("consultant", "mission", "staffing_date"),)
-        ordering = ["staffing_date", "consultant"]
+        ordering = ["staffing_date", "consultant", "-mission__nature",
+                    "mission__lead__client__organisation__company__name", "mission__description", "id"]
         verbose_name = _("Staffing")
 
 
