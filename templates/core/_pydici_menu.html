@@ -160,6 +160,7 @@
                                     <li><a class="dropdown-item" href="{% url 'billing:client_bills_archive' %}">{% trans "All client bills" %}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'billing:client_bill' %}?return_to={{ request.get_full_path }}">{% trans "New client bill" %}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'billing:client_bills_in_creation' %}">{% trans "Client bills in creation" %}</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'billing:bill_review' %}">{% trans "Bills review" %}</a></li>
                                     {% if pydici_feature.billing_management %}
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="dropdown-header">{% trans "Supplier billing" %}</li>
@@ -171,7 +172,6 @@
                                 {% if pydici_feature.reports %}
                                     <li><hr class="dropdown-divider"></li>
                                     <li class="dropdown-header">{% trans "Reporting" %}</li>
-                                    <li><a class="dropdown-item" href="{% url 'billing:bill_review' %}">{% trans "Bills review" %}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'billing:bill_delay' %}">{% trans "Payment delay review" %}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'leads:leads_to_bill' %}">{% trans "Leads still to be billed" %}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'billing:client_billing_control_pivotable' %}">{% trans "Client billing control" %}</a></li>
