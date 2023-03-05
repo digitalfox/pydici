@@ -174,7 +174,8 @@ def main():
     states = {}
     states.update(declare_time_states())
 
-    conv_handler = ConversationHandler(entry_points=entry_points, states=states, fallbacks=[CommandHandler('help', help)])
+    conv_handler = ConversationHandler(entry_points=entry_points, states=states, conversation_timeout=3600,
+                                       fallbacks=[CommandHandler('help', help)])
 
     # Add ConversationHandler to application
     application.add_handler(conv_handler)
