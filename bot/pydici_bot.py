@@ -52,6 +52,7 @@ application = get_wsgi_application()
 from people.models import Consultant
 from staffing.models import Mission, Timesheet, Holiday
 from core.utils import get_parameter
+from staffing.utils import check_timesheet_validity
 
 logger = logging.getLogger(__name__)
 
@@ -151,19 +152,28 @@ async def end_timesheet(update, context):
 def update_timesheet(context):
     """Update consultant timesheet and return summary message"""
     consultant = context.user_data["consultant"]
+    missions = []
     with transaction.atomic():
+        sid = transaction.savepoint()
         Timesheet.objects.filter(consultant=consultant, working_date=date.today()).delete()
         for mission, charge in context.user_data["timesheet"].items():
             Timesheet.objects.create(mission=mission, consultant=consultant,
                                      charge=charge, working_date=date.today())
-    msg = _("You timesheet was updated:\n")
-    msg += " - "
-    msg += "\n - ".join(["%s : %s" % (m.short_name(), c) for m, c in context.user_data["timesheet"].items()])
-    total = sum(context.user_data["timesheet"].values())
-    if total > 1:
-        msg += _("\n\nWhat a day, %s declared. Time to get some rest!") % total
-    elif total < 1:
-        msg += _("\n\nOnly %s today. Don't you forget to declare something ?") % total
+            missions.append(mission)
+        error = check_timesheet_validity(missions, consultant, date.today().replace(day=1))
+        if error:
+            transaction.savepoint_rollback(sid)
+            msg = error
+        else:  # No violations, we can commit
+            transaction.savepoint_commit(sid)
+            msg = _("You timesheet was updated:\n")
+            msg += " - "
+            msg += "\n - ".join(["%s : %s" % (m.short_name(), c) for m, c in context.user_data["timesheet"].items()])
+            total = sum(context.user_data["timesheet"].values())
+            if total > 1:
+                msg += _("\n\nWhat a day, %s declared. Time to get some rest!") % total
+            elif total < 1:
+                msg += _("\n\nOnly %s today. Don't you forget to declare something ?") % total
     return msg
 
 
