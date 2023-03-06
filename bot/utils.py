@@ -10,6 +10,7 @@ from asgiref.sync import sync_to_async
 from datetime import datetime, date
 
 from django.db import close_old_connections
+from django.db.models import Sum
 from django.utils.translation import gettext as _
 
 from people.models import Consultant
