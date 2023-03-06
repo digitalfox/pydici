@@ -8,7 +8,7 @@ Pydici staffing views. Http request are processed here.
 from datetime import date, timedelta, datetime
 import csv
 import json
-from itertools import zip_longest
+from itertools import zip_longest, chain
 import codecs
 from collections import defaultdict
 
@@ -413,61 +413,86 @@ def pdc_review(request, year=None, month=None):
         consultants = consultants.filter(staffing_manager=team)
     if subsidiary:
         consultants = consultants.filter(company=subsidiary)
-    for consultant in consultants:
-        staffing[consultant] = []
-        missions = set()
-        for month in months:
-            if projection in ("balanced", "full"):
-                # Only exclude null (0%) mission
-                current_staffings = consultant.staffing_set.filter(staffing_date=month, mission__probability__gt=0).order_by()
-            else:
-                # Only keep 100% mission
-                current_staffings = consultant.staffing_set.filter(staffing_date=month, mission__probability=100).order_by()
 
-            # Sum staffing
+    #currents_staffings = Staffing.objects.filter(consultant__in=consultants)
+    currents_staffings = Staffing.objects.filter(consultant__productive=True, consultant__active=True, consultant__subcontractor=False)
+    currents_staffings = currents_staffings.filter(staffing_date__gte=months[0], staffing_date__lte=months[-1])
+    if projection in ("balanced", "full"):
+        # Only exclude null (0%) mission
+        currents_staffings = currents_staffings.filter(mission__probability__gt=0)
+    else:
+        # Only keep 100% mission
+        currents_staffings = currents_staffings.filter(mission__probability=100)
+
+    currents_staffings = currents_staffings.order_by("consultant", "staffing_date")
+    currents_staffings = currents_staffings.select_related("mission__lead__client__organisation__company", "consultant__staffing_manager")
+
+    consultant = None
+    month = None
+    missions = set()
+    # Iterate on staffing. Chain None as a flag for last loop to compute total
+    for current_staffing in chain(currents_staffings, [None]):
+        if month is None or current_staffing is None or month != current_staffing.staffing_date:
+            # compute total for previous month and this consultant
+            if month is not None or current_staffing is None: # at first loop, no total to compute. Last loop, current_staffing is None
+                prod = sum(prod)
+                unprod = sum(unprod)
+                holidays = sum(holidays)
+                prod_round = to_int_or_round(prod)
+                unprod_round = to_int_or_round(unprod)
+                holidays_round = to_int_or_round(holidays)
+                available = available_month[month] - (prod + unprod + holidays)
+                available_displayed = to_int_or_round(
+                    available_month[month] - (prod_round + unprod_round + holidays_round))
+                staffing[consultant].append([prod_round, unprod_round, holidays_round, available_displayed])
+                total[month]["prod"] += prod
+                total[month]["unprod"] += unprod
+                total[month]["holidays"] += holidays
+                total[month]["available"] += available
+                total[month]["total"] += available_month[month]
+                if current_staffing is None: # last month of last consultant. Exit loop
+                    break
+            # Switch to new month
+            month = current_staffing.staffing_date
             prod = []
             unprod = []
             holidays = []
-            for current_staffing in current_staffings.select_related("mission__lead__client__organisation__company"):
-                nature = current_staffing.mission.nature
-                if nature == "PROD":
-                    missions.add(current_staffing.mission)  # Store prod missions for this consultant
-                    if projection == "full":
-                        prod.append(current_staffing.charge)
-                    else:
-                        prod.append(current_staffing.charge * current_staffing.mission.probability / 100)
-                elif nature == "NONPROD":
-                    if projection == "full":
-                        unprod.append(current_staffing.charge)
-                    else:
-                        unprod.append(current_staffing.charge * current_staffing.mission.probability / 100)
-                elif nature == "HOLIDAYS":
-                    if projection == "full":
-                        holidays.append(current_staffing.charge)
-                    else:
-                        holidays.append(current_staffing.charge * current_staffing.mission.probability / 100)
 
-            # Staffing computation
-            prod = sum(prod)
-            unprod = sum(unprod)
-            holidays = sum(holidays)
-            prod_round = to_int_or_round(prod)
-            unprod_round = to_int_or_round(unprod)
-            holidays_round = to_int_or_round(holidays)
-            available = available_month[month] - (prod + unprod + holidays)
-            available_displayed = to_int_or_round(available_month[month] - (prod_round + unprod_round + holidays_round))
-            staffing[consultant].append([prod_round, unprod_round, holidays_round, available_displayed])
-            total[month]["prod"] += prod
-            total[month]["unprod"] += unprod
-            total[month]["holidays"] += holidays
-            total[month]["available"] += available
-            total[month]["total"] += available_month[month]
-        # Add client synthesis to staffing dict
-        company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
-        client_list = ", ".join(["<a href='%s'>%s</a>" %
-                                (reverse("crm:company_detail", args=[c.id]), escape(c)) for c in company])
-        client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
-        staffing[consultant].append([client_list])
+        if consultant is not None and consultant != current_staffing.consultant:
+            # compute end of line data for consultant before switch to new one
+            # Add client synthesis to staffing dict
+            company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
+            client_list = ", ".join(["<a href='%s'>%s</a>" %
+                                     (reverse("crm:company_detail", args=[c.id]), escape(c)) for c in company])
+            client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
+            staffing[consultant].append([client_list])
+            missions = set()
+
+        if consultant is None or consultant != current_staffing.consultant:
+            # Switch to new consultant
+            consultant = current_staffing.consultant
+            if consultant not in staffing:
+                staffing[consultant] = []
+
+
+        # Do staffing computation
+        nature = current_staffing.mission.nature
+        if nature == "PROD":
+            missions.add(current_staffing.mission)  # Store prod missions for this consultant
+            if projection == "full":
+                prod.append(current_staffing.charge)
+            else:
+                prod.append(current_staffing.charge * current_staffing.mission.probability / 100)
+        elif nature == "NONPROD":
+            if projection == "full":
+                unprod.append(current_staffing.charge)
+            else:
+                unprod.append(current_staffing.charge * current_staffing.mission.probability / 100)
+        elif nature == "HOLIDAYS":
+            if projection == "full":
+                holidays.append(current_staffing.charge)
+            else:
+                holidays.append(current_staffing.charge * current_staffing.mission.probability / 100)
 
     # Compute indicator rates
     for month in months:
