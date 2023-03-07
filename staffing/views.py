@@ -422,7 +422,8 @@ def pdc_review(request, year=None, month=None):
         staffings = staffings.filter(mission__probability=100)
 
     staffings = staffings.order_by("consultant", "staffing_date")
-    staffings = staffings.select_related("mission__lead__client__organisation__company", "consultant__staffing_manager")
+    staffings = staffings.prefetch_related("consultant__staffing_manager")
+    staffings = staffings.prefetch_related("mission__lead__client__organisation__company")
 
     consultant = None
     month = None
