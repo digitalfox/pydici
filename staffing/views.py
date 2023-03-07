@@ -362,12 +362,11 @@ def pdc_review(request, year=None, month=None):
         return HttpResponse(_("No productive consultant defined !"))
 
     n_month = 4  # Default number of month to display
-
     if "n_month" in request.GET:
         try:
             n_month = int(request.GET["n_month"])
-            if n_month > 12:
-                n_month = 12  # Limit to 12 month to avoid complex and useless month list computation
+            n_month = min(n_month, 12)
+            n_month = max(n_month, 2)
         except ValueError:
             pass
 
