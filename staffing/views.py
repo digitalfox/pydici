@@ -408,15 +408,12 @@ def pdc_review(request, year=None, month=None):
         available_month[month] = working_days(month, holidays_days)
 
     # Get consultants staffing
-    consultants = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False).select_related("staffing_manager")
-    if team:
-        consultants = consultants.filter(staffing_manager=team)
-    if subsidiary:
-        consultants = consultants.filter(company=subsidiary)
-
-    #currents_staffings = Staffing.objects.filter(consultant__in=consultants)
     currents_staffings = Staffing.objects.filter(consultant__productive=True, consultant__active=True, consultant__subcontractor=False)
     currents_staffings = currents_staffings.filter(staffing_date__gte=months[0], staffing_date__lte=months[-1])
+    if team:
+        currents_staffings = currents_staffings.filter(consultant__staffing_manager=team)
+    if subsidiary:
+        currents_staffings = currents_staffings.filter(consultant__company=subsidiary)
     if projection in ("balanced", "full"):
         # Only exclude null (0%) mission
         currents_staffings = currents_staffings.filter(mission__probability__gt=0)
