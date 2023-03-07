@@ -391,6 +391,7 @@ def pdc_review(request, year=None, month=None):
     rates = []  # staffing rates per month
     available_month = {}  # available working days per month
     months = []  # list of month to be displayed
+    consultant_clients = {}  # Current consultant clients
 
     month = start_date
     for i in range(n_month):
@@ -439,7 +440,7 @@ def pdc_review(request, year=None, month=None):
                 holidays_round = to_int_or_round(holidays)
                 available = available_month[month] - (prod + unprod + holidays)
                 available_displayed = to_int_or_round(available_month[month] - (prod_round + unprod_round + holidays_round))
-                consultant_staffing[consultant].append([prod_round, unprod_round, holidays_round, available_displayed])
+                consultant_staffing[consultant][month] = [prod_round, unprod_round, holidays_round, available_displayed]
                 total[month]["prod"] += prod
                 total[month]["unprod"] += unprod
                 total[month]["holidays"] += holidays
@@ -454,20 +455,16 @@ def pdc_review(request, year=None, month=None):
             holidays = []
 
         if consultant is not None and consultant != staffing.consultant:
-            # compute end of line data for consultant before switch to new one
-            # Add client synthesis to staffing dict
-            company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
-            client_list = ", ".join(["<a href='%s'>%s</a>" %
-                                     (reverse("crm:company_detail", args=[c.id]), escape(c)) for c in company])
-            client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
-            consultant_staffing[consultant].append([client_list])
+            # end of line data for consultant before switch to new one
+            # Add client synthesis
+            consultant_clients[consultant] = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
             missions = set()
 
         if consultant is None or consultant != staffing.consultant:
             # Switch to new consultant
             consultant = staffing.consultant
             if consultant not in consultant_staffing:
-                consultant_staffing[consultant] = []
+                consultant_staffing[consultant] = {}
 
         # Do staffing computation
         nature = staffing.mission.nature
@@ -508,13 +505,24 @@ def pdc_review(request, year=None, month=None):
             to_int_or_round(i[1]["holidays"]),
             to_int_or_round(i[1]["total"] - (to_int_or_round(i[1]["prod"]) + to_int_or_round(i[1]["unprod"]) + to_int_or_round(i[1]["holidays"])))) for i in total]
 
+    # Format consultant lines, fill holes with zero data and add client/company list
+    data = []
+    for consultant, staffing in consultant_staffing.items():
+        consultant_data = []
+        for month in months:
+             consultant_data.append(staffing.get(month, [0, 0, 0, available_month[month]]))
+        client_list = ", ".join(["<a href='%s'>%s</a>" %
+                                 (reverse("crm:company_detail", args=[c.id]), escape(c)) for c in consultant_clients.get(consultant, [])])
+        client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
+        consultant_data.append([client_list])
+        data.append([consultant, consultant_data])
+
     # Order staffing list
-    consultant_staffing = list(consultant_staffing.items())
-    consultant_staffing.sort(key=lambda x: x[0].name)  # Sort by name
+    data.sort(key=lambda x: x[0].name)  # Sort by name
     if groupby == "manager":
-        consultant_staffing.sort(key=lambda x: str(x[0].staffing_manager))  # Sort by staffing manager
+        data.sort(key=lambda x: str(x[0].staffing_manager))  # Sort by staffing manager
     else:
-        consultant_staffing.sort(key=lambda x: x[0].profil.level)  # Sort by level
+        data.sort(key=lambda x: x[0].profil.level)  # Sort by level
 
     scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
     if team:
@@ -523,7 +531,7 @@ def pdc_review(request, year=None, month=None):
         team_name = None
 
     return render(request, "staffing/pdc_review.html",
-                  {"staffing": consultant_staffing,
+                  {"staffing": data,
                    "months": months,
                    "total": total,
                    "rates": rates,
