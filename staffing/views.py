@@ -359,7 +359,7 @@ def pdc_review(request, year=None, month=None):
     people_count = people.count()
     if people_count == 0:
         # TODO: make this message nice
-        return HttpResponse(_("No productive consultant defined !"))
+        return HttpResponse(_("No consultant defined !"))
 
     n_month = 4  # Default number of month to display
     if "n_month" in request.GET:
@@ -430,9 +430,9 @@ def pdc_review(request, year=None, month=None):
     missions = set()
     # Iterate on staffing. Chain None as a flag for last loop to compute total
     for staffing in chain(staffings, [None]):
-        if month is None or staffing is None or month != staffing.staffing_date:
+        if month is None or staffing is None or month != staffing.staffing_date or consultant != staffing.consultant:
             # compute total for previous month and this consultant
-            if month is not None or staffing is None: # at first loop, no total to compute. Last loop, current_staffing is None
+            if month or staffing is None: # at first loop, no total to compute. Last loop, current_staffing is None
                 prod = sum(prod)
                 unprod = sum(unprod)
                 holidays = sum(holidays)
@@ -447,25 +447,28 @@ def pdc_review(request, year=None, month=None):
                 total[month]["holidays"] += holidays
                 total[month]["available"] += available
                 total[month]["total"] += available_month[month]
-                if staffing is None: # last month of last consultant. Exit loop
-                    break
+
+        if consultant and (staffing is None or consultant != staffing.consultant):
+            # end of line data for consultant - add client synthesis
+            consultant_clients[consultant] = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
+            missions = set()
+
+        if staffing is None:  # last month of last consultant. Exit loop
+            break
+
+        if consultant is None or consultant != staffing.consultant:
+            # Switch to new consultant and reset month
+            consultant = staffing.consultant
+            month = None
+            if consultant not in consultant_staffing:
+                consultant_staffing[consultant] = {}
+
+        if month != staffing.staffing_date:
             # Switch to new month
             month = staffing.staffing_date
             prod = []
             unprod = []
             holidays = []
-
-        if consultant is not None and consultant != staffing.consultant:
-            # end of line data for consultant before switch to new one
-            # Add client synthesis
-            consultant_clients[consultant] = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
-            missions = set()
-
-        if consultant is None or consultant != staffing.consultant:
-            # Switch to new consultant
-            consultant = staffing.consultant
-            if consultant not in consultant_staffing:
-                consultant_staffing[consultant] = {}
 
         # Do staffing computation
         nature = staffing.mission.nature
@@ -486,10 +489,27 @@ def pdc_review(request, year=None, month=None):
             else:
                 holidays.append(staffing.charge * staffing.mission.probability / 100)
 
+    # Format consultant lines, fill holes with zero data, adjust available total and add client/company list
+    data = []
+    for consultant, staffing in consultant_staffing.items():
+        consultant_data = []
+        for month in months:
+            consultant_data.append(staffing.get(month, [0, 0, 0, available_month[month]]))
+            if month not in staffing:
+                # Adjust available total as we fill a hole
+                total[month]["available"] += available_month[month]
+                total[month]["total"] += available_month[month]
+        client_list = ", ".join(["<a href='%s'>%s</a>" %
+                                 (reverse("crm:company_detail", args=[c.id]), escape(c)) for c in
+                                 consultant_clients.get(consultant, [])])
+        client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
+        consultant_data.append([client_list])
+        data.append([consultant, consultant_data])
+
     # Compute indicator rates
     for month in months:
         rate = []
-        ndays = people_count * available_month[month]  # Total days for this month
+        ndays = len(consultant_staffing) * available_month[month]  # Total days for this month
         for indicator in ("prod", "unprod", "holidays", "available"):
             if indicator == "holidays":
                 rate.append(100.0 * total[month][indicator] / ndays)
@@ -505,18 +525,6 @@ def pdc_review(request, year=None, month=None):
             to_int_or_round(i[1]["unprod"]),
             to_int_or_round(i[1]["holidays"]),
             to_int_or_round(i[1]["total"] - (to_int_or_round(i[1]["prod"]) + to_int_or_round(i[1]["unprod"]) + to_int_or_round(i[1]["holidays"])))) for i in total]
-
-    # Format consultant lines, fill holes with zero data and add client/company list
-    data = []
-    for consultant, staffing in consultant_staffing.items():
-        consultant_data = []
-        for month in months:
-             consultant_data.append(staffing.get(month, [0, 0, 0, available_month[month]]))
-        client_list = ", ".join(["<a href='%s'>%s</a>" %
-                                 (reverse("crm:company_detail", args=[c.id]), escape(c)) for c in consultant_clients.get(consultant, [])])
-        client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
-        consultant_data.append([client_list])
-        data.append([consultant, consultant_data])
 
     # Order staffing list
     data.sort(key=lambda x: x[0].name)  # Sort by name
