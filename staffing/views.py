@@ -350,17 +350,6 @@ def pdc_review(request, year=None, month=None):
     if "team_id" in request.GET:
         team = Consultant.objects.get(id=int(request.GET["team_id"]))
 
-    # Don't display this page if no productive consultant are defined
-    people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False)
-    if team:
-        people = people.filter(staffing_manager=team)
-    if subsidiary:
-        people = people.filter(staffing_manager__company=subsidiary)
-    people_count = people.count()
-    if people_count == 0:
-        # TODO: make this message nice
-        return HttpResponse(_("No consultant defined !"))
-
     n_month = 4  # Default number of month to display
     if "n_month" in request.GET:
         try:
@@ -432,7 +421,7 @@ def pdc_review(request, year=None, month=None):
     for staffing in chain(staffings, [None]):
         if month is None or staffing is None or month != staffing.staffing_date or consultant != staffing.consultant:
             # compute total for previous month and this consultant
-            if month or staffing is None: # at first loop, no total to compute. Last loop, current_staffing is None
+            if month or (staffing is None and consultant): # at first loop, no total to compute. Last loop, current_staffing is None
                 prod = sum(prod)
                 unprod = sum(unprod)
                 holidays = sum(holidays)
@@ -511,10 +500,16 @@ def pdc_review(request, year=None, month=None):
         rate = []
         ndays = len(consultant_staffing) * available_month[month]  # Total days for this month
         for indicator in ("prod", "unprod", "holidays", "available"):
-            if indicator == "holidays":
-                rate.append(100.0 * total[month][indicator] / ndays)
+            if ndays == 0:  # no data...
+                if indicator == "available":
+                    rate.append(100.0)
+                else:
+                    rate.append(0)
             else:
-                rate.append(100.0 * total[month][indicator] / (ndays - total[month]["holidays"]))
+                if indicator == "holidays":
+                    rate.append(100.0 * total[month][indicator] / ndays)
+                else:
+                    rate.append(100.0 * total[month][indicator] / (ndays - total[month]["holidays"]))
         rates.append(list(map(to_int_or_round, rate)))
 
     # Format total dict into list
