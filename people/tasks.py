@@ -107,7 +107,7 @@ def compute_consultant_tasks(consultant_id):
     if supplier_bills_count > 0:
         supplier_bills_age = (now.date() - supplier_bills.aggregate(Min("creation_date"))["creation_date__min"]).days
         supplier_bills_priority = get_task_priority(supplier_bills_age, (4, 7))
-        tasks.append((_("Supplier bills to review"), supplier_bills_count, reverse("billing:bill_review")+"#supplier_soondue_bills", supplier_bills_priority))
+        tasks.append((_("Supplier bills to review"), supplier_bills_count, reverse("billing:supplier_bills_validation"), supplier_bills_priority))
 
     # leads without tag
     leads_without_tag = consultant.active_leads().annotate(Count("tags")).filter(tags__count=0)
