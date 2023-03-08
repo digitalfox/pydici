@@ -106,7 +106,7 @@ def bill_review(request):
                    "user": request.user})
 
 @pydici_non_public
-@pydici_feature("billing_management")
+@pydici_feature("billing_request")
 def supplier_bills_validation(request):
     """Review and validate suppliers bills"""
     today = date.today()
