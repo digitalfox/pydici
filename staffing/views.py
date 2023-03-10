@@ -397,12 +397,15 @@ def pdc_review(request, year=None, month=None):
         available_month[month] = working_days(month, holidays_days)
 
     # Get consultants staffing
+    consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
     staffings = Staffing.objects.filter(consultant__productive=True, consultant__active=True, consultant__subcontractor=False)
     staffings = staffings.filter(staffing_date__gte=months[0], staffing_date__lte=months[-1])
     if team:
         staffings = staffings.filter(consultant__staffing_manager=team)
+        consultants = consultants.filter(staffing_manager=team)
     if subsidiary:
         staffings = staffings.filter(consultant__company=subsidiary)
+        consultants = consultants.filter(company=subsidiary)
     if projection in ("balanced", "full"):
         # Only exclude null (0%) mission
         staffings = staffings.filter(mission__probability__gt=0)
@@ -413,6 +416,7 @@ def pdc_review(request, year=None, month=None):
     staffings = staffings.order_by("consultant", "staffing_date")
     staffings = staffings.prefetch_related("consultant__staffing_manager")
     staffings = staffings.prefetch_related("mission__lead__client__organisation__company")
+    consultants = consultants.prefetch_related("staffing_manager")
 
     consultant = None
     month = None
@@ -480,6 +484,9 @@ def pdc_review(request, year=None, month=None):
 
     # Format consultant lines, fill holes with zero data, adjust available total and add client/company list
     data = []
+    for consultant in consultants:
+        if consultant not in consultant_staffing:
+            consultant_staffing[consultant] = {}
     for consultant, staffing in consultant_staffing.items():
         consultant_data = []
         for month in months:
