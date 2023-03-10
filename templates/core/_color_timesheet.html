@@ -85,15 +85,24 @@ $(document).ready(function()
         return false;
     });
 
-    $("input[class=timesheet-cycle]").on('touchstart', function(ev) {
+    // true if mobile user scroll
+    var timesheetInputTouchMove = false;
+    $("input[class=timesheet-cycle]").on('touchmove', function(ev) {
+        timesheetInputTouchMove = true;
+    });
+
+    $("input[class=timesheet-cycle]").on('touchend', function(ev) {
         event.stopPropagation();
-        event.preventDefault();
-        if(event.handled !== true) {
-            cycleitem($(this));
-            event.handled = true;
-        } else {
-            return false;
+        if (!timesheetInputTouchMove) {
+            event.preventDefault();
+            if (event.handled !== true) {
+                cycleitem($(this));
+                event.handled = true;
+            } else {
+                return false;
+            }
         }
+        timesheetInputTouchMove = false;
     });
 
     $("input[class=timesheet-keyboard]").change(function() {
