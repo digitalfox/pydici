@@ -23,6 +23,7 @@ from people.tasks import compute_consultant_tasks
 CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY = "Consultant.is_in_holidays%(id)s"
 TIMESHEET_IS_UP_TO_DATE_CACHE_KEY = "Consultant.timesheet_is_up_to_date%(id)s"
 CONSULTANT_TASKS_CACHE_KEY = "CONSULTANT_TASKS_%s"
+RATE_OBJECTIVE_CACHE_KEY = "RATE_OBJ_%s_%s_%s"
 
 
 class ConsultantProfile(models.Model):
@@ -128,6 +129,9 @@ class Consultant(models.Model):
 
     def get_rate_objective(self, working_date=None, rate_type="DAILY_RATE"):
         """Get the consultant rate objective for given date. rate_type can be DAILY_RATE (default) or PROD_RATE"""
+        r = cache.get(RATE_OBJECTIVE_CACHE_KEY % (self.id, working_date.isoformat(), rate_type))
+        if r:
+            return r
         rate_types = dict(RateObjective.RATE_TYPE).keys()
         if rate_type not in rate_types:
             raise ValueError("rate_type must be one of %s" % ", ".join(rate_types))
@@ -135,6 +139,7 @@ class Consultant(models.Model):
             working_date = date.today()
         rates = self.rateobjective_set.filter(start_date__lte=working_date, rate_type=rate_type).order_by("-start_date")
         if rates:
+            cache.set(RATE_OBJECTIVE_CACHE_KEY % (self.id, working_date.isoformat(), rate_type), rates[0], 60*60*24)
             return rates[0]
 
     def get_production_rate(self, start_date, end_date):
