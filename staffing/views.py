@@ -8,7 +8,7 @@ Pydici staffing views. Http request are processed here.
 from datetime import date, timedelta, datetime
 import csv
 import json
-from itertools import zip_longest
+from itertools import zip_longest, chain
 import codecs
 from collections import defaultdict
 
@@ -350,24 +350,12 @@ def pdc_review(request, year=None, month=None):
     if "team_id" in request.GET:
         team = Consultant.objects.get(id=int(request.GET["team_id"]))
 
-    # Don't display this page if no productive consultant are defined
-    people = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False)
-    if team:
-        people = people.filter(staffing_manager=team)
-    if subsidiary:
-        people = people.filter(staffing_manager__company=subsidiary)
-    people_count = people.count()
-    if people_count == 0:
-        # TODO: make this message nice
-        return HttpResponse(_("No productive consultant defined !"))
-
     n_month = 4  # Default number of month to display
-
     if "n_month" in request.GET:
         try:
             n_month = int(request.GET["n_month"])
-            if n_month > 12:
-                n_month = 12  # Limit to 12 month to avoid complex and useless month list computation
+            n_month = min(n_month, 12)
+            n_month = max(n_month, 2)
         except ValueError:
             pass
 
@@ -387,11 +375,12 @@ def pdc_review(request, year=None, month=None):
         start_date = date.today()
         start_date = start_date.replace(day=1)  # We use the first day to represent month
 
-    staffing = {}  # staffing data per month and per consultant
+    consultant_staffing = {}  # staffing data per month and per consultant
     total = {}  # total staffing data per month
     rates = []  # staffing rates per month
     available_month = {}  # available working days per month
     months = []  # list of month to be displayed
+    consultant_clients = {}  # Current consultant clients
 
     month = start_date
     for i in range(n_month):
@@ -408,76 +397,126 @@ def pdc_review(request, year=None, month=None):
         available_month[month] = working_days(month, holidays_days)
 
     # Get consultants staffing
-    consultants = Consultant.objects.filter(productive=True).filter(active=True).filter(subcontractor=False).select_related("staffing_manager")
+    consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
+    staffings = Staffing.objects.filter(consultant__productive=True, consultant__active=True, consultant__subcontractor=False)
+    staffings = staffings.filter(staffing_date__gte=months[0], staffing_date__lte=months[-1])
     if team:
+        staffings = staffings.filter(consultant__staffing_manager=team)
         consultants = consultants.filter(staffing_manager=team)
     if subsidiary:
+        staffings = staffings.filter(consultant__company=subsidiary)
         consultants = consultants.filter(company=subsidiary)
-    for consultant in consultants:
-        staffing[consultant] = []
-        missions = set()
-        for month in months:
-            if projection in ("balanced", "full"):
-                # Only exclude null (0%) mission
-                current_staffings = consultant.staffing_set.filter(staffing_date=month, mission__probability__gt=0).order_by()
-            else:
-                # Only keep 100% mission
-                current_staffings = consultant.staffing_set.filter(staffing_date=month, mission__probability=100).order_by()
+    if projection in ("balanced", "full"):
+        # Only exclude null (0%) mission
+        staffings = staffings.filter(mission__probability__gt=0)
+    else:
+        # Only keep 100% mission
+        staffings = staffings.filter(mission__probability=100)
 
-            # Sum staffing
+    staffings = staffings.order_by("consultant", "staffing_date")
+    staffings = staffings.prefetch_related("consultant__staffing_manager")
+    staffings = staffings.prefetch_related("mission__lead__client__organisation__company")
+    consultants = consultants.prefetch_related("staffing_manager")
+
+    consultant = None
+    month = None
+    missions = set()
+    # Iterate on staffing. Chain None as a flag for last loop to compute total
+    for staffing in chain(staffings, [None]):
+        if month is None or staffing is None or month != staffing.staffing_date or consultant != staffing.consultant:
+            # compute total for previous month and this consultant
+            if month or (staffing is None and consultant): # at first loop, no total to compute. Last loop, current_staffing is None
+                prod = sum(prod)
+                unprod = sum(unprod)
+                holidays = sum(holidays)
+                prod_round = to_int_or_round(prod)
+                unprod_round = to_int_or_round(unprod)
+                holidays_round = to_int_or_round(holidays)
+                available = available_month[month] - (prod + unprod + holidays)
+                available_displayed = to_int_or_round(available_month[month] - (prod_round + unprod_round + holidays_round))
+                consultant_staffing[consultant][month] = [prod_round, unprod_round, holidays_round, available_displayed]
+                total[month]["prod"] += prod
+                total[month]["unprod"] += unprod
+                total[month]["holidays"] += holidays
+                total[month]["available"] += available
+                total[month]["total"] += available_month[month]
+
+        if consultant and (staffing is None or consultant != staffing.consultant):
+            # end of line data for consultant - add client synthesis
+            consultant_clients[consultant] = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
+            missions = set()
+
+        if staffing is None:  # last month of last consultant. Exit loop
+            break
+
+        if consultant is None or consultant != staffing.consultant:
+            # Switch to new consultant and reset month
+            consultant = staffing.consultant
+            month = None
+            if consultant not in consultant_staffing:
+                consultant_staffing[consultant] = {}
+
+        if month != staffing.staffing_date:
+            # Switch to new month
+            month = staffing.staffing_date
             prod = []
             unprod = []
             holidays = []
-            for current_staffing in current_staffings.select_related("mission__lead__client__organisation__company"):
-                nature = current_staffing.mission.nature
-                if nature == "PROD":
-                    missions.add(current_staffing.mission)  # Store prod missions for this consultant
-                    if projection == "full":
-                        prod.append(current_staffing.charge)
-                    else:
-                        prod.append(current_staffing.charge * current_staffing.mission.probability / 100)
-                elif nature == "NONPROD":
-                    if projection == "full":
-                        unprod.append(current_staffing.charge)
-                    else:
-                        unprod.append(current_staffing.charge * current_staffing.mission.probability / 100)
-                elif nature == "HOLIDAYS":
-                    if projection == "full":
-                        holidays.append(current_staffing.charge)
-                    else:
-                        holidays.append(current_staffing.charge * current_staffing.mission.probability / 100)
 
-            # Staffing computation
-            prod = sum(prod)
-            unprod = sum(unprod)
-            holidays = sum(holidays)
-            prod_round = to_int_or_round(prod)
-            unprod_round = to_int_or_round(unprod)
-            holidays_round = to_int_or_round(holidays)
-            available = available_month[month] - (prod + unprod + holidays)
-            available_displayed = to_int_or_round(available_month[month] - (prod_round + unprod_round + holidays_round))
-            staffing[consultant].append([prod_round, unprod_round, holidays_round, available_displayed])
-            total[month]["prod"] += prod
-            total[month]["unprod"] += unprod
-            total[month]["holidays"] += holidays
-            total[month]["available"] += available
-            total[month]["total"] += available_month[month]
-        # Add client synthesis to staffing dict
-        company = set([m.lead.client.organisation.company for m in list(missions) if m.lead is not None])
+        # Do staffing computation
+        nature = staffing.mission.nature
+        if nature == "PROD":
+            missions.add(staffing.mission)  # Store prod missions for this consultant
+            if projection == "full":
+                prod.append(staffing.charge)
+            else:
+                prod.append(staffing.charge * staffing.mission.probability / 100)
+        elif nature == "NONPROD":
+            if projection == "full":
+                unprod.append(staffing.charge)
+            else:
+                unprod.append(staffing.charge * staffing.mission.probability / 100)
+        elif nature == "HOLIDAYS":
+            if projection == "full":
+                holidays.append(staffing.charge)
+            else:
+                holidays.append(staffing.charge * staffing.mission.probability / 100)
+
+    # Format consultant lines, fill holes with zero data, adjust available total and add client/company list
+    data = []
+    for consultant in consultants:
+        if consultant not in consultant_staffing:
+            consultant_staffing[consultant] = {}
+    for consultant, staffing in consultant_staffing.items():
+        consultant_data = []
+        for month in months:
+            consultant_data.append(staffing.get(month, [0, 0, 0, available_month[month]]))
+            if month not in staffing:
+                # Adjust available total as we fill a hole
+                total[month]["available"] += available_month[month]
+                total[month]["total"] += available_month[month]
         client_list = ", ".join(["<a href='%s'>%s</a>" %
-                                (reverse("crm:company_detail", args=[c.id]), escape(c)) for c in company])
+                                 (reverse("crm:company_detail", args=[c.id]), escape(c)) for c in
+                                 consultant_clients.get(consultant, [])])
         client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
-        staffing[consultant].append([client_list])
+        consultant_data.append([client_list])
+        data.append([consultant, consultant_data])
 
     # Compute indicator rates
     for month in months:
         rate = []
-        ndays = people_count * available_month[month]  # Total days for this month
+        ndays = len(consultant_staffing) * available_month[month]  # Total days for this month
         for indicator in ("prod", "unprod", "holidays", "available"):
-            if indicator == "holidays":
-                rate.append(100.0 * total[month][indicator] / ndays)
+            if ndays == 0:  # no data...
+                if indicator == "available":
+                    rate.append(100.0)
+                else:
+                    rate.append(0)
             else:
-                rate.append(100.0 * total[month][indicator] / (ndays - total[month]["holidays"]))
+                if indicator == "holidays":
+                    rate.append(100.0 * total[month][indicator] / ndays)
+                else:
+                    rate.append(100.0 * total[month][indicator] / (ndays - total[month]["holidays"]))
         rates.append(list(map(to_int_or_round, rate)))
 
     # Format total dict into list
@@ -490,12 +529,11 @@ def pdc_review(request, year=None, month=None):
             to_int_or_round(i[1]["total"] - (to_int_or_round(i[1]["prod"]) + to_int_or_round(i[1]["unprod"]) + to_int_or_round(i[1]["holidays"])))) for i in total]
 
     # Order staffing list
-    staffing = list(staffing.items())
-    staffing.sort(key=lambda x: x[0].name)  # Sort by name
+    data.sort(key=lambda x: x[0].name)  # Sort by name
     if groupby == "manager":
-        staffing.sort(key=lambda x: str(x[0].staffing_manager))  # Sort by staffing manager
+        data.sort(key=lambda x: str(x[0].staffing_manager))  # Sort by staffing manager
     else:
-        staffing.sort(key=lambda x: x[0].profil.level)  # Sort by level
+        data.sort(key=lambda x: x[0].profil.level)  # Sort by level
 
     scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
     if team:
@@ -504,7 +542,7 @@ def pdc_review(request, year=None, month=None):
         team_name = None
 
     return render(request, "staffing/pdc_review.html",
-                  {"staffing": staffing,
+                  {"staffing": data,
                    "months": months,
                    "total": total,
                    "rates": rates,
