@@ -7,7 +7,7 @@ Database access layer for pydici people module
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Max, Q
 from django.apps import apps
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -169,13 +169,12 @@ class Consultant(models.Model):
         if end_date is None:
             end_date = date.today()
         turnover = 0
-        timesheets = Timesheet.objects.filter(consultant=self, working_date__gte=start_date, working_date__lt=end_date, mission__nature="PROD").order_by("mission__id")
-        timesheets = timesheets.values_list("mission", "mission__billing_mode").annotate(Sum("charge"))
-        rates = dict(FinancialCondition.objects.filter(consultant=self, mission__in=[i[0] for i in timesheets]).values_list("mission", "daily_rate"))
-        for mission_id, billing_mode, charge in timesheets:
-            mission_turnover = charge * rates.get(mission_id, 0)
-            if billing_mode == "FIXED_PRICE":
-                mission = Mission.objects.get(id=mission_id)
+        missions = Mission.objects.filter(timesheet__consultant=self, financialcondition__consultant=self, timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date, nature="PROD")
+        missions = missions.order_by().annotate(charge__sum=Sum("timesheet__charge"))
+        missions = missions.annotate(rate=Max("financialcondition__daily_rate"))
+        for mission in missions:
+            mission_turnover = mission.charge__sum * (mission.rate or 0)
+            if mission.billing_mode == "FIXED_PRICE":
                 done_work = mission.done_work_k()[1]
                 price = float(mission.price or 0)
                 if done_work and (done_work > price or (not mission.active and done_work < price)):
