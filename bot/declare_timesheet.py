@@ -6,19 +6,18 @@ Conversational consultant timesheet declaration with telegram bot
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from asgiref.sync import sync_to_async
 from datetime import date
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ConversationHandler, CallbackQueryHandler, CommandHandler
 
-from django.db import transaction, close_old_connections
+from django.db import transaction
 from django.utils.translation import gettext as _
 
 from staffing.models import Mission, Timesheet
 from staffing.utils import check_timesheet_validity
 
-from bot.utils import check_user_is_declared
+from bot.utils import check_user_is_declared, db_sync_to_async
 
 # States
 MISSION_SELECT = "MISSION_SELECT"
@@ -29,7 +28,7 @@ NONPROD_BUTTON = InlineKeyboardButton(_("non productive mission?"), callback_dat
 END_TIMESHEET_BUTTON = InlineKeyboardButton(_("That's all for today !"), callback_data="END")
 
 
-@sync_to_async
+@db_sync_to_async
 def mission_keyboard(consultant, nature):
     keyboard = []
     for mission in consultant.forecasted_missions():
@@ -42,7 +41,7 @@ async def mission_timesheet(update, context):
     """Declare timesheet for given mission"""
     query = update.callback_query
     await query.answer()
-    mission = await sync_to_async(Mission.objects.get)(id=int(query.data))
+    mission = await db_sync_to_async(Mission.objects.get)(id=int(query.data))
     context.user_data["mission"] = mission
     keyboard = [
         [
@@ -54,7 +53,7 @@ async def mission_timesheet(update, context):
         ]
     ]
     await query.edit_message_text(
-        text=_("how much did you work on %(mission)s ? (%(time)s is remaining for today)") % {"mission": await sync_to_async(mission.short_name)(),
+        text=_("how much did you work on %(mission)s ? (%(time)s is remaining for today)") % {"mission": await db_sync_to_async(mission.short_name)(),
                                                                                               "time": 1 - sum(context.user_data["timesheet"].values())},
         reply_markup=InlineKeyboardMarkup(keyboard))
     return MISSION_TIMESHEET
@@ -74,7 +73,7 @@ async def end_timesheet(update, context):
     await query.edit_message_text(text=msg)
     return ConversationHandler.END
 
-@sync_to_async
+@db_sync_to_async
 def update_timesheet(context):
     """Update consultant timesheet and return summary message"""
     consultant = context.user_data["consultant"]
@@ -127,7 +126,6 @@ async def select_mission(update, context):
 
 async def declare_time(update, context):
     """Start timesheet session when user type /start"""
-    close_old_connections()
     if update.effective_chat.id < 0:
         await update.message.reply_text(_("I am too shy to do that in public. Let's go private :-)"))
         return ConversationHandler.END

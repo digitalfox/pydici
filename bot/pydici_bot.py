@@ -15,7 +15,6 @@ import logging
 from datetime import time
 import random
 import pytz
-from asgiref.sync import sync_to_async
 
 # Enable logging
 logging.basicConfig(
@@ -37,7 +36,6 @@ os.chdir(PYDICI_DIR)
 
 # Django imports
 from django.core.wsgi import get_wsgi_application
-from django.db import close_old_connections
 from django.utils.translation import gettext as _
 from django.conf import settings
 from django.core.cache import cache
@@ -50,7 +48,7 @@ application = get_wsgi_application()
 from core.utils import get_parameter
 
 # Bot import
-from bot.utils import check_user_is_declared, outside_business_hours, get_consultants, time_to_declare
+from bot.utils import check_user_is_declared, outside_business_hours, get_consultants, time_to_declare, db_sync_to_async
 from bot.declare_timesheet import declare_time_entry_points, declare_time_states
 
 logger = logging.getLogger(__name__)
@@ -58,7 +56,6 @@ logger = logging.getLogger(__name__)
 
 async def alert_consultant(context):
     """Randomly alert consultant about important stuff to do"""
-    close_old_connections()
     if outside_business_hours():
         return
 
@@ -68,7 +65,7 @@ async def alert_consultant(context):
         logger.warning("No consultant have telegram id defined. Alerting won't be possible. Bye")
         return
     consultant = random.choice(consultants)
-    if await sync_to_async(consultant.is_in_holidays)():
+    if await db_sync_to_async(consultant.is_in_holidays)():
         # don't bother people during holidays
         return
     cache_key = "BOT_ALERT_CONSULTANT_LAST_PERIOD_%s" % consultant.trigramme
@@ -76,11 +73,11 @@ async def alert_consultant(context):
         # don't persecute people :-)
         return
 
-    tasks = await sync_to_async(consultant.get_tasks)()
+    tasks = await db_sync_to_async(consultant.get_tasks)()
     if tasks:
         cache.set(cache_key, 1, 3600 * 12)  # Keep track 12 hours that this user has been alerted
         task_name, task_count, task_link, task_priority = random.choice(tasks)
-        url = await sync_to_async(get_parameter)("HOST") + task_link
+        url = await db_sync_to_async(get_parameter)("HOST") + task_link
         msg = _("Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n%(link)s") % {"task_name": task_name,
                                                                                                      "task_count": task_count,
                                                                                                      "link": url.replace(" ", "%20")}
@@ -92,7 +89,6 @@ async def alert_consultant(context):
 
 async def call_for_timesheet(context):
     """If needed, remind people to declare timesheet of current day"""
-    close_old_connections()
     if outside_business_hours():
         return
     msg = _("""Hope the day was fine. Time to declare your timesheet no? Just click /time""")
@@ -106,12 +102,11 @@ async def call_for_timesheet(context):
             except telegram.error.Forbidden:
                 # We have been banned :-( Opt out user
                 consultant.telegram_id = None
-                await sync_to_async(consultant.save)()
+                await db_sync_to_async(consultant.save)()
 
 
 async def help(update, context):
     """Bot help"""
-    close_old_connections()
     consultant = await check_user_is_declared(update, context)
     if consultant is None:
         return ConversationHandler.END
@@ -128,7 +123,6 @@ async def help(update, context):
 
 async def hello(update, context):
     """Bot introduction. Allow to receive alerts after this first meeting"""
-    close_old_connections()
     consultant = await check_user_is_declared(update, context)
     if consultant is None:
         return ConversationHandler.END
@@ -139,7 +133,7 @@ async def hello(update, context):
         await update.message.reply_text(_("very happy to see you again !"))
     else:
         consultant.telegram_id = user.id
-        await sync_to_async(consultant.save)()
+        await db_sync_to_async(consultant.save)()
         await update.message.reply_text(_("I very pleased to meet you !"))
 
     return ConversationHandler.END
@@ -147,7 +141,6 @@ async def hello(update, context):
 
 async def bye(update, context):
     """Allow to erase consultant telegram id"""
-    close_old_connections()
     consultant = await check_user_is_declared(update, context)
     if consultant is None:
         return ConversationHandler.END
@@ -155,7 +148,7 @@ async def bye(update, context):
     if consultant.telegram_id:
         await update.message.reply_text(_("I am so sad you leave me so early... Whenever you want to come back, just say /hello and we will be happy together again !"))
         consultant.telegram_id = None
-        await sync_to_async(consultant.save)()
+        await db_sync_to_async(consultant.save)()
     else:
         await update.message.reply_text(_("Do we met ?"))
 
