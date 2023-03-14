@@ -5,7 +5,7 @@
 
 {% block extrajs %}
     <script src="{{ MEDIA_URL }}js/graphology.min.js"></script>
-    <script src="{{ MEDIA_URL }}js/graphology-library.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/graphology-library.js"></script>
     <script src="{{ MEDIA_URL }}js/sigma.min.js"></script>
 {% endblock %}
 
@@ -22,9 +22,13 @@
         edges: {{ edges|safe }}
       });
 
-      // Layout
+      // Layout, first random, then Atlas2
       graphologyLibrary.layout.random.assign(graph);
-      //graphologyLibrary.layoutForceAtlas2.assign(graph);
+      var atlasSettings = graphologyLibrary.layoutForceAtlas2.inferSettings(graph);
+      graphologyLibrary.layoutForceAtlas2.assign(graph, {iterations: 200, settings: atlasSettings});
+
+      // issue with size
+      //graphologyLibrary.metrics.centrality.degree.assign(graph, {nodeCentralityAttribute: 'size'});
 
       // Initialize sigma:
       var s = new Sigma(graph, document.getElementById('sigma-container'));

@@ -190,6 +190,7 @@ def consultant_network(request):
 
     # Get nodes as Consultant objects and compute their lifetime across timesheet selection
     nodes = Consultant.objects.filter(id__in=ts.order_by("consultant").values_list("consultant", flat=True))
+    nodes = nodes.filter(active=True, subcontractor=False)
     nodes = {c.trigramme: c for c in nodes}
     lifetime = {k: ts.filter(consultant=v).aggregate(Min("working_date"), Max("working_date")) for k, v in
                 nodes.items()}
@@ -203,7 +204,6 @@ def consultant_network(request):
         if t["mission"] not in missions:
             missions[t["mission"]] = {}
         missions[t["mission"]][t["consultant__trigramme"]] = t["charge__sum"]
-
 
     # Compute edges combinations
     edges = {}
@@ -224,6 +224,9 @@ def consultant_network(request):
 
     # Ponderate charge on consultant shared lifetime in % of the youngest
     for (c1, c2), charge in edges.copy().items():
+        if c1 not in lifetime or c2 not in lifetime:
+            del edges[(c1, c2)]
+            continue
         shared_lifetime = min(lifetime[c1]["working_date__max"], lifetime[c2]["working_date__max"]) - max(lifetime[c1]["working_date__min"], lifetime[c2]["working_date__min"])
         shared_lifetime = shared_lifetime / min(lifetime[c1]["working_date__max"]-lifetime[c1]["working_date__min"], lifetime[c2]["working_date__max"]-lifetime[c2]["working_date__min"])
         if shared_lifetime > 0:
@@ -231,13 +234,17 @@ def consultant_network(request):
         else: # consultant never met even if they work on the same mission
             del edges[(c1, c2)]
 
+    # colors//
+    company_colors = dict(zip(Subsidiary.objects.all(), ["blue", "green", "teal", "red"]))
     # Serialize data on graphology format
-    edges = [{"key":f"{c1}=>{c2}", "source": c1, "target": c2, "attributes": {"charge": charge}} for (c1, c2), charge in edges.items()]
+    edges = [{"key":f"{c1}=>{c2}", "source": c1, "target": c2, "attributes": {"size": charge/100}} for (c1, c2), charge in edges.items()]
 
-    nodes = [{"key": k, "attributes": {"name": v.name, "company": str(v.company), "active": v.active,
+    nodes = [{"key": k, "attributes": {"label": v.name, "company": str(v.company), "active": v.active,
+                                       "color": company_colors[v.company],
                                        "start": lifetime[k]["working_date__min"].isoformat(),
                                        "end": lifetime[k]["working_date__max"].isoformat(),
                                        "profil": str(v.profil)}} for k, v in nodes.items()]
+
 
     return render(request, "people/consultant_network.html",
                   {"edges": json.dumps(edges),
