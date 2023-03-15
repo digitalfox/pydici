@@ -1382,6 +1382,88 @@ def detailed_csv_timesheet(request, year=None, month=None):
 
     return response
 
+@pydici_non_public
+@pydici_feature("management")
+def holiday_csv_timesheet(request, year=None, month=None):
+    """Export holidays timesheet in a convenient format for pay application"""
+    if year and month:
+        month = date(int(year), int(month), 1)
+    else:
+        month = previousMonth(date.today().replace(day=1))
+    holidays_days = Holiday.objects.all().values_list("day", flat=True)
+    subsidiary = get_subsidiary_from_session(request)
+
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = "attachment; filename=%s" % _("holidays_timesheet.csv")
+    response.write(codecs.BOM_UTF8)  # Poor excel needs tiger bom to understand UTF-8 easily
+
+    writer = csv.writer(response, delimiter=';')
+
+    consultants = Consultant.objects.filter(subcontractor=False)
+
+    if subsidiary:
+        consultants = consultants.filter(company=subsidiary)
+
+    # gather missions holidays types
+    holidays_types = Mission.objects.filter(nature="HOLIDAYS", timesheet__working_date__gte=month, timesheet__working_date__lt=nextMonth(month))
+    holidays_types = holidays_types.filter(timesheet__consultant__in=consultants).distinct()
+
+    holidays = {}  # Holidays segments. Key is consultant, value is dict with holiday type as key and value the list of timesheet
+    for consultant in consultants:
+        timesheets = Timesheet.objects.filter(consultant=consultant)
+        timesheets = timesheets.filter(working_date__gte=month,  working_date__lt=nextMonth(month))
+        # no timesheet at all ? forget about this one
+        if timesheets.count() == 0:
+            continue
+        timesheets = timesheets.filter(mission__nature = "HOLIDAYS")
+        timesheets = timesheets.order_by("working_date")
+        holidays[consultant] = {m: [] for m in holidays_types}
+        current_holiday = [] # current holiday segment, as a list of Timesheet objects
+        for timesheet in timesheets:
+            if current_holiday:
+                # Is it a continuation or a new segment ?
+                change_type = current_holiday[-1].mission != timesheet.mission
+                day_break = (timesheet.working_date.day - current_holiday[-1].working_date.day) > 1
+                consecutive_partial_day = timesheet.charge < 1 and current_holiday[-1].charge < 1
+                if day_break:  # Real break or just a continuation over weekend or public holiday day ?
+                    yesterday = timesheet.working_date
+                    while True:
+                        yesterday -= timedelta(1)
+                        print(yesterday)
+                        if yesterday.weekday() in (5, 6) or yesterday in holidays_days:
+                            continue
+                        if yesterday == current_holiday[-1].working_date:
+                            day_break = False  # It was really a continuation over weekend or public holiday day
+                        break
+                if change_type or day_break or consecutive_partial_day:
+                    # new holiday segment
+                    holidays[consultant][current_holiday[0].mission].append(current_holiday)
+                    current_holiday = [timesheet]
+                else:
+                    # continuation
+                    current_holiday.append(timesheet)
+            else:
+                # Start a new holiday segment
+                current_holiday = [timesheet]
+        # End of looping of consultant timesheet. Handle last holidays segment
+        if current_holiday:
+            holidays[consultant][current_holiday[0].mission].append(current_holiday)
+
+    title = [_("trigramme"), _("name"), _("profil"), _("company"), _("type"), _("start"), _("end"), _("total")]
+    writer.writerow(title)
+    for consultant, consultant_holidays in holidays.items():
+        for holiday_mission, segments in holidays[consultant].items():
+            base_row = [consultant.trigramme, consultant.name, str(consultant.profil), consultant.company, holiday_mission]
+            for segment in holidays[consultant][holiday_mission]:
+                row = base_row.copy()
+                row.append(segment[0].working_date)
+                row.append(segment[-1].working_date)
+                row.append(sum([t.charge for t in segment]))
+                writer.writerow(row)
+
+    return response
+
+
 
 @pydici_non_public
 @pydici_feature("management")
