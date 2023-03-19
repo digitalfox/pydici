@@ -8,6 +8,7 @@ Test cases for staffing
 
 from unittest import mock
 from io import StringIO
+import csv
 
 from django.test import TestCase, override_settings
 from django.core.cache import cache
@@ -181,6 +182,13 @@ class StaffingViewsTest(TestCase):
         Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 31), charge=1).save()
 
         response = self.client.get(reverse("staffing:holiday_csv_timesheet", kwargs={"year":2023, "month":3}))
+        self.assertEqual(response.status_code, 200)
+        r = list(csv.reader(response.content.decode(response.charset).splitlines(), delimiter=";"))
+        self.assertEqual([8, 8, 8, 8, 8, 8, 8], [len(i) for i in r])
+        self.assertEqual(len(r), 7)
+        self.assertEqual(set([i[0] for i in r[1:]]), {c1.trigramme})
+        self.assertEqual(sum([float(i[-1]) for i in r[1:]]), 11.5)
+
 
 
 

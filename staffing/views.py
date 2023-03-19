@@ -1429,7 +1429,6 @@ def holiday_csv_timesheet(request, year=None, month=None):
                     yesterday = timesheet.working_date
                     while True:
                         yesterday -= timedelta(1)
-                        print(yesterday)
                         if yesterday.weekday() in (5, 6) or yesterday in holidays_days:
                             continue
                         if yesterday == current_holiday[-1].working_date:
