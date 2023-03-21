@@ -15,7 +15,7 @@ from django.core.cache import cache
 
 from datetime import date, timedelta
 
-from core.utils import capitalize, cacheable, previousMonth, working_days
+from core.utils import capitalize, cacheable, previousMonth, nextMonth, working_days
 from crm.models import Subsidiary, Supplier
 from people.tasks import compute_consultant_tasks
 
@@ -278,6 +278,19 @@ class Consultant(models.Model):
             td = list(Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values())[0] or 0
             result.append(wd - td)
         return result
+
+    def staffing_overload(self):
+        """return tuple (current month over staffing overload, next month overload). Negative values mean available days"""
+        Staffing = apps.get_model("staffing", "Staffing")  # Get Staffing with get_model to avoid circular imports
+        from staffing.utils import holidayDays  # Idem
+        result = []
+        current_month = date.today().replace(day=1)
+        for month, up_to in ((current_month, nextMonth(current_month)), (nextMonth(current_month), nextMonth((nextMonth(current_month))))):
+            md = working_days(month, holidayDays(month))
+            sd = Staffing.objects.filter(consultant=self, staffing_date__gte=month, staffing_date__lt=up_to).aggregate(Sum("charge"))["charge__sum"] or 0
+            result.append(sd - md)
+        return result
+
 
     def get_tasks(self):
         """gather all tasks consultant should do
