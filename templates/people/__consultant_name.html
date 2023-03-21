@@ -29,20 +29,20 @@
     {% endwith %}
     {% with staffing_overload=consultant.staffing_overload %}
         {% with current_overload=staffing_overload.0 future_overload=staffing_overload.1 %}
-            {% if current_overload > 2 %}
+            {% if current_overload > 3 %}
                 <i title="{% blocktrans %} {{ current_overload }} days in excess in current month staffing{% endblocktrans %}"
                             {% if current_overload > 5 %}
                                 style="color:red"
-                            {% elif current_overload > 3 %}
+                            {% elif current_overload > 4 %}
                                 style="color:orange"
                             {% endif %}
                               class="pydici-tooltip bi bi-calendar3"></i>
             {% endif %}
-            {% if future_overload > 2 %}
+            {% if future_overload > 3 %}
                 <i title="{% blocktrans %} {{ future_overload }} days in excess in next month staffing{% endblocktrans %}"
                             {% if future_overload > 5 %}
                                 style="color:red"
-                            {% elif future_overload > 3 %}
+                            {% elif future_overload > 4 %}
                                 style="color:orange"
                             {% endif %}
                               class="pydici-tooltip bi bi-calendar3"></i>
