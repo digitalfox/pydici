@@ -287,7 +287,8 @@ class Consultant(models.Model):
         current_month = date.today().replace(day=1)
         for month, up_to in ((current_month, nextMonth(current_month)), (nextMonth(current_month), nextMonth((nextMonth(current_month))))):
             md = working_days(month, holidayDays(month))
-            sd = Staffing.objects.filter(consultant=self, staffing_date__gte=month, staffing_date__lt=up_to).aggregate(Sum("charge"))["charge__sum"] or 0
+            sd = Staffing.objects.filter(consultant=self, staffing_date__gte=month, staffing_date__lt=up_to)
+            sd = sd.aggregate(p_charge=Sum(F("charge")*F("mission__probability")/100))["p_charge"] or 0
             result.append(sd - md)
         return result
 
