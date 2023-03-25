@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-21 23:09+0100\n"
-"PO-Revision-Date: 2023-03-21 23:09+0100\n"
+"POT-Creation-Date: 2023-03-25 17:21+0100\n"
+"PO-Revision-Date: 2023-03-25 17:21+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -515,7 +515,7 @@ msgid "Responsible"
 msgstr "Responsable"
 
 #: billing/views.py:150 crm/models.py:76 leads/models.py:91 people/models.py:46
-#: people/models.py:322 staffing/models.py:40 staffing/models.py:84
+#: people/models.py:323 staffing/models.py:40 staffing/models.py:84
 #: templates/billing/client_bills_archive.html:13
 #: templates/billing/client_bills_in_creation.html:13
 #: templates/billing/payment_delay.html:51
@@ -1039,7 +1039,7 @@ msgstr "Pays"
 
 #: crm/models.py:48 crm/models.py:149 crm/models.py:469 expense/models.py:67
 #: leads/models.py:68 leads/views.py:200 people/models.py:31
-#: people/models.py:320 templates/crm/clientcompany_detail.html:362
+#: people/models.py:321 templates/crm/clientcompany_detail.html:362
 #: templates/leads/manage_tags.html:22 templates/leads/review.html:45
 #: templates/leads/review.html:78
 #: templates/staffing/consultant_missions.html:10
@@ -1084,7 +1084,7 @@ msgstr "Organisation"
 msgid "Client company"
 msgstr "Société client"
 
-#: crm/models.py:151 people/models.py:325
+#: crm/models.py:151 people/models.py:326
 #: templates/staffing/mission_contacts.html:16
 msgid "Phone"
 msgstr "Téléphone"
@@ -1183,7 +1183,7 @@ msgstr "Perspectives"
 msgid "Strategic alignment"
 msgstr "Alignement stratégique"
 
-#: crm/models.py:321 people/models.py:48 people/models.py:323
+#: crm/models.py:321 people/models.py:48 people/models.py:324
 #: staffing/models.py:41 staffing/models.py:78
 msgid "Active"
 msgstr "Active"
@@ -1504,7 +1504,7 @@ msgstr ""
 "Les dernières affaires actives dont je suis responsable ou ressource "
 "pressentie"
 
-#: leads/forms.py:75 leads/models.py:73 leads/views.py:200 people/models.py:337
+#: leads/forms.py:75 leads/models.py:73 leads/views.py:200 people/models.py:338
 #: templates/core/index.html:15 templates/core/index.html:40
 #: templates/core/index.html:64 templates/core/index.html:88
 #: templates/leads/lead_detail.html:154
@@ -1626,7 +1626,7 @@ msgstr "Montant (k€)"
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:79 leads/views.py:200 people/models.py:313
+#: leads/models.py:79 leads/views.py:200 people/models.py:314
 msgid "Starting"
 msgstr "Démarrage"
 
@@ -1794,7 +1794,7 @@ msgstr "Profil"
 msgid "Subcontractor"
 msgstr "Sous-traitant"
 
-#: people/models.py:310 staffing/views.py:1579
+#: people/models.py:311 staffing/views.py:1579
 #: templates/people/consultant_detail.html:237
 #: templates/people/consultant_detail.html:243
 #: templates/staffing/_consultant_prod_tooltip.html:2
@@ -1802,7 +1802,7 @@ msgstr "Sous-traitant"
 msgid "daily rate"
 msgstr "taux journalier"
 
-#: people/models.py:311 staffing/views.py:1564 staffing/views.py:2095
+#: people/models.py:312 staffing/views.py:1564 staffing/views.py:2095
 #: templates/staffing/_consultant_prod_tooltip.html:1
 #: templates/staffing/graph_timesheet_rates_bar.html:15
 #: templates/staffing/graph_timesheet_rates_bar.html:25
@@ -1810,15 +1810,15 @@ msgstr "taux journalier"
 msgid "production rate"
 msgstr "taux de production"
 
-#: people/models.py:314
+#: people/models.py:315
 msgid "Rate"
 msgstr "Taux"
 
-#: people/models.py:315
+#: people/models.py:316
 msgid "Rate type"
 msgstr "Type de taux"
 
-#: people/models.py:338
+#: people/models.py:339
 msgid "Salesmen"
 msgstr "Commerciaux"
 
@@ -4516,16 +4516,15 @@ msgstr " %(days)s jour(s) manquant(s) dans la feuille de temps du mois dernier"
 msgid " %(days)s days missing in current month timesheet"
 msgstr " %(days)s jour(s) manquant(s) dans la feuille de temps de ce mois"
 
-#: templates/people/__consultant_name.html:33
+#: templates/people/__consultant_name.html:34
 #, python-format
-msgid " %(current_overload)s days in excess in current month staffing"
-msgstr " %(current_overload)s jours en trop dans le plan charge de ce mois"
+msgid " %(days)s days in excess in current month staffing"
+msgstr " %(days)s jours en trop dans le plan charge de ce mois"
 
-#: templates/people/__consultant_name.html:42
+#: templates/people/__consultant_name.html:45
 #, python-format
-msgid " %(future_overload)s days in excess in next month staffing"
-msgstr ""
-" %(future_overload)s jours en trop dans le plan charge du mois prochain"
+msgid " %(days)s days in excess in next month staffing"
+msgstr " %(days)s jours en trop dans le plan charge du mois prochain"
 
 #: templates/people/consultant.html:11
 msgid "Forecast/timesheet "
