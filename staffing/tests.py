@@ -8,6 +8,7 @@ Test cases for staffing
 
 from unittest import mock
 from io import StringIO
+import csv
 
 from django.test import TestCase, override_settings
 from django.core.cache import cache
@@ -16,7 +17,7 @@ from django.contrib.auth.models import User
 
 from staffing import utils
 from leads.models import Lead
-from staffing.models import Mission, Staffing, Timesheet, FinancialCondition
+from staffing.models import Mission, Staffing, Timesheet, FinancialCondition, Holiday
 from staffing.optim import solve_pdc, display_solver_solution
 from people.models import Consultant, RateObjective
 from core.utils import previousMonth, nextMonth
@@ -153,6 +154,45 @@ class StaffingViewsTest(TestCase):
         self.assertListEqual(data[2], [None, [13, 20, 33, 30.6], [5, 14, 19, 17.3], [52, 47.9],
                                        [11.9, 18.7], [4.3, 13],
                                        [915.4, 935, 927.3], [860, 928.6, 910.5]])
+
+    def test_holiday_csv_timesheet(self):
+        #TODO: inject holidays days and timesheet on fixed month with holes and holidays in first and last open days
+        self.client.force_login(self.test_user)
+        c1 = Consultant.objects.get(id=1)
+        # create various holidays missions
+        h1 = Mission(nature="HOLIDAYS", description="holiday 1", subsidiary=c1.company)
+        h1.save()
+        h2 = Mission(nature="HOLIDAYS", description="holiday 2", subsidiary=c1.company)
+        h2.save()
+        # inject some public holiday
+        Holiday(day=date(2023,3,14)).save()
+        Holiday(day=date(2023, 3, 24)).save()
+        # create some holiday timesheet on this month
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 1), charge=1).save()
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 2), charge=0.5).save()
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 6), charge=1).save()
+        Timesheet(consultant=c1, mission=h2, working_date=date(2023, 3, 7), charge=1).save()
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 10), charge=1).save()
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 13), charge=1).save()
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 15), charge=1).save()
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 23), charge=1).save()
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 27), charge=1).save()
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 29), charge=1).save()
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 30), charge=1).save()
+        Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 31), charge=1).save()
+
+        response = self.client.get(reverse("staffing:holiday_csv_timesheet", kwargs={"year":2023, "month":3}))
+        self.assertEqual(response.status_code, 200)
+        r = list(csv.reader(response.content.decode(response.charset).splitlines(), delimiter=";"))
+        self.assertEqual([8, 8, 8, 8, 8, 8, 8], [len(i) for i in r])
+        self.assertEqual(len(r), 7)
+        self.assertEqual(set([i[0] for i in r[1:]]), {c1.trigramme})
+        self.assertEqual(sum([float(i[-1]) for i in r[1:]]), 11.5)
+
+
+
+
+
 
 
 class OptimTest(TestCase):

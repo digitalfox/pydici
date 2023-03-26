@@ -475,6 +475,7 @@ class Staffing(models.Model):
     consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
     mission = models.ForeignKey(Mission, limit_choices_to={"active": True}, on_delete=models.CASCADE)
     staffing_date = models.DateField(_("Date"))
+    staffing_date.db_index = True  # Because time is in third position on uniq index defined below
     charge = models.FloatField(_("Load"), default=0)
     comment = models.CharField(_("Comments"), max_length=500, blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
@@ -492,7 +493,8 @@ class Staffing(models.Model):
 
     class Meta:
         unique_together = (("consultant", "mission", "staffing_date"),)
-        ordering = ["staffing_date", "consultant"]
+        ordering = ["staffing_date", "consultant", "-mission__nature",
+                    "mission__lead__client__organisation__company__name", "mission__description", "id"]
         verbose_name = _("Staffing")
 
 
@@ -501,6 +503,7 @@ class Timesheet(models.Model):
     consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
     mission = models.ForeignKey(Mission, limit_choices_to={"active": True}, on_delete=models.CASCADE)
     working_date = models.DateField(_("Date"))
+    working_date.db_index = True  # Because time is in third position on uniq index defined below
     charge = models.FloatField(_("Load"), default=0)
 
     def __str__(self):

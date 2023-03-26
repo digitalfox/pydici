@@ -11,7 +11,7 @@
         {% with previous_month_late=late_timesheet|first current_month_late=late_timesheet|last %}
             {% if previous_month_late > 0 %}
                 {% with days=previous_month_late|floatformat:-1 %}
-                    <i title="{% blocktrans %} {{ days }} days missing in last month timesheet{% endblocktrans %}" style="color:red" class="pydici-tooltip bi bi-exclamation-triangle"></i>
+                    <i title="{% blocktrans %} {{ days }} days missing in last month timesheet{% endblocktrans %}" style="color:red" class="pydici-tooltip bi bi-clock"></i>
                 {% endwith %}
             {% endif %}
             {% if current_month_late > 0 %}
@@ -22,7 +22,33 @@
                         {% elif current_month_late > 4 %}
                             style="color:orange"
                         {% endif %}
-                          class="pydici-tooltip bi bi-exclamation-triangle"></i>
+                          class="pydici-tooltip bi bi-clock"></i>
+                {% endwith %}
+            {% endif %}
+        {% endwith %}
+    {% endwith %}
+    {% with staffing_overload=consultant.staffing_overload %}
+        {% with current_overload=staffing_overload.0 future_overload=staffing_overload.1 %}
+            {% if current_overload > 3 %}
+                {% with days=current_overload|floatformat:-1 %}
+                <i title="{% blocktrans %} {{ days }} days in excess in current month staffing{% endblocktrans %}"
+                            {% if current_overload > 5 %}
+                                style="color:red"
+                            {% elif current_overload > 4 %}
+                                style="color:orange"
+                            {% endif %}
+                              class="pydici-tooltip bi bi-calendar3"></i>
+                {% endwith %}
+            {% endif %}
+            {% if future_overload > 3 %}
+                {% with days=future_overload|floatformat:-1 %}
+                <i title="{% blocktrans %} {{ days }} days in excess in next month staffing{% endblocktrans %}"
+                            {% if future_overload > 5 %}
+                                style="color:red"
+                            {% elif future_overload > 4 %}
+                                style="color:orange"
+                            {% endif %}
+                              class="pydici-tooltip bi bi-calendar3"></i>
                 {% endwith %}
             {% endif %}
         {% endwith %}

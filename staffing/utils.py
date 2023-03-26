@@ -377,3 +377,22 @@ def check_missions_min_charge(missions, month):
             offending_missions.append(mission)
 
     return offending_missions
+
+
+def check_timesheet_validity(missions, consultant, month):
+    """Execute all check that must be done before saving timesheet.
+    It's up to the caller to encapsulate this in a transaction and commit or rollback according to results
+    Checks done: check_missions_limited_mode, check_missions_limited_individual_mode, check_missions_min_charge
+    :return potential errors or None if everything is fine"""
+    limited_mode_offending_missions = check_missions_limited_mode(missions)
+    if limited_mode_offending_missions:
+        return _("Timesheet exceeds mission price and management is set as 'limited' (%s)") %\
+            ", ".join([str(m) for m in limited_mode_offending_missions])
+    min_charge_offending_missions = check_missions_min_charge(missions, month)
+    if min_charge_offending_missions:
+        return _("Charge cannot be below minimum threshold  (%s)") %\
+            ", ".join([f"{m} : {m.min_charge_per_day} "for m in min_charge_offending_missions])
+    limited_individual_mode_offending_missions = check_missions_limited_individual_mode(missions, consultant, month)
+    if limited_individual_mode_offending_missions:
+        return _("Charge cannot exceed forecast (%s)") %\
+            ", ".join([str(m) for m in limited_individual_mode_offending_missions])

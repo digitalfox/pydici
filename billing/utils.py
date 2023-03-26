@@ -168,7 +168,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
             data.append(legacy_bill_data)
         # Add chargeable expense
         expenses = Expense.objects.filter(lead=lead, chargeable=True)
-        bill_expenses = BillExpense.objects.filter(bill__lead=lead).exclude(expense_date=None)
+        bill_expenses = BillExpense.objects.filter(bill__lead=lead, bill__state__in=bill_state).exclude(expense_date=None)
         for qs, label, way in ((expenses, _("Expense"), 1), (bill_expenses, _("Expense bill"), -1)):
             qs = qs.annotate(month=TruncMonth("expense_date")).order_by("month").values("month")
             for month, amount in qs.annotate(Sum("amount")).values_list("month", "amount__sum"):

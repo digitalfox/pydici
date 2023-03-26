@@ -22,3 +22,5 @@ celerybeat-schedule
 package-lock.json
 dump.rdb
 pydici/settings/local.py
+media/favicon-*
+media/pydici/company_logo-*

@@ -7,7 +7,7 @@ Database access layer for pydici people module
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Max, Q
 from django.apps import apps
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -15,7 +15,7 @@ from django.core.cache import cache
 
 from datetime import date, timedelta
 
-from core.utils import capitalize, cacheable, previousMonth, working_days
+from core.utils import capitalize, cacheable, previousMonth, nextMonth, working_days
 from crm.models import Subsidiary, Supplier
 from people.tasks import compute_consultant_tasks
 
@@ -23,6 +23,7 @@ from people.tasks import compute_consultant_tasks
 CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY = "Consultant.is_in_holidays%(id)s"
 TIMESHEET_IS_UP_TO_DATE_CACHE_KEY = "Consultant.timesheet_is_up_to_date%(id)s"
 CONSULTANT_TASKS_CACHE_KEY = "CONSULTANT_TASKS_%s"
+RATE_OBJECTIVE_CACHE_KEY = "RATE_OBJ_%s_%s_%s"
 
 
 class ConsultantProfile(models.Model):
@@ -51,7 +52,7 @@ class Consultant(models.Model):
     subcontractor = models.BooleanField(_("Subcontractor"), default=False)
     subcontractor_company = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
     telegram_alias = models.CharField(max_length=50, null=True, blank=True)
-    telegram_id = models.IntegerField(null=True)
+    telegram_id = models.BigIntegerField(null=True)
 
     def __str__(self):
         return self.name
@@ -128,6 +129,9 @@ class Consultant(models.Model):
 
     def get_rate_objective(self, working_date=None, rate_type="DAILY_RATE"):
         """Get the consultant rate objective for given date. rate_type can be DAILY_RATE (default) or PROD_RATE"""
+        r = cache.get(RATE_OBJECTIVE_CACHE_KEY % (self.id, working_date.isoformat(), rate_type))
+        if r:
+            return r
         rate_types = dict(RateObjective.RATE_TYPE).keys()
         if rate_type not in rate_types:
             raise ValueError("rate_type must be one of %s" % ", ".join(rate_types))
@@ -135,6 +139,7 @@ class Consultant(models.Model):
             working_date = date.today()
         rates = self.rateobjective_set.filter(start_date__lte=working_date, rate_type=rate_type).order_by("-start_date")
         if rates:
+            cache.set(RATE_OBJECTIVE_CACHE_KEY % (self.id, working_date.isoformat(), rate_type), rates[0], 60*60*24)
             return rates[0]
 
     def get_production_rate(self, start_date, end_date):
@@ -164,13 +169,12 @@ class Consultant(models.Model):
         if end_date is None:
             end_date = date.today()
         turnover = 0
-        timesheets = Timesheet.objects.filter(consultant=self, working_date__gte=start_date, working_date__lt=end_date, mission__nature="PROD").order_by("mission__id")
-        timesheets = timesheets.values_list("mission", "mission__billing_mode").annotate(Sum("charge"))
-        rates = dict(FinancialCondition.objects.filter(consultant=self, mission__in=[i[0] for i in timesheets]).values_list("mission", "daily_rate"))
-        for mission_id, billing_mode, charge in timesheets:
-            mission_turnover = charge * rates.get(mission_id, 0)
-            if billing_mode == "FIXED_PRICE":
-                mission = Mission.objects.get(id=mission_id)
+        missions = Mission.objects.filter(timesheet__consultant=self, financialcondition__consultant=self, timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date, nature="PROD")
+        missions = missions.order_by().annotate(charge__sum=Sum("timesheet__charge"))
+        missions = missions.annotate(rate=Max("financialcondition__daily_rate"))
+        for mission in missions:
+            mission_turnover = mission.charge__sum * (mission.rate or 0)
+            if mission.billing_mode == "FIXED_PRICE":
                 done_work = mission.done_work_k()[1]
                 price = float(mission.price or 0)
                 if done_work and (done_work > price or (not mission.active and done_work < price)):
@@ -274,6 +278,20 @@ class Consultant(models.Model):
             td = list(Timesheet.objects.filter(consultant=self, working_date__lt=up_to, working_date__gte=month).aggregate(Sum("charge")).values())[0] or 0
             result.append(wd - td)
         return result
+
+    def staffing_overload(self):
+        """return tuple (current month over staffing overload, next month overload). Negative values mean available days"""
+        Staffing = apps.get_model("staffing", "Staffing")  # Get Staffing with get_model to avoid circular imports
+        from staffing.utils import holidayDays  # Idem
+        result = []
+        current_month = date.today().replace(day=1)
+        for month, up_to in ((current_month, nextMonth(current_month)), (nextMonth(current_month), nextMonth((nextMonth(current_month))))):
+            md = working_days(month, holidayDays(month))
+            sd = Staffing.objects.filter(consultant=self, staffing_date__gte=month, staffing_date__lt=up_to)
+            sd = sd.aggregate(p_charge=Sum(F("charge")*F("mission__probability")/100))["p_charge"] or 0
+            result.append(sd - md)
+        return result
+
 
     def get_tasks(self):
         """gather all tasks consultant should do
