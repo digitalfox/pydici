@@ -76,6 +76,14 @@ class AbstractCompany(AbstractAddress, AbstractLegalInformation):
         abstract = True
 
 
+class BusinessSector(models.Model):
+    """Business sector of activity"""
+    name = models.CharField(_("Name"), max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Subsidiary(AbstractCompany):
     """Internal company / organisation unit"""
     payment_description = models.TextField(_("Payment condition description"), blank=True, null=True)
@@ -91,6 +99,7 @@ class Company(AbstractCompany):
     """Company"""
     businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True, on_delete=models.SET_NULL)
     external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
+    business_sector = models.ForeignKey("crm.BusinessSector", verbose_name=_("Business sector"), null=True, on_delete=models.SET_NULL)
 
     def sales(self, onlyLastYear=False, subsidiary=None):
         """Sales billed for this company in keuros"""
@@ -128,6 +137,7 @@ class ClientOrganisation(AbstractAddress, AbstractLegalInformation):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
     company = models.ForeignKey(Company, verbose_name=_("Client company"), on_delete=models.CASCADE)
+    business_sector = models.ForeignKey("crm.BusinessSector", verbose_name=_("Business sector"), null=True, blank=True, on_delete=models.SET_NULL)
     billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
     billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True,
                                         verbose_name=_("Billing contact"), on_delete=models.SET_NULL)
@@ -139,7 +149,7 @@ class ClientOrganisation(AbstractAddress, AbstractLegalInformation):
 
     def save(self, **kwargs):
         heritage_from_company = ("legal_id", "vat_id", "street", "city", "zipcode", "country",
-                                 "billing_street", "billing_city", "billing_zipcode", "billing_country",)
+                                 "billing_street", "billing_city", "billing_zipcode", "billing_country", "business_sector")
         for attr in heritage_from_company:
             if not getattr(self, attr):
                 setattr(self, attr, getattr(self.company, attr))

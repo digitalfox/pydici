@@ -10,9 +10,7 @@ from django.contrib import admin
 from crm.models import Client, ClientOrganisation, Company, \
     Contact, BusinessBroker, Subsidiary, \
     Supplier, AdministrativeFunction, AdministrativeContact, \
-    MissionContact
-from crm.forms import SupplierForm, BusinessBrokerForm, CompanyForm, ContactForm, \
-    AdministrativeContactForm, MissionContactForm, ClientOrganisationForm, ClientForm
+    MissionContact, BusinessSector
 from core.admin import ReturnToAppAdmin
 
 
@@ -48,6 +46,10 @@ class SupplierAdmin(ReturnToAppAdmin):
     list_display = ("company", "contact")
     ordering = ("company", "contact")
     search_fields = ["company__name", "contact__name"]
+
+
+class BusinessSectorAdmin(ReturnToAppAdmin):
+    list_display = ("name",)
 
 
 class AdministrativeFunctionAdmin(ReturnToAppAdmin):
@@ -92,6 +94,7 @@ admin.site.register(ClientOrganisation, ClientOrganisationAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(BusinessBroker, BusinessBrokerAdmin)
 admin.site.register(Supplier, SupplierAdmin)
+admin.site.register(BusinessSector, BusinessSectorAdmin)
 admin.site.register(AdministrativeFunction, AdministrativeFunctionAdmin)
 admin.site.register(AdministrativeContact, AdministrativeContactAdmin)
 admin.site.register(MissionContact, MissionContactAdmin)

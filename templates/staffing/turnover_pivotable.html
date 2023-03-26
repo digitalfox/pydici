@@ -28,6 +28,8 @@
                 <button class="btn btn-primary" onclick="turnover_per_broker();">{% trans "Turnover per broker" %}</button>
                 <button class="btn btn-primary" onclick="turnover_per_client();">{% trans "Turnover per client company" %}</button>
                 <button class="btn btn-primary" onclick="turnover_top_client();">{% trans "Turnover for top client company" %}</button>
+                <button class="btn btn-primary" onclick="turnover_per_business_sector();">{% trans "Turnover per business sector" %}</button>
+                <button class="btn btn-primary" onclick="turnover_per_business_sector_and_product();">{% trans "Turnover per business sector and product" %}</button>
                 <button class="btn btn-primary" onclick="turnover_per_billing_mode();">{% trans "Turnover per billing mode" %}</button>
                 <button class="btn btn-primary" onclick="turnover_per_mktg_product();">{% trans "Turnover per marketing product" %}</button>
             </div>
@@ -98,6 +100,20 @@
                 var cols = ["{% trans 'month' %}"];
                 var options = {};
                 drawPivot(data, rows, cols, "Area Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
+            }
+
+            function turnover_per_business_sector() {
+                var rows = ["{% trans 'Business sector' %}"];
+                var cols = ["{% trans 'month' %}"];
+                var options = {};
+                drawPivot(data, rows, cols, "Area Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
+            }
+
+            function turnover_per_business_sector_and_product() {
+                var rows = ["{% trans 'Business sector' %}"];
+                var cols = ["{% trans 'Marketing product' %}"];
+                var options = {};
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
             }
 
             // default

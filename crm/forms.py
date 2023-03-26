@@ -163,6 +163,7 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
         self.helper.layout = Layout(Div(Column("name", FieldWithButtons("company",
                                                                         HTML("""<a role='button' class='btn btn-primary' href='%s' target='_blank'>
                                                                                 <i class='bi bi-plus'></i></a>""" % reverse("crm:company"))),
+                                               "business_sector",
                                                Field("vat_id", placeholder=_("Leave blank to use company vat id")),
                                                Field("legal_id", placeholder=_("Leave blank to use company legal id")),
                                                "billing_lang",
@@ -200,7 +201,7 @@ class CompanyForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(CompanyForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(
-            Div(Column("name", "code", "businessOwner", "vat_id", "legal_id",  "web", "legal_description", css_class="col-md-6"),
+            Div(Column("name", "code", "businessOwner", "business_sector", "vat_id", "legal_id",  "web", "legal_description", css_class="col-md-6"),
                 get_address_column(show_banner=False), css_class="row my-2"),
             self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Company"),
