@@ -179,12 +179,13 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Client organisation"),
                                                     Row(Column("name",
+                                                               Field("billing_name", placeholder=_("Leave blank to use standard name")),
                                                                FieldWithButtons("company", HTML(
                                                                    """<a role='button' class='btn btn-primary' href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
                                                                                 css_id="company_input_group")),
-                                                        Column(Field("billing_name",
-                                                                     placeholder=_("Leave blank to use standard name")),
-                                                               "billing_lang"),
+                                                        Column("business_sector", "billing_lang"),
+                                                        Column(Field("vat_id", placeholder=_("Leave blank to use company vat id")),
+                                                               Field("legal_id", placeholder=_("Leave blank to use company legal id"))),
                                                         ),
                                                     css_class="collapse", css_id="organisationForm"))
 
@@ -205,8 +206,9 @@ class CompanyForm(PydiciCrispyModelForm):
                 get_address_column(show_banner=False), css_class="row my-2"),
             self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Company"),
-                                                    Row(Column("name"), Column("code")),
-                                                    Row(Column("businessOwner"), Column("web")),
+                                                    Row(Column("name", "businessOwner", "business_sector"),
+                                                        Column("code", "web"),
+                                                        Column("vat_id", "legal_id")),
                                                     css_class="collapse", css_id="companyForm"))
 
 
