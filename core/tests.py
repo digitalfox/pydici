@@ -310,7 +310,9 @@ class SimpleJsTest(SeleniumTestCase):
             for log in self.driver.get_log("browser"):
                 self.assertNotEqual(log["level"], "SEVERE",
                                     f"JS error on {url}\nsource {log['source']}\n{log['message']}")
-                # print(self.driver.page_source)
+        # cleanup downloaded files
+        for f in ("04.csv", "download.csv"):
+            os.unlink(f)
 
 
 def setup_test_user_features():
