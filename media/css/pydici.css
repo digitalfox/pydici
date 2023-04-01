@@ -153,6 +153,16 @@ h5 { font-size:1rem; }
     color: #ccc;
 }
 
+.lead_mission_sub_label {
+    display: flex;
+    font-size: 0.7rem;
+    flex-direction: column;
+}
+
+.timesheet-week-space {
+    height: 3vh;
+}
+
 /* Small grid like timesheet */
 .tablesmall-form-row td { padding:0px; margin:0px; vertical-align: middle;}
 .tablesmall-form-row input {  background: #F9F9F9; margin: 1px -2px;}
@@ -255,7 +265,6 @@ td.in-holidays {
 
 .tablesmall-form-row td.timesheet-mission-label, .holidays-consultant-name {
     text-align: left;
-    min-width: 20rem;
     padding-right: 2px;
 }
 
