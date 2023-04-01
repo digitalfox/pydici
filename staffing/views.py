@@ -879,13 +879,17 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
 
     holiday_days = holidayDays(month=month)
 
+    # Shrink warning list to given week if week number is given
+    if week:
+        warning = warning[days[0].day - 1:days[-1].day]
+
     if request.method == 'POST':  # If the form has been submitted...
         if readOnly:
             # We should never go here as validate button is not displayed when read only...
             # This is just a security control
             return HttpResponseRedirect(reverse("core:forbidden"))
         form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
-                             forecastTotal=forecastTotal, timesheetTotal=timesheetTotal)
+                             forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, warning=warning)
         if form.is_valid():  # All validation rules pass
             with transaction.atomic():
                 sid = transaction.savepoint()
@@ -899,19 +903,15 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                 # Recreate a new form for next update and compute again totals
                 timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
                 form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
-                                 forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData)
+                                 forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData, warning=warning)
     else:
         # An unbound form
         form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
-                             forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData)
+                             forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData, warning=warning)
 
     # Compute workings days of this month and compare it to declared days
     wDays = working_days(month, holiday_days)
     wDaysBalance = wDays - (sum(timesheetTotal.values()) - timesheetTotal["ticket"])
-
-    # Shrink warning list to given week if week number is given
-    if week:
-        warning = warning[days[0].day - 1:days[-1].day]
 
     previous_date_enabled = check_user_timesheet_access(request.user, consultant, previous_date.replace(day=1)) != TIMESHEET_ACCESS_NOT_ALLOWED
 
