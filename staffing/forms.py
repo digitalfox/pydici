@@ -222,21 +222,25 @@ class TimesheetForm(forms.Form):
         holiday_days = kwargs.pop("holiday_days", [])
         showLunchTickets = kwargs.pop("showLunchTickets", True)
         warning = kwargs.pop("warning", None)
+        timesheet_view = kwargs.pop("timesheet_view", None)
         super(TimesheetForm, self).__init__(*args, **kwargs)
 
         TimesheetFieldClass = TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD[settings.TIMESHEET_INPUT_METHOD]
         calendar_weeks = []
-        for idx, day in enumerate(days):
-            if idx == 0 or day.isoweekday() == 1:
-                week = []
-            week.append(day)
-            if day.isoweekday() == 7:
-                calendar_weeks.append(week)
+        is_calendar_view = timesheet_view == 'calendar'
+        if is_calendar_view:
+            week = []
+            for idx, day in enumerate(days):
+                if day.isoweekday() == 1:
+                    week = []
+                week.append(day)
+                if day.isoweekday() == 7:
+                    calendar_weeks.append(week)
 
         day_index = 0
-        for idxw, week_days in enumerate(calendar_weeks):
+        for idxw, week_days in enumerate(calendar_weeks if is_calendar_view else [days]):
             for idxm, mission in enumerate(missions):
-                for day in week_days:
+                for idxd, day in enumerate(week_days):
                     key = "charge_%s_%s" % (mission.id, day.day)
                     self.fields[key] = TimesheetFieldClass(required=False)
                     # Order tabindex by day
@@ -248,7 +252,7 @@ class TimesheetForm(forms.Form):
                         tabIndex = day.day
                     self.fields[key].widget.attrs.setdefault("tabindex", tabIndex)
 
-                    if day.isoweekday() == 1 or day.day == 1:  # Only show label for first day
+                    if (is_calendar_view and (day.isoweekday() == 1 or day.day == 1)) or (not is_calendar_view and day.day == 1):  # Only show label for first day
                         tooltip = _("mission id: %s") % mission.mission_id()
                         mission_link = escape(mission)
                         if mission.lead_id:
@@ -276,7 +280,7 @@ class TimesheetForm(forms.Form):
                     else:
                         self.fields[key].label = ""
 
-                    if day.isoweekday() == 7:
+                    if (is_calendar_view and day.isoweekday() == 7) or (not is_calendar_view and idxd == len(days) - 1):
                         # Add staffing total and forecast in hidden field
                         hwidget = forms.HiddenInput()
                         # Mission id is added to ensure field key is uniq.

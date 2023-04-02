@@ -812,7 +812,7 @@ def deactivate_mission(request, mission_id):
 
 
 @cache_control(no_store=True)
-def consultant_timesheet(request, consultant_id, year=None, month=None, week=None):
+def consultant_timesheet(request, consultant_id, year=None, month=None, timesheet_view="inline"):
     """Consultant timesheet"""
     management_mode_error = None
     price_updated_missions = []
@@ -821,6 +821,8 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
         month = date(int(year), int(month), 1)
     else:
         month = date.today().replace(day=1)
+
+    week = timesheet_view.split("_")[1] if timesheet_view and timesheet_view.startswith("week_") else None
 
     if week:
         week = int(week)
@@ -889,7 +891,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
             # This is just a security control
             return HttpResponseRedirect(reverse("core:forbidden"))
         form = TimesheetForm(request.POST, days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
-                             forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, warning=warning)
+                             forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, warning=warning, timesheet_view=timesheet_view)
         if form.is_valid():  # All validation rules pass
             with transaction.atomic():
                 sid = transaction.savepoint()
@@ -903,11 +905,11 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                 # Recreate a new form for next update and compute again totals
                 timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
                 form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
-                                 forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData, warning=warning)
+                                 forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData, warning=warning, timesheet_view=timesheet_view)
     else:
         # An unbound form
         form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
-                             forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData, warning=warning)
+                             forecastTotal=forecastTotal, timesheetTotal=timesheetTotal, initial=timesheetData, warning=warning, timesheet_view=timesheet_view)
 
     # Compute workings days of this month and compare it to declared days
     wDays = working_days(month, holiday_days)
@@ -936,7 +938,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, week=Non
                    "read_only": readOnly,
                    "days": days,
                    "month": month,
-                   "week": week or 0,
+                   "timesheet_view": timesheet_view,
                    "missions": missions,
                    "working_days_balance": wDaysBalance,
                    "working_days": wDays,
