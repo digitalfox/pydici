@@ -15,7 +15,7 @@ from os.path import abspath, join, pardir, dirname
 
 
 # # Setup django envt & django imports
-PYDICI_DIR = abspath(dirname(__file__))
+PYDICI_DIR = abspath(join(dirname(__file__), pardir))
 os.environ['DJANGO_SETTINGS_MODULE'] = "pydici.settings"
 
 sys.path.append(PYDICI_DIR)  # Add project path to python path
@@ -41,6 +41,9 @@ output.writerow(["Consultant", "Filiale", "Tx prod N-1", "TJM N-1", "Obj TJM N-1
 
 for c in Consultant.objects.filter(active=True, subcontractor=False, productive=True):
     fc = c.get_financial_conditions(start, end)
+    if not fc:
+        print(f"Warning, no financial conditions for {c}")
+        continue
     line = ([c.trigramme, c.company.name,
             c.get_production_rate(start,end),
             int(sum([i*j for i, j in fc])/sum([j for i, j in fc])),
