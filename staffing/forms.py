@@ -243,6 +243,7 @@ class TimesheetForm(forms.Form):
                 for idxd, day in enumerate(week_days):
                     key = "charge_%s_%s" % (mission.id, day.day)
                     self.fields[key] = TimesheetFieldClass(required=False)
+                    self.fields[key].weekday = day.isoweekday()
                     # Order tabindex by day
                     if day.isoweekday() in (6, 7) or day in holiday_days:
                         tabIndex = 100000  # Skip week-end from tab path
@@ -283,12 +284,14 @@ class TimesheetForm(forms.Form):
                         # Mission id is added to ensure field key is uniq.
                         key = "%s %s %s %s" % (timesheetTotal.get(mission.id, 0), idxw, mission.id, forecastTotal[mission.id])
                         self.fields[key] = forms.CharField(widget=hwidget, required=False)
+                        self.fields[key].weekday = day.isoweekday()
 
                         if idxm == len(missions)-1:
                             if showLunchTickets:
                                 for lunch_day in week_days:
                                     key = "lunch_ticket_%s" % lunch_day.day
                                     self.fields[key] = forms.BooleanField(required=False)
+                                    self.fields[key].weekday = lunch_day.isoweekday()
                                     self.fields[key].widget.attrs.setdefault("size", 1)  # Reduce default size
                                     self.fields[key].widget.attrs.setdefault("data-role", "none")  # Don't apply jquery theme
                                     if lunch_day == week_days[0]:  # Only show label for first day
@@ -298,12 +301,13 @@ class TimesheetForm(forms.Form):
                                         # extra space is important - it is for forecast total (which does not exist for ticket...)
                                 key = "%s %s total-ticket " % (timesheetTotal.get("ticket", 0), idxw)
                                 self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
+                                self.fields[key].weekday = day.isoweekday()
 
                             key = "week_warning_%s " % idxw
                             self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
                             self.fields[key].warning = []
                             for warning_week_day in week_days:
-                                self.fields[key].warning.append(warning[day_index])
+                                self.fields[key].warning.append({"value":warning[day_index], "weekday": warning_week_day.isoweekday()})
                                 day_index += 1
 
 class MissionForm(PydiciCrispyModelForm):

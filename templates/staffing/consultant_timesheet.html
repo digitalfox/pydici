@@ -5,7 +5,10 @@
     <div class="my-3 d-flex flex-row">
         <div class="col-3 align-self-center my-0"><button id="switch-week" class="btn btn-primary align-self-center my-0" {% if t_view == "week" %}disabled{% endif %}>{% trans "Week mode" %}</button></div>
         <div class="col-3 align-self-center my-0"><button id="switch-month" class="btn btn-primary" {% if t_view == "inline" %}disabled{% endif %}>{% trans "Inline month mode" %}</button></div>
-        <div class="col-3 align-self-center my-0"><button id="switch-calendar" class="btn btn-primary align-self-center my-0" {% if t_view == "calendar" %}disabled{% endif %}>{% trans "Calendar month mode" %}</button></div>
+        <div class="col-3 align-self-center my-0">
+            <button id="switch-calendar" class="btn btn-primary align-self-center my-0" {% if t_view == "calendar" %}disabled{% endif %}>{% trans "Calendar month mode" %}</button>
+            {% if t_view == "calendar" %}<button id="switch-show-weekend" class="btn btn-primary align-self-center my-0">{% trans "Show weekend" %}</button>{% endif %}
+        </div>
     </div>
     {% if not missions %}
         <nav>
@@ -84,13 +87,13 @@
                             <td></td>
                         {% endifchanged %}
                         {% for day in field.field.days %}
-                            <td>{{ day|date:"j" }}</td>
+                            <td {% if day|date:"w" == '0' or day|date:"w" == '6' %} class="timesheet-weekend" {% endif %}>{{ day|date:"j" }}</td>
                         {% endfor %}
                         <td></td><td></td></tr>
                         <tr>
                         <td></td>
                         {% for day in field.field.days %}
-                            <td class="timesheet-long-day">{{ day|date:"D" }}</td>
+                            <td class="timesheet-long-day {% if day|date:"w" == '0' or day|date:"w" == '6' %} timesheet-weekend {% endif %}">{{ day|date:"D" }}</td>
                         {% endfor %}
                         <td>{% trans "Tot." %}</td><td>{% trans "Forec." %}</td></tr>
                         <tr>
@@ -99,10 +102,10 @@
                         {% if field.field.warning %}
                             {% for i in field.field.warning %}
                                 {% if forloop.first %}<td></td>{% endif %}
-                                <td>
-                                {% if i == 0 %}<img src="{{ MEDIA_URL }}/img/icon_success.gif"/>{% endif %}
-                                {% if i == 1 %}<img src="{{ MEDIA_URL }}/img/icon_alert.gif"/>  {% endif %}
-                                {% if i == 2 %}<img src="{{ MEDIA_URL }}/img/icon-no.gif"/>  {% endif %}
+                                <td {% if i.weekday == 6 or i.weekday == 7 %}class="timesheet-weekend"{% endif %}>
+                                {% if i.value == 0 %}<img src="{{ MEDIA_URL }}/img/icon_success.gif"/>{% endif %}
+                                {% if i.value == 1 %}<img src="{{ MEDIA_URL }}/img/icon_alert.gif"/>  {% endif %}
+                                {% if i.value == 2 %}<img src="{{ MEDIA_URL }}/img/icon-no.gif"/>  {% endif %}
                                 </td>
                             {% endfor %}
                             </tr><tr class="timesheet-week-space">
@@ -116,7 +119,7 @@
                         <td class="timesheet-mission-label">{{ field.label }}</td>
                         {% endif %}
                         {% if field %}
-                        <td class="{% if field.errors %}timesheet-error{% endif %} timesheet-day">
+                        <td class="{% if field.errors %}timesheet-error{% endif %} timesheet-day {% if field.field.weekday == 6 or field.field.weekday == 7 %} timesheet-weekend{% endif %}">
                           {{ field }}
                         </td>
                         {% endif %}
@@ -186,12 +189,20 @@ $('#switch-calendar').on("click", function () {
     $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' timesheet_view="calendar" %}');
 });
 
+{% if t_view == "calendar" %}
+$(".timesheet-weekend").hide();
+$("#switch-show-weekend").on("click", function() {
+    if ($(".timesheet-weekend").css('display') == "none") {
+        $(".timesheet-weekend").show();
+    } else {
+        $(".timesheet-weekend").hide();
+    }
+})
+{% endif %}
+
 $('#switch-month').on("click", function () {
     $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' %}');
 });
-
-/* Hide last column for small devices */
-$("#pydici-consultant-timesheet-table td:last-child").addClass("d-none d-sm-table-cell");
 
  if (0 !== {{ today }}) {
      highlight_today({{ today }} + 1, "2px solid #555");
