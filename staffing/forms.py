@@ -252,24 +252,21 @@ class TimesheetForm(forms.Form):
                         tabIndex = day.day
                     self.fields[key].widget.attrs.setdefault("tabindex", tabIndex)
 
-                    if (is_calendar_view and (day.isoweekday() == 1 or day.day == 1)) or (not is_calendar_view and day.day == 1):  # Only show label for first day
+                    if (is_calendar_view and (day.isoweekday() == 1 or idxd == 0)) or (not is_calendar_view and idxd == 0):  # Only show label for first day
                         tooltip = _("mission id: %s") % mission.mission_id()
                         mission_link = escape(mission)
                         if mission.lead_id:
-                            near_leads = []
-                            if idxm > 0:
-                                if missions[idxm - 1].lead:
-                                    near_leads.append(missions[idxm - 1].lead.name)
-                            if idxm < len(missions) - 1:
-                                if missions[idxm + 1].lead:
-                                    near_leads.append(missions[idxm + 1].lead.name)
-                                has_same_lead = True if mission.lead.name in near_leads else False
-                                mission_lead = ("<span class='same_lead_sub_label'>%s</span>" if has_same_lead else "<span class='lead_sub_label'>%s</span>") % mission.lead.name
+                            near_leads = [missions[idxm - 1].lead.name] if idxm > 0 and missions[idxm - 1].lead else []
+                            if idxm < len(missions) - 1 and missions[idxm + 1].lead:
+                                near_leads.append(missions[idxm + 1].lead.name)
+                            has_same_lead = True if mission.lead.name in near_leads else False
+                            mission_lead = "<span class='lead-sub-label'>%s</span>" % mission.lead.name
+
                             if mission.description:
-                                mission_sub_label = "<div class='lead_mission_sub_label'>%s <span class='mission_sub_label'>%s</span></div>" % (mission_lead, mission.description)
+                                mission_sub_label = "<div class='lead-mission-sub-label'>%s <span class='%s-mission-sub-label'>%s</span></div>" % (mission_lead, "highlight" if has_same_lead else "", mission.description)
                             else:
-                                mission_sub_label = "<div class='lead_mission_sub_label'>%s</div>" % mission_lead
-                            mission_label = "<div class='mission_label'><div class='client_mission_label'>%s</div> %s</div>" % (mission.lead.client.organisation, mission_sub_label)
+                                mission_sub_label = "<div class='lead-mission-sub-label'>%s</div>" % mission_lead
+                            mission_label = "<div class='mission-label'><div class='client-mission-label'>%s</div> %s</div>" % (mission.lead.client.organisation, mission_sub_label)
                             mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), mission_label)
                         self.fields[key].label = mark_safe("<div class='pydici-tooltip' title='%s'>%s</div>" % (escape(tooltip), mission_link))
 
