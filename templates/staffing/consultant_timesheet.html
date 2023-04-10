@@ -1,53 +1,43 @@
 {% load i18n %}
 {% load pydici_filters %}
-
+{% with t_view=timesheet_view|split:"_"|first t_week=timesheet_view|split:"_"|last %}
 <div id="pydici-ajax-form-content-consultant-timesheet">
-
     <div class="my-3 d-flex flex-row">
-    {% if timesheet_view|split:"_"|first == "week" %}
-        <h4 class="col-6 col-lg-4 col-xl-3 align-self-center my-0">{% trans "Timesheet" %} {{ month|date:"F Y"}} - {% trans "week " %} {{ timesheet_view|split:"_"|last }}</h4>
-        <nav class="col-3 align-self-center">
-        <ul class="pagination my-0">
-            <li class="page-item">
-                <a id="previous-week" class ="page-link" title="{% trans 'Previous week' %}" href="#">
-                    <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
-                </a>
-            </li>
-            <li class="page-item">
-                <a id="next-week" class="page-link" title="{% trans 'Next week' %}" href="#">
-                    <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
-                </a>
-            </li>
-        </ul>
-        </nav>
-    {% else %}
-        <h4 class="col-6 col-lg-4 col-xl-2 align-self-center my-0">{% trans "Timesheet" %} {{ month|date:"F Y"}}</h4>
-        <nav class="col-3 align-self-center">
-        <ul class="pagination my-0">
-            <li class="page-item">
-                <a id="previous-month" class ="page-link" title="{% trans 'Previous month' %}" href="#">
-                    <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
-                </a>
-            </li>
-            <li class="page-item">
-                <a id="next-month" class="page-link" title="{% trans 'Next month' %}" href="#">
-                    <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
-                </a>
-            </li>
-        </ul>
-        </nav>
-    {% endif %}
-    {% if timesheet_view|split:"_"|first == "week" %}
-        <div class="col-3 align-self-center my-0"><button id="switch-month" class="btn btn-primary">{% trans "Switch to month mode" %}</button></div>
-        <div class="col-3 align-self-center my-0"><button id="switch-calendar" class="btn btn-primary align-self-center my-0">{% trans "Switch to calendar mode" %}</button></div>
-    {% elif timesheet_view|split:"_"|first == "calendar" %}
-        <div class="col-3 align-self-center my-0"><button id="switch-month" class="btn btn-primary">{% trans "Switch to month mode" %}</button></div>
-        <div class="col-3 align-self-center my-0"><button id="switch-week" class="btn btn-primary align-self-center my-0">{% trans "Switch to week mode" %}</button></div>
-    {% else %}
-        <div class="col-3 align-self-center my-0"><button id="switch-week" class="btn btn-primary align-self-center my-0">{% trans "Switch to week mode" %}</button></div>
-        <div class="col-3 align-self-center my-0"><button id="switch-calendar" class="btn btn-primary align-self-center my-0">{% trans "Switch to calendar mode" %}</button></div>
-    {% endif %}
+        <div class="col-3 align-self-center my-0"><button id="switch-week" class="btn btn-primary align-self-center my-0" {% if t_view == "week" %}disabled{% endif %}>{% trans "Week mode" %}</button></div>
+        <div class="col-3 align-self-center my-0"><button id="switch-month" class="btn btn-primary" {% if t_view == "inline" %}disabled{% endif %}>{% trans "Inline month mode" %}</button></div>
+        <div class="col-3 align-self-center my-0"><button id="switch-calendar" class="btn btn-primary align-self-center my-0" {% if t_view == "calendar" %}disabled{% endif %}>{% trans "Calendar month mode" %}</button></div>
     </div>
+    {% if not missions %}
+        <nav>
+            <ul class="pagination my-0">
+            {% if t_view == "week" %}
+                <li class="page-item">
+                    <a id="previous-week" class ="page-link nav-pagination-timesheet" title="{% trans 'Previous week' %}" href="#">
+                        <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
+                    </a>
+                </li>
+                <li class="timesheet-time-context">{{ month|date:"F Y"}} - {% trans "week " %} {{ t_week }}</li>
+                <li class="page-item">
+                    <a id="next-week" class="page-link nav-pagination-timesheet" title="{% trans 'Next week' %}" href="#">
+                        <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a id="previous-month" class ="page-link nav-pagination-timesheet" title="{% trans 'Previous month' %}" href="#">
+                        <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
+                    </a>
+                </li>
+                <li class="timesheet-time-context">{{ month|date:"F Y"}}</li>
+                <li class="page-item">
+                    <a id="next-month" class="page-link nav-pagination-timesheet" title="{% trans 'Next month' %}" href="#">
+                        <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
+                    </a>
+                </li>
+            {% endif %}
+            </ul>
+         </nav>
+    {% endif %}
     {% if missions %}
         {% if management_mode_error %}
             <div class="alert alert-danger col-md-6">{{ management_mode_error }}</div>
@@ -60,7 +50,39 @@
                 {% for field in form  %}
                     {% if field.field.days %}
                         <tr>
-                        <td></td>
+                        {% ifchanged month|date:"F Y" %}
+                        <td><nav>
+                            <ul class="pagination my-0">
+                            {% if t_view == "week" %}
+                                <li class="page-item">
+                                    <a id="previous-week" class ="page-link nav-pagination-timesheet" title="{% trans 'Previous week' %}" href="#">
+                                        <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
+                                    </a>
+                                </li>
+                                <li class="timesheet-time-context">{{ month|date:"F Y"}} - {% trans "week " %} {{ t_week }}</li>
+                                <li class="page-item">
+                                    <a id="next-week" class="page-link nav-pagination-timesheet" title="{% trans 'Next week' %}" href="#">
+                                        <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a id="previous-month" class ="page-link nav-pagination-timesheet" title="{% trans 'Previous month' %}" href="#">
+                                        <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
+                                    </a>
+                                </li>
+                                <li class="timesheet-time-context">{{ month|date:"F Y"}}</li>
+                                <li class="page-item">
+                                    <a id="next-month" class="page-link nav-pagination-timesheet" title="{% trans 'Next month' %}" href="#">
+                                        <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            </ul>
+                         </nav></td>
+                        {% else %}
+                            <td></td>
+                        {% endifchanged %}
                         {% for day in field.field.days %}
                             <td>{{ day|date:"j" }}</td>
                         {% endfor %}
@@ -128,7 +150,7 @@
 
 <script type="text/javascript">
 /* Bind time nav bar to ajax calls */
-{% if timesheet_view|split:"_"|first == "week" %}
+{% if t_view == "week" %}
     {% with week=timesheet_view|split:"_"|last|floatformat previous_week=previous_week|stringformat:"i" next_week=next_week|stringformat:"i" %}
         {% if previous_date_enabled %}
             $('#previous-week').on("click", function () {
@@ -148,11 +170,11 @@
 {% else %}
     {% if previous_date_enabled %}
         $('#previous-month').on("click", function () {
-            $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=previous_date|date:'Y' month=previous_date|date:'m' %}');
+            $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=previous_date|date:'Y' month=previous_date|date:'m' timesheet_view=timesheet_view %}');
         });
     {% endif %}
     $('#next-month').on("click", function () {
-        $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=next_date|date:'Y' month=next_date|date:'m' %}');
+        $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=next_date|date:'Y' month=next_date|date:'m' timesheet_view=timesheet_view %}');
     });
 {% endif %}
 
@@ -183,5 +205,5 @@ $("#pydici-consultant-timesheet-table td:last-child").addClass("d-none d-sm-tabl
     {% endwith %}
     {% endwith %}
 {% endif %}
-
+{% endwith %}
 {% include "core/_color_timesheet.html" %}

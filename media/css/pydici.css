@@ -153,14 +153,18 @@ h5 { font-size:1rem; }
     color: #ccc;
 }
 
-.lead_mission_sub_label {
+.lead-mission-sub-label {
     display: flex;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     flex-direction: column;
 }
 
 .timesheet-week-space {
     height: 3vh;
+}
+
+.highlight-mission-sub-label {
+    font-weight: bold;
 }
 
 /* Small grid like timesheet */
@@ -482,6 +486,14 @@ body {
 .page-item.active .page-link {
     background-color: #8F6749;
     border-color: rgba(244,141,51, 0.9);
+}
+
+.nav-pagination-timesheet {
+    border:none;
+}
+
+.timesheet-time-context {
+    align-self: center;
 }
 
 .page-link:focus, .select2-container--bootstrap-5.select2-container--focus .select2-selection,  .select2-container--bootstrap-5.select2-container--open .select2-selection,
