@@ -11,13 +11,33 @@
     <nav class="mx-3">
     <ul class="pagination my-0">
         <li class="page-item pydici-tooltip" title="{% trans 'Previous months' %}">
-            <a class ="page-link" href="{% url 'staffing:holidays_planning' year=previous_month|date:'Y' month=previous_month|date:'m' %}"><i class="bi bi-arrow-left-circle"></i></a>
+            <a class ="page-link" href="{% url 'staffing:holidays_planning' year=previous_month|date:'Y' month=previous_month|date:'m' %}?{{team_current_filter}}"><i class="bi bi-arrow-left-circle"></i></a>
         </li>
         <li class="page-item pydici-tooltip" title="{% trans 'Next months' %}">
-            <a class="page-link " href="{% url 'staffing:holidays_planning' year=next_month|date:'Y' month=next_month|date:'m' %}"><i class="bi bi-arrow-right-circle"></i></a>
+            <a class="page-link " href="{% url 'staffing:holidays_planning' year=next_month|date:'Y' month=next_month|date:'m' %}?{{team_current_filter}}"><i class="bi bi-arrow-right-circle"></i></a>
         </li>
     </ul>
     </nav>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <!-- Scope  button -->
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ scope }}
+          </button>
+          <ul class="dropdown-menu">
+              {% for scope_type, scope_filter, scope_label in scopes %}
+                {% ifchanged scope_type %}
+                    {% if not forloop.first %}
+                        <li><hr class="dropdown-divider"></li>
+                    {% endif %}
+                {% endifchanged %}
+                <li><a class="dropdown-item" href="{% url 'staffing:holidays_planning' year=month|date:'Y' month=month|date:'m' %}/?{{scope_filter}}">{{ scope_label }}</a></li>
+              {% endfor %}
+          </ul>
+        </div>
+    </div>
 </div>
 
 <div class="table-responsive">

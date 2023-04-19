@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 from people.models import Consultant
 from core.utils import user_has_feature
 
-def get_team_scopes(subsidiary, team):
+def get_team_scopes(subsidiary, team, only_productive=True):
     """Define scopes than can be used to filter data on team".
     @:param team
     @:return: scopes, scope_current_filter, scope_current_url_filter"""
@@ -20,7 +20,9 @@ def get_team_scopes(subsidiary, team):
     # Gather scopes
     scopes = [(None, "all", _("Everybody")), ]
 
-    consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
+    consultants = Consultant.objects.filter(active=True, subcontractor=False)
+    if only_productive:
+        consultants = consultants.filter(productive=True)
     if subsidiary:
         consultants = consultants.filter(company=subsidiary)
     consultants = consultants.values_list("staffing_manager", "staffing_manager__name").order_by().distinct()
