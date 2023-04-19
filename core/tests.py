@@ -312,7 +312,10 @@ class SimpleJsTest(SeleniumTestCase):
                                     f"JS error on {url}\nsource {log['source']}\n{log['message']}")
         # cleanup downloaded files
         for f in ("04.csv", "download.csv"):
-            os.unlink(f)
+            try:
+                os.unlink(f)
+            except FileNotFoundError:
+                pass
 
 
 def setup_test_user_features():
