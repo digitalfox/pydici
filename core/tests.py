@@ -127,7 +127,7 @@ PYDICI_AJAX_PAGES = (
                 "/staffing/forecast/consultant/1/",
                 "/staffing/timesheet/consultant/1/?csv",
                 "/staffing/timesheet/consultant/1/2010/10",
-                "/staffing/timesheet/consultant/1/2010/10/2",
+                "/staffing/timesheet/consultant/1/2010/10/week_2",
                 "/staffing/timesheet/mission/1/",
                 "/staffing/timesheet/mission/1/?csv",
                 "/staffing/timesheet/mission/1/?pdf",
