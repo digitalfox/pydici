@@ -26,8 +26,10 @@ def mission_list(request, start_date=None, end_date=None):
     else:
         start_date = datetime.date(int(start_date[0:4]), int(start_date[4:6]), 1)
 
-    missions = Mission.objects.filter(timesheet__working_date__gte=start_date, timesheet__working_date__lte=end_date)
-    missions = missions.distinct()[:500]  # Limit data to avoid stupid things
+    if (end_date - start_date).days > 366:
+        return JsonResponse({"error": "timeframe cannot exceed 12 month" }, status=400)
+
+    missions = Mission.objects.filter(timesheet__working_date__gte=start_date, timesheet__working_date__lte=end_date).distinct()
     data = []
     for mission in missions:
         data.append({"lead_id": mission.lead.deal_id if mission.lead else None,
