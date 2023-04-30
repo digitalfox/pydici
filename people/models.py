@@ -129,14 +129,16 @@ class Consultant(models.Model):
 
     def get_rate_objective(self, working_date=None, rate_type="DAILY_RATE"):
         """Get the consultant rate objective for given date. rate_type can be DAILY_RATE (default) or PROD_RATE"""
+        if not working_date:
+            working_date = date.today()
+
         r = cache.get(RATE_OBJECTIVE_CACHE_KEY % (self.id, working_date.isoformat(), rate_type))
         if r:
             return r
         rate_types = dict(RateObjective.RATE_TYPE).keys()
         if rate_type not in rate_types:
             raise ValueError("rate_type must be one of %s" % ", ".join(rate_types))
-        if not working_date:
-            working_date = date.today()
+
         rates = self.rateobjective_set.filter(start_date__lte=working_date, rate_type=rate_type).order_by("-start_date")
         if rates:
             cache.set(RATE_OBJECTIVE_CACHE_KEY % (self.id, working_date.isoformat(), rate_type), rates[0], 60*60*24)

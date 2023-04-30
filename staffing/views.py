@@ -1474,6 +1474,12 @@ def holidays_planning(request, year=None, month=None):
     else:
         month = date.today().replace(day=1)
 
+    if "team_id" in request.GET:
+        team = Consultant.objects.get(id=int(request.GET["team_id"]))
+        team_name = _("team %(manager_name)s") % {"manager_name": team}
+    else:
+        team = team_name = None
+
     subsidiary = get_subsidiary_from_session(request)
     holidays_days = Holiday.objects.all().values_list("day", flat=True)
     days = daysOfMonth(month)
@@ -1489,6 +1495,10 @@ def holidays_planning(request, year=None, month=None):
     consultants = Consultant.objects.filter(active=True, subcontractor=False)
     if subsidiary:
         consultants = consultants.filter(company=subsidiary)
+    if team:
+        consultants = consultants.filter(staffing_manager=team)
+
+
     for consultant in consultants:
         consultantData = [consultant, ]
         consultantHolidays = Timesheet.objects.filter(working_date__gte=month, working_date__lt=next_month,
@@ -1501,6 +1511,9 @@ def holidays_planning(request, year=None, month=None):
             else:
                 consultantData.append("holidays-weekend")
         data.append(consultantData)
+
+    scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team, only_productive=False)
+
     return render(request, "staffing/holidays_planning.html",
                   {"days": days,
                    "data": data,
@@ -1508,6 +1521,10 @@ def holidays_planning(request, year=None, month=None):
                    "today": today,
                    "previous_month": previous_month,
                    "next_month": next_month,
+                   "scope": team_name or subsidiary or _("Everybody"),
+                   "team_current_filter": team_current_filter,
+                   "team_current_url_filter": team_current_url_filter,
+                   "scopes": scopes,
                    "user": request.user, })
 
 

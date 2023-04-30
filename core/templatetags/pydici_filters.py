@@ -137,6 +137,9 @@ def get_admin_mail(value, arg=None):
         return mark_safe("<a class='dropdown-item' href='mailto:%s'>%s</a>" % (settings.ADMINS[0][1],
                                                          _("Mail to support")))
 
+@register.filter
+def get_logo_url(vale, arg=None):
+    return mark_safe(settings.COMPANY_LOGO)
 
 @register.filter
 def pydici_simple_format(value, arg=None):

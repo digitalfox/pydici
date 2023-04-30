@@ -84,6 +84,8 @@ class ExpenseForm(forms.ModelForm):
         valid_extensions = ["pdf", "png", "jpg", "jpeg"]
 
         if self.cleaned_data["receipt"]:
+            if self.cleaned_data["receipt"].size > 10485760:
+                raise ValidationError(gettext_lazy("Attached file must be less than 10 Mb"))
             for extension in valid_extensions:
                 if self.cleaned_data["receipt"].name.lower().endswith(extension):
                     return self.cleaned_data["receipt"]
