@@ -205,7 +205,7 @@ $('#switch-month').on("click", function () {
 });
 
  if (0 !== {{ today }}) {
-     highlight_today({{ today }} + 1, "2px solid #555");
+     highlight_today({{ today }}, "2px solid #555", {{ missions|length }});
  }
 </script>
 
