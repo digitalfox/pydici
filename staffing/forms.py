@@ -298,7 +298,7 @@ class TimesheetForm(forms.Form):
                                         self.fields[key].label = _("Days without lunch ticket")
                                     else:
                                         self.fields[key].label = ""  # Squash label
-                                        # extra space is important - it is for forecast total (which does not exist for ticket...)
+                                # extra space is important - it is for forecast total (which does not exist for ticket...)
                                 key = "%s %s total-ticket " % (timesheetTotal.get("ticket", 0), idxw)
                                 self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
                                 self.fields[key].weekday = day.isoweekday()
