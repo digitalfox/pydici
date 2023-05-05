@@ -160,7 +160,7 @@ h5 { font-size:1rem; }
 }
 
 .timesheet-week-space {
-    height: 3vh;
+    height: 10vh;
 }
 
 .highlight-mission-sub-label {
@@ -494,6 +494,16 @@ body {
 
 .timesheet-time-context {
     align-self: center;
+    white-space: nowrap;
+    padding:0 0.1rem;
+}
+
+.timesheet-view-navigation-label {
+    align-self: center;
+}
+
+.timesheet-view-navigation {
+    gap: 1rem;
 }
 
 .page-link:focus, .select2-container--bootstrap-5.select2-container--focus .select2-selection,  .select2-container--bootstrap-5.select2-container--open .select2-selection,

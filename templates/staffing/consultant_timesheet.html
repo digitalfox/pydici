@@ -2,14 +2,27 @@
 {% load pydici_filters %}
 {% with t_view=timesheet_view|split:"_"|first t_week=timesheet_view|split:"_"|last %}
 <div id="pydici-ajax-form-content-consultant-timesheet">
-    <div class="my-3 d-flex flex-row">
-        <div class="col-3 align-self-center my-0"><button id="switch-week" class="btn btn-primary align-self-center my-0" {% if t_view == "week" %}disabled{% endif %}>{% trans "Week mode" %}</button></div>
-        <div class="col-3 align-self-center my-0"><button id="switch-month" class="btn btn-primary" {% if t_view == "inline" %}disabled{% endif %}>{% trans "Inline month mode" %}</button></div>
-        <div class="col-3 align-self-center my-0">
-            <button id="switch-calendar" class="btn btn-primary align-self-center my-0" {% if t_view == "calendar" %}disabled{% endif %}>{% trans "Calendar month mode" %}</button>
-            {% if t_view == "calendar" %}<button id="switch-show-weekend" class="btn btn-primary align-self-center my-0">{% trans "Show weekend" %}</button>{% endif %}
+    <div class="timesheet-view-navigation my-3 d-flex flex-row">
+        <div class="timesheet-view-navigation-label">{% trans "View mode" %}</div>
+        <div class="my-3 btn-group" role="group" aria-label="Button group with nested dropdown">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% with title=t_view %}
+                        {% trans title %}
+                    {% endwith %}
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#" id="switch-week">{% trans "week" %}</a></li>
+                  <li><a class="dropdown-item" href="#" id="switch-month">{% trans "inline" %}</a></li>
+                  <li><a class="dropdown-item" href="#" id="switch-calendar">{% trans "calendar" %}</a></li>
+                </ul>
+            </div>
+            {% if t_view == "calendar" %}
+                <button type="button" id="switch-show-weekend" class="btn btn-primary">{% trans "weekend" %}</button>
+            {% endif %}
         </div>
     </div>
+    <div>{% trans "Year" %} {{ month|date:"Y"}}</div>
     {% if not missions %}
         <nav>
             <ul class="pagination my-0">
@@ -19,7 +32,7 @@
                         <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
                     </a>
                 </li>
-                <li class="timesheet-time-context">{{ month|date:"F Y"}} - {% trans "week " %} {{ t_week }}</li>
+                <li class="timesheet-time-context">{{ month|date:"M"}} - {% trans "week" %} {{ t_week }}</li>
                 <li class="page-item">
                     <a id="next-week" class="page-link nav-pagination-timesheet" title="{% trans 'Next week' %}" href="#">
                         <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
@@ -31,7 +44,7 @@
                         <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
                     </a>
                 </li>
-                <li class="timesheet-time-context">{{ month|date:"F Y"}}</li>
+                <li class="timesheet-time-context">{% if t_view == "inline" %}{{ month|date:"F"}}{% else %}{{ month|date:"M" }}{% endif %}</li>
                 <li class="page-item">
                     <a id="next-month" class="page-link nav-pagination-timesheet" title="{% trans 'Next month' %}" href="#">
                         <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
@@ -53,7 +66,7 @@
                 {% for field in form  %}
                     {% if field.field.days %}
                         <tr>
-                        {% ifchanged month|date:"F Y" %}
+                        {% ifchanged month|date:"M" %}
                         <td><nav>
                             <ul class="pagination my-0">
                             {% if t_view == "week" %}
@@ -62,7 +75,7 @@
                                         <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
                                     </a>
                                 </li>
-                                <li class="timesheet-time-context">{{ month|date:"F Y"}} - {% trans "week " %} {{ t_week }}</li>
+                                <li class="timesheet-time-context">{{ month|date:"M"}} - {% trans "week" %} {{ t_week }}</li>
                                 <li class="page-item">
                                     <a id="next-week" class="page-link nav-pagination-timesheet" title="{% trans 'Next week' %}" href="#">
                                         <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
@@ -74,7 +87,7 @@
                                         <i class="bi bi-arrow-left-circle timesheet-nav-btn"></i>
                                     </a>
                                 </li>
-                                <li class="timesheet-time-context">{{ month|date:"F Y"}}</li>
+                                <li class="timesheet-time-context">{% if t_view == "inline" %}{{ month|date:"F"}}{% else %}{{ month|date:"M" }}{% endif %}</li>
                                 <li class="page-item">
                                     <a id="next-month" class="page-link nav-pagination-timesheet" title="{% trans 'Next month' %}" href="#">
                                         <i class="bi bi-arrow-right-circle timesheet-nav-btn"></i>
@@ -194,8 +207,10 @@ $(".timesheet-weekend").hide();
 $("#switch-show-weekend").on("click", function() {
     if ($(".timesheet-weekend").css('display') == "none") {
         $(".timesheet-weekend").show();
+        $("#switch-show-weekend").removeClass('btn-primary').addClass('btn-secondary').blur();
     } else {
         $(".timesheet-weekend").hide();
+        $("#switch-show-weekend").removeClass('btn-secondary').addClass('btn-primary').blur();
     }
 })
 {% endif %}
