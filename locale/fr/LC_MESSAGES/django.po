@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-03 08:53+0200\n"
+"POT-Creation-Date: 2023-05-05 13:03+0200\n"
 "PO-Revision-Date: 2023-03-25 17:21+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -753,7 +753,7 @@ msgstr "Désolé, on ne se connaît pas"
 #: templates/billing/supplier_bill_form.html:20
 #: templates/crm/client-popup.html:11
 #: templates/staffing/consultant_staffing.html:63
-#: templates/staffing/consultant_timesheet.html:134
+#: templates/staffing/consultant_timesheet.html:147
 #: templates/staffing/mission_contacts.html:39
 #: templates/staffing/mission_staffing.html:77
 msgid "Save"
@@ -4726,7 +4726,7 @@ msgid "No timesheet data for this month"
 msgstr "Pas de feuille de temps définie pour ce mois-ci"
 
 #: templates/staffing/all_timesheet.html:51
-#: templates/staffing/consultant_timesheet.html:149
+#: templates/staffing/consultant_timesheet.html:162
 #: templates/staffing/mission_timesheet.html:78
 msgid "Export this timesheet in a spreadsheet"
 msgstr "Exporter cette feuille de temps dans un tableur"
@@ -4778,65 +4778,72 @@ msgid "Optimize workload for current missions"
 msgstr "Optimiser le plan de charge des missions en cours"
 
 #: templates/staffing/consultant_timesheet.html:6
-msgid "Week mode"
-msgstr "Mode semaine"
+msgid "View mode"
+msgstr "Affichage"
 
-#: templates/staffing/consultant_timesheet.html:7
-msgid "Inline month mode"
-msgstr "Mode timeline"
+#: templates/staffing/consultant_timesheet.html:15
+#: templates/staffing/consultant_timesheet.html:35
+#: templates/staffing/consultant_timesheet.html:78
+msgid "week"
+msgstr "semaine"
 
-#: templates/staffing/consultant_timesheet.html:9
-msgid "Calendar month mode"
-msgstr "Mode calendrier"
+#: templates/staffing/consultant_timesheet.html:16
+msgid "inline"
+msgstr "linéaire"
 
-#: templates/staffing/consultant_timesheet.html:10
-msgid "Show weekend"
+#: templates/staffing/consultant_timesheet.html:17
+msgid "calendar"
+msgstr "calendrier"
+
+#: templates/staffing/consultant_timesheet.html:21
+#, fuzzy
+#| msgid "Show weekend"
+msgid "weekend"
 msgstr "Afficher les weekend"
 
-#: templates/staffing/consultant_timesheet.html:18
-#: templates/staffing/consultant_timesheet.html:61
+#: templates/staffing/consultant_timesheet.html:25
+msgid "Year"
+msgstr "Année"
+
+#: templates/staffing/consultant_timesheet.html:31
+#: templates/staffing/consultant_timesheet.html:74
 msgid "Previous week"
 msgstr "Semaine précédente"
 
-#: templates/staffing/consultant_timesheet.html:22
-#: templates/staffing/consultant_timesheet.html:65
-msgid "week "
-msgstr "semaine "
-
-#: templates/staffing/consultant_timesheet.html:24
-#: templates/staffing/consultant_timesheet.html:67
+#: templates/staffing/consultant_timesheet.html:37
+#: templates/staffing/consultant_timesheet.html:80
 msgid "Next week"
 msgstr "Semaine suivante"
 
-#: templates/staffing/consultant_timesheet.html:30
-#: templates/staffing/consultant_timesheet.html:73
+#: templates/staffing/consultant_timesheet.html:43
+#: templates/staffing/consultant_timesheet.html:86
 msgid "Previous month"
 msgstr "Mois précédent"
 
-#: templates/staffing/consultant_timesheet.html:36
-#: templates/staffing/consultant_timesheet.html:79
+#: templates/staffing/consultant_timesheet.html:49
+#: templates/staffing/consultant_timesheet.html:92
 msgid "Next month"
 msgstr "Mois suivant"
 
-#: templates/staffing/consultant_timesheet.html:49
+#: templates/staffing/consultant_timesheet.html:62
 msgid "Price has been updated for some missions"
 msgstr "Le prix a été mis à jour pour certaines missions"
 
-#: templates/staffing/consultant_timesheet.html:98
+#: templates/staffing/consultant_timesheet.html:111
 msgid "Tot."
 msgstr "Tot."
 
-#: templates/staffing/consultant_timesheet.html:98
+#: templates/staffing/consultant_timesheet.html:111
 msgid "Forec."
 msgstr "Prév."
 
-#: templates/staffing/consultant_timesheet.html:131
+#: templates/staffing/consultant_timesheet.html:144
 msgid "Note: Past month timesheet and other people timesheets are read only"
 msgstr ""
 "Remarque : les feuilles de temps des mois passés et des autres personnes  "
 "sont en lecture seule."
 
-#: templates/staffing/consultant_timesheet.html:139
+#: templates/staffing/consultant_timesheet.html:152
 msgid ""
 "No forecast this month. You have to defined forecast prior to fill in "
 "timesheet"
@@ -4844,15 +4851,15 @@ msgstr ""
 "Aucune prévision définie pour ce mois. Vous devez définir des prévisions "
 "avant de pouvoir réaliser le pointage des temps"
 
-#: templates/staffing/consultant_timesheet.html:142
+#: templates/staffing/consultant_timesheet.html:155
 msgid "Working days in this month: "
 msgstr "Jours ouvrés de ce mois : "
 
-#: templates/staffing/consultant_timesheet.html:144
+#: templates/staffing/consultant_timesheet.html:157
 msgid "Working days balance: "
 msgstr "Balance de jours travaillés : "
 
-#: templates/staffing/consultant_timesheet.html:147
+#: templates/staffing/consultant_timesheet.html:160
 msgid "Forecasted this month: "
 msgstr "Jours planifiés ce mois : "
 
@@ -5341,6 +5348,15 @@ msgstr "CA par mode de facturation"
 #: templates/staffing/turnover_pivotable.html:32
 msgid "Turnover per marketing product"
 msgstr "CA par produit marketing"
+
+#~ msgid "week "
+#~ msgstr "semaine "
+
+#~ msgid "Inline month mode"
+#~ msgstr "Mode timeline"
+
+#~ msgid "Calendar month mode"
+#~ msgstr "Mode calendrier"
 
 #~ msgid "Today"
 #~ msgstr "Aujourd'hui"
