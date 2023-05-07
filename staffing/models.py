@@ -422,6 +422,7 @@ class Mission(models.Model):
         subsidiary = str(self.subsidiary)
         consultant_rates = self.consultant_rates()
         billing_mode = self.get_billing_mode_display()
+        marketing_product = self.marketing_product.description if self.marketing_product else gettext("undefined")
 
         # Gather timesheet and staffing (Only consider data up to current month)
         timesheets = Timesheet.objects.filter(mission=self).filter(working_date__lt=nextMonth(current_month)).order_by("working_date")
@@ -443,6 +444,7 @@ class Mission(models.Model):
             for month in set(timesheetMonths + staffingMonths):
                 data.append({ gettext("mission id"): mission_id,
                               gettext("mission name"): mission_name,
+                              gettext("marketing product"): marketing_product,
                               gettext("consultant"): consultant_name,
                               gettext("subsidiary"): subsidiary,
                               gettext("billing mode"): billing_mode,

@@ -6,6 +6,7 @@
         <div id="type-selector" class="btn-group" role="group">
             <button class="btn btn-primary active" onclick="done_by_client();">{% trans "Done by client" %}</button>
             <button class="btn btn-primary" onclick="done_by_mission();">{% trans "Done by mission" %}</button>
+            <button class="btn btn-primary" onclick="done_by_product();">{% trans "Done by marketing product" %}</button>
             &nbsp;
             <input id="startDate" name="startDate" class="datepicker dateinput" placeholder="{% trans 'From' %}">
             <input id="endDate" name="endDate" class="datepicker dateinput" placeholder="{% trans 'To' %}">
@@ -52,6 +53,12 @@
 
             function done_by_mission() {
                 var rows = ["{% trans 'mission id' %}"];
+                var cols = ["{% trans 'date' %}"];;
+                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "done (€)" %}']);
+            }
+
+            function done_by_product() {
+                var rows = ["{% trans 'marketing product' %}"];
                 var cols = ["{% trans 'date' %}"];;
                 drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "done (€)" %}']);
             }
