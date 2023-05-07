@@ -27,6 +27,7 @@ from people.models import Consultant
 from core.decorator import pydici_non_public, pydici_feature, pydici_subcontractor
 from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm
 from people.utils import users_are_in_same_company
+from crm.utils import get_subsidiary_from_session
 
 
 @pydici_subcontractor
@@ -236,6 +237,9 @@ def lead_expenses(request, lead_id):
 def chargeable_expenses(request):
     """Display all chargeable expenses that are not yet charged in a bill"""
     expenses= Expense.objects.filter(chargeable=True)
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        expenses = expenses.filter(lead__subsidiary=subsidiary)
     expenses = expenses.annotate(Count("clientbill"), Count("billexpense"))
     expenses = expenses.filter(clientbill__count=0, billexpense__count=0)
     expenses = expenses.select_related("lead__client__organisation__company").prefetch_related("clientbill_set")
