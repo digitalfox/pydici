@@ -22,6 +22,7 @@ from django_countries.fields import CountryField
 from core.utils import GEdge, GEdges, GNode, GNodes
 from core.models import CLIENT_BILL_LANG
 from crm.utils import get_clients_rate_ranking
+from people.tasks import compute_consultant_tasks
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -153,6 +154,9 @@ class ClientOrganisation(AbstractAddress, AbstractLegalInformation):
         for attr in heritage_from_company:
             if not getattr(self, attr):
                 setattr(self, attr, getattr(self.company, attr))
+
+        if self.company.businessOwner:
+            compute_consultant_tasks.delay(self.company.businessOwner.id)
 
         super(ClientOrganisation, self).save(kwargs)
 
