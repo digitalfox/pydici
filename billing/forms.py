@@ -14,6 +14,8 @@ from django.forms.fields import DateField, TypedChoiceField
 from django.forms.widgets import DateInput
 from django.forms.utils import ValidationError
 from django.utils import formats
+from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 
 from crispy_forms.layout import Layout, Div, Column, Row
@@ -86,6 +88,15 @@ class ClientBillForm(PydiciCrispyModelForm):
         else:
             # Amount must be defined
             raise ValidationError(_("Bill amount must be computed from bill detail or defined manually"))
+
+    def clean_add_facturx_data(self):
+        if self.cleaned_data["add_facturx_data"]:
+            if not self.instance.lead.client.organisation.vat_id or not self.instance.lead.client.organisation.legal_id:
+                raise ValidationError(mark_safe(_("You must <a href='%s'>define VAT id and Legal id</a> to generate Facturx data" %
+                                        reverse("crm:client_organisation_change",
+                                                args=[self.instance.lead.client.organisation.id]))))
+        return self.cleaned_data["add_facturx_data"]
+
 
 
 class SupplierBillForm(PydiciCrispyModelForm):
