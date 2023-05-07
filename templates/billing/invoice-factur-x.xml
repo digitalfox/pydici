@@ -50,13 +50,25 @@
                 </ram:SpecifiedTaxRegistration>
             </ram:SellerTradeParty>
             <ram:BuyerTradeParty>
-                <ram:Name>{{ bill.client.billing_name }}</ram:Name>
+                <ram:Name>
+                    {% if bill.lead.paying_authority %}
+                        {{ bill.lead.paying_authority.billing_name|default:bill.lead.paying_authority.company }}
+                    {% else %}
+                        {{ bill.lead.client.billing_name|default:bill.lead.client.organisation }}
+                    {% endif %}
+                </ram:Name>
                 <ram:SpecifiedLegalOrganization>
-                    <ram:ID schemeID="0002">{{ bill.client.organisation.legal_id }}</ram:ID>
+                    <ram:ID schemeID="0002">
+                        {% if bill.lead.paying_authority %}
+                            {{ bill.lead.paying_authority.company.legal_id }}
+                        {% else %}
+                            {{ bill.lead.client.organisation.legal_id }}
+                        {% endif %}
+                    </ram:ID>
                 </ram:SpecifiedLegalOrganization>
             </ram:BuyerTradeParty>
             <ram:BuyerOrderReferencedDocument>
-                <ram:IssuerAssignedID>{{ bill.client_deal_id }}</ram:IssuerAssignedID>
+                <ram:IssuerAssignedID>{{ bill.client_deal_id | default_if_none:'' }}</ram:IssuerAssignedID>
             </ram:BuyerOrderReferencedDocument>
         </ram:ApplicableHeaderTradeAgreement>
 
