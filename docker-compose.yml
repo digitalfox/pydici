@@ -44,7 +44,6 @@ services:
   bot:
     image: digitalfox/pydici:latest
     environment:
-      TELEGRAM_TOKEN: $TELEGRAM_TOKEN
       PYDICI_ENV: "dev"
     command: python bot/pydici_bot.py
     volumes:
