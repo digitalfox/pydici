@@ -177,6 +177,7 @@ class ClientBill(AbstractBill):
     client_comment = models.CharField(_("Client comments"), max_length=500, blank=True, null=True)
     client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
     allow_duplicate_expense = models.BooleanField(_("Allow to bill twice an expense"), default=False)  # Useful after credit note
+    add_facturx_data = models.BooleanField(_("Add Factur-X embedded information"), default=False)
 
     history = AuditlogHistoryField()
 

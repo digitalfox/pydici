@@ -74,7 +74,8 @@ class ClientBillForm(PydiciCrispyModelForm):
                                                       Column("amount", "vat", "amount_with_vat", css_class="col-md-6")),
                                                   Tab(_("Dates"), Column("creation_date", "due_date", "payment_date",
                                                                          css_class="col-md-6"), ),
-                                                  Tab(_("Advanced"), Column("client_deal_id", "lang", "allow_duplicate_expense", "bill_file",
+                                                  Tab(_("Advanced"), Column("client_deal_id", "lang", "allow_duplicate_expense",
+                                                                            "add_facturx_data","bill_file",
                                                                             css_class="col-md-6"), ),
                                                   css_class="row")))
 
