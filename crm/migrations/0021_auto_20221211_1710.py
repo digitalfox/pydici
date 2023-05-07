@@ -5,14 +5,14 @@ from django.db import migrations
 def forwards(apps, schema_editor):
     Client = apps.get_model("crm", "Client")
     for client in Client.objects.all():
-        client.organisation.billing_city = client.billing_city
-        client.organisation.billing_country = client.billing_country
-        client.organisation.billing_street = client.billing_street
-        client.organisation.billing_zipcode = client.billing_zipcode
-        client.organisation.city = client.city
-        client.organisation.country = client.country
-        client.organisation.street = client.street
-        client.organisation.zipcode = client.zipcode
+        client.organisation.billing_city = client.billing_city or client.organisation.company.billing_city
+        client.organisation.billing_country = client.billing_country or client.organisation.company.billing_country
+        client.organisation.billing_street = client.billing_street or client.organisation.company.billing_street
+        client.organisation.billing_zipcode = client.billing_zipcode or client.organisation.company.billing_zipcode
+        client.organisation.city = client.city or client.organisation.company.city
+        client.organisation.country = client.country or client.organisation.company.country
+        client.organisation.street = client.street or client.organisation.company.street
+        client.organisation.zipcode = client.zipcode or client.organisation.company.zipcode
         client.organisation.save()
 
 
