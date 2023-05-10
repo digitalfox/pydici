@@ -231,11 +231,13 @@ class TimesheetForm(forms.Form):
         if is_calendar_view:
             week = []
             for idx, day in enumerate(days):
-                if day.isoweekday() == 1:
-                    week = []
                 week.append(day)
                 if day.isoweekday() == 7:
                     calendar_weeks.append(week)
+                    week = []
+            if week:
+                calendar_weeks.append(week)
+
 
         day_index = 0
         for idxw, week_days in enumerate(calendar_weeks if is_calendar_view else [days]):
@@ -278,7 +280,7 @@ class TimesheetForm(forms.Form):
                     else:
                         self.fields[key].label = ""
 
-                    if (is_calendar_view and day.isoweekday() == 7) or (not is_calendar_view and idxd == len(days) - 1):
+                    if idxd == len(week_days) - 1:
                         # Add staffing total and forecast in hidden field
                         hwidget = forms.HiddenInput()
                         # Mission id is added to ensure field key is uniq.
