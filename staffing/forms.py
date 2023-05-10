@@ -226,21 +226,30 @@ class TimesheetForm(forms.Form):
         super(TimesheetForm, self).__init__(*args, **kwargs)
 
         TimesheetFieldClass = TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD[settings.TIMESHEET_INPUT_METHOD]
-        calendar_weeks = []
+
+        # Init the timesheet form builder cursor
+        global_timesheet_cursor = [days]
+
         is_calendar_view = timesheet_view == 'calendar'
+
+        # override the timesheet form builder cursor for calendar view
         if is_calendar_view:
+            global_timesheet_cursor = []
             week = []
+            # split the month in weeks for calendar view
             for idx, day in enumerate(days):
                 week.append(day)
                 if day.isoweekday() == 7:
-                    calendar_weeks.append(week)
+                    global_timesheet_cursor.append(week)
                     week = []
             if week:
-                calendar_weeks.append(week)
+                global_timesheet_cursor.append(week)
 
+        # warning array is based on the global number of days index
+        warning_day_index = 0
 
-        day_index = 0
-        for idxw, week_days in enumerate(calendar_weeks if is_calendar_view else [days]):
+        # build the timesheet form for al type of views
+        for idxw, week_days in enumerate(global_timesheet_cursor):
             for idxm, mission in enumerate(missions):
                 for idxd, day in enumerate(week_days):
                     key = "charge_%s_%s" % (mission.id, day.day)
@@ -255,39 +264,27 @@ class TimesheetForm(forms.Form):
                         tabIndex = day.day
                     self.fields[key].widget.attrs.setdefault("tabindex", tabIndex)
 
-                    if (is_calendar_view and (day.isoweekday() == 1 or idxd == 0)) or (not is_calendar_view and idxd == 0):  # Only show label for first day
-                        tooltip = _("mission id: %s") % mission.mission_id()
-                        mission_link = escape(mission)
-                        if mission.lead_id:
-                            near_leads = [missions[idxm - 1].lead.name] if idxm > 0 and missions[idxm - 1].lead else []
-                            if idxm < len(missions) - 1 and missions[idxm + 1].lead:
-                                near_leads.append(missions[idxm + 1].lead.name)
-                            has_same_lead = True if mission.lead.name in near_leads else False
-                            mission_lead = "<span class='lead-sub-label'>%s</span>" % mission.lead.name
+                    # default label's empty, will be updated with a dedicated "form missions label loop"
+                    self.fields[key].label = ""
+                    # Only show label for first day
+                    if idxd == 0 and idxm == 0:
+                        # table column headers displays day labels
+                        self.fields[key].days = []
+                        for d in week_days:
+                            self.fields[key].days.append(d)
 
-                            if mission.description:
-                                mission_sub_label = "<div class='lead-mission-sub-label'>%s <span class='%s-mission-sub-label'>%s</span></div>" % (mission_lead, "highlight" if has_same_lead else "", mission.description)
-                            else:
-                                mission_sub_label = "<div class='lead-mission-sub-label'>%s</div>" % mission_lead
-                            mission_label = "<div class='mission-label'><div class='client-mission-label'>%s</div> %s</div>" % (mission.lead.client.organisation, mission_sub_label)
-                            mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), mission_label)
-                        self.fields[key].label = mark_safe("<div class='pydici-tooltip' title='%s'>%s</div>" % (escape(tooltip), mission_link))
-
-                        if idxm == 0:
-                            self.fields[key].days = []
-                            for d in week_days:
-                                self.fields[key].days.append(d)
-                    else:
-                        self.fields[key].label = ""
-
+                    # last week or day of month displays the timesheet footer
                     if idxd == len(week_days) - 1:
                         # Add staffing total and forecast in hidden field
                         hwidget = forms.HiddenInput()
-                        # Mission id is added to ensure field key is uniq.
+                        # Mission id is added to ensure field key is uniq (as for the week for calendar view)
                         key = "%s %s %s %s" % (timesheetTotal.get(mission.id, 0), idxw, mission.id, forecastTotal[mission.id])
                         self.fields[key] = forms.CharField(widget=hwidget, required=False)
+                        # simple way for the template to differentiate week days over weekend days
                         self.fields[key].weekday = day.isoweekday()
 
+                        # After the last mission being computed
+                        # add extra rows for lunch tickets and warnings
                         if idxm == len(missions)-1:
                             if showLunchTickets:
                                 for lunch_day in week_days:
@@ -301,16 +298,45 @@ class TimesheetForm(forms.Form):
                                     else:
                                         self.fields[key].label = ""  # Squash label
                                 # extra space is important - it is for forecast total (which does not exist for ticket...)
+                                # add week id for uniqueness purpose in calendar view
                                 key = "%s %s total-ticket " % (timesheetTotal.get("ticket", 0), idxw)
                                 self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
+                                # simple way for the template to differentiate week days over weekend days
                                 self.fields[key].weekday = day.isoweekday()
 
+                            # add week id for uniqueness purpose in calendar view
                             key = "week_warning_%s " % idxw
                             self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
                             self.fields[key].warning = []
                             for warning_week_day in week_days:
-                                self.fields[key].warning.append({"value":warning[day_index], "weekday": warning_week_day.isoweekday()})
-                                day_index += 1
+                                # simple way for the template to differentiate week days over weekend days
+                                self.fields[key].warning.append({"value":warning[warning_day_index], "weekday": warning_week_day.isoweekday()})
+                                warning_day_index += 1
+
+        # form missions labels
+        for idxm, mission in enumerate(missions):
+            for idxd, day in enumerate(days):
+                key = "charge_%s_%s" % (mission.id, day.day)
+                if (is_calendar_view and (day.isoweekday() == 1 or idxd == 0)) or (not is_calendar_view and idxd == 0):  # Only show label for first day
+                    tooltip = _("mission id: %s") % mission.mission_id()
+                    mission_link = escape(mission)
+                    if mission.lead_id:
+                        # enable highlight on mission info if the next or previous one have same lead
+                        near_leads = [missions[idxm - 1].lead.name] if idxm > 0 and missions[idxm - 1].lead else []
+                        if idxm < len(missions) - 1 and missions[idxm + 1].lead:
+                            near_leads.append(missions[idxm + 1].lead.name)
+                        has_same_lead = True if mission.lead.name in near_leads else False
+                        mission_lead = "<span class='lead-sub-label'>%s</span>" % mission.lead.name
+
+                        if mission.description:
+                            mission_sub_label = "<div class='lead-mission-sub-label'>%s <span class='%s-mission-sub-label'>%s</span></div>" % (mission_lead, "highlight" if has_same_lead else "", mission.description)
+                        else:
+                            mission_sub_label = "<div class='lead-mission-sub-label'>%s</div>" % mission_lead
+                        mission_label = "<div class='mission-label'><div class='client-mission-label'>%s</div> %s</div>" % (
+                            mission.lead.client.organisation, mission_sub_label)
+                        mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), mission_label)
+                    self.fields[key].label = mark_safe("<div class='pydici-tooltip' title='%s'>%s</div>" % (escape(tooltip), mission_link))
+
 
 class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""
