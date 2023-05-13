@@ -92,9 +92,9 @@ class ClientBillForm(PydiciCrispyModelForm):
     def clean_add_facturx_data(self):
         if self.cleaned_data["add_facturx_data"]:
             if not self.instance.lead.client.organisation.vat_id or not self.instance.lead.client.organisation.legal_id:
-                raise ValidationError(mark_safe(_("You must <a href='%s'>define VAT id and Legal id</a> to generate Facturx data" %
+                raise ValidationError(mark_safe(_("You must <a href='%s'>define VAT id and Legal id</a> to generate Facturx data") %
                                         reverse("crm:client_organisation_change",
-                                                args=[self.instance.lead.client.organisation.id]))))
+                                                args=[self.instance.lead.client.organisation.id])))
         return self.cleaned_data["add_facturx_data"]
 
 
