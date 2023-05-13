@@ -84,6 +84,9 @@ class BusinessSector(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = _("Business sector")
+        verbose_name_plural = _("Business sectors")
 
 class Subsidiary(AbstractCompany):
     """Internal company / organisation unit"""
