@@ -27,7 +27,7 @@ try:
 except ImportError:
     HAVE_SCIKIT = False
 
-from django.db.models import Count, Sum, Min, Max
+from django.db.models import Count, Sum, Min, Max, Avg
 from django.core.cache import cache
 from django.db.models.query import QuerySet
 
@@ -81,9 +81,26 @@ def get_lead_state_data(lead):
     feature["client_contact_count"] = Lead.objects.filter(client__contact=lead.client.contact,
                                                           creation_date__lt=lead.creation_date).count()
     feature["client_company_business_owner"] = str(lead.client.organisation.company.businessOwner)
+    feature["client_company_business_sector"] = str(lead.client.organisation.business_sector)
     if lead.start_date:
         feature["lifetime"] = max(0, (lead.start_date - lead.creation_date.date()).days)
-    feature["sales"] = float(lead.sales or 0)
+
+    previous_recent_leads = Lead.objects.filter(creation_date__lt=lead.creation_date,
+                                                creation_date__gt=lead.creation_date-timedelta(365*2))
+    if lead.sales:
+        feature["sales"] = float(lead.sales)
+    else:
+        # Use client average if available, else default to subsidiary average
+        feature["sales"] = previous_recent_leads.filter(client=lead.client).aggregate(Avg("sales"))["sales__avg"]
+        if not feature["sales"]:
+            feature["sales"] = previous_recent_leads.filter(subsidiary=lead.subsidiary).aggregate(Avg("sales"))["sales__avg"] or 0
+        feature["sales"] = float(feature["sales"])
+    feature["subsidiary_avg_sales_delta"] = previous_recent_leads.filter(subsidiary=lead.subsidiary).aggregate(Avg("sales"))["sales__avg"]
+    feature["subsidiary_avg_sales_delta"] = feature["sales"] - float(feature["subsidiary_avg_sales_delta"] or 0)
+    feature["client_avg_sales_delta"] = previous_recent_leads.filter(client=lead.client).aggregate(Avg("sales"))["sales__avg"]
+    feature["client_avg_sales_delta"] = feature["sales"] - float(feature["client_avg_sales_delta"] or 0)
+    feature["business_sector_avg_sales_delta"] = previous_recent_leads.filter(client__organisation__business_sector=lead.client.organisation.business_sector).aggregate(Avg("sales"))["sales__avg"]
+    feature["business_sector_avg_sales_delta"] = feature["sales"] - float(feature["business_sector_avg_sales_delta"] or 0)
     if lead.business_broker:
         feature["broker_company"] = str(lead.business_broker.company)
         feature["broker_count"] = Lead.objects.filter(business_broker=lead.business_broker,
@@ -100,6 +117,11 @@ def get_lead_state_data(lead):
                                                      creation_date__gt=(lead.creation_date - timedelta(360))).count()
     feature["leads_last_three_year"] = client_leads.filter(creation_date__lt=lead.creation_date,
                                                            creation_date__gt=(lead.creation_date - timedelta(360 * 3))).count()
+    for timespan in (60, 120):
+        feature["nb_leads_active_%s_before" % timespan] = Lead.objects.filter(mission__timesheet__working_date__gt=(lead.creation_date-timedelta(timespan)),
+                                                                              mission__timesheet__working_date__lt=lead.creation_date,
+                                                                              client=lead.client).distinct().count()
+
     for staf in lead.staffing.all():
         feature["staffing_%s" % staf.trigramme] = "yes"
     for tag in lead.tags.all():
@@ -189,7 +211,7 @@ def extract_leads_tag(leads, include_leads=False):
 def get_state_model():
     model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(max_features="sqrt",
                                                                                  min_samples_split=8,
-                                                                                 min_samples_leaf=2,
+                                                                                 min_samples_leaf=1,
                                                                                  criterion='entropy',
                                                                                  n_estimators=300,
                                                                                  class_weight="balanced_subsample"))])
