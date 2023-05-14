@@ -222,12 +222,12 @@ def extract_leads_tag(leads, include_leads=False):
 
 ############# Model definition ##########################
 def get_state_model():
-    model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(max_features="sqrt",
-                                                                                 min_samples_split=8,
-                                                                                 min_samples_leaf=1,
+    model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(max_features=None,
+                                                                                 min_samples_split=2,
+                                                                                 min_samples_leaf=5,
                                                                                  criterion='entropy',
                                                                                  n_estimators=300,
-                                                                                 class_weight="balanced_subsample"))])
+                                                                                 class_weight="balanced"))])
     return model
 
 
@@ -316,10 +316,11 @@ def grid_cv_tag_model():
 def grid_cv_state_model():
     """Perform a grid search cross validation to find best parameters"""
     parameters = {
-        'clf__criterion': ("gini", "entropy"),
+        'clf__criterion': ("gini", "entropy", "log_loss"),
         'clf__min_samples_split': (2, 3, 5, 8, 10, 12),
-        'clf__min_samples_leaf': (1, 2, 3, 5),
-        'clf__class_weight': ("balanced", "balanced_subsample")
+        'clf__min_samples_leaf': (1, 2, 5, 8, 10),
+        'clf__class_weight': ("balanced", "balanced_subsample"),
+        'clf__max_features': ("sqrt", "log2", None),
     }
     learn_leads = Lead.objects.filter(state__in=list(STATES.keys()))
     features, targets = extract_leads_state(learn_leads)
