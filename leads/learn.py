@@ -10,6 +10,7 @@ from datetime import datetime, date, timedelta
 import re
 import zlib
 import pickle
+import itertools
 from celery import shared_task
 
 HAVE_SCIKIT = True
@@ -51,6 +52,13 @@ FR_STOP_WORDS = """alors au aucun aussi autre avant avec avoir bon car ce cela c
  si sien son sont sous soyez sujet sur ta tandis tellement tels tes ton tous tout trop très tu voient vont votre vous
  vu ça étaient état étions été être un une de ce cette ces ceux"""
 
+
+def pairwise(iterable):
+    """s -> (s0,s1), (s1,s2), (s2, s3), ...
+    #TODO: included in itertools in python 3.11"""
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return zip(a, b)
 
 ############# Features extraction ##########################
 
@@ -126,10 +134,15 @@ def get_lead_state_data(lead):
         feature["staffing_%s" % staf.trigramme] = "yes"
     for tag in lead.tags.all():
         feature["tag_%s" % tag.slug] = "yes"
-    feature["history_changes"] = lead.history.count()
+    history = lead.history.filter(timestamp__lte=(lead.start_date or date.today()))
+    feature["history_changes"] = history.count()
     if feature["history_changes"] > 1:
-        history_boundaries = lead.history.aggregate(Min("timestamp"), Max("timestamp"))
+        history_boundaries = history.aggregate(Min("timestamp"), Max("timestamp"))
         feature["history_length"] = (history_boundaries["timestamp__max"] - history_boundaries["timestamp__min"]).days
+        feature["history_actor_count"] = history.aggregate(Count("actor"))["actor__count"]
+        history_timestamps = [c.timestamp for c in history]
+        if len(history_timestamps) > 1:
+            feature["history_mean_time_bet_changes"] = np.median(([(a - b).total_seconds() for a, b in pairwise(history_timestamps)]))
 
     return feature, lead.state
 
