@@ -35,6 +35,8 @@ from django.db.models.query import QuerySet
 from leads.models import Lead, StateProba
 from taggit.models import Tag
 from billing.models import ClientBill
+from crm.models import Client
+from staffing.models import Consultant
 
 STATES = {"WON": 1, "LOST": 2, "FORGIVEN": 3}
 INV_STATES = dict([(v, k) for k, v in list(STATES.items())])
@@ -85,6 +87,8 @@ def get_lead_state_data(lead):
                                                                               creation_date__gt=(lead.creation_date - timedelta(360 * 3)))
                                                                  .aggregate(Sum("amount")).values())[0] or 0)
     feature["client_contact"] = str(lead.client.contact)
+    feature["client_contact_function"] = str(lead.client.contact.function if lead.client.contact and lead.client.contact.function else "Undefined")
+    feature["client_contact_num_client"] = Client.objects.filter(contact=lead.client.contact).count()
     feature["no_client_contact"] = int(lead.client.contact is None)
     feature["client_contact_count"] = Lead.objects.filter(client__contact=lead.client.contact,
                                                           creation_date__lt=lead.creation_date).count()
@@ -129,9 +133,18 @@ def get_lead_state_data(lead):
         feature["nb_leads_active_%s_before" % timespan] = Lead.objects.filter(mission__timesheet__working_date__gt=(lead.creation_date-timedelta(timespan)),
                                                                               mission__timesheet__working_date__lt=lead.creation_date,
                                                                               client=lead.client).distinct().count()
-
+    client_working_consultants = Consultant.objects.filter(timesheet__mission__lead__client=lead.client,
+                                                           timesheet__working_date__lt=lead.creation_date).distinct()
+    feature["client_working_consultants"] = client_working_consultants.count()
+    feature["responsible_already_work_for_client"] = lead.responsible in client_working_consultants
+    feature["staf_size"] = lead.staffing.count()
+    known_staf = 0
     for staf in lead.staffing.all():
         feature["staffing_%s" % staf.trigramme] = "yes"
+        if staf in client_working_consultants:
+            known_staf +=1
+    if feature["staf_size"] > 0:
+        feature["staf_known"] = known_staf / feature["staf_size"]
     for tag in lead.tags.all():
         feature["tag_%s" % tag.slug] = "yes"
     history = lead.history.filter(timestamp__lte=(lead.start_date or date.today()))
