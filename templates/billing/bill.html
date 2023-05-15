@@ -62,7 +62,7 @@
             </div>
         {% else %}
             <div class="lead">
-                {{ bill.lead.client.billing_name|default:bill.lead.client.organisation }}
+                {{ bill.lead.client.organisation.billing_name|default:bill.lead.client.organisation }}
                 {{ bill.lead.client.billing_contact.contact }}<br>
                 {{ bill.lead.client.billing_address|linebreaksbr }}<br>
                 {% if bill.lead.client.organisation.vat_id  %}
