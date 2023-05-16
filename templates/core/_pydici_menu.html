@@ -89,7 +89,7 @@
                               </a>
                               <ul class="dropdown-menu pydici-on-top" aria-labelledby="navbarDropdown">
                                   <li><a class="dropdown-item" href="{% url 'staffing:prod_report' %}">{% trans "Staff production" %}</a></li>
-                                  <li><a class="dropdown-item" href="{% url 'staffing:turnover_pivotable' %}?{{scope_current_filter}}">{% trans "Turnover analysis" %}</a></li>
+                                  <li><a class="dropdown-item" href="{% url 'staffing:turnover_pivotable' %}{% if scope_current_filter %}?{{scope_current_filter}}{% endif %}">{% trans "Turnover analysis" %}</a></li>
                                   <li><a class="dropdown-item" href="{% url 'people:consultants_tasks' %}">{% trans "Consultants tasks" %}</a></li>
                                   <li><hr class="dropdown-divider"></li>
                                   <li class="dropdown-header">{% trans "Time tracking" %}</li>
