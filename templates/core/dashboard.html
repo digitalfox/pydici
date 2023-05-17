@@ -86,7 +86,7 @@
         <div id="people_count_graph_content"></div>
         <script type="text/javascript">
         $(document).ready(function() {
-            $('#people_count_graph_content').load("{% url 'people:graph_people_count' %}?{{scope_current_filter}}")
+            $('#people_count_graph_content').load("{% url 'people:graph_people_count' %}{% if scope_current_filter %}?{{scope_current_filter}}"){% endif %}
          });
         </script>
     </div>

@@ -16,6 +16,9 @@ from django.core.cache import cache
 from celery import shared_task
 
 from staffing.views import turnover_pivotable, graph_profile_rates
+from leads.views import graph_leads_pipe, leads_pivotable
+from people.views import graph_people_count
+from crm.views import clients_ranking
 from core.utils import get_fiscal_year, create_fake_request
 from crm.models import Subsidiary
 
@@ -29,6 +32,7 @@ def view_warmup():
     """Warmup cache for heavy views"""
     user = User.objects.filter(is_superuser=True).first()
     subsidiaries_id = list(Subsidiary.objects.filter(mission__nature="PROD").distinct().values_list("id", flat=True))
+    current_fiscal_year = get_fiscal_year(date.today())
     ## Request env is important as it is used to build header cache key
     if settings.DEBUG:
         env = { "SERVER_NAME" : "localhost", "SERVER_PORT": "8888" }
@@ -37,8 +41,15 @@ def view_warmup():
         env = { "SERVER_NAME": hosts[0] if hosts else "localhost"}
     for url_name, view, kwargs, subsidiary_context in (
             ("staffing:turnover_pivotable", turnover_pivotable, {}, True),
-            ("staffing:turnover_pivotable_year", turnover_pivotable, { "year": get_fiscal_year(date.today()) }, True),
+            ("staffing:turnover_pivotable_year", turnover_pivotable, { "year": current_fiscal_year }, True),
+            ("staffing:turnover_pivotable_year", turnover_pivotable, {"year": current_fiscal_year - 1 }, True),
             ("staffing:graph_profile_rates", graph_profile_rates, {}, True),
+            ("leads:graph_leads_pipe", graph_leads_pipe, {}, True),
+            ("people:graph_people_count", graph_people_count, {}, True),
+            ("crm:clients_ranking", clients_ranking, {}, True),
+            ("leads:leads-pivotable", leads_pivotable, {}, True),
+            ("leads:leads-pivotable-year", leads_pivotable, { "year": current_fiscal_year }, True),
+            ("leads:leads-pivotable-year", leads_pivotable, {"year": current_fiscal_year - 1 }, True),
     ):
         context = [None, ]
         if subsidiary_context:

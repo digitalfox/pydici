@@ -30,7 +30,7 @@
                                 <li class="dropdown-header">{% trans "Rates Reporting" %}</li>
                                 <li><a class="dropdown-item" href="{% url 'staffing:rate_objective_report' %}">{% trans "Rate objectives report" %}</a></li>
                                 <li><a class="dropdown-item" href="{% url 'staffing:rates_report' %}?{{scope_current_filter}}">{% trans "Production rates and daily rates report" %}</a></li>
-                                <li><a class="dropdown-item" href="{% url 'crm:clients_ranking' %}?{{scope_current_filter}}">{% trans "Rate ranking" %}</a></li>
+                                <li><a class="dropdown-item" href="{% url 'crm:clients_ranking' %}{% if scope_current_filter %}?{{scope_current_filter}}{% endif %}">{% trans "Rate ranking" %}</a></li>
                               {% endif %}
                               <li><hr class="dropdown-divider"></li>
                               <li class="dropdown-header">{% trans "Leads Reporting" %}</li>
