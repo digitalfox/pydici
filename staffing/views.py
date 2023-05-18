@@ -1916,7 +1916,7 @@ def optimise_pdc(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-@cache_page(60 * 60 * 10)
+@cache_page(60 * 60 * 24)
 def turnover_pivotable(request, year=None):
     """Turnover analysis (per people and mission) based on timesheet production"""
     data = []
@@ -1956,7 +1956,8 @@ def turnover_pivotable(request, year=None):
                         _("billing mode"): mission.get_billing_mode_display(),
                         _("broker"): str(mission.lead.business_broker or _("Direct")) if mission.lead else _("Direct"),
                         _("subsidiary"): str(mission.subsidiary),
-                        _("Marketing product"): mission.marketing_product.description if mission.marketing_product else _("Undefined")}
+                        _("Marketing product"): mission.marketing_product.description if mission.marketing_product else _("Undefined"),
+                        _("Business sector"): mission.lead.client.organisation.business_sector.name if mission.lead and mission.lead.client.organisation.business_sector else _("Undefined")}
         for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):
             fiscal_year = get_fiscal_year(month)
             if year != "all" and (month < start or month >= end):

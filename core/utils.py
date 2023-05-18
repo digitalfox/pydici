@@ -19,6 +19,10 @@ from django.template.defaultfilters import slugify
 from django.core.cache import cache
 from django.db.models import Max, Min
 from django.conf import settings
+from django.test import RequestFactory
+from django.contrib.messages.storage import default_storage
+from django.contrib.auth.models import User
+
 
 from core.models import GroupFeature, Parameter
 
@@ -454,3 +458,16 @@ def audit_log_is_real_change(value):
         return float(old) != float(new)
     except (ValueError, TypeError) as e:
         return True
+
+def create_fake_request(user=None, url="/", env=None):
+    """Create fake request to """
+    if user is None:
+        user = User.objects.get(id=1)
+    if env is None:
+        env = {}
+    f = RequestFactory()
+    request = f.get(url, **env)
+    request.user = user
+    request.session = {}
+    request._messages = default_storage(request)
+    return request

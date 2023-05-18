@@ -177,6 +177,7 @@ class ClientBill(AbstractBill):
     client_comment = models.CharField(_("Client comments"), max_length=500, blank=True, null=True)
     client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
     allow_duplicate_expense = models.BooleanField(_("Allow to bill twice an expense"), default=False)  # Useful after credit note
+    add_facturx_data = models.BooleanField(_("Add Factur-X embedded information"), default=False)
 
     history = AuditlogHistoryField()
 
@@ -227,7 +228,7 @@ class ClientBill(AbstractBill):
 
     def save(self, *args, **kwargs):
         if not self.lang:
-            self.lang = self.lead.client.billing_lang
+            self.lang = self.lead.client.organisation.billing_lang
         if self.client_deal_id == "" and self.lead.client_deal_id:
             self.client_deal_id = self.lead.client_deal_id
         if self.state in ("0_DRAFT", "0_PROPOSED"):

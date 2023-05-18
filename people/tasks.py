@@ -8,7 +8,7 @@ Module that handle asynchronous tasks
 
 from datetime import datetime, date
 
-from django.db.models import Min, Count
+from django.db.models import Min, Count, Q
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.core.cache import cache
@@ -38,6 +38,7 @@ def compute_consultant_tasks(consultant_id):
     ClientBill = apps.get_model("billing", "ClientBill")
     Consultant = apps.get_model("people", "Consultant")
     Lead = apps.get_model("leads", "Lead")
+    ClientOrganisation = apps.get_model("crm", "ClientOrganisation")
     from people.models import CONSULTANT_TASKS_CACHE_KEY
 
     consultant = Consultant.objects.get(id=consultant_id)
@@ -123,6 +124,13 @@ def compute_consultant_tasks(consultant_id):
         tasks.append((_("Leads with past due date"), leads_with_past_due_date_count,
                       reverse("leads:detail", args=[leads_with_past_due_date[0].id]), 1))
 
+    # active client organisation with incomplete legal information
+    incomplete_client_orga = ClientOrganisation.objects.filter(client__active=True, company__businessOwner=consultant)
+    incomplete_client_orga = incomplete_client_orga.filter(Q(legal_id__isnull=True) | Q(vat_id__isnull=True)).distinct()
+    incomplete_client_orga_count = incomplete_client_orga.count()
+    if incomplete_client_orga_count > 0:
+        tasks.append((_("Missing legal id or vat id"), incomplete_client_orga_count,
+                      reverse("crm:client_organisation_change", args=[incomplete_client_orga[0].id]), 1))
 
     # update cache with computed tasks
     cache.set(CONSULTANT_TASKS_CACHE_KEY % consultant.id, tasks, 24*3600)

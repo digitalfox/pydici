@@ -7,8 +7,6 @@ Test cases for Lead module
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.test import RequestFactory
-from django.contrib.messages.storage import default_storage
 from django.contrib.auth.models import User
 from django.conf import settings
 
@@ -22,7 +20,7 @@ from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
 from leads import learn as leads_learn
 from leads.utils import post_save_lead
 from leads.tasks import connect_to_nextcloud_db
-from core.utils import getLeadDirs
+from core.utils import getLeadDirs, create_fake_request
 
 from urllib.parse import urlsplit
 import os.path
@@ -501,12 +499,3 @@ def create_nextcloud_test_db():
     cursor.execute("""create database if not exists %s""" % settings.NEXTCLOUD_DB_DATABASE)
     cursor.close()
     connection.close()
-
-def create_fake_request(user_id=1, path="/"):
-    """Create fake request to """
-    f = RequestFactory()
-    request = f.get(path)
-    request.user = User.objects.get(id=user_id)
-    request.session = {}
-    request._messages = default_storage(request)
-    return request

@@ -25,7 +25,7 @@ from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 
 def get_address_column(show_banner=True):
     if show_banner:
-        banner = HTML(_("<em>Leave address blank to use company or organisation address</em>"))
+        banner = HTML(_("<em>Leave address blank to use company address</em>"))
     else:
         banner = None
     col = Column(banner,
@@ -125,28 +125,19 @@ class ClientForm(PydiciCrispyModelForm):
                     HTML(
                         "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                             "crm:client_organisation"))),
-                "expectations",
                 FieldWithButtons("contact",
                                  HTML(
                                      "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                          "crm:contact_create"))),
-                "alignment",
-                Field("vat_id", placeholder=_("Leave blank to use company vat id")),
-                "billing_lang",
-                "billing_name",
-                FieldWithButtons(
-                    "billing_contact",
-                    HTML(
-                        "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
-                            "crm:administrative_contact_add"))),
                 css_class="col-md-6"),
-            get_address_column(),
+            Column(
+                "expectations", "alignment",
+                css_class="col-md-6"),
             css_class="row my-2"),
             "active",
             self.submit)
         self.inline_helper.layout = Layout(
-            Div(Column(Field("billing_name", placeholder=_("Leave blank to use standard name")),
-                       FieldWithButtons("organisation",
+            Div(Column(FieldWithButtons("organisation",
                                         HTML(
                                             """<a role='button' class='btn btn-primary' href='#' onclick='$("#organisationForm").show("slow"); $("#organisation_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
                                         css_id="organisation_input_group"),
@@ -155,9 +146,7 @@ class ClientForm(PydiciCrispyModelForm):
                                             """<a role='button' class='btn btn-primary' href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
                                         css_id="contact_input_group"),
                        css_class="col-md-6"),
-                Column(Field("vat_id", placeholder=_("Leave blank to use company vat id")),
-                       "billing_lang",
-                       "alignment",
+                Column("alignment",
                        "expectations",
                        css_class="col-md-6"),
                 css_class="row"))
@@ -174,15 +163,30 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
         self.helper.layout = Layout(Div(Column("name", FieldWithButtons("company",
                                                                         HTML("""<a role='button' class='btn btn-primary' href='%s' target='_blank'>
                                                                                 <i class='bi bi-plus'></i></a>""" % reverse("crm:company"))),
+                                               "business_sector",
+                                               Field("vat_id", placeholder=_("Leave blank to use company vat id")),
+                                               Field("legal_id", placeholder=_("Leave blank to use company legal id")),
+                                               "billing_lang",
+                                               "billing_name",
+                                               FieldWithButtons(
+                                                   "billing_contact",
+                                                   HTML(
+                                                       "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
+                                                           "crm:administrative_contact_add"))),
                                                css_class="col-md-6"),
                                         get_address_column(),
                                         css_class="row my-2"),
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Client organisation"),
-                                                    Row(Column("name"),
-                                                        Column(FieldWithButtons("company", HTML(
-                                                               """<a role='button' class='btn btn-primary' href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
-                                                                            css_id="company_input_group"))),
+                                                    Row(Column("name",
+                                                               Field("billing_name", placeholder=_("Leave blank to use standard name")),
+                                                               FieldWithButtons("company", HTML(
+                                                                   """<a role='button' class='btn btn-primary' href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
+                                                                                css_id="company_input_group")),
+                                                        Column("business_sector", "billing_lang"),
+                                                        Column(Field("vat_id", placeholder=_("Leave blank to use company vat id")),
+                                                               Field("legal_id", placeholder=_("Leave blank to use company legal id"))),
+                                                        ),
                                                     css_class="collapse", css_id="organisationForm"))
 
 
@@ -198,12 +202,13 @@ class CompanyForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(CompanyForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(
-            Div(Column("name", "code", "businessOwner", "vat_id", "web", "legal_description", css_class="col-md-6"),
+            Div(Column("name", "code", "businessOwner", "business_sector", "vat_id", "legal_id",  "web", "legal_description", css_class="col-md-6"),
                 get_address_column(show_banner=False), css_class="row my-2"),
             self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Company"),
-                                                    Row(Column("name"), Column("code")),
-                                                    Row(Column("businessOwner"), Column("web")),
+                                                    Row(Column("name", "businessOwner", "business_sector"),
+                                                        Column("code", "web"),
+                                                        Column("vat_id", "legal_id")),
                                                     css_class="collapse", css_id="companyForm"))
 
 

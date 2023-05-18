@@ -90,5 +90,13 @@
             "company": 1,
             "contact": 1
         }
+    },
+
+    {
+        "pk": 1,
+        "model": "crm.businesssector",
+        "fields": {
+            "name": "industry"
+        }
     }
 ]

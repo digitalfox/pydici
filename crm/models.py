@@ -16,10 +16,13 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.conf import settings
+
+from django_countries.fields import CountryField
+
 from core.utils import GEdge, GEdges, GNode, GNodes
 from core.models import CLIENT_BILL_LANG
-
 from crm.utils import get_clients_rate_ranking
+from people.tasks import compute_consultant_tasks
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
 
@@ -28,11 +31,11 @@ class AbstractAddress(models.Model):
     street = models.TextField(_("Street"), blank=True, null=True)
     city = models.CharField(_("City"), max_length=200, blank=True, null=True)
     zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
-    country = models.CharField(_("Country"), max_length=50, blank=True, null=True)
+    country = CountryField(_("Country"), null=True, blank=True)
     billing_street = models.TextField(_("Street"), blank=True, null=True)
     billing_city = models.CharField(_("City"), max_length=200, blank=True, null=True)
     billing_zipcode = models.CharField(_("Zip code"), max_length=30, blank=True, null=True)
-    billing_country = models.CharField(_("Country"), max_length=50, blank=True, null=True)
+    billing_country = CountryField(_("Country"), null=True, blank=True)
 
     def main_address(self):
         return "%s\n%s %s\n%s" % (self.street, self.zipcode, self.city, self.country)
@@ -43,13 +46,20 @@ class AbstractAddress(models.Model):
     class Meta:
         abstract = True
 
-class AbstractCompany(AbstractAddress):
+
+class AbstractLegalInformation(models.Model):
+    legal_description = models.TextField("Legal description", blank=True, null=True)
+    legal_id = models.CharField(max_length=30, blank=True, null=True, verbose_name=_("Legal id"))
+    vat_id = models.CharField(max_length=30, blank=True, null=True, verbose_name=_("VAT id"))
+
+    class Meta:
+        abstract = True
+
+class AbstractCompany(AbstractAddress, AbstractLegalInformation):
     """Abstract Company base class for subsidiary, client/supplier/broker/.. company"""
     name = models.CharField(_("Name"), max_length=200, unique=True)
     code = models.CharField(_("Code"), max_length=3, unique=True)
     web = models.URLField(blank=True, null=True)
-    legal_description = models.TextField("Legal description", blank=True, null=True)
-    vat_id = models.CharField(max_length=30, blank=True, null=True, verbose_name=_("VAT id"))
 
     def __str__(self):
         return str(self.name)
@@ -67,6 +77,17 @@ class AbstractCompany(AbstractAddress):
         abstract = True
 
 
+class BusinessSector(models.Model):
+    """Business sector of activity"""
+    name = models.CharField(_("Name"), max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("Business sector")
+        verbose_name_plural = _("Business sectors")
+
 class Subsidiary(AbstractCompany):
     """Internal company / organisation unit"""
     payment_description = models.TextField(_("Payment condition description"), blank=True, null=True)
@@ -82,6 +103,7 @@ class Company(AbstractCompany):
     """Company"""
     businessOwner = models.ForeignKey("people.Consultant", verbose_name=_("Business owner"), related_name="%(class)s_business_owner", null=True, on_delete=models.SET_NULL)
     external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
+    business_sector = models.ForeignKey("crm.BusinessSector", verbose_name=_("Business sector"), null=True, on_delete=models.SET_NULL)
 
     def sales(self, onlyLastYear=False, subsidiary=None):
         """Sales billed for this company in keuros"""
@@ -115,25 +137,31 @@ class Company(AbstractCompany):
         ordering = ["name", ]
 
 
-class ClientOrganisation(AbstractAddress):
+class ClientOrganisation(AbstractAddress, AbstractLegalInformation):
     """A department in client organization"""
     name = models.CharField(_("Organization"), max_length=200)
     company = models.ForeignKey(Company, verbose_name=_("Client company"), on_delete=models.CASCADE)
+    business_sector = models.ForeignKey("crm.BusinessSector", verbose_name=_("Business sector"), null=True, blank=True, on_delete=models.SET_NULL)
+    billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
+    billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True,
+                                        verbose_name=_("Billing contact"), on_delete=models.SET_NULL)
+    billing_lang = models.CharField(_("Billing language"), max_length=10, choices=CLIENT_BILL_LANG,
+                                    default=settings.LANGUAGE_CODE)
 
     def __str__(self):
         return "%s : %s " % (self.company, self.name)
 
-    def main_address(self):
-        if self.city:
-            return super(ClientOrganisation, self).main_address()
-        else:
-            return self.company.main_address()
+    def save(self, **kwargs):
+        heritage_from_company = ("legal_id", "vat_id", "street", "city", "zipcode", "country",
+                                 "billing_street", "billing_city", "billing_zipcode", "billing_country", "business_sector")
+        for attr in heritage_from_company:
+            if not getattr(self, attr):
+                setattr(self, attr, getattr(self.company, attr))
 
-    def billing_address(self):
-        if self.billing_city:
-            return super(ClientOrganisation, self).billing_address()
-        else:
-            return self.company.billing_address()
+        if self.company.businessOwner:
+            compute_consultant_tasks.delay(self.company.businessOwner.id)
+
+        super(ClientOrganisation, self).save(kwargs)
 
     def get_absolute_url(self):
         return reverse("crm:client_organisation", args=[self.id, ])
@@ -301,7 +329,7 @@ class Supplier(models.Model):
         unique_together = ("company", "contact",)
 
 
-class Client(AbstractAddress):
+class Client(models.Model):
     """A client is defined by a contact and the organisation where he works at the moment"""
     EXPECTATIONS = (
             ('1_NONE', pgettext("feminine", "None")),
@@ -319,10 +347,6 @@ class Client(AbstractAddress):
     expectations = models.CharField(max_length=30, choices=EXPECTATIONS, default=EXPECTATIONS[2][0], verbose_name=_("Expectations"))
     alignment = models.CharField(max_length=30, choices=ALIGNMENT, default=ALIGNMENT[1][0], verbose_name=_("Strategic alignment"))
     active = models.BooleanField(_("Active"), default=True)
-    billing_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Name used for billing"))
-    billing_contact = models.ForeignKey("AdministrativeContact", null=True, blank=True, verbose_name=_("Billing contact"), on_delete=models.SET_NULL)
-    billing_lang = models.CharField(_("Billing language"), max_length=10, choices=CLIENT_BILL_LANG, default=settings.LANGUAGE_CODE)
-    vat_id = models.CharField(max_length=30, blank=True, null=True,  verbose_name=_("VAT id"))
 
     def __str__(self):
         if self.contact:
@@ -426,16 +450,10 @@ class Client(AbstractAddress):
         return missions
 
     def main_address(self):
-        if self.city:
-            return super(Client, self).main_address()
-        else:
-            return self.organisation.main_address()
+        return self.organisation.main_address()
 
     def billing_address(self):
-        if self.billing_city:
-            return super(Client, self).billing_address()
-        else:
-            return self.organisation.billing_address()
+        return self.organisation.billing_address()
 
     def get_absolute_url(self):
         return reverse("crm:company_detail", args=[self.organisation.company.id, ])

@@ -10,6 +10,7 @@ from datetime import datetime, date, timedelta
 import re
 import zlib
 import pickle
+import itertools
 from celery import shared_task
 
 HAVE_SCIKIT = True
@@ -27,13 +28,15 @@ try:
 except ImportError:
     HAVE_SCIKIT = False
 
-from django.db.models import Count, Sum, Min, Max
+from django.db.models import Count, Sum, Min, Max, Avg
 from django.core.cache import cache
 from django.db.models.query import QuerySet
 
 from leads.models import Lead, StateProba
 from taggit.models import Tag
 from billing.models import ClientBill
+from crm.models import Client
+from staffing.models import Consultant
 
 STATES = {"WON": 1, "LOST": 2, "FORGIVEN": 3}
 INV_STATES = dict([(v, k) for k, v in list(STATES.items())])
@@ -51,6 +54,13 @@ FR_STOP_WORDS = """alors au aucun aussi autre avant avec avoir bon car ce cela c
  si sien son sont sous soyez sujet sur ta tandis tellement tels tes ton tous tout trop très tu voient vont votre vous
  vu ça étaient état étions été être un une de ce cette ces ceux"""
 
+
+def pairwise(iterable):
+    """s -> (s0,s1), (s1,s2), (s2, s3), ...
+    #TODO: included in itertools in python 3.11"""
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return zip(a, b)
 
 ############# Features extraction ##########################
 
@@ -77,13 +87,32 @@ def get_lead_state_data(lead):
                                                                               creation_date__gt=(lead.creation_date - timedelta(360 * 3)))
                                                                  .aggregate(Sum("amount")).values())[0] or 0)
     feature["client_contact"] = str(lead.client.contact)
+    feature["client_contact_function"] = str(lead.client.contact.function if lead.client.contact and lead.client.contact.function else "Undefined")
+    feature["client_contact_num_client"] = Client.objects.filter(contact=lead.client.contact).count()
     feature["no_client_contact"] = int(lead.client.contact is None)
     feature["client_contact_count"] = Lead.objects.filter(client__contact=lead.client.contact,
                                                           creation_date__lt=lead.creation_date).count()
     feature["client_company_business_owner"] = str(lead.client.organisation.company.businessOwner)
+    feature["client_company_business_sector"] = str(lead.client.organisation.business_sector)
     if lead.start_date:
         feature["lifetime"] = max(0, (lead.start_date - lead.creation_date.date()).days)
-    feature["sales"] = float(lead.sales or 0)
+
+    previous_recent_leads = Lead.objects.filter(creation_date__lt=lead.creation_date,
+                                                creation_date__gt=lead.creation_date-timedelta(365*2))
+    if lead.sales:
+        feature["sales"] = float(lead.sales)
+    else:
+        # Use client average if available, else default to subsidiary average
+        feature["sales"] = previous_recent_leads.filter(client=lead.client).aggregate(Avg("sales"))["sales__avg"]
+        if not feature["sales"]:
+            feature["sales"] = previous_recent_leads.filter(subsidiary=lead.subsidiary).aggregate(Avg("sales"))["sales__avg"] or 0
+        feature["sales"] = float(feature["sales"])
+    feature["subsidiary_avg_sales_delta"] = previous_recent_leads.filter(subsidiary=lead.subsidiary).aggregate(Avg("sales"))["sales__avg"]
+    feature["subsidiary_avg_sales_delta"] = feature["sales"] - float(feature["subsidiary_avg_sales_delta"] or 0)
+    feature["client_avg_sales_delta"] = previous_recent_leads.filter(client=lead.client).aggregate(Avg("sales"))["sales__avg"]
+    feature["client_avg_sales_delta"] = feature["sales"] - float(feature["client_avg_sales_delta"] or 0)
+    feature["business_sector_avg_sales_delta"] = previous_recent_leads.filter(client__organisation__business_sector=lead.client.organisation.business_sector).aggregate(Avg("sales"))["sales__avg"]
+    feature["business_sector_avg_sales_delta"] = feature["sales"] - float(feature["business_sector_avg_sales_delta"] or 0)
     if lead.business_broker:
         feature["broker_company"] = str(lead.business_broker.company)
         feature["broker_count"] = Lead.objects.filter(business_broker=lead.business_broker,
@@ -100,14 +129,33 @@ def get_lead_state_data(lead):
                                                      creation_date__gt=(lead.creation_date - timedelta(360))).count()
     feature["leads_last_three_year"] = client_leads.filter(creation_date__lt=lead.creation_date,
                                                            creation_date__gt=(lead.creation_date - timedelta(360 * 3))).count()
+    for timespan in (60, 120):
+        feature["nb_leads_active_%s_before" % timespan] = Lead.objects.filter(mission__timesheet__working_date__gt=(lead.creation_date-timedelta(timespan)),
+                                                                              mission__timesheet__working_date__lt=lead.creation_date,
+                                                                              client=lead.client).distinct().count()
+    client_working_consultants = Consultant.objects.filter(timesheet__mission__lead__client=lead.client,
+                                                           timesheet__working_date__lt=lead.creation_date).distinct()
+    feature["client_working_consultants"] = client_working_consultants.count()
+    feature["responsible_already_work_for_client"] = lead.responsible in client_working_consultants
+    feature["staf_size"] = lead.staffing.count()
+    known_staf = 0
     for staf in lead.staffing.all():
         feature["staffing_%s" % staf.trigramme] = "yes"
+        if staf in client_working_consultants:
+            known_staf +=1
+    if feature["staf_size"] > 0:
+        feature["staf_known"] = known_staf / feature["staf_size"]
     for tag in lead.tags.all():
         feature["tag_%s" % tag.slug] = "yes"
-    feature["history_changes"] = lead.history.count()
+    history = lead.history.filter(timestamp__lte=(lead.start_date or date.today()))
+    feature["history_changes"] = history.count()
     if feature["history_changes"] > 1:
-        history_boundaries = lead.history.aggregate(Min("timestamp"), Max("timestamp"))
+        history_boundaries = history.aggregate(Min("timestamp"), Max("timestamp"))
         feature["history_length"] = (history_boundaries["timestamp__max"] - history_boundaries["timestamp__min"]).days
+        feature["history_actor_count"] = history.aggregate(Count("actor"))["actor__count"]
+        history_timestamps = [c.timestamp for c in history]
+        if len(history_timestamps) > 1:
+            feature["history_mean_time_bet_changes"] = np.median(([(a - b).total_seconds() for a, b in pairwise(history_timestamps)]))
 
     return feature, lead.state
 
@@ -187,12 +235,12 @@ def extract_leads_tag(leads, include_leads=False):
 
 ############# Model definition ##########################
 def get_state_model():
-    model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(max_features="sqrt",
-                                                                                 min_samples_split=8,
-                                                                                 min_samples_leaf=2,
+    model = Pipeline([("vect", DictVectorizer()), ("clf", RandomForestClassifier(max_features=None,
+                                                                                 min_samples_split=2,
+                                                                                 min_samples_leaf=5,
                                                                                  criterion='entropy',
                                                                                  n_estimators=300,
-                                                                                 class_weight="balanced_subsample"))])
+                                                                                 class_weight="balanced"))])
     return model
 
 
@@ -281,10 +329,11 @@ def grid_cv_tag_model():
 def grid_cv_state_model():
     """Perform a grid search cross validation to find best parameters"""
     parameters = {
-        'clf__criterion': ("gini", "entropy"),
+        'clf__criterion': ("gini", "entropy", "log_loss"),
         'clf__min_samples_split': (2, 3, 5, 8, 10, 12),
-        'clf__min_samples_leaf': (1, 2, 3, 5),
-        'clf__class_weight': ("balanced", "balanced_subsample")
+        'clf__min_samples_leaf': (1, 2, 5, 8, 10),
+        'clf__class_weight': ("balanced", "balanced_subsample"),
+        'clf__max_features': ("sqrt", "log2", None),
     }
     learn_leads = Lead.objects.filter(state__in=list(STATES.keys()))
     features, targets = extract_leads_state(learn_leads)
