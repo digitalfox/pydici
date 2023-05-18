@@ -32,6 +32,7 @@ def view_warmup():
     """Warmup cache for heavy views"""
     user = User.objects.filter(is_superuser=True).first()
     subsidiaries_id = list(Subsidiary.objects.filter(mission__nature="PROD").distinct().values_list("id", flat=True))
+    subsidiaries_id.append(0) # Add the "all" subsidiaries
     current_fiscal_year = get_fiscal_year(date.today())
     ## Request env is important as it is used to build header cache key
     if settings.DEBUG:
