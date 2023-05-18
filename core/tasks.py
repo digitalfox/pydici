@@ -39,7 +39,7 @@ def view_warmup():
         env = { "SERVER_NAME" : "localhost", "SERVER_PORT": "8888" }
     else:
         hosts = [h for h in settings.ALLOWED_HOSTS if h != "localhost"]
-        env = { "SERVER_NAME": hosts[0] if hosts else "localhost"}
+        env = {"SERVER_NAME": hosts[0] if hosts else "localhost", "SERVER_PORT": "443", "wsgi.url_scheme": "https"}
     for url_name, view, kwargs, subsidiary_context in (
             ("staffing:turnover_pivotable", turnover_pivotable, {}, True),
             ("staffing:turnover_pivotable_year", turnover_pivotable, { "year": current_fiscal_year }, True),
