@@ -6,7 +6,7 @@ from django_celery_beat.models import CrontabSchedule, PeriodicTask
 
 
 def add_warmup_task(apps, schema_editor):
-    c = CrontabSchedule.objects.create(minute=0, hour=6, day_of_week="*",
+    c, created = CrontabSchedule.objects.get_or_create(minute=0, hour=6, day_of_week="*",
                                        day_of_month="*", month_of_year="*",
                                        timezone=settings.TIME_ZONE)
     t = PeriodicTask.objects.create(name="view warmup", task="core.tasks.view_warmup", crontab=c)
