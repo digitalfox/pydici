@@ -61,6 +61,8 @@ def view_warmup():
             if c:
                 url += "?subsidiary_id=%s" % c
             request = create_fake_request(user=user, url=url, env=env)
+            if c: # inject subsidiary id in session to have proper subsidiary name in selector
+                request.session["subsidiary_id"] = c
             key = get_cache_key(request)
             if cache.has_key(key):  # purge cache if it exists
                 cache.delete(key)
