@@ -33,7 +33,7 @@ staffing_urls = [ re_path(r'^pdcreview/?$', v.pdc_review, name='pdcreview-index'
                   re_path(r'^timesheet/detailed/(?P<year>\d+)/(?P<month>\d+)/?$', v.detailed_csv_timesheet, name="detailed_csv_timesheet"),
                   re_path(r'^timesheet/consultant/(?P<consultant_id>\d+)/$', v.consultant_timesheet, name="consultant_timesheet"),
                   re_path(r'^timesheet/consultant/(?P<consultant_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/?$', v.consultant_timesheet, name="consultant_timesheet"),
-                  re_path(r'^timesheet/consultant/(?P<consultant_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/(?P<week>\d+)/?$', v.consultant_timesheet, name="consultant_timesheet"),
+                  re_path(r'^timesheet/consultant/(?P<consultant_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/(?P<timesheet_view>(week_\d+|calendar|inline))/?$', v.consultant_timesheet, name="consultant_timesheet"),
                   re_path(r'^timesheet/mission/(?P<mission_id>\d+)/$', v.mission_timesheet, name="mission_timesheet"),
                   re_path(r'^holidays_planning/?$', v.holidays_planning, name="holidays_planning"),
                   re_path(r'^holidays_planning/(?P<year>\d+)/(?P<month>\d+)/?$', v.holidays_planning, name="holidays_planning"),

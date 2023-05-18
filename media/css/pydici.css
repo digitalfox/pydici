@@ -153,6 +153,28 @@ h5 { font-size:1rem; }
     color: #ccc;
 }
 
+.lead-mission-sub-label-calendar {
+    display: flex;
+    font-size: 0.8rem;
+    flex-direction: column;
+}
+
+.lead-mission-sub-label-inline {
+    display: inline;
+}
+
+.client-mission-label-inline {
+    display: inline;
+}
+
+.timesheet-week-space {
+    height: 10vh;
+}
+
+.highlight-mission-sub-label {
+    font-weight: bold;
+}
+
 /* Small grid like timesheet */
 .tablesmall-form-row td { padding:0px; margin:0px; vertical-align: middle;}
 .tablesmall-form-row input {  background: #F9F9F9; margin: 1px -2px;}
@@ -255,7 +277,6 @@ td.in-holidays {
 
 .tablesmall-form-row td.timesheet-mission-label, .holidays-consultant-name {
     text-align: left;
-    min-width: 20rem;
     padding-right: 2px;
 }
 
@@ -473,6 +494,24 @@ body {
 .page-item.active .page-link {
     background-color: #8F6749;
     border-color: rgba(244,141,51, 0.9);
+}
+
+.nav-pagination-timesheet {
+    border:none;
+}
+
+.timesheet-time-context {
+    align-self: center;
+    white-space: nowrap;
+    padding:0 0.1rem;
+}
+
+.timesheet-view-navigation-label {
+    align-self: center;
+}
+
+.timesheet-view-navigation {
+    gap: 1rem;
 }
 
 .page-link:focus, .select2-container--bootstrap-5.select2-container--focus .select2-selection,  .select2-container--bootstrap-5.select2-container--open .select2-selection,

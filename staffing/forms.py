@@ -221,51 +221,110 @@ class TimesheetForm(forms.Form):
         timesheetTotal = kwargs.pop("timesheetTotal", [])
         holiday_days = kwargs.pop("holiday_days", [])
         showLunchTickets = kwargs.pop("showLunchTickets", True)
+        warning = kwargs.pop("warning", None)
+        timesheet_view = kwargs.pop("timesheet_view", None)
         super(TimesheetForm, self).__init__(*args, **kwargs)
 
         TimesheetFieldClass = TIMESHEET_FIELD_CLASS_FOR_INPUT_METHOD[settings.TIMESHEET_INPUT_METHOD]
-        for mission in missions:
-            for day in days:
-                key = "charge_%s_%s" % (mission.id, day.day)
-                self.fields[key] = TimesheetFieldClass(required=False)
-                # Order tabindex by day
-                if day.isoweekday() in (6, 7) or day in holiday_days:
-                    tabIndex = 100000  # Skip week-end from tab path
-                    # Color week ends in grey
-                    self.fields[key].widget.attrs.setdefault("style", "background-color: LightGrey;")
-                else:
-                    tabIndex = day.day
-                self.fields[key].widget.attrs.setdefault("tabindex", tabIndex)
 
-                if day == days[0]:  # Only show label for first day
-                    tooltip = _("mission id: %s") % mission.mission_id()
-                    mission_link = escape(mission)
-                    if mission.lead_id:
-                        mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), escape(mission))
-                    self.fields[key].label = mark_safe("<span class='pydici-tooltip' title='%s'>%s</span>" % (escape(tooltip), mission_link))
-                else:
+        # Init the timesheet form builder cursor
+        global_timesheet_cursor = [days]
+
+        is_calendar_view = timesheet_view == 'calendar'
+
+        # override the timesheet form builder cursor for calendar view
+        if is_calendar_view:
+            global_timesheet_cursor = []
+            week = []
+            # split the month in weeks for calendar view
+            for idx, day in enumerate(days):
+                week.append(day)
+                if day.isoweekday() == 7:
+                    global_timesheet_cursor.append(week)
+                    week = []
+            if week:
+                global_timesheet_cursor.append(week)
+
+        # warning array is based on the global number of days index
+        warning_day_index = 0
+
+        # build the timesheet form for al type of views
+        for idxw, week_days in enumerate(global_timesheet_cursor):
+            for idxm, mission in enumerate(missions):
+                for idxd, day in enumerate(week_days):
+                    key = "charge_%s_%s" % (mission.id, day.day)
+                    self.fields[key] = TimesheetFieldClass(required=False)
+                    self.fields[key].weekday = day.isoweekday()
+                    # Order tabindex by day
+                    if day.isoweekday() in (6, 7) or day in holiday_days:
+                        tabIndex = 100000  # Skip week-end from tab path
+                        # Color week ends in grey
+                        self.fields[key].widget.attrs.setdefault("style", "background-color: LightGrey;")
+                    else:
+                        tabIndex = day.day
+                    self.fields[key].widget.attrs.setdefault("tabindex", tabIndex)
+
+                    key = "charge_%s_%s" % (mission.id, day.day)
+                    # default label's empty
                     self.fields[key].label = ""
-            # Add staffing total and forecast in hidden field
-            hwidget = forms.HiddenInput()
-            # Mission id is added to ensure field key is uniq.
-            key = "%s %s %s" % (timesheetTotal.get(mission.id, 0), mission.id, forecastTotal[mission.id])
-            self.fields[key] = forms.CharField(widget=hwidget, required=False)
+                    # Show "mission label" only needed for the first day
+                    if idxd == 0:
+                        tooltip = _("mission id: %s") % mission.mission_id()
+                        mission_link = escape(mission)
+                        if mission.lead_id:
+                            mission_lead_name = "<span class='lead-sub-label'>%s</span>" % mission.lead.name
+                            # highlights mission description
+                            mission_description = "<span class='highlight-mission-sub-label'>%s</span>" % mission.description if mission.description else ""
+                            mission_sub_label =  "<div class='%s'>%s %s</div>" % ('lead-mission-sub-label-calendar' if is_calendar_view else 'lead-mission-sub-label-inline', mission_lead_name, (" %s" % mission_description).strip())
+                            mission_label = "<div class='mission-label'><div class='%s'>%s</div> %s</div>" % ('client-mission-label-calendar' if is_calendar_view else 'client-mission-label-inline', mission.lead.client.organisation, mission_sub_label)
+                            mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), mission_label)
+                        self.fields[key].label = mark_safe("<div class='pydici-tooltip' title='%s'>%s</div>" % (escape(tooltip), mission_link))
 
-        # Add lunch ticket line
-        if showLunchTickets:
-            for day in days:
-                key = "lunch_ticket_%s" % day.day
-                self.fields[key] = forms.BooleanField(required=False)
-                self.fields[key].widget.attrs.setdefault("size", 1)  # Reduce default size
-                self.fields[key].widget.attrs.setdefault("data-role", "none")  # Don't apply jquery theme
-                if day == days[0]:  # Only show label for first day
-                    self.fields[key].label = _("Days without lunch ticket")
-                else:
-                    self.fields[key].label = ""  # Squash label
-            # extra space is important - it is for forecast total (which does not exist for ticket...)
-            key = "%s total-ticket " % timesheetTotal.get("ticket", 0)
-            self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
+                        # table column headers displays day labels for all missions
+                        if idxm == 0:
+                            self.fields[key].days = []
+                            for d in week_days:
+                                self.fields[key].days.append(d)
 
+                    # last week or day of month displays the timesheet footer
+                    if idxd == len(week_days) - 1:
+                        # Add staffing total and forecast in hidden field
+                        hwidget = forms.HiddenInput()
+                        # Mission id is added to ensure field key is uniq (as for the week for calendar view)
+                        key = "%s %s %s %s" % (timesheetTotal.get(mission.id, 0), idxw, mission.id, forecastTotal[mission.id])
+                        self.fields[key] = forms.CharField(widget=hwidget, required=False)
+                        # simple way for the template to differentiate week days over weekend days
+                        self.fields[key].weekday = day.isoweekday()
+
+                        # After the last mission being computed
+                        # add extra rows for lunch tickets and warnings
+                        if idxm == len(missions)-1:
+                            if showLunchTickets:
+                                for lunch_day in week_days:
+                                    key = "lunch_ticket_%s" % lunch_day.day
+                                    self.fields[key] = forms.BooleanField(required=False)
+                                    self.fields[key].weekday = lunch_day.isoweekday()
+                                    self.fields[key].widget.attrs.setdefault("size", 1)  # Reduce default size
+                                    self.fields[key].widget.attrs.setdefault("data-role", "none")  # Don't apply jquery theme
+                                    if lunch_day == week_days[0]:  # Only show label for first day
+                                        self.fields[key].label = _("Days without lunch ticket")
+                                    else:
+                                        self.fields[key].label = ""  # Squash label
+                                # extra space is important - it is for forecast total (which does not exist for ticket...)
+                                # add week id for uniqueness purpose in calendar view
+                                key = "%s %s total-ticket " % (timesheetTotal.get("ticket", 0), idxw)
+                                self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
+                                # simple way for the template to differentiate week days over weekend days
+                                self.fields[key].weekday = day.isoweekday()
+
+                            # add week id for uniqueness purpose in calendar view
+                            key = "week_warning_%s " % idxw
+                            self.fields[key] = forms.CharField(widget=forms.HiddenInput(), required=False)
+                            self.fields[key].warning = []
+                            for warning_week_day in week_days:
+                                # simple way for the template to differentiate week days over weekend days
+                                self.fields[key].warning.append({"value":warning[warning_day_index], "weekday": warning_week_day.isoweekday()})
+                                warning_day_index += 1
 
 class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""
