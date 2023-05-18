@@ -18,7 +18,7 @@
                 {% for year in years %}
                     <a class="btn btn-primary {% if year == selected_year %}active{% endif %}" href="{% url 'staffing:turnover_pivotable_year' year %}?{{scope_current_filter}}">{{ year }}</a>
                 {% endfor %}
-                    <a class="btn btn-primary {% if 'all' == selected_year %}active{% endif %}" href="{% url 'staffing:turnover_pivotable_all' %}?{{scope_current_filter}}">{% trans "All" %}</a>
+                    <a class="btn btn-primary {% if 'all' == selected_year %}active{% endif %}" href="{% url 'staffing:turnover_pivotable_all' %}{% if scope_current_filter %}?{{scope_current_filter}}{% endif %}">{% trans "All" %}</a>
             </div>
         </div>
         <div class="row mt-2">

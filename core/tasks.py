@@ -43,6 +43,7 @@ def view_warmup():
             ("staffing:turnover_pivotable", turnover_pivotable, {}, True),
             ("staffing:turnover_pivotable_year", turnover_pivotable, { "year": current_fiscal_year }, True),
             ("staffing:turnover_pivotable_year", turnover_pivotable, {"year": current_fiscal_year - 1 }, True),
+            ("staffing:turnover_pivotable_all", turnover_pivotable, {}, True),
             ("staffing:graph_profile_rates", graph_profile_rates, {}, True),
             ("leads:graph_leads_pipe", graph_leads_pipe, {}, True),
             ("people:graph_people_count", graph_people_count, {}, True),
