@@ -153,10 +153,18 @@ h5 { font-size:1rem; }
     color: #ccc;
 }
 
-.lead-mission-sub-label {
+.lead-mission-sub-label-calendar {
     display: flex;
     font-size: 0.8rem;
     flex-direction: column;
+}
+
+.lead-mission-sub-label-inline {
+    display: inline;
+}
+
+.client-mission-label-inline {
+    display: inline;
 }
 
 .timesheet-week-space {
