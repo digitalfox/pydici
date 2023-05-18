@@ -121,7 +121,9 @@
                                 {% if i.value == 2 %}<img src="{{ MEDIA_URL }}/img/icon-no.gif"/>  {% endif %}
                                 </td>
                             {% endfor %}
-                            </tr><tr class="timesheet-week-space">
+                            {% if t_view == "calendar" %}
+                                </tr><tr class="timesheet-week-space">
+                            {% endif %}
                         {% else %}
                             <td {% if field.label|split:" "|last != "" and field.label|split:" "|first|to_float > field.label|split:" "|last|to_float %}style='background:rgba(255,0,0,0.3)'{% endif %}>{{ field.label|split:" "|first|floatformat:-2 }}</td>
                             <td>{{ field.label|split:" "|last|floatformat:-2 }}</td>
