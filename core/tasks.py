@@ -30,16 +30,16 @@ def sessions_cleanup():
 @shared_task
 def view_warmup():
     """Warmup cache for heavy views"""
+    if settings.DEBUG:
+        # Don't bother developers with that.
+        return
     user = User.objects.filter(is_superuser=True).first()
     subsidiaries_id = list(Subsidiary.objects.filter(mission__nature="PROD").distinct().values_list("id", flat=True))
     subsidiaries_id.append(0) # Add the "all" subsidiaries
     current_fiscal_year = get_fiscal_year(date.today())
     ## Request env is important as it is used to build header cache key
-    if settings.DEBUG:
-        env = { "SERVER_NAME" : "localhost", "SERVER_PORT": "8888" }
-    else:
-        hosts = [h for h in settings.ALLOWED_HOSTS if h != "localhost"]
-        env = {"SERVER_NAME": hosts[0] if hosts else "localhost", "SERVER_PORT": "443", "wsgi.url_scheme": "https"}
+    hosts = [h for h in settings.ALLOWED_HOSTS if h != "localhost"]
+    env = {"SERVER_NAME": hosts[0] if hosts else "localhost", "SERVER_PORT": "443", "wsgi.url_scheme": "https"}
     for url_name, view, kwargs, subsidiary_context in (
             ("staffing:turnover_pivotable", turnover_pivotable, {}, True),
             ("staffing:turnover_pivotable_year", turnover_pivotable, { "year": current_fiscal_year }, True),
