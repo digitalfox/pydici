@@ -218,7 +218,7 @@ $("#switch-show-weekend").on("click", function() {
 {% endif %}
 
 $('#switch-month').on("click", function () {
-    $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' %}');
+    $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' timesheet_view="inline" %}');
 });
 
  if (0 !== {{ today }}) {

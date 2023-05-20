@@ -2,10 +2,19 @@
 {# tab id must be {{ tabs }} (use {% with...%}) #}
 {% load i18n %}
 <script>
-
+const getCookieByName = (cookieName) => document.cookie.split('; ')
+    .find((cookie) => cookie.split('=')[0] === cookieName)?.split('=')[1] || null;
 
 $(document).ready(function() {
     tabprefix = "goto_";
+
+    // detect mobile devices using screen size
+    const deviceType = Math.min(window.screen.width, window.screen.height) < 768 ? 'mobile' : 'desktop';
+    const deviceTypeCookie = getCookieByName('deviceType')
+    // update the device type if it has changed
+    if (deviceTypeCookie === null || deviceTypeCookie !== deviceType) {
+        document.cookie = 'deviceType=' + deviceType;
+    }
 
     // Display a tab and load its content with ajax if data-tab-url is defined
     function displayBsTab(tab, href) {

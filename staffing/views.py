@@ -812,7 +812,7 @@ def deactivate_mission(request, mission_id):
 
 
 @cache_control(no_store=True)
-def consultant_timesheet(request, consultant_id, year=None, month=None, timesheet_view="inline"):
+def consultant_timesheet(request, consultant_id, year=None, month=None, timesheet_view=None):
     """Consultant timesheet"""
     management_mode_error = None
     price_updated_missions = []
@@ -821,6 +821,14 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
         month = date(int(year), int(month), 1)
     else:
         month = date.today().replace(day=1)
+
+    # if no view type has been manually selected
+    if not timesheet_view:
+        # default value
+        timesheet_view = 'inline'
+        # check device type from user cookie
+        if request.COOKIES.get('deviceType') and  request.COOKIES.get('deviceType') == 'mobile':
+            timesheet_view = 'calendar'
 
     week = timesheet_view.split("_")[1] if timesheet_view and timesheet_view.startswith("week_") else None
 
