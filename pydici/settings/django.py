@@ -17,6 +17,7 @@ DATABASES = {
         'USER': "pydici" if "test" not in sys.argv else "root",
         'PASSWORD': "pydici" if "test" not in sys.argv else "root",
         'HOST': "mariadb",
+        'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
 
