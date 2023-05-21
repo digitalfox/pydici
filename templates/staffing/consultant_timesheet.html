@@ -209,13 +209,45 @@ $('#switch-calendar').on("click", function () {
 });
 
 {% if t_view == "calendar" %}
+
+// Hide weeks that starts with weekend
+// get all cells for which mission label is directly followed by a weekend
+timesheetWeekendOnlyWeek = $(".timesheet-mission-label + .timesheet-weekend");
+// setup a hide class for all appropriate rows
+if (timesheetWeekendOnlyWeek.length !== 0) {
+    // collected row
+    timesheetWeekendOnlyWeek.each(function(){$(this.parentElement).addClass('timesheet-weekend-only-week')});
+
+    // days headers based on collected row
+    dayHeadersRow = timesheetWeekendOnlyWeek[0].parentElement.previousElementSibling;
+    if (dayHeadersRow !== null) {
+        $(dayHeadersRow).addClass('timesheet-weekend-only-week');;
+    }
+    // warning footer based on collected row
+    warningFooterRow = timesheetWeekendOnlyWeek[timesheetWeekendOnlyWeek.length - 1].parentElement.nextElementSibling
+    if ( warningFooterRow !== null) {
+        $(warningFooterRow).addClass('timesheet-weekend-only-week');;
+
+        // row space footer ie week delimiter based on collected row
+        spaceDelimiterFooter = warningFooterRow.nextElementSibling;
+        if (spaceDelimiterFooter !== null) {
+            $(spaceDelimiterFooter).addClass('timesheet-weekend-only-week');;
+        }
+    }
+}
+// hide the above row if exists
+$(".timesheet-weekend-only-week").hide();
+
+// hide weekends by default
 $(".timesheet-weekend").hide();
 $("#switch-show-weekend").on("click", function() {
     if ($(".timesheet-weekend").css('display') == "none") {
         $(".timesheet-weekend").show();
+        $(".timesheet-weekend-only-week").show();
         $("#switch-show-weekend").removeClass('btn-primary').addClass('btn-secondary').blur();
     } else {
         $(".timesheet-weekend").hide();
+        $(".timesheet-weekend-only-week").hide();
         $("#switch-show-weekend").removeClass('btn-secondary').addClass('btn-primary').blur();
     }
 })
