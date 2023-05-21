@@ -7,14 +7,18 @@
         <div class="my-3 btn-group" role="group" aria-label="Button group with nested dropdown">
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    {% with title=t_view %}
-                        {% trans title %}
-                    {% endwith %}
+                    {% if t_view == 'inline' %}
+                        {% trans "month" %}
+                    {% elif t_view == 'calendar' %}
+                        {% trans "month/week" %}
+                    {% else %}
+                        {% trans "week" %}
+                    {% endif %}
                 </button>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="#" id="switch-week">{% trans "week" %}</a></li>
-                  <li><a class="dropdown-item" href="#" id="switch-month">{% trans "inline" %}</a></li>
-                  <li><a class="dropdown-item" href="#" id="switch-calendar">{% trans "calendar" %}</a></li>
+                  <li><a class="dropdown-item" href="#" id="switch-month">{% trans "month" %}</a></li>
+                  <li><a class="dropdown-item" href="#" id="switch-calendar">{% trans "month/week" %}</a></li>
                 </ul>
             </div>
             {% if t_view == "calendar" %}
