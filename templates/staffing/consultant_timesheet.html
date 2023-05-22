@@ -219,19 +219,19 @@ if (timesheetWeekendOnlyWeek.length !== 0) {
     timesheetWeekendOnlyWeek.each(function(){$(this.parentElement).addClass('timesheet-weekend-only-week')});
 
     // days headers based on collected row
-    dayHeadersRow = timesheetWeekendOnlyWeek[0].parentElement.previousElementSibling;
+    dayHeadersRow = timesheetWeekendOnlyWeek[0].parentElement.parentElement.previousElementSibling;
     if (dayHeadersRow !== null) {
-        $(dayHeadersRow).addClass('timesheet-weekend-only-week');;
+        $(dayHeadersRow).find('td:not(:has(nav))').each(function(){$(this).addClass('timesheet-weekend-only-week')});
     }
     // warning footer based on collected row
     warningFooterRow = timesheetWeekendOnlyWeek[timesheetWeekendOnlyWeek.length - 1].parentElement.nextElementSibling
     if ( warningFooterRow !== null) {
-        $(warningFooterRow).addClass('timesheet-weekend-only-week');;
+        $(warningFooterRow).addClass('timesheet-weekend-only-week');
 
         // row space footer ie week delimiter based on collected row
         spaceDelimiterFooter = warningFooterRow.nextElementSibling;
         if (spaceDelimiterFooter !== null) {
-            $(spaceDelimiterFooter).addClass('timesheet-weekend-only-week');;
+            $(spaceDelimiterFooter).addClass('timesheet-weekend-only-week');
         }
     }
 }
@@ -258,7 +258,11 @@ $('#switch-month').on("click", function () {
 });
 
  if (0 !== {{ today }}) {
-     highlight_today({{ today }}, "2px solid #555", {{ missions|length }});
+     {% if t_view == 'calendar' %}
+        highlight_today_timesheet_calendar({{ today }}, "2px solid #555", {{ missions|length }})
+     {% else %}
+        highlight_today({{ today }}, "2px solid #555");
+     {% endif %}
  }
 </script>
 
