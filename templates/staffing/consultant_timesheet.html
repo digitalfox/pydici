@@ -69,8 +69,8 @@
         <table id="pydici-consultant-timesheet-table" class='table table-pydici-extra-condensed table-hover tablesmall-form-row table-timesheet' style="text-align:center">
                 {% for field in form  %}
                     {% if field.field.days %}
-                        <tr>
                         {% ifchanged month|date:"M" %}
+                        <thead><tr>
                         <td><nav>
                             <ul class="pagination my-0">
                             {% if t_view == "week" %}
@@ -101,7 +101,7 @@
                             </ul>
                          </nav></td>
                         {% else %}
-                            <td></td>
+                            <tr><td></td>
                         {% endifchanged %}
                         {% for day in field.field.days %}
                             <td {% if day|date:"w" == '0' or day|date:"w" == '6' %} class="timesheet-weekend" {% endif %}>{{ day|date:"j" }}</td>
@@ -112,7 +112,7 @@
                         {% for day in field.field.days %}
                             <td class="timesheet-long-day {% if day|date:"w" == '0' or day|date:"w" == '6' %} timesheet-weekend {% endif %}">{{ day|date:"D" }}</td>
                         {% endfor %}
-                        <td>{% trans "Tot." %}</td><td>{% trans "Forec." %}</td></tr>
+                        <td>{% trans "Tot." %}</td><td>{% trans "Forec." %}</td></tr></thead>
                         <tr>
                     {% endif %}
                     {% if field.is_hidden %}
