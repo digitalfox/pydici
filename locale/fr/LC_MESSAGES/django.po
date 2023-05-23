@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-18 19:39+0200\n"
-"PO-Revision-Date: 2023-05-18 19:39+0200\n"
+"POT-Creation-Date: 2023-05-23 13:25+0200\n"
+"PO-Revision-Date: 2023-05-23 13:25+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -73,7 +73,7 @@ msgstr ""
 msgid ""
 "You must <a href='%s'>define VAT id and Legal id</a> to generate Facturx data"
 msgstr ""
-"Il faut définir<a href='%s'>le numéro TVA et d'identification</a> pour "
+"Il faut définir<a href='%s'>le numéro TVA et d'immatriculation</a> pour "
 "générer les données Factur-X"
 
 #: billing/forms.py:135
@@ -1011,7 +1011,8 @@ msgstr "Laissez vide pour utiliser le n° de TVA de la société"
 
 #: crm/forms.py:168 crm/forms.py:188
 msgid "Leave blank to use company legal id"
-msgstr "Laissez vide pour utiliser le n° d'identification légal de la société"
+msgstr ""
+"Laissez vide pour utiliser le n° d'immatriculation légale de la société"
 
 #: crm/forms.py:180 crm/models.py:171
 msgid "Client organisation"
@@ -1054,7 +1055,7 @@ msgstr "Pays"
 
 #: crm/models.py:52
 msgid "Legal id"
-msgstr "N° d'identification"
+msgstr "n° d'immatriculation"
 
 #: crm/models.py:53
 msgid "VAT id"
@@ -1896,7 +1897,7 @@ msgstr "Affaires avec date d'échéance passée"
 
 #: people/tasks.py:132
 msgid "Missing legal id or vat id"
-msgstr "Numéro légal d'identification ou TVA manquants"
+msgstr "Numéro d'immatriculation légale ou TVA manquants"
 
 #: people/utils.py:21 staffing/views.py:559 staffing/views.py:770
 #: staffing/views.py:1526
@@ -2843,7 +2844,7 @@ msgstr "n° TVA : "
 
 #: templates/billing/bill.html:60 templates/billing/bill.html:72
 msgid "Legal id:"
-msgstr "N° d'identification : "
+msgstr "n° immatriculation : "
 
 #: templates/billing/bill.html:83
 msgid "Unit Price €"
