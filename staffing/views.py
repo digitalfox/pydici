@@ -822,13 +822,14 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
     else:
         month = date.today().replace(day=1)
 
+    timesheet_view_user_preference = timesheet_view
     # if no view type has been manually selected
     if not timesheet_view:
-        # default value
-        timesheet_view = 'inline'
-        # check device type from user cookie
-        if request.COOKIES.get('deviceType') and  request.COOKIES.get('deviceType') == 'mobile':
-            timesheet_view = 'calendar'
+        # get user timesheet view preference cookie
+        timesheet_view = request.COOKIES.get('timesheetViewUserPreference')
+        if not timesheet_view:
+            # check device type user cookie, otherwise use default value 'inline'
+            timesheet_view = 'calendar' if request.COOKIES.get('deviceType') and  request.COOKIES.get('deviceType') == 'mobile' else 'inline'
 
     week = timesheet_view.split("_")[1] if timesheet_view and timesheet_view.startswith("week_") else None
 
@@ -940,27 +941,33 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
                     mission.save()
                     price_updated_missions.append(mission)
 
-    return render(request, "staffing/consultant_timesheet.html",
-                  {"consultant": consultant,
-                   "form": form,
-                   "read_only": readOnly,
-                   "days": days,
-                   "month": month,
-                   "timesheet_view": timesheet_view,
-                   "missions": missions,
-                   "working_days_balance": wDaysBalance,
-                   "working_days": wDays,
-                   "warning": warning,
-                   "management_mode_error": management_mode_error,
-                   "price_updated_missions": price_updated_missions,
-                   "next_date": next_date,
-                   "previous_date": previous_date,
-                   "previous_date_enabled": previous_date_enabled,
-                   "previous_week": previous_week,
-                   "next_week": next_week,
-                   "today": today,
-                   "is_current_month": month == date.today().replace(day=1),
-                   "user": request.user})
+    response = render(request, "staffing/consultant_timesheet.html",
+                      {"consultant": consultant,
+                       "form": form,
+                       "read_only": readOnly,
+                       "days": days,
+                       "month": month,
+                       "timesheet_view": timesheet_view,
+                       "missions": missions,
+                       "working_days_balance": wDaysBalance,
+                       "working_days": wDays,
+                       "warning": warning,
+                       "management_mode_error": management_mode_error,
+                       "price_updated_missions": price_updated_missions,
+                       "next_date": next_date,
+                       "previous_date": previous_date,
+                       "previous_date_enabled": previous_date_enabled,
+                       "previous_week": previous_week,
+                       "next_week": next_week,
+                       "today": today,
+                       "is_current_month": month == date.today().replace(day=1),
+                       "user": request.user})
+
+    # store user view type preference in a cookie
+    if timesheet_view_user_preference:
+        response.set_cookie('timesheetViewUserPreference', timesheet_view)
+
+    return response
 
 
 def consultant_csv_timesheet(request, consultant, days, month, missions):
