@@ -169,13 +169,13 @@ h5 { font-size:1rem; }
 
 /* submit form button sticky for mobile devices */
 @media (max-width: 767px) {
-    .submit-row {
+    .submit-row.sticky {
         position: sticky;
         bottom: 0;
         padding:0.2rem 0 0.4rem 0;
         background-color: white;
     }
-    .submit-row > button[type=submit] {
+    .submit-row.sticky > button[type=submit] {
         width: 100%;
     }
 }

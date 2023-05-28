@@ -149,7 +149,7 @@
         {% if read_only %}
             <div id="readonly-warning"><em>{% trans "Note: Past month timesheet and other people timesheets are read only" %}</em></div>
         {% else %}
-            <div class="submit-row">
+            <div class="submit-row {% if t_view == 'calendar' %} sticky {% endif %}">
                 <button type='submit' class="btn btn-primary"><i class="bi-save"></i> {% trans 'Save' %}</button>
             </div>
         {% endif %}
