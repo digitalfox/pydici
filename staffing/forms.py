@@ -272,14 +272,13 @@ class TimesheetForm(forms.Form):
                         tooltip = _("mission id: %s") % mission.mission_id()
                         mission_link = escape(mission)
                         if mission.lead_id:
-                            mission_description = mission.description if mission.description else ""
+                            mission_description = "<span class='highlight-mission-sub-label'>%s</span>" % mission.description if mission.description else ""
                             # default inline mission label
-                            mission_label = "%s - %s / <span class='highlight-mission-sub-label'>%s</span>" % (mission.lead.client.organisation, mission.lead.name, mission_description)
+                            mission_label = "%s - %s %s" % (mission.lead.client.organisation, mission.lead.name, "/ %s" % mission_description if mission_description else "")
 
                             # override mission label for calendar view
                             if is_calendar_view:
                                 mission_lead_name = "<span class='lead-sub-label'>%s</span>" % mission.lead.name
-                                mission_description = "<span class='highlight-mission-sub-label'>%s</span>" % mission_description
                                 mission_sub_label =  "<div class='lead-mission-sub-label'>%s %s</div>" % (mission_lead_name, (" %s" % mission_description).strip())
                                 mission_label = "<div class='mission-label'><div class='client-mission-label'>%s</div> %s</div>" % (mission.lead.client.organisation, mission_sub_label)
                             mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), mission_label)
