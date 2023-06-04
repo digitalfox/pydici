@@ -82,18 +82,17 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
     <script type="text/javascript">
-    <!--
-    $(document).ready(function() {
-        // Enable tooltip for all objects with pydici-tooltip class
-        $(".pydici-tooltip").tooltip();
-
-        // Prevent menu closing when using in-menu search form
-        $(document).on('click', '.dropdown-menu', function (e) {
-            $(this).hasClass('keep-open') && e.stopPropagation();
+        const getCookieByName = (cookieName) => document.cookie.split('; ')
+            .find((cookie) => cookie.split('=')[0] === cookieName)?.split('=')[1] || null;
+        $(document).ready(function() {
+            // detect mobile devices using screen size
+            const deviceType = Math.min(window.screen.width, window.screen.height) < 768 ? 'mobile' : 'desktop';
+            const deviceTypeCookie = getCookieByName('deviceType')
+            // update the device type if it has changed
+            if (deviceTypeCookie === null || deviceTypeCookie !== deviceType) {
+                document.cookie = 'deviceType=' + deviceType + '; SameSite=Strict';
+            }
         });
-
-    });
-    -->
     </script>
 
 
