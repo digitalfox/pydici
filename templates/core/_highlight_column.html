@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <script type="text/javascript">
- function highlight_today(col_number, borderStyle, row_size) {
+ function highlight_today_timesheet_calendar(col_number, borderStyle, row_size) {
      const timesheet_td = $(".table-pydici-extra-condensed tr td");
      let today_td = null;
      let i = 0;
@@ -15,13 +15,28 @@
      }
 
      if (today_td !== null) {
-         i = 0;
-         // add 4 extra row: 2 headers, 2 footers
-         // Loop on the missions to add the borders
-         row_size += 4
+         // thead separated from tbody
+         // handle thead
          let row_element = today_td.parentElement;
+         // handle the 2 headers manually
          let cell_element = row_element.children[today_td.cellIndex];
          $(cell_element).css("border-top", borderStyle);
+         $(cell_element).css("border-left", borderStyle);
+         $(cell_element).css("border-right", borderStyle);
+         row_element = row_element.nextElementSibling;
+         cell_element = row_element.children[today_td.cellIndex];
+         $(cell_element).css("border-left", borderStyle);
+         $(cell_element).css("border-right", borderStyle);
+         row_element = row_element.nextElementSibling;
+
+         // move to tbody - td > tr > thead > tbody > tr
+         if (row_element === null) {
+             row_element = today_td.parentElement.parentElement.nextElementSibling.firstChild
+         }
+         // add 2 extra row for the 2 footers (lunch tickets and warnings)
+         row_size += 2
+         let i = 0
+         // Loop on the "missions labels" to add the borders
          while (i < row_size) {
              cell_element = row_element.children[today_td.cellIndex];
              $(cell_element).css("border-left", borderStyle);
@@ -29,8 +44,29 @@
              row_element = row_element.nextElementSibling;
              i++;
          }
+         // Close the rectangle with a border bottom
          $(cell_element).css("border-bottom", borderStyle);
      }
+}
+
+function highlight_today(col_number, borderStyle) {
+     // Header cell for both table that use and don't use thead
+     $(".table-pydici-extra-condensed tr:first td:nth-child(" + col_number + ")").css('border-top', borderStyle);
+     $(".table-pydici-extra-condensed tr:first th:nth-child(" + col_number + ")").css('border-top', borderStyle);
+     $(".table-pydici-extra-condensed tr:first th:nth-child(" + col_number + ")").css('border-left', borderStyle);
+     $(".table-pydici-extra-condensed tr:first th:nth-child(" + col_number + ")").css('border-right', borderStyle);
+
+     // Rows of each mission
+     $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('border-left', borderStyle);
+     $(".table-pydici-extra-condensed tr td:nth-child(" + col_number + ")").css('border-right', borderStyle);
+
+     // Last Row
+     $(".table-pydici-extra-condensed tr:last td:nth-child(" + col_number + ")").css('border-bottom', borderStyle);
+
+     // Add a tooltip on headers (for tables that use thead)
+     $(".table-pydici-extra-condensed thead tr *:nth-child(" + col_number + ")").prop("title", "{% blocktrans %}Today{% endblocktrans %}");
+     // Add a tooltip on headers (for tables that DON'T use thead)
+     $(".table-pydici-extra-condensed tr:first td:nth-child(" + col_number + ")").prop("title", "{% blocktrans %}Today{% endblocktrans %}");
  }
 
 </script>

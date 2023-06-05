@@ -7,14 +7,18 @@
         <div class="my-3 btn-group" role="group" aria-label="Button group with nested dropdown">
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    {% with title=t_view %}
-                        {% trans title %}
-                    {% endwith %}
+                    {% if t_view == 'inline' %}
+                        {% trans "month" %}
+                    {% elif t_view == 'calendar' %}
+                        {% trans "month/week" %}
+                    {% else %}
+                        {% trans "week" %}
+                    {% endif %}
                 </button>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="#" id="switch-week">{% trans "week" %}</a></li>
-                  <li><a class="dropdown-item" href="#" id="switch-month">{% trans "inline" %}</a></li>
-                  <li><a class="dropdown-item" href="#" id="switch-calendar">{% trans "calendar" %}</a></li>
+                  <li><a class="dropdown-item" href="#" id="switch-month">{% trans "month" %}</a></li>
+                  <li><a class="dropdown-item" href="#" id="switch-calendar">{% trans "month/week" %}</a></li>
                 </ul>
             </div>
             {% if t_view == "calendar" %}
@@ -65,8 +69,8 @@
         <table id="pydici-consultant-timesheet-table" class='table table-pydici-extra-condensed table-hover tablesmall-form-row table-timesheet' style="text-align:center">
                 {% for field in form  %}
                     {% if field.field.days %}
-                        <tr>
                         {% ifchanged month|date:"M" %}
+                        <thead><tr>
                         <td><nav>
                             <ul class="pagination my-0">
                             {% if t_view == "week" %}
@@ -97,7 +101,7 @@
                             </ul>
                          </nav></td>
                         {% else %}
-                            <td></td>
+                            <tr><td></td>
                         {% endifchanged %}
                         {% for day in field.field.days %}
                             <td {% if day|date:"w" == '0' or day|date:"w" == '6' %} class="timesheet-weekend" {% endif %}>{{ day|date:"j" }}</td>
@@ -108,7 +112,7 @@
                         {% for day in field.field.days %}
                             <td class="timesheet-long-day {% if day|date:"w" == '0' or day|date:"w" == '6' %} timesheet-weekend {% endif %}">{{ day|date:"D" }}</td>
                         {% endfor %}
-                        <td>{% trans "Tot." %}</td><td>{% trans "Forec." %}</td></tr>
+                        <td>{% trans "Tot." %}</td><td>{% trans "Forec." %}</td></tr></thead>
                         <tr>
                     {% endif %}
                     {% if field.is_hidden %}
@@ -145,7 +149,7 @@
         {% if read_only %}
             <div id="readonly-warning"><em>{% trans "Note: Past month timesheet and other people timesheets are read only" %}</em></div>
         {% else %}
-            <div class="submit-row">
+            <div class="submit-row {% if t_view == 'calendar' %} sticky {% endif %}">
                 <button type='submit' class="btn btn-primary"><i class="bi-save"></i> {% trans 'Save' %}</button>
             </div>
         {% endif %}
@@ -205,24 +209,60 @@ $('#switch-calendar').on("click", function () {
 });
 
 {% if t_view == "calendar" %}
+
+// Hide weeks that starts with weekend
+// get all cells for which mission label is directly followed by a weekend
+timesheetWeekendOnlyWeek = $(".timesheet-mission-label + .timesheet-weekend");
+// setup a hide class for all appropriate rows
+if (timesheetWeekendOnlyWeek.length !== 0) {
+    // collected row
+    timesheetWeekendOnlyWeek.each(function(){$(this.parentElement).addClass('timesheet-weekend-only-week')});
+
+    // days headers based on collected row
+    dayHeadersRow = timesheetWeekendOnlyWeek[0].parentElement.parentElement.previousElementSibling;
+    if (dayHeadersRow !== null) {
+        $(dayHeadersRow).find('td:not(:has(nav))').each(function(){$(this).addClass('timesheet-weekend-only-week')});
+    }
+    // warning footer based on collected row
+    warningFooterRow = timesheetWeekendOnlyWeek[timesheetWeekendOnlyWeek.length - 1].parentElement.nextElementSibling
+    if ( warningFooterRow !== null) {
+        $(warningFooterRow).addClass('timesheet-weekend-only-week');
+
+        // row space footer ie week delimiter based on collected row
+        spaceDelimiterFooter = warningFooterRow.nextElementSibling;
+        if (spaceDelimiterFooter !== null) {
+            $(spaceDelimiterFooter).addClass('timesheet-weekend-only-week');
+        }
+    }
+}
+// hide the above row if exists
+$(".timesheet-weekend-only-week").hide();
+
+// hide weekends by default
 $(".timesheet-weekend").hide();
 $("#switch-show-weekend").on("click", function() {
     if ($(".timesheet-weekend").css('display') == "none") {
         $(".timesheet-weekend").show();
+        $(".timesheet-weekend-only-week").show();
         $("#switch-show-weekend").removeClass('btn-primary').addClass('btn-secondary').blur();
     } else {
         $(".timesheet-weekend").hide();
+        $(".timesheet-weekend-only-week").hide();
         $("#switch-show-weekend").removeClass('btn-secondary').addClass('btn-primary').blur();
     }
 })
 {% endif %}
 
 $('#switch-month').on("click", function () {
-    $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' %}');
+    $('#pydici-ajax-form-content-consultant-timesheet').load('{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' timesheet_view="inline" %}');
 });
 
  if (0 !== {{ today }}) {
-     highlight_today({{ today }}, "2px solid #555", {{ missions|length }});
+     {% if t_view == 'calendar' %}
+        highlight_today_timesheet_calendar({{ today }}, "2px solid #555", {{ missions|length }})
+     {% else %}
+        highlight_today({{ today }}, "2px solid #555");
+     {% endif %}
  }
 </script>
 

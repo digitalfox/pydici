@@ -153,18 +153,10 @@ h5 { font-size:1rem; }
     color: #ccc;
 }
 
-.lead-mission-sub-label-calendar {
+.lead-mission-sub-label {
     display: flex;
     font-size: 0.8rem;
     flex-direction: column;
-}
-
-.lead-mission-sub-label-inline {
-    display: inline;
-}
-
-.client-mission-label-inline {
-    display: inline;
 }
 
 .timesheet-week-space {
@@ -173,6 +165,19 @@ h5 { font-size:1rem; }
 
 .highlight-mission-sub-label {
     font-weight: bold;
+}
+
+/* submit form button sticky for mobile devices */
+@media (max-width: 767px) {
+    .submit-row.sticky {
+        position: sticky;
+        bottom: 0;
+        padding:0.2rem 0 0.4rem 0;
+        background-color: white;
+    }
+    .submit-row.sticky > button[type=submit] {
+        width: 100%;
+    }
 }
 
 /* Small grid like timesheet */

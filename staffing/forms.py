@@ -272,11 +272,15 @@ class TimesheetForm(forms.Form):
                         tooltip = _("mission id: %s") % mission.mission_id()
                         mission_link = escape(mission)
                         if mission.lead_id:
-                            mission_lead_name = "<span class='lead-sub-label'>%s</span>" % mission.lead.name
-                            # highlights mission description
                             mission_description = "<span class='highlight-mission-sub-label'>%s</span>" % mission.description if mission.description else ""
-                            mission_sub_label =  "<div class='%s'>%s %s</div>" % ('lead-mission-sub-label-calendar' if is_calendar_view else 'lead-mission-sub-label-inline', mission_lead_name, (" %s" % mission_description).strip())
-                            mission_label = "<div class='mission-label'><div class='%s'>%s</div> %s</div>" % ('client-mission-label-calendar' if is_calendar_view else 'client-mission-label-inline', mission.lead.client.organisation, mission_sub_label)
+                            # default inline mission label
+                            mission_label = "%s - %s %s" % (mission.lead.client.organisation, mission.lead.name, "/ %s" % mission_description if mission_description else "")
+
+                            # override mission label for calendar view
+                            if is_calendar_view:
+                                mission_lead_name = "<span class='lead-sub-label'>%s</span>" % mission.lead.name
+                                mission_sub_label =  "<div class='lead-mission-sub-label'>%s %s</div>" % (mission_lead_name, (" %s" % mission_description).strip())
+                                mission_label = "<div class='mission-label'><div class='client-mission-label'>%s</div> %s</div>" % (mission.lead.client.organisation, mission_sub_label)
                             mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), mission_label)
                         self.fields[key].label = mark_safe("<div class='pydici-tooltip' title='%s'>%s</div>" % (escape(tooltip), mission_link))
 
