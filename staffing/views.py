@@ -1903,6 +1903,8 @@ def optimise_pdc(request):
         consultants = []
         missions = []
         try:
+            if "consultant_missions" in request.GET:
+                missions = [m for m in Consultant.objects.get(id=int(request.GET["consultant_missions"])).active_missions() if m.nature == "PROD" ]
             if "missions" in request.GET:
                 missions = [Mission.objects.get(id=int(m)) for m in request.GET.getlist("missions")]
             if "consultants" in request.GET:
