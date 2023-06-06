@@ -258,10 +258,10 @@ $('#switch-month').on("click", function () {
 });
 
  if (0 !== {{ today }}) {
-     {% if t_view == 'calendar' %}
-        highlight_today_timesheet_calendar({{ today }}, "2px solid #555", {{ missions|length }})
+     {% if t_view == 'inline' %}
+         highlight_today({{ today }} + 1, "2px solid #555");
      {% else %}
-        highlight_today({{ today }} + 1, "2px solid #555");
+        highlight_today_timesheet_calendar({{ today }}, "2px solid #555", {{ missions|length }})
      {% endif %}
  }
 </script>
