@@ -104,7 +104,7 @@
                             <tr><td></td>
                         {% endifchanged %}
                         {% for day in field.field.days %}
-                            <td {% if day|date:"w" == '0' or day|date:"w" == '6' %} class="timesheet-weekend" {% endif %}>{{ day|date:"j" }}</td>
+                            <td class="timesheet-header-day{% if day|date:"w" == '0' or day|date:"w" == '6' %} timesheet-weekend {% endif %}" >{{ day|date:"j" }}</td>
                         {% endfor %}
                         <td></td><td></td></tr>
                         <tr>
