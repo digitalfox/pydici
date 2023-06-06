@@ -261,7 +261,7 @@ $('#switch-month').on("click", function () {
      {% if t_view == 'calendar' %}
         highlight_today_timesheet_calendar({{ today }}, "2px solid #555", {{ missions|length }})
      {% else %}
-        highlight_today({{ today }}, "2px solid #555");
+        highlight_today({{ today }} + 1, "2px solid #555");
      {% endif %}
  }
 </script>
