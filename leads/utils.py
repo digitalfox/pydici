@@ -57,8 +57,10 @@ def post_save_lead(request, lead, created=False, state_changed=False):
 
     # Compute leads probability
     if lead.state in ("WON", "LOST", "SLEEPING", "FORGIVEN"):
-        # Remove leads proba, no more needed
+        # Remove leads proba and due date, no more needed
         lead.stateproba_set.all().delete()
+        lead.due_date = None
+        lead.save()
         # Learn again. This new lead will now be used to training
         compute_leads_state.delay(relearn=True)
     else:
