@@ -185,10 +185,10 @@ class StaffingForm(forms.ModelForm):
             mission = self.cleaned_data.get("mission")
             if mission and mission.start_date:
                 if self.cleaned_data["staffing_date"] < mission.start_date.replace(day=1):
-                    raise ValidationError(_("Staffing must be after %s") % mission.start_date)
+                    raise ValidationError(_("Staffing below must be after %s") % mission.start_date)
             if mission and mission.end_date:
                 if self.cleaned_data["staffing_date"] > mission.end_date:
-                    raise ValidationError(_("Staffing must be before %s") % mission.end_date)
+                    raise ValidationError(_("Staffing below must be before %s") % mission.end_date)
 
 
 class MassStaffingForm(forms.Form):
