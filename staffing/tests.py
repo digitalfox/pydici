@@ -184,8 +184,8 @@ class StaffingViewsTest(TestCase):
         response = self.client.get(reverse("staffing:holiday_csv_timesheet", kwargs={"year":2023, "month":3}))
         self.assertEqual(response.status_code, 200)
         r = list(csv.reader(response.content.decode(response.charset).splitlines(), delimiter=";"))
-        self.assertEqual([8, 8, 8, 8, 8, 8, 8], [len(i) for i in r])
-        self.assertEqual(len(r), 7)
+        self.assertEqual([8, 8, 8, 8, 8, 8, 8, 8], [len(i) for i in r])
+        self.assertEqual(len(r), 8)
         self.assertEqual(set([i[0] for i in r[1:]]), {c1.trigramme})
         self.assertEqual(sum([float(i[-1]) for i in r[1:]]), 11.5)
 

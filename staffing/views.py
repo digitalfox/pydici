@@ -1441,7 +1441,7 @@ def holiday_csv_timesheet(request, year=None, month=None):
                 # Is it a continuation or a new segment ?
                 change_type = current_holiday[-1].mission != timesheet.mission
                 day_break = (timesheet.working_date.day - current_holiday[-1].working_date.day) > 1
-                consecutive_partial_day = timesheet.charge < 1 and current_holiday[-1].charge < 1
+                partial_day = timesheet.charge < 1 or current_holiday[-1].charge < 1
                 if day_break:  # Real break or just a continuation over weekend or public holiday day ?
                     yesterday = timesheet.working_date
                     while True:
@@ -1451,7 +1451,7 @@ def holiday_csv_timesheet(request, year=None, month=None):
                         if yesterday == current_holiday[-1].working_date:
                             day_break = False  # It was really a continuation over weekend or public holiday day
                         break
-                if change_type or day_break or consecutive_partial_day:
+                if change_type or day_break or partial_day:
                     # new holiday segment
                     holidays[consultant][current_holiday[0].mission].append(current_holiday)
                     current_holiday = [timesheet]
