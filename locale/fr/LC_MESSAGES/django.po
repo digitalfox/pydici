@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-07 20:37+0200\n"
-"PO-Revision-Date: 2023-06-07 22:41+0200\n"
+"POT-Creation-Date: 2023-06-07 23:18+0200\n"
+"PO-Revision-Date: 2023-06-07 23:18+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -1711,15 +1711,15 @@ msgstr ""
 "%(url)s\n"
 "%(change)s"
 
-#: leads/utils.py:78
+#: leads/utils.py:80
 msgid "A mission has been initialized for this lead."
 msgstr "Une mission a été créée pour cette affaire."
 
-#: leads/utils.py:88
+#: leads/utils.py:90
 msgid "Mission's probability has been set to 100%"
 msgstr "La probabilité de la mission a été mise à 100 %"
 
-#: leads/utils.py:93
+#: leads/utils.py:95
 msgid "According mission has been archived"
 msgstr "La mission correspondante a été archivée"
 
@@ -2237,8 +2237,8 @@ msgid "End date"
 msgstr "Date de fin"
 
 #: staffing/models.py:91
-msgid "Min charge per day"
-msgstr "Charge mini par jour"
+msgid "Min charge multiple per day"
+msgstr "Multiple mini de charge par jour"
 
 #: staffing/models.py:425 templates/crm/clientcompany_detail.html:253
 #: templates/staffing/mission.html:104
@@ -2401,19 +2401,19 @@ msgstr "Consultants"
 msgid "total"
 msgstr "total"
 
-#: staffing/utils.py:389
+#: staffing/utils.py:390
 #, python-format
 msgid "Timesheet exceeds mission price and management is set as 'limited' (%s)"
 msgstr ""
 "Les pointages excèdent le prix de la mission et celle-ci est en mode gestion "
 "de gestion « limité » (%s)"
 
-#: staffing/utils.py:393
+#: staffing/utils.py:394
 #, python-format
-msgid "Charge cannot be below minimum threshold  (%s)"
-msgstr "La charge ne peut être inférieure au seuil minimum (%s)"
+msgid "Charge must be a multiple (%s)"
+msgstr "La charge doit être un multiple (%s)"
 
-#: staffing/utils.py:397
+#: staffing/utils.py:398
 #, python-format
 msgid "Charge cannot exceed forecast (%s)"
 msgstr "La charge ne peut pas excéder la prévision (%s)"
@@ -5420,6 +5420,10 @@ msgstr "CA par mode de facturation"
 #: templates/staffing/turnover_pivotable.html:34
 msgid "Turnover per marketing product"
 msgstr "CA par produit marketing"
+
+#, python-format
+#~ msgid "Charge cannot be below minimum threshold  (%s)"
+#~ msgstr "La charge ne peut être inférieure au seuil minimum (%s)"
 
 #~ msgid "inline"
 #~ msgstr "linéaire"
