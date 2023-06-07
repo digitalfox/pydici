@@ -88,7 +88,7 @@ class Mission(models.Model):
     marketing_product = models.ForeignKey(MarketingProduct, verbose_name=_("marketing product"), blank=True, null=True, on_delete=models.SET_NULL)
     start_date = models.DateField(_("Start date"), blank=True, null=True)
     end_date = models.DateField(_("End date"), blank=True, null=True)
-    min_charge_per_day = models.FloatField(_("Min charge per day"), default=0)
+    min_charge_multiple_per_day = models.FloatField(_("Min charge multiple per day"), default=0)
 
     history = AuditlogHistoryField()
 

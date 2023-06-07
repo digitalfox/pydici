@@ -344,7 +344,7 @@ class MissionForm(PydiciCrispyModelForm):
                                         Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "nature", "analytic_code", "marketing_product",
                                                Field("start_date", placeholder=_("Forbid forecast before this date"), css_class="datepicker"),
                                                Field("end_date", placeholder=_("Forbid forecast after this date"), css_class="datepicker"),
-                                               "contacts", "min_charge_per_day",
+                                               "contacts", "min_charge_multiple_per_day",
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)

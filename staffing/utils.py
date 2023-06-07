@@ -331,7 +331,7 @@ def create_next_year_std_missions(current, target, dryrun=True, start_date=None,
                               analytic_code=m.analytic_code,
                               start_date=start_date,
                               end_date=end_date,
-                              min_charge_per_day=m.min_charge_per_day)
+                              min_charge_multiple_per_day=m.min_charge_multiple_per_day)
         print("Creating new mission %s" % new_mission)
         if not dryrun:
             new_mission.save()
@@ -364,16 +364,17 @@ def check_missions_limited_individual_mode(missions, consultant, month):
     return offending_missions
 
 
-def check_missions_min_charge(missions, month):
+def check_missions_charge_multiple(missions, month):
     """Ensure that after a timesheet update on this month we don't violate minimum charge per day requirement
     :return list of missions that do not conform to policy"""
     offending_missions = []
     for mission in missions:
-        if mission.min_charge_per_day == 0:
+        if mission.min_charge_multiple_per_day == 0:
             continue
-        ts = Timesheet.objects.filter(mission=mission, working_date__gte=month, working_date__lt=nextMonth(month),
-                                      charge__gt=0, charge__lt=mission.min_charge_per_day)
-        if ts.exists():
+        charges = Timesheet.objects.filter(mission=mission, working_date__gte=month, working_date__lt=nextMonth(month),
+                                           charge__gt=0).values_list("charge", flat=True)
+
+        if sum([i % mission.min_charge_multiple_per_day for i in charges]):
             offending_missions.append(mission)
 
     return offending_missions
@@ -382,16 +383,16 @@ def check_missions_min_charge(missions, month):
 def check_timesheet_validity(missions, consultant, month):
     """Execute all check that must be done before saving timesheet.
     It's up to the caller to encapsulate this in a transaction and commit or rollback according to results
-    Checks done: check_missions_limited_mode, check_missions_limited_individual_mode, check_missions_min_charge
+    Checks done: check_missions_limited_mode, check_missions_limited_individual_mode, check_missions_charge_multiple
     :return potential errors or None if everything is fine"""
     limited_mode_offending_missions = check_missions_limited_mode(missions)
     if limited_mode_offending_missions:
         return _("Timesheet exceeds mission price and management is set as 'limited' (%s)") %\
             ", ".join([str(m) for m in limited_mode_offending_missions])
-    min_charge_offending_missions = check_missions_min_charge(missions, month)
-    if min_charge_offending_missions:
-        return _("Charge cannot be below minimum threshold  (%s)") %\
-            ", ".join([f"{m} : {m.min_charge_per_day} "for m in min_charge_offending_missions])
+    charge_multiple_offending_missions = check_missions_charge_multiple(missions, month)
+    if charge_multiple_offending_missions:
+        return _("Charge must be a multiple (%s)") %\
+            ", ".join([f"{m} : {m.min_charge_multiple_per_day} "for m in charge_multiple_offending_missions])
     limited_individual_mode_offending_missions = check_missions_limited_individual_mode(missions, consultant, month)
     if limited_individual_mode_offending_missions:
         return _("Charge cannot exceed forecast (%s)") %\
