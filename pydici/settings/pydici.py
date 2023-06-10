@@ -45,19 +45,5 @@ TELEGRAM_STICKERS = {
                     }
 TELEGRAM_CHAT_MANAGER_LEVEL = 4  # Every people with level < to his will be notified individually if concerned
 
-# Nextcloud document tag integration
-
-NEXTCLOUD_TAG_IS_ENABLED = True  # Wether to enable or not Nextcloud tag add/remove by Pydici
-# Nextcloud DB connection settings
-NEXTCLOUD_DB_DATABASE = "nextcloud"
-NEXTCLOUD_DB_HOST = "mariadb"
-NEXTCLOUD_DB_USER= "root"
-NEXTCLOUD_DB_PWD = "root"
-# Filter on a nextcloud particular storage. Get it with "SELECT * FROM oc_storages" and using the one that
-# is used for the file to be taggued
-NEXTCLOUD_DB_FILE_STORAGE = 1
-# Don't tag file of those types to prevent tag clutter in search
-NEXTCLOUD_DB_EXCLUDE_TYPES = ["httpd/unix-directory", "application/octet-stream"]
-
 # Default company logo
 COMPANY_LOGO = "/media/pydici/company_logo.png"

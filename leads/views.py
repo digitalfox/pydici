@@ -31,7 +31,6 @@ from crm.utils import get_subsidiary_from_session
 from leads.models import Lead
 from leads.forms import LeadForm
 from leads.utils import post_save_lead, leads_state_stat
-from leads.tasks import tag_leads_files, remove_lead_tag, merge_lead_tag
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_tags, predict_similar
 from core.utils import capitalize, getLeadDirs, createProjectTree, get_fiscal_years_from_qs, to_int_or_round
@@ -274,8 +273,6 @@ def add_tag(request):
             compute_leads_state.delay(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity.delay()  # update lead similarity model in background
         compute_consultant_tasks.delay(lead.responsible.id)  # update consultants tasks in background
-        if settings.NEXTCLOUD_TAG_IS_ENABLED:
-            tag_leads_files.delay([lead.id])  # Update lead tags from lead files
         tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
         answer["tag_url"] = reverse("leads:tag", args=[tag.id, ])
         answer["tag_remove_url"] = reverse("leads:remove_tag", args=[tag.id, lead.id])
@@ -297,8 +294,6 @@ def remove_tag(request, tag_id, lead_id):
         if lead.state not in ("WON", "LOST", "FORGIVEN"):
             compute_leads_state.delay(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity.delay()  # update lead similarity model in background
-        if settings.NEXTCLOUD_TAG_IS_ENABLED:
-            remove_lead_tag.delay(lead.id, tag.id)  # Remove the lead tag from the lead files
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         answer["error"] = True
     return HttpResponse(json.dumps(answer), content_type="application/json")
@@ -320,8 +315,6 @@ def manage_tags(request):
             target_tag = tags[0]
             object_ids = list(TaggedItem.objects.filter(tag__in=tags[1:]).values_list("object_id", flat=True))
             for tag in tags[1:]:
-                if settings.NEXTCLOUD_TAG_IS_ENABLED:
-                    merge_lead_tag.delay(target_tag.name, tag.name)
                 tag.delete()
             for object_id in object_ids:
                 TaggedItem.objects.update_or_create(content_type=ct, object_id=object_id, tag=target_tag)
