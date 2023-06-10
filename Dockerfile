@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM python:3.9
-RUN apt-get update && apt-get -y install gettext chromium
+RUN apt-get update && apt-get -y install gettext chromium ghostscript
 # Install pydici django env
 RUN useradd -m pydici
 USER pydici
