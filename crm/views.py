@@ -388,7 +388,7 @@ def company_detail(request, company_id):
     direct_sales = sales - supplier_billing
 
     # Other companies
-    companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
+    companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct().order_by("business_sector", "name")
 
     return render(request, "crm/clientcompany_detail.html",
                   {"company": company,
