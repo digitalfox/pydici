@@ -498,7 +498,7 @@ def company_pivotable(request, company_id=None):
 @pydici_feature("3rdparties")
 def company_list(request):
     """Client company list"""
-    companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct()
+    companies = Company.objects.filter(clientorganisation__client__id__isnull=False).distinct().order_by("business_sector", "name")
     return render(request, "crm/clientcompany_list.html",
                   {"companies": list(companies)})
 

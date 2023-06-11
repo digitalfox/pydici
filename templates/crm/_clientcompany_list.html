@@ -3,18 +3,27 @@
 
 {% load i18n %}
 
-<h2 class="mt-2">{% trans "All companies list" %}</h2>
-<ul class="row">
-{% for company in companies %}
-    {% with first_letter=company.name|slice:"1" %}
-    {% ifchanged first_letter %}
-        </ul>
-        <h4>{{ first_letter }}</h4>
-        <ul class="row">
-    {% endifchanged %}
-    {% endwith %}
-    <li class="col-6 col-sm-4 col-md-3 col-lg-2">
-        <a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a>
-    </li>
+<h1 class="mt-2">{% trans "All companies list" %}</h1>
+{% regroup companies by business_sector as business_sector_list %}
+{% for business_sector in business_sector_list %}
+    <h2>{{ business_sector.grouper|default_if_none:_("uncategorized") }}</h2>
+    <ul class="row">
+    {% for company in business_sector.list %}
+        {% with company_number=business_sector.list|length %}
+        {% with first_letter=company.name|slice:"1"|upper %}
+        {% if company_number > 50 %}
+            {% ifchanged first_letter %}
+                </ul>
+                <h4>{{ first_letter }}</h4>
+                <ul class="row">
+            {% endifchanged %}
+        {% endif %}
+        {% endwith %}
+        {% endwith %}
+        <li class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <a href="{% url 'crm:company_detail' company.id %}">{{ company }}</a>
+        </li>
+    {% endfor %}
+    </ul>
 {% endfor %}
 </ul>
