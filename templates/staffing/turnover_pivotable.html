@@ -32,6 +32,7 @@
                 <button class="btn btn-primary" onclick="turnover_per_business_sector_and_product();">{% trans "Turnover per business sector and product" %}</button>
                 <button class="btn btn-primary" onclick="turnover_per_billing_mode();">{% trans "Turnover per billing mode" %}</button>
                 <button class="btn btn-primary" onclick="turnover_per_mktg_product();">{% trans "Turnover per marketing product" %}</button>
+                <button class="btn btn-primary" onclick="subcontractor_proportion_per_product();">{% trans "Subcontractor proportion per product" %}</button>
             </div>
         </div>
 
@@ -86,19 +87,21 @@
                 var rows = ["{% trans 'top client company' %}"];
                 var cols = ["{% trans 'month' %}"];
                 var options = {};
+                options["rowOrder"] = "value_z_to_a";
                 drawPivot(data, rows, cols, "Area Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
             }
 
             function turnover_per_billing_mode() {
                 var rows = ["{% trans 'billing mode' %}"];
                 var cols = ["{% trans 'subsidiary' %}"];
-                drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'own turnover (€)' %}"]);
+                drawPivot(data, rows, cols, "Multiple Pie Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"]);
             }
 
             function turnover_per_mktg_product() {
                 var rows = ["{% trans 'Marketing product' %}"];
                 var cols = ["{% trans 'month' %}"];
                 var options = {};
+                options["rowOrder"] = "value_z_to_a";
                 drawPivot(data, rows, cols, "Area Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
             }
 
@@ -106,6 +109,7 @@
                 var rows = ["{% trans 'Business sector' %}"];
                 var cols = ["{% trans 'month' %}"];
                 var options = {};
+                options["rowOrder"] = "value_z_to_a";
                 drawPivot(data, rows, cols, "Area Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
             }
 
@@ -113,8 +117,19 @@
                 var rows = ["{% trans 'Business sector' %}"];
                 var cols = ["{% trans 'Marketing product' %}"];
                 var options = {};
+                options["colOrder"] = "value_z_to_a";
                 drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Integer Sum" %}', ["{% trans 'turnover (€)' %}"], options);
             }
+
+            function subcontractor_proportion_per_product() {
+                var rows = ["{% trans 'Marketing product' %}"];
+                var cols = [];
+                var options = {};
+                options["rowOrder"] = "value_a_to_z";
+                drawPivot(data, rows, cols, "Horizontal Bar Chart", '{% trans "Sum ratio" %}', ["{% trans 'own turnover (€)' %}", "{% trans 'turnover (€)' %}"], options);
+            }
+
+
 
             // default
             turnover_per_month_graph();

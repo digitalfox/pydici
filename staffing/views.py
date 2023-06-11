@@ -1957,7 +1957,7 @@ def turnover_pivotable(request, year=None):
         year = int(year)
         start = date(year, month, 1)
         end = date(year + 1, month, 1)
-        end = min(end, date.today())
+        end = min(end, previousMonth(date.today()))
         missions = missions.filter(timesheet__working_date__gte=start, timesheet__working_date__lt=end)
 
     missions = missions.distinct()
