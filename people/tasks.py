@@ -7,6 +7,7 @@ Module that handle asynchronous tasks
 """
 
 from datetime import datetime, date
+import random
 
 from django.db.models import Min, Count, Q
 from django.urls import reverse
@@ -64,21 +65,21 @@ def compute_consultant_tasks(consultant_id):
     missions_without_billing_mode_count = missions_without_billing_mode.count()
     if missions_without_billing_mode_count > 0:
         tasks.append((_("Mission without billing mode"), missions_without_billing_mode_count,
-                      reverse("staffing:mission_home", args=[missions_without_billing_mode[0].id]), 3))
+                      reverse("staffing:mission_home", args=[random.choice(missions_without_billing_mode).id]), 3))
 
     # Missions with missing financial conditions
     missions_with_missing_fc = [ m for m in Mission.objects.filter(active=True, responsible=consultant) if not m.defined_rates()]
     missions_with_missing_fc_count = len(missions_with_missing_fc)
     if missions_with_missing_fc_count > 0:
         tasks.append((_("Consultants rates are not fully defined"), missions_with_missing_fc_count,
-                      reverse("staffing:mission_home", args=[missions_with_missing_fc[0].id]), 3))
+                      reverse("staffing:mission_home", args=[random.choice(missions_with_missing_fc).id]), 3))
 
     # Mission with missing marketing product
     missions_with_missing_mktg_pdt = Mission.objects.filter(active=True, responsible=consultant, marketing_product__isnull=True)
     missions_with_missing_mktg_pdt_count = missions_with_missing_mktg_pdt.count()
     if missions_with_missing_mktg_pdt_count > 0:
         tasks.append((_("Mission marketing product is missing"), missions_with_missing_mktg_pdt_count,
-                      reverse("staffing:mission_home", args=[missions_with_missing_mktg_pdt[0].id]), 1))
+                      reverse("staffing:mission_home", args=[random.choice(missions_with_missing_mktg_pdt).id]), 1))
 
     # Done work without billing
     still_to_be_billed = 0
@@ -115,14 +116,14 @@ def compute_consultant_tasks(consultant_id):
     leads_without_tag_count = leads_without_tag.count()
     if leads_without_tag_count > 0:
         tasks.append((_("Leads without tag"), leads_without_tag_count,
-                      reverse("leads:detail", args=[leads_without_tag[0].id]), 1))
+                      reverse("leads:detail", args=[random.choice(leads_without_tag).id]), 1))
 
     # leads with past due date
     leads_with_past_due_date = consultant.active_leads().filter(due_date__lt=date.today())
     leads_with_past_due_date_count = leads_with_past_due_date.count()
     if leads_with_past_due_date_count > 0:
         tasks.append((_("Leads with past due date"), leads_with_past_due_date_count,
-                      reverse("leads:detail", args=[leads_with_past_due_date[0].id]), 1))
+                      reverse("leads:detail", args=[random.choice(leads_with_past_due_date).id]), 1))
 
     # active client organisation with incomplete legal information
     incomplete_client_orga = ClientOrganisation.objects.filter(client__active=True, company__businessOwner=consultant)
@@ -130,7 +131,7 @@ def compute_consultant_tasks(consultant_id):
     incomplete_client_orga_count = incomplete_client_orga.count()
     if incomplete_client_orga_count > 0:
         tasks.append((_("Missing legal id or vat id"), incomplete_client_orga_count,
-                      reverse("crm:client_organisation_change", args=[incomplete_client_orga[0].id]), 1))
+                      reverse("crm:client_organisation_change", args=[random.choice(incomplete_client_orga).id]), 1))
 
     # update cache with computed tasks
     cache.set(CONSULTANT_TASKS_CACHE_KEY % consultant.id, tasks, 24*3600)
