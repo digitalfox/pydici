@@ -116,4 +116,4 @@ temporary by changing the name of the AUDITLOG_INCLUDE_TRACKING_MODELS config ke
 in pydici/settings/django.py
 
 # Hosting, support, professional services, custom development
-See http://www.enioka.com/pydici-web/
+See https://pydici-web.enioka.com/
