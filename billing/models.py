@@ -143,6 +143,9 @@ class AbstractBill(models.Model):
         super(AbstractBill, self).save(*args, **kwargs)  # Save it
         if self.lead.responsible:
             compute_consultant_tasks.delay(self.lead.responsible.id)
+        for mission in self.lead.mission_set.all():
+            if mission.responsible and mission.responsible != self.lead.responsible:
+                compute_consultant_tasks.delay(mission.responsible.id)
 
         if self.bill_file:
             bill_id = get_bill_id_from_path(self.bill_file.name)

@@ -85,7 +85,7 @@ def compute_consultant_tasks(consultant_id):
     still_to_be_billed = 0
     still_to_be_billed_count = 0
     still_to_be_billed_leads = []
-    for lead in Lead.objects.filter(responsible=consultant, mission__active=True).distinct():
+    for lead in Lead.objects.filter(Q(responsible=consultant) | Q(mission__responsible=consultant), mission__active=True).distinct():
         amount = lead.still_to_be_billed(include_fixed_price=False, include_current_month=False)
         if amount > 0:
             still_to_be_billed += int(amount)
