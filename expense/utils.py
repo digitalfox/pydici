@@ -118,31 +118,3 @@ def user_expense_perm(user):
     expense_requester = expense_administrator or user_has_feature(user, "expense")
 
     return expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester
-
-
-def migrate_default_workflow():
-    """Migrate expense state from old default workflow"""
-    from django.db import connection, transaction
-    from expense.models import Expense
-    expense_states = dict()
-    state_mapping = { 1: "REQUESTED",
-                      2: "VALIDATED",
-                      3: "REJECTED",
-                      4: "NEEDS_INFORMATION",
-                      5: "CONTROLLED" }
-
-    # Get current states from old workflow
-    with connection.cursor() as cursor:
-        cursor.execute("select content_id, state_id from workflows_stateobjectrelation")
-        expense_states = dict(cursor.fetchall())
-
-    # Map old to new state
-    with transaction.atomic():
-        for expense in Expense.objects.all():
-            try:
-                expense.state = state_mapping[expense_states[expense.id]]
-            except KeyError:
-                pass  # expense is new and does not have old workflow state. Just ignore it
-            if expense.expensePayment:
-                expense.state = "PAID"
-            expense.save()
