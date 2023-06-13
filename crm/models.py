@@ -131,6 +131,13 @@ class Company(AbstractCompany):
         else:
             return 0
 
+    def save(self, **kwargs):
+        super(Company, self).save(kwargs)
+        # Save client organisation children to trigger attribute heritage if needed
+        for clientOrganisation in self.clientorganisation_set.all():
+            clientOrganisation.save()
+
+
     class Meta:
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")
