@@ -159,7 +159,6 @@ def expense_receipt(request, expense_id):
     expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
     try:
         expense = Expense.objects.get(id=expense_id)
-        content_type = expense.receipt_content_type()
         if expense.user == request.user or\
            expense_manager or expense_paymaster or expense_administrator:
             data = expense.receipt_data()
@@ -313,14 +312,6 @@ def expense_payments(request, expense_payment_id=None):
 
     if not (expense_paymaster or expense_administrator):
         readOnly = True
-
-    try:
-        if expense_payment_id:
-            expensePayment = ExpensePayment.objects.get(id=expense_payment_id)
-    except ExpensePayment.DoesNotExist:
-        messages.add_message(request, messages.ERROR, _("Expense payment %s does not exist" % expense_payment_id))
-        expense_payment_id = None
-        expensePayment = None
 
     if readOnly:
         expensesToPay = []
