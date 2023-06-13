@@ -337,6 +337,7 @@ def expense_payments(request, expense_payment_id=None):
                 for expense in form.cleaned_data["expenses"]:
                     expense.expensePayment = expensePayment
                     expense.workflow_in_progress = False
+                    expense.state = "PAID"
                     expense.save()
             return HttpResponseRedirect(reverse("expense:expense_payments"))
         else:
