@@ -33,7 +33,7 @@ def learning_warmup():
     compute_leads_tags.delay(relearn=True)
     compute_lead_similarity.delay(relearn=True)
 
-@shared_task(bind=True)
+@shared_task(bind=True, rate_limit="10/m")
 def lead_mail_notify(self, lead_id, from_addr=None, from_name=None):
     """Notify (mail, telegram) about lead creation or status update"""
     lead = Lead.objects.get(id=lead_id)
@@ -55,7 +55,7 @@ def lead_mail_notify(self, lead_id, from_addr=None, from_name=None):
         raise self.retry(exc=e)
 
 
-@shared_task(bind=True)
+@shared_task(bind=True, rate_limit="5/m")
 def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
     lead = Lead.objects.get(id=lead_id)
     if not settings.TELEGRAM_IS_ENABLED:

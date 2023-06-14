@@ -423,7 +423,7 @@ def predict_similar(lead):
 
 
 ############# Entry points for computation ##########################
-@shared_task
+@shared_task(rate_limit="10/h")
 def compute_leads_state(relearn=True, leads_id=None):
     """Learn state from past leads and compute state probal for current leads. This function is intended to be run async
     as it could last few seconds.
@@ -467,7 +467,7 @@ def compute_leads_state(relearn=True, leads_id=None):
                     mission.save(update_tasks=False)  # don't update tasks to avoid useless flood
 
 
-@shared_task
+@shared_task(rate_limit="10/h")
 def compute_leads_tags(relearn=False, return_model=False):
     """Learn tags from past leads and cache model
     :param relearn: force to recompute model even if valid model is in cache (default is False)
@@ -494,7 +494,7 @@ def compute_leads_tags(relearn=False, return_model=False):
         return model
 
 
-@shared_task
+@shared_task(rate_limit="10/h")
 def compute_lead_similarity(relearn=False, return_model=False):
     """Compute a model to find similar leads and cache it
     :param relearn: force to recompute model even if valid model is in cache (default is False)
