@@ -11,7 +11,7 @@ django-datatables-view==1.20.0
 WeasyPrint==58.1
 django-weasyprint==2.2.0
 bleach==5.0.1
-Markdown==3.4.1
+Markdown==3.4.3
 pypdf2==2.10.2
 ortools>=9.3.0,<9.4.0
 celery[redis]==5.2.7
@@ -20,6 +20,6 @@ django-celery-results==2.4.0
 django-celery-beat==2.3.0
 mysqlclient==2.1.1
 python-telegram-bot[job-queue]==20.1
-django-auditlog==2.1.1
+django-auditlog==2.3.0
 factur-x==2.3
-django-countries==7.4.2
+django-countries==7.5.1
