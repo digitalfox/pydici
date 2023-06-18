@@ -162,7 +162,7 @@ def pydici_simple_format(value, arg=None):
     markdown_tags = ["h1", "h2", "h3", "h4", "h5", "h6", "b", "i", "strong", "em", "tt", "p", "br",
                      "span", "div", "blockquote", "code", "hr","ul", "ol", "li", "dd", "dt", "img","a"]
     markdown_attrs = {"img": ["src", "alt", "title"],  "a": ["href", "alt", "title"] }
-    value = bleach.clean(markdown.markdown(value, tab_length=2, extensions=[SaneListExtension(),]), tags=markdown_tags, attributes=markdown_attrs)
+    value = bleach.clean(markdown.markdown(value, tab_length=2, extensions=[SaneListExtension(),"nl2br"]), tags=markdown_tags, attributes=markdown_attrs)
 
     return mark_safe(value)
 
