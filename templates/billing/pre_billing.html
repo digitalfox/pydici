@@ -15,14 +15,28 @@
 
 <div class="row mt-2">
     <div class="btn-group col-lg-4" data-toggle="buttons">
-        <button class="btn btn-primary col-lg-6 {% if mine %}active{% endif %}"
-                onclick="window.location='{% url 'billing:pre_billing' start_date=start_date|date:'Ym' end_date=end_date|date:'Ym' mine=True %}'">
-            {% trans "Only my leads" %}
-        </button>
-        <button class="btn btn-primary col-lg-6 {% if not mine %}active{% endif %}"
-                onclick="window.location='{% url 'billing:pre_billing' start_date=start_date|date:'Ym' end_date=end_date|date:'Ym' mine=False %}'">
-            {% trans "All leads" %}
-        </button>
+        <div class="btn-group col-lg-6">
+            <button class="btn btn-primary {% if mine %}active{% endif %}"
+                    onclick="window.location='{% url 'billing:pre_billing' start_date=start_date|date:'Ym' end_date=end_date|date:'Ym' mine=True %}'">
+                {% trans "Only my leads" %}
+            </button>
+        </div>
+        <div class="btn-group col-lg-6">
+          <button type="button" class="btn btn-primary dropdown-toggle {% if not mine %}active{% endif %}" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ scope }}
+          </button>
+          <ul class="dropdown-menu">
+              {% for scope_type, scope_filter, scope_label in scopes %}
+                {% ifchanged scope_type %}
+                    {% if not forloop.first %}
+                        <li><hr class="dropdown-divider"></li>
+                    {% endif %}
+                {% endifchanged %}
+                <li><a class="dropdown-item" href="{% url 'billing:pre_billing' start_date=start_date|date:'Ym' end_date=end_date|date:'Ym' mine=False %}/?{{scope_filter}}">{{ scope_label }}</a></li>
+              {% endfor %}
+          </ul>
+        </div>
+
     </div>
     <div class="btn-group col-lg-4" data-toggle="buttons">
         <input id="startDate" name="startDate" class="btn btn-primary datepicker dateinput" data-date-format="mm/yyyy" data-date-min-view-mode=1 placeholder="{% trans 'From' %}">

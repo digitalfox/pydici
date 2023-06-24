@@ -7,7 +7,6 @@ Pydici billing views. Http request are processed here.
 
 from datetime import date, timedelta
 import mimetypes
-from collections import defaultdict
 import json
 from io import BytesIO
 import os
@@ -41,12 +40,13 @@ from billing.utils import get_billing_info, update_client_bill_from_timesheet, u
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
 from leads.models import Lead
 from people.models import Consultant
-from staffing.models import Timesheet, FinancialCondition, Staffing, Mission
+from people.utils import get_team_scopes
+from staffing.models import Timesheet, Mission
 from staffing.views import MissionTimesheetReportPdf
 from crm.models import Subsidiary
 from crm.utils import get_subsidiary_from_session
 from core.utils import get_fiscal_years_from_qs, get_parameter, user_has_feature
-from core.utils import COLORS, sortedValues, nextMonth, previousMonth
+from core.utils import COLORS, nextMonth, previousMonth
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
 from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
 from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper, SupplierBillForm
@@ -507,6 +507,8 @@ def supplierbill_delete(request, bill_id):
 def pre_billing(request, start_date=None, end_date=None, mine=False):
     """Pre billing page: help to identify bills to send"""
     subsidiary = get_subsidiary_from_session(request)
+    team = None
+    team_consultants = None
     if end_date is None:
         end_date = date.today().replace(day=1)
     else:
@@ -522,6 +524,11 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
 
     if end_date < start_date:
         end_date = nextMonth(start_date)
+
+    if "team_id" in request.GET:
+        team = Consultant.objects.get(id=int(request.GET["team_id"]))
+        team_consultants = Consultant.objects.filter(staffing_manager=team)
+        mine = False
 
     timeSpentBilling = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
     rates = {}  # Key is mission, value is Consultant rates dict
@@ -547,13 +554,22 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
     internalBillingTimesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
                                                     mission__nature="PROD")
     internalBillingTimesheets = internalBillingTimesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
-    #TODO: hanlde fixed price mission fully delegated to a subsidiary
+    #TODO: handle fixed price mission fully delegated to a subsidiary
 
     if mine:  # Filter on consultant mission/lead as responsible
         fixedPriceMissions = fixedPriceMissions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
         undefinedBillingModeMissions = undefinedBillingModeMissions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
         timespent_timesheets = timespent_timesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
         internalBillingTimesheets = internalBillingTimesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
+    elif team:  # Filter on team
+        fixedPriceMissions = fixedPriceMissions.filter(
+            Q(lead__responsible__in=team_consultants) | Q(responsible__in=team_consultants))
+        undefinedBillingModeMissions = undefinedBillingModeMissions.filter(
+            Q(lead__responsible__in=team_consultants) | Q(responsible__in=team_consultants))
+        timespent_timesheets = timespent_timesheets.filter(
+            Q(mission__lead__responsible__in=team_consultants) | Q(mission__responsible__in=team_consultants))
+        internalBillingTimesheets = internalBillingTimesheets.filter(
+            Q(mission__lead__responsible__in=team_consultants) | Q(mission__responsible__in=team_consultants))
 
     fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
     undefinedBillingModeMissions = undefinedBillingModeMissions.order_by("lead").distinct()
@@ -566,14 +582,20 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
     timesheet_data = timespent_timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
     timeSpentBilling = get_billing_info(timesheet_data)
 
-    for subsidiary in Subsidiary.objects.all():
-        subsidiary_timesheet_data = internalBillingTimesheets.filter(consultant__company=subsidiary)
-        for target_subsidiary in Subsidiary.objects.exclude(pk=subsidiary.id):
+    for internal_subsidiary in Subsidiary.objects.all():
+        subsidiary_timesheet_data = internalBillingTimesheets.filter(consultant__company=internal_subsidiary)
+        for target_subsidiary in Subsidiary.objects.exclude(pk=internal_subsidiary.id):
             timesheet_data = subsidiary_timesheet_data.filter(mission__lead__subsidiary=target_subsidiary)
             timesheet_data = timesheet_data .order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
             billing_info = get_billing_info(timesheet_data)
             if billing_info:
-                internalBilling[(subsidiary,target_subsidiary)] = billing_info
+                internalBilling[(internal_subsidiary,target_subsidiary)] = billing_info
+
+    scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
+    if team:
+        team_name = _("team %(manager_name)s") % {"manager_name": team}
+    else:
+        team_name = None
 
     return render(request, "billing/pre_billing.html",
                   {"time_spent_billing": timeSpentBilling,
@@ -583,6 +605,10 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
                    "start_date": start_date,
                    "end_date": end_date,
                    "mine": mine,
+                   "scope": team_name or subsidiary or _("Everybody"),
+                   "team_current_filter": team_current_filter,
+                   "team_current_url_filter": team_current_url_filter,
+                   "scopes": scopes,
                    "user": request.user})
 
 
