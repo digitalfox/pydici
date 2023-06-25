@@ -4,8 +4,12 @@
 
 {% for lead in leads %}
     {% if lead.state == "WON" %}
-        <h2 class="mt-4"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h2>
+        {% ifchanged lead.client.organisation %}
+            <h1 class="mt-4">{{ lead.client.organisation }} </h1>
+        {% endifchanged %}
+        <h4 class="mt-4"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h4>
             {% with show_supplier_bills=True %}{% include "billing/_lead_billing.html" %}{% endwith %}
+        <hr/>
     {% endif %}
 {% endfor %}
 
