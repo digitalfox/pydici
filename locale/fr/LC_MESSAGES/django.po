@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-25 15:27+0200\n"
-"PO-Revision-Date: 2023-06-25 15:27+0200\n"
+"POT-Creation-Date: 2023-06-25 15:44+0200\n"
+"PO-Revision-Date: 2023-06-25 15:44+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -2819,7 +2819,6 @@ msgid "Billing in advance:"
 msgstr "Facturation en avance : "
 
 #: templates/billing/_lead_billing.html:83
-#: templates/billing/pre_billing.html:112
 msgid "Add a client bill for this lead"
 msgstr "Ajouter une facture client pour cette affaire"
 
@@ -3212,6 +3211,10 @@ msgstr "Taux"
 #: templates/billing/pre_billing.html:104
 msgid "Add a client bill for this mission"
 msgstr "Ajouter une facture client pour cette mission"
+
+#: templates/billing/pre_billing.html:112
+msgid "Add a client bill for all missions of this lead"
+msgstr "Ajouter une facture pour toutes les missions de cette affaire"
 
 #: templates/billing/pre_billing.html:113
 #: templates/billing/pre_billing.html:161
