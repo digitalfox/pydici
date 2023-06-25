@@ -72,7 +72,7 @@
         {% if to_bill > 0 %}
             <p><strong>{% trans "Still to be billed:" %} {{ to_bill|floatformat:-2 }} €</strong></p>
         {% elif to_bill == 0 %}
-            <p><strong>{% trans "Everything has been billed" %}</strong></p>
+            <p class="text-success"><strong>{% trans "Everything has been billed" %}</strong></p>
         {% elif to_bill < 0 %}
             <p><strong>{% trans "Billing in advance:" %} {{ to_bill|floatformat:-2 }} €</strong></p>
         {% endif %}

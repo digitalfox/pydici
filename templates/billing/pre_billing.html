@@ -114,12 +114,12 @@
     {% endif %}
     {% with to_bill=lead.still_to_be_billed_excl_current_month %}
         {% if to_bill == 0 %}
-            <p class="text-success"><strong><i class="bi bi-check-lg"></i>
+            <p class="text-success"><strong><i class="bi bi-check-lg"></i>{% trans "Everything has been billed" %}</strong></p>
         {% else %}
             <p class="text-danger"><strong><i class="bi bi-exclamation-triangle pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Done work (excluding current month) still not billed. Draft bills are not considered.{% endblocktrans %}"></i>
+                {% trans "Still to be billed: " %}{{ lead.still_to_be_billed_excl_current_month|floatformat:-2 }} €
+            </strong></p>
             {% endif %}
-            {% trans "Still to be billed: " %}{{ lead.still_to_be_billed_excl_current_month|floatformat:-2 }} €
-        </strong></p>
     {% endwith %}
      <hr/>
 {% endfor %}
