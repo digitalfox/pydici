@@ -129,7 +129,9 @@
     {% ifchanged mission.lead.client.organisation.company.id %}<span id="fp-company-{{ mission.lead.client.organisation.company.id|unlocalize }}"></span>{% endifchanged %}
     {% ifchanged mission.lead %}
         <h3 class="mt-4">{{ mission.lead }} ({{ mission.lead.deal_id }})</h3>
-        {% with mission.lead as lead %}{% include "billing/_lead_billing.html" %}{% endwith %}
+            {% with show_supplier_bills=False %}
+                {% with mission.lead as lead %}{% include "billing/_lead_billing.html" %}{% endwith %}
+            {% endwith %}
         <h4 class="mt-3">{% trans "Fixed price mission(s)" %}</h4>
     {% endifchanged %}
     <p><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }} : </a>
