@@ -232,6 +232,10 @@ class Lead(models.Model):
         to_bill += float(list(self.expense_set.filter(chargeable=True, expense_date__lt=end).aggregate(Sum("amount")).values())[0] or 0)
         return to_bill - float(self.billed())
 
+    def still_to_be_billed_excl_current_month(self):
+        """Amount that still need to be billed, exc. current month)"""
+        return self.still_to_be_billed(include_current_month=False, include_fixed_price=False)
+
     def billing_control_data(self):
         return get_client_billing_control_pivotable_data(filter_on_lead=self)
 
