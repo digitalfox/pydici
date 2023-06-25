@@ -106,12 +106,12 @@
         </div>
 
     {% endfor %}
-     {% if lead.mission_set.count == 1 %}
+    {% if lead_data.1.keys|length <= 1 %}
         <h4></h4>
-     {% else %}
-        <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }}&start_date={{start_date|date:'Ym'}}&end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for this lead" %}</a>
+    {% else %}
+        <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?lead={{ lead.id|unlocalize }}&start_date={{start_date|date:'Ym'}}&end_date={{end_date|date:'Ym'}}" target="_blank">{% trans "Add a client bill for all missions of this lead" %}</a>
         <p class="mt-2"><strong>{% trans "Total:" %} {{ lead_data.0|floatformat:-2}} €</strong></p>
-     {% endif %}
+    {% endif %}
      <p><strong>{% trans "Still to be billed" %}: {{ lead.still_to_be_billed|floatformat:-2 }} €</strong></p>
      <hr/>
 {% endfor %}
