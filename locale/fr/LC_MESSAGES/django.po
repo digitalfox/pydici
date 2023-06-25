@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-25 15:44+0200\n"
-"PO-Revision-Date: 2023-06-25 15:44+0200\n"
+"POT-Creation-Date: 2023-06-25 16:11+0200\n"
+"PO-Revision-Date: 2023-06-25 16:10+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -38,7 +38,7 @@ msgid "Dates"
 msgstr "Dates"
 
 #: billing/admin.py:31 billing/admin.py:44 billing/models.py:171
-#: billing/models.py:259 leads/models.py:81 leads/models.py:293
+#: billing/models.py:259 leads/models.py:81 leads/models.py:297
 #: leads/views.py:200 templates/billing/_lead_billing.html:38
 #: templates/billing/_lead_billing.html:94
 #: templates/billing/client_bill_detail.html:49
@@ -109,7 +109,7 @@ msgid "Cannot declare twice the same expense"
 msgstr "Impossible de déclarer deux fois la même note de frais"
 
 #: billing/models.py:74 billing/views.py:152 expense/forms.py:71
-#: expense/forms.py:76 expense/models.py:104 leads/models.py:287
+#: expense/forms.py:76 expense/models.py:104 leads/models.py:291
 #: staffing/models.py:72 staffing/views.py:1362
 #: templates/billing/bill_review.html:207
 #: templates/billing/client_bill_detail.html:25
@@ -415,7 +415,7 @@ msgstr "manager"
 #: staffing/views.py:1563 staffing/views.py:1595 staffing/views.py:1610
 #: staffing/views.py:1659 staffing/views.py:2060
 #: templates/billing/_lead_billing.html:20
-#: templates/billing/pre_billing.html:92 templates/billing/pre_billing.html:147
+#: templates/billing/pre_billing.html:92 templates/billing/pre_billing.html:155
 #: templates/leads/lead_pivotable.html:38
 #: templates/leads/lead_pivotable.html:44
 #: templates/staffing/lunch_tickets_pivotable.html:45
@@ -1702,7 +1702,7 @@ msgstr "N° affaire"
 msgid "Send lead by email"
 msgstr "Envoyer par courriel"
 
-#: leads/models.py:294
+#: leads/models.py:298
 msgid "Score"
 msgstr "Score"
 
@@ -2401,8 +2401,8 @@ msgstr "Consultants"
 
 #: staffing/utils.py:285 staffing/views.py:988 staffing/views.py:1468
 #: templates/billing/pre_billing.html:92 templates/billing/pre_billing.html:100
-#: templates/billing/pre_billing.html:147
-#: templates/billing/pre_billing.html:155 templates/staffing/pdc_detail.html:19
+#: templates/billing/pre_billing.html:155
+#: templates/billing/pre_billing.html:163 templates/staffing/pdc_detail.html:19
 msgid "total"
 msgstr "total"
 
@@ -2578,7 +2578,7 @@ msgid "year"
 msgstr "année"
 
 #: staffing/views.py:1662 staffing/views.py:1994
-#: templates/billing/pre_billing.html:92 templates/billing/pre_billing.html:147
+#: templates/billing/pre_billing.html:92 templates/billing/pre_billing.html:155
 #: templates/staffing/missions_report.html:67
 #: templates/staffing/missions_report.html:73
 #: templates/staffing/missions_report.html:79
@@ -3196,7 +3196,7 @@ msgstr "Jusqu'à "
 msgid "Pre billing for time spent missions"
 msgstr "Pré facturation pour les missions au temps passé"
 
-#: templates/billing/pre_billing.html:64 templates/billing/pre_billing.html:119
+#: templates/billing/pre_billing.html:64 templates/billing/pre_billing.html:127
 msgid "Pre billing for fixed price missions"
 msgstr "Pré facturation pour les missions au forfait"
 
@@ -3204,7 +3204,7 @@ msgstr "Pré facturation pour les missions au forfait"
 msgid "Pre billing between subsidiaries"
 msgstr "Pré facturation interne entre filiales"
 
-#: templates/billing/pre_billing.html:92 templates/billing/pre_billing.html:147
+#: templates/billing/pre_billing.html:92 templates/billing/pre_billing.html:155
 msgid "rate"
 msgstr "Taux"
 
@@ -3217,53 +3217,61 @@ msgid "Add a client bill for all missions of this lead"
 msgstr "Ajouter une facture pour toutes les missions de cette affaire"
 
 #: templates/billing/pre_billing.html:113
-#: templates/billing/pre_billing.html:161
+#: templates/billing/pre_billing.html:169
 msgid "Total:"
 msgstr "Total : "
 
-#: templates/billing/pre_billing.html:115 templates/staffing/mission.html:61
-msgid "Still to be billed"
-msgstr "Reste à facturer"
+#: templates/billing/pre_billing.html:119
+msgid ""
+"Done work (excluding current month) still not billed. Draft bills are not "
+"considered."
+msgstr ""
+"Travail réalisé (en excluant le mois courant) qui n'est pas encore facturé. "
+"Les factures à l'état brouillon ne sont pas prises en compte."
 
-#: templates/billing/pre_billing.html:125
+#: templates/billing/pre_billing.html:121
+msgid "Still to be billed: "
+msgstr "Reste à facturer : "
+
+#: templates/billing/pre_billing.html:133
 msgid "Fixed price mission(s)"
 msgstr "Mission(s) au forfait"
 
-#: templates/billing/pre_billing.html:128
-#: templates/billing/pre_billing.html:178
+#: templates/billing/pre_billing.html:136
+#: templates/billing/pre_billing.html:186
 #, python-format
 msgid "%(done)s k€ done "
 msgstr "%(done)s k€ réalisés "
 
-#: templates/billing/pre_billing.html:128
-#: templates/billing/pre_billing.html:178
+#: templates/billing/pre_billing.html:136
+#: templates/billing/pre_billing.html:186
 msgid "sold:"
 msgstr "Vendu :"
 
-#: templates/billing/pre_billing.html:130
+#: templates/billing/pre_billing.html:138
 #, python-format
 msgid "Bill 30%% for this mission"
 msgstr "Facturer 30%% de cette mission"
 
-#: templates/billing/pre_billing.html:131
+#: templates/billing/pre_billing.html:139
 #, python-format
 msgid "Bill 70%% for this mission"
 msgstr "Facturer 70%% de cette mission"
 
-#: templates/billing/pre_billing.html:136
+#: templates/billing/pre_billing.html:144
 msgid "Internal billing"
 msgstr "Facture interne"
 
-#: templates/billing/pre_billing.html:138
+#: templates/billing/pre_billing.html:146
 #, python-format
 msgid "Internal billing from %(from)s to %(to)s"
 msgstr "Facturation interne  depuis %(from)s vers %(to)s"
 
-#: templates/billing/pre_billing.html:163
+#: templates/billing/pre_billing.html:171
 msgid "Add an internal bill"
 msgstr "Ajouter une facture interne"
 
-#: templates/billing/pre_billing.html:171
+#: templates/billing/pre_billing.html:179
 msgid "Missions without defined billing mode"
 msgstr "Missions sans mode de facturation défini"
 
@@ -5052,6 +5060,10 @@ msgstr "Autres missions"
 #: templates/staffing/mission.html:60
 msgid "This mission has no staffing in future"
 msgstr "Cette mission n'a plus de staffing défini dans le futur"
+
+#: templates/staffing/mission.html:61
+msgid "Still to be billed"
+msgstr "Reste à facturer"
 
 #: templates/staffing/mission.html:63
 msgid "Archive this mission"
