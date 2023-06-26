@@ -210,10 +210,16 @@ class Lead(models.Model):
                 margin += mission.remaining(mode="target") * 1000
         return margin
 
-    @cacheable("Lead.__billed__%(id)s", 3)
-    def billed(self):
+
+    def billed(self, include_fixed_price=True):
         """Total amount billed for this lead"""
-        return list(self.clientbill_set.filter(state__in=("0_PROPOSED", "1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0
+        bills = self.clientbill_set.filter(state__in=("0_PROPOSED", "1_SENT", "2_PAID"))
+        amount_billed =  bills.aggregate(Sum("amount"))["amount__sum"] or 0
+        if not include_fixed_price:
+            for bill in bills:
+                amount_billed -= bill.billdetail_set.filter(mission__billing_mode="FIXED_PRICE").aggregate(Sum("amount"))["amount__sum"] or 0
+        return amount_billed
+
 
     def still_to_be_billed(self, include_current_month=True, include_fixed_price=True):
         """Amount that still need to be billed"""
@@ -230,7 +236,7 @@ class Lead(models.Model):
                 if mission.price:
                     to_bill += float(mission.price * 1000)
         to_bill += float(list(self.expense_set.filter(chargeable=True, expense_date__lt=end).aggregate(Sum("amount")).values())[0] or 0)
-        return to_bill - float(self.billed())
+        return to_bill - float(self.billed(include_fixed_price=include_fixed_price))
 
     def still_to_be_billed_excl_current_month(self):
         """Amount that still need to be billed, exc. current month)"""
