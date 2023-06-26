@@ -318,17 +318,20 @@ def client_bill(request, bill_id=None):
     billDetailFormSet = None
     billExpenseFormSet = None
     billing_management_feature = "billing_management"
+    wip_status = ("0_DRAFT", "0_PROPOSED")
     forbidden = HttpResponseRedirect(reverse("core:forbidden"))
     if bill_id:
         try:
             bill = ClientBill.objects.get(id=bill_id)
+            have_expenses = bill.lead.expense_set.filter(chargeable=True, billexpense__isnull=True).exists()
         except ClientBill.DoesNotExist:
             raise Http404
     else:
         bill = None
+        have_expenses = False
     BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, formset=BillDetailInlineFormset, form=BillDetailForm, fields="__all__")
     BillExpenseFormSet = inlineformset_factory(ClientBill, BillExpense, formset=BillExpenseInlineFormset, form=BillExpenseForm, fields="__all__")
-    wip_status = ("0_DRAFT", "0_PROPOSED")
+
     if request.POST:
         form = ClientBillForm(request.POST, request.FILES, instance=bill)
         # First, ensure user is allowed to manipulate the bill
@@ -351,6 +354,12 @@ def client_bill(request, bill_id=None):
             bill.save()  # Again, to take into account modified details.
             if bill.state in wip_status:
                 success_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
+                # User want to add chargeable expenses ?
+                if "Submit-expenses" in request.POST:
+                    # compute again because user may add expenses during submit
+                    expenses = bill.lead.expense_set.filter(chargeable=True, billexpense__isnull=True)
+                    for expense in expenses:
+                        BillExpense(bill=bill, expense=expense).save()
             else:
                 success_url = request.GET.get('return_to', False) or reverse_lazy("billing:client_bill_detail", args=[bill.id, ])
                 if bill.bill_file:
@@ -418,6 +427,7 @@ def client_bill(request, bill_id=None):
                    "bill_id": bill.id if bill else None,
                    "can_delete": bill.state in wip_status if bill else False,
                    "can_preview": bill.state in wip_status if bill else False,
+                   "have_expenses": have_expenses,
                    "user": request.user})
 
 
