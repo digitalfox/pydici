@@ -23,7 +23,7 @@ from django.db.models import Sum
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Field, Row
-from crispy_forms.bootstrap import AppendedText
+from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget, Select2Widget
 from django.utils import formats
 
@@ -338,15 +338,32 @@ class MissionForm(PydiciCrispyModelForm):
         self.fields["marketing_product"] = ModelChoiceField(widget=MarketingProductChoices(mission=self.instance),
                                                             queryset=MarketingProduct.objects.filter(subsidiary=self.instance.subsidiary),
                                                             required=False)
-        self.helper.layout = Layout(Div(Column(Field("description", placeholder=_("Name of this mission. Leave blank when leads has only one mission")),
-                                               AppendedText("price", "k€"), "billing_mode", "management_mode", "subsidiary", "responsible", "probability", "probability_auto", "active",
-                                               css_class="col-md-6"),
-                                        Column(Field("deal_id", placeholder=_("Leave blank to auto generate")), "nature", "analytic_code", "marketing_product",
-                                               Field("start_date", placeholder=_("Forbid forecast before this date"), css_class="datepicker"),
-                                               Field("end_date", placeholder=_("Forbid forecast after this date"), css_class="datepicker"),
-                                               "contacts", "min_charge_multiple_per_day",
-                                               css_class="col-md-6"),
-                                        css_class="row"),
+        self.helper.layout = Layout(TabHolder(Tab(_("Identification"),
+                                                  Row(Column(Field("description", placeholder=_("Name of this mission. Leave blank when leads has only one mission")),
+                                                             AppendedText("price", "k€"),
+                                                             Field("client_deal_id", placeholder=_("Leave blank to use lead client deal id")),
+                                                             "contacts",
+                                                             css_class="col-md-6"),
+                                                      Column("subsidiary", "responsible", "nature", "marketing_product",
+                                                             css_class="col-md-6"),
+                                                      )),
+                                              Tab(_("Management"),
+                                                  Row(Column("billing_mode",
+                                                             Field("start_date", placeholder=_("Forbid forecast before this date"), css_class="datepicker"),
+                                                             css_class="col-md-6"),
+                                                      Column("management_mode",
+                                                             Field("end_date", placeholder=_("Forbid forecast after this date"), css_class="datepicker"),
+                                                             css_class="col-md-6"),
+                                                      )),
+                                              Tab(_("Advanced"),
+                                                  Row(Column( Field("deal_id", placeholder=_("Leave blank to auto generate")),
+                                                              "analytic_code", "min_charge_multiple_per_day",
+                                                              css_class="col-md-6"),
+                                                      Column("probability", "probability_auto",
+                                                             css_class="col-md-6")),
+                                                  ),
+                                              ),
+                                    "active",
                                     self.submit)
 
     def add_fields(self, form, index):

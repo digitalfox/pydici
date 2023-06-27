@@ -11,7 +11,7 @@ from django.db import IntegrityError
 from crm.models import Supplier, Client
 from billing.models import SupplierBill, ClientBill, BillDetail
 from leads.models import Lead
-from staffing.models import Timesheet
+from staffing.models import Timesheet, Mission
 from people.models import Consultant
 from core.tests import PYDICI_FIXTURES
 
@@ -100,6 +100,55 @@ class BillingModelTest(TransactionTestCase):
         detail2.save()
         self.assertEqual(bill.creation_lag(), 25)  # still no change for first bill
         self.assertEqual(bill2.creation_lag(), 31)
+
+    def test_client_deal_id(self):
+        lead = Lead.objects.get(id=1)
+        mission = lead.mission_set.first()
+        self.assertEqual(mission.client_deal_id, "")
+        bill = ClientBill(lead=lead, creation_date=date(2010, 10, 5), state="1_SENT")
+        bill.save()
+        BillDetail(bill=bill, mission=mission, quantity=1, unit_price=1000).save()
+        self.assertEqual(bill.client_deal_id, "")
+
+        # With lead client deal id
+        lead.client_deal_id = "123"
+        lead.save()
+        self.assertEqual(mission.client_deal_id, "")
+        self.assertEqual(bill.client_deal_id, "")
+        bill.save() # trigger inheritance
+        self.assertEqual(bill.client_deal_id, "123")
+        mission.save() # trigger inheritance
+        self.assertEqual(mission.client_deal_id, "123")
+
+        # With mission client deal id
+        mission.client_deal_id = "123M"
+        mission.save()
+        self.assertEqual(bill.client_deal_id, "123") # still lead client deal id
+        bill.save()
+        self.assertEqual(bill.client_deal_id, "123")  # again, because id is defined
+        bill.client_deal_id = ""
+        bill.save() # trigger inheritance
+        self.assertEqual(bill.client_deal_id, "123M")  # this time, inherit from mission
+
+        # With bill client deal id
+        bill.client_deal_id = "123B"
+        bill.save()
+        self.assertEqual(bill.client_deal_id, "123B")  # no inheritance, client_dead_id is already defined
+
+        # With multiple mission
+        mission2 = Mission(lead=lead, subsidiary_id=1)
+        mission2.save()
+        bill2 = ClientBill(lead=lead, creation_date=date(2010, 10, 5), state="1_SENT")
+        bill2.save()
+        bill2.client_deal_id = ""
+        BillDetail(bill=bill2, mission=mission, quantity=1, unit_price=1000).save()
+        BillDetail(bill=bill2, mission=mission2, quantity=1, unit_price=1000).save()
+        bill2.save()
+        self.assertEqual(bill2.client_deal_id, "123")  # multiple mission. Use lead client deal id
+
+
+
+
 
 
 

@@ -24,6 +24,7 @@ def create_default_mission(lead):
     mission.price = lead.sales  # Initialise with lead price
     mission.subsidiary = lead.subsidiary
     mission.responsible = lead.responsible
+    mission.client_deal_id = lead.client_deal_id
     try:
         mission.probability = lead.stateproba_set.get(state="WON").score
     except StateProba.DoesNotExist:

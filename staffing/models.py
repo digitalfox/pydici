@@ -89,6 +89,7 @@ class Mission(models.Model):
     start_date = models.DateField(_("Start date"), blank=True, null=True)
     end_date = models.DateField(_("End date"), blank=True, null=True)
     min_charge_multiple_per_day = models.FloatField(_("Min charge multiple per day"), default=0)
+    client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
 
     history = AuditlogHistoryField()
 
@@ -104,7 +105,13 @@ class Mission(models.Model):
 
     def save(self, *args, **kwargs):
         update_tasks = kwargs.pop("update_tasks", True)
+
+        # inherit from lead client_deal_id if it has been defined after mission creation
+        if not self.client_deal_id:
+            self.client_deal_id = self.lead.client_deal_id
+
         super(Mission, self).save(*args, **kwargs)
+
         if not self.active:
             # Mission is archived. Remove all staffing
             if not self.archived_date:

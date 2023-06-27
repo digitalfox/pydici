@@ -14,7 +14,7 @@ from base64 import b64encode
 from io import BytesIO
 
 from django.db import models
-from django.db.models import Sum, Min, Max
+from django.db.models import Sum, Min, Max, Count
 from django.utils.translation import gettext_lazy as _
 from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
@@ -229,7 +229,10 @@ class ClientBill(AbstractBill):
     def save(self, *args, **kwargs):
         if not self.lang:
             self.lang = self.lead.client.organisation.billing_lang
-        if self.client_deal_id == "" and self.lead.client_deal_id:
+        if self.client_deal_id == "":  # First, try with mission client_deal_id if defined and if only one mission
+            if self.billdetail_set.aggregate(Count("mission", distinct=True))["mission__count"] == 1:
+                self.client_deal_id = self.billdetail_set.first().mission.client_deal_id
+        if self.client_deal_id == "" and self.lead.client_deal_id: # Default to lead client deal id if still blank
             self.client_deal_id = self.lead.client_deal_id
         if self.state in ("0_DRAFT", "0_PROPOSED"):
             compute_bill(self)

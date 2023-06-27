@@ -108,7 +108,11 @@
                         <th>{% trans "Analytic code" %}</th><td>{{ mission.mission_analytic_code }}</td>
                     </tr>
                     {% if mission.lead %}
-                        {% if mission.lead.client_deal_id %}
+                        {% if mission.client_deal_id %}
+                            <tr>
+                                <th>{% trans "Client lead id" %}</th><td>{{ mission.client_deal_id }}</td>
+                            </tr>
+                        {% elif mission.lead.client_deal_id %}
                             <tr>
                                 <th>{% trans "Client lead id" %}</th><td>{{ mission.lead.client_deal_id }}</td>
                             </tr>
