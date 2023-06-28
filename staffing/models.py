@@ -107,7 +107,7 @@ class Mission(models.Model):
         update_tasks = kwargs.pop("update_tasks", True)
 
         # inherit from lead client_deal_id if it has been defined after mission creation
-        if not self.client_deal_id:
+        if self.lead and not self.client_deal_id:
             self.client_deal_id = self.lead.client_deal_id
 
         super(Mission, self).save(*args, **kwargs)
