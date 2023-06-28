@@ -1575,19 +1575,25 @@ def rate_objective_report(request):
 @cache_page(60*10*10)
 def rates_report(request):
     data = []
-    fiscal_year_month = int(get_parameter("FISCAL_YEAR_MONTH"))
-    current_year = date.today().year
-    years = [current_year - 3, current_year - 2,  current_year -1, current_year]
+    periods = []
+    step = request.GET.get("step", "year")
+    if step == "month":
+        month = date.today().replace(day=1)
+        for i in range(1, 12):
+            periods.append(((month - timedelta(30*i)).replace(day=1), (month - timedelta(30*(i-1))).replace(day=1)))
+    else:
+        fiscal_year_month = int(get_parameter("FISCAL_YEAR_MONTH"))
+        current_year = date.today().year
+        for year in [current_year - i for i in range(6)]:
+            periods.append([date(year, fiscal_year_month, 1), date(year + 1, fiscal_year_month, 1)])
     consultants = Consultant.objects.filter(productive=True, subcontractor=False)
     subsidiary = get_subsidiary_from_session(request)
     if subsidiary:
         consultants = consultants.filter(company=subsidiary)
 
-    consultants = consultants.filter(timesheet__working_date__gte=date(years[0], fiscal_year_month, 1)).distinct()
+    consultants = consultants.filter(timesheet__working_date__gte=periods[0][0]).distinct()
 
-    for year in years:
-        start_date = date(year, fiscal_year_month, 1)
-        end_date = date(year + 1, fiscal_year_month, 1)
+    for start_date, end_date in periods:
         for consultant in consultants:
             amount = 100 * consultant.get_production_rate(start_date=start_date, end_date=end_date)
             if amount:
@@ -1596,7 +1602,7 @@ def rates_report(request):
                     _("profile"): str(consultant.profil),
                     _("subsidiary"): str(consultant.company),
                     _("type"): _("production rate"),
-                    _("year"): year,
+                    _("period"): start_date.isoformat(),
                     _("amount"): amount
             })
             prod_days = Timesheet.objects.filter(consultant=consultant,
@@ -1611,11 +1617,12 @@ def rates_report(request):
                     _("profile"): str(consultant.profil),
                     _("subsidiary"): str(consultant.company),
                     _("type"): _("daily rate"),
-                    _("year"): year,
+                    _("period"): start_date.isoformat(),
                     _("amount"): turnover / prod_days
             })
     return render(request, "staffing/rates_report.html", {"data": json.dumps(data),
-                                                          "derivedAttributes": [],})
+                                                          "derivedAttributes": [],
+                                                          "step": step})
 
 @pydici_non_public
 @pydici_feature("reports")

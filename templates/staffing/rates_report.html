@@ -12,12 +12,16 @@
 {% endblock %}
 
 {% block content %}
-        <h2>{% trans "Production rates and daily rates" %}</h2>
+        {% if step == "month" %}
+            <h2>{% trans "Production rates and daily rates per month" %}</h2>
+        {% else %}
+            <h2>{% trans "Production rates and daily rates per year" %}</h2>
+        {% endif %}
 
         <div id="type-selector" class="btn-group" role="group">
             <button class="btn btn-primary" onclick="table_per_consultant();">{% trans "Table per consultant" %}</button>
-            <button class="btn btn-primary" onclick="daily_rate_per_year();">{% trans "Daily rate per year" %}</button>
-            <button class="btn btn-primary" onclick="production_rate_per_year();">{% trans "Production rate per year" %}</button>
+            <button class="btn btn-primary" onclick="daily_rate();">{% trans "Daily rate" %}</button>
+            <button class="btn btn-primary" onclick="production_rate();">{% trans "Production rate" %}</button>
         </div>
 
         <div id="pivotable-output" style="margin-top: 10px;"></div>
@@ -40,21 +44,21 @@
 
          // Preset definition
          function table_per_consultant() {
-             var cols = ["{% trans 'type' %}", "{% trans 'year' %}"];
+             var cols = ["{% trans 'type' %}", "{% trans 'period' %}"];
              var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"];
              drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ['{% trans "amount" %}'],  {"hideRowTotal": true, "hideGrandTotal": true, "hideColTotal": true});
          }
 
-         function daily_rate_per_year() {
-             var cols = ["{% trans 'year' %}"];
+         function daily_rate() {
+             var cols = ["{% trans 'period' %}"];
              var rows = ["{% trans 'subsidiary' %}"];
              var options = {};
              options['inclusions'] = { {% trans "type" %}: ['{% trans "daily rate" %}'] };
              drawPivot(data, rows, cols, "Line Chart", '{% trans "Average" %}', ['{% trans "amount" %}'],  options);
          }
 
-         function production_rate_per_year() {
-             var cols = ["{% trans 'year' %}"];
+         function production_rate() {
+             var cols = ["{% trans 'period' %}"];
              var rows = ["{% trans 'subsidiary' %}"];
              var options = {};
              options['inclusions'] = { {% trans "type" %}: ['{% trans "production rate" %}'] };
