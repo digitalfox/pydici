@@ -333,6 +333,8 @@ def expense_payments(request, expense_payment_id=None):
                 expensePayment = ExpensePayment(payment_date=form.cleaned_data["payment_date"])
             expensePayment.save()
             for expense in Expense.objects.filter(expensePayment=expensePayment):
+                expense.workflow_in_progress = True
+                expense.state = "CONTROLLED"
                 expense.expensePayment = None  # Remove any previous association
                 expense.save()
             if form.cleaned_data["expenses"]:
