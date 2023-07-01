@@ -17,23 +17,27 @@
                 <th>{% trans "name" %}</th>
 				<th>{% trans "subsidiary" %}</th>
 				<th>{% trans "manager" %}</th>
+                <th>{% trans "category" %}</th>
+                <th>{% trans "priority" %}</th>
 				<th>{% trans "task name" %}</th>
             </tr>
         </thead>
         <tbody>
         {% for consultant in consultants %}
-            {% for label, count, link, priority in consultant.get_tasks %}
+            {% for task in consultant.get_tasks %}
                 <tr>
                     <td>{% include "people/__consultant_name.html" %}</td>
                     <td>{{ consultant.company }}</td>
                     <td>{% with consultant=consultant.manager %}{% include "people/__consultant_name.html" %}{% endwith %}</td>
-                    <td><a href="{{ link }}">{{ label }} {% if count > 1 %}(x{{ count }}){% endif %}</a>
-                        <i {% if priority == 3 %}
+                    <td>{{ task.category }}</td>
+                    <td><span style="display:none">{{ task.priority }}</span>
+                        <i {% if task.priority == 3 %}
                             style="color:red"
-                           {% elif priority == 2 %}
+                           {% elif task.priority == 2 %}
                             style="color:orange"
                         {% endif %}
-                          class="pydici-tooltip bi bi-exclamation-triangle"></i>
+                          class="pydici-tooltip bi bi-exclamation-triangle"></i></td>
+                    <td><a href="{{ task.link }}">{{ task.label }} {% if task.count > 1 %}(x{{ task.count }}){% endif %}</a>
                     </td>
                 </tr>
             {% endfor %}

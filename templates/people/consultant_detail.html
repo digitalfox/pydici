@@ -40,8 +40,8 @@
             <div class="pydici-block">
                 <h3 class="pydici-block-title">{% trans "Things to do right now !" %}</h3>
                 <ul class="icon-list">
-                {% for name, count, link, priority in tasks %}
-                    <li class="task_priority_{{priority}} bi bi-check2-square"><a href="{{ link }}">{{ name }} {% if count > 1 %}(x{{ count }}){% endif %}</a></li>
+                {% for task in tasks %}
+                    <li class="task_priority_{{task.priority}} bi bi-check2-square"><a href="{{ task.link }}">{{ task.label }} {% if task.count > 1 %}(x{{ task.count }}){% endif %}</a></li>
                 {% endfor %}
                 </ul>
             </div>

@@ -1886,7 +1886,7 @@ def optimise_pdc(request):
             missions_remaining = {m.mission_id():int(1000 * m.remaining()) for m in missions}
             if not error:
                 solver, status, scores, staffing = solve_pdc([c.trigramme for c in form.cleaned_data["consultants"]],
-                                                             [c.trigramme for c in form.cleaned_data["consultants"] if 2 < c.profil.level < 6],
+                                                             [c.trigramme for c in form.cleaned_data["consultants"] if 3 < c.profil.level < 6],
                                                              [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level >= 6],
                                                              missions_id, [month[1] for month in staffing_dates],
                                                              missions_charge, missions_remaining, missions_boundaries, consultants_freetime,

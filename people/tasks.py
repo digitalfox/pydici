@@ -8,6 +8,7 @@ Module that handle asynchronous tasks
 
 from datetime import datetime, date
 import random
+from dataclasses import dataclass
 
 from django.db.models import Min, Count, Q
 from django.urls import reverse
@@ -16,6 +17,17 @@ from django.core.cache import cache
 from django.apps import apps
 
 from celery import shared_task
+
+
+@dataclass
+@dataclass
+class ConsultantTask:
+    """Group of tasks to be done by consultants"""
+    label: str
+    count: int
+    link: str
+    priority: int
+    category: str
 
 
 @shared_task
@@ -55,31 +67,36 @@ def compute_consultant_tasks(consultant_id):
     expenses = Expense.objects.filter(user__in=consultant.user_team(exclude_self=False), workflow_in_progress=True, state="REQUESTED")
     expenses_count = expenses.count()
     if expenses_count > 0:
+        expenses_link = reverse("expense:expenses") + "#managed_expense_workflow_table"
         expenses_age = (now - expenses.aggregate(Min("update_date"))["update_date__min"]).days
         expenses_priority = get_task_priority(expenses_age, (7, 14))
-        tasks.append((_("Expenses to review"), expenses_count, reverse("expense:expenses")+"#managed_expense_workflow_table", expenses_priority))
+        tasks.append(ConsultantTask(label=_("Expenses to review"), category=_("expenses"), count=expenses_count,
+                                    priority=expenses_priority, link=expenses_link))
+
 
     # Missions without billing mode
     missions_without_billing_mode = Mission.objects.filter(responsible=consultant, active=True,
                                                            nature="PROD", billing_mode=None)
     missions_without_billing_mode_count = missions_without_billing_mode.count()
     if missions_without_billing_mode_count > 0:
-        tasks.append((_("Mission without billing mode"), missions_without_billing_mode_count,
-                      reverse("staffing:mission_home", args=[random.choice(missions_without_billing_mode).id]), 3))
+        tasks.append(ConsultantTask(label=_("Mission without billing mode"), category=_("missions"), count=missions_without_billing_mode_count,
+                                    link=reverse("staffing:mission_home", args=[random.choice(missions_without_billing_mode).id]), priority=3))
 
     # Missions with missing financial conditions
     missions_with_missing_fc = [ m for m in Mission.objects.filter(active=True, responsible=consultant) if not m.defined_rates()]
     missions_with_missing_fc_count = len(missions_with_missing_fc)
     if missions_with_missing_fc_count > 0:
-        tasks.append((_("Consultants rates are not fully defined"), missions_with_missing_fc_count,
-                      reverse("staffing:mission_home", args=[random.choice(missions_with_missing_fc).id]), 3))
+        tasks.append(ConsultantTask(label=_("Consultants rates are not fully defined"), count=missions_with_missing_fc_count,
+                                    category=_("missions"), priority=3,
+                                    link=reverse("staffing:mission_home", args=[random.choice(missions_with_missing_fc).id])))
 
     # Mission with missing marketing product
     missions_with_missing_mktg_pdt = Mission.objects.filter(active=True, responsible=consultant, marketing_product__isnull=True)
     missions_with_missing_mktg_pdt_count = missions_with_missing_mktg_pdt.count()
     if missions_with_missing_mktg_pdt_count > 0:
-        tasks.append((_("Mission marketing product is missing"), missions_with_missing_mktg_pdt_count,
-                      reverse("staffing:mission_home", args=[random.choice(missions_with_missing_mktg_pdt).id]), 1))
+        tasks.append(ConsultantTask(label=_("Mission marketing product is missing"), count=missions_with_missing_mktg_pdt_count,
+                                    category=_("missions"), priority=1,
+                                    link=reverse("staffing:mission_home", args=[random.choice(missions_with_missing_mktg_pdt).id])))
 
     # Done work without billing
     still_to_be_billed = 0
@@ -92,8 +109,9 @@ def compute_consultant_tasks(consultant_id):
             still_to_be_billed_count += 1
             still_to_be_billed_leads.append(lead)
     if still_to_be_billed_count > 0:
-        tasks.append((_("%s € missing billing for past months") % still_to_be_billed, still_to_be_billed_count,
-                      reverse("billing:client_billing_control_pivotable")+"?focus=%s" % consultant.name, 3))
+        tasks.append(ConsultantTask(label=_("%s € missing billing for past months") % still_to_be_billed, count=still_to_be_billed_count,
+                                    priority=3, category=_("billing"),
+                                    link=reverse("billing:client_billing_control_pivotable")+"?focus=%s" % consultant.name))
 
     # Client bills to reviews
     bills = ClientBill.objects.filter(state="0_DRAFT", billdetail__mission__responsible=consultant).distinct()
@@ -101,7 +119,8 @@ def compute_consultant_tasks(consultant_id):
     if bills_count > 0:
         bills_age = (now.date() - bills.aggregate(Min("creation_date"))["creation_date__min"]).days
         bills_priority = get_task_priority(bills_age, (5, 10))
-        tasks.append((_("Bills to review"), bills_count, reverse("billing:client_bills_in_creation"), bills_priority ))
+        tasks.append(ConsultantTask(label=_("Bills to review"), count=bills_count, category=_("billing"),
+                                    link=reverse("billing:client_bills_in_creation"), priority=bills_priority))
 
     # Supplier bills to reviews
     supplier_bills = SupplierBill.objects.filter(state="1_RECEIVED", lead__responsible=consultant)
@@ -109,29 +128,31 @@ def compute_consultant_tasks(consultant_id):
     if supplier_bills_count > 0:
         supplier_bills_age = (now.date() - supplier_bills.aggregate(Min("creation_date"))["creation_date__min"]).days
         supplier_bills_priority = get_task_priority(supplier_bills_age, (4, 7))
-        tasks.append((_("Supplier bills to review"), supplier_bills_count, reverse("billing:supplier_bills_validation"), supplier_bills_priority))
+        tasks.append(ConsultantTask(label=_("Supplier bills to review"), count=supplier_bills_count, category=_("billing"),
+                                    link=reverse("billing:supplier_bills_validation"), priority=supplier_bills_priority))
 
     # leads without tag
     leads_without_tag = consultant.active_leads().annotate(Count("tags")).filter(tags__count=0)
     leads_without_tag_count = leads_without_tag.count()
     if leads_without_tag_count > 0:
-        tasks.append((_("Leads without tag"), leads_without_tag_count,
-                      reverse("leads:detail", args=[random.choice(leads_without_tag).id]), 1))
+        tasks.append(ConsultantTask(label=_("Leads without tag"), count=leads_without_tag_count, priority=1,
+                                    category=_("leads"), link=reverse("leads:detail", args=[random.choice(leads_without_tag).id])))
 
     # leads with past due date
     leads_with_past_due_date = consultant.active_leads().filter(due_date__lt=date.today())
     leads_with_past_due_date_count = leads_with_past_due_date.count()
     if leads_with_past_due_date_count > 0:
-        tasks.append((_("Leads with past due date"), leads_with_past_due_date_count,
-                      reverse("leads:detail", args=[random.choice(leads_with_past_due_date).id]), 1))
+        tasks.append(ConsultantTask(label=_("Leads with past due date"), count=leads_with_past_due_date_count, category=_("leads"),
+                                    priority=1, link=reverse("leads:detail", args=[random.choice(leads_with_past_due_date).id])))
 
     # active client organisation with incomplete legal information
     incomplete_client_orga = ClientOrganisation.objects.filter(client__active=True, company__businessOwner=consultant)
     incomplete_client_orga = incomplete_client_orga.filter(Q(legal_id__isnull=True) | Q(vat_id__isnull=True)).distinct()
     incomplete_client_orga_count = incomplete_client_orga.count()
     if incomplete_client_orga_count > 0:
-        tasks.append((_("Missing legal id or vat id"), incomplete_client_orga_count,
-                      reverse("crm:client_organisation_change", args=[random.choice(incomplete_client_orga).id]), 1))
+        tasks.append(ConsultantTask(label=_("Missing legal id or vat id"), count=incomplete_client_orga_count,
+                                    category=_("billing"), priority=1,
+                                    link=reverse("crm:client_organisation_change", args=[random.choice(incomplete_client_orga).id]),))
 
     # update cache with computed tasks
     cache.set(CONSULTANT_TASKS_CACHE_KEY % consultant.id, tasks, 24*3600)
