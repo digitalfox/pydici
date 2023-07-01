@@ -156,7 +156,6 @@ def compute_consultant_tasks(consultant_id):
 
     # update cache with computed tasks
     cache.set(CONSULTANT_TASKS_CACHE_KEY % consultant.id, tasks, 24*3600)
-    return tasks
 
 @shared_task
 def compute_all_consultants_tasks():
