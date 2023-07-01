@@ -60,7 +60,7 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
         try:
             # Just try to cast to see if we have a number but use str for filter to allow proper casting by django himself
             float(search)
-            filters = [Q(amount=search), Q(vat=search)]
+            filters = [Q(amount=search), Q(vat=search), Q(id=int(float(search)))]
 
         except ValueError:
             # search term is not a number
