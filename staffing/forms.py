@@ -34,6 +34,7 @@ from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
 from staffing.utils import staffingDates, time_string_for_day_percent, day_percent_for_time_string
+from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMIT, OPTIM_NEWBIE_LIMIT
 
 
 class MissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
@@ -631,21 +632,21 @@ class OptimiserForm(forms.Form):
     def clean_director_quota(self):
         levels = [c.profil.level for c in self.cleaned_data["consultants"]]
         if self.cleaned_data.get("consultants") and self.cleaned_data["director_quota"] > 0:
-            if max(levels) < 6:
+            if max(levels) < OPTIM_SENIOR_DIRECTOR_LIMIT:
                 raise ValidationError(_("%s %% director profile is required but no director has been selected") % self.cleaned_data["director_quota"])
         return self.cleaned_data["director_quota"]
 
     def clean_senior_quota(self):
         levels = [c.profil.level for c in self.cleaned_data["consultants"]]
         if self.cleaned_data.get("consultants") and self.cleaned_data["senior_quota"] > 0:
-            if len([i for i in levels if 2 < i < 6]) == 0:
+            if len([i for i in levels if OPTIM_NEWBIE_SENIOR_LIMIT < i < OPTIM_SENIOR_DIRECTOR_LIMIT]) == 0:
                 raise ValidationError(_("%s %% senior profile is required but no senior consultant has been selected") % self.cleaned_data["senior_quota"])
         return self.cleaned_data["senior_quota"]
 
     def clean_newbie_quota(self):
         levels = [c.profil.level for c in self.cleaned_data["consultants"]]
         if self.cleaned_data.get("consultants") and self.cleaned_data["newbie_quota"] > 0:
-            if min(levels) > 2:
+            if min(levels) > OPTIM_NEWBIE_LIMIT:
                 raise ValidationError(_("%s %% newbie profile is required but no newbie consultant has been selected") % self.cleaned_data["newbie_quota"])
         return self.cleaned_data["newbie_quota"]
 

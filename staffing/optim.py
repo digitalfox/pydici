@@ -18,6 +18,10 @@ from django.db import transaction
 from core.utils import working_days, to_int_or_round
 from staffing.models import Holiday, Staffing
 
+OPTIM_NEWBIE_LIMIT = 2
+OPTIM_NEWBIE_SENIOR_LIMIT = 3
+OPTIM_SENIOR_DIRECTOR_LIMIT = 6
+
 
 def solve_pdc(consultants, senior_consultants, director_consultants, missions, months, missions_charge, missions_remaining, missions_boundaries,
               consultants_freetime, predefined_assignment, exclusions, consultants_rates, solver_param=None):

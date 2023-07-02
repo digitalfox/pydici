@@ -51,6 +51,7 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
     timesheet_report_data, timesheet_report_data_grouped, check_timesheet_validity
 from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
+from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMIT
 from people.utils import get_team_scopes
 from people.tasks import compute_consultant_tasks
 from crm.utils import get_subsidiary_from_session
@@ -1886,8 +1887,8 @@ def optimise_pdc(request):
             missions_remaining = {m.mission_id():int(1000 * m.remaining()) for m in missions}
             if not error:
                 solver, status, scores, staffing = solve_pdc([c.trigramme for c in form.cleaned_data["consultants"]],
-                                                             [c.trigramme for c in form.cleaned_data["consultants"] if 3 < c.profil.level < 6],
-                                                             [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level >= 6],
+                                                             [c.trigramme for c in form.cleaned_data["consultants"] if OPTIM_NEWBIE_SENIOR_LIMIT < c.profil.level < OPTIM_SENIOR_DIRECTOR_LIMIT],
+                                                             [c.trigramme for c in form.cleaned_data["consultants"] if c.profil.level >= OPTIM_SENIOR_DIRECTOR_LIMIT],
                                                              missions_id, [month[1] for month in staffing_dates],
                                                              missions_charge, missions_remaining, missions_boundaries, consultants_freetime,
                                                              predefined_assignment, exclusions, consultant_rates, solver_param)
