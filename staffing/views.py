@@ -1909,21 +1909,32 @@ def optimise_pdc(request):
         # An unbound form with optional initial data
         consultants = []
         missions = []
+        form_initial_extra = {}
+        formset_initial_extra = {}
         try:
             if "consultant_missions" in request.GET:
-                missions = [m for m in Consultant.objects.get(id=int(request.GET["consultant_missions"])).active_missions() if m.nature == "PROD" ]
+                consultant = Consultant.objects.get(id=int(request.GET["consultant_missions"]))
+                missions = [m for m in consultant.active_missions() if m.nature == "PROD" ]
+                consultants = [consultant]
+                form_initial_extra["newbie_quota"] = 0
+                form_initial_extra["senior_quota"] = 0
+                form_initial_extra["director_quota"] = 0
             if "missions" in request.GET:
                 missions = [Mission.objects.get(id=int(m)) for m in request.GET.getlist("missions")]
+                # complete consultants list with already staffed people
+                [consultants.extend(m.consultants()) for m in missions]
+                form_initial_extra["people_per_mission_weight"] = 0
+                form_initial_extra["mission_per_people_weight"] = 0
+                form_initial_extra["planning_weight"] = 2
+                formset_initial_extra["predefined_assignment"] = {{"predefined_assignment": m.consultants()} for m in missions}
             if "consultants" in request.GET:
                 consultants = [Consultant.objects.get(trigramme=c) for c in request.GET.getlist("consultants")]
         except Exception:
             pass # User give garbage as in put
-        # complete consultants list with already staffed people
-        [consultants.extend(m.consultants()) for m in missions]
         # Create form and formset with optional initial data
-        form = OptimiserForm(initial={"consultants": consultants}, subsidiary=get_subsidiary_from_session(request))
+        form = OptimiserForm(initial={"consultants": consultants, **form_initial_extra}, subsidiary=get_subsidiary_from_session(request))
         formset = MissionOptimiserFormset(form_kwargs={"staffing_dates": staffing_dates},
-                                          initial=[{"mission":m, "predefined_assignment": m.consultants()} for m in missions])
+                                          initial=[{"mission":m } for m in missions], **formset_initial_extra)
 
     return render(request, "staffing/optimise_pdc.html",
                   {"form": form,

@@ -13,7 +13,7 @@ from math import sqrt
 from django import forms
 from django.conf import settings
 from django.forms.models import BaseInlineFormSet
-from django.forms import ChoiceField, ModelChoiceField
+from django.forms import ChoiceField, ModelChoiceField, NumberInput
 from django.utils.html import escape
 from django.utils.translation import gettext as _
 from django.utils.safestring import mark_safe
@@ -509,9 +509,9 @@ class MissionOptimiserForm(forms.Form):
         self.staffing_dates = kwargs.pop("staffing_dates", [])
         super().__init__(*args, **kwargs)
         qs = Mission.objects.filter(nature="PROD", active=True)
-        self.fields["mission"] = forms.ModelChoiceField(widget=MissionChoices(attrs={'data-width': '15em', 'data-placeholder': _("Select mission to plan")}, queryset=qs), queryset=qs)
+        self.fields["mission"] = forms.ModelChoiceField(widget=MissionChoices(attrs={'data-placeholder': _("Select mission to plan")}, queryset=qs), queryset=qs)
         for month in self.staffing_dates:
-            self.fields["charge_%s" % month[1]] = forms.IntegerField(required=False, label=month[1])
+            self.fields["charge_%s" % month[1]] = forms.IntegerField(required=False, label=month[1], widget=NumberInput(attrs={'size': '1'}))
         self.fields["predefined_assignment"] = forms.ModelMultipleChoiceField(label=_("Predefined assignment"),
                                                                               required=False, widget=ConsultantMChoices,
                                                                               queryset=Consultant.objects.filter(active=True))
