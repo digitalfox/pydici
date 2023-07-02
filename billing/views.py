@@ -396,7 +396,7 @@ def client_bill(request, bill_id=None):
             if request.GET.get("mission"):
                 missions = [Mission.objects.get(id=request.GET.get("mission"))]
             if missions:
-                bill = ClientBill.objects.create(lead=missions[0].lead)
+                bill = ClientBill(lead=missions[0].lead)
                 bill.save()
             for mission in missions:
                 if mission.billing_mode == "TIME_SPENT":

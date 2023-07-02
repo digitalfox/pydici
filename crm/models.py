@@ -65,7 +65,7 @@ class AbstractCompany(AbstractAddress, AbstractLegalInformation):
         return str(self.name)
 
     def save(self, *args, **kwargs):
-        # If billing addresse is not defined, use main address
+        # If billing address is not defined, use main address
         if not (self.billing_street and self.billing_city and self.billing_zipcode and self.billing_country):
             self.billing_street = self.street
             self.billing_city = self.city
@@ -131,8 +131,8 @@ class Company(AbstractCompany):
         else:
             return 0
 
-    def save(self, **kwargs):
-        super(Company, self).save(kwargs)
+    def save(self, *args, **kwargs):
+        super(Company, self).save(*args, **kwargs)
         # Save client organisation children to trigger attribute heritage if needed
         for clientOrganisation in self.clientorganisation_set.all():
             clientOrganisation.save()
@@ -158,7 +158,7 @@ class ClientOrganisation(AbstractAddress, AbstractLegalInformation):
     def __str__(self):
         return "%s : %s " % (self.company, self.name)
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         heritage_from_company = ("legal_id", "vat_id", "street", "city", "zipcode", "country",
                                  "billing_street", "billing_city", "billing_zipcode", "billing_country", "business_sector")
         for attr in heritage_from_company:
@@ -168,7 +168,7 @@ class ClientOrganisation(AbstractAddress, AbstractLegalInformation):
         if self.company.businessOwner:
             compute_consultant_tasks.delay(self.company.businessOwner.id)
 
-        super(ClientOrganisation, self).save(kwargs)
+        super(ClientOrganisation, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("crm:client_organisation", args=[self.id, ])
