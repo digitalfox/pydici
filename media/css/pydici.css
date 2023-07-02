@@ -455,9 +455,9 @@ div.ui-tooltip {
 }
 
 /* workload optim result */
-.optim_ok { background-color: #e7ffde; }
-.optim_warn { background-color: #ffc5c5; }
-.optim_info { background-color: #c7f3ff; }
+.optim_ok { background-color: #e7ffde !important; }
+.optim_warn { background-color: #ffc5c5 !important; }
+.optim_info { background-color: #c7f3ff !important; }
 
 /* override boostratp default */
 body {
