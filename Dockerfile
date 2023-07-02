@@ -13,6 +13,4 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN pip install -r requirements-sklearn.txt
 RUN pip install -r requirements-dev.txt
-COPY scripts/patch-django-3.2-memcached-sync.patch /code/
-RUN cd ~/.local/lib/python3.9/site-packages/django && patch -p2 < /code/patch-django-3.2-memcached-sync.patch
 
