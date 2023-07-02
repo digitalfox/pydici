@@ -243,7 +243,7 @@
                 <td>{% if mission.nature == "PROD" %}{{ mission.marketing_product.description|default:_("To be defined") }}{% endif %}</td>
             </tr>
             {% endfor %}
-            {% ifnotequal lead.mission_set.count 1 %}
+            {% if lead.mission_set.count != 1 %}
                 <tr>
                     <th>{% trans "Unattributed" %}</th>
                     <th></th>
@@ -260,7 +260,7 @@
                     <th>{{ lead.sales }}</th>
                     <th></th>
                 </tr>
-            {% endifnotequal %}
+            {% endif %}
             </table>
             </div>
             </div>

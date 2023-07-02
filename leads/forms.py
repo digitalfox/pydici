@@ -9,11 +9,11 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from django import forms
 
 from crispy_forms.layout import Layout, Div, Column, Fieldset, Field, HTML, Row
-from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, StrictButton, FieldWithButtons
+from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, FieldWithButtons
 from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
 
@@ -40,7 +40,7 @@ class LeadChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
         return Lead.objects.distinct()
 
     def label_from_instance(self, obj):
-        return smart_text("%s (%s)" % (str(obj), obj.deal_id))
+        return smart_str("%s (%s)" % (str(obj), obj.deal_id))
 
 
 class CurrentLeadChoices(LeadChoices):

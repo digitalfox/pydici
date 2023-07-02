@@ -7,7 +7,7 @@ CRM form setup
 
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import  gettext
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from django.urls import reverse
 
 from django.forms.widgets import Textarea
@@ -51,9 +51,9 @@ class ClientChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
 
     def label_from_instance(self, obj):
         if obj.active:
-            return smart_text(str(obj))
+            return smart_str(str(obj))
         else:
-            return smart_text( gettext("%s (inactive)" % obj))
+            return smart_str( gettext("%s (inactive)" % obj))
 
 
 class ThirdPartyChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):

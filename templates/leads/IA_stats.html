@@ -20,9 +20,9 @@
 	                {% for month, stat in months.items %}
 	                    <td>
 	                    {% for state, value in stat.items %}
-	                       {% ifnotequal value 0 %}
+	                       {% if value != 0 %}
 	                           {{ state }} : {{ value }}<br>
-	                       {% endifnotequal %}
+	                       {% endif %}
 	                    {% endfor %}
 	                    </td>
 	                {% endfor %}

@@ -52,9 +52,9 @@
     <div class="col-lg-4 col-md-4 col-sm-6 col-12">
         <div class="pydici-block">
             {% if consultant.manager %}
-                {% ifnotequal consultant.manager consultant %}
+                {% if consultant.manager != consultant %}
                     <h3 class="pydici-block-title">{% trans "Manager: " %} {% with consultant=consultant.manager %}{% include "people/__consultant_name.html" %}{% endwith %}</h3>
-                {% endifnotequal %}
+                {% endif %}
             {% endif %}
             {% if staff %}
                 <h3 class="pydici-block-title">{% trans "Staff" %}</h3>

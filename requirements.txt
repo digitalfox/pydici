@@ -1,7 +1,7 @@
-django>=3.2.11,<3.3.0
+django>=4.2.2,<5.0.0
 django-extensions==3.2.1
 django_tables2==2.4.1
-django-taggit==2.1.0
+django-taggit==4.0
 django-taggit-templatetags2==1.6.1
 django-crispy-forms==1.14.0
 crispy-bootstrap5==0.6
@@ -17,7 +17,7 @@ ortools>=9.3.0,<9.4.0
 celery[redis]==5.2.7
 django-split-settings==1.1.0
 django-celery-results==2.4.0
-django-celery-beat==2.3.0
+django-celery-beat==2.5.0
 mysqlclient==2.1.1
 python-telegram-bot[job-queue]==20.1
 django-auditlog==2.3.0

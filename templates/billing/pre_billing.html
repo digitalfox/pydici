@@ -169,9 +169,9 @@
                 </div>
             </div>
         {% endfor %}
-         {% ifnotequal lead.mission_set.count 1 %}
+         {% if lead.mission_set.count != 1 %}
             <h4>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</h4>
-         {% endifnotequal %}
+         {% endif %}
          <button type="button" class="btn btn-primary" disabled>{% trans "Add an internal bill" %}</button>
          <hr/>
     {% endfor %}

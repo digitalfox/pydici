@@ -227,6 +227,7 @@ class ClientBill(AbstractBill):
         return reverse("billing:client_bill_detail", args=[self.id,])
 
     def save(self, *args, **kwargs):
+        super(ClientBill, self).save(*args, **kwargs)  # Save it to create pk
         if not self.lang:
             self.lang = self.lead.client.organisation.billing_lang
         if self.client_deal_id == "":  # First, try with mission client_deal_id if defined and if only one mission

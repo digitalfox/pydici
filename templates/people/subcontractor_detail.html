@@ -6,7 +6,7 @@
 
     <div class="col-md-4 col-sm-6">
         <h3>{% trans "Contact" %}</h3>
-	   <p>{% if consultant.manager %}{% ifnotequal consultant.manager consultant %}{{ consultant.manager.full_name }}{% endifnotequal %}{% endif %}</p>
+	   <p>{% if consultant.manager %}{% if consultant.manager != consultant %}{{ consultant.manager.full_name }}{% endif %}{% endif %}</p>
 	</div>
 
     <div class="col-md-4 col-sm-6">
