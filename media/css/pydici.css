@@ -272,6 +272,10 @@ td.in-holidays {
     left: 0;
 }
 
+.tablesmall-form-row td.timesheet-day {
+    background-color: transparent;
+}
+
 .tablesmall-form-row td.timesheet-day-weekend > input[type="text"] {
     background-color: LightGrey;
 }
