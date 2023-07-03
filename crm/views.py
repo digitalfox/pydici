@@ -40,11 +40,11 @@ from billing.models import ClientBill
 class ContactReturnToMixin(object):
     """Mixin class to return to contact detail if return_to args is not provided"""
     def get_success_url(self):
-        if self.model in (MissionContact, BusinessBroker, Supplier):
-            target = self.object.contact.id
+        if self.model in (MissionContact, BusinessBroker, Supplier) and self.object.contact:
+            link = reverse_lazy("crm:contact_detail", args=[self.object.contact.id, ])
         else:
-            target = self.object.id
-        return self.request.GET.get('return_to', False) or reverse_lazy("crm:contact_detail", args=[target, ])
+            link = "/"
+        return self.request.GET.get('return_to', False) or link
 
 
 class ThirdPartyMixin(PydiciFeatureMixin):
