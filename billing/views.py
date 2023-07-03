@@ -32,7 +32,7 @@ from django.template.loader import get_template
 
 
 from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
-from PyPDF2 import PdfFileMerger, PdfFileReader
+from pypdf import PdfMerger, PdfReader
 import facturx
 
 from billing.utils import get_billing_info, update_client_bill_from_timesheet, update_client_bill_from_proportion, \
@@ -255,12 +255,12 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
             bill = self.context_data["bill"]
             translation.activate(bill.lang)
             bill_pdf = super(BillAnnexPDFTemplateResponse, self).rendered_content
-            merger = PdfFileMerger()
-            merger.append(PdfFileReader(BytesIO(bill_pdf)))
+            merger = PdfMerger()
+            merger.append(PdfReader(BytesIO(bill_pdf)))
             # Add expense receipt
             for billExpense in bill.billexpense_set.all():
                 if billExpense.expense and billExpense.expense.receipt_content_type() == "application/pdf":
-                    merger.append(PdfFileReader(billExpense.expense.receipt.file))
+                    merger.append(PdfReader(billExpense.expense.receipt.file))
             # Add timesheet
             if bill.include_timesheet:
                 fake_http_request = self._request

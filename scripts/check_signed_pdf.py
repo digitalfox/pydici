@@ -9,8 +9,8 @@ Try to guess if commerce documents are present and signed
 
 import os
 import csv
-from PyPDF2 import PdfReader
-from PyPDF2.errors import PdfReadError
+from pypdf import PdfReader
+from pypdf.errors import PdfReadError
 
 csv_writter = csv.writer(open("check_signed_pdf_result.csv", "w"), dialect="excel")
 csv_writter.writerow(["lead", "pdf files", "Office pdf files", "pdf types", "diag"])
