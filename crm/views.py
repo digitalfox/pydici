@@ -9,7 +9,7 @@ import json
 from datetime import date, datetime, timedelta
 
 from django.shortcuts import render
-from django.db.models import Sum, Min, Count
+from django.db.models import Sum, Min, Count, F, Q
 from django.views.decorators.cache import cache_page
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
@@ -575,44 +575,31 @@ def graph_company_sales(request, onlyLastYear=False, subsidiary_id=None):
 @cache_page(60 * 60)
 def graph_company_business_activity(request, company_id):
     """Business activity (leads and bills) for a company"""
-    billsData = dict()
-    lostLeadsData = dict()
-    preSalesData = dict()
-    wonLeadsData = dict()
     company = Company.objects.get(id=company_id)
     subsidiary = get_subsidiary_from_session(request)
 
-    bills = ClientBill.objects.filter(lead__client__organisation__company=company, state__in=("1_SENT", "2_PAID"))
+    bills = ClientBill.objects.filter(lead__client__organisation__company=company, state__in=("1_SENT", "2_PAID")).order_by()
     if subsidiary:
         bills = bills.filter(lead__subsidiary=subsidiary)
-    for bill in bills:
-        kdate = bill.creation_date.replace(day=1)
-        if kdate in billsData:
-            billsData[kdate] += int(float(bill.amount) / 1000)
-        else:
-            billsData[kdate] = int(float(bill.amount) / 1000)
+    bills = bills.annotate(year=F("creation_date__year")).values("year").annotate(amount_sum=Sum("amount")/1000).order_by("year")
 
-    leads = Lead.objects.filter(client__organisation__company=company)
+    leads = Lead.objects.filter(client__organisation__company=company).order_by()
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
-    for lead in leads:
-        kdate = lead.creation_date.date().replace(day=1)
-        for data in (lostLeadsData, wonLeadsData, preSalesData, billsData):
-            data[kdate] = data.get(kdate, 0)  # Default to 0 to avoid stacking weirdness in graph
-        if lead.state == "WON":
-            wonLeadsData[kdate] += 1
-        elif lead.state in ("LOST", "FORGIVEN"):
-            lostLeadsData[kdate] += 1
-        else:
-            preSalesData[kdate] += 1
+    leads = leads.annotate(year=F("creation_date__year")).values("year")
+    leads = leads.annotate(
+        won=Count("state", filter=Q(state="WON")),
+        lost_forgiven=Count("state", filter=Q(state__in=("LOST", "FORGIVEN"))),
+        presales=Count("state", filter=Q(state__in=("QUALIF", "WRITE_OFFER", "OFFER_SENT", "NEGOTIATION"))),
+    ).order_by("year")
 
     graph_data = [
-        ["x_billing"] + [d.isoformat() for d in list(billsData.keys())],
-        ["x_leads"] + [d.isoformat() for d in list(wonLeadsData.keys())],
-        ["y_billing"] + list(billsData.values()),
-        ["y_lost_leads"] + list(lostLeadsData.values()),
-        ["y_won_leads"] + list(wonLeadsData.values()),
-        ["y_presales_leads"] + list(preSalesData.values()),
+        ["x_billing"] + [str(b["year"]) for b in bills],
+        ["x_leads"] + [str(l["year"]) for l in leads],
+        ["y_billing"] + [str(int(float(b["amount_sum"]))) for b in bills],
+        ["y_lost_leads"] + [l["lost_forgiven"] for l in leads],
+        ["y_won_leads"] + [l["won"] for l in leads],
+        ["y_presales_leads"] + [l["presales"] for l in leads],
     ]
 
     return render(request, "crm/graph_company_business_activity.html",
