@@ -84,9 +84,8 @@ def post_save_lead(request, lead, created=False, state_changed=False):
         if mission.subsidiary != lead.subsidiary:
             mission.subsidiary = lead.subsidiary
             mission.save()
-        if lead.state == "WON":
+        if lead.state == "WON" and mission.probability != 100:
             mission.probability = 100
-            mission.active = True
             mission.save()
             messages.add_message(request, messages.INFO,  gettext("Mission's probability has been set to 100%"))
         elif lead.state in ("LOST", "FORGIVEN", "SLEEPING"):
