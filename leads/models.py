@@ -98,7 +98,7 @@ class Lead(models.Model):
     def __str__(self):
         return "%s - %s" % (self.client.organisation, self.name)
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, *args, **kwargs):
         self.description = compact_text(self.description)
         self.administrative_notes = compact_text(self.administrative_notes)
         if self.deal_id == "":
@@ -120,7 +120,7 @@ class Lead(models.Model):
 
             self.deal_id = deal_id
 
-        super(Lead, self).save(force_insert, force_update)
+        super(Lead, self).save(*args, **kwargs)
 
     def staffing_list(self):
         staffing = ""
