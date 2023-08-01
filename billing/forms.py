@@ -176,12 +176,16 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
         for form in self.forms:
             expense = form.cleaned_data.get("expense", None)
             if expense:
+                # ensure expense is unique for this bill
                 expense = expense.id
-            else:
-                continue
-            if expense in expenses:
-                raise ValidationError(_("Cannot declare twice the same expense"))
-            expenses.append(expense)
+                if expense in expenses:
+                    raise ValidationError(_("Cannot declare twice the same expense"))
+                expenses.append(expense)
+            elif form.cleaned_data.get("amount") or form.cleaned_data.get("amount_with_vat") or form.cleaned_data.get("description"):
+                # ensure amount is defined is expense is not provided
+                if not (form.cleaned_data.get("amount") or form.cleaned_data.get("amount_with_vat")):
+                    raise ValidationError(_("If expense is not selected, please provide at least amount or amount with vat"))
+
 
 
 class BillExpenseFormSetHelper(FormHelper):
