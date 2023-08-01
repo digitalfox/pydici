@@ -41,7 +41,7 @@ class AbstractAddress(models.Model):
         return "%s\n%s %s\n%s" % (self.street, self.zipcode, self.city, self.country)
 
     def billing_address(self):
-        return "%s\n%s %s\n%s" % (self.billing_street, self.billing_zipcode, self.billing_city, self.billing_country)
+        return "%s\n%s %s\n%s" % (self.billing_street, self.billing_zipcode, self.billing_city, self.billing_country.name)
 
     class Meta:
         abstract = True
