@@ -16,13 +16,13 @@ from crm.models import Contact
 
 class ContactTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
     """Contact tables backend for datatables"""
-    columns = ("name", "companies", "function", "email", "phone", "mobile_phone", "fax")
+    columns = ("name", "companies", "function", "email", "phone", "mobile_phone", "contacts")
     order_columns = columns
     max_display_length = 500
 
 
     def get_initial_queryset(self):
-        return Contact.objects.all()
+        return Contact.objects.all().prefetch_related("contact_points")
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
@@ -33,6 +33,8 @@ class ContactTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
                            Q(email__icontains=search) |
                            Q(mobile_phone__icontains=search) |
                            Q(fax__icontains=search) |
+                           Q(contact_points__name__icontains=search) |
+                           Q(contact_points__trigramme__icontains=search) |
                            Q(phone__icontains=search) |
                            Q(client__organisation__company__name__icontains=search)
                            ).distinct()
@@ -41,6 +43,8 @@ class ContactTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
     def render_column(self, row, column):
         if column == "companies":
             return row.companies(html=True)
+        elif column == "contacts":
+            return ", ".join([c.name for c in row.contact_points.all()])
         else:
             return super(ContactTableDT, self).render_column(row, column)
 
