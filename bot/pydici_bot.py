@@ -76,10 +76,10 @@ async def alert_consultant(context):
     tasks = await db_sync_to_async(consultant.get_tasks)()
     if tasks:
         cache.set(cache_key, 1, 3600 * 12)  # Keep track 12 hours that this user has been alerted
-        task_name, task_count, task_link, task_priority = random.choice(tasks)
-        url = await db_sync_to_async(get_parameter)("HOST") + task_link
-        msg = _("Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n%(link)s") % {"task_name": task_name,
-                                                                                                     "task_count": task_count,
+        task = random.choice(tasks)
+        url = await db_sync_to_async(get_parameter)("HOST") + task.link
+        msg = _("Hey, what about thinking about that: %(task_name)s (x%(task_count)s)\n%(link)s") % {"task_name": task.label,
+                                                                                                     "task_count": task.count,
                                                                                                      "link": url.replace(" ", "%20")}
         try:
             await context.bot.send_message(chat_id=consultant.telegram_id, text=msg)

@@ -1580,7 +1580,7 @@ def rates_report(request):
     step = request.GET.get("step", "year")
     if step == "month":
         month = date.today().replace(day=1)
-        for i in range(1, 12):
+        for i in range(1, 13):
             periods.append(((month - timedelta(30*i)).replace(day=1), (month - timedelta(30*(i-1))).replace(day=1)))
     else:
         fiscal_year_month = int(get_parameter("FISCAL_YEAR_MONTH"))

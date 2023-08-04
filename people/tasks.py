@@ -83,7 +83,7 @@ def compute_consultant_tasks(consultant_id):
                                     link=reverse("staffing:mission_home", args=[random.choice(missions_without_billing_mode).id]), priority=3))
 
     # Missions with missing financial conditions
-    missions_with_missing_fc = [ m for m in Mission.objects.filter(active=True, responsible=consultant) if not m.defined_rates()]
+    missions_with_missing_fc = [ m for m in Mission.objects.filter(active=True, nature="PROD", responsible=consultant) if not m.defined_rates()]
     missions_with_missing_fc_count = len(missions_with_missing_fc)
     if missions_with_missing_fc_count > 0:
         tasks.append(ConsultantTask(label=_("Consultants rates are not fully defined"), count=missions_with_missing_fc_count,
@@ -91,7 +91,7 @@ def compute_consultant_tasks(consultant_id):
                                     link=reverse("staffing:mission_home", args=[random.choice(missions_with_missing_fc).id])))
 
     # Mission with missing marketing product
-    missions_with_missing_mktg_pdt = Mission.objects.filter(active=True, responsible=consultant, marketing_product__isnull=True)
+    missions_with_missing_mktg_pdt = Mission.objects.filter(active=True, nature="PROD", responsible=consultant, marketing_product__isnull=True)
     missions_with_missing_mktg_pdt_count = missions_with_missing_mktg_pdt.count()
     if missions_with_missing_mktg_pdt_count > 0:
         tasks.append(ConsultantTask(label=_("Mission marketing product is missing"), count=missions_with_missing_mktg_pdt_count,
