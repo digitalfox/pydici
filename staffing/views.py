@@ -1010,7 +1010,6 @@ def consultant_csv_timesheet(request, consultant, days, month, missions):
 @pydici_non_public
 def mission_timesheet(request, mission_id):
     """Mission timesheet"""
-    dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
     mission = Mission.objects.get(id=mission_id)
     current_month = date.today().replace(day=1)  # Current month
     consultants = mission.consultants()
@@ -1630,7 +1629,6 @@ def rates_report(request):
 def missions_report(request, year=None, nature="HOLIDAYS"):
     """Reports about holidays or non-prod missions"""
     data = []
-    dateTrunc = connections[Timesheet.objects.db].ops.date_trunc_sql  # Shortcut to SQL date trunc function
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
     timesheets = Timesheet.objects.filter(mission__nature=nature, working_date__lte=date.today())
@@ -1653,7 +1651,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
         end = date(year+1, month, 1)
         timesheets = timesheets.filter(working_date__gte=start, working_date__lt=end)
 
-    timesheets =timesheets.extra(select={'month': dateTrunc("month", "working_date")})
+    timesheets =timesheets.annotate(month=TruncMonth("working_date"))
     timesheets = timesheets.values("month", "mission__description", "consultant__name", "consultant__profil__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
 
     for timesheet in timesheets:
