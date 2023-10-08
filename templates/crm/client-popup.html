@@ -30,4 +30,8 @@
     $("#companyForm").show();
     $("#company_input_group").hide();
 {% endif %}
+    $(document).ready(function(){
+        // In bootstrap modal, we need to attach select2 to modal instead of body
+        $('.django-select2').djangoSelect2({ "theme": "bootstrap-5", "width": "auto", "dropdownParent": $('#clientModal')});
+    });
 </script>
