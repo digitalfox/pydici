@@ -62,6 +62,7 @@ def search(request):
 
     words = request.GET.get("q", "")
     words = words.split()[:10]  # limits search to 10 words
+    words = [w for w in words if len(w) > 1]  # remove one letter words
     consultants = companies = contacts = leads = active_missions = archived_missions = bills = tags = None
     max_record = 50
     more_record = False  # Whether we have more records
