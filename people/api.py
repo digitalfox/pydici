@@ -45,7 +45,7 @@ def consultant_provisioning(request):
                                     profil = ConsultantProfile.objects.get(name=request.POST["profile"]))
             consultant.save()
             if request.headers.get("Dry-Run"):
-                return JsonResponse({"result": "nothing", "msg": "Dry run mode. User is not created"})
+                raise Exception("Dry-Run, rollback user creation")
         return JsonResponse({"result": "ok"})
     except Exception as e:
         logging.error(f"cannot create consultant: {e}")
