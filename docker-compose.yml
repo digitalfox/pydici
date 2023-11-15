@@ -34,13 +34,15 @@ services:
       - mariadb
   celery:
     image: digitalfox/pydici:latest
-    command: celery -A pydici worker -B -l INFO -Q pydici
+    command: celery -A pydici worker -B -l INFO -Q pydici --concurrency=1
     volumes:
       - .:/code
     environment:
       PYDICI_ENV: "dev"
     depends_on:
-      - django
+      - memcached
+      - redis
+      - mariadb
   bot:
     image: digitalfox/pydici:latest
     environment:
