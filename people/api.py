@@ -42,7 +42,8 @@ def consultant_provisioning(request):
             consultant = Consultant(name="%s %s" % (request.POST["firstname"], request.POST["lastname"]),
                                     trigramme = request.POST["trigramme"].upper(),
                                     company = Subsidiary.objects.get(code=request.POST["company"],),
-                                    profil = ConsultantProfile.objects.get(name=request.POST["profile"]))
+                                    profil = ConsultantProfile.objects.get(name=request.POST["profile"]),
+                                    productive = request.POST.get("productive", True))
             consultant.save()
             if request.headers.get("Dry-Run"):
                 raise Exception("Dry-Run, rollback user creation")
