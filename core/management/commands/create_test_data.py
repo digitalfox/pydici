@@ -59,6 +59,9 @@ class Command(BaseCommand):
         lastweek = datetime.now() - timedelta(days=7)
         Lead.objects.all().update(update_date=lastweek)
 
+        # Non prod and holidays missions
+        other_missions()
+
 
 def create_static_data():
     # Business sector
@@ -91,3 +94,10 @@ def set_user_permissions():
     u.is_superuser = True
     u.is_staff = True
     u.save()
+
+def other_missions():
+    subsidiary = Subsidiary.objects.first()
+    for name in ["holidays", "sick days", "non-staff"]:
+        Mission(description=name, probability=100, nature="HOLIDAYS", subsidiary=subsidiary).save()
+    for name in ["management", "pre-sale", "traingin", "R&D", "marketing", "admin"]:
+        Mission(description=name, probability=100, nature="NONPROD", subsidiary=subsidiary).save()
