@@ -14,6 +14,8 @@ import random
 
 from people.models import Consultant
 from crm.models import Client, Subsidiary
+from staffing.factories import ProdMissionFactory
+from leads.models import Lead
 
 class LeadFactory(DjangoModelFactory):
     name = factory.Faker("bs")
@@ -24,6 +26,14 @@ class LeadFactory(DjangoModelFactory):
     creation_date = factory.LazyAttribute(lambda o: o.start_date - timedelta(random.randint(20, 80)))
     client = factory.fuzzy.FuzzyChoice(Client.objects.all())
     subsidiary = factory.fuzzy.FuzzyChoice(Subsidiary.objects.all())
+    missions = factory.RelatedFactoryList(ProdMissionFactory, factory_related_name="lead", size=random.choice([1, 2]))
+
+    @factory.lazy_attribute
+    def state(self):
+        if self.creation_date > (date.today() - timedelta(90)):
+            return random.choice([s[0] for s in Lead.STATES])
+        else:
+            return random.choice([s[0] for s in Lead.STATES[4:]])
 
     @classmethod
     def _create(cls, target_class, *args, **kwargs):
