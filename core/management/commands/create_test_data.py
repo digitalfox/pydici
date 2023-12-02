@@ -12,7 +12,7 @@ from django.core.management import BaseCommand
 from django.db.models import F
 from django.contrib.auth.models import User, Group
 
-from crm.factories import SubsidiaryFactory, CompanyFactory
+from crm.factories import SubsidiaryFactory, CompanyFactory, SupplierFactory
 from crm.models import BusinessSector, Subsidiary
 from people.factories import CONSULTANT_PROFILES, ConsultantFactory, UserFactory, DailyRateObjectiveFactory, ProductionRateObjectiveFactory
 from people.models import ConsultantProfile, Consultant
@@ -21,6 +21,7 @@ from core.models import GroupFeature, FEATURES
 N_SUBSIDIARIES = 3
 N_CONSULTANTS = 50
 N_COMPANIES = 30
+N_SUPPLIERS = 5
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -42,6 +43,8 @@ class Command(BaseCommand):
 
         # Client Company
         CompanyFactory.create_batch(N_COMPANIES)
+        # Suppliers
+        SupplierFactory.create_batch(N_SUPPLIERS)
 
 
 def create_static_data():

@@ -79,3 +79,9 @@ class CompanyFactory(AbstractCompanyFactory):
     class Meta:
         model = "crm.Company"
 
+class SupplierFactory(DjangoModelFactory):
+    company = factory.SubFactory(CompanyFactory, clientorganisation=None)
+    contact = factory.SubFactory(ContactFactory)
+
+    class Meta:
+        model = "crm.Supplier"
