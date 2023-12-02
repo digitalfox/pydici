@@ -20,9 +20,8 @@ from people.models import ConsultantProfile, Consultant
 from core.models import GroupFeature, FEATURES
 from leads.factories import LeadFactory
 from leads.models import Lead
-from leads.utils import create_default_mission
 from staffing.models import Mission
-from staffing.factories import MarketingProductFactory
+from staffing.factories import MarketingProductFactory, ProdStaffingFactory, OtherStaffingFactory
 
 N_SUBSIDIARIES = 3
 N_CONSULTANTS = 50
@@ -62,6 +61,10 @@ class Command(BaseCommand):
         # Non prod and holidays missions
         other_missions()
 
+        # Staffing
+        ProdStaffingFactory.create_batch(N_CONSULTANTS * 4 * 3)
+        OtherStaffingFactory.create_batch((N_CONSULTANTS * 4 * 2))
+
 
 def create_static_data():
     # Business sector
@@ -97,7 +100,7 @@ def set_user_permissions():
 
 def other_missions():
     subsidiary = Subsidiary.objects.first()
-    for name in ["holidays", "sick days", "non-staff"]:
+    for name in ["holidays", "non-staff"]:
         Mission(description=name, probability=100, nature="HOLIDAYS", subsidiary=subsidiary).save()
-    for name in ["management", "pre-sale", "traingin", "R&D", "marketing", "admin"]:
+    for name in ["management", "pre-sale", "training", "R&D", "marketing", "admin"]:
         Mission(description=name, probability=100, nature="NONPROD", subsidiary=subsidiary).save()
