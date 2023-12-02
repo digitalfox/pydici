@@ -7,6 +7,7 @@ Create test / demo data
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 import random
+from datetime import date, datetime, timedelta
 
 from django.core.management import BaseCommand
 from django.db.models import F
@@ -17,11 +18,14 @@ from crm.models import BusinessSector, Subsidiary
 from people.factories import CONSULTANT_PROFILES, ConsultantFactory, UserFactory, DailyRateObjectiveFactory, ProductionRateObjectiveFactory
 from people.models import ConsultantProfile, Consultant
 from core.models import GroupFeature, FEATURES
+from leads.factories import LeadFactory
+from leads.models import Lead
 
 N_SUBSIDIARIES = 3
 N_CONSULTANTS = 50
 N_COMPANIES = 30
 N_SUPPLIERS = 5
+N_LEADS = 200
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -41,10 +45,15 @@ class Command(BaseCommand):
         set_managers()
         set_user_permissions()
 
-        # Client Company
+        # Client and suppliers
         CompanyFactory.create_batch(N_COMPANIES)
-        # Suppliers
         SupplierFactory.create_batch(N_SUPPLIERS)
+
+        # Leads
+        LeadFactory.create_batch(N_LEADS)
+        set_lead_state()
+        lastweek = datetime.now() - timedelta(days=7)
+        Lead.objects.all().update(update_date=lastweek)
 
 
 def create_static_data():
@@ -79,3 +88,10 @@ def set_user_permissions():
     u.is_staff = True
     u.save()
 
+def set_lead_state():
+    for lead in Lead.objects.filter(creation_date__gt=(date.today()-timedelta(90))):
+        lead.state = random.choice([s[0] for s in Lead.STATES])
+        lead.save()
+    for lead in Lead.objects.filter(creation_date__lte=(date.today()-timedelta(90))):
+        lead.state = random.choice([s[0] for s in Lead.STATES[4:]])
+        lead.save()
