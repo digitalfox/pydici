@@ -18,11 +18,12 @@ from crm.factories import SubsidiaryFactory, CompanyFactory, SupplierFactory
 from crm.models import BusinessSector, Subsidiary
 from people.factories import CONSULTANT_PROFILES, ConsultantFactory, UserFactory, DailyRateObjectiveFactory, ProductionRateObjectiveFactory
 from people.models import ConsultantProfile, Consultant
-from core.models import GroupFeature, FEATURES
+from core.models import GroupFeature, FEATURES, Parameter
 from leads.factories import LeadFactory
 from leads.models import Lead
 from staffing.models import Mission, FinancialCondition, Staffing, Timesheet
 from staffing.factories import MarketingProductFactory, OtherStaffingFactory
+from billing.factories import ClientBillFactory
 from core.utils import nextMonth
 
 N_SUBSIDIARIES = 3
@@ -68,6 +69,10 @@ class Command(BaseCommand):
         create_prod_staffing_and_financial_conditions()
         create_timesheet()
 
+        # Bills
+        ClientBillFactory.create_batch(N_LEADS * 2)
+
+
 
 @atomic
 def create_static_data():
@@ -80,6 +85,10 @@ def create_static_data():
     for level, profile in enumerate(CONSULTANT_PROFILES):
         ConsultantProfile(name=profile, level=level).save()
     ConsultantProfile(name="support", level=3).save()
+
+    # Paratemers
+    Parameter(key="FISCAL_YEAR_MONTH", value="1", type="FLOAT").save()
+
 
 @atomic
 def set_managers():

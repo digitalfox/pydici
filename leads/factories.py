@@ -16,6 +16,7 @@ from people.models import Consultant
 from crm.models import Client, Subsidiary
 from staffing.factories import ProdMissionFactory
 from leads.models import Lead
+from billing.factories import ClientBillFactory
 
 class LeadFactory(DjangoModelFactory):
     name = factory.Faker("bs")
