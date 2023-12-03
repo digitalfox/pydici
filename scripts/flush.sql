@@ -12,7 +12,6 @@ TRUNCATE `auth_group_permissions`;
 TRUNCATE `crm_missioncontact`;
 TRUNCATE `billing_supplierbill`;
 TRUNCATE `expense_expensecategory`;
-TRUNCATE `core_parameter`;
 TRUNCATE `leads_lead_staffing`;
 TRUNCATE `crm_businesssector`;
 TRUNCATE `billing_supplierbill_expenses`;

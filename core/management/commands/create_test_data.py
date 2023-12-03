@@ -86,10 +86,6 @@ def create_static_data():
         ConsultantProfile(name=profile, level=level).save()
     ConsultantProfile(name="support", level=3).save()
 
-    # Paratemers
-    Parameter(key="FISCAL_YEAR_MONTH", value="1", type="FLOAT").save()
-
-
 @atomic
 def set_managers():
     Consultant.objects.filter(profil__name="director").update(manager=F("id"), staffing_manager=F("id"))
