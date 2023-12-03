@@ -33,7 +33,7 @@ class ProdMissionFactory(DjangoModelFactory):
     subsidiary = factory.SelfAttribute("lead.subsidiary")
     price = factory.SelfAttribute("lead.sales")
     description = factory.Faker("word")
-    active = factory.LazyAttribute(lambda o: o.lead.state in [s[0] for s in Lead.STATES[4:]])
+    active = factory.LazyAttribute(lambda o: o.lead.state in [s[0] for s in Lead.STATES[:5]])
 
     @factory.lazy_attribute
     def probability(self):
@@ -47,14 +47,6 @@ class ProdMissionFactory(DjangoModelFactory):
     class Meta:
         model = "staffing.Mission"
 
-class ProdStaffingFactory(DjangoModelFactory):
-    consultant = factory.Iterator(Consultant.objects.all())
-    mission = factory.fuzzy.FuzzyChoice(Mission.objects.filter(nature="PROD", active=True))
-    staffing_date = factory.fuzzy.FuzzyChoice(staffingDates(4, format="datetime"))
-    charge = factory.fuzzy.FuzzyInteger(5, 10)
-    class Meta:
-        model = "staffing.Staffing"
-        django_get_or_create = ("consultant", "mission", "staffing_date",)
 
 class OtherStaffingFactory(DjangoModelFactory):
     consultant = factory.Iterator(Consultant.objects.all())

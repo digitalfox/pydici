@@ -41,6 +41,7 @@ class SubsidiaryFactory(AbstractCompanyFactory):
 
     class Meta:
         model = "crm.Subsidiary"
+        django_get_or_create = ("name",)
 
 class ContactFactory(DjangoModelFactory):
     name = factory.Faker("name")
@@ -52,7 +53,7 @@ class ContactFactory(DjangoModelFactory):
 
     @factory.post_generation
     def contact_points(obj, create, extracted, **kwargs):
-        contacts = random.choices(Consultant.objects.all(), k=random.choice([1, 2, 3]))
+        contacts = Consultant.objects.all().order_by("?")[:random.choice([1, 2, 3])]
         obj.contact_points.set(contacts)
 
     class Meta:
@@ -78,6 +79,7 @@ class CompanyFactory(AbstractCompanyFactory):
 
     class Meta:
         model = "crm.Company"
+        django_get_or_create = ("name", )
 
 class SupplierFactory(DjangoModelFactory):
     company = factory.SubFactory(CompanyFactory, clientorganisation=None)

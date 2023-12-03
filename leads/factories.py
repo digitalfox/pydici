@@ -30,7 +30,7 @@ class LeadFactory(DjangoModelFactory):
 
     @factory.lazy_attribute
     def state(self):
-        if self.creation_date > (date.today() - timedelta(90)):
+        if self.creation_date > (date.today() - timedelta(120)):
             return random.choice([s[0] for s in Lead.STATES])
         else:
             return random.choice([s[0] for s in Lead.STATES[4:]])

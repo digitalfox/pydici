@@ -11,6 +11,7 @@ from datetime import date, datetime, timedelta
 
 from django.core.management import BaseCommand
 from django.db.models import F
+from django.db.transaction import atomic
 from django.contrib.auth.models import User, Group
 
 from crm.factories import SubsidiaryFactory, CompanyFactory, SupplierFactory
@@ -20,8 +21,9 @@ from people.models import ConsultantProfile, Consultant
 from core.models import GroupFeature, FEATURES
 from leads.factories import LeadFactory
 from leads.models import Lead
-from staffing.models import Mission
-from staffing.factories import MarketingProductFactory, ProdStaffingFactory, OtherStaffingFactory
+from staffing.models import Mission, FinancialCondition, Staffing, Timesheet
+from staffing.factories import MarketingProductFactory, OtherStaffingFactory
+from core.utils import nextMonth
 
 N_SUBSIDIARIES = 3
 N_CONSULTANTS = 50
@@ -61,11 +63,13 @@ class Command(BaseCommand):
         # Non prod and holidays missions
         other_missions()
 
-        # Staffing
-        ProdStaffingFactory.create_batch(N_CONSULTANTS * 4 * 3)
+        # Staffing, financial conditions and timesheet
         OtherStaffingFactory.create_batch((N_CONSULTANTS * 4 * 2))
+        create_prod_staffing_and_financial_conditions()
+        create_timesheet()
 
 
+@atomic
 def create_static_data():
     # Business sector
     for bs in ["Information Technology", "Health Care", "Financials", "Consumer Goods",
@@ -77,6 +81,7 @@ def create_static_data():
         ConsultantProfile(name=profile, level=level).save()
     ConsultantProfile(name="support", level=3).save()
 
+@atomic
 def set_managers():
     Consultant.objects.filter(profil__name="director").update(manager=F("id"), staffing_manager=F("id"))
     for subsidiary in Subsidiary.objects.all():
@@ -98,9 +103,39 @@ def set_user_permissions():
     u.is_staff = True
     u.save()
 
+@atomic
 def other_missions():
     subsidiary = Subsidiary.objects.first()
     for name in ["holidays", "non-staff"]:
         Mission(description=name, probability=100, nature="HOLIDAYS", subsidiary=subsidiary).save()
     for name in ["management", "pre-sale", "training", "R&D", "marketing", "admin"]:
         Mission(description=name, probability=100, nature="NONPROD", subsidiary=subsidiary).save()
+
+@atomic
+def create_prod_staffing_and_financial_conditions():
+    for subsidiary in Subsidiary.objects.all():
+        consultants = Consultant.objects.filter(company=subsidiary)
+        for mission in Mission.objects.filter(nature="PROD", lead__subsidiary=subsidiary, lead__state__in=("OFFER_SENT", "NEGOCIATION", "WON")):
+            for consultant in consultants.order_by("?")[:random.randint(2, 5)]:
+                FinancialCondition(consultant=consultant, mission=mission,daily_rate=random.randint(800, 2500)).save()
+                if mission.lead.state == "WON":
+                    m = mission.lead.creation_date.replace(day=1)
+                else:
+                    m = date.today().replace(day=1)
+                for i in range(4):
+                    Staffing(consultant=consultant, mission=mission, staffing_date=m, charge=random.randint(4, 8)).save()
+                    m = nextMonth(m)
+
+@atomic
+def create_timesheet():
+    start = (date.today() - timedelta(120)).replace(day=1)
+    end = date.today()
+    day = timedelta(1)
+    for consultant in Consultant.objects.all():
+        current_day = start
+        missions = Mission.objects.filter(staffing__consultant=consultant)
+        while current_day < end:
+            current_day += day
+            if current_day.weekday() >= 5:
+                continue
+            Timesheet(consultant=consultant, mission=random.choice(missions), charge=1, working_date=current_day).save()
