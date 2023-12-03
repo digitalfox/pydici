@@ -89,6 +89,10 @@ Or with docker, on development environment :
 
       docker exec pydici_django_1 python manage.py migrate
 
+To create sample data for dev or demo : 
+
+      docker exec pydici_django_1 python manage.py create_test_data
+
 
 ## Notes about scikit learn
 Scikit learn is a machine learning framework for python. It is an optional Pydici deps that can predict leads tags and state.
