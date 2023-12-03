@@ -137,7 +137,7 @@ def create_prod_staffing_and_financial_conditions():
 
 @atomic
 def create_timesheet():
-    start = (date.today() - timedelta(120)).replace(day=1)
+    start = (date.today() - timedelta(365)).replace(day=1)
     end = date.today()
     day = timedelta(1)
     for consultant in Consultant.objects.all():
