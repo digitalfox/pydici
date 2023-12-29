@@ -2,5 +2,5 @@ django-debug-toolbar==4.1
 Werkzeug==2.2.3
 ipython==8.10.0
 git+https://github.com//harpb/django-userswitch#egg=django-userswitch
-selenium==4.8.0
-webdriver-manager==3.8.5
+selenium==4.16
+webdriver-manager==4.0.1
