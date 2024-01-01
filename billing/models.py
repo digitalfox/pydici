@@ -124,7 +124,7 @@ class AbstractBill(models.Model):
                 elif idx == len(bills) - 1:  # last bill
                     if mission_boundaries["working_date__max"]:
                         lag.append(self.creation_date - mission_boundaries["working_date__max"])
-            else:  # timespent mission
+            elif detail.mission.billing_mode == "TIME_SPENT":
                 lag.append(self.creation_date - nextMonth(detail.month))
         if lag:
             return max(lag).days
