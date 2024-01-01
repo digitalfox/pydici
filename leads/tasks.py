@@ -100,8 +100,8 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
 
         loop = asyncio.new_event_loop()
         for chat_id in set(settings.TELEGRAM_CHAT.get(chat_group, []) + chat_consultants):
-            loop.run_until_complete(bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True))
             if sticker:
                 loop.run_until_complete(bot.sendSticker(chat_id=chat_id, sticker=sticker))
+            loop.run_until_complete(bot.sendMessage(chat_id=chat_id, text=msg, disable_web_page_preview=True))
     except TelegramError as e:
         raise self.retry(exc=e)
