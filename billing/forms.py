@@ -149,6 +149,10 @@ class BillDetailForm(ModelForm):
     def clean(self):
         mission = self.cleaned_data.get("mission", None)
         if mission:
+            if mission.billing_mode is None:
+                link = reverse("staffing:mission_home", args=[mission.id])
+                msg = _("Billing mode of mission <a href='%s'>%s</a> should be defined" % (link, mission.mission_id()))
+                raise ValidationError(mark_safe(msg))
             if not self.cleaned_data["month"] and mission.billing_mode=="TIME_SPENT":
                 raise ValidationError(_("Month must be defined for time spent mission"))
             if not self.cleaned_data["consultant"] and mission.billing_mode=="TIME_SPENT":
