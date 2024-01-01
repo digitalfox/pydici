@@ -12,7 +12,7 @@ WeasyPrint==58.1
 django-weasyprint==2.2.0
 bleach==5.0.1
 Markdown==3.4.3
-pypdf==3.12
+pypdf==3.17.4
 ortools>=9.6.0,<9.7.0
 celery[redis]==5.2.7
 django-split-settings==1.1.0
