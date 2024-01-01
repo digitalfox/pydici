@@ -25,7 +25,6 @@
 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.11.0/b-2.0.0/b-colvis-2.0.0/b-html5-2.0.0/date-1.1.1/fc-3.3.3/fh-3.1.9/r-2.2.9/datatables.min.css"/>
 
-
     {% block extracss %}{% endblock %}
     
     <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
@@ -66,7 +65,7 @@
     {% endif %}
 
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.11.0/b-2.0.0/b-colvis-2.0.0/b-html5-2.0.0/date-1.1.1/fc-3.3.3/fh-3.1.9/r-2.2.9/datatables.min.js"></script>
-    
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     {% block extrajs %}{% endblock %}
     
     
@@ -79,8 +78,6 @@
         </div> <!-- /container -->
     {% endblock %}
 
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
     <script type="text/javascript">
         const getCookieByName = (cookieName) => document.cookie.split('; ')
             .find((cookie) => cookie.split('=')[0] === cookieName)?.split('=')[1] || null;
