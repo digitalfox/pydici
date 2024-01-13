@@ -1591,7 +1591,7 @@ def rates_report(request):
     if subsidiary:
         consultants = consultants.filter(company=subsidiary)
 
-    consultants = consultants.filter(timesheet__working_date__gte=periods[0][0]).distinct()
+    consultants = consultants.filter(timesheet__working_date__gte=periods[-1][0]).distinct()
 
     for start_date, end_date in periods:
         for consultant in consultants:
