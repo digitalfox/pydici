@@ -18,10 +18,6 @@ admin.autodiscover()
 
 from core.utils import get_parameter
 
-# Feeds definition
-from leads.feeds import LatestLeads, NewLeads, MyLatestLeads, WonLeads
-from staffing.feeds import LatestStaffing, MyLatestStaffing, ArchivedMission
-
 # URLs from pydici modules
 from crm.urls import crm_urls
 from people.urls import people_urls
@@ -54,14 +50,6 @@ pydici_patterns.extend([
     re_path(r'^media/(?P<path>.*)$', django.views.static.serve,
             {'document_root': os.path.join(settings.PYDICI_ROOTDIR, 'media')}),
 
-    # Feeds
-    re_path(r'^feeds/latest/?$', LatestLeads(), name='latest'),
-    re_path(r'^feeds/new/?$', NewLeads(), name='new'),
-    re_path(r'^feeds/won/?$', WonLeads(), name='won'),
-    re_path(r'^feeds/mine/?$', MyLatestLeads(), name='mine'),
-    re_path(r'^feeds/latestStaffing/?$', LatestStaffing(), name='latestStaffing'),
-    re_path(r'^feeds/myLatestStaffing/?$', MyLatestStaffing(), name='myLatestStaffing'),
-    re_path(r'^feeds/archivedMission/?$', ArchivedMission(), name='archivedMission'),
     ])
 
 # Add select2 url

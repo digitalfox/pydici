@@ -28,23 +28,6 @@
     {% block extracss %}{% endblock %}
     
     <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
-
-    {% block pydici_rss %}
-    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last modified leads' %}"
-              href="{% url 'latest' %}" />
-    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last created leads' %}"
-              href="{% url 'new' %}" />
-    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last won leads' %}"
-              href="{% url 'won' %}" />
-    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my leads' %}"
-              href="{% url 'mine' %}" />
-    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of latest staffing forecast' %}"
-              href="{% url 'latestStaffing' %}" />
-    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of my latest staffing forecast' %}"
-              href="{% url 'myLatestStaffing' %}" />
-    <link rel="alternate" type="application/atom+xml" title="{% trans 'ATOM feed of last archived Mission' %}"
-              href="{% url 'archivedMission' %}" />
-    {% endblock %}
     
   </head>
 
