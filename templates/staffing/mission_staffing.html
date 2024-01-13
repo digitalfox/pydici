@@ -103,9 +103,9 @@ $(document).ready(function(){
           container: "body",
           html: true,
           sanitize: false,
-          content: function() {
-              var staffing_date = $(this).closest('tr').find('td').eq($(this).index()-1)[0].firstElementChild.value.replace('-01','').replace('-','');
-              var consultant = $(this).closest('tr').find('td').eq($(this).index()-2)[0].firstElementChild.firstElementChild;
+          content: function(e) {
+              var staffing_date = $(e).closest('tr').find('td').eq($(e).index()-1)[0].firstElementChild.value.replace('-01','').replace('-','');
+              var consultant = $(e).closest('tr').find('td').eq($(e).index()-2)[0].firstElementChild.firstElementChild;
               if (consultant) {
                 consultant = consultant.value;
                 } else {
