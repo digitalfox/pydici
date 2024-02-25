@@ -5,15 +5,19 @@ Test cases for billing module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, RequestFactory
 from django.db import IntegrityError
+from django.urls import reverse
+from django.contrib.auth.models import User
 
 from crm.models import Supplier, Client
 from billing.models import SupplierBill, ClientBill, BillDetail
 from leads.models import Lead
-from staffing.models import Timesheet, Mission
+from staffing.models import Timesheet, Mission, FinancialCondition
 from people.models import Consultant
-from core.tests import PYDICI_FIXTURES
+from billing.views import pre_billing
+from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
+from core.utils import previousMonth
 
 from datetime import date
 
@@ -146,11 +150,64 @@ class BillingModelTest(TransactionTestCase):
         bill2.save()
         self.assertEqual(bill2.client_deal_id, "123")  # multiple mission. Use lead client deal id
 
+class TestBillingViews(TestCase):
+    fixtures = PYDICI_FIXTURES
+    def setUp(self):
+        setup_test_user_features()
+        self.test_user = User.objects.get(username=TEST_USERNAME)
+    def test_create_client_bill(self):
+        self.client.force_login(self.test_user)
+        bill_count = ClientBill.objects.count()
+        data = {
+            "lead": 1,
+            "state": "0_DRAFT",
+            "lang": "fr-fr",
+            "creation_date": date.today(),
+            "due_date": date.today(),
+            "vat": 20,
+            "bill_id": 123
+        }
+        response = self.client.post(reverse("billing:client_bill"), data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(bill_count + 1, ClientBill.objects.count())
 
+        response = self.client.get(reverse("billing:bill_pdf", args=[ClientBill.objects.last().id,]))
+        self.assertEqual(response.status_code, 200)
 
+    def test_pre_billing(self):
+        self.client.force_login(self.test_user)
+        previous_month = previousMonth(date.today())
+        lead = Lead.objects.get(id=1)
+        c1 = Consultant.objects.get(id=1)
+        c2 = Consultant.objects.get(id=2)
+        c2.company_id = 2
+        c2.save()
+        mission = Mission(lead=lead, subsidiary_id=1, billing_mode="TIME_SPENT", nature="PROD", probability=100)
+        mission.save()
+        FinancialCondition(consultant=c1, mission=mission, daily_rate=800).save()
+        FinancialCondition(consultant=c2, mission=mission, daily_rate=1100).save()
 
+        # No timesheet, no pre billing
+        r = self.client.get(reverse("billing:pre_billing"))
+        self.assertFalse(r.context["internal_billing"])
+        self.assertFalse(r.context["time_spent_billing"])
 
+        # Add simple timesheet. Still no internal billing
+        Timesheet(mission=mission, working_date=previous_month, consultant=c1, charge=7).save()
+        r = self.client.get(reverse("billing:pre_billing"))
+        self.assertFalse(r.context["internal_billing"])
+        self.assertEqual(len(r.context["time_spent_billing"]), 1)
 
+        # Timesheet from a consultant of another company, we have now internal billing
+        Timesheet(mission=mission, working_date=previous_month, consultant=c2, charge=4).save()
+        r = self.client.get(reverse("billing:pre_billing"))
+        self.assertTrue(r.context["internal_billing"])
+        self.assertEqual(len(r.context["time_spent_billing"]), 1)
 
-
+        # In fact, this consultant is a subcontractor, not internal billing required
+        c2.subcontractor = True
+        c2.save()
+        r = self.client.get(reverse("billing:pre_billing"))
+        self.assertFalse(r.context["internal_billing"])
+        self.assertEqual(len(r.context["time_spent_billing"]), 1)
 

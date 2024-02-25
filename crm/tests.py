@@ -7,11 +7,9 @@ Test cases for CRM module
 
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 
 from crm.models import Client, Subsidiary
-from people.models import Consultant, ConsultantProfile
-from staffing.models import Mission
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
 
 import json

@@ -564,7 +564,7 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
     internalBillingTimesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
                                                     mission__nature="PROD")
     internalBillingTimesheets = internalBillingTimesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
-    #TODO: handle fixed price mission fully delegated to a subsidiary
+    internalBillingTimesheets = internalBillingTimesheets.exclude(consultant__subcontractor=True)
 
     if mine:  # Filter on consultant mission/lead as responsible
         fixedPriceMissions = fixedPriceMissions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
