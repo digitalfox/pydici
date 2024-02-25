@@ -194,8 +194,12 @@ def mission_staffing(request, mission_id):
             return HttpResponseRedirect(reverse("core:forbidden"))
         formset = StaffingFormSet(request.POST, instance=mission)
         if formset.is_valid():
-            saveFormsetAndLog(formset, request)
-            formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
+            try:
+                saveFormsetAndLog(formset, request)
+                formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
+            except IntegrityError as e:
+                # Corner case with temporary constraint violation as database does not support deferred constraints
+                formset.management_form.add_error("", _("Duplicate data error"))
     else:
         formset = StaffingFormSet(instance=mission)  # An unbound form
 
@@ -238,8 +242,8 @@ def consultant_staffing(request, consultant_id):
                 saveFormsetAndLog(formset, request)
                 formset = StaffingFormSet(instance=consultant)  # Recreate a new form for next update
             except IntegrityError as e:
-                # Corner case when user update one line that clash with constraint on another line that is removed on the same time
-                formset.management_form.add_error("", e)
+                # Corner case with temporary constraint violation as database does not support deferred constraints
+                formset.management_form.add_error("", _("Duplicate data error"))
     else:
         formset = StaffingFormSet(instance=consultant)  # An unbound form
 

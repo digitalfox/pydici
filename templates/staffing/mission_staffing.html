@@ -15,7 +15,7 @@
     </div>
 
     <form action="{% url 'staffing:mission_staffing' mission.id %}" method="POST" id="pydici-ajax-form-mission-staffing">
-        {{ formset.management_form }}
+        <div class="text-danger">{{ formset.management_form }}</div>
         <div class="form-row">
         <table class="table table-striped table-hover table-sm">
            <tr>
