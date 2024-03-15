@@ -318,10 +318,20 @@ def mass_staffing(request):
                         staffing.save()
             # Redirect to self to display a new unbound form
             messages.add_message(request, messages.INFO, _("Staffing has been updated"))
-            return HttpResponseRedirect(reverse("staffing:mass_staffing"))
+
+            if "mission" in request.GET:
+                # Redirect to mission staffing if we have been called from it
+                return HttpResponseRedirect(reverse("staffing:mission_home" , args=[request.GET.get("mission")])+"#goto_tab-staffing")
+            else:
+                # Redirect to self to display a new unbound form
+                return HttpResponseRedirect(reverse("staffing:mass_staffing"))
     else:
         # An unbound form
-        form = MassStaffingForm(staffing_dates=staffing_dates)
+        if "mission" in request.GET:
+            mission = Mission.objects.get(id=request.GET["mission"])
+            form = MassStaffingForm(staffing_dates=staffing_dates, initial={"missions": [mission,], "consultants": mission.consultants()})
+        else:
+            form = MassStaffingForm(staffing_dates=staffing_dates)
 
     return render(request, "staffing/mass_staffing.html",
                   {"form": form,

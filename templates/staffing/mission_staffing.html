@@ -78,6 +78,9 @@
                 <a role="button" class="btn btn-primary button-link" href="{% url 'staffing:optimise_pdc' %}?missions={{ mission.id|unlocalize }}">
                     <i class="bi bi-gear"></i> {% trans "Optimize workload for this mission" %}
                 </a>
+                <a role="button" class="btn btn-primary button-link" href="{% url 'staffing:mass_staffing' %}?mission={{ mission.id|unlocalize }}">
+                    <i class="bi bi-bucket"></i> {% trans "Mass staffing for this mission" %}
+                </a>
 	    {% endif %}
     </form>
 </div>
