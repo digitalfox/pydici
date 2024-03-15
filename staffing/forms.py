@@ -28,13 +28,14 @@ from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget,
 from django.utils import formats
 
 
-from staffing.models import Mission, Staffing, MarketingProduct
+from staffing.models import Mission, Staffing, MarketingProduct, Timesheet
 from people.models import Consultant
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
 from staffing.utils import staffingDates, time_string_for_day_percent, day_percent_for_time_string
 from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMIT, OPTIM_NEWBIE_LIMIT
+from core.utils import nextMonth
 
 
 class MissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
@@ -182,15 +183,23 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
 class StaffingForm(forms.ModelForm):
     """Just a single staffing. Used to add sanity checks"""
     def clean(self):
-        if self.cleaned_data.get("staffing_date"):
-            mission = self.cleaned_data.get("mission")
-            if mission and mission.start_date:
-                if self.cleaned_data["staffing_date"] < mission.start_date.replace(day=1):
-                    raise ValidationError(_("Staffing below must be after %s") % mission.start_date)
-            if mission and mission.end_date:
-                if self.cleaned_data["staffing_date"] > mission.end_date:
-                    raise ValidationError(_("Staffing below must be before %s") % mission.end_date)
+        consultant = self.cleaned_data.get("consultant")
+        charge = self.cleaned_data.get("charge")
+        mission = self.cleaned_data.get("mission")
+        staffing_date = self.cleaned_data.get("staffing_date")
 
+        if staffing_date and mission and mission.start_date:
+            if staffing_date < mission.start_date.replace(day=1):
+                self.add_error("staffing_date", _("Staffing below must be after %s") % mission.start_date)
+        if staffing_date and mission and mission.end_date:
+            if staffing_date > mission.end_date:
+                self.add_error("staffing_date", _("Staffing below must be before %s") % mission.end_date)
+        if mission and staffing_date and consultant and charge and mission.management_mode=="LIMITED_INDIVIDUAL":
+            done = Timesheet.objects.filter(consultant=consultant, mission=mission,
+                                            working_date__gte=staffing_date, working_date__lt=nextMonth(staffing_date))
+            done = done.aggregate(Sum("charge"))["charge__sum"] or 0
+            if charge < done:
+                self.add_error("charge", _("You can't define a forecast lower than already done on timesheet (%s)") % done)
 
 class MassStaffingForm(forms.Form):
     """Massive staffing input forms that allow to define same staffing
