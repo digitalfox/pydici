@@ -24,6 +24,7 @@ staffing_urls = [ re_path(r'^pdcreview/?$', v.pdc_review, name='pdcreview-index'
                   re_path(r'^mission/newfromdeal/(?P<lead_id>\d+)/$', v.create_new_mission_from_lead, name="create_new_mission_from_lead"),
                   re_path(r'^missions/consultant/(?P<consultant_id>\d+)/$', v.consultant_missions, name="consultant_missions"),
                   re_path(r'^forecast/mission/(?P<mission_id>\d+)/$', v.mission_staffing, name="mission_staffing"),
+                  re_path(r'^forecast/shift/(?P<shift>\d+)/mission/(?P<mission_id>\d+)/$', v.mission_staffing_shift, name="mission_staffing_shift"),
                   re_path(r'^mission/(?P<mission_id>\d+)/deactivate$', v.deactivate_mission, name="deactivate_mission"),
                   re_path(r'^forecast/consultant/(?P<consultant_id>\d+)/$', v.consultant_staffing, name="consultant_staffing"),
                   re_path(r'^forecast/mass/$', v.mass_staffing, name="mass_staffing"),

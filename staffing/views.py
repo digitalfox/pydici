@@ -339,6 +339,21 @@ def mass_staffing(request):
 
 
 @pydici_non_public
+@transaction.atomic
+def mission_staffing_shift(request, shift, mission_id, ):
+    """Shift forecasted mission staffing by "shift" months"""
+    #TODO: for now, only 1 month shift is considered.
+    mission = Mission.objects.get(id=mission_id)
+    messages.add_message(request, messages.INFO, _("Staffing has been shifted by %s month") % shift)
+
+    staffings = Staffing.objects.filter(mission=mission, staffing_date__gte=date.today().replace(day=1)).order_by("-staffing_date")
+    for staffing in staffings:
+        staffing.staffing_date = nextMonth(staffing.staffing_date )
+        staffing.save()
+
+    return HttpResponseRedirect(reverse("staffing:mission_home", args=[mission.id])+"#goto_tab-staffing")
+
+@pydici_non_public
 @pydici_feature("staffing_mass")
 def pdc_review(request, year=None, month=None):
     """PDC overview
