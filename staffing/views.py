@@ -11,6 +11,7 @@ import json
 from itertools import zip_longest, chain
 import codecs
 from collections import defaultdict
+from math import sqrt
 
 from django.core.cache import cache
 from django.shortcuts import render, redirect
@@ -328,8 +329,19 @@ def mass_staffing(request):
     else:
         # An unbound form
         if "mission" in request.GET:
+            charge = 1
+            months = []
             mission = Mission.objects.get(id=request.GET["mission"])
-            form = MassStaffingForm(staffing_dates=staffing_dates, initial={"missions": [mission,], "consultants": mission.consultants()})
+            rates = [i[0] for i in mission.consultant_rates().values()]
+            remaining = mission.remaining()
+            avg_rate = (sum(rates) / (len(rates) or 1) / 1000) or 1  # default to 1K€ per day
+            days = int(remaining / avg_rate)
+            if remaining > 0:
+                duration = sqrt(days / 20) * 2  # Guess duration with square root of man.month charge as a max. Take the double for safety
+                charge = remaining / avg_rate / duration / (len(rates) or 1)
+                months = [i[0] for i in staffing_dates[0:int(duration)]]
+            form = MassStaffingForm(staffing_dates=staffing_dates, initial={"missions": [mission,], "consultants": mission.consultants(),
+                                                                            "charge": int(charge), "staffing_dates": months})
         else:
             form = MassStaffingForm(staffing_dates=staffing_dates)
 
