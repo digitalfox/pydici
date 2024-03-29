@@ -23,7 +23,7 @@ from django.utils.translation import gettext as _
 from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import TruncMonth
-from django.db import connections, transaction, IntegrityError
+from django.db import transaction, IntegrityError
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.utils import formats

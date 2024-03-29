@@ -11,9 +11,6 @@ from django.db import models
 from datetime import datetime, date, timedelta
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext
-from django.contrib.admin.models import ContentType
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
 from django.db.models import Q, Sum
 from django.urls import reverse
 from django.conf import settings
@@ -25,7 +22,7 @@ from core.utils import compact_text
 from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
 from billing.utils import get_client_billing_control_pivotable_data
-from core.utils import createProjectTree, disable_for_loaddata, getLeadDirs, cacheable
+from core.utils import getLeadDirs, cacheable
 
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
