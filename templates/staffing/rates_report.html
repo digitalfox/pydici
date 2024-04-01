@@ -46,7 +46,7 @@
          function table_per_consultant() {
              var cols = ["{% trans 'type' %}", "{% trans 'period' %}"];
              var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"];
-             drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ['{% trans "amount" %}'],  {"hideRowTotal": true, "hideGrandTotal": true, "hideColTotal": true});
+             drawPivot(data, rows, cols, "Table", '{% trans "Average" %}', ['{% trans "amount" %}'],  {"hideRowTotal": true, "hideGrandTotal": true, "hideColTotal": true});
          }
 
          function daily_rate() {
