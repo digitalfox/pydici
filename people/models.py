@@ -172,8 +172,8 @@ class Consultant(models.Model):
         if end_date is None:
             end_date = date.today()
         turnover = 0
-        missions = Mission.objects.filter(timesheet__consultant=self, financialcondition__consultant=self, nature="PROD")
-        missions = missions.filter(timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date)
+        missions = Mission.objects.filter(timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date,
+                                          timesheet__consultant=self, financialcondition__consultant=self, nature="PROD")
         if clients:
             missions = missions.filter(lead__client__in=clients)
         missions = missions.order_by().annotate(charge__sum=Sum("timesheet__charge"))
