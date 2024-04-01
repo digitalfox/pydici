@@ -31,9 +31,10 @@ from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactFo
 from crm.utils import get_subsidiary_from_session
 from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
+from staffing.models import Timesheet
 from leads.utils import leads_state_stat
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
-from core.utils import COLORS
+from core.utils import COLORS, get_parameter
 from billing.models import ClientBill
 
 
@@ -427,11 +428,42 @@ def company_detail(request, company_id):
 def company_rates_margin(request, company_id):
     """ajax fragment that display useful stats about margin and rates for this company"""
     company = Company.objects.get(id=company_id)
+    subsidiary = get_subsidiary_from_session(request)
+    rates = []
+    periods = []
+    fiscal_year_month = int(get_parameter("FISCAL_YEAR_MONTH"))
+    current_year = date.today().year
+    for year in [current_year - i for i in range(6)]:
+        periods.append([date(year, fiscal_year_month, 1), date(year + 1, fiscal_year_month, 1)])
+
+    consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct().order_by("company", "subcontractor")
+    if subsidiary:
+        consultants = consultants.filter(company=subsidiary)
+
+    for start_date, end_date in periods:
+        for consultant in consultants:
+            prod_days = Timesheet.objects.filter(consultant=consultant,
+                                                 mission__lead__client__organisation__company=company,
+                                                 charge__gt=0,
+                                                 working_date__gte=start_date,
+                                                 working_date__lt=end_date,
+                                                 mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"]
+            turnover = consultant.get_turnover(start_date=start_date, end_date=end_date, clients=Client.objects.filter(organisation__company=company))
+            if turnover > 0 and prod_days:
+                rates.append({
+                    _("consultant"): consultant.name,
+                    _("profile"): str(consultant.profil),
+                    _("subsidiary"): str(consultant.company),
+                    _("type"): _("daily rate"),
+                    _("period"): start_date.isoformat(),
+                    _("amount"): turnover / prod_days
+                })
 
     return render(request, "crm/_clientcompany_rates_margin.html",
         {"company": company,
          "clients": Client.objects.filter(organisation__company=company).select_related(),
-         "profiles": ConsultantProfile.objects.all().order_by("level")})
+         "profiles": ConsultantProfile.objects.all().order_by("level"),
+         "rates": rates})
 
 
 @pydici_non_public

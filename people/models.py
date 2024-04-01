@@ -159,11 +159,12 @@ class Consultant(models.Model):
         else:
             return 0
 
-    def get_turnover(self, start_date=None, end_date=None):
+    def get_turnover(self, start_date=None, end_date=None, clients=None):
         """Get consultant turnover in euros of done missions according to timesheet and rates between startDate (included) and enDate (excluded). Only PROD missions are considered.
         Fixed price mission margin (profit or loss) are considered.
         @param start_date: if None, from the creation of earth
         @param end_date : if None, up to today
+        @:param clients: compute only turnover those clients. If None, all Clients are considered
         @return: turnover in euros"""
         from staffing.models import Timesheet, FinancialCondition, Mission  # Late import to avoid circular reference
         if start_date is None:
@@ -171,7 +172,10 @@ class Consultant(models.Model):
         if end_date is None:
             end_date = date.today()
         turnover = 0
-        missions = Mission.objects.filter(timesheet__consultant=self, financialcondition__consultant=self, timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date, nature="PROD")
+        missions = Mission.objects.filter(timesheet__consultant=self, financialcondition__consultant=self, nature="PROD")
+        missions = missions.filter(timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date)
+        if clients:
+            missions = missions.filter(lead__client__in=clients)
         missions = missions.order_by().annotate(charge__sum=Sum("timesheet__charge"))
         missions = missions.annotate(rate=Max("financialcondition__daily_rate"))
         for mission in missions:
