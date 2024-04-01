@@ -98,4 +98,11 @@ class PeopleModelTest(TestCase):
         mission.save()
         self.assertEqual(c1.get_turnover(end_date=next_month), 20 * 2000 * mission.price * 1000 / done_work)  # like in time spent
         self.assertEqual(c1.get_turnover(end_date=next_month) + c2.get_turnover(end_date=next_month), mission.price * 1000)
+        # restrict scope to client of this mission, results should be the same
+        self.assertEqual(c1.get_turnover(end_date=next_month, clients=[lead.client]), 20 * 2000 * mission.price * 1000 / done_work)
+        self.assertEqual(c1.get_turnover(end_date=next_month, clients=[lead.client]) + c2.get_turnover(end_date=next_month, clients=[lead.client]), mission.price * 1000)
+        # restrict scope to another client, turnover should be zero
+        lead2 = Lead.objects.get(id=2)
+        self.assertEqual(c1.get_turnover(end_date=next_month, clients=[lead2.client]), 0)
+        self.assertEqual(c1.get_turnover(end_date=next_month, clients=[lead2.client]) + c2.get_turnover(end_date=next_month, clients=[lead2.client]), 0)
 
