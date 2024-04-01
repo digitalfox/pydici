@@ -71,7 +71,7 @@
 <h2 class="mt-4">{% trans "Rates per consultant" %}</h2>
     <div id="type-selector" class="btn-group" role="group">
             <button class="btn btn-primary" onclick="table_per_consultant();">{% trans "Table per consultant" %}</button>
-            <button class="btn btn-primary" onclick="graph_per_consultant();">{% trans "Daily rate graph" %}</button>
+            <button class="btn btn-primary active" onclick="graph_per_consultant();">{% trans "Daily rate graph" %}</button>
         </div>
 
         <div id="pivotable-output" style="margin-top: 10px;"></div>
@@ -96,7 +96,7 @@
          function table_per_consultant() {
              var cols = ["{% trans 'type' %}", "{% trans 'period' %}"];
              var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"];
-             drawPivot(data, rows, cols, "Table", '{% trans "Sum" %}', ['{% trans "amount" %}'],  {"hideRowTotal": true, "hideGrandTotal": true, "hideColTotal": true});
+             drawPivot(data, rows, cols, "Table", '{% trans "Average" %}', ['{% trans "amount" %}'],  {"hideRowTotal": true, "hideGrandTotal": true, "hideColTotal": true});
          }
 
          function graph_per_consultant() {

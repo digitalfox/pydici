@@ -429,6 +429,7 @@ def company_rates_margin(request, company_id):
     """ajax fragment that display useful stats about margin and rates for this company"""
     company = Company.objects.get(id=company_id)
     subsidiary = get_subsidiary_from_session(request)
+    clients = Client.objects.filter(organisation__company=company).select_related()
     rates = []
     periods = []
     fiscal_year_month = int(get_parameter("FISCAL_YEAR_MONTH"))
@@ -441,27 +442,29 @@ def company_rates_margin(request, company_id):
         consultants = consultants.filter(company=subsidiary)
 
     for start_date, end_date in periods:
-        for consultant in consultants:
-            prod_days = Timesheet.objects.filter(consultant=consultant,
-                                                 mission__lead__client__organisation__company=company,
-                                                 charge__gt=0,
-                                                 working_date__gte=start_date,
-                                                 working_date__lt=end_date,
-                                                 mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"]
-            turnover = consultant.get_turnover(start_date=start_date, end_date=end_date, clients=Client.objects.filter(organisation__company=company))
-            if turnover > 0 and prod_days:
-                rates.append({
-                    _("consultant"): consultant.name,
-                    _("profile"): str(consultant.profil),
-                    _("subsidiary"): str(consultant.company),
-                    _("type"): _("daily rate"),
-                    _("period"): start_date.isoformat(),
-                    _("amount"): turnover / prod_days
-                })
+        for client in clients:
+            for consultant in consultants:
+                prod_days = Timesheet.objects.filter(consultant=consultant,
+                                                     mission__lead__client=client,
+                                                     charge__gt=0,
+                                                     working_date__gte=start_date,
+                                                     working_date__lt=end_date,
+                                                     mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"]
+                turnover = consultant.get_turnover(start_date=start_date, end_date=end_date, clients=[client,])
+                if turnover > 0 and prod_days:
+                    rates.append({
+                        _("consultant"): consultant.name,
+                        _("profile"): str(consultant.profil),
+                        _("subsidiary"): str(consultant.company),
+                        _("client"): str(client),
+                        _("type"): _("daily rate"),
+                        _("period"): start_date.isoformat(),
+                        _("amount"): turnover / prod_days
+                    })
 
     return render(request, "crm/_clientcompany_rates_margin.html",
         {"company": company,
-         "clients": Client.objects.filter(organisation__company=company).select_related(),
+         "clients": clients,
          "profiles": ConsultantProfile.objects.all().order_by("level"),
          "rates": rates})
 
