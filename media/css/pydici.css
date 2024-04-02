@@ -627,3 +627,8 @@ td a:hover {
 .pydici-on-top {
     z-index: 1025;
 }
+
+/* fix pivotable context menu position */
+.pvtUi .pvtTriangle {
+    position: relative;
+}
