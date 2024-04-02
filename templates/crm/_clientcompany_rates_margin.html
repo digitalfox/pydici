@@ -74,9 +74,11 @@
             <button class="btn btn-primary active" onclick="graph_per_consultant();">{% trans "Daily rate graph" %}</button>
         </div>
 
-        <div id="pivotable-output" style="margin-top: 10px;"></div>
+        <div class="row my-2">
+            <div id="rate-pivotable-output"></div>
+        </div>
 
-        {% with output as "pivotable-output" %}
+        {% with output="rate-pivotable-output" %}
             {% include "core/_pivotable_body.html" %}
         {% endwith %}
 

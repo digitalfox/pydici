@@ -8,7 +8,7 @@
  function drawPivot(data, rows, cols, rendererName, aggregatorName, vals, options) {
      var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.plotly_renderers, $.pivotUtilities.export_renderers);
      if (typeof options == "undefined") { var options = {}; }
-     $("#pivotable-output").pivotUI(
+     $("#{{ output|default_if_none:'pivotable-output' }}").pivotUI(
          data,
          {
              rows: rows,
