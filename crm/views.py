@@ -9,7 +9,7 @@ import json
 from datetime import date, datetime, timedelta
 
 from django.shortcuts import render
-from django.db.models import Sum, Min, Count, F, Q
+from django.db.models import Sum, Min, Max, Count, F, Q
 from django.views.decorators.cache import cache_page
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, ListView
@@ -433,8 +433,8 @@ def company_rates_margin(request, company_id):
     rates = []
     periods = []
     fiscal_year_month = int(get_parameter("FISCAL_YEAR_MONTH"))
-    current_year = date.today().year
-    for year in [current_year - i for i in range(6)]:
+    last_year = Timesheet.objects.filter(mission__lead__client__organisation__company_id=company_id).aggregate(Max("working_date")).get("working_date__max", date.today()).year
+    for year in [last_year - i for i in range(6)]:
         periods.append([date(year, fiscal_year_month, 1), date(year + 1, fiscal_year_month, 1)])
 
     consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct().order_by("company", "subcontractor")
