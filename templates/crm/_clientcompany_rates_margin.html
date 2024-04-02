@@ -103,7 +103,7 @@
 
          function graph_per_consultant() {
              var cols = ["{% trans 'period' %}"];
-             var rows = ["{% trans 'subsidiary' %}", "{% trans 'consultant' %}"];
+             var rows = ["{% trans 'consultant' %}"];
              var options = {};
              options['inclusions'] = { {% trans "type" %}: ['{% trans "daily rate" %}'] };
              drawPivot(data, rows, cols, "Line Chart", '{% trans "Average" %}', ['{% trans "amount" %}'],  options);
