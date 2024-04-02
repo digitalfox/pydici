@@ -440,6 +440,7 @@ def company_rates_margin(request, company_id):
     consultants = Consultant.objects.filter(timesheet__mission__lead__client__organisation__company=company).distinct().order_by("company", "subcontractor")
     if subsidiary:
         consultants = consultants.filter(company=subsidiary)
+    consultants = consultants.prefetch_related("profil", "company")
 
     for start_date, end_date in periods:
         for client in clients:
