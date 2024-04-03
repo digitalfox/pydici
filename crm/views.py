@@ -433,7 +433,8 @@ def company_rates_margin(request, company_id):
     rates = []
     periods = []
     fiscal_year_month = int(get_parameter("FISCAL_YEAR_MONTH"))
-    last_year = Timesheet.objects.filter(mission__lead__client__organisation__company_id=company_id).aggregate(Max("working_date")).get("working_date__max", date.today()).year
+    last_year = Timesheet.objects.filter(mission__lead__client__organisation__company_id=company_id).aggregate(Max("working_date")).get("working_date__max")
+    last_year = last_year.year if last_year else datetime.now().year
     for year in [last_year - i for i in range(6)]:
         periods.append([date(year, fiscal_year_month, 1), date(year + 1, fiscal_year_month, 1)])
 
