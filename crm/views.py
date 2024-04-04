@@ -425,6 +425,7 @@ def company_detail(request, company_id):
 
 @pydici_non_public
 @pydici_feature("3rdparties")
+@cache_page(60 * 60 * 24)
 def company_rates_margin(request, company_id):
     """ajax fragment that display useful stats about margin and rates for this company"""
     company = Company.objects.get(id=company_id)
