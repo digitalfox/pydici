@@ -216,7 +216,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                     mission_month_consultant_data[_("type")] = _("Done work")
                     data.append(mission_month_consultant_data)
             if mission.billing_mode == "TIME_SPENT": # Add bills for time spent mission
-                for billed_detail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state):
+                for billed_detail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state).select_related("consultant"):
                         mission_month_bill_data = mission_data.copy()
                         mission_month_bill_data[_("month")] = billed_detail.month.isoformat()
                         mission_month_bill_data[_("amount")] = -float(billed_detail.amount or 0)
