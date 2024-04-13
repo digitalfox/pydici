@@ -4,22 +4,24 @@ Test cases for billing module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from datetime import date
+import json
 
 from django.test import TestCase, TransactionTestCase, RequestFactory
 from django.db import IntegrityError
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils.translation import gettext as _
 
-from crm.models import Supplier, Client
+from crm.models import Supplier, Subsidiary
 from billing.models import SupplierBill, ClientBill, BillDetail
 from leads.models import Lead
 from staffing.models import Timesheet, Mission, FinancialCondition
 from people.models import Consultant
-from billing.views import pre_billing
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
-from core.utils import previousMonth
+from core.utils import previousMonth, nextMonth
+from billing.utils import get_client_billing_control_pivotable_data
 
-from datetime import date
 
 
 class BillingModelTest(TransactionTestCase):
@@ -211,3 +213,78 @@ class TestBillingViews(TestCase):
         self.assertFalse(r.context["internal_billing"])
         self.assertEqual(len(r.context["time_spent_billing"]), 1)
 
+class TestBillingUtils(TestCase):
+    fixtures = PYDICI_FIXTURES
+    def setUp(self):
+        setup_test_user_features()
+        self.test_user = User.objects.get(username=TEST_USERNAME)
+
+    def test_get_client_billing_control_pivotable_data(self):
+        c = Consultant.objects.first()
+        d = json.loads(get_client_billing_control_pivotable_data())
+        self.assertEqual(len(d), 13)  # Default test fixtures
+
+        s = Subsidiary(name="test", code="T")
+        s.save()
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_subsidiary=s))
+        self.assertEqual(len(d), 0)  # new subsidiary, empty set
+
+        l = Lead(subsidiary=s, client_id=1)
+        l.save()
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        self.assertEqual(len(d), 0)  # new lead, empty set
+
+        m = Mission(lead=l, subsidiary=s, nature="PROD", probability=100, billing_mode="TIME_SPENT")
+        m.save()
+        FinancialCondition(consultant=c, mission=m, daily_rate=1000).save()
+        self.assertEqual(len(d), 0)  # new mission but no timesheet, empty set
+
+        Timesheet(mission=m, consultant=c, working_date=date.today(), charge=1).save()
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        self.assertEqual(len(d), 2)  # now, we have timesheet, so we have billing amount with 0
+        self.assertEqual(sum([x[_("amount")] for x in d]), 1000)
+
+        # add client bill detail
+        bill = ClientBill(lead=l, creation_date=date.today(), state="0_PROPOSED")
+        bill.save()
+        BillDetail(bill=bill, consultant=c, mission=m, quantity=1, unit_price=1000, month=date.today().replace(day=1)).save()
+        bill.save()
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        self.assertEqual(len(d), 2)  # Still 2 items
+        self.assertEqual(sum([x[_("amount")] for x in d]), 0)  # we billed what we did
+
+        # add bills outside timesheet window
+        BillDetail(bill=bill, consultant=c, mission=m, quantity=3, unit_price=1000, month=nextMonth(date.today())).save()
+        BillDetail(bill=bill, consultant=c, mission=m, quantity=4, unit_price=1000, month=previousMonth(date.today())).save()
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        self.assertEqual(len(d), 6)  # activity and bill for 3 months
+        self.assertEqual(sum([x[_("amount")] for x in d]), -7000)  # we over bill by 7 * 1000
+
+        # add timesheet according billing
+        Timesheet(mission=m, consultant=c, working_date=nextMonth(date.today()), charge=3).save()
+        Timesheet(mission=m, consultant=c, working_date=previousMonth(date.today()), charge=4).save()
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        print(json.dumps(d, indent=4))
+        self.assertEqual(len(d), 6)  # activity and bill for 3 months
+        self.assertEqual(sum([x[_("amount")] for x in d]), 0)  # we billed what we did
+
+        # And new, add a fixed price mission
+        m2 = Mission(lead=l, subsidiary=s, nature="PROD", probability=100, price=5, billing_mode="FIXED_PRICE")
+        m2.save()
+        FinancialCondition(consultant=c, mission=m2, daily_rate=1000).save()
+        BillDetail(bill=bill, mission=m2, quantity=1, unit_price=3000).save()
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        self.assertEqual(len(d), 7)  # activity and bill for 3 months and 1 fixed price bill
+        self.assertEqual(sum([x[_("amount")] for x in d]), -3000) # we bill in advance
+
+        # Add timesheet on fixed price mission
+        Timesheet(mission=m2, consultant=c, working_date=date.today(), charge=2).save()
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        self.assertEqual(len(d), 8)  # 6 + and 1 activity and 1 bill for fixed price mission
+        self.assertEqual(sum([x[_("amount")] for x in d]), -1000) # Still one day of advance
+
+        # We spent too much time, but it won't be billed as it's a fixe price mission
+        Timesheet(mission=m2, consultant=c, working_date=nextMonth(date.today()), charge=8).save()
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        self.assertEqual(len(d), 9)  # 6 + and 2 activities and 1 bill for fixed price mission
+        self.assertEqual(sum([x[_("amount")] for x in d]), 2000)  # We should have 2K to bill, no more
