@@ -220,7 +220,8 @@ class TestBillingUtils(TestCase):
         self.test_user = User.objects.get(username=TEST_USERNAME)
 
     def test_get_client_billing_control_pivotable_data(self):
-        c = Consultant.objects.first()
+        c = Consultant.objects.get(id=1)
+        c2 = Consultant.objects.get(id=2)
         d = json.loads(get_client_billing_control_pivotable_data())
         self.assertEqual(len(d), 13)  # Default test fixtures
 
@@ -241,30 +242,28 @@ class TestBillingUtils(TestCase):
 
         Timesheet(mission=m, consultant=c, working_date=date.today(), charge=1).save()
         d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
-        self.assertEqual(len(d), 2)  # now, we have timesheet, so we have billing amount with 0
+        self.assertEqual(len(d), 1)  # still no billing
         self.assertEqual(sum([x[_("amount")] for x in d]), 1000)
 
         # add client bill detail
         bill = ClientBill(lead=l, creation_date=date.today(), state="0_PROPOSED")
         bill.save()
         BillDetail(bill=bill, consultant=c, mission=m, quantity=1, unit_price=1000, month=date.today().replace(day=1)).save()
-        bill.save()
         d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
-        self.assertEqual(len(d), 2)  # Still 2 items
+        self.assertEqual(len(d), 2)  # 1 activity and 1 bill
         self.assertEqual(sum([x[_("amount")] for x in d]), 0)  # we billed what we did
 
-        # add bills outside timesheet window
+        # add bills outside timesheet window and with wrong consultant
         BillDetail(bill=bill, consultant=c, mission=m, quantity=3, unit_price=1000, month=nextMonth(date.today())).save()
-        BillDetail(bill=bill, consultant=c, mission=m, quantity=4, unit_price=1000, month=previousMonth(date.today())).save()
+        BillDetail(bill=bill, consultant=c2, mission=m, quantity=4, unit_price=1000, month=previousMonth(date.today())).save()
         d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
-        self.assertEqual(len(d), 6)  # activity and bill for 3 months
+        self.assertEqual(len(d), 4)  # 2 + 2 new bills
         self.assertEqual(sum([x[_("amount")] for x in d]), -7000)  # we over bill by 7 * 1000
 
         # add timesheet according billing
         Timesheet(mission=m, consultant=c, working_date=nextMonth(date.today()), charge=3).save()
         Timesheet(mission=m, consultant=c, working_date=previousMonth(date.today()), charge=4).save()
         d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
-        print(json.dumps(d, indent=4))
         self.assertEqual(len(d), 6)  # activity and bill for 3 months
         self.assertEqual(sum([x[_("amount")] for x in d]), 0)  # we billed what we did
 

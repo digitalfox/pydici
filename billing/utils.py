@@ -195,22 +195,8 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                     mission_fixed_price_data[_("amount")] = -float(billDetail.amount or 0)
                     data.append(mission_fixed_price_data)
             # Add done work and time spent bills
-            timesheet_timespan = list(mission.timesheet_set.dates("working_date", "month", order="ASC"))
-            billing_timespan = list(mission.billdetail_set.dates("month", "month", order="ASC"))
-            if timesheet_timespan and billing_timespan:
-                start = min(timesheet_timespan[0], billing_timespan[0])
-                end = max(timesheet_timespan[-1], billing_timespan[-1])
-            elif timesheet_timespan and not billing_timespan:
-                start = timesheet_timespan[0]
-                end = timesheet_timespan[-1]
-            elif not timesheet_timespan and billing_timespan:
-                start = billing_timespan[0]
-                end = billing_timespan[-1]
-            else:
-                continue
             consultants = Consultant.objects.filter(timesheet__mission=mission).distinct()
-            month = start
-            while month <= end:
+            for month in mission.timesheet_set.dates("working_date", "month", order="ASC"):
                 next_month = nextMonth(month)
                 for consultant in consultants:
                     mission_month_consultant_data = mission_data.copy()
@@ -229,18 +215,14 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                     mission_month_consultant_data[_("amount")] = turnover
                     mission_month_consultant_data[_("type")] = _("Done work")
                     data.append(mission_month_consultant_data)
-                    #TODO: move this out this loop. Currently, we missed bills outside timesheet range. We should iterate on all BilledDetail objects of this mission
-                    if mission.billing_mode == "TIME_SPENT":
-                        # Add bills for time spent mission
-                        mission_month_consultant_data = mission_month_consultant_data.copy()
-                        billed = BillDetail.objects.filter(mission=mission, consultant=consultant,
-                                                           month=month, bill__state__in=bill_state)
-                        billed = float(billed.aggregate(Sum("amount"))["amount__sum"] or 0)
-                        mission_month_consultant_data[_("amount")] = -billed
-                        mission_month_consultant_data[_("type")] = _("Service bill")
-                        data.append(mission_month_consultant_data)
-
-                month = next_month
+            if mission.billing_mode == "TIME_SPENT": # Add bills for time spent mission
+                for billed_detail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state):
+                        mission_month_bill_data = mission_data.copy()
+                        mission_month_bill_data[_("month")] = billed_detail.month.isoformat()
+                        mission_month_bill_data[_("amount")] = -float(billed_detail.amount or 0)
+                        mission_month_bill_data[_("type")] = _("Service bill")
+                        mission_month_bill_data[_("consultant")] = str(billed_detail.consultant)
+                        data.append(mission_month_bill_data)
 
     return json.dumps(data)
 
