@@ -119,6 +119,7 @@ def bill_pdf_filename(bill):
 
 
 def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_on_company=None,
+                                              filter_on_responsible=None,
                                               filter_on_lead=None, only_active=False):
     """Compute pivotable to check lead/mission billing."""
     # local import to avoid circurlar weirdness
@@ -136,6 +137,8 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
         leads = leads.filter(subsidiary=filter_on_subsidiary)
     if filter_on_company:
         leads = leads.filter(client__organisation__company=filter_on_company)
+    if filter_on_responsible:
+        leads = leads.filter(responsible=filter_on_responsible)
     if filter_on_lead:
         leads = leads.filter(id=filter_on_lead.id)
 

@@ -662,21 +662,25 @@ def lead_billing(request, lead_id):
 
 @pydici_non_public
 @pydici_feature("reports")
-def client_billing_control_pivotable(request, filter_on_subsidiary=None, filter_on_company=None, filter_on_lead=None):
+def client_billing_control_pivotable(request):
     """Check lead/mission billing."""
     subsidiary = get_subsidiary_from_session(request)
-    month_to_exc_from_my_leads = [date.today().replace(day=1)]
+    responsible_id = request.GET.get("responsible")
+    if responsible_id:
+        responsible = Consultant.objects.get(id=responsible_id)
+    else:
+        responsible = None
+    month_to_exclude = [date.today().replace(day=1)]
     for i in range(6):
-        month_to_exc_from_my_leads.append(nextMonth(month_to_exc_from_my_leads[-1]))
-    month_to_exc_from_my_leads = [m.isoformat() for m in month_to_exc_from_my_leads]
-    data = get_client_billing_control_pivotable_data(filter_on_subsidiary=filter_on_subsidiary or subsidiary,
-                                                     filter_on_company=filter_on_company,
-                                                     filter_on_lead=filter_on_lead,
+        month_to_exclude.append(nextMonth(month_to_exclude[-1]))
+    month_to_exclude = [m.isoformat() for m in month_to_exclude]
+    data = get_client_billing_control_pivotable_data(filter_on_subsidiary=subsidiary,
+                                                     filter_on_responsible=responsible,
                                                      only_active=True)
     return render(request, "billing/client_billing_control_pivotable.html",
                   {"data": data,
-                   "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
-                   "month_to_exc_from_my_leads": month_to_exc_from_my_leads,
+                   "responsible": responsible,
+                   "month_to_exclude": month_to_exclude,
                    "derivedAttributes": "{}"})
 
 
