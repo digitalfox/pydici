@@ -106,17 +106,13 @@
          function graph_per_consultant() {
              var cols = ["{% trans 'period' %}"];
              var rows = ["{% trans 'consultant' %}"];
-             var options = {};
-             options['inclusions'] = { {% trans "type" %}: ['{% trans "daily rate" %}'] };
-             drawPivot(data, rows, cols, "Line Chart", '{% trans "Average" %}', ['{% trans "amount" %}'],  options);
+             drawPivot(data, rows, cols, "Line Chart", '{% trans "Average" %}', ['{% trans "amount" %}']);
          }
 
          function graph_per_client() {
              var cols = ["{% trans 'period' %}"];
              var rows = ["{% trans 'client' %}"];
-             var options = {};
-             options['inclusions'] = { {% trans "type" %}: ['{% trans "daily rate" %}'] };
-             drawPivot(data, rows, cols, "Line Chart", '{% trans "Average" %}', ['{% trans "amount" %}'],  options);
+             drawPivot(data, rows, cols, "Line Chart", '{% trans "Average" %}', ['{% trans "amount" %}']);
          }
 
          // default

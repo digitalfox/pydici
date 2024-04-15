@@ -460,7 +460,6 @@ def company_rates_margin(request, company_id):
                         _("profile"): str(consultant.profil),
                         _("subsidiary"): str(consultant.company),
                         _("client"): str(client),
-                        _("type"): _("daily rate"),
                         _("period"): start_date.isoformat(),
                         _("amount"): turnover / prod_days
                     })
