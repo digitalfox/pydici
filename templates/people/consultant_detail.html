@@ -147,7 +147,7 @@
     </script>
 
 </div> <!-- end of row -->
-<script type="text/javascript">
+<script type="text/javascript" async>
     function displayConsultantGraph () {
         var chart_timesheet = bb.generate({
             bindto: '#consultant_timesheet_status',
@@ -257,12 +257,11 @@
     }
     // Don't display graph and do masonry layout right now graph, it can badly compute div size in some corner cases
     // Sad solution. I pay a beer for the one who solve it properly
-    setTimeout(function(){ displayConsultantGraph();
-                          $("#pydici-blocks").masonry({"percentPosition": true, columnWidth:1});
-                         }, 10);
 
     // recompute layout when collapsing or uncollapsing block
     $(".collapse-business-territory").last().bind('hidden.bs.collapse shown.bs.collapse', function () {
       $('#pydici-blocks').masonry("layout");
     });
+    displayConsultantGraph();
+    $("#pydici-blocks").masonry({"percentPosition": true, columnWidth:1});
 </script>
