@@ -47,7 +47,9 @@ async def check_user_is_declared(update, context):
 def outside_business_hours():
     """Don't bother people outside business hours"""
     now = datetime.now()
-    return now.weekday() in (5, 6) or now.hour < 9 or now.hour > 19
+    today = date.today()
+    holiday_today = Holiday.objects.filter(day__contains=today)
+    return now.weekday() in (5, 6) or now.hour < 9 or now.hour > 19 or holiday_today.count() > 0
 
 
 @db_sync_to_async
@@ -60,10 +62,6 @@ def get_consultants():
 @db_sync_to_async
 def time_to_declare(consultant):
     today = date.today()
-    holidays = Holiday.objects.all()
-    if today.weekday() < 5 and today not in holidays:
-        declared = Timesheet.objects.filter(consultant=consultant, working_date=today).aggregate(Sum("charge"))[
-                       "charge__sum"] or 0
-        return 1 - declared
-    else:
-        return 0
+    declared = Timesheet.objects.filter(consultant=consultant, working_date=today).aggregate(Sum("charge"))[
+                    "charge__sum"] or 0
+    return 1 - declared
