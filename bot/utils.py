@@ -44,11 +44,12 @@ async def check_user_is_declared(update, context):
         return None
 
 
+@db_sync_to_async
 def outside_business_hours():
     """Don't bother people outside business hours"""
     now = datetime.now()
     today = date.today()
-    holiday_today = Holiday.objects.filter(day__contains=today)
+    holiday_today = Holiday.objects.filter(day=today)
     return now.weekday() in (5, 6) or now.hour < 9 or now.hour > 19 or holiday_today.count() > 0
 
 

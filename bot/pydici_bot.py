@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 
 async def alert_consultant(context):
     """Randomly alert consultant about important stuff to do"""
-    if outside_business_hours():
+    if await outside_business_hours():
         return
 
     consultants = await get_consultants()
@@ -89,7 +89,7 @@ async def alert_consultant(context):
 
 async def call_for_timesheet(context):
     """If needed, remind people to declare timesheet of current day"""
-    if outside_business_hours():
+    if await outside_business_hours():
         return
     msg = _("""Hope the day was fine. Time to declare your timesheet no? Just click /time""")
 
