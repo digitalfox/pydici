@@ -92,11 +92,11 @@
                     {% if mission.billing_mode == "FIXED_PRICE" %}
                         <tr><td>{% trans "Average daily rate" %}</td><td>{{ avg_daily_rate }}  €</td></tr>
                         {% if forecasted_unused < 0 %}
-                            <tr><td>{% trans "Overtaking" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Done and forecasted days with defined rate overtake mision price{% endblocktrans %}"></i></td><td>{{ forecasted_unused }} k€</td></tr>
+                            <tr><td>{% trans "Overtaking" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Done and forecasted days with defined rate overtake mission price{% endblocktrans %}"></i></td><td>{{ forecasted_unused }} k€</td></tr>
                         {% else %}
                             <tr><td>{% trans "Forecasted unused" %}</td><td>{{ forecasted_unused }} k€</td></tr>
                         {% endif %}
-                        <tr><td>{% trans "Margin" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Sum of unused or overtaken days and margin over budget rate, considering done days and forecasting{% endblocktrans %}"></i></td><td>{{ margin }} k€</td></tr>
+                        <tr><td>{% trans "Margin" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Sum of unused or overtaken days and margin over budget rate, considering done days and forecasting.{% endblocktrans %}"></i></td><td>{{ margin }} k€</td></tr>
                     {% else %}
                         <tr><td>{% trans "Currently unused" %}</td><td>{{ current_unused }} k€</td></tr>
                         <tr><td>{% trans "Forecasted unused" %}{% if forecasted_unused < 0 %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Consider mission price update to reflect reality or use elastic management mode for this mission{% endblocktrans %}"></i>{% endif %}</td><td>{{ forecasted_unused }} k€</td></tr>
@@ -105,7 +105,7 @@
             </div>
 
             <div class="col-md-6 col-xl-4">
-                <h2>{% trans "Margin over rate objective" %} <span class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Computed as the difference between budget objectives and applied rates for done days (timesheet) and forecasted days{% endblocktrans %}"></span></h2>
+                <h2>{% trans "Margin over rate objective" %} <span class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Computed as the difference between budget objectives and applied rates for done days (timesheet) and forecasted days. For subcontractors default margin is subtracted{% endblocktrans %}"></span></h2>
                 <table class="table table-hover">
                 {% for consultant, consultant_objective_margin in objective_margin.items %}
                     <tr>

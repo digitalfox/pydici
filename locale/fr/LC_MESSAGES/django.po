@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-14 21:09+0200\n"
-"PO-Revision-Date: 2024-04-14 21:08+0200\n"
+"POT-Creation-Date: 2024-06-01 17:43+0200\n"
+"PO-Revision-Date: 2024-06-01 17:43+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -334,7 +334,7 @@ msgstr "Libellé"
 #: billing/tests.py:268 billing/tests.py:277 billing/tests.py:283
 #: billing/tests.py:289 billing/utils.py:164 billing/utils.py:182
 #: billing/utils.py:198 billing/utils.py:218 billing/utils.py:225
-#: core/views.py:376 core/views.py:397 crm/views.py:465 staffing/views.py:1608
+#: core/views.py:376 core/views.py:397 crm/views.py:464 staffing/views.py:1608
 #: staffing/views.py:1647 staffing/views.py:1662
 #: templates/billing/_lead_billing.html:24
 #: templates/billing/client_billing_control_pivotable.html:56
@@ -344,8 +344,8 @@ msgstr "Libellé"
 #: templates/core/risks.html:43 templates/core/risks.html:49
 #: templates/core/risks.html:58
 #: templates/crm/_clientcompany_rates_margin.html:103
-#: templates/crm/_clientcompany_rates_margin.html:111
-#: templates/crm/_clientcompany_rates_margin.html:119
+#: templates/crm/_clientcompany_rates_margin.html:109
+#: templates/crm/_clientcompany_rates_margin.html:115
 #: templates/staffing/rate_objective_report.html:43
 #: templates/staffing/rates_report.html:49
 #: templates/staffing/rates_report.html:57
@@ -490,15 +490,13 @@ msgstr "mois"
 
 #: billing/utils.py:166 billing/utils.py:180 billing/utils.py:197
 #: billing/utils.py:219 billing/utils.py:226 core/views.py:372
-#: core/views.py:393 crm/views.py:463 staffing/views.py:1509
-#: staffing/views.py:1606 staffing/views.py:1645 staffing/views.py:1660
-#: staffing/views.py:1705 templates/billing/_lead_billing.html:20
+#: core/views.py:393 staffing/views.py:1509 staffing/views.py:1606
+#: staffing/views.py:1645 staffing/views.py:1660 staffing/views.py:1705
+#: templates/billing/_lead_billing.html:20
 #: templates/billing/client_billing_control_pivotable.html:53
 #: templates/core/risks.html:41 templates/core/risks.html:48
 #: templates/core/risks.html:57
 #: templates/crm/_clientcompany_rates_margin.html:101
-#: templates/crm/_clientcompany_rates_margin.html:110
-#: templates/crm/_clientcompany_rates_margin.html:118
 #: templates/staffing/missions_report.html:66
 #: templates/staffing/missions_report.html:72
 #: templates/staffing/missions_report.html:77
@@ -998,8 +996,8 @@ msgstr "affaire"
 msgid "company"
 msgstr "société"
 
-#: core/views.py:378 core/views.py:399 crm/views.py:462 crm/views.py:523
-#: templates/crm/_clientcompany_rates_margin.html:116
+#: core/views.py:378 core/views.py:399 crm/views.py:462 crm/views.py:522
+#: templates/crm/_clientcompany_rates_margin.html:114
 #: templates/crm/clientcompany_detail.html:295
 #: templates/crm/company_pivotable.html:49 templates/leads/leads.html:15
 #: templates/leads/leads_to_bill.html:14
@@ -1323,27 +1321,17 @@ msgstr "12 derniers mois"
 msgid "profile"
 msgstr "profile"
 
-#: crm/views.py:463 people/models.py:317 staffing/views.py:1660
-#: templates/crm/_clientcompany_rates_margin.html:110
-#: templates/crm/_clientcompany_rates_margin.html:118
-#: templates/people/consultant_detail.html:237
-#: templates/people/consultant_detail.html:243
-#: templates/staffing/_consultant_prod_tooltip.html:2
-#: templates/staffing/rates_report.html:56
-msgid "daily rate"
-msgstr "taux journalier"
-
-#: crm/views.py:464 staffing/views.py:1646 staffing/views.py:1661
+#: crm/views.py:463 staffing/views.py:1646 staffing/views.py:1661
 #: templates/crm/_clientcompany_rates_margin.html:101
 #: templates/crm/_clientcompany_rates_margin.html:107
-#: templates/crm/_clientcompany_rates_margin.html:115
+#: templates/crm/_clientcompany_rates_margin.html:113
 #: templates/staffing/rates_report.html:47
 #: templates/staffing/rates_report.html:53
 #: templates/staffing/rates_report.html:61
 msgid "period"
 msgstr "période"
 
-#: crm/views.py:594
+#: crm/views.py:593
 msgid "Others"
 msgstr "Autres"
 
@@ -1864,6 +1852,14 @@ msgstr "Profil"
 #: people/models.py:52
 msgid "Subcontractor"
 msgstr "Sous-traitant"
+
+#: people/models.py:317 staffing/views.py:1660
+#: templates/people/consultant_detail.html:237
+#: templates/people/consultant_detail.html:243
+#: templates/staffing/_consultant_prod_tooltip.html:2
+#: templates/staffing/rates_report.html:56
+msgid "daily rate"
+msgstr "taux journalier"
 
 #: people/models.py:318 staffing/views.py:1645 staffing/views.py:2190
 #: templates/staffing/_consultant_prod_tooltip.html:1
@@ -3197,8 +3193,8 @@ msgstr "Délai de création au cours du temps"
 #: templates/billing/payment_delay.html:93
 #: templates/billing/payment_delay.html:99
 #: templates/crm/_clientcompany_rates_margin.html:103
-#: templates/crm/_clientcompany_rates_margin.html:111
-#: templates/crm/_clientcompany_rates_margin.html:119
+#: templates/crm/_clientcompany_rates_margin.html:109
+#: templates/crm/_clientcompany_rates_margin.html:115
 #: templates/staffing/rates_report.html:49
 #: templates/staffing/rates_report.html:57
 #: templates/staffing/rates_report.html:65
@@ -5045,7 +5041,6 @@ msgid "Margin (k€)"
 msgstr "Marge fin de mission (k€)"
 
 #: templates/staffing/fixed_price_report.html:23
-#: templates/staffing/mission_timesheet.html:99
 msgid ""
 "Sum of unused or overtaken days and margin over budget rate, considering "
 "done days and forecasting"
@@ -5236,7 +5231,7 @@ msgid "Overtaking"
 msgstr "Dépassement"
 
 #: templates/staffing/mission_timesheet.html:95
-msgid "Done and forecasted days with defined rate overtake mision price"
+msgid "Done and forecasted days with defined rate overtake mission price"
 msgstr ""
 "Les jours réalisés et prévus avec les taux définis dépassent le montant de "
 "la mission"
@@ -5249,6 +5244,14 @@ msgstr "Montant inutilisé en projection"
 #: templates/staffing/mission_timesheet.html:99
 msgid "Margin"
 msgstr "Marge"
+
+#: templates/staffing/mission_timesheet.html:99
+msgid ""
+"Sum of unused or overtaken days and margin over budget rate, considering "
+"done days and forecasting."
+msgstr ""
+"Somme des montants inutilisés ou en dépassement et de la marge sur objectifs "
+"de TJM en prenant en compte les jours réalisés et prévus."
 
 #: templates/staffing/mission_timesheet.html:101
 msgid "Currently unused"
@@ -5265,10 +5268,12 @@ msgstr ""
 #: templates/staffing/mission_timesheet.html:108
 msgid ""
 "Computed as the difference between budget objectives and applied rates for "
-"done days (timesheet) and forecasted days"
+"done days (timesheet) and forecasted days. For subcontractors default margin "
+"is subtracted"
 msgstr ""
 "Calculé comme  la différence entre le taux objectif défini dans le budget et "
-"le taux appliqué pour cette mission pour les jours réalisés et prévus"
+"le taux appliqué pour cette mission pour les jours réalisés et prévus. Pour "
+"les sous traitants la marge par défaut est soustraite."
 
 #: templates/staffing/mission_timesheet.html:156
 msgid "Click to show past timesheet"
@@ -5498,6 +5503,17 @@ msgstr "Proportion de sous traitance par produit"
 #: templates/staffing/turnover_pivotable.html:129
 msgid "Sum ratio"
 msgstr "Ratio de sommes"
+
+#, fuzzy
+#~| msgid ""
+#~| "Sum of unused or overtaken days and margin over budget rate, considering "
+#~| "done days and forecasting"
+#~ msgid ""
+#~ "Sum of unused or overtaken days and margin over budget rate, considering "
+#~ "done days and forecasting. For subcontractors default margin is subtracted"
+#~ msgstr ""
+#~ "Somme des montants inutilisés ou en dépassement et de la marge sur "
+#~ "objectifs de TJM en prenant en compte les jours réalisés et prévus"
 
 #~ msgid "My leads"
 #~ msgstr "Mes affaires"
