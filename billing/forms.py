@@ -30,7 +30,7 @@ from people.models import Consultant
 from leads.forms import LeadChoices
 from expense.forms import ChargeableExpenseMChoices, ExpenseChoices
 from crm.forms import SupplierChoices
-from staffing.forms import MissionChoices, LeadMissionChoices
+from staffing.forms import LeadMissionChoices
 from people.forms import ConsultantChoices
 from core.forms import PydiciCrispyModelForm
 from core.utils import nextMonth

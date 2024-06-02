@@ -6,12 +6,10 @@ Test data factories for billing module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from decimal import Decimal
 from factory.django import DjangoModelFactory
-import factory.django
 import factory.fuzzy
 import random
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django.db.models import Min, Max
 
