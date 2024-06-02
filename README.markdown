@@ -21,7 +21,7 @@ Sébastien Renard (Sebastien.Renard@digitalfox.org).
 
 # INSTALLATION
 ## Production pre requisites:
-* python >= 3.9
+* python >= 3.11 (it should work with python 3.9 but it's not tested anymore)
 * mariadb (tested with 10.X)
 * memcached
 * redis
