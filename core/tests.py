@@ -27,8 +27,7 @@ from core.models import GroupFeature, FEATURES, Parameter
 from datetime import date
 import os
 import os.path
-import sys
-from subprocess import Popen, PIPE
+import re
 
 
 TEST_USERNAME = "sre"
@@ -303,6 +302,8 @@ class SimpleJsTest(SeleniumTestCase):
         for url in urls:
             self.driver.get(url)
             for log in self.driver.get_log("browser"):
+                if re.search(r"favicon.ico.*404.*", log["message"]):
+                    continue  # ignore favicon 404 errors
                 self.assertNotEqual(log["level"], "SEVERE",
                                     f"JS error on {url}\nsource {log['source']}\n{log['message']}")
         # cleanup downloaded files
