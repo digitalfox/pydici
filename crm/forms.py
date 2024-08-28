@@ -210,7 +210,8 @@ class CompanyForm(PydiciCrispyModelForm):
                                                         Column("code", "web"),
                                                         Column("vat_id", "legal_id")),
                                                     css_class="collapse", css_id="companyForm"))
-
+    def clean_code(self):
+        return self.cleaned_data["code"].upper()
 
 class ContactForm(PydiciCrispyModelForm):
     class Meta:
