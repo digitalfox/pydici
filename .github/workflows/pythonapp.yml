@@ -12,4 +12,4 @@ jobs:
     - name: setup fs right
       run: sudo chown -R $USER:$USER data && sudo chmod 777 -R data
     - name: Run tests
-      run: docker exec -e RUNNING_IN_GH=1 pydici_django_1 /code/run-test.sh
+      run: docker exec -e RUNNING_IN_GH=1 pydici-django-1 /code/run-test.sh
