@@ -8,8 +8,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Launch pydici (mariadb, memcached, redis, django and celery)
-      run: docker-compose up -d
+      run: docker compose up -d
     - name: setup fs right
       run: sudo chown -R $USER:$USER data && sudo chmod 777 -R data
     - name: Run tests
-      run: docker exec -e RUNNING_IN_GH=1 pydici_django_1 /code/run-test.sh
+      run: docker exec -e RUNNING_IN_GH=1 pydici-django-1 /code/run-test.sh
