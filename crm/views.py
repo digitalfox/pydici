@@ -414,7 +414,7 @@ def company_detail(request, company_id):
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
                    "lead_data_url": reverse('leads:client_company_lead_table_DT', args=[company.id,]),
                    "mission_data_url": reverse('staffing:client_company_mission_table_DT', args=[company.id,]),
-                   "mission_datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 7, 8] },
+                   "mission_datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9, 10] },
                                                                      { className: "hidden-xs hidden-sm hidden-md", "targets": [6, 7,8]}],
                                                      "order": [[0, "asc"]] ''',
                    "data_for_other_subsidiaries": data_for_other_subsidiaries,
