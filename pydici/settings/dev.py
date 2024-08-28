@@ -5,6 +5,7 @@ Don't customise this file, use local.py for specific local settings
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+import sys
 from django.conf import settings
 
 DEBUG = True
@@ -18,13 +19,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'core.middleware.ScopeMiddleware',
     'userswitch.middleware.UserSwitchMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'auditlog.middleware.AuditlogMiddleware',
 ]
 
-TEMPLATES[0]["OPTIONS"]["debug"] = True
+if settings.DEBUG and "test" not in sys.argv:
+    TEMPLATES[0]["OPTIONS"]["debug"] = True
+    INSTALLED_APPS.extend(['debug_toolbar'])
+    MIDDLEWARE.extend(['debug_toolbar.middleware.DebugToolbarMiddleware',])
 
-INSTALLED_APPS.extend(['debug_toolbar'])
 
 ALLOWED_HOSTS = ("localhost",)
 
