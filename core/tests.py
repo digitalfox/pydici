@@ -79,6 +79,7 @@ PYDICI_PAGES = ("/",
                 "/people/home/consultant/3/",
                 "/people/home/consultant/1/#tab-staffing",
                 "/people/home/consultant/1/#tab-timesheet",
+                "/people/home/consultant/1/#tab-achievements",
                 "/crm/company/1/detail",
                 "/crm/company/all",
                 "/billing/graph/billing",
@@ -132,6 +133,8 @@ PYDICI_AJAX_PAGES = (
                 "/crm/company/graph/sales",
                 "/crm/company/graph/sales/lastyear",
                 "/billing/graph/yearly-billing",
+                "/people/achievements/consultant/1/",
+                "/people/achievements/consultant/2/"
 )
 
 PYDICI_FIXTURES = ["auth.json", "people.json", "crm.json",

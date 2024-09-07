@@ -13,12 +13,13 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext as _
-from django.db.models import Count
+from django.db.models import Count, Sum
+from django.db.models.functions import TruncMonth
 
 from people.models import Consultant
 from crm.models import Company
 from crm.utils import get_subsidiary_from_session
-from staffing.models import Holiday
+from staffing.models import Holiday, Mission, Timesheet
 from core.decorator import pydici_non_public, pydici_subcontractor
 from core.utils import working_days, previousMonth, nextMonth, COLORS
 from people.utils import subcontractor_is_user
@@ -182,6 +183,45 @@ def consultants_tasks(request):
     return render(request, "people/consultants_tasks.html",
                   {"consultants": consultants})
 
+
+@pydici_non_public
+def consultant_achievements(request, consultant_id):
+    """Fun consultants statistics"""
+    if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        # This view should only be accessed by ajax request. Redirect lost users
+        return redirect("people:consultant_home_by_id", consultant_id)
+    try:
+        consultant = Consultant.objects.get(id=consultant_id)
+    except Consultant.DoesNotExist:
+        raise Http404
+
+    mission_count = Mission.objects.filter(nature="PROD", active=False, timesheet__consultant=consultant).distinct().count()
+    active_missions_count = Mission.objects.filter(nature="PROD", active=True).filter(staffing__consultant=consultant).distinct().count()
+
+    turnover = int((consultant.get_turnover() or 0)/1000)
+    last_12_months_turnover = int((consultant.get_turnover(start_date=(date.today() - timedelta(365)).replace(day=1)) or 0) / 1000)
+
+    longest_mission_qs = Timesheet.objects.filter(mission__nature="PROD", consultant=consultant).values("mission").annotate(
+        Sum("charge")).order_by("charge__sum").last()
+    longest_mission = Mission.objects.get(id=longest_mission_qs["mission"]) if longest_mission_qs else None
+    longest_mission_duration = int(longest_mission_qs.get("charge__sum", 0) if longest_mission_qs else 0)
+
+    max_mission_per_month_qs = Mission.objects.filter(nature="PROD", timesheet__consultant=consultant).annotate(
+        month=TruncMonth("timesheet__working_date")).values("month").annotate(Count("id", distinct=True)).order_by(
+        "id__count").last()
+    max_mission_per_month_count = max_mission_per_month_qs["id__count"] if max_mission_per_month_qs else 0
+    max_mission_per_month_month = max_mission_per_month_qs["month"] if max_mission_per_month_qs else None
+
+    return render(request, "people/consultant_achievements.html",
+                  {"consultant": consultant,
+                   "missions_count": mission_count,
+                   "active_missions_count": active_missions_count,
+                   "turnover": turnover,
+                   "last_12_months_turnover": last_12_months_turnover,
+                   "longest_mission": longest_mission,
+                   "longest_mission_duration": longest_mission_duration,
+                   "max_mission_per_month_count": max_mission_per_month_count,
+                   "max_mission_per_month_month": max_mission_per_month_month,})
 
 @pydici_non_public
 @cache_page(60 * 60 * 24)
