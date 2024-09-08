@@ -10,7 +10,6 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from taggit.models import Tag
 
 from people.models import Consultant
 from leads.models import Lead
@@ -19,7 +18,7 @@ from crm.models import Subsidiary, BusinessBroker, Client
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
 from leads import learn as leads_learn
 from leads.utils import post_save_lead
-from core.utils import getLeadDirs, create_fake_request
+from core.utils import create_fake_request
 
 from urllib.parse import urlsplit
 import os.path

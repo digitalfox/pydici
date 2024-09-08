@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 from people.models import Consultant
 from core.utils import user_has_feature
 
+
 def get_team_scopes(subsidiary, team, only_productive=True):
     """Define scopes than can be used to filter data on team".
     @:param team

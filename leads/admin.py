@@ -10,7 +10,6 @@ from django.utils.translation import gettext_lazy as _
 
 from leads.models import Lead
 
-from leads.forms import LeadForm
 from leads.utils import post_save_lead
 from core.admin import ReturnToAppAdmin
 

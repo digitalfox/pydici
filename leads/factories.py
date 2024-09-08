@@ -7,7 +7,6 @@ Test data factories for lead module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 from factory.django import DjangoModelFactory
-import factory.django
 import factory.fuzzy
 from datetime import date, timedelta
 import random
@@ -16,7 +15,7 @@ from people.models import Consultant
 from crm.models import Client, Subsidiary
 from staffing.factories import ProdMissionFactory
 from leads.models import Lead
-from billing.factories import ClientBillFactory
+
 
 class LeadFactory(DjangoModelFactory):
     name = factory.Faker("bs")

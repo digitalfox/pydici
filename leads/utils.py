@@ -14,7 +14,7 @@ from django.db.models import Count
 
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
 from staffing.models import Mission
-from leads.models import StateProba, Lead
+from leads.models import StateProba
 from leads.tasks import lead_mail_notify, lead_telegram_notify
 from core.utils import createProjectTree
 
@@ -97,6 +97,5 @@ def post_save_lead(request, lead, created=False, state_changed=False):
 
 def leads_state_stat(leads):
     """Compute leads statistics in compatible billboard.js format"""
-    states = dict(Lead.STATES)
     leads_stat = leads.values("state").order_by("state").annotate(count=Count("state")).values_list("state", "count")
     return json.dumps(list(leads_stat))

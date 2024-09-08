@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-from crm.models import Client, Subsidiary
+from crm.models import Client
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
 
 import json
@@ -25,7 +25,6 @@ class CrmViewsTest(TestCase):
     def test_client_all_in_one(self):
         self.client.force_login(self.test_user)
         view = reverse("crm:client_organisation_company_popup")
-        error_tag = "form-group has-error"
 
         # Initial data
         data = { "client-expectations": "3_FLAT",

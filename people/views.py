@@ -20,7 +20,7 @@ from crm.models import Company
 from crm.utils import get_subsidiary_from_session
 from staffing.models import Holiday
 from core.decorator import pydici_non_public, pydici_subcontractor
-from core.utils import working_days, previousMonth, nextMonth, COLORS, user_has_feature
+from core.utils import working_days, previousMonth, nextMonth, COLORS
 from people.utils import subcontractor_is_user
 from crm.models import Subsidiary
 
@@ -171,6 +171,7 @@ def subcontractor_detail(request, consultant_id):
                    "leads_as_staffee": leads_as_staffee,
                    "user": request.user})
 
+
 @pydici_non_public
 def consultants_tasks(request):
     """display all active consultants tasks"""
@@ -181,11 +182,12 @@ def consultants_tasks(request):
     return render(request, "people/consultants_tasks.html",
                   {"consultants": consultants})
 
+
 @pydici_non_public
 @cache_page(60 * 60 * 24)
 def graph_people_count(request):
     """Active people count"""
-    #TODO: add start/end timeframe
+    # TODO: add start/end timeframe
     graph_data = []
     iso_months = []
     start_date = (date.today() - 3 * timedelta(365)).replace(day=1)  # Last three years
@@ -235,7 +237,7 @@ def graph_people_count(request):
         graph_data.append([_("subcontractors %s" % subsidiary)] + subcontractors_count[subsidiary])
 
     return render(request, "people/graph_people_count.html",
-              {"graph_data": json.dumps(graph_data),
-               "series_colors": COLORS,
-               "subsidiaries": subsidiaries,
-               "user": request.user})
+                  {"graph_data": json.dumps(graph_data),
+                   "series_colors": COLORS,
+                   "subsidiaries": subsidiaries,
+                   "user": request.user})

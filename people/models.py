@@ -7,7 +7,7 @@ Database access layer for pydici people module
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.db.models import F, Sum, Max, Q
+from django.db.models import F, Sum, Max
 from django.apps import apps
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -166,7 +166,7 @@ class Consultant(models.Model):
         @param end_date : if None, up to today
         @:param clients: compute only turnover those clients. If None, all Clients are considered
         @return: turnover in euros"""
-        from staffing.models import Timesheet, FinancialCondition, Mission  # Late import to avoid circular reference
+        from staffing.models import Mission  # Late import to avoid circular reference
         if start_date is None:
             start_date = date(1977, 2, 18)
         if end_date is None:

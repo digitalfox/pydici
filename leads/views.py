@@ -340,7 +340,6 @@ def tags(request, lead_id):
 @cache_page(60 * 60)
 def graph_leads_bar(request):
     """Nice graph bar of lead state during time """
-    data = defaultdict(list)  # Raw data collected
     graph_data = {}
 
     # Gathering data

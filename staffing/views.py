@@ -198,7 +198,7 @@ def mission_staffing(request, mission_id):
             try:
                 saveFormsetAndLog(formset, request)
                 formset = StaffingFormSet(instance=mission)  # Recreate a new form for next update
-            except IntegrityError as e:
+            except IntegrityError:
                 # Corner case with temporary constraint violation as database does not support deferred constraints
                 formset.management_form.add_error("", _("Duplicate data error"))
     else:
@@ -242,7 +242,7 @@ def consultant_staffing(request, consultant_id):
             try:
                 saveFormsetAndLog(formset, request)
                 formset = StaffingFormSet(instance=consultant)  # Recreate a new form for next update
-            except IntegrityError as e:
+            except IntegrityError:
                 # Corner case with temporary constraint violation as database does not support deferred constraints
                 formset.management_form.add_error("", _("Duplicate data error"))
     else:
@@ -463,6 +463,9 @@ def pdc_review(request, year=None, month=None):
     consultant = None
     month = None
     missions = set()
+    prod = []
+    unprod = []
+    holidays = []
     # Iterate on staffing. Chain None as a flag for last loop to compute total
     for staffing in chain(staffings, [None]):
         if month is None or staffing is None or month != staffing.staffing_date or consultant != staffing.consultant:
@@ -922,7 +925,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
 
     # Add zero forecast for mission with active timesheet but no more forecast
     for mission in missions:
-        if not mission.id in forecastTotal:
+        if mission.id not in forecastTotal:
             forecastTotal[mission.id] = 0
 
     if "csv" in request.GET:
@@ -2238,9 +2241,9 @@ def graph_profile_rates(request, team_id=None):
         monthGlobalNDays = 0
         monthGlobalTurnover = 0
         for consultant in consultants:
-            if not month in nDays[consultant.profil_id]:
+            if month not in nDays[consultant.profil_id]:
                 nDays[consultant.profil.id][month] = 0
-            if not month in turnover[consultant.profil_id]:
+            if month not in turnover[consultant.profil_id]:
                 turnover[consultant.profil_id][month] = 0
             nDays[consultant.profil_id][month] += Timesheet.objects.filter(consultant=consultant, working_date__gte=month, working_date__lt=upperBound, mission__nature="PROD").aggregate(Sum("charge"))["charge__sum"] or 0
             turnover[consultant.profil_id][month] += consultant.get_turnover(month, upperBound)

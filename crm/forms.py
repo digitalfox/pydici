@@ -14,7 +14,7 @@ from django.forms.widgets import Textarea
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from crispy_forms.layout import Layout, Div, Column, Fieldset, HTML, Field, Row
-from crispy_forms.bootstrap import AppendedText, FieldWithButtons, Tab, TabHolder
+from crispy_forms.bootstrap import FieldWithButtons, Tab, TabHolder
 
 from crm.models import Client, BusinessBroker, Supplier, MissionContact, ClientOrganisation, Contact, Company, \
     AdministrativeContact

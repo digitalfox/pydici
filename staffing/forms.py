@@ -119,7 +119,7 @@ class StaffingDateChoicesField(ChoiceField):
             return value
         try:
             return self.strptime(value, "%Y-%m-%d")
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError):
             raise ValidationError(_("Invalid date format"), code='invalid')
 
     def strptime(self, value, format):

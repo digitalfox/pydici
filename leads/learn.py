@@ -6,7 +6,7 @@ Module that handle predictive state of a lead
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 import re
 import zlib
 import pickle
@@ -23,7 +23,7 @@ try:
     from sklearn.pipeline import Pipeline
     from sklearn.linear_model import SGDClassifier
     from sklearn.model_selection import GridSearchCV, cross_val_score, train_test_split
-    from sklearn.metrics import confusion_matrix, classification_report, f1_score
+    from sklearn.metrics import confusion_matrix, classification_report
     import numpy as np
 except ImportError:
     HAVE_SCIKIT = False

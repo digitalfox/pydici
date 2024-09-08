@@ -16,10 +16,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 
 from celery import shared_task
-from taggit.models import Tag
 
 from leads.learn import compute_leads_state, compute_leads_tags, compute_lead_similarity
-from core.utils import get_parameter, audit_log_is_real_change, getLeadDirs
+from core.utils import get_parameter, audit_log_is_real_change
 from leads.models import Lead
 
 if settings.TELEGRAM_IS_ENABLED:
