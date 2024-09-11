@@ -578,7 +578,7 @@ def pdc_review(request, year=None, month=None):
     if groupby == "manager":
         data.sort(key=lambda x: str(x[0].staffing_manager))  # Sort by staffing manager
     else:
-        data.sort(key=lambda x: x[0].profil.level)  # Sort by level
+        data.sort(key=lambda x: (x[0].profil.level, x[0].profil.id))  # Sort by level
 
     scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
     if team:
