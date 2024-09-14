@@ -7,6 +7,7 @@ Pydici people views. Http request are processed here.
 
 from datetime import date, timedelta
 import json
+from collections import namedtuple
 
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -195,33 +196,47 @@ def consultant_achievements(request, consultant_id):
     except Consultant.DoesNotExist:
         raise Http404
 
-    mission_count = Mission.objects.filter(nature="PROD", active=False, timesheet__consultant=consultant).distinct().count()
-    active_missions_count = Mission.objects.filter(nature="PROD", active=True).filter(staffing__consultant=consultant).distinct().count()
+    achievements = []
+    Achievement = namedtuple("Achievement", ["name", "icon", "value", "link"])
+    achievements.append(Achievement(name=_("Mission done"),
+                                    icon="list-ul",
+                                    value=Mission.objects.filter(nature="PROD", active=False, timesheet__consultant=consultant).distinct().count(),
+                                    link="#"))
 
-    turnover = int((consultant.get_turnover() or 0)/1000)
-    last_12_months_turnover = int((consultant.get_turnover(start_date=(date.today() - timedelta(365)).replace(day=1)) or 0) / 1000)
+    achievements.append(Achievement(name=_("Active mission count"),
+                                    icon="list-ul",
+                                    value=Mission.objects.filter(nature="PROD", active=True).filter(staffing__consultant=consultant).distinct().count(),
+                                    link="#"))
 
-    longest_mission_qs = Timesheet.objects.filter(mission__nature="PROD", consultant=consultant).values("mission").annotate(
-        Sum("charge")).order_by("charge__sum").last()
-    longest_mission = Mission.objects.get(id=longest_mission_qs["mission"]) if longest_mission_qs else None
-    longest_mission_duration = int(longest_mission_qs.get("charge__sum", 0) if longest_mission_qs else 0)
+    achievements.append(Achievement(name=_("Turnover"),
+                                    icon="calculator",
+                                    value="%i k€" % ((consultant.get_turnover() or 0)/1000),
+                                    link="#"))
 
-    max_mission_per_month_qs = Mission.objects.filter(nature="PROD", timesheet__consultant=consultant).annotate(
-        month=TruncMonth("timesheet__working_date")).values("month").annotate(Count("id", distinct=True)).order_by(
-        "id__count").last()
-    max_mission_per_month_count = max_mission_per_month_qs["id__count"] if max_mission_per_month_qs else 0
-    max_mission_per_month_month = max_mission_per_month_qs["month"] if max_mission_per_month_qs else None
+    achievements.append(Achievement(name=_("Turnover last 12 months"),
+                                    icon="calculator",
+                                    value="%i k€" % ((consultant.get_turnover(start_date=(date.today() - timedelta(365)).replace(day=1)) or 0) / 1000),
+                                    link="#"))
+
+    longest_mission_qs = Timesheet.objects.filter(mission__nature="PROD", consultant=consultant).values("mission").annotate(Sum("charge")).order_by("charge__sum").last()
+    if longest_mission_qs:
+        achievements.append(Achievement(name=_("Longest mission: %s") % Mission.objects.get(id=longest_mission_qs["mission"]),
+                                        icon="hourglass",
+                                        value=_("%i days") % longest_mission_qs.get("charge__sum", 0),
+                                        link=reverse("staffing:mission_home", args=[longest_mission_qs["mission"], ])))
+
+    max_mission_per_month_qs = Mission.objects.filter(nature="PROD", timesheet__consultant=consultant)
+    max_mission_per_month_qs = max_mission_per_month_qs.annotate(month=TruncMonth("timesheet__working_date")).values("month")
+    max_mission_per_month_qs = max_mission_per_month_qs.annotate(Count("id", distinct=True)).order_by("id__count").last()
+    if max_mission_per_month_qs:
+        achievements.append(Achievement(name=_("Max mission in one month (%s)") % max_mission_per_month_qs["month"].strftime("%m/%Y"),
+                                        icon="list-nested",
+                                        value=max_mission_per_month_qs["id__count"],
+                                        link="#"))
 
     return render(request, "people/consultant_achievements.html",
                   {"consultant": consultant,
-                   "missions_count": mission_count,
-                   "active_missions_count": active_missions_count,
-                   "turnover": turnover,
-                   "last_12_months_turnover": last_12_months_turnover,
-                   "longest_mission": longest_mission,
-                   "longest_mission_duration": longest_mission_duration,
-                   "max_mission_per_month_count": max_mission_per_month_count,
-                   "max_mission_per_month_month": max_mission_per_month_month,})
+                   "achievements": achievements})
 
 @pydici_non_public
 @cache_page(60 * 60 * 24)

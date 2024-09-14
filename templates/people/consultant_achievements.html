@@ -6,47 +6,21 @@
 
 
 <div class="row my-2">
+    {% for achievement in achievements %}
     <div class="col-lg-3 col-md-6 col-sm-6">
         <div class="card">
             <div class="card-header">
                 <div class="row">
                     <div class="col-3">
-                        <i class="bi bi-list-ul" style="font-size: 4rem"></i>
-                    </div>
-                    <div class="col-5 text-end">
-                        <div class="huge">{{ active_missions_count }}</div>
-                        <div>{% trans "active missions" %}</div>
-                    </div>
-                    <div class="col-4 text-end">
-                        <div class="huge">{{ missions_count }}</div>
-                        <div>{% trans "missions done" %}</div>
-                    </div>
-                </div>
-            </div>
-            <a href="#">
-                <div class="card-footer">
-                    <div class="row">
-                        <div class="col-6">{% trans "View Details" %}</div>
-                        <div class="col-6 text-end"><i class="bi bi-search"></i></div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6 col-sm-6">
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-3">
-                        <i class="bi bi-list-nested" style="font-size: 4rem"></i>
+                        <i class="bi bi-{{ achievement.icon }}" style="font-size: 4rem"></i>
                     </div>
                     <div class="col-9 text-end">
-                        <div class="huge">{{ max_mission_per_month_count }}</div>
-                        <div>{% trans "missions in one month" %} ({{ max_mission_per_month_month|date:"b Y" }})</div>
+                        <div class="huge">{{ achievement.value }}</div>
+                        <div>{{ achievement.name }}</div>
                     </div>
                 </div>
             </div>
-            <a href="#tab-consultants">
+            <a href="{{ achievement.link }}">
                 <div class="card-footer">
                     <div class="row">
                         <div class="col-6">{% trans "View Details" %}</div>
@@ -56,50 +30,7 @@
             </a>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6 col-sm-6">
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-3">
-                        <i class="bi bi-hourglass" style="font-size: 4rem"></i>
-                    </div>
-                    <div class="col-9 text-end">
-                        <div class="huge">{{ longest_mission_duration }} {% trans "days" %}</div>
-                        <div>{% trans "longest mission:" %} {{ longest_mission|default:_("no mission so far") }}</div>
-                    </div>
-                </div>
-            </div>
-            <a href="{% if longest_mission %}{% url 'staffing:mission_home' longest_mission.id %}{% else %}#{% endif %}">
-                <div class="card-footer">
-                    <div class="row">
-                        <div class="col-6">{% trans "View Details" %}</div>
-                        <div class="col-6 text-end"><i class="bi bi-search"></i></div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6 col-sm-6">
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-3">
-                        <i class="bi bi-calculator" style="font-size: 4rem"></i>
-                    </div>
-                    <div class="col-9 text-end">
-                        <div class="huge" title="{% trans 'billed turnover'%}">{{ turnover }} k€</div>
-                        <div>{% trans "turnover" %} ({{ last_12_months_turnover }} k€ {% trans "during last 12 months" %})</div>
-                    </div>
-                </div>
-            </div>
-            <a href="#">
-                <div class="card-footer">
-                    <div class="row">
-                        <div class="col-6">{% trans "View Details" %}</div>
-                        <div class="col-6 text-end"><i class="bi bi-search"></i></div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
+    {% endfor %}
+</div>
+
 </div> <!-- end of dashboard panels -->
