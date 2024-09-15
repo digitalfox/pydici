@@ -265,15 +265,28 @@ def consultant_staffing(request, consultant_id):
                    "user": request.user})
 
 
-@pydici_subcontractor
-def consultant_missions(request, consultant_id):
+@pydici_non_public
+def consultant_missions(request, only_active=True, consultant_id=None):
     """List of current consultant mission"""
     consultant = Consultant.objects.get(id=consultant_id)
     if not subcontractor_is_user(consultant, request.user):
         # subcontractor cannot see other people page
         return HttpResponseRedirect(reverse("core:forbidden"))
 
-    return render(request, "staffing/consultant_missions.html", {"consultant": consultant})
+    if only_active:
+        data_url = reverse('staffing:consultant_active_mission_table_DT', args=(consultant_id,))
+    else:
+        data_url = reverse('staffing:consultant_all_mission_table_DT', args=(consultant_id,))
+
+    return render(request, "staffing/_mission_table.html",
+                  {"all": not only_active,
+                   "consultant": consultant,
+                   "data_url": data_url,
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] },
+                                                                 { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7,8,9]}],
+                                            "order": [[3, "asc"]]
+                                            ''',
+                   "user": request.user})
 
 
 @pydici_non_public

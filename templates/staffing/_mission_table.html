@@ -1,0 +1,60 @@
+{% load i18n %}
+<div id="missions-content" class="row mt-2">
+{% if consultant %}
+    <div class="my-3 d-flex flex-row">
+        {% if all %}
+            <br/><a class="btn btn-primary" id="active-missions" href="#">{% trans "Display only active missions" %}</a><br/><br/>
+        {% else %}
+            <br/><a class="btn btn-primary" id="all-missions" href="#">{% trans "Display all missions" %}</a><br/><br/>
+        {% endif %}
+
+    </div>
+{% endif %}
+<table id="mission_table" class="table table-striped table-hover table-sm table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>{% trans "name" %}</th>
+				<th>{% trans "subsidiary" %}</th>
+				<th>{% trans "responsible" %}</th>
+				<th>{% trans "nature" %}</th>
+                <th>{% trans "Mission id" %}</th>
+				<th>{% trans "amount (k€)" %}</th>
+                <th>{% trans "billing mode" %}</th>
+                <th>{% trans "product" %}</th>
+                <th>{% trans "Forecast in future" %}</th>
+                <th>{% trans "Up to date forecast" %}</th>
+                <th>{% trans "Archiving" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+{% with "mission_table" as table_id %}
+    {% include "core/_datatables.html" %}
+{% endwith %}
+
+<script type="text/JavaScript">
+<!--
+
+    // Function that process ajax callback
+    function process_mission_archive(data) {
+        if (data.error==true) {
+            alert("{% trans 'Archiving failed' %}");
+        }
+        else {
+            $("#mission_" + data.id).closest("tr").hide("fast");
+        }
+    };
+    {% if consultant %}
+         // Toggle all or only active missions when embeded in consultant mission tab
+        $('#all-missions').on("click", function () {
+            $('#missions-content').load('{% url 'staffing:consultant_all_missions' consultant.id %}');
+        });
+        $('#active-missions').on("click", function () {
+            $('#missions-content').load('{% url 'staffing:consultant_missions' consultant.id %}');
+        });
+    {% endif %}
+-->
+</script>
+</div>

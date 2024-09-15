@@ -9,62 +9,13 @@
 {% block content %}
 
 {% if all %}
-    {% if consultant %}
-        <h1>{% blocktrans %}All missions of {{ consultant }}{% endblocktrans %}</h1>
-        <br/><a class="btn btn-primary" href="{% url 'staffing:consultant-missions' consultant.id %}">{% trans "Only display active missions" %}</a><br/><br/>
-    {% else %}
-        <h1>{% trans "All missions" %}</h1>
-        <br/><a class="btn btn-primary" href="{% url 'staffing:missions' %}">{% trans "Only display active missions" %}</a><br/><br/>
-    {% endif %}
+    <h1>{% trans "All missions" %}</h1>
+    <br/><a class="btn btn-primary" href="{% url 'staffing:missions' %}">{% trans "Only display active missions" %}</a><br/><br/>
 {% else %}
-    {% if consultant %}
-        <h1>{% blocktrans %}Actives missions of {{ consultant }}{% endblocktrans %}</h1>
-        <br/><a class="btn btn-primary" href="{% url 'staffing:consultant-all-missions' consultant.id %}">{% trans "Also display inactive missions" %}</a><br/><br/>
-    {% else %}
-        <h1>{% trans "Active missions" %}</h1>
-        <br/><a class="btn btn-primary" href="{% url 'staffing:all-missions' %}">{% trans "Also display inactive missions" %}</a><br/><br/>
-    {% endif %}
+    <h1>{% trans "Active missions" %}</h1>
+    <br/><a class="btn btn-primary" href="{% url 'staffing:all_missions' %}">{% trans "Also display inactive missions" %}</a><br/><br/>
 {% endif %}
 
-<table id="mission_table" class="table table-striped table-hover table-sm table-bordered" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th>{% trans "name" %}</th>
-				<th>{% trans "subsidiary" %}</th>
-				<th>{% trans "responsible" %}</th>
-				<th>{% trans "nature" %}</th>
-                <th>{% trans "Mission id" %}</th>
-				<th>{% trans "amount (k€)" %}</th>
-                <th>{% trans "billing mode" %}</th>
-                <th>{% trans "product" %}</th>
-                <th>{% trans "Forecast in future" %}</th>
-                <th>{% trans "Up to date forecast" %}</th>
-                <th>{% trans "Archiving" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-
-
-{% with "mission_table" as table_id %}
-    {% include "core/_datatables.html" %}
-{% endwith %}
-
-<script type="text/JavaScript">
-<!--
-
-    // Function that process ajax callback
-    function process_mission_archive(data) {
-        if (data.error==true) {
-            alert("{% trans 'Archiving failed' %}");
-        }
-        else {
-            $("#mission_" + data.id).closest("tr").hide("fast");
-        }
-    };
--->
-</script>
-
+    {% include "staffing/_mission_table.html" %}
 
 {% endblock %}
