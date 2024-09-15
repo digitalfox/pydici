@@ -38,15 +38,21 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
             qs = qs.filter(subsidiary=subsidiary)
         return qs
 
+    def _filter_on_consultant(self, qs):
+        """Filter on consultant based on timesheet"""
+        consultant_id = self.kwargs.get("consultant_id", None)
+        if consultant_id:
+            qs = qs.filter(timesheet__consultant_id=consultant_id).distinct()
+        return qs
+
     def get_initial_queryset(self):
-        qs = Mission.objects.all()
-        qs = self._filter_on_subsidiary(qs)
-        return qs.select_related("lead__client__organisation__company", "subsidiary")
+        return Mission.objects.all().select_related("lead__client__organisation__company", "subsidiary")
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
         search = self.request.GET.get(u'search[value]', None)
         qs = self._filter_on_subsidiary(qs)
+        qs = self._filter_on_consultant(qs)
         if search:
             qs = qs.filter(Q(deal_id__icontains=search) |
                            Q(description__icontains=search) |

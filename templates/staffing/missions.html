@@ -3,21 +3,27 @@
 {% load i18n %}
 
 {% block title %}
-	{% if all %}
-	    {% trans "All missions" %}
-	{% else %}
-	    {% trans "Active missions" %}
-	{% endif %}
+	{% trans "Missions" %}
 {% endblock %}
 
 {% block content %}
 
 {% if all %}
-    <h1>{% trans "All missions" %}</h1>
-    <br/><a class="btn btn-primary" href='{% url 'staffing:missions' %}'>{% trans "Only display active missions" %}</a><br/><br/>
+    {% if consultant %}
+        <h1>{% blocktrans %}All missions of {{ consultant }}{% endblocktrans %}</h1>
+        <br/><a class="btn btn-primary" href="{% url 'staffing:consultant-missions' consultant.id %}">{% trans "Only display active missions" %}</a><br/><br/>
+    {% else %}
+        <h1>{% trans "All missions" %}</h1>
+        <br/><a class="btn btn-primary" href="{% url 'staffing:missions' %}">{% trans "Only display active missions" %}</a><br/><br/>
+    {% endif %}
 {% else %}
-    <h1>{% trans "Active missions" %}</h1>
-    <br/><a class="btn btn-primary" href="{% url 'staffing:all-missions' %}">{% trans "Also display inactive missions" %}</a><br/><br/>
+    {% if consultant %}
+        <h1>{% blocktrans %}Actives missions of {{ consultant }}{% endblocktrans %}</h1>
+        <br/><a class="btn btn-primary" href="{% url 'staffing:consultant-all-missions' consultant.id %}">{% trans "Also display inactive missions" %}</a><br/><br/>
+    {% else %}
+        <h1>{% trans "Active missions" %}</h1>
+        <br/><a class="btn btn-primary" href="{% url 'staffing:all-missions' %}">{% trans "Also display inactive missions" %}</a><br/><br/>
+    {% endif %}
 {% endif %}
 
 <table id="mission_table" class="table table-striped table-hover table-sm table-bordered" cellspacing="0" width="100%">

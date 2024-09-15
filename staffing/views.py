@@ -123,14 +123,23 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
 
 
 @pydici_non_public
-def missions(request, onlyActive=True):
+def missions(request, only_active=True, consultant_id=None):
     """List of missions"""
-    if onlyActive:
-        data_url = reverse('staffing:active_mission_table_DT')
+    if consultant_id:
+        consultant = Consultant.objects.get(id=consultant_id)
+        if only_active:
+            data_url = reverse('staffing:consultant_active_mission_table_DT', args=(consultant_id,))
+        else:
+            data_url = reverse('staffing:consultant_all_mission_table_DT', args=(consultant_id,))
     else:
-        data_url = reverse('staffing:all_mission_table_DT')
+        consultant = None
+        if only_active:
+            data_url = reverse('staffing:active_mission_table_DT')
+        else:
+            data_url = reverse('staffing:all_mission_table_DT')
     return render(request, "staffing/missions.html",
-                  {"all": not onlyActive,
+                  {"all": not only_active,
+                   "consultant": consultant,
                    "data_url": data_url,
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] },
                                                              { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7,8,9]}],
