@@ -3,6 +3,7 @@
 # Pydici specific parameters
 
 import os
+from django.utils.translation import gettext_lazy as _
 
 # Root dir
 PYDICI_ROOTDIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir, os.path.pardir)
@@ -47,3 +48,13 @@ TELEGRAM_CHAT_MANAGER_LEVEL = 4  # Every people with level < to his will be noti
 
 # Default company logo
 COMPANY_LOGO = "/media/pydici/company_logo.png"
+
+# Achievements configuration
+ACHIEVEMENTS = {
+    "MISSION_COUNT": [(_("rookie"), 0), (_("pro"), 50), (_("veteran"), 100), (_("emperor"), 200), (_("grandmaster"), 300)],
+    "ACTIVE_MISSION_COUNT": [(_("rookie"), 0), (_("busy"), 10), (_("expert"), 10), (_("master"), 15), (_("archivist killer"), 50)],
+    "TURNOVER": [(_("rookie"), 0), (_("pro"), 500), (_("good winner"), 1_000), (_("Cresus"), 2_000), (_("Picsou"), 5_000)],
+    "LAST_YEAR_TURNOVER": [(_("rookie"), 0), (_("good winner"), 100), (_("alchemist"), 150), (_("wolf of Wall Street"), 250), (_("grandmaster"), 350)],
+    "LONGEST_MISSION": [(_("rookie"), 0), (_("sprinter"), 50), (_("marathoner"), 100), (_("survivor"), 200), (_("grandmaster"), 500)],
+    "MAX_MISSION_PER_MONTH": [(_("rookie"), 0), (_("multithread"), 3), (_("ubiquitous"), 5), (_("ninja"), 10), (_("grandmaster"), 15)],
+}
