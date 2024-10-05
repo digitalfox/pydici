@@ -116,35 +116,46 @@ class MissionContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, Con
     form_class = MissionContactForm
 
 
-class BusinessBrokerCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
+class BusinessBrokerCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, CreateView):
     model = BusinessBroker
     template_name = "core/form.html"
     form_class = BusinessBrokerForm
 
+    def get_success_url(self):
+        return reverse_lazy("crm:businessbroker_list")
 
-class BusinessBrokerUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, UpdateView):
+class BusinessBrokerUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, UpdateView):
     model = BusinessBroker
     template_name = "core/form.html"
     form_class = BusinessBrokerForm
+
+    def get_success_url(self):
+        return reverse_lazy("crm:businessbroker_list")
 
 @pydici_non_public
 @pydici_feature("3rdparties")
-def business_broker_list(request):
-    return render(request, "crm/business_broker_list.html",
-                  {"data_url": reverse("crm:all_business_broker_table_DT"),
+def businessbroker_list(request):
+    return render(request, "crm/businessbroker_list.html",
+                  {"data_url": reverse("crm:all_businessbroker_table_DT"),
                           "user": request.user})
 
 
-class SupplierCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
+class SupplierCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, CreateView):
     model = Supplier
     template_name = "core/form.html"
     form_class = SupplierForm
 
+    def get_success_url(self):
+        return reverse_lazy("crm:supplier_list")
 
-class SupplierUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, UpdateView):
+
+class SupplierUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, UpdateView):
     model = Supplier
     template_name = "core/form.html"
     form_class = SupplierForm
+
+    def get_success_url(self):
+        return reverse_lazy("crm:supplier_list")
 
 
 @pydici_non_public
