@@ -117,6 +117,7 @@
                                 {% trans "Third parties" %}
                             </a>
                             <ul class="dropdown-menu pydici-on-top" aria-labelledby="navbarDropdown">
+                                <li class="dropdown-header">{% trans "Create" %}</li>
                                 <li><a class="dropdown-item" href="{% url 'crm:client' %}">{% trans "New client" %}</a></li>
                                 {% if pydici_feature.contacts_write %}
                                     <li><a class="dropdown-item" href="{% url 'crm:mission_contact_create' %}">{% trans "New mission contact" %}</a></li>
@@ -125,8 +126,9 @@
                                     <li><a class="dropdown-item" href="{% url 'crm:supplier_create' %}">{% trans "New supplier" %}</a></li>
                                 {% endif %}
                                 <li><hr class="dropdown-divider"></li>
-                                <li class="dropdown-header">{% trans "Reporting" %}</li>
+                                <li class="dropdown-header">{% trans "Lists" %}</li>
                                 <li><a class="dropdown-item" href="{% url 'crm:company_list' %}">{% trans "All clients" %}</a></li>
+                                <li><a class="dropdown-item" href="{% url 'crm:business_broker_list' %}">{% trans "All business brokers" %}</a></li>
                                 <li><a class="dropdown-item" href="{% url 'crm:contact_list' %}">{% trans "Contact address directory" %}</a></li>
                             </ul>
                         </li>

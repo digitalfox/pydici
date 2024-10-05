@@ -11,8 +11,7 @@ from datetime import date, datetime, timedelta
 from django.shortcuts import render
 from django.db.models import Sum, Min, Max, Count, F, Q
 from django.views.decorators.cache import cache_page
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import DetailView, ListView
+from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
 from django.contrib import messages
 from django.utils.translation import gettext as _
 from django.http import HttpResponseRedirect, HttpResponse, Http404
@@ -94,10 +93,6 @@ class ContactDetail(PydiciNonPublicdMixin, ThirdPartyMixin, DetailView):
     model = Contact
 
 
-class ContactList(PydiciNonPublicdMixin, ThirdPartyMixin, ListView):
-    model = Contact
-
-
 @pydici_non_public
 @pydici_feature("3rdparties")
 def contact_list(request):
@@ -131,6 +126,13 @@ class BusinessBrokerUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, Con
     model = BusinessBroker
     template_name = "core/form.html"
     form_class = BusinessBrokerForm
+
+@pydici_non_public
+@pydici_feature("3rdparties")
+def business_broker_list(request):
+    return render(request, "crm/business_broker_list.html",
+                  {"data_url": reverse("crm:all_business_broker_table_DT"),
+                          "user": request.user})
 
 
 class SupplierCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):

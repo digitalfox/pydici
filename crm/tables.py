@@ -10,7 +10,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from core.decorator import PydiciNonPublicdMixin
 from crm.views import ThirdPartyMixin
-from crm.models import Contact
+from crm.models import Contact, BusinessBroker
 
 
 class ContactTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
@@ -47,3 +47,23 @@ class ContactTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
         else:
             return super(ContactTableDT, self).render_column(row, column)
 
+
+class BusinessBrokerTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
+    """Business broker tables backend for datatables"""
+    columns = ("company", "contact", "billing_name")
+    order_columns = columns
+    max_display_length = 500
+
+
+    def get_initial_queryset(self):
+        return BusinessBroker.objects.all()
+
+    def filter_queryset(self, qs):
+        """ simple search on some attributes"""
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(Q(contact__name__icontains=search) |
+                           Q(contact__contact_points__name__icontains=search) |
+                           Q(company__name__icontains=search)
+                           ).distinct()
+        return qs
