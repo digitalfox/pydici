@@ -147,6 +147,14 @@ class SupplierUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactRe
     form_class = SupplierForm
 
 
+@pydici_non_public
+@pydici_feature("3rdparties")
+def supplier_list(request):
+    return render(request, "crm/supplier_list.html",
+                  {"data_url": reverse("crm:all_supplier_table_DT"),
+                          "user": request.user})
+
+
 class AdministrativeContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, CreateView):
     model = AdministrativeContact
     template_name = "core/form.html"

@@ -10,7 +10,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from core.decorator import PydiciNonPublicdMixin
 from crm.views import ThirdPartyMixin
-from crm.models import Contact, BusinessBroker
+from crm.models import Contact, BusinessBroker, Supplier
 
 
 class ContactTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
@@ -54,7 +54,6 @@ class BusinessBrokerTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatabl
     order_columns = columns
     max_display_length = 500
 
-
     def get_initial_queryset(self):
         return BusinessBroker.objects.all()
 
@@ -64,6 +63,25 @@ class BusinessBrokerTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatabl
         if search:
             qs = qs.filter(Q(contact__name__icontains=search) |
                            Q(contact__contact_points__name__icontains=search) |
+                           Q(company__name__icontains=search)
+                           ).distinct()
+        return qs
+
+
+class SupplierTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
+    """Supplier tables backend for datatables"""
+    columns = ("company", "contact")
+    order_columns = columns
+    max_display_length = 500
+
+    def get_initial_queryset(self):
+        return Supplier.objects.all()
+
+    def filter_queryset(self, qs):
+        """ simple search on some attributes"""
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(Q(contact__name__icontains=search) |
                            Q(company__name__icontains=search)
                            ).distinct()
         return qs
