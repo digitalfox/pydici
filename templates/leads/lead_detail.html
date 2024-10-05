@@ -156,12 +156,12 @@
                 {% endif %}
                 {% if lead.business_broker %}
                     <tr>
-                        <th>{% trans "Broker" %}</th><td>{{ lead.business_broker }}</td>
+                        <th>{% trans "Broker" %}</th><td><a href="{% url 'crm:businessbroker_update' lead.business_broker.id %}">{{ lead.business_broker }}</a></td>
                     </tr>
                 {% endif %}
                 {% if lead.paying_authority %}
                     <tr>
-                        <th>{% trans "Paying authority" %}</th><td>{{ lead.paying_authority }}</td>
+                        <th>{% trans "Paying authority" %}</th><td><a href="{% url 'crm:businessbroker_update' lead.paying_authority.id %}">{{ lead.paying_authority }}</a></td>
                     </tr>
                 {% endif %}
                 <tr>
