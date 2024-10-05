@@ -313,6 +313,9 @@ class BusinessBroker(models.Model):
         else:
             return self.contact
 
+    def get_absolute_url(self):
+        return reverse("crm:businessbroker_update", args=[self.id, ])
+
     class Meta:
         ordering = ["company", "contact"]
         verbose_name = _("Business broker")
@@ -329,6 +332,9 @@ class Supplier(models.Model):
             return "%s (%s)" % (self.company, self.contact)
         else:
             return str(self.company)
+
+    def get_absolute_url(self):
+        return reverse("crm:supplier_update", args=[self.id, ])
 
     class Meta:
         ordering = ["company", "contact"]

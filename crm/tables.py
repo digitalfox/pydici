@@ -19,7 +19,6 @@ class ContactTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
     order_columns = columns
     max_display_length = 500
 
-
     def get_initial_queryset(self):
         return Contact.objects.all().prefetch_related("contact_points")
 
