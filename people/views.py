@@ -14,14 +14,14 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext as _
-from django.db.models import Count, Sum, Min, F
+from django.db.models import Count, Sum, Min, F, Avg
 from django.db.models.functions import TruncMonth
 from django.conf import settings
 
 from people.models import Consultant
 from crm.models import Company
 from crm.utils import get_subsidiary_from_session
-from staffing.models import Holiday, Mission, Timesheet
+from staffing.models import Holiday, Mission, Timesheet, FinancialCondition
 from core.decorator import pydici_non_public, pydici_subcontractor
 from core.utils import working_days, previousMonth, nextMonth, COLORS
 from people.utils import subcontractor_is_user
@@ -291,6 +291,16 @@ def consultant_achievements(request, consultant_id):
                                         value=max_mission_per_month_qs["id__count"],
                                         link=max_mission_per_month_link))
 
+    max_monthly_daily_rate = FinancialCondition.objects.filter(mission__lead__state="WON", consultant=consultant).annotate(
+        month=TruncMonth("mission__timesheet__working_date")).values("month").annotate(Avg("daily_rate")).order_by(
+        "-daily_rate__avg").first()
+    if max_monthly_daily_rate:
+        achievements.append(Achievement(key="MAX_MONTHLY_DAILY_RATE",
+                                        name=_("Max monthly daily rate (%s)") % max_monthly_daily_rate["month"].strftime("%m/%Y"),
+                                        icon="calculator",
+                                        value=max_monthly_daily_rate["daily_rate__avg"],
+                                        format="%i €",
+                                        link=reverse("staffing:rates_report") + "?step=month"))
     #TODO: nb of distinct client so far and number of client last 12 month
     #TODO number of missions last year
 

@@ -58,4 +58,5 @@ ACHIEVEMENTS = {
     "LONGEST_MISSION": [(_("rookie"), 0), (_("sprinter"), 50), (_("marathoner"), 100), (_("survivor"), 200), (_("grandmaster"), 500)],
     "LONGEST_LEAD": [(_("premature"), 0), (_("patient"), 50), (_("resilient"), 100), (_("tireless"), 200), (_("resigned"), 500)],
     "MAX_MISSION_PER_MONTH": [(_("rookie"), 0), (_("multithread"), 3), (_("ubiquitous"), 5), (_("ninja"), 10), (_("grandmaster"), 15)],
+    "MAX_MONTHLY_DAILY_RATE": [(_("beggar"), 0), (_("penniless"), 700), (_("honorable"), 1000), (_("prince"), 1500), (_("nabab"), 2000)],
 }
