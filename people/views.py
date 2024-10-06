@@ -208,6 +208,7 @@ def consultant_achievements(request, consultant_id):
         format: str = None
         level_name: str = ""
         level_color: str = "black"
+        rank: int = 0
 
         def __post_init__(self):
             LEVEL_COLORS = ("#8bbdd8", "#83a3bd", "#7c789c", "#876089", "#6d4672")
@@ -220,6 +221,7 @@ def consultant_achievements(request, consultant_id):
                 self.level_color = LEVEL_COLORS[rank]
             except IndexError:
                 self.level_color = LEVEL_COLORS[-1]
+            self.rank = rank + 1
 
         def value_repr(self):
             if self.format:
@@ -233,27 +235,27 @@ def consultant_achievements(request, consultant_id):
                                     name=_("Missions done"),
                                     icon="list-ul",
                                     value=Mission.objects.filter(nature="PROD", active=False, timesheet__consultant=consultant).distinct().count(),
-                                    link="#"))
+                                    link="#goto_tab-missions"))
 
     achievements.append(Achievement(key="ACTIVE_MISSION_COUNT",
                                     name=_("Active missions count"),
                                     icon="list-ul",
                                     value=Mission.objects.filter(nature="PROD", active=True).filter(staffing__consultant=consultant).distinct().count(),
-                                    link="#"))
+                                    link="#goto_tab-missions"))
 
     achievements.append(Achievement(key="TURNOVER",
                                     name=_("Turnover"),
                                     icon="calculator",
                                     value=(consultant.get_turnover() or 0)/1000,
                                     format="%i k€",
-                                    link="#"))
+                                    link=reverse("staffing:turnover_pivotable")))
 
     achievements.append(Achievement(key="LAST_YEAR_TURNOVER",
                                     name=_("Turnover last 12 months"),
                                     icon="calculator",
                                     value=(consultant.get_turnover(start_date=(date.today() - timedelta(365)).replace(day=1)) or 0) / 1000,
                                     format="%i k€",
-                                    link="#"))
+                                    link=reverse("staffing:turnover_pivotable")))
 
     longest_mission_qs = Timesheet.objects.filter(mission__nature="PROD", consultant=consultant).values("mission").annotate(Sum("charge")).order_by("charge__sum").last()
     if longest_mission_qs:
@@ -279,12 +281,15 @@ def consultant_achievements(request, consultant_id):
     max_mission_per_month_qs = max_mission_per_month_qs.annotate(month=TruncMonth("timesheet__working_date")).values("month")
     max_mission_per_month_qs = max_mission_per_month_qs.annotate(Count("id", distinct=True)).order_by("id__count").last()
     if max_mission_per_month_qs:
+        max_mission_per_month_link = reverse("people:consultant_home",
+                                             args=[consultant.trigramme]) + "?year=%s&month=%s" % (
+                                         max_mission_per_month_qs["month"].year,
+                                         max_mission_per_month_qs["month"].month) + "#tab-timesheet"
         achievements.append(Achievement(key="MAX_MISSION_PER_MONTH",
                                         name=_("Max mission in one month (%s)") % max_mission_per_month_qs["month"].strftime("%m/%Y"),
                                         icon="list-nested",
                                         value=max_mission_per_month_qs["id__count"],
-                                        link="#"))
-
+                                        link=max_mission_per_month_link))
 
     #TODO: nb of distinct client so far and number of client last 12 month
     #TODO number of missions last year

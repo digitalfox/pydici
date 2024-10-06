@@ -12,7 +12,9 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-3">
-                        <i class="pydici-tooltip bi bi-{{ achievement.icon }}" style="font-size: 4rem; color:{{ achievement.level_color }}" title="{{ achievement.level_name }}"></i>
+                        {% for i in "x"|rjust:achievement.rank %}
+                            <i class="pydici-tooltip bi bi-{{ achievement.icon }}" style="font-size: 1.5rem; color:{{ achievement.level_color }}" title="{{ achievement.level_name }}"></i>
+                        {% endfor %}
                     </div>
                     <div class="col-9 text-end">
                         <div class="huge">{{ achievement.value_repr }}</div>
