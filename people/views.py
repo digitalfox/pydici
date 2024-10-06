@@ -14,7 +14,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext as _
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Min, F
 from django.db.models.functions import TruncMonth
 from django.conf import settings
 
@@ -26,6 +26,7 @@ from core.decorator import pydici_non_public, pydici_subcontractor
 from core.utils import working_days, previousMonth, nextMonth, COLORS
 from people.utils import subcontractor_is_user
 from crm.models import Subsidiary
+from leads.models import Lead
 
 
 def _consultant_home(request, consultant):
@@ -229,13 +230,13 @@ def consultant_achievements(request, consultant_id):
     achievements = []
 
     achievements.append(Achievement(key="MISSION_COUNT",
-                                    name=_("Mission done"),
+                                    name=_("Missions done"),
                                     icon="list-ul",
                                     value=Mission.objects.filter(nature="PROD", active=False, timesheet__consultant=consultant).distinct().count(),
                                     link="#"))
 
     achievements.append(Achievement(key="ACTIVE_MISSION_COUNT",
-                                    name=_("Active mission count"),
+                                    name=_("Active missions count"),
                                     icon="list-ul",
                                     value=Mission.objects.filter(nature="PROD", active=True).filter(staffing__consultant=consultant).distinct().count(),
                                     link="#"))
@@ -263,6 +264,17 @@ def consultant_achievements(request, consultant_id):
                                         format=_("%i days"),
                                         link=reverse("staffing:mission_home", args=[longest_mission_qs["mission"], ])))
 
+    longest_lead = Lead.objects.filter(state="WON", responsible=consultant).annotate(
+        start=Min("mission__timesheet__working_date")).exclude(
+        start=None).annotate(duration=F("start") - F("creation_date__date")).order_by("-duration").first()
+    if longest_lead:
+        achievements.append(Achievement(key="LONGEST_LEAD",
+                                        name=_("Longest won lead: %s") % str(longest_lead),
+                                        icon="hourglass",
+                                        value=longest_lead.duration.days,
+                                        format=_("%i days"),
+                                        link=reverse("leads:detail", args=[longest_lead.id, ])))
+
     max_mission_per_month_qs = Mission.objects.filter(nature="PROD", timesheet__consultant=consultant)
     max_mission_per_month_qs = max_mission_per_month_qs.annotate(month=TruncMonth("timesheet__working_date")).values("month")
     max_mission_per_month_qs = max_mission_per_month_qs.annotate(Count("id", distinct=True)).order_by("id__count").last()
@@ -272,6 +284,7 @@ def consultant_achievements(request, consultant_id):
                                         icon="list-nested",
                                         value=max_mission_per_month_qs["id__count"],
                                         link="#"))
+
 
     #TODO: nb of distinct client so far and number of client last 12 month
     #TODO number of missions last year

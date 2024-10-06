@@ -56,5 +56,6 @@ ACHIEVEMENTS = {
     "TURNOVER": [(_("rookie"), 0), (_("pro"), 500), (_("good winner"), 1_000), (_("Cresus"), 2_000), (_("Picsou"), 5_000)],
     "LAST_YEAR_TURNOVER": [(_("rookie"), 0), (_("good winner"), 100), (_("alchemist"), 150), (_("wolf of Wall Street"), 250), (_("grandmaster"), 350)],
     "LONGEST_MISSION": [(_("rookie"), 0), (_("sprinter"), 50), (_("marathoner"), 100), (_("survivor"), 200), (_("grandmaster"), 500)],
+    "LONGEST_LEAD": [(_("premature"), 0), (_("patient"), 50), (_("resilient"), 100), (_("tireless"), 200), (_("resigned"), 500)],
     "MAX_MISSION_PER_MONTH": [(_("rookie"), 0), (_("multithread"), 3), (_("ubiquitous"), 5), (_("ninja"), 10), (_("grandmaster"), 15)],
 }
