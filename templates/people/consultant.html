@@ -25,22 +25,22 @@
     {% cache 3600 consultant_menu consultant.id request.GET.year request.GET.month request.GET.all_missions %}
     <ul class="nav nav-tabs" id="consultant-tabs">
         {% if consultant.subcontractor %}
-            <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home" data-tab-url="{% url 'people:subcontractor_detail' consultant.id %}"><i class="bi bi-house"></i> {% trans "Home" %}</button></li>
+            <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home" data-tab-url="{% url 'people:subcontractor_detail' consultant.id %}"><i class="bi bi-house"></i> <div class="d-none d-md-inline">{% trans "Home" %}</div></button></li>
         {% else %}
-            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home" data-tab-url="{% url 'people:consultant_detail' consultant.id %}"><i class="bi-house"></i> {% trans "Home" %}</button></li>
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home" data-tab-url="{% url 'people:consultant_detail' consultant.id %}"><i class="bi-house"></i> <div class="d-none d-md-inline">{% trans "Home" %}</div></button></li>
         {% endif %}
         {% if request.GET.year and request.GET.month %}
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-timesheet" data-tab-url="{% url 'staffing:consultant_timesheet' consultant.id request.GET.year request.GET.month %}"><i class="bi-clock"></i> {% trans "Timesheet" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-timesheet" data-tab-url="{% url 'staffing:consultant_timesheet' consultant.id request.GET.year request.GET.month %}"><i class="bi-clock"></i> <div class="d-none d-md-inline">{% trans "Timesheet" %}</div></button></li>
         {% else %}
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-timesheet" data-tab-url="{% url 'staffing:consultant_timesheet' consultant.id %}"><i class="bi-clock"></i> {% trans "Timesheet" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-timesheet" data-tab-url="{% url 'staffing:consultant_timesheet' consultant.id %}"><i class="bi-clock"></i> <div class="d-none d-md-inline">{% trans "Timesheet" %}</div></button></li>
         {% endif %}
         {% if pydici_feature.staffing %}
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-staffing"  data-tab-url="{% url 'staffing:consultant_staffing' consultant.id %}"><i class="bi-eye"></i> {% trans "Forecast staffing" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-staffing"  data-tab-url="{% url 'staffing:consultant_staffing' consultant.id %}"><i class="bi-eye"></i> <div class="d-none d-md-inline">{% trans "Forecast staffing" %}</div></button></li>
         {% endif %}
         {% if not consultant.subcontractor %}
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-missions" data-tab-url="{% url 'staffing:consultant_missions' consultant_id=consultant.id  %}"><i class="bi-list-ul"></i> {% trans "Missions" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-missions" data-tab-url="{% url 'staffing:consultant_missions' consultant_id=consultant.id  %}"><i class="bi-list-ul"></i> <div class="d-none d-md-inline">{% trans "Missions" %}</div></button></li>
             {% if consultant.productive %}
-                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-achievements" data-tab-url="{% url 'people:consultant_achievements' consultant.id %}"><i class="bi-trophy"></i> {% trans "Achievements" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-achievements" data-tab-url="{% url 'people:consultant_achievements' consultant.id %}"><i class="bi-trophy"></i> <div class="d-none d-md-inline">{% trans "Achievements" %}</div></button></li>
             {% endif %}
         {% endif %}
     </ul>

@@ -31,21 +31,21 @@
 <div>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="mission-tabs">
-        <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home"><i class="bi bi-house"></i> {% trans "Description" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-consultants" data-tab-url="{% url 'staffing:mission_consultants' mission.id %}"><i class="bi bi-person"></i> {% trans "Consultants" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-contacts" data-tab-url="{% url 'staffing:mission_contacts' mission.id %}"><i class="bi bi-envelope"></i> {% trans "Contacts" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-other-missions" id="tabheader-other-missions"><i class="bi bi-list-ul"></i> {% trans "Other missions" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-timesheet" data-tab-url="{% url 'staffing:mission_timesheet' mission.id %}"><i class="bi bi-clock"></i> {% trans "Timesheet" %}</button></li>
+        <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home"><i class="bi bi-house"></i> <div class="d-none d-md-inline">{% trans "Description" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-consultants" data-tab-url="{% url 'staffing:mission_consultants' mission.id %}"><i class="bi bi-person"></i> <div class="d-none d-md-inline">{% trans "Consultants" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-contacts" data-tab-url="{% url 'staffing:mission_contacts' mission.id %}"><i class="bi bi-envelope"></i> <div class="d-none d-md-inline">{% trans "Contacts" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-other-missions" id="tabheader-other-missions"><i class="bi bi-list-ul"></i> <div class="d-none d-md-inline">{% trans "Other missions" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-timesheet" data-tab-url="{% url 'staffing:mission_timesheet' mission.id %}"><i class="bi bi-clock"></i> <div class="d-none d-md-inline">{% trans "Timesheet" %}</div></button></li>
         {% if mission.active %}
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-staffing" data-tab-url="{% url 'staffing:mission_staffing' mission.id %}"><i class="bi bi-eye"></i> {% trans "Forecast staffing" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-staffing" data-tab-url="{% url 'staffing:mission_staffing' mission.id %}"><i class="bi bi-eye"></i> <div class="d-none d-md-inline">{% trans "Forecast staffing" %}</div></button></li>
         {% endif %}
         {% if mission.lead %}
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-expenses" data-tab-url="{% url 'expense:lead_expenses' mission.lead.id %}"><i class="bi bi-credit-card"></i> {% trans "Expenses" %}</button></li>
-            {% if enable_doc_tab %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-documents" data-tab-url="{% url 'leads:lead_documents' mission.lead.id %}"><i class="bi bi-file-earmark-text"></i> {% trans "Documents" %}</button></li>{% endif %}
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' mission.lead.id %}"><i class="bi bi-graph-up"></i> {% trans "Reporting" %}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-expenses" data-tab-url="{% url 'expense:lead_expenses' mission.lead.id %}"><i class="bi bi-credit-card"></i> <div class="d-none d-md-inline">{% trans "Expenses" %}</div></button></li>
+        {% if enable_doc_tab %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-documents" data-tab-url="{% url 'leads:lead_documents' mission.lead.id %}"><i class="bi bi-file-earmark-text"></i> <div class="d-none d-md-inline">{% trans "Documents" %}</div></button></li>{% endif %}
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' mission.lead.id %}"><i class="bi bi-graph-up"></i> <div class="d-none d-md-inline">{% trans "Reporting" %}</div></button></li>
         {% endif %}
-        {% if mission.lead %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-billing" data-tab-url="{% url 'billing:lead_billing' mission.lead.id %}"><i class="bi bi-calculator"></i> {% trans "Billing" %}</button></li>{% endif %}
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-history", data-tab-url="{% url 'core:object_history' 'mission' mission.id %}"><i class="bi bi-clock-history"></i> {% trans "History" %}</button></li>
+        {% if mission.lead %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-billing" data-tab-url="{% url 'billing:lead_billing' mission.lead.id %}"><i class="bi bi-calculator"></i> <div class="d-none d-md-inline">{% trans "Billing" %}</div></button></li>{% endif %}
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-history", data-tab-url="{% url 'core:object_history' 'mission' mission.id %}"><i class="bi bi-clock-history"></i> <div class="d-none d-md-inline">{% trans "History" %}</div></button></li>
     </ul>
 </div>
 

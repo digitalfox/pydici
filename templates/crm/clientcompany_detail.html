@@ -28,15 +28,15 @@
 <div>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="company-tabs">
-        <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-dashboard"><i class="bi bi-house"></i> {% trans "Dashboard" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-structure"><i class="bi bi-diagram-3"></i> {% trans "Structure" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-leads"><i class="bi bi-list-ul"></i> {% trans "Leads" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-consultants"><i class="bi bi-person"></i> {% trans "Consultants" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-contacts"><i class="bi bi-envelope"></i> {% trans "Client contacts" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-rates-margin" data-tab-url="{% url 'crm:company_rates_margin' company.id %}"><i class="bi bi-tag"></i> {% trans "Rates and margin" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-billing" data-tab-url="{% url 'crm:company_billing' company.id %}"><i class="bi bi-calculator"></i> {% trans "Billing" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'crm:company_pivotable' company.id %}"><i class="bi bi-graph-up"></i> {% trans "Reporting" %}</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-all-companies"><i class="bi bi-folder2-open"></i> {% trans "All companies list" %}</button></li>
+        <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-dashboard"><i class="bi bi-house"></i> <div class="d-none d-md-inline">{% trans "Dashboard" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-structure"><i class="bi bi-diagram-3"></i> <div class="d-none d-md-inline">{% trans "Structure" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-leads"><i class="bi bi-list-ul"></i> <div class="d-none d-md-inline">{% trans "Leads" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-consultants"><i class="bi bi-person"></i> <div class="d-none d-md-inline">{% trans "Consultants" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-contacts"><i class="bi bi-envelope"></i> <div class="d-none d-md-inline">{% trans "Client contacts" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-rates-margin" data-tab-url="{% url 'crm:company_rates_margin' company.id %}"><i class="bi bi-tag"></i> <div class="d-none d-md-inline">{% trans "Rates and margin" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-billing" data-tab-url="{% url 'crm:company_billing' company.id %}"><i class="bi bi-calculator"></i> <div class="d-none d-md-inline">{% trans "Billing" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'crm:company_pivotable' company.id %}"><i class="bi bi-graph-up"></i> <div class="d-none d-md-inline">{% trans "Reporting" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-all-companies"><i class="bi bi-folder2-open"></i> <div class="d-none d-md-inline">{% trans "All companies list" %}</div></button></li>
     </ul>
 </div>
 
