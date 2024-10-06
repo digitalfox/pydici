@@ -39,7 +39,9 @@
         {% endif %}
         {% if not consultant.subcontractor %}
             <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-missions" data-tab-url="{% url 'staffing:consultant_missions' consultant_id=consultant.id  %}"><i class="bi-list-ul"></i> {% trans "Missions" %}</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-achievements" data-tab-url="{% url 'people:consultant_achievements' consultant.id %}"><i class="bi-trophy"></i> {% trans "Achievements" %}</button></li>
+            {% if consultant.productive %}
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-achievements" data-tab-url="{% url 'people:consultant_achievements' consultant.id %}"><i class="bi-trophy"></i> {% trans "Achievements" %}</button></li>
+            {% endif %}
         {% endif %}
     </ul>
     {% endcache %}
