@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-06 15:54+0200\n"
-"PO-Revision-Date: 2024-10-06 15:54+0200\n"
+"POT-Creation-Date: 2024-10-06 16:40+0200\n"
+"PO-Revision-Date: 2024-10-06 16:39+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -1978,12 +1978,17 @@ msgstr "Avant vente gagnée la plus longue : %s"
 msgid "Max mission in one month (%s)"
 msgstr "Max missions sur un mois (%s)"
 
-#: people/views.py:351
+#: people/views.py:299
+#, python-format
+msgid "Max monthly daily rate (%s)"
+msgstr "Meilleur TJM mensuel (%s)"
+
+#: people/views.py:361
 #, python-format
 msgid "consultants %s"
 msgstr "consultants %s"
 
-#: people/views.py:352
+#: people/views.py:362
 #, python-format
 msgid "subcontractors %s"
 msgstr "sous-traitant %s"
@@ -2094,6 +2099,26 @@ msgstr "don d'ubiquité"
 #: pydici/settings/pydici.py:60
 msgid "ninja"
 msgstr "ninja"
+
+#: pydici/settings/pydici.py:61
+msgid "beggar"
+msgstr "mendiant"
+
+#: pydici/settings/pydici.py:61
+msgid "penniless"
+msgstr "sans-le-sou"
+
+#: pydici/settings/pydici.py:61
+msgid "honorable"
+msgstr "honorable"
+
+#: pydici/settings/pydici.py:61
+msgid "prince"
+msgstr "prince"
+
+#: pydici/settings/pydici.py:61
+msgid "nabab"
+msgstr "nabab"
 
 #: staffing/forms.py:123
 msgid "Invalid date format"
@@ -4839,7 +4864,7 @@ msgstr "Accueil"
 msgid "Forecast staffing"
 msgstr "Charge prévisionnelle"
 
-#: templates/people/consultant.html:42
+#: templates/people/consultant.html:43
 msgid "Achievements"
 msgstr "Trophées"
 
@@ -6199,9 +6224,6 @@ msgstr "Ratio de sommes"
 
 #~ msgid "Min daily rate (€)"
 #~ msgstr "Taux journalier mini (€)"
-
-#~ msgid "Max daily rate (€)"
-#~ msgstr "Taux journalier maxi (€)"
 
 #~ msgid "Production rate (&#37;)"
 #~ msgstr "Taux de production (&#37;)"
