@@ -123,27 +123,19 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
 
 
 @pydici_non_public
-def missions(request, only_active=True, consultant_id=None):
+def missions(request, only_active=True):
     """List of missions"""
-    if consultant_id:
-        consultant = Consultant.objects.get(id=consultant_id)
-        if only_active:
-            data_url = reverse('staffing:consultant_active_mission_table_DT', args=(consultant_id,))
-        else:
-            data_url = reverse('staffing:consultant_all_mission_table_DT', args=(consultant_id,))
+    if only_active:
+        data_url = reverse('staffing:active_mission_table_DT')
     else:
-        consultant = None
-        if only_active:
-            data_url = reverse('staffing:active_mission_table_DT')
-        else:
-            data_url = reverse('staffing:all_mission_table_DT')
+        data_url = reverse('staffing:all_mission_table_DT')
     return render(request, "staffing/missions.html",
                   {"all": not only_active,
-                   "consultant": consultant,
                    "data_url": data_url,
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] },
                                                              { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7,8,9]}],
-                                             "order": [[0, "asc"]] ''',
+                                             "order": [[0, "asc"]],
+                                             "fnDrawCallback": function( oSettings ) {htmx.process(document.body); }''',
                    "user": request.user})
 
 
@@ -284,7 +276,8 @@ def consultant_missions(request, only_active=True, consultant_id=None):
                    "data_url": data_url,
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] },
                                                                  { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7,8,9]}],
-                                            "order": [[3, "asc"]]
+                                            "order": [[3, "asc"]],
+                                            "fnDrawCallback": function( oSettings ) {htmx.process(document.body); }
                                             ''',
                    "user": request.user})
 
@@ -866,16 +859,14 @@ def fixed_price_missions_report(request):
 
 @pydici_non_public
 def deactivate_mission(request, mission_id):
-    """Deactivate the given mission"""
+    """Deactivate the given mission. Fragment for htmx call"""
     try:
-        error = False
         mission = Mission.objects.get(id=mission_id)
         mission.active = False
         mission.save()
+        return HttpResponse(_("mission archived"))
     except Mission.DoesNotExist:
-        error = True
-    return HttpResponse(json.dumps({"error": error, "id": mission_id}),
-                        content_type="application/json")
+        return HttpResponse(_("mission not found"))
 
 
 @cache_control(no_store=True)

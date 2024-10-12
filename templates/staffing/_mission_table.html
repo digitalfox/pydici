@@ -36,16 +36,6 @@
 
 <script type="text/JavaScript">
 <!--
-
-    // Function that process ajax callback
-    function process_mission_archive(data) {
-        if (data.error==true) {
-            alert("{% trans 'Archiving failed' %}");
-        }
-        else {
-            $("#mission_" + data.id).closest("tr").hide("fast");
-        }
-    };
     {% if consultant %}
          // Toggle all or only active missions when embeded in consultant mission tab
         $('#all-missions').on("click", function () {
