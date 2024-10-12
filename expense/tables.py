@@ -6,10 +6,8 @@ Pydici leads tables
 """
 
 from django.utils.translation import gettext as _
-from django.urls import reverse
 from django.db.models import Q
 from django.utils.safestring import mark_safe
-from django.utils.encoding import smart_str
 from django.template import Template, RequestContext
 from django.template.loader import get_template
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -22,7 +20,7 @@ from people.models import Consultant
 from core.templatetags.pydici_filters import link_to_consultant
 from core.utils import TABLES2_HIDE_COL_MD, to_int_or_round
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin, PydiciSubcontractordMixin
-from expense.utils import expense_transition_to_state_display, user_expense_perm
+from expense.utils import expense_transition_to_state_display, user_expense_perm, can_edit_expense, expense_next_states
 
 
 class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatableView):
@@ -126,6 +124,7 @@ class ExpenseTable(tables.Table):
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
     update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title attr is just used to have an easy to parse hidden value for sorting
     vat = tables.TemplateColumn("""{% load l10n %}<div id="{{record.id|unlocalize}}" class="jeditable-vat">{{record.vat}}</div>""")
+    transitions_template = get_template("expense/_expense_transitions_column.html")
 
     def render_user(self, value):
         return link_to_consultant(value)
@@ -142,35 +141,18 @@ class ExpenseTable(tables.Table):
 class ExpenseWorkflowTable(ExpenseTable):
     transitions = tables.Column(accessor="pk")
 
-    def render_transitions(self, record):
-        result = []
-        for transition in self.transitionsData[record.id]:
-            result.append("""<a role='button' title='%s' class='btn btn-primary btn-sm' href="javascript:;" onClick="$.get('%s', process_expense_transition)">%s</a>"""
-                          % (expense_transition_to_state_display(transition), reverse("expense:update_expense_state", args=[record.id, transition]), expense_transition_to_state_display(transition)[0:2]))
-        if self.expenseEditPerm[record.id]:
-            result.append("<a role='button' title='%s' class='btn btn-primary btn-sm' href='%s'>%s</a>"
-                          % (smart_str(_("Edit")),
-                             reverse("expense:expenses", kwargs={"expense_id": record.id}),
-                             # Translators: Ed is the short term for Edit
-                             smart_str(_("Ed"))))
-            result.append("<a role='button' title='%s' class='btn btn-primary btn-sm' href='%s'>%s</a>" %
-                          (smart_str(_("Delete")),
-                           reverse("expense:expense_delete", kwargs={"expense_id": record.id}),
-                           # Translators: De is the short term for Delete
-                           smart_str(_("De"))))
-        result.append("<a role='button' title='%s' class='btn btn-primary btn-sm' href='%s'>%s</a>" %
-                      (smart_str(_("Clone")),
-                       reverse("expense:clone_expense", kwargs={"clone_from": record.id}),
-                       # Translators: Cl is the short term for Clone
-                       smart_str(_("Cl"))))
-        return mark_safe(" ".join(result))
-
     class Meta:
         sequence = ("id", "user", "description", "lead", "amount", "chargeable", "corporate_card", "receipt", "state", "transitions", "expense_date", "update_date", "comment")
         fields = sequence
 
 
 class UserExpenseWorkflowTable(ExpenseWorkflowTable):
+    def render_transitions(self, record):
+        return self.transitions_template.render(context={"record": record,
+                                                         "transitions": [],
+                                                         "expense_edit_perm": can_edit_expense(record, self.request.user)},
+                                                request=self.request)
+
     class Meta:
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-sm", "id": "user_expense_workflow_table"}
         prefix = "user_expense_workflow_table"
@@ -180,6 +162,12 @@ class UserExpenseWorkflowTable(ExpenseWorkflowTable):
 class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
     description = tables.TemplateColumn("""{% load l10n %} <span id="managed_expense_{{record.id|unlocalize }}">{{ record.description }}</span>""",
                                         attrs={"td": {"class": "description"}})
+    def render_transitions(self, record):
+        transitions = [(t, expense_transition_to_state_display(t), expense_transition_to_state_display(t)[0:2]) for t in expense_next_states(record, self.request.user)]
+        return self.transitions_template.render(context={"record": record,
+                                                         "transitions": transitions,
+                                                         "expense_edit_perm": can_edit_expense(record, self.request.user)},
+                                                request=self.request)
     class Meta:
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-sm", "id": "managed_expense_workflow_table"}
         prefix = "managed_expense_workflow_table"

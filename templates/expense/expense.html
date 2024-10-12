@@ -88,6 +88,10 @@
                         {% trans "No" %}
                     {% endif %}</td>
             </tr>
+            <tr>
+                <th>{% trans "Transitions" %}</th>
+                <td>{% include "expense/_expense_transitions_column.html" with record=expense %}</td>
+            </tr>
         </table>
     </div>
     <div class="col-md-6">
