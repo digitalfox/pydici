@@ -265,11 +265,15 @@ def update_expense_state(request, expense_id, target_state):
         if in_terminal_state(expense):
             expense.workflow_in_progress = False
         expense.save()
-        message = _("Successfully update expense")
+        transitions = [(t, expense_transition_to_state_display(t), expense_transition_to_state_display(t)[0:2]) for t in
+                       expense_next_states(expense, request.user)]
+        return render(request, "expense/_expense_transitions_column.html",
+                      {"record": expense,
+                       "transitions": transitions,
+                       "expense_edit_perm": can_edit_expense(expense, request.user)})
     else:
         message = ("Transition %s is not allowed" % target_state)
-
-    return HttpResponse(message)
+        return HttpResponse(message)
 
 
 @pydici_non_public

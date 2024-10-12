@@ -74,7 +74,7 @@
             </tr>
             <tr>
                 <th>{% trans "State" %}</th>
-                <td>{{ expense.get_state_display }}</td>
+                <td><div id="state-{{ expense.id|unlocalize }}">{{ expense.get_state_display }}</div></td>
             </tr>
             <tr>
                 <th>{% trans "Comment" %}</th>
