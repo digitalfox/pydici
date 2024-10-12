@@ -4,7 +4,6 @@ Expense form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-import copy
 
 from django import forms
 from django.forms.widgets import TextInput, Textarea
@@ -22,19 +21,20 @@ from leads.forms import CurrentLeadChoices, SubcontractorLeadChoices
 from core.forms import PydiciCrispyForm, PydiciSelect2WidgetMixin
 
 
-class ExpenseChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
-    #TODO: factorize this
+class ExpenseChoiceMixin(PydiciSelect2WidgetMixin):
     model = Expense
     search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains",
                      "lead__name__icontains", "lead__deal_id__icontains", "lead__client__organisation__name",
                      "lead__client__organisation__company__name__icontains",
                      "lead__client__organisation__company__code__icontains"]
 
-class ExpenseMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
-    model = Expense
-    search_fields = ["description__icontains", "user__first_name__icontains", "user__last_name__icontains",
-                     "lead__name__icontains", "lead__deal_id__icontains", "lead__client__organisation__name",
-                     "lead__client__organisation__company__name__icontains", "lead__client__organisation__company__code__icontains"]
+
+class ExpenseChoices(ExpenseChoiceMixin, ModelSelect2Widget):
+    pass
+
+
+class ExpenseMChoices(ExpenseChoiceMixin, ModelSelect2MultipleWidget):
+    pass
 
 
 class ChargeableExpenseMChoices(ExpenseMChoices):
@@ -91,7 +91,6 @@ class ExpenseForm(forms.ModelForm):
                     return self.cleaned_data["receipt"]
             raise ValidationError(gettext_lazy("Use a valid extension (%s)") % ", ".join(valid_extensions))
 
-
     def clean(self):
         """Additional check on expense form"""
         if self.cleaned_data["chargeable"] and not self.cleaned_data["lead"]:
@@ -110,7 +109,6 @@ class ExpensePaymentForm(PydiciCrispyForm):
                                         Column(Field("payment_date", css_class="datepicker"), css_class="col-md-3"),
                                         css_class="row"),
                                     self.submit)
-
 
     def clean(self):
         """Ensure expenses belongs to the same users"""
