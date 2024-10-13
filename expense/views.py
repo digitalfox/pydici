@@ -212,7 +212,7 @@ def expenses_history(request):
                                                       { className: "hidden-xs hidden-sm hidden-md", "targets": [2, 10, 12, 13]},
                                                       { className: "description", "targets": [3]},
                                                       { className: "amount", "targets": [5]}],
-                                       "fnDrawCallback": function( oSettings ) {make_vat_editable(); }''',
+                                       "drawCallback": function( oSettings ) {make_vat_editable(); }''',
                    "can_edit_vat": expense_administrator or expense_paymaster,
                    "user": request.user})
 

@@ -135,7 +135,7 @@ def missions(request, only_active=True):
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] },
                                                              { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7,8,9]}],
                                              "order": [[0, "asc"]],
-                                             "fnDrawCallback": function( oSettings ) {htmx.process(document.body); }''',
+                                             "drawCallback": function( oSettings ) {htmx.process(document.body); }''',
                    "user": request.user})
 
 
@@ -277,7 +277,7 @@ def consultant_missions(request, only_active=True, consultant_id=None):
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] },
                                                                  { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7,8,9]}],
                                             "order": [[3, "asc"]],
-                                            "fnDrawCallback": function( oSettings ) {htmx.process(document.body); }
+                                            "drawCallback": function( oSettings ) {htmx.process(document.body); }
                                             ''',
                    "user": request.user})
 
