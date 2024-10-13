@@ -257,7 +257,7 @@ def update_expense_state(request, expense_id, target_state):
     try:
         expense = Expense.objects.get(id=expense_id)
     except Expense.DoesNotExist:
-        return HttpResponse(_("Expense %s does not exist" % expense_id), error_code=404)
+        return HttpResponse(_("Expense %s does not exist" % expense_id), status=404)
 
     next_states = expense_next_states(expense, request.user)
     if target_state in next_states:
@@ -289,7 +289,7 @@ def update_expense_vat(request, expense_id):
     try:
         expense = Expense.objects.get(id=expense_id)
     except Expense.DoesNotExist:
-        return HttpResponse(_("Expense does not exist"), error_code=404)
+        return HttpResponse(_("Expense does not exist"), status=404)
 
     if request.method == "GET":
         form = ExpenseVATForm(instance=expense)
