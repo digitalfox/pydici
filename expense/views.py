@@ -18,7 +18,7 @@ from django.db.models import Q, Count
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-from expense.forms import ExpenseForm, ExpensePaymentForm
+from expense.forms import ExpenseForm, ExpensePaymentForm, ExpenseVATForm
 from expense.models import Expense, ExpensePayment
 from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable
 from leads.models import Lead
@@ -212,7 +212,7 @@ def expenses_history(request):
                                                       { className: "hidden-xs hidden-sm hidden-md", "targets": [2, 10, 12, 13]},
                                                       { className: "description", "targets": [3]},
                                                       { className: "amount", "targets": [5]}],
-                                       "drawCallback": function( oSettings ) {make_vat_editable(); }''',
+                                       "drawCallback": function( oSettings ) {htmx.process(document.body); }''',
                    "can_edit_vat": expense_administrator or expense_paymaster,
                    "user": request.user})
 
@@ -278,27 +278,34 @@ def update_expense_state(request, expense_id, target_state):
 
 @pydici_non_public
 @pydici_feature("management")
-def update_expense_vat(request):
+def update_expense_vat(request, expense_id):
     """Update expense VAT."""
-
-    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(
+        request.user)
 
     if not (expense_administrator or expense_paymaster):
         return HttpResponseForbidden()
 
     try:
-        expense_id = request.POST["id"]
-        value = request.POST["value"].replace(",", ".")
         expense = Expense.objects.get(id=expense_id)
-        expense.vat = decimal.Decimal(value)
-        expense.save()
-        message = value
     except Expense.DoesNotExist:
-        message = _("Expense %s does not exist" % expense_id)
-    except (ValueError, decimal.InvalidOperation):
-        message = _("Incorrect value")
+        return HttpResponse(_("Expense does not exist"), error_code=404)
 
-    return HttpResponse(message)
+    if request.method == "GET":
+        form = ExpenseVATForm(instance=expense)
+        return HttpResponse("<form hx-post='%s' hx-swap='outerHTML'><div class='input-group input-group-sm'>%s</div></form>" % (
+        reverse("expense:update_expense_vat", args=[expense_id]), form))
+
+    else:
+        form = ExpenseVATForm(request.POST, instance=expense)
+        if form.is_valid():
+            form.save()
+        form = ExpenseVATForm(instance=expense)
+        return render(request, "expense/_expense_vat_column.html",
+                      {"expense": expense,
+                       "can_edit_vat": expense_administrator or expense_paymaster,
+                       "form": form,
+                       "user": request.user})
 
 
 @pydici_non_public

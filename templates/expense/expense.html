@@ -41,7 +41,7 @@
             </tr>
             <tr>
                 <th>{% trans "VAT (€)" %}</th>
-                <td><div id="{{ expense.id|unlocalize }}" {% if can_edit_vat %}class="jeditable-vat"{% endif %}>{{ expense.vat }}</div></td>
+                <td>{% include "expense/_expense_vat_column.html" %}</td>
             </tr>
             <tr>
                 <th>{% trans "Creation date" %}</th>
@@ -104,15 +104,5 @@
 {% with object=expense %}
     {% include "core/_object_history.html" %}
 {% endwith %}
-
-
-{% if can_edit_vat %}
-    {% include "expense/_make_vat_editable.html" %}
-    <script type="text/javascript">
-    $(document).ready(function() {
-        make_vat_editable();
-        });
-    </script>
-{% endif %}
 
 {% endblock %}

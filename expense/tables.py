@@ -35,10 +35,13 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
     state_template = get_template("expense/_expense_state_column.html")
     ko_sign = mark_safe("""<i class="bi bi-x" style="color:red"><span class="visuallyhidden">No</span></i>""")
     ok_sign = mark_safe("""<i class="bi bi-check" style="color:green"><span class="visuallyhidden">Yes</span></i>""")
+    vat_template = get_template("expense/_expense_vat_column.html")
 
     def get_initial_queryset(self):
         expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(self.request.user)
         consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
+
+        self.can_edit_vat = expense_administrator or expense_paymaster  # Used for vat column render
 
         if expense_subsidiary_manager:
             user_team = consultant.user_team(subsidiary=True)
@@ -108,7 +111,7 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
         elif column == "amount":
             return to_int_or_round(row.amount, 2)
         elif column == "vat":
-            return """<div id="{0}" class="jeditable-vat">{1}</div>""".format(row.id, row.vat)
+            return self.vat_template.render(context={"expense": row, "can_edit_vat": self.can_edit_vat}, request=self.request)
         else:
             return super(ExpenseTableDT, self).render_column(row, column)
 
@@ -123,11 +126,15 @@ class ExpenseTable(tables.Table):
     state = tables.TemplateColumn(template_name="expense/_expense_state_column.html", orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
     update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title attr is just used to have an easy to parse hidden value for sorting
-    vat = tables.TemplateColumn("""{% load l10n %}<div id="{{record.id|unlocalize}}" class="jeditable-vat">{{record.vat}}</div>""")
     transitions_template = get_template("expense/_expense_transitions_column.html")
+    vat_template = get_template("expense/_expense_vat_column.html")
+
 
     def render_user(self, value):
         return link_to_consultant(value)
+
+    def render_vat(self, record):
+        return self.vat_template.render(context={"expense": record, "can_edit_vat": True}, request=self.request)
 
     class Meta:
         model = Expense
@@ -162,12 +169,14 @@ class UserExpenseWorkflowTable(ExpenseWorkflowTable):
 class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
     description = tables.TemplateColumn("""{% load l10n %} <span id="managed_expense_{{record.id|unlocalize }}">{{ record.description }}</span>""",
                                         attrs={"td": {"class": "description"}})
+
     def render_transitions(self, record):
         transitions = [(t, expense_transition_to_state_display(t), expense_transition_to_state_display(t)[0:2]) for t in expense_next_states(record, self.request.user)]
         return self.transitions_template.render(context={"record": record,
                                                          "transitions": transitions,
                                                          "expense_edit_perm": can_edit_expense(record, self.request.user)},
                                                 request=self.request)
+
     class Meta:
         attrs = {"class": "pydici-tables2 table table-hover table-striped table-sm", "id": "managed_expense_workflow_table"}
         prefix = "managed_expense_workflow_table"
