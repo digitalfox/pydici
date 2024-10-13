@@ -134,7 +134,7 @@ class ExpenseTable(tables.Table):
         return link_to_consultant(value)
 
     def render_vat(self, record):
-        return self.vat_template.render(context={"expense": record, "can_edit_vat": True}, request=self.request)
+        return self.vat_template.render(context={"expense": record, "can_edit_vat": True})
 
     class Meta:
         model = Expense

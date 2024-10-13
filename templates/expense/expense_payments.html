@@ -69,14 +69,4 @@
 
 {% include "core/_datepicker.html" %}
 
-{% if can_edit_vat %}
-    {% include "expense/_make_vat_editable.html" %}
-    <script type="text/javascript">
-    $(document).ready(function() {
-        make_vat_editable();
-        });
-    </script>
-{% endif %}
-
-
 {% endblock %}
