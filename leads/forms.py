@@ -12,11 +12,11 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
 from django import forms
 
-from crispy_forms.layout import Layout, Div, Column, Fieldset, Field, HTML, Row
+from crispy_forms.layout import Layout, Column, Fieldset, Field, HTML, Row
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, FieldWithButtons
 from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
-
+from taggit.models import Tag
 
 from leads.models import Lead
 from people.models import Consultant, SalesMan
@@ -64,6 +64,28 @@ class SubcontractorLeadChoices(CurrentLeadChoices):
         qs = super(CurrentLeadChoices, self).get_queryset()
         qs = qs.filter(mission__staffing__consultant = self.subcontractor)
         return qs.distinct()
+
+
+class LeadTagChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
+    model = Tag
+    search_fields = ["name__icontains"]
+
+    def __init__(self, *args, **kwargs):
+        self.lead = kwargs.pop("lead", None)
+        super(LeadTagChoices, self).__init__(*args, **kwargs)
+
+    def get_queryset(self):
+        qs = super(LeadTagChoices, self).get_queryset()
+        if self.lead:
+            qs = qs.exclude(lead__id=self.lead.id)  # Exclude existing tags
+        return qs
+
+
+class LeadTagForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        lead = kwargs.pop("lead", None)
+        super(LeadTagForm, self).__init__(*args, **kwargs)
+        self.fields["tag"] = forms.ModelChoiceField(widget=LeadTagChoices(lead=lead), queryset=Tag.objects.all(), label=False)
 
 
 class LeadForm(PydiciCrispyModelForm):

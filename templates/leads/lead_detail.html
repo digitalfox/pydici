@@ -60,35 +60,7 @@
 <div class="tab-content">
     <div id="tab-description" class="tab-pane fade active show" role="tabpanel">
         <div class="row mt-2"><div class="col-12">
-            <div class="tag_banner alert">
-                <div class="d-flex flex-row">
-                    <div id="newtags" class="d-flex flex-row align-self-center">
-                        {% for tag in lead.tags.all %}
-                        <div id="tag_{{ tag.id|unlocalize }}" class="mx-1">
-                            <a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a>
-                            <a class='tagrlink' href='javascript:;' onClick="$.get('{% url 'leads:remove_tag' tag.id|unlocalize lead.id|unlocalize %}', hide_tag);"><i class="bi bi-x-circle"></i></a>&nbsp;
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% if perms.leads.change_lead %}
-                        <form id="tag_form">
-                            <div class="ms-3">
-                                <input class="textInput form-control" type="text" id="newtag" value="" maxlength="100" onclick="this.value='';"/>
-                            </div>
-                        </form>
-                    {% endif %}
-                </div>
-                {% if perms.leads.change_lead %}
-                    <div id="suggested">
-                        {% if suggested_tags %}
-                        {% trans "Suggested tags: " %}
-                        {% for tag in suggested_tags %}
-                            <a href="">{{ tag }}</a>&nbsp;&nbsp;
-                        {% endfor %}
-                        {% endif %}
-                    </div>
-                {% endif %}
-            </div>
+            {% include "leads/_tags_banner.html" %}
         </div></div>
         <div class="row">
             {% with lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}

@@ -286,6 +286,17 @@ class Lead(models.Model):
         else:
             return ""
 
+    def suggested_tags(self):
+        """Find suggested tags for this lead except if it has already at least two tags"""
+        from leads.learn import predict_tags  # Late import to avoid circular dependency
+        tags = self.tags.all()
+        if tags.count() < 3:
+            suggestedTags = set(predict_tags(self))
+            suggestedTags -= set(tags)
+        else:
+            suggestedTags = []
+        return suggestedTags
+
     def get_absolute_url(self):
         return reverse('leads:detail', args=[str(self.id)])
 
