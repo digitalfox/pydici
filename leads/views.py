@@ -33,7 +33,7 @@ from leads.forms import LeadForm, LeadTagForm
 from leads.utils import post_save_lead, leads_state_stat
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_similar
-from core.utils import capitalize, getLeadDirs, createProjectTree, get_fiscal_years_from_qs, to_int_or_round
+from core.utils import getLeadDirs, createProjectTree, get_fiscal_years_from_qs, to_int_or_round
 from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
 from people.tasks import compute_consultant_tasks
@@ -252,24 +252,32 @@ def tag(request, tag_id):
 @pydici_feature("leads")
 @permission_required("leads.change_lead")
 def add_tag(request, lead_id, tag_id=None):
-    """Add a tag by id to a lead or create (through POST) a new one and attach it and return tag banner."""
-    #TODO: handle tag creation
+    """Add a tag by id (PUT) to a lead or create (through POST) a new one and attach it and return tag banner."""
     try:
         lead = Lead.objects.get(id=lead_id)
-        if tag_id:
+    except Lead.DoesNotExist:
+        return Http404()
+    if request.method == "POST":
+        form = LeadTagForm(request.POST)
+        if form.is_valid():
+            tags = form.cleaned_data["tag"]
+            lead.tags.add(*tags)
+        else:  # Returns forms with errors
+            return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": form})
+    elif tag_id:  # PUT, we add an existing tag
+        try:
             tag = Tag.objects.get(id=tag_id)
             lead.tags.add(tag)
-        else:
-            return HttpResponse(_("No tag provided"), status=400)
-    except (Lead.DoesNotExist, Tag.DoesNotExist):
-        return Http404()
+        except Tag.DoesNotExist:
+            return HttpResponse(_("Invalid tag"), status=400)
+    else:
+        return HttpResponse(_("No tag provided"), status=400)
 
     if lead.state not in ("WON", "LOST", "FORGIVEN"):
         compute_leads_state.delay(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
     compute_lead_similarity.delay()  # update lead similarity model in background
     compute_consultant_tasks.delay(lead.responsible.id)  # update consultants tasks in background
-
-    return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": LeadTagForm(lead=lead)})
+    return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": LeadTagForm(lead=lead) })
 
 
 @pydici_non_public

@@ -14,7 +14,7 @@ from django import forms
 
 from crispy_forms.layout import Layout, Column, Fieldset, Field, HTML, Row
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, FieldWithButtons
-from django_select2.forms import ModelSelect2Widget
+from django_select2.forms import ModelSelect2Widget, ModelSelect2TagWidget
 from taggit.forms import TagField
 from taggit.models import Tag
 
@@ -24,6 +24,7 @@ from crm.models import Client, BusinessBroker
 from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
 from crm.forms import ClientChoices, BusinessBrokerChoices
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
+from core.utils import capitalize
 
 
 class LeadChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
@@ -66,9 +67,10 @@ class SubcontractorLeadChoices(CurrentLeadChoices):
         return qs.distinct()
 
 
-class LeadTagChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
+class LeadTagChoices(PydiciSelect2WidgetMixin, ModelSelect2TagWidget):
     model = Tag
     search_fields = ["name__icontains"]
+    queryset = Tag.objects.all()
 
     def __init__(self, *args, **kwargs):
         self.lead = kwargs.pop("lead", None)
@@ -80,12 +82,27 @@ class LeadTagChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
             qs = qs.exclude(lead__id=self.lead.id)  # Exclude existing tags
         return qs
 
+    def value_from_datadict(self, data, files, name):
+        """Create objects for given non-pimary-key values. Return list of all primary keys."""
+        cleaned_values = []
+        values = set(super().value_from_datadict(data, files, name))
+        for value in values:
+            try:  # Tag exists
+                cleaned_values.append(self.queryset.get(pk=int(value)).pk)
+            except (ValueError, TypeError) or self.model.DoesNotExist:
+                # We need to create it needed
+                tag, created = self.queryset.get_or_create(name=capitalize(value))
+                cleaned_values.append(tag.pk)
+
+        return cleaned_values
+
 
 class LeadTagForm(forms.Form):
+
     def __init__(self, *args, **kwargs):
         lead = kwargs.pop("lead", None)
         super(LeadTagForm, self).__init__(*args, **kwargs)
-        self.fields["tag"] = forms.ModelChoiceField(widget=LeadTagChoices(lead=lead), queryset=Tag.objects.all(), label=False)
+        self.fields["tag"] = forms.ModelMultipleChoiceField(widget=LeadTagChoices(lead=lead), queryset=Tag.objects, label=False)
 
 
 class LeadForm(PydiciCrispyModelForm):
@@ -141,7 +158,6 @@ class LeadForm(PydiciCrispyModelForm):
         else:
             # We can't tolerate that sale amount is not known at this step of the process
             raise ValidationError(_("Sales amount must be defined at this step of the commercial process"))
-
 
     def clean_start_date(self):
         """Ensure start_date amount is defined at lead when commercial proposition has been sent"""
