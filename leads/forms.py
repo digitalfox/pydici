@@ -102,7 +102,8 @@ class LeadTagForm(forms.Form):
     def __init__(self, *args, **kwargs):
         lead = kwargs.pop("lead", None)
         super(LeadTagForm, self).__init__(*args, **kwargs)
-        self.fields["tag"] = forms.ModelMultipleChoiceField(widget=LeadTagChoices(lead=lead), queryset=Tag.objects, label=False)
+        self.fields["tag"] = forms.ModelMultipleChoiceField(widget=LeadTagChoices(lead=lead, attrs={"data-placeholder": _("New tags"), "style": "min-width: 200px;"}),
+                                                            queryset=Tag.objects, label=False)
 
 
 class LeadForm(PydiciCrispyModelForm):

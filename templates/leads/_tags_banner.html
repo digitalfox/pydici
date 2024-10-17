@@ -4,26 +4,28 @@
 {% load l10n %}
 
 <div class="tag_banner alert" hx-target="this" hx-swap="outerHTML" hx-on::after-settle="$('.django-select2').djangoSelect2({ 'theme': 'bootstrap-5', 'width': 'auto'});">
-    <div class="d-flex flex-row">
-        <div id="newtags" class="d-flex flex-row align-self-center">
-            {% for tag in lead.tags.all %}
-            <div id="tag_{{ tag.id|unlocalize }}" class="mx-1">
-                <a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a>
-                <a href='#' hx-delete="{% url 'leads:remove_tag' lead.id|unlocalize tag.id|unlocalize %}" >
-                   <i class="bi bi-x-circle"></i></a>&nbsp;
-            </div>
-            {% endfor %}
-        </div>
-        {% if perms.leads.change_lead %}
-                <div class="ms-3" >
-                    <form id="tag_form">
-                        <div class="row">
-                        <div class="col">{{ lead_tag_form }}</div>
-                        <div class="col"><button type="submit" class="btn btn-primary" hx-post="{% url 'leads:add_tag' lead.id|unlocalize %}">{% trans "Add" %}</button></div>
-                        </div>
-                    </form>
+    <div class="row">
+        <div class="col-lg-auto col-md-12 align-self-center">
+            <div class="d-flex flex-wrap">
+                {% for tag in lead.tags.all %}
+                <div class="mx-1">
+                    <a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a>
+                    <a href='#' hx-delete="{% url 'leads:remove_tag' lead.id|unlocalize tag.id|unlocalize %}" >
+                       <i class="bi bi-x-circle"></i></a>&nbsp;
                 </div>
+                {% endfor %}
+            </div>
+        </div>
 
+        {% if perms.leads.change_lead %}
+        <div class="col-lg-auto col-md-12">
+        <form id="tag_form">
+            <div class="d-flex">
+                <div class="col">{{ lead_tag_form }}</div>
+                <div class="col"><button type="submit" class="btn btn-primary" hx-post="{% url 'leads:add_tag' lead.id|unlocalize %}">{% trans "Add" %}</button></div>
+            </div>
+        </form>
+        </div>
         {% endif %}
     </div>
     {% if perms.leads.change_lead %}
@@ -34,4 +36,3 @@
     {% endif %}
 </div>
 
-{% include "core/_select2.html" %}
