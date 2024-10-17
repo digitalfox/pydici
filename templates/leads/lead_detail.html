@@ -262,54 +262,6 @@
 
 <script type="text/javascript">
 <!--
-
-$(document).ready(function() {
-    // Function to add new tags asynchronously
-
-    // Add autocomplete on existings tags
-    $("#newtag").autocomplete({ source:"{{ completion_url }}", minLength: 0});
-
-    // Connect form validation to ajax request
-    $("#tag_form").submit(function(e) {
-        e.preventDefault();
-        // send requests
-        if ($("#newtag").val()) {
-	        $.post("{% url 'leads:add_tag' %}",
-	                { tag : $("#newtag").val(), lead_id : {{lead.id|unlocalize }} },
-	                function(data) {
-	                    if (data.tag_created) {
-	                        // Add new tag on list
-				var remove_link = "<a class='tagrlink' href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "', hide_tag)\"> <i class=\"bi bi-x-circle\"></i></a>";
-				$("#newtags").append("<div id='tag_" + data.id + "'><a href='"+ data.tag_url + "' class='mx-1'>" + data.tag_name + "</a> " + remove_link + "&nbsp;&nbsp;");
-	                        $("#newtag").val("");
-	                    }
-	                    else {
-	                        $("#newtag").val("{% trans 'Tag already exists' %}");
-	                    }
-	                });
-	         }
-    });
-
-    // Connect suggested tag to ajax request
-    $("#suggested a").on("click", function(e){
-        e.preventDefault();
-        // send requests
-        $.post("{% url 'leads:add_tag' %}",
-                { tag : $(this).text(), lead_id : {{lead.id|unlocalize}} },
-                function(data) {
-	                // Add new tag on list
-		var remove_link = "<a href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "')\"><i class=\"bi bi-x-circle\"></i></a>";
-		$("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>" + remove_link + "&nbsp;&nbsp;");
-                });
-        // Remove from suggested list
-        $(this).remove();
-    });
-});
-
-function hide_tag(data) {    
-    $("#tag_"+ data.id).hide("fast");
-};
-
  // Add keyboard shortcut to go to next/previous lead
 function doc_keyUp(e) {
     /// Do not change page if the user is editing a field
