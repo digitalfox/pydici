@@ -12,8 +12,9 @@
             "responsive": true,
             "fixedHeader": true,
             "ajax": "{{ data_url }}",
-            buttons: ['excel', 'csv'],
-            dom: "<'row'<'col-md-12'f>><'row'<'col-md-12'tr>><'row'<'col-md-3'l><'col-md-3'B><'col-md-6'p>>",
+            layout: {
+               topStart: ['pageLength', { buttons: [ 'copy', 'excel', 'pdf', 'csv' ]}],
+            },
             {% if datatable_options %}{{ datatable_options|safe }}, {% endif %}
             "language": {
                 "decimal": ",",
@@ -25,12 +26,7 @@
                 "infoFiltered": "{% trans '(filtered from _MAX_ total records)' %}",
                 "search": "{% trans 'Search:' %}",
                 "lengthMenu": "{% trans 'Show _MENU_ entries' %}",
-                paginate:{
-                    first:'<<',
-                    last: '>>',
-                    next: '>',
-                    previous: '<'
-                },
+
             },
         });
     });

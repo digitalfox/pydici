@@ -1,0 +1,25 @@
+{# fragment to display and allow inline edit of consultant rate for a mission #}
+{# context: consultant, rate #}
+{% load l10n %}
+{% load i18n %}
+
+<tr>
+    <td>{% include "people/__consultant_name.html" %}</td>
+    {% if edit %}
+            <td align="right"><input id="sold" type="number"  step="1" name="sold" value="{{ rate.0.0|unlocalize }}" class="text-end"
+                                     hx-post="{% url 'staffing:mission_consultant_rate' mission.id consultant.id %}" autofocus />
+            </td>
+            <td align="right">{% if consultant.subcontractor %}<input id="bought" type="number" step="1" name="bought" value="{{ rate.0.1|unlocalize }}" class="text-end"
+                                                                      hx-post="{% url 'staffing:mission_consultant_rate' mission.id consultant.id %}" />{% endif %}
+            </td>
+    {% else %}
+        <td align="right"><a href="#" hx-get="{% url 'staffing:mission_consultant_rate' mission.id consultant.id %}">{{ rate.0.0 }}</a></td>
+        <td align="right"><a href="#"hx-get="{% url 'staffing:mission_consultant_rate' mission.id consultant.id %}">
+            {% if consultant.subcontractor %}{{ rate.0.1 }}{% endif %}</a></td>
+    {% endif %}
+    {% with o_rates=rate.1 %}
+        {% for date, o_rate in o_rates %}
+            <td align="right">{{ o_rate|default_if_none:"-" }}</td>
+        {% endfor %}
+    {% endwith %}
+</tr>

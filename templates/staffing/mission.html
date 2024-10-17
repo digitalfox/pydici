@@ -59,7 +59,8 @@
                                 <i class="bi bi-eye"></i>
                                {% trans "This mission has no staffing in future" %}.
                                {% if mission.lead %}<strong>{% trans "Still to be billed" %}: {{ mission.lead.still_to_be_billed|floatformat:-2 }} €. </strong>{% endif %}
-                                <button onClick="$.get('{% url 'staffing:deactivate_mission' mission.id %}', process_mission_archive)"
+                                <button hx-post="{% url 'staffing:deactivate_mission' mission.id %}"
+                                        hx-target="#mission_no_staffing_warning"
                                    class="btn btn-primary">{% trans "Archive this mission" %}</button>
                            </div>
                        </div>
@@ -225,16 +226,6 @@ $(document).ready(function() {
 {% endif %}
 
 });
-
-// Function that process mission archiving ajax callback
-function process_mission_archive(data) {
-    if (data.error==true) {
-        alert("{% trans 'Archiving failed' %}");
-    }
-    else {
-        $("#mission_no_staffing_warning").hide("fast");
-    }
-};
 
 -->
 </script>
