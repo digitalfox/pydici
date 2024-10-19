@@ -1867,7 +1867,6 @@ def mission_contacts(request, mission_id):
         form = MissionContactsForm(request.POST, instance=mission)
         if form.is_valid():
             form.save()
-        return HttpResponseRedirect(reverse("staffing:mission_home", args=[mission.id, ]))
 
     # Unbound form
     form = MissionContactsForm(instance=mission)

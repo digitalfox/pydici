@@ -2,6 +2,10 @@
 {# of a page loaded in ajax #}
 {% load i18n %}
 
+<div hx-on::after-settle="$('#contact_edit').hide();"
+     hx-target="this"
+     hx-swap="outerHTML">
+
 <div id="contact_display">
 {% for mission_contact in mission_contacts %}
     {% ifchanged mission_contact.company %}
@@ -28,15 +32,17 @@
 {% if pydici_feature.contacts_write %}
     <br/>
     <a class="btn btn-primary" href="javascript:;"
-       onClick="$('#contact_display').hide();$('#contact_edit').show();">
+       onClick="$('#contact_display').hide();$('#contact_edit').show();$('.django-select2').djangoSelect2({ 'theme': 'bootstrap-5', 'width': 'auto'});">
        {% trans "Add or edit" %}</a>
     </div>
 
     <div id="contact_edit">
-    <form action="{% url 'staffing:mission_contacts' mission.id %}#tab-contacts" method="POST">
+    <form>
         {{ mission_contact_form.non_field_errors }}
         {{ mission_contact_form }}
-        <input class="btn btn-primary" type="submit" value="{% trans 'Save' %}"/>
+        <input class="btn btn-primary" type="submit" value="{% trans 'Save' %}"
+               hx-post="{% url 'staffing:mission_contacts' mission.id %}#tab-contacts"
+        />
     </form>
        <br/>
     <a href="{% url 'crm:linked_mission_contact_create' mission.id %}?return_to={% url 'staffing:mission_home' mission.id %}#goto_tab-contacts" class="btn btn-primary">{% trans "New mission contact" %}</a>
@@ -51,5 +57,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('#contact_edit').hide();
+        htmx.process(document.body);
     });
 </script>
+</div>
