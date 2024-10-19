@@ -13,7 +13,7 @@
             "fixedHeader": true,
             "ajax": "{{ data_url }}",
             layout: {
-               topStart: ['pageLength', { buttons: [ 'copy', 'excel', 'pdf', 'csv' ]}],
+               topStart: ['pageLength', { buttons: [ 'excel', 'csv' ]}],
             },
             {% if datatable_options %}{{ datatable_options|safe }}, {% endif %}
             "language": {
