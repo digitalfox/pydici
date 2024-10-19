@@ -1871,7 +1871,6 @@ def mission_contacts(request, mission_id):
 
     # Unbound form
     form = MissionContactsForm(instance=mission)
-    # TODO: add link to add mission contact
     missionContacts = mission.contacts.select_related().order_by("company")
     return render(request, "staffing/mission_contacts.html",
                   {"mission": mission,

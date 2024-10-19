@@ -30,7 +30,7 @@ from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactFo
 from crm.utils import get_subsidiary_from_session
 from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
-from staffing.models import Timesheet
+from staffing.models import Timesheet, Mission
 from leads.utils import leads_state_stat
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
 from core.utils import COLORS, get_parameter
@@ -107,6 +107,14 @@ class MissionContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, Con
     model = MissionContact
     template_name = "core/form.html"
     form_class = MissionContactForm
+
+    def form_valid(self, form):
+        self.object = form.save()
+        if self.kwargs.get("mission_id"):  # If linked mission is defined, directly add MissionContact to it
+            mission = Mission.objects.get(id=self.kwargs["mission_id"])
+            mission.contacts.add(self.object)
+            mission.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class MissionContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, UpdateView):
