@@ -68,7 +68,7 @@ class ContactCreate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin
             return {}
 
 
-class ContactUpdate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin, UpdateView):
+class ContactUpdate(PydiciNonPublicdMixin, ThirdPartyMixin, UpdateView):
     model = Contact
     template_name = "core/form.html"
     form_class = ContactForm
@@ -77,7 +77,6 @@ class ContactUpdate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin
 class ContactDelete(PydiciNonPublicdMixin, FeatureContactsWriteMixin, DeleteView):
     model = Contact
     template_name = "core/delete.html"
-    form_class = ContactForm
     success_url = reverse_lazy("crm:contact_list")
 
     def form_valid(self, form):
