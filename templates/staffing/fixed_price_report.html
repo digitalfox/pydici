@@ -29,7 +29,7 @@
                             <td><a href="{{ mission.get_absolute_url }}">{{ mission }}</a></td>
                             <td>{{ mission.mission_id }}</td>
                             <td>{{ mission.subsidiary }}</td>
-                            <td>{% with consultant=mission.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}</td>
+                            <td>{% if mission.responsible %}{% with consultant=mission.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}{% endif %}</td>
                             <td class="text-end">{{ mission.price|floatformat:-1 }}</td>
                             <td class="text-end">{{ done }}</td>
                             <td class="text-end" style="{% if current_remaining < 0 %}background-color:#E76F6F{% endif %}">{{ current_remaining }}</td>
