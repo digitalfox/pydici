@@ -123,6 +123,7 @@ class BusinessBrokerCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, Cre
     def get_success_url(self):
         return reverse_lazy("crm:businessbroker_list")
 
+
 class BusinessBrokerUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, UpdateView):
     model = BusinessBroker
     template_name = "core/form.html"

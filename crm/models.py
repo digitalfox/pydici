@@ -233,7 +233,7 @@ class Contact(models.Model):
             for missionContact in self.missioncontact_set.all():
                 for mission in missionContact.mission_set.all():
                     missionNode = GNode("mission-%s" % mission.id, """<i class="bi bi-gear"></i> 
-                                                                      <span class='graph-tooltip' title='%s'><a href='%s'>&nbsp;%s&nbsp;</a></span>""" % (mission.short_name(),
+                                                                      <span class='graph-tooltip' title='%s'><a href='%s'>%s&nbsp;</a></span>""" % (mission.short_name(),
                                                                                                                                                           mission.get_absolute_url(),
                                                                                                                                                           mission.mission_id()))
                     nodes.add(missionNode)
@@ -487,7 +487,6 @@ class MissionContact(models.Model):
 
     def get_absolute_url(self):
         return reverse("crm:contact_detail", args=[self.contact.id, ])
-
 
     class Meta:
         ordering = ["company", "contact"]
