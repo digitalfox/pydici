@@ -51,6 +51,17 @@ class PayableExpenseMChoices(ExpenseMChoices):
         return expenses
 
 
+class ExpenseVATForm(forms.ModelForm):
+    class Meta:
+        model = Expense
+        fields = ("vat",)
+
+    def __init__(self, *args, **kwargs):
+        super(ExpenseVATForm, self).__init__(*args, **kwargs)
+        self.fields["vat"].label = False
+        self.fields["vat"].widget.attrs["autofocus"] = True
+
+
 class ExpenseForm(forms.ModelForm):
     """Expense form based on Expense model"""
     class Meta:
@@ -59,7 +70,6 @@ class ExpenseForm(forms.ModelForm):
         widgets = {"description": TextInput(attrs={"size": 40}),  # Increase default size
                    "comment": Textarea(attrs={'cols': 17, 'rows': 2}),  # Reduce height and increase width
                    }
-
 
     def __init__(self, *args, **kwargs):
         subcontractor = kwargs.pop("subcontractor")

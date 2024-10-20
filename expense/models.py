@@ -136,21 +136,22 @@ class Expense(models.Model):
         if self.receipt:
             content_type = self.receipt_content_type()
             data = BytesIO()
-            for chunk in self.receipt.chunks():
-                data.write(chunk)
-
-            data = b64encode(data.getvalue()).decode()
-            if content_type == "application/pdf":
-                response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
-            else:
-                response = "<img src='data:%s;base64,%s' class='receipt'>" % (content_type, data)
+            try:
+                for chunk in self.receipt.chunks():
+                    data.write(chunk)
+                data = b64encode(data.getvalue()).decode()
+                if content_type == "application/pdf":
+                    response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
+                else:
+                    response = "<img src='data:%s;base64,%s' class='receipt'>" % (content_type, data)
+            except FileNotFoundError:
+                response = "Expense file not found"
 
         return response
 
     def receipt_content_type(self):
         if self.receipt:
             return mimetypes.guess_type(self.receipt.name)[0] or "application/stream"
-
 
     def get_absolute_url(self):
         return reverse('expense:expense', args=[str(self.id)])

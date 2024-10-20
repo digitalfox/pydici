@@ -6,12 +6,7 @@
 {% load render_table from django_tables2 %}
 {% load crispy_forms_tags %}
 
-{% block extrajs %}
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jeditable.mini.js"></script>
-{% endblock %}
-
 {% block title %}{% trans "Expense" %}{% endblock %}
-
 
 {% block content %}
 
@@ -41,7 +36,7 @@
             </tr>
             <tr>
                 <th>{% trans "VAT (€)" %}</th>
-                <td><div id="{{ expense.id|unlocalize }}" {% if can_edit_vat %}class="jeditable-vat"{% endif %}>{{ expense.vat }}</div></td>
+                <td>{% include "expense/_expense_vat_column.html" %}</td>
             </tr>
             <tr>
                 <th>{% trans "Creation date" %}</th>
@@ -74,7 +69,7 @@
             </tr>
             <tr>
                 <th>{% trans "State" %}</th>
-                <td>{{ expense.get_state_display }}</td>
+                <td><div id="state-{{ expense.id|unlocalize }}">{{ expense.get_state_display }}</div></td>
             </tr>
             <tr>
                 <th>{% trans "Comment" %}</th>
@@ -88,6 +83,10 @@
                         {% trans "No" %}
                     {% endif %}</td>
             </tr>
+            <tr>
+                <th>{% trans "Transitions" %}</th>
+                <td>{% include "expense/_expense_transitions_column.html" with record=expense %}</td>
+            </tr>
         </table>
     </div>
     <div class="col-md-6">
@@ -100,15 +99,5 @@
 {% with object=expense %}
     {% include "core/_object_history.html" %}
 {% endwith %}
-
-
-{% if can_edit_vat %}
-    {% include "expense/_make_vat_editable.html" %}
-    <script type="text/javascript">
-    $(document).ready(function() {
-        make_vat_editable();
-        });
-    </script>
-{% endif %}
 
 {% endblock %}

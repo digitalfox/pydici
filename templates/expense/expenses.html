@@ -55,20 +55,4 @@
 
 {% include "expense/_expense_receipt_modal.html" %}
 
-<script type="text/JavaScript">
-// Function that process ajax callback
-    function process_expense_transition(data) {
-        if (data.error==true) {
-            alert(data.message);
-        }
-        else {
-            var row = $("#managed_expense_" + data.expense_id).closest("tr");
-            var table = $('#managed_expense_workflow_table').DataTable();
-            row.fadeOut(200, function () { table.row(row).remove(); });
-            table.draw();
-        }
-    };
-
-</script>
-
 {% endblock %}

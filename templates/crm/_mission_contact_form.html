@@ -1,0 +1,13 @@
+{# form to create a new contact linked to a mission #}
+{# context: missionContactForm and contactForm #}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+<form hx-post="{% url 'crm:linked_mission_contact_create' mission_id %}"
+      hx-on::after-settle="$('.django-select2').djangoSelect2({ 'theme': 'bootstrap-5', 'width': 'auto'});"
+      novalidate>
+    {% crispy missionContactForm missionContactForm.inline_helper %}
+    {% crispy contactForm contactForm.inline_helper %}
+    {% crispy companyForm companyForm.inline_helper %}
+    <input type="submit" name="submit" value="{% trans 'Save' %}" class="btn btn-primary">
+</form>

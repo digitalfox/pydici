@@ -6,7 +6,6 @@ Pydici expense views. Http request are processed here.
 """
 
 from datetime import date
-import json
 from io import BytesIO
 import decimal
 
@@ -19,13 +18,13 @@ from django.db.models import Q, Count
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-from expense.forms import ExpenseForm, ExpensePaymentForm
+from expense.forms import ExpenseForm, ExpensePaymentForm, ExpenseVATForm
 from expense.models import Expense, ExpensePayment
 from expense.tables import ExpenseTable, UserExpenseWorkflowTable, ManagedExpenseWorkflowTable
 from leads.models import Lead
 from people.models import Consultant
 from core.decorator import pydici_non_public, pydici_feature, pydici_subcontractor
-from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm
+from expense.utils import expense_next_states, can_edit_expense, in_terminal_state, user_expense_perm, expense_transition_to_state_display
 from people.utils import users_are_in_same_company
 from crm.utils import get_subsidiary_from_session
 
@@ -53,10 +52,14 @@ def expense(request, expense_id):
                 (expense_subsidiary_manager and users_are_in_same_company(expense.user, request.user))):
             return HttpResponseRedirect(reverse("core:forbidden"))
 
+    transitions = [(t, expense_transition_to_state_display(t), expense_transition_to_state_display(t)[0:2]) for t in
+                   expense_next_states(expense, request.user)]
+
     return render(request, "expense/expense.html",
                   {"expense": expense,
                    "can_edit": can_edit_expense(expense, request.user),
                    "can_edit_vat": expense_administrator or expense_paymaster,
+                   "transitions": transitions,
                    "user": request.user})
 
 
@@ -137,13 +140,9 @@ def expenses(request, expense_id=None, clone_from=None):
         managed_expenses = team_expenses
 
     userExpenseTable = UserExpenseWorkflowTable(user_expenses)
-    userExpenseTable.transitionsData = dict([(e.id, []) for e in user_expenses])  # Inject expense allowed transitions. Always empty for own expense
-    userExpenseTable.expenseEditPerm = dict([(e.id, can_edit_expense(e, request.user)) for e in user_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 50}).configure(userExpenseTable)
 
     managedExpenseTable = ManagedExpenseWorkflowTable(managed_expenses)
-    managedExpenseTable.transitionsData = dict([(e.id, expense_next_states(e, request.user)) for e in managed_expenses])  # Inject expense allowed transitions
-    managedExpenseTable.expenseEditPerm = dict([(e.id, can_edit_expense(e, request.user)) for e in managed_expenses])  # Inject expense edit permissions
     RequestConfig(request, paginate={"per_page": 100}).configure(managedExpenseTable)
     return render(request, "expense/expenses.html",
                   {"user_expense_table": userExpenseTable,
@@ -213,7 +212,7 @@ def expenses_history(request):
                                                       { className: "hidden-xs hidden-sm hidden-md", "targets": [2, 10, 12, 13]},
                                                       { className: "description", "targets": [3]},
                                                       { className: "amount", "targets": [5]}],
-                                       "fnDrawCallback": function( oSettings ) {make_vat_editable(); }''',
+                                       "drawCallback": function( oSettings ) {htmx.process(document.body); }''',
                    "can_edit_vat": expense_administrator or expense_paymaster,
                    "user": request.user})
 
@@ -253,57 +252,60 @@ def chargeable_expenses(request):
 @pydici_feature("reports")
 def update_expense_state(request, expense_id, target_state):
     """Do workflow transition for that expense."""
-    error = False
     message = ""
 
     try:
         expense = Expense.objects.get(id=expense_id)
     except Expense.DoesNotExist:
-        message = _("Expense %s does not exist" % expense_id)
-        error = True
+        return HttpResponse(_("Expense %s does not exist" % expense_id), status=404)
 
-    if not error:
-        next_states = expense_next_states(expense, request.user)
-        if target_state in next_states:
-            expense.state = target_state
-            if in_terminal_state(expense):
-                expense.workflow_in_progress = False
-            expense.save()
-            message = _("Successfully update expense")
-        else:
-            message = ("Transition %s is not allowed" % target_state)
-            error = True
-
-    response = {"message": message,
-                "expense_id": expense_id,
-                "error": error}
-
-    return HttpResponse(json.dumps(response), content_type="application/json")
+    next_states = expense_next_states(expense, request.user)
+    if target_state in next_states:
+        expense.state = target_state
+        if in_terminal_state(expense):
+            expense.workflow_in_progress = False
+        expense.save()
+        transitions = [(t, expense_transition_to_state_display(t), expense_transition_to_state_display(t)[0:2]) for t in
+                       expense_next_states(expense, request.user)]
+        return render(request, "expense/_expense_transitions_column.html",
+                      {"record": expense,
+                       "transitions": transitions,
+                       "expense_edit_perm": can_edit_expense(expense, request.user)})
+    else:
+        message = ("Transition %s is not allowed" % target_state)
+        return HttpResponse(message)
 
 
 @pydici_non_public
 @pydici_feature("management")
-def update_expense_vat(request):
+def update_expense_vat(request, expense_id):
     """Update expense VAT."""
-
-    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(request.user)
+    expense_administrator, expense_subsidiary_manager, expense_manager, expense_paymaster, expense_requester = user_expense_perm(
+        request.user)
 
     if not (expense_administrator or expense_paymaster):
         return HttpResponseForbidden()
 
     try:
-        expense_id = request.POST["id"]
-        value = request.POST["value"].replace(",", ".")
         expense = Expense.objects.get(id=expense_id)
-        expense.vat = decimal.Decimal(value)
-        expense.save()
-        message = value
     except Expense.DoesNotExist:
-        message = _("Expense %s does not exist" % expense_id)
-    except (ValueError, decimal.InvalidOperation):
-        message = _("Incorrect value")
+        return HttpResponse(_("Expense does not exist"), status=404)
 
-    return HttpResponse(message)
+    if request.method == "GET":
+        form = ExpenseVATForm(instance=expense)
+        return HttpResponse("<form hx-post='%s' hx-swap='outerHTML'><div class='input-group input-group-sm'>%s</div></form>" % (
+        reverse("expense:update_expense_vat", args=[expense_id]), form))
+
+    else:
+        form = ExpenseVATForm(request.POST, instance=expense)
+        if form.is_valid():
+            form.save()
+        form = ExpenseVATForm(instance=expense)
+        return render(request, "expense/_expense_vat_column.html",
+                      {"expense": expense,
+                       "can_edit_vat": expense_administrator or expense_paymaster,
+                       "form": form,
+                       "user": request.user})
 
 
 @pydici_non_public

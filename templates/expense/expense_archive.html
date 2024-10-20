@@ -5,11 +5,6 @@
 
 {% block title %}{% trans "Expenses history" %}{% endblock %}
 
-{% block extrajs %}
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.jeditable.mini.js"></script>
-{% endblock %}
-
-
 {% block content %}
 
     <div class="row mt-2">
@@ -47,11 +42,6 @@
         </div>
     </div>
 
-
 {% include "expense/_expense_receipt_modal.html" %}
-
-
-{% include "expense/_make_vat_editable.html" %}
-
 
 {% endblock %}
