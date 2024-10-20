@@ -35,6 +35,7 @@ from leads.utils import leads_state_stat
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
 from core.utils import COLORS, get_parameter
 from billing.models import ClientBill
+from staffing.views import mission_contacts
 
 
 class ContactReturnToMixin(object):
@@ -104,18 +105,28 @@ def contact_list(request):
 
 
 def linked_mission_contact_create(request, mission_id):
-    form = None
+    missionContactForm = None
+    contactForm = None
     if request.POST:
-        form = MissionContactForm(request.POST)
-        if form.is_valid():
-            mission_contact = form.save()
-            mission_contact.save()
+        missionContactForm = MissionContactForm(request.POST, prefix="mission-contact")
+        contactForm = ContactForm(request.POST, prefix="contact")
+
+        if contactForm.is_valid():
+            contact = contactForm.save()
+            missionContactForm.data = missionContactForm.data.copy()
+            missionContactForm.data["mission-contact-contact"] = contact.id
+
+        if missionContactForm.is_valid():
+            mission_contact = missionContactForm.save()
             mission = Mission.objects.get(id=mission_id)
             mission.contacts.add(mission_contact)
             mission.save()
-            return HttpResponseRedirect(reverse("staffing:mission_home", args=[mission_id]) + "#goto_tab-contacts")
+            request.method = "GET"  # Fake request to return unbound form
+            return mission_contacts(request, mission_id)
 
-    return render(request, "core/_form.html", {"form": form or MissionContactForm(mission_id=mission_id)})
+    return render(request, "crm/_mission_contact_form.html", {"mission_id": mission_id,
+                                                              "missionContactForm": missionContactForm or MissionContactForm(mission_id=mission_id, prefix="mission-contact"),
+                                                              "contactForm": contactForm or ContactForm(prefix="contact")})
 
 
 class MissionContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
