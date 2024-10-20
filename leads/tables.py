@@ -166,3 +166,18 @@ class LeadToBill(LeadTableDT):
             else:
                 return super(LeadToBill, self).render_column(row, column)
 
+
+class SupplierLeadTableDT(LeadTableDT):
+    def get_initial_queryset(self):
+        qs = Lead.objects.filter(mission__timesheet__consultant__subcontractor_company__company_id=self.kwargs["supplier_id"]).distinct()
+        return qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+
+
+class BusinessBrokerLeadTableDT(LeadTableDT):
+    """Business broker or paying authority leads"""
+    def get_initial_queryset(self):
+        qs = Lead.objects.filter(Q(business_broker__company_id=self.kwargs["businessbroker_id"]) | Q(paying_authority__company_id=self.kwargs["businessbroker_id"]))
+        qs = qs.distinct()
+        return qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+
+

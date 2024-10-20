@@ -468,6 +468,8 @@ def company_detail(request, company_id):
                    "contacts_count" : business_contacts.count() + mission_contacts.count() + administrative_contacts.count(),
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
                    "lead_data_url": reverse('leads:client_company_lead_table_DT', args=[company.id,]),
+                   "supplier_lead_data_url": reverse('leads:supplier_company_lead_table_DT', args=[company.id, ]),
+                   "businessbroker_lead_data_url": reverse('leads:businessbroker_lead_table_DT', args=[company.id,]),
                    "mission_data_url": reverse('staffing:client_company_mission_table_DT', args=[company.id,]),
                    "mission_datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9, 10] },
                                                                      { className: "hidden-xs hidden-sm hidden-md", "targets": [6, 7,8]}],
