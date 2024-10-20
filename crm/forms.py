@@ -245,7 +245,10 @@ class MissionContactForm(PydiciCrispyModelForm):
                    "company": CompanyChoices}
 
     def __init__(self, *args, **kwargs):
+        mission_id = kwargs.pop("mission_id", None)
         super(MissionContactForm, self).__init__(*args, **kwargs)
+        if mission_id:
+            self.helper.form_action = reverse("crm:linked_mission_contact_create", args=[mission_id])
         self.helper.layout = Layout(Div(Column(FieldWithButtons("contact", HTML(
             "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                 "crm:contact_create"))),

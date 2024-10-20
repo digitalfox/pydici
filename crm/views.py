@@ -103,18 +103,25 @@ def contact_list(request):
                    "user": request.user})
 
 
+def linked_mission_contact_create(request, mission_id):
+    form = None
+    if request.POST:
+        form = MissionContactForm(request.POST)
+        if form.is_valid():
+            mission_contact = form.save()
+            mission_contact.save()
+            mission = Mission.objects.get(id=mission_id)
+            mission.contacts.add(mission_contact)
+            mission.save()
+            return HttpResponseRedirect(reverse("staffing:mission_home", args=[mission_id]) + "#goto_tab-contacts")
+
+    return render(request, "core/_form.html", {"form": form or MissionContactForm(mission_id=mission_id)})
+
+
 class MissionContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
     model = MissionContact
     template_name = "core/form.html"
     form_class = MissionContactForm
-
-    def form_valid(self, form):
-        self.object = form.save()
-        if self.kwargs.get("mission_id"):  # If linked mission is defined, directly add MissionContact to it
-            mission = Mission.objects.get(id=self.kwargs["mission_id"])
-            mission.contacts.add(self.object)
-            mission.save()
-        return HttpResponseRedirect(self.get_success_url())
 
 
 class MissionContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, UpdateView):
