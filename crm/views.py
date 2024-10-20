@@ -107,14 +107,21 @@ def contact_list(request):
 def linked_mission_contact_create(request, mission_id):
     missionContactForm = None
     contactForm = None
+    companyForm = None
     if request.POST:
         missionContactForm = MissionContactForm(request.POST, prefix="mission-contact")
         contactForm = ContactForm(request.POST, prefix="contact")
+        companyForm = CompanyForm(request.POST, prefix="company")
 
         if contactForm.is_valid():
             contact = contactForm.save()
             missionContactForm.data = missionContactForm.data.copy()
             missionContactForm.data["mission-contact-contact"] = contact.id
+
+        if companyForm.is_valid():
+            company = companyForm.save()
+            missionContactForm.data = missionContactForm.data.copy()
+            missionContactForm.data["mission-contact-company"] = company.id
 
         if missionContactForm.is_valid():
             mission_contact = missionContactForm.save()
@@ -126,7 +133,8 @@ def linked_mission_contact_create(request, mission_id):
 
     return render(request, "crm/_mission_contact_form.html", {"mission_id": mission_id,
                                                               "missionContactForm": missionContactForm or MissionContactForm(mission_id=mission_id, prefix="mission-contact"),
-                                                              "contactForm": contactForm or ContactForm(prefix="contact")})
+                                                              "contactForm": contactForm or ContactForm(prefix="contact"),
+                                                              "companyForm": companyForm or CompanyForm(prefix="company")})
 
 
 class MissionContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
