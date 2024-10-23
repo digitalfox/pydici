@@ -13,6 +13,7 @@ crm_urls = [
              re_path(r'^contact/add/$', v.ContactCreate.as_view(), name='contact_create'),
              re_path(r'^contact/(?P<pk>\d+)/update$', v.ContactUpdate.as_view(), name='contact_update'),
              re_path(r'^mission/contact/add/$', v.MissionContactCreate.as_view(), name='mission_contact_create'),
+             re_path(r'^mission/(?P<mission_id>\d+)/addcontact/add/$', v.linked_mission_contact_create, name='linked_mission_contact_create'),
              re_path(r'^mission/contact/(?P<pk>\d+)/update$', v.MissionContactUpdate.as_view(), name='mission_contact_update'),
              re_path(r'^businessbroker/add/$', v.BusinessBrokerCreate.as_view(), name='businessbroker_create'),
              re_path(r'^businessbroker/(?P<pk>\d+)/update$', v.BusinessBrokerUpdate.as_view(), name='businessbroker_update'),

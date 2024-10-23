@@ -397,3 +397,17 @@ def check_timesheet_validity(missions, consultant, month):
     if limited_individual_mode_offending_missions:
         return _("Charge cannot exceed forecast (%s)") %\
             ", ".join([str(m) for m in limited_individual_mode_offending_missions])
+
+
+def compute_mission_consultant_rates(mission):
+    """helper function to compute mission rates for each consultant for tab display and htmx edit form"""
+    rates = {}
+    objective_rates = mission.consultant_objective_rates()
+    for consultant, rate in mission.consultant_rates().items():
+        rates[consultant] = (rate, objective_rates.get(consultant))
+    try:
+        objective_dates = [i[0] for i in list(objective_rates.values())[0]]
+    except IndexError:
+        # No consultant or no objective on mission timeframe
+        objective_dates = []
+    return objective_dates, rates

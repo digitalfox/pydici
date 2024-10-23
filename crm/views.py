@@ -30,11 +30,12 @@ from crm.forms import ClientForm, ClientOrganisationForm, CompanyForm, ContactFo
 from crm.utils import get_subsidiary_from_session
 from people.models import Consultant, ConsultantProfile
 from leads.models import Lead
-from staffing.models import Timesheet
+from staffing.models import Timesheet, Mission
 from leads.utils import leads_state_stat
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
 from core.utils import COLORS, get_parameter
 from billing.models import ClientBill
+from staffing.views import mission_contacts
 
 
 class ContactReturnToMixin(object):
@@ -68,7 +69,7 @@ class ContactCreate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin
             return {}
 
 
-class ContactUpdate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin, UpdateView):
+class ContactUpdate(PydiciNonPublicdMixin, ThirdPartyMixin, UpdateView):
     model = Contact
     template_name = "core/form.html"
     form_class = ContactForm
@@ -77,7 +78,6 @@ class ContactUpdate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin
 class ContactDelete(PydiciNonPublicdMixin, FeatureContactsWriteMixin, DeleteView):
     model = Contact
     template_name = "core/delete.html"
-    form_class = ContactForm
     success_url = reverse_lazy("crm:contact_list")
 
     def form_valid(self, form):
@@ -104,6 +104,39 @@ def contact_list(request):
                    "user": request.user})
 
 
+def linked_mission_contact_create(request, mission_id):
+    missionContactForm = None
+    contactForm = None
+    companyForm = None
+    if request.POST:
+        missionContactForm = MissionContactForm(request.POST, prefix="mission-contact")
+        contactForm = ContactForm(request.POST, prefix="contact")
+        companyForm = CompanyForm(request.POST, prefix="company")
+
+        if contactForm.is_valid():
+            contact = contactForm.save()
+            missionContactForm.data = missionContactForm.data.copy()
+            missionContactForm.data["mission-contact-contact"] = contact.id
+
+        if companyForm.is_valid():
+            company = companyForm.save()
+            missionContactForm.data = missionContactForm.data.copy()
+            missionContactForm.data["mission-contact-company"] = company.id
+
+        if missionContactForm.is_valid():
+            mission_contact = missionContactForm.save()
+            mission = Mission.objects.get(id=mission_id)
+            mission.contacts.add(mission_contact)
+            mission.save()
+            request.method = "GET"  # Fake request to return unbound form
+            return mission_contacts(request, mission_id)
+
+    return render(request, "crm/_mission_contact_form.html", {"mission_id": mission_id,
+                                                              "missionContactForm": missionContactForm or MissionContactForm(mission_id=mission_id, prefix="mission-contact"),
+                                                              "contactForm": contactForm or ContactForm(prefix="contact"),
+                                                              "companyForm": companyForm or CompanyForm(prefix="company")})
+
+
 class MissionContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
     model = MissionContact
     template_name = "core/form.html"
@@ -123,6 +156,7 @@ class BusinessBrokerCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, Cre
 
     def get_success_url(self):
         return reverse_lazy("crm:businessbroker_list")
+
 
 class BusinessBrokerUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, UpdateView):
     model = BusinessBroker
@@ -377,7 +411,7 @@ def company_detail(request, company_id):
 
     # Gather contacts for this company
     business_contacts = Contact.objects.filter(client__organisation__company=company).distinct()
-    mission_contacts = Contact.objects.filter(missioncontact__company=company).distinct()
+    mission_contacts = Contact.objects.filter(missioncontact__mission__lead__client__organisation__company=company).distinct()
     administrative_contacts = AdministrativeContact.objects.filter(company=company)
 
     # Won rate
@@ -434,6 +468,8 @@ def company_detail(request, company_id):
                    "contacts_count" : business_contacts.count() + mission_contacts.count() + administrative_contacts.count(),
                    "clients": Client.objects.filter(organisation__company=company).select_related(),
                    "lead_data_url": reverse('leads:client_company_lead_table_DT', args=[company.id,]),
+                   "supplier_lead_data_url": reverse('leads:supplier_company_lead_table_DT', args=[company.id, ]),
+                   "businessbroker_lead_data_url": reverse('leads:businessbroker_lead_table_DT', args=[company.id,]),
                    "mission_data_url": reverse('staffing:client_company_mission_table_DT', args=[company.id,]),
                    "mission_datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9, 10] },
                                                                      { className: "hidden-xs hidden-sm hidden-md", "targets": [6, 7,8]}],
