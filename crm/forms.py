@@ -245,17 +245,20 @@ class MissionContactForm(PydiciCrispyModelForm):
                    "company": CompanyChoices}
 
     def __init__(self, *args, **kwargs):
+        mission_id = kwargs.pop("mission_id", None)
         super(MissionContactForm, self).__init__(*args, **kwargs)
-        self.helper.layout = Layout(Div(Column(FieldWithButtons("contact", HTML(
-            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
-                "crm:contact_create"))),
-                                               css_class="col-md-6"),
-                                        Column(FieldWithButtons("company", HTML(
-                                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
-                                                "crm:company"))),
-                                               css_class="col-md-6"),
-                                        css_class="row"),
-                                    self.submit)
+        if mission_id:
+            self.inline_helper.form_action = reverse("crm:linked_mission_contact_create", args=[mission_id])
+        self.inline_helper.layout = Layout(Div(
+            Column(FieldWithButtons("contact",
+                                    HTML("""<a role='button' class='btn btn-primary' href='#' onclick='$("#contactForm").show("slow"); $("#contact_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
+                                    css_id="contact_input_group"),
+                   css_class="col-md-6"),
+            Column(FieldWithButtons("company",
+                                    HTML("""<a role='button' class='btn btn-primary' href='#' onclick='$("#companyForm").show("slow"); $("#company_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
+                                    css_id="company_input_group"),
+                   css_class="col-md-6"),
+            css_class="row"))
 
 
 class BusinessBrokerForm(PydiciCrispyModelForm):

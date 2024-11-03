@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load l10n %}
+{# context : record (expense object) #}
+
+{# out of band swap for expense state #}
+<template><div id="state-{{ record.id|unlocalize }}" hx-swap-oob="true">{{ record.get_state_display }}</div></template>
+
+
+<div id="transitions-{{ record.id|unlocalize }}" class="btn-group">
+{% for transition, transition_label, transition_short_label in transitions %}
+    <a role='button' title='{{ transition_label }}' class='btn btn-primary btn-sm'
+       hx-post="{% url 'expense:update_expense_state' record.id transition %}"
+       hx-target="#transitions-{{ record.id|unlocalize }}">
+        {{ transition_short_label }}
+    </a>
+{% endfor %}
+
+{% if expense_edit_perm %}
+    <a role='button' title='{% trans "Edit" %}' class='btn btn-primary btn-sm' href="{% url 'expense:expenses' record.id %}">
+        {% trans "Ed" %}
+    </a>
+    <a role='button' title='{% trans "Delete" %}' class='btn btn-primary btn-sm' href="{% url 'expense:expense_delete' record.id %}">
+        {% trans "De" %}
+    </a>
+{% endif %}
+
+<a role="button" title="{% trans 'Clone' %}" class="btn btn-primary btn-sm" href="{% url 'expense:clone_expense' clone_from=record.id %}">
+    {% trans "Cl" %}
+</a>
+</div>

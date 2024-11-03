@@ -29,11 +29,11 @@ from taggit.models import Tag, TaggedItem
 from core.utils import sortedValues, COLORS, get_parameter, moving_average, nextMonth
 from crm.utils import get_subsidiary_from_session
 from leads.models import Lead
-from leads.forms import LeadForm
+from leads.forms import LeadForm, LeadTagForm
 from leads.utils import post_save_lead, leads_state_stat
 from leads.learn import compute_leads_state, compute_lead_similarity
-from leads.learn import predict_tags, predict_similar
-from core.utils import capitalize, getLeadDirs, createProjectTree, get_fiscal_years_from_qs, to_int_or_round
+from leads.learn import predict_similar
+from core.utils import getLeadDirs, createProjectTree, get_fiscal_years_from_qs, to_int_or_round
 from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
 from people.tasks import compute_consultant_tasks
@@ -88,15 +88,6 @@ def detail(request, lead_id):
         previous_lead = None
         active_count = None
 
-    # Find suggested tags for this lead except if it has already at least two tags
-    tags = lead.tags.all()
-    if tags.count() < 3:
-        suggestedTags = set(predict_tags(lead))
-        suggestedTags -= set(tags)
-    else:
-        suggestedTags = []
-
-
     return render(request, "leads/lead_detail.html",
                   {"lead": lead,
                    "active_count": active_count,
@@ -105,9 +96,9 @@ def detail(request, lead_id):
                    "previous_lead": previous_lead,
                    "link_root": reverse("core:index"),
                    "completion_url": reverse("leads:tags", args=[lead.id, ]),
-                   "suggested_tags": suggestedTags,
                    "similar_leads": predict_similar(lead),
                    "enable_doc_tab": bool(settings.DOCUMENT_PROJECT_PATH),
+                   "lead_tag_form": LeadTagForm(lead=lead),
                    "user": request.user})
 
 @pydici_non_public
@@ -260,33 +251,40 @@ def tag(request, tag_id):
 @pydici_non_public
 @pydici_feature("leads")
 @permission_required("leads.change_lead")
-def add_tag(request):
-    """Add a tag to a lead. Create the tag if needed"""
-    answer = {"tag_created": True, "tag_url": "", "tag_name": ""}
-    if request.POST["tag"]:
-        tagName = capitalize(request.POST["tag"])
-        lead = Lead.objects.get(id=int(request.POST["lead_id"]))
-        if tagName in lead.tags.all().values_list("name", flat=True):
-            answer["tag_created"] = False
-        lead.tags.add(tagName)
-        if lead.state not in ("WON", "LOST", "FORGIVEN"):
-            compute_leads_state.delay(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
-        compute_lead_similarity.delay()  # update lead similarity model in background
-        compute_consultant_tasks.delay(lead.responsible.id)  # update consultants tasks in background
-        tag = Tag.objects.filter(name=tagName)[0]  # We should have only one, but in case of bad data, just take the first one
-        answer["tag_url"] = reverse("leads:tag", args=[tag.id, ])
-        answer["tag_remove_url"] = reverse("leads:remove_tag", args=[tag.id, lead.id])
-        answer["tag_name"] = tag.name
-        answer["id"] = tag.id
-    return HttpResponse(json.dumps(answer), content_type="application/json")
+def add_tag(request, lead_id, tag_id=None):
+    """Add a tag by id (PUT) to a lead or create (through POST) a new one and attach it and return tag banner."""
+    try:
+        lead = Lead.objects.get(id=lead_id)
+    except Lead.DoesNotExist:
+        return Http404()
+    if request.method == "POST":
+        form = LeadTagForm(request.POST)
+        if form.is_valid():
+            tags = form.cleaned_data["tag"]
+            lead.tags.add(*tags)
+        else:  # Returns forms with errors
+            return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": form})
+    elif tag_id:  # PUT, we add an existing tag
+        try:
+            tag = Tag.objects.get(id=tag_id)
+            lead.tags.add(tag)
+        except Tag.DoesNotExist:
+            return HttpResponse(_("Invalid tag"), status=400)
+    else:
+        return HttpResponse(_("No tag provided"), status=400)
+
+    if lead.state not in ("WON", "LOST", "FORGIVEN"):
+        compute_leads_state.delay(relearn=False, leads_id=[lead.id,])  # Update (in background) lead proba state as tag are used in computation
+    compute_lead_similarity.delay()  # update lead similarity model in background
+    compute_consultant_tasks.delay(lead.responsible.id)  # update consultants tasks in background
+    return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": LeadTagForm(lead=lead) })
 
 
 @pydici_non_public
 @pydici_feature("leads")
 @permission_required("leads.change_lead")
-def remove_tag(request, tag_id, lead_id):
-    """Remove a tag to a lead"""
-    answer = {"error": False, "id": tag_id}
+def remove_tag(request, lead_id, tag_id):
+    """Remove a tag to a lead and return tag banner"""
     try:
         tag = Tag.objects.get(id=tag_id)
         lead = Lead.objects.get(id=lead_id)
@@ -295,8 +293,8 @@ def remove_tag(request, tag_id, lead_id):
             compute_leads_state.delay(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity.delay()  # update lead similarity model in background
     except (Tag.DoesNotExist, Lead.DoesNotExist):
-        answer["error"] = True
-    return HttpResponse(json.dumps(answer), content_type="application/json")
+        return Http404()
+    return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": LeadTagForm(lead=lead)})
 
 
 @pydici_non_public
@@ -329,6 +327,7 @@ def manage_tags(request):
 @pydici_feature("leads")
 def tags(request, lead_id):
     """@return: all tags that contains q parameter and are not already associated to this lead as a simple text list"""
+    #TODO: remove this function
     tags = Tag.objects.all().exclude(lead__id=lead_id)  # Exclude existing tags
     tags = tags.filter(name__icontains=request.GET["term"])
     tags = tags.values_list("name", flat=True)

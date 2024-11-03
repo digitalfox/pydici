@@ -10,6 +10,7 @@
     {% include "core/_billboard.html" %}
     {% include "core/_pivotable_header.html" %}
     <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+    <script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
 {% endblock %}
 
 
@@ -60,35 +61,7 @@
 <div class="tab-content">
     <div id="tab-description" class="tab-pane fade active show" role="tabpanel">
         <div class="row mt-2"><div class="col-12">
-            <div class="tag_banner alert">
-                <div class="d-flex flex-row">
-                    <div id="newtags" class="d-flex flex-row align-self-center">
-                        {% for tag in lead.tags.all %}
-                        <div id="tag_{{ tag.id|unlocalize }}" class="mx-1">
-                            <a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a>
-                            <a class='tagrlink' href='javascript:;' onClick="$.get('{% url 'leads:remove_tag' tag.id|unlocalize lead.id|unlocalize %}', hide_tag);"><i class="bi bi-x-circle"></i></a>&nbsp;
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% if perms.leads.change_lead %}
-                        <form id="tag_form">
-                            <div class="ms-3">
-                                <input class="textInput form-control" type="text" id="newtag" value="" maxlength="100" onclick="this.value='';"/>
-                            </div>
-                        </form>
-                    {% endif %}
-                </div>
-                {% if perms.leads.change_lead %}
-                    <div id="suggested">
-                        {% if suggested_tags %}
-                        {% trans "Suggested tags: " %}
-                        {% for tag in suggested_tags %}
-                            <a href="">{{ tag }}</a>&nbsp;&nbsp;
-                        {% endfor %}
-                        {% endif %}
-                    </div>
-                {% endif %}
-            </div>
+            {% include "leads/_tags_banner.html" %}
         </div></div>
         <div class="row">
             {% with lead as lead %}{% include "leads/_lead_checkdoc.html" %}{% endwith %}
@@ -289,54 +262,6 @@
 
 <script type="text/javascript">
 <!--
-
-$(document).ready(function() {
-    // Function to add new tags asynchronously
-
-    // Add autocomplete on existings tags
-    $("#newtag").autocomplete({ source:"{{ completion_url }}", minLength: 0});
-
-    // Connect form validation to ajax request
-    $("#tag_form").submit(function(e) {
-        e.preventDefault();
-        // send requests
-        if ($("#newtag").val()) {
-	        $.post("{% url 'leads:add_tag' %}",
-	                { tag : $("#newtag").val(), lead_id : {{lead.id|unlocalize }} },
-	                function(data) {
-	                    if (data.tag_created) {
-	                        // Add new tag on list
-				var remove_link = "<a class='tagrlink' href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "', hide_tag)\"> <i class=\"bi bi-x-circle\"></i></a>";
-				$("#newtags").append("<div id='tag_" + data.id + "'><a href='"+ data.tag_url + "' class='mx-1'>" + data.tag_name + "</a> " + remove_link + "&nbsp;&nbsp;");
-	                        $("#newtag").val("");
-	                    }
-	                    else {
-	                        $("#newtag").val("{% trans 'Tag already exists' %}");
-	                    }
-	                });
-	         }
-    });
-
-    // Connect suggested tag to ajax request
-    $("#suggested a").on("click", function(e){
-        e.preventDefault();
-        // send requests
-        $.post("{% url 'leads:add_tag' %}",
-                { tag : $(this).text(), lead_id : {{lead.id|unlocalize}} },
-                function(data) {
-	                // Add new tag on list
-		var remove_link = "<a href='javascript:;' onClick=\"$.get('" + data.tag_remove_url + "')\"><i class=\"bi bi-x-circle\"></i></a>";
-		$("#newtags").append("<a href='"+ data.tag_url + "'>" + data.tag_name + "</a>" + remove_link + "&nbsp;&nbsp;");
-                });
-        // Remove from suggested list
-        $(this).remove();
-    });
-});
-
-function hide_tag(data) {    
-    $("#tag_"+ data.id).hide("fast");
-};
-
  // Add keyboard shortcut to go to next/previous lead
 function doc_keyUp(e) {
     /// Do not change page if the user is editing a field

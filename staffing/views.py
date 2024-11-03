@@ -15,7 +15,7 @@ from math import sqrt
 
 from django.core.cache import cache
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.forms import formset_factory
@@ -46,10 +46,10 @@ from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlin
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
     to_int_or_round, COLORS, cumulateList, user_has_feature, get_parameter, \
     get_fiscal_years_from_qs, get_fiscal_year
-from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, pydici_subcontractor
+from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, \
-    timesheet_report_data, timesheet_report_data_grouped, check_timesheet_validity
+    timesheet_report_data, timesheet_report_data_grouped, check_timesheet_validity, compute_mission_consultant_rates
 from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMIT
@@ -123,27 +123,19 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
 
 
 @pydici_non_public
-def missions(request, only_active=True, consultant_id=None):
+def missions(request, only_active=True):
     """List of missions"""
-    if consultant_id:
-        consultant = Consultant.objects.get(id=consultant_id)
-        if only_active:
-            data_url = reverse('staffing:consultant_active_mission_table_DT', args=(consultant_id,))
-        else:
-            data_url = reverse('staffing:consultant_all_mission_table_DT', args=(consultant_id,))
+    if only_active:
+        data_url = reverse('staffing:active_mission_table_DT')
     else:
-        consultant = None
-        if only_active:
-            data_url = reverse('staffing:active_mission_table_DT')
-        else:
-            data_url = reverse('staffing:all_mission_table_DT')
+        data_url = reverse('staffing:all_mission_table_DT')
     return render(request, "staffing/missions.html",
                   {"all": not only_active,
-                   "consultant": consultant,
                    "data_url": data_url,
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] },
                                                              { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7,8,9]}],
-                                             "order": [[0, "asc"]] ''',
+                                             "order": [[0, "asc"]],
+                                             "drawCallback": function( oSettings ) {htmx.process(document.body); }''',
                    "user": request.user})
 
 
@@ -163,15 +155,7 @@ def mission_home(request, mission_id):
 @pydici_non_public
 def mission_consultants(request, mission_id):
     mission = Mission.objects.get(id=mission_id)
-    rates = {}
-    objective_rates = mission.consultant_objective_rates()
-    for consultant, rate in mission.consultant_rates().items():
-        rates[consultant] = (rate, objective_rates.get(consultant))
-    try:
-        objective_dates = [i[0] for i in list(objective_rates.values())[0]]
-    except IndexError:
-        # No consultant or no objective on mission timeframe
-        objective_dates = []
+    objective_dates, rates = compute_mission_consultant_rates(mission)
     return render(request, "staffing/mission_consultants.html",
                   {"mission": mission,
                    "objective_dates": objective_dates,
@@ -284,7 +268,8 @@ def consultant_missions(request, only_active=True, consultant_id=None):
                    "data_url": data_url,
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] },
                                                                  { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7,8,9]}],
-                                            "order": [[3, "asc"]]
+                                            "order": [[3, "asc"]],
+                                            "drawCallback": function( oSettings ) {htmx.process(document.body); }
                                             ''',
                    "user": request.user})
 
@@ -866,16 +851,14 @@ def fixed_price_missions_report(request):
 
 @pydici_non_public
 def deactivate_mission(request, mission_id):
-    """Deactivate the given mission"""
+    """Deactivate the given mission. Fragment for htmx call"""
     try:
-        error = False
         mission = Mission.objects.get(id=mission_id)
         mission.active = False
         mission.save()
+        return HttpResponse(_("mission archived"))
     except Mission.DoesNotExist:
-        error = True
-    return HttpResponse(json.dumps({"error": error, "id": mission_id}),
-                        content_type="application/json")
+        return HttpResponse(_("mission not found"))
 
 
 @cache_control(no_store=True)
@@ -1546,7 +1529,6 @@ def holiday_csv_timesheet(request, year=None, month=None):
     return response
 
 
-
 @pydici_non_public
 @pydici_feature("management")
 def holidays_planning(request, year=None, month=None):
@@ -1741,7 +1723,6 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
                                                              "derivedAttributes": [],})
 
 
-
 @pydici_non_public
 @pydici_feature("leads")
 @permission_required("staffing.add_mission")
@@ -1780,35 +1761,48 @@ def create_new_mission_from_lead(request, lead_id):
 
 
 @pydici_non_public
-def mission_consultant_rate(request):
-    """Select or create financial condition for this consultant/mission tuple and update it
-    This is intended to be used through a jquery jeditable call"""
+def mission_consultant_rate(request, mission_id, consultant_id):
+    """Select or create financial condition for this consultant/mission tuple and update it with htmx"""
     if not (request.user.has_perm("staffing.add_financialcondition") and
-        request.user.has_perm("staffing.change_financialcondition")):
-        return HttpResponse(_("You are not allowed to do that"))
+            request.user.has_perm("staffing.change_financialcondition")):
+        return HttpResponseForbidden()
+
     try:
-        sold, mission_id, consultant_id = request.POST["id"].split("-")
         mission = Mission.objects.get(id=mission_id)
         consultant = Consultant.objects.get(id=consultant_id)
         condition, created = FinancialCondition.objects.get_or_create(mission=mission, consultant=consultant,
                                                                       defaults={"daily_rate": 0})
-        value = escape(request.POST["value"].replace(" ", ""))
-        if sold == "sold":
+    except (Mission.DoesNotExist, Consultant.DoesNotExist):
+        return HttpResponse(_("Mission or consultant does not exist"), status=404)
+
+    if request.method == "GET":
+        edit = True
+    else:
+        edit = False
+        change = None
+        if request.POST.get("sold"):
+            value = request.POST["sold"]
             change = {_(f"daily rate for {consultant}"): [condition.daily_rate, value]}
             condition.daily_rate = value
-        else:
+
+        if request.POST.get("bought"):
+            value = request.POST["bought"]
             change = {_(f"bought daily rate for {consultant}"): [condition.daily_rate, value]}
             condition.bought_daily_rate = value
-        condition.save()
-        if mission.responsible:
-            compute_consultant_tasks.delay(mission.responsible.id)
-        LogEntry.objects.log_create(instance=mission, actor=request.user, action=LogEntry.Action.UPDATE, changes=json.dumps(change))
 
-        return HttpResponse(value)
-    except (Mission.DoesNotExist, Consultant.DoesNotExist):
-        return HttpResponse(_("Mission or consultant does not exist"))
-    except ValueError:
-        return HttpResponse(_("Incorrect value"))
+        if change:
+            try:
+                condition.save()
+                cache.delete("Mission.consultant_rates%s" % mission.id)  # flush rate cache
+            except ValueError:
+                return HttpResponse(status=400)
+            if mission.responsible:
+                compute_consultant_tasks.delay(mission.responsible.id)
+            LogEntry.objects.log_create(instance=mission, actor=request.user, action=LogEntry.Action.UPDATE, changes=json.dumps(change))
+
+    objective_dates, rates = compute_mission_consultant_rates(mission)
+    return render(request, "staffing/_mission_consultants_rate.html", {"mission": mission, "consultant": consultant,
+                                                                       "rate": rates[consultant], "edit": edit})
 
 
 @pydici_non_public
@@ -1873,11 +1867,9 @@ def mission_contacts(request, mission_id):
         form = MissionContactsForm(request.POST, instance=mission)
         if form.is_valid():
             form.save()
-        return HttpResponseRedirect(reverse("staffing:mission_home", args=[mission.id, ]))
 
     # Unbound form
     form = MissionContactsForm(instance=mission)
-    # TODO: add link to add mission contact
     missionContacts = mission.contacts.select_related().order_by("company")
     return render(request, "staffing/mission_contacts.html",
                   {"mission": mission,

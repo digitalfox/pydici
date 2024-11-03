@@ -1,0 +1,11 @@
+{# display VAT as htmx editable field #}
+{# context: expense object #}
+{% load l10n %}
+<a id="{{ expense.id|unlocalize }}"
+     {% if can_edit_vat %}
+        hx-get="{% url 'expense:update_expense_vat' expense.id %}"
+        hx-swap="outerHTML"
+        href="#"
+     {% endif %} >
+    {{ expense.vat }}
+</a>
