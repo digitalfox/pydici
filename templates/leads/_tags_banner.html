@@ -21,7 +21,7 @@
         <div class="col-lg-auto col-md-12">
         <form id="tag_form">
             <div class="d-flex">
-                <div class="col">{{ lead_tag_form }}</div>
+                <div class="col" style="min-width: 200px">{{ lead_tag_form }}</div>
                 <div class="col"><button type="submit" class="btn btn-primary" hx-post="{% url 'leads:add_tag' lead.id|unlocalize %}">{% trans "Add" %}</button></div>
             </div>
         </form>
