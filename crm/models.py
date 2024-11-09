@@ -303,7 +303,10 @@ class BusinessBroker(models.Model):
 
     def __str__(self):
         if self.company:
-            return "%s (%s)" % (self.company, self.contact)
+            if self.contact:
+                return "%s (%s)" % (self.company, self.contact)
+            else:
+                return str(self.company)
         else:
             return self.contact
 
