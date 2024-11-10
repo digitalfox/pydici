@@ -129,6 +129,7 @@ class Expense(models.Model):
         consultant = Consultant.objects.get(trigramme__iexact=self.user.username)
         if consultant.manager:
             compute_consultant_tasks.delay(consultant.manager.id)  # update manager tasks
+            compute_consultant_tasks.delay(consultant.id)  # update self tasks
 
     def receipt_data(self):
         """Return receipt data in formatted way to be included inline in a html page"""

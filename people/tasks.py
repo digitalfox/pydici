@@ -63,7 +63,7 @@ def compute_consultant_tasks(consultant_id):
     if not user:
         return []
 
-    # Expenses to reviews
+    # Expenses to reviews as manager
     expenses = Expense.objects.filter(user__in=consultant.user_team(exclude_self=False), workflow_in_progress=True, state="REQUESTED")
     expenses_count = expenses.count()
     if expenses_count > 0:
@@ -73,6 +73,15 @@ def compute_consultant_tasks(consultant_id):
         tasks.append(ConsultantTask(label=_("Expenses to review"), category=_("expenses"), count=expenses_count,
                                     priority=expenses_priority, link=expenses_link))
 
+    # Self expenses waiting for information
+    expenses = Expense.objects.filter(user=user, workflow_in_progress=True, state="NEEDS_INFORMATION")
+    expenses_count = expenses.count()
+    if expenses_count > 0:
+        expenses_link = reverse("expense:expenses")
+        expenses_age = (now - expenses.aggregate(Min("update_date"))["update_date__min"]).days
+        expenses_priority = get_task_priority(expenses_age, (7, 14))
+        tasks.append(ConsultantTask(label=_("Expenses needs information"), category=_("expenses"), count=expenses_count,
+                                    priority=expenses_priority, link=expenses_link))
 
     # Missions without billing mode
     missions_without_billing_mode = Mission.objects.filter(responsible=consultant, active=True,
