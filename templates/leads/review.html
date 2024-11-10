@@ -11,29 +11,15 @@
 {% block content %}
     <div class="row mt-3">
         <h1 class="text-center">{% trans "Commercial activity" %}</h1>
-        <div id="graph_leads_bar"></div>
-        <script type="text/javascript">
-        $('#graph_leads_bar').load('{% url 'leads:graph_leads_bar' %}?{{scope_current_filter}}')
-        </script>
+        <div hx-get="{% url 'leads:graph_leads_bar' %}?{{scope_current_filter}}" hx-trigger="load"><div class="loader m-3"></div></div>
     </div>
 
-    <div id="graph_leads_activity_content" class="col-12"></div>
-    <script type="text/javascript">
-        $('#graph_leads_activity_content').load('{% url 'leads:graph_leads_activity' %}?{{ scope_current_filter }}')
-    </script>
-
+    <div hx-get="{% url 'leads:graph_leads_activity' %}?{{ scope_current_filter }}" hx-trigger="load" class="col-12"><div class="loader m-3"></div></div>
 
     <div class="row">
-        <div id="graph_leads_pipe_content" class="col-lg-6"></div>
-        <script type="text/javascript">
-        $('#graph_leads_pipe_content').load('{% url 'leads:graph_leads_pipe' %}?{{ scope_current_filter }}')
-        </script>
-        <div id="graph_won_rate_content" class="col-lg-6"></div>
-        <script type="text/javascript">
-        $('#graph_won_rate_content').load('{% url 'leads:graph_leads_won_rate' %}?{{ scope_current_filter }}')
-        </script>
+        <div hx-get="{% url 'leads:graph_leads_pipe' %}?{{ scope_current_filter }}" hx-trigger="load" class="col-lg-6"><div class="loader m-3"></div></div>
+        <div hx-get="{% url 'leads:graph_leads_won_rate' %}?{{ scope_current_filter }}" hx-trigger="load" class="col-lg-6"><div class="loader m-3"></div></div>
     </div>
-
 
     <div class="row mt-5">
         <div class="col-lg-12">
@@ -99,7 +85,6 @@
             {% endwith %}
         </div>
     </div>
-
 
     <script type="text/JavaScript">
         $(document).ready(function() {
