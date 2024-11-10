@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load l10n %}
 {# context : record (expense object) #}
-<div id="state-{{ record.id|unlocalize }}">
+<div id="{{ state_prefix }}-state-{{ record.id|unlocalize }}">
 {% if record.state == "PAID" %}
     <a href="{% url 'expense:expense_payment_detail' record.expensePayment.id %}">{% trans "Paid" %}</a>
 {% else %}

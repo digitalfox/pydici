@@ -3,14 +3,14 @@
 {# context : record (expense object) #}
 
 {# out of band swap for expense state #}
-<template><div id="state-{{ record.id|unlocalize }}" hx-swap-oob="true" class="text-success">{{ record.get_state_display }}</div></template>
+<template><div id="managed-expense-state-{{ record.id|unlocalize }}" hx-swap-oob="true" class="text-success">{{ record.get_state_display }}</div></template>
 
 
-<div id="transitions-{{ record.id|unlocalize }}" class="btn-group">
+<div id="{{ transition_prefix }}-transitions-{{ record.id|unlocalize }}" class="btn-group">
 {% for transition, transition_label, transition_short_label in transitions %}
     <a role='button' title='{{ transition_label }}' class='btn btn-primary btn-sm'
        hx-post="{% url 'expense:update_expense_state' record.id transition %}"
-       hx-target="#transitions-{{ record.id|unlocalize }}">
+       hx-target="#{{ transition_prefix }}-transitions-{{ record.id|unlocalize }}">
         {{ transition_short_label }}
     </a>
 {% endfor %}

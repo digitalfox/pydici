@@ -60,6 +60,7 @@ def expense(request, expense_id):
                    "can_edit": can_edit_expense(expense, request.user),
                    "can_edit_vat": expense_administrator or expense_paymaster,
                    "transitions": transitions,
+                   "transition_prefix": "managed-expense",
                    "user": request.user})
 
 
@@ -270,7 +271,8 @@ def update_expense_state(request, expense_id, target_state):
         return render(request, "expense/_expense_transitions_column.html",
                       {"record": expense,
                        "transitions": transitions,
-                       "expense_edit_perm": can_edit_expense(expense, request.user)})
+                       "expense_edit_perm": can_edit_expense(expense, request.user),
+                       "transition_prefix": "managed-expense"})
     else:
         message = ("Transition %s is not allowed" % target_state)
         return HttpResponse(message)

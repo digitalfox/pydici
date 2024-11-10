@@ -123,7 +123,7 @@ class ExpenseTable(tables.Table):
     user = tables.Column(verbose_name=_("Consultant"))
     lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads:detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
     receipt = tables.TemplateColumn(template_name="expense/_receipt_column.html")
-    state = tables.TemplateColumn(template_name="expense/_expense_state_column.html", orderable=False)
+    state = tables.TemplateColumn(template_name="expense/_expense_state_column.html", extra_context={"state_prefix": "expense"}, orderable=False)
     expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
     update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title attr is just used to have an easy to parse hidden value for sorting
     transitions_template = get_template("expense/_expense_transitions_column.html")
@@ -156,7 +156,8 @@ class UserExpenseWorkflowTable(ExpenseWorkflowTable):
     def render_transitions(self, record):
         return self.transitions_template.render(context={"record": record,
                                                          "transitions": [],
-                                                         "expense_edit_perm": can_edit_expense(record, self.request.user)},
+                                                         "expense_edit_perm": can_edit_expense(record, self.request.user),
+                                                         "transition_prefix": "user-expense"},
                                                 request=self.request)
 
     class Meta:
@@ -168,12 +169,15 @@ class UserExpenseWorkflowTable(ExpenseWorkflowTable):
 class ManagedExpenseWorkflowTable(ExpenseWorkflowTable):
     description = tables.TemplateColumn("""{% load l10n %} <span id="managed_expense_{{record.id|unlocalize }}">{{ record.description }}</span>""",
                                         attrs={"td": {"class": "description"}})
+    state = tables.TemplateColumn(template_name="expense/_expense_state_column.html",
+                                  extra_context={"state_prefix": "managed-expense"}, orderable=False)
 
     def render_transitions(self, record):
         transitions = [(t, expense_transition_to_state_display(t), expense_transition_to_state_display(t)[0:2]) for t in expense_next_states(record, self.request.user)]
         return self.transitions_template.render(context={"record": record,
                                                          "transitions": transitions,
-                                                         "expense_edit_perm": can_edit_expense(record, self.request.user)},
+                                                         "expense_edit_perm": can_edit_expense(record, self.request.user),
+                                                         "transition_prefix": "managed-expense"},
                                                 request=self.request)
 
     class Meta:
