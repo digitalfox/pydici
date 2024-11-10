@@ -173,7 +173,7 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
         if self.instance.end_date:
             maxDate = self.instance.end_date.replace(day=1)
         else:
-            maxDate = None
+            maxDate = self.instance.staffing_end_date()
         form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices(attrs={'data-placeholder':_("Select a consultant to add forecast...")}), queryset=Consultant.objects)
         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=minDate, maxDate=maxDate)
         form.fields["charge"].widget.attrs["class"] = "numberinput form-control"
@@ -410,9 +410,13 @@ class MissionForm(PydiciCrispyModelForm):
         return self.cleaned_data[field]
 
     def clean_start_date(self):
+        if self.cleaned_data.get("start_date") and self.cleaned_data.get("start_date") > self.instance.staffing_start_date():
+            raise ValidationError(_("start date must be before staffing start date (%s)" % self.instance.staffing_start_date()))
         return self._clean_start_end_date("start_date")
 
     def clean_end_date(self):
+        if self.cleaned_data.get("end_date") and self.cleaned_data.get("end_date") < self.instance.staffing_end_date():
+            raise ValidationError(_("end date must be after staffing end date (%s)" % self.instance.staffing_end_date()))
         return self._clean_start_end_date("end_date")
 
     def clean(self):

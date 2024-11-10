@@ -411,10 +411,19 @@ class Mission(models.Model):
 
     @cacheable("Mission.staffing_start_date%(id)s", 10)
     def staffing_start_date(self):
-        """Starting date (=oldiest) staffing date of this mission. None if no staffing"""
+        """Starting date (=oldest) staffing date of this mission. None if no staffing"""
         start_dates = self.staffing_set.all().aggregate(Min("staffing_date")).values()
         if start_dates:
             return list(start_dates)[0]
+        else:
+            return None
+
+    @cacheable("Mission.staffing_end_date%(id)s", 10)
+    def staffing_end_date(self):
+        """End date (=latest) staffing date of this mission. None if no staffing"""
+        end_dates = self.staffing_set.all().aggregate(Max("staffing_date")).values()
+        if end_dates:
+            return list(end_dates)[0]
         else:
             return None
 
