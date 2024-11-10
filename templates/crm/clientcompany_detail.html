@@ -232,12 +232,7 @@
 
         <div class="row mt-4">
             <div class="col-12">
-                <div id="graph_company_business_activity_content"></div>
-                <script type="text/javascript">
-                $(document).ready(function() {
-                    $('#graph_company_business_activity_content').load('{% url 'crm:graph_company_business_activity' company.id %}?{{scope_current_filter}}');
-                });
-                </script>
+                <div hx-get="{% url 'crm:graph_company_business_activity' company.id %}?{{scope_current_filter}}" hx-trigger="load"><div class="loader m-3"></div></div>
             </div>
         </div>
     </div> <!-- end of dashboard tab -->

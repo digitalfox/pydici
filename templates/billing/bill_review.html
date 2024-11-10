@@ -230,17 +230,7 @@
     {% endif %}
 
     <div class="row my-2">
-        <div id="outstanding_billing_graph_content" class="col-lg-12"></div>
-        <script type="text/javascript">
-        $(document).ready(function() {
-            $('#outstanding_billing_graph_content').load("{% url 'billing:graph_outstanding_billing' %}?{{ scope_current_filter }}")
-         });
-        </script>
+        <div hx-get="{% url 'billing:graph_outstanding_billing' %}?{{ scope_current_filter }}" hx-trigger="load" class="col-lg-12"><div class="loader m-3"></div></div>
+        <div hx-get="{% url 'billing:graph_billing' %}?{{ scope_current_filter }}" hx-trigger="load" class="my-2"><div class="loader m-3"></div></div>
     </div>
-
-    <div id="graph_billing_content" class="my-2"></div>
-    <script type="text/javascript">
-        $('#graph_billing_content').load('{% url 'billing:graph_billing' %}?{{ scope_current_filter }}')
-    </script>
-
 {% endblock %}

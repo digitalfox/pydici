@@ -138,16 +138,13 @@
         </div>
     {% endif %}
 
-
-    <div id="consultant_rate_graph_content" class="col-12"></div>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        $('#consultant_rate_graph_content').load("{% url 'staffing:graph_consultant_rates' consultant.id %}")
-     });
-    </script>
+    <div hx-get="{% url 'staffing:graph_consultant_rates' consultant.id %}" hx-trigger="load"  class="col-12"><div class="loader m-3"></div></div>
 
 </div> <!-- end of row -->
+
 <script type="text/javascript">
+    $(document).ready(function() { htmx.process(document.body); });
+
     function displayConsultantGraph () {
         var chart_timesheet = bb.generate({
             bindto: '#consultant_timesheet_status',
