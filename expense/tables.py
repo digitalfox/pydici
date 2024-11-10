@@ -129,7 +129,6 @@ class ExpenseTable(tables.Table):
     transitions_template = get_template("expense/_expense_transitions_column.html")
     vat_template = get_template("expense/_expense_vat_column.html")
 
-
     def render_user(self, value):
         return link_to_consultant(value)
 

@@ -3,7 +3,7 @@
 {# context : record (expense object) #}
 
 {# out of band swap for expense state #}
-<template><div id="state-{{ record.id|unlocalize }}" hx-swap-oob="true">{{ record.get_state_display }}</div></template>
+<template><div id="state-{{ record.id|unlocalize }}" hx-swap-oob="true" class="text-success">{{ record.get_state_display }}</div></template>
 
 
 <div id="transitions-{{ record.id|unlocalize }}" class="btn-group">
