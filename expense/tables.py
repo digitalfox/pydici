@@ -117,23 +117,27 @@ class ExpenseTableDT(PydiciSubcontractordMixin, PydiciFeatureMixin, BaseDatatabl
 
 
 class ExpenseTable(tables.Table):
+    class VatColumn(tables.Column):
+        """Vat custom column to allow changing record name and adding extra attrs on calling"""
+        vat_template = get_template("expense/_expense_vat_column.html")
+
+        def render(self, record=None):
+            return self.vat_template.render(context={"expense": record, "can_edit_vat": True})
+
     id = tables.TemplateColumn("""<a href="{{ record.get_absolute_url }}">{{ record.id }}</a>""", verbose_name="#")
     description = tables.Column(attrs={"td": {"class": "description"}})
-    amount = tables.Column(attrs={"td": {"class": "amount"}})
+    amount = tables.Column(attrs={"td": {"class": "amount"}, "th": {"data-priority": "15000"}})
     user = tables.Column(verbose_name=_("Consultant"))
-    lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads:detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""")
-    receipt = tables.TemplateColumn(template_name="expense/_receipt_column.html")
+    lead = tables.TemplateColumn("""{% if record.lead %}<a href='{% url "leads:detail" record.lead.id %}'>{{ record.lead }}</a>{% endif%}""", attrs={"th": {"data-priority": "15000"}})
+    receipt = tables.TemplateColumn(template_name="expense/_receipt_column.html", attrs={"th": {"data-priority": "15000"}})
     state = tables.TemplateColumn(template_name="expense/_expense_state_column.html", extra_context={"state_prefix": "expense"}, orderable=False)
-    expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""")  # Title attr is just used to have an easy to parse hidden value for sorting
-    update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs=TABLES2_HIDE_COL_MD)  # Title attr is just used to have an easy to parse hidden value for sorting
+    expense_date = tables.TemplateColumn("""<span title="{{ record.expense_date|date:"Ymd" }}">{{ record.expense_date }}</span>""", attrs={"th": {"data-priority": "15000"}})  # Title attr is just used to have an easy to parse hidden value for sorting
+    update_date = tables.TemplateColumn("""<span title="{{ record.update_date|date:"Ymd" }}">{{ record.update_date }}</span>""", attrs={"th": {"data-priority": "15000"}})  # Title attr is just used to have an easy to parse hidden value for sorting
     transitions_template = get_template("expense/_expense_transitions_column.html")
-    vat_template = get_template("expense/_expense_vat_column.html")
+    vat = VatColumn(attrs={"th": {"data-priority": "15000"}})
 
     def render_user(self, value):
         return link_to_consultant(value)
-
-    def render_vat(self, record):
-        return self.vat_template.render(context={"expense": record, "can_edit_vat": True})
 
     class Meta:
         model = Expense
@@ -145,7 +149,7 @@ class ExpenseTable(tables.Table):
 
 
 class ExpenseWorkflowTable(ExpenseTable):
-    transitions = tables.Column(accessor="pk")
+    transitions = tables.Column(accessor="pk", attrs={"th": {"data-priority": "1"}})
 
     class Meta:
         sequence = ("id", "user", "description", "lead", "amount", "chargeable", "corporate_card", "receipt", "state", "transitions", "expense_date", "update_date", "comment")
