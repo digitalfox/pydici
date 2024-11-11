@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 PYDICI_ROOTDIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir, os.path.pardir)
 
 # Default VAT (Value Added Tax) rate (in %) used for billing.
-# Can be overrode for each bill. This is just the default proposed value on form
+# Can be overridden for each bill. This is just the default proposed value on form
 # Value **must** be quoted as a string
 # Ex. "19.6"
 PYDICI_DEFAULT_VAT_RATE = "20.0"

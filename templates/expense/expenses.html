@@ -26,26 +26,26 @@
 
 
 {% if user_expense_table.data %}
+    <div class="row"><h2>{% trans "My expenses" %}</h2></div>
     <div class="row">
-        <div class="col-12">
-            <h2>{% trans "My expenses" %}</h2>
-                {% render_table user_expense_table %}
-                {% with "user_expense_workflow_table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
-        </div>
+        {% render_table user_expense_table %}
+        {% with "user_expense_workflow_table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
     </div>
     <hr/>
 {% endif %}
 
 
-<div class="row">
-    <div class="col-12">
-    {% if managed_expense_table.data %}
-        <h2>{% trans "Expenses I manage" %}</h2>
-            {% render_table managed_expense_table %}
-            {% with "managed_expense_workflow_table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
-    {% endif %}
+
+
+{% if managed_expense_table.data %}
+    <div class="row"><h2>{% trans "Expenses I manage" %}</h2></div>
+    <div class="row">
+        {% render_table managed_expense_table %}
+        {% with "managed_expense_workflow_table" as table_id %}{% include "core/_datatables-dj-tables.html" %}{% endwith %}
     </div>
-</div>
+{% endif %}
+
+
 
 <hr/>
 

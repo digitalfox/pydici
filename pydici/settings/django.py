@@ -136,6 +136,8 @@ SELECT2_JS = ''
 SELECT2_CSS = ''
 TAGGIT_LIMIT = 200
 
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
+
 # since django 3.2, default PK field has changed from autofield (integer) to bigint. Set here previous default.
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
