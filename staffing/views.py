@@ -1816,10 +1816,12 @@ def mission_update(request):
         mission = Mission.objects.get(id=mission_id)  # If no mission found, it fails, that's what we want
         if attribute == "billing_mode":
             values = dict(Mission.BILLING_MODES)
+            values = {mission.billing_mode: values.pop(mission.billing_mode), **values}
             if mission.management_mode == "ELASTIC":
                 del values["FIXED_PRICE"]
         elif attribute == "management_mode":
             values = dict(Mission.MANAGEMENT_MODES)
+            values = { mission.management_mode: values.pop(mission.management_mode), **values}
             if mission.billing_mode == "FIXED_PRICE":
                 del values["ELASTIC"]
         elif attribute == "probability":
