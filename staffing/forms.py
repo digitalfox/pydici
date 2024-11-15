@@ -173,7 +173,7 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
         if self.instance.end_date:
             maxDate = self.instance.end_date.replace(day=1)
         else:
-            maxDate = self.instance.staffing_end_date()
+            maxDate = None
         form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices(attrs={'data-placeholder':_("Select a consultant to add forecast...")}), queryset=Consultant.objects)
         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=minDate, maxDate=maxDate)
         form.fields["charge"].widget.attrs["class"] = "numberinput form-control"
@@ -200,6 +200,7 @@ class StaffingForm(forms.ModelForm):
             done = done.aggregate(Sum("charge"))["charge__sum"] or 0
             if charge < done:
                 self.add_error("charge", _("You can't define a forecast lower than already done on timesheet (%s)") % done)
+
 
 class MassStaffingForm(forms.Form):
     """Massive staffing input forms that allow to define same staffing
@@ -339,6 +340,7 @@ class TimesheetForm(forms.Form):
                                 # simple way for the template to differentiate week days over weekend days
                                 self.fields[key].warning.append({"value":warning[warning_day_index], "weekday": warning_week_day.isoweekday()})
                                 warning_day_index += 1
+
 
 class MissionForm(PydiciCrispyModelForm):
     """Form used to change mission name and price"""

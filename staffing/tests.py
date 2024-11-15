@@ -9,15 +9,18 @@ Test cases for staffing
 from unittest import mock
 from io import StringIO
 import csv
+from datetime import date, timedelta
 
 from django.test import TestCase, override_settings
 from unittest import skipIf
 from django.core.cache import cache
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.forms import inlineformset_factory
 
 from staffing import utils
 from leads.models import Lead
+from staffing.forms import MissionStaffingInlineFormset, StaffingForm
 from staffing.models import Mission, Staffing, Timesheet, FinancialCondition, Holiday
 from staffing.optim import solve_pdc, display_solver_solution
 from people.models import Consultant, RateObjective
@@ -192,9 +195,35 @@ class StaffingViewsTest(TestCase):
         self.assertEqual(sum([float(i[-1]) for i in r[1:]]), 11.5)
 
 
+class StaffingFormsTest(TestCase):
+    fixtures = PYDICI_FIXTURES
 
+    def setUp(self):
+        setup_test_user_features()
+        self.test_user = User.objects.get(username=TEST_USERNAME)
 
+    def testMissionFormDates(self):
+        StaffingFormSet = inlineformset_factory(Mission, Staffing,
+                                                formset=MissionStaffingInlineFormset,
+                                                form=StaffingForm,
+                                                fields="__all__")
+        lead = Lead.objects.get(id=1)
+        mission = Mission(lead=lead, subsidiary_id=1, billing_mode="TIME_SPENT", nature="PROD", probability=100)
+        mission.save()
+        c1 = Consultant.objects.get(id=1)
+        current_month = date.today().replace(day=1)
+        Staffing(mission=mission, staffing_date=current_month, consultant=c1, charge=15).save()
 
+        formset = StaffingFormSet(instance=mission)
+        form = formset.forms[0]
+        self.assertEqual(form.fields["staffing_date"].choices[-1][0], previousMonth(date.today() + timedelta(days=2*365)))
+
+        end_date = (date.today() + timedelta(days=100)).replace(day=1)
+        mission.end_date = end_date
+        mission.save()
+        formset = StaffingFormSet(instance=mission)
+        form = formset.forms[0]
+        self.assertEqual(form.fields["staffing_date"].choices[-1][0], end_date)
 
 
 class OptimTest(TestCase):
