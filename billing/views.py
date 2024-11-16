@@ -46,7 +46,7 @@ from staffing.views import MissionTimesheetReportPdf
 from crm.models import Subsidiary
 from crm.utils import get_subsidiary_from_session
 from core.utils import get_fiscal_years_from_qs, get_parameter, user_has_feature
-from core.utils import COLORS, nextMonth, previousMonth
+from core.utils import COLORS, nextMonth, previousMonth, get_fiscal_year
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
 from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
 from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper, SupplierBillForm
@@ -158,7 +158,8 @@ def bill_delay(request):
              _("creation lag"): bill.creation_lag() or "null",
              _("payment delay"): bill.payment_delay(),
              _("payment wait"): bill.payment_wait(),
-             _("creation date"): bill.creation_date.replace(day=1).isoformat()}
+             _("creation date"): bill.creation_date.replace(day=1).isoformat(),
+             _("fiscal year"): get_fiscal_year(bill.creation_date)}
         )
     return render(request, "billing/payment_delay.html",
                   {"data": data,
