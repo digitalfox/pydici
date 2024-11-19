@@ -511,6 +511,9 @@ def graph_leads_activity(request):
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
 
+    if not leads:
+        return HttpResponse('')
+
     # lead creation rate per week
     first_lead_creation_date = leads.aggregate(Min("creation_date")).get("creation_date__min", datetime.now()).date()
     today = date.today()

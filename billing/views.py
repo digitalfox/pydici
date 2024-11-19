@@ -742,7 +742,7 @@ def graph_yearly_billing(request):
             growth.append(None)
         last_turnover = current_turnover
 
-    if years[-1] == date.today().year:
+    if years and years[-1] == date.today().year:
         growth.pop()  # Don't compute for on-going year.
 
     graph_data.append(["x"] + years)  # X (years) axis
