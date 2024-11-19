@@ -46,7 +46,11 @@ def consultant_home_by_id(request, consultant_id):
 
 def consultant_home(request, consultant_trigramme):
     """Home page of consultant - this page loads all others mission sub-pages"""
-    return _consultant_home(request, Consultant.objects.get(trigramme__iexact=consultant_trigramme))
+    try:
+        consultant = Consultant.objects.get(trigramme__iexact=consultant_trigramme)
+        return _consultant_home(request, consultant)
+    except Consultant.DoesNotExist:
+        raise Http404
 
 
 @pydici_non_public
