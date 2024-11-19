@@ -428,7 +428,7 @@ def tableToCSV(table, filename="data.csv"):
 
 def forbidden(request):
     """When access is denied..."""
-    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest' or request.META.get("HTTP_HX_REQUEST"):
         # Ajax request, use stripped forbidden page
         template = "core/_access_forbidden.html"
     else:
