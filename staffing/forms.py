@@ -498,7 +498,7 @@ class KeyboardTimesheetField(forms.Field):
         self.widget.attrs.setdefault("class", "timesheet-keyboard")
 
     def prepare_value(self, day_percent):
-        if isinstance(day_percent, types.StringTypes):
+        if isinstance(day_percent, str):
             # day_percent may already be a string if prepare_value() is called
             # with the final value
             return day_percent

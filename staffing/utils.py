@@ -192,8 +192,7 @@ def staffingDates(n=12, format=None, minDate=None, maxDate=None):
 
 def time_string_for_day_percent(day_percent, day_duration=settings.TIMESHEET_DAY_DURATION):
     if day_percent is None:
-        hours = 0
-        minutes = 0
+        return ""
     else:
         # Using round() is important here because int() truncates the decimal
         # part so int(24.99) returns 24, whereas round(24.99) returns 25.

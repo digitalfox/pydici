@@ -31,7 +31,7 @@ DOCUMENT_PROJECT_INPUT_DIR = "input"
 
 # can be "cycle" or "keyboard"
 TIMESHEET_INPUT_METHOD = "cycle"
-TIMESHEET_DAY_DURATION = 7
+TIMESHEET_DAY_DURATION = 8
 
 # Telegram integration
 TELEGRAM_IS_ENABLED = False  # Wether to enable or not Telegram notifications

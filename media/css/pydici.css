@@ -186,10 +186,20 @@ h5 { font-size:1rem; }
 .tablesmall-form-row input:focus { border:0px; }
 
 .tablesmall-form-row input.timesheet-keyboard {
-    margin: 0;
-    padding: 0;
-    width: 2.5em;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    height: 100%;
     text-align: center;
+    border: none;
+}
+
+.tablesmall-form-row td:has(input.timesheet-keyboard) {
+    width: 32px;
+    min-width: 32px;
+    max-width: 32px;
+    font-size: 13px;
+    border: 0.1px solid #e6e6e6;
 }
 
 .tablesmall-form-row input.timesheet-keyboard:focus {
@@ -246,7 +256,7 @@ td.in-holidays {
     font-style: normal;
 }
 
-.tablesmall-form-row td.timesheet-day > input[type="text"], .tablesmall-form-row td.timesheet-day-weekend > input[type="text"] {
+input.timesheet-cycle{
     text-align: center;
     height: 100%;
     width: 100%;
