@@ -130,7 +130,7 @@ def lead(request, lead_id=None):
         else:
             try:
                 consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-                form = LeadForm(initial={"responsible": consultant})  # An unbound form
+                form = LeadForm(initial={"responsible": consultant, "subsidiary": consultant.company})  # An unbound form
             except Consultant.DoesNotExist:
                 form = LeadForm()  # An unbound form
 
