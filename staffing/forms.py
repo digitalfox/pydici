@@ -412,8 +412,9 @@ class MissionForm(PydiciCrispyModelForm):
         return self.cleaned_data[field]
 
     def clean_start_date(self):
-        if self.cleaned_data.get("start_date") and self.cleaned_data.get("start_date") > self.instance.staffing_start_date():
-            raise ValidationError(_("start date must be before staffing start date (%s)") % self.instance.staffing_start_date())
+        if self.cleaned_data.get("start_date") and self.instance.staffing_start_date():
+            if self.cleaned_data.get("start_date") > self.instance.staffing_start_date():
+                raise ValidationError(_("start date must be before staffing start date (%s)") % self.instance.staffing_start_date())
         return self._clean_start_end_date("start_date")
 
     def clean_end_date(self):
