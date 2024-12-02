@@ -26,8 +26,8 @@ def mission_list(request, start_date=None, end_date=None):
     else:
         start_date = datetime.date(int(start_date[0:4]), int(start_date[4:6]), 1)
 
-    if (end_date - start_date).days > 366:
-        return JsonResponse({"error": "timeframe cannot exceed 12 month" }, status=400)
+    if (end_date - start_date).days > (2*366):
+        return JsonResponse({"error": "timeframe cannot exceed 24 month" }, status=400)
 
     missions = Mission.objects.filter(update_date__gte=start_date, update_date__lte=end_date)
     data = []
