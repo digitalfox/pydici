@@ -10,13 +10,15 @@ from datetime import datetime, date
 import random
 from dataclasses import dataclass
 
-from django.db.models import Min, Count, Q
+from django.db.models import Min, Count, Q, F, Sum, Max
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.core.cache import cache
 from django.apps import apps
 
 from celery import shared_task
+
+from core.utils import nextMonth
 
 
 @dataclass
@@ -58,6 +60,7 @@ def compute_consultant_tasks(consultant_id):
 
     tasks = []
     now = datetime.now()
+    current_month = date.today().replace(day=1)
     user = consultant.get_user()
 
     if not user:
@@ -163,8 +166,24 @@ def compute_consultant_tasks(consultant_id):
                                     category=_("billing"), priority=1,
                                     link=reverse("crm:client_organisation_change", args=[random.choice(incomplete_client_orga).id]),))
 
+    # timesheet way beyond forecasted staffing
+    # Note: we use Max to aggregate staffing because join on timesheet multiple lines.
+    overshoot_missions = Mission.objects.filter(active=True, staffing__consultant=consultant, staffing__staffing_date=current_month)\
+        .annotate(forecasted=Max("staffing__charge", filter=Q(staffing__staffing_date=current_month, staffing__consultant=consultant)))\
+        .annotate(done=Sum("timesheet__charge", filter=Q(timesheet__working_date__gte=current_month,
+            timesheet__working_date__lt=nextMonth(current_month), timesheet__consultant=consultant)))\
+        .filter(done__gt=F("forecasted"))
+
+    overshoot_missions_count = overshoot_missions.count()
+    if overshoot_missions_count > 0:
+        overshoot_missions_priority = get_task_priority(overshoot_missions_count, (2, 5))
+        tasks.append(ConsultantTask(label=_("Timesheet beyond forecasted staffing this month"), count=overshoot_missions_count,
+                                    category=_("timesheet"), priority=overshoot_missions_priority,
+                                    link=reverse("people:consultant_home_by_id", args=[consultant.id])+"#tab-timesheet"))
+
     # update cache with computed tasks
     cache.set(CONSULTANT_TASKS_CACHE_KEY % consultant.id, tasks, 24*3600)
+
 
 @shared_task
 def compute_all_consultants_tasks():
@@ -172,6 +191,7 @@ def compute_all_consultants_tasks():
     Consultant = apps.get_model("people", "Consultant")
     for consultant in Consultant.objects.filter(active=True, subcontractor=False):
         compute_consultant_tasks(consultant.id)
+
 
 def get_task_priority(value, threshold):
     """determine task priority according threshold (medium/high)"""

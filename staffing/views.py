@@ -961,6 +961,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
                     transaction.savepoint_rollback(sid)
                 else:  # No violations, we can commit
                     transaction.savepoint_commit(sid)
+                    compute_consultant_tasks.delay(consultant.id)  # update self tasks after timesheet update
                 # Recreate a new form for next update and compute again totals
                 timesheetData, timesheetTotal, warning = gatherTimesheetData(consultant, missions, month)
                 form = TimesheetForm(days=days, missions=missions, holiday_days=holiday_days, showLunchTickets=not consultant.subcontractor,
