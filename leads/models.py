@@ -22,7 +22,7 @@ from core.utils import compact_text
 from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
 from billing.utils import get_client_billing_control_pivotable_data
-from core.utils import getLeadDirs, cacheable
+from core.utils import getLeadDirs, cacheable, nextMonth
 
 
 SHORT_DATETIME_FORMAT = "%d/%m/%y %H:%M"
@@ -222,7 +222,7 @@ class Lead(models.Model):
         """Amount that still need to be billed"""
         to_bill = 0
         if include_current_month:
-            end = date.today()
+            end = nextMonth(date.today())
         else:
             end = date.today().replace(day=1)
         for mission in self.mission_set.all():
