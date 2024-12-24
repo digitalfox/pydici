@@ -368,6 +368,8 @@ def mission_staffing_shift(request, shift, mission_id, ):
     staffings = Staffing.objects.filter(mission=mission, staffing_date__gte=date.today().replace(day=1)).order_by("-staffing_date")
     for staffing in staffings:
         staffing.staffing_date = nextMonth(staffing.staffing_date )
+        staffing.last_user = str(request.user)
+        staffing.update_date = datetime.now().replace(microsecond=0)
         staffing.save()
 
     return HttpResponseRedirect(reverse("staffing:mission_home", args=[mission.id])+"#goto_tab-staffing")
