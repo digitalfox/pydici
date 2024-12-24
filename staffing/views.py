@@ -363,14 +363,22 @@ def mission_staffing_shift(request, shift, mission_id, ):
     """Shift forecasted mission staffing by "shift" months"""
     #TODO: for now, only 1 month shift is considered.
     mission = Mission.objects.get(id=mission_id)
-    messages.add_message(request, messages.INFO, _("Staffing has been shifted by %s month") % shift)
 
     staffings = Staffing.objects.filter(mission=mission, staffing_date__gte=date.today().replace(day=1)).order_by("-staffing_date")
     for staffing in staffings:
-        staffing.staffing_date = nextMonth(staffing.staffing_date )
+        if mission.end_date and nextMonth(staffing.staffing_date) > mission.end_date:
+            messages.add_message(request, messages.WARNING,
+                                 _("Staffing has been ignored for mission %(mission_name)s because %(staffing_date)s is after mission end (%(end_date)s)") % {
+                                     "mission_name": mission.short_name(),
+                                     "staffing_date": staffing.staffing_date,
+                                     "end_date": mission.end_date
+                                 })
+            continue
+        staffing.staffing_date = nextMonth(staffing.staffing_date)
         staffing.last_user = str(request.user)
         staffing.update_date = datetime.now().replace(microsecond=0)
         staffing.save()
+    messages.add_message(request, messages.INFO, _("Staffing has been shifted by %s month") % shift)
 
     return HttpResponseRedirect(reverse("staffing:mission_home", args=[mission.id])+"#goto_tab-staffing")
 
