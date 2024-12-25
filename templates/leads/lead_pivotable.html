@@ -45,30 +45,29 @@
                 var cols = ["{% trans 'mission name' %}"];;
                 drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "done (days)" %}']);
             }
+            $(document).ready(function() {
+                // set dates on widgets with template value
+                {% if startDate %}
+                    $("#startDate").datepicker("setDate", new Date("{{ startDate|date:"Y-m-d" }}"));
+                {% endif %}
+                {% if endDate %}
+                    $("#endDate").datepicker("setDate", new Date("{{ endDate|date:"Y-m-d" }}"));
+                {% endif %}
 
-            // set dates on widgets with template value
-            {% if startDate %}
-                $("#startDate").datepicker("setDate", new Date("{{ startDate|date:"Y-m-d" }}"));
-            {% endif %}
-            {% if endDate %}
-                $("#endDate").datepicker("setDate", new Date("{{ endDate|date:"Y-m-d" }}"));
-            {% endif %}
-
-            // reload data with choosen timeframe
-            $('.datepicker').datepicker().on("changeDate", function(e) {
-                    var param = "";
-                    var fromDate = $("#startDate").datepicker("getDate");
-                    var toDate   = $("#endDate").datepicker("getDate");
-                    if (fromDate !== null && !isNaN(fromDate.getTime())) {
-                        param += "start=" + yyyymmdd(fromDate);
-                    }
-                    if (toDate !== null && !isNaN(toDate.getTime())) {
-                        param += "&end=" + yyyymmdd(toDate);
-                    }
-                    $('#tab-reporting').load("{% url 'leads:lead_pivotable' lead.id %}?"+param);
+                // reload data with choosen timeframe
+                $('.datepicker').datepicker().on("change", function(e) {
+                        var param = "";
+                        var fromDate = $("#startDate").datepicker("getDate");
+                        var toDate   = $("#endDate").datepicker("getDate");
+                        if (fromDate !== null && !isNaN(fromDate.getTime())) {
+                            param += "start=" + yyyymmdd(fromDate);
+                        }
+                        if (toDate !== null && !isNaN(toDate.getTime())) {
+                            param += "&end=" + yyyymmdd(toDate);
+                        }
+                        $('#tab-reporting').load("{% url 'leads:lead_pivotable' lead.id %}?"+param);
+                });
             });
-
-
 
             // default
             mission_by_date();

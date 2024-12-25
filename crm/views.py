@@ -561,6 +561,8 @@ def company_pivotable(request, company_id=None):
             startDate = datetime.now() - timedelta(365)  # Default to 1 year. It is often enough.
         if endDate:
             endDate = datetime.strptime(endDate, dateFormat)
+        else:
+            endDate = datetime.today()
     except ValueError:
         pass
 

@@ -199,7 +199,7 @@
 {% include "core/_datepicker.html" %}
 
 <script type="text/javascript">
-// set dates on widgets with template value
+    // set dates on widgets with template value
             {% if start_date %}
                 $("#startDate").datepicker("setDate", new Date("{{ start_date|date:"Y-m-d" }}"));
             {% endif %}
@@ -207,25 +207,34 @@
                 $("#endDate").datepicker("setDate", new Date("{{ end_date|date:"Y-m-d" }}"));
             {% endif %}
 
-// reload data with choosen timeframe
-$('.datepicker').datepicker().on("changeDate", function(e) {
-    var param = "";
-    var fromDate = $("#startDate").datepicker("getDate");
-    var toDate   = $("#endDate").datepicker("getDate");
-    if (fromDate > toDate || fromDate.getTime() == toDate.getTime()) {
-        toDate = new Date(toDate.setMonth(toDate.getMonth()+1));
-    }
-    if (!isNaN(fromDate.getTime())) {
-        param += yyyymm(fromDate) + '/';
-    }
-    if (!isNaN(toDate.getTime())) {
-        param += yyyymm(toDate);
-    }
-    window.location.href = window.location.href.replace(/\?.*/, '').replace(/\d{6}\/?/g, '') + param;
-});
-
 $(document).ready(function() {
     $(".pydici-tooltip").tooltip();
+
+    // set dates on widgets with template value
+    {% if start_date %}
+        $("#startDate").datepicker("setDate", new Date("{{ start_date|date:"Y-m-d" }}"));
+    {% endif %}
+    {% if end_date %}
+        $("#endDate").datepicker("setDate", new Date("{{ end_date|date:"Y-m-d" }}"));
+    {% endif %}
+
+    // reload data with choosen timeframe
+    $('.datepicker').datepicker().on("change", function(e) {
+        var param = "";
+        var fromDate = $("#startDate").datepicker("getDate");
+        var toDate   = $("#endDate").datepicker("getDate");
+        if (fromDate > toDate || fromDate.getTime() == toDate.getTime()) {
+            toDate = new Date(toDate.setMonth(toDate.getMonth()+1));
+        }
+        if (!isNaN(fromDate.getTime())) {
+            param += yyyymm(fromDate) + '/';
+        }
+        if (!isNaN(toDate.getTime())) {
+            param += yyyymm(toDate);
+        }
+        window.location.href = window.location.href.replace(/\?.*/, '').replace(/\d{6}\/?/g, '') + param;
+    });
+
 });
 </script>
 {% endblock %}
