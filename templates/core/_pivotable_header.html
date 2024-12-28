@@ -1,6 +1,12 @@
 {# load pivotable script and css #}
 
 <script src="{{ MEDIA_URL }}js/jquery-ui-1.12.1.min.js"></script>
+<!-- Load again bootstrap date picker to override jquery-ui datepicker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js" integrity="sha512-LsnSViqQyaXpD4mBBdRYeP6sRwJiJveh2ZIbW41EBrNmKxgr/LFZIiWT6yr+nycvhvauz8c2nYMhrP80YhG7Cw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% if LANGUAGE_CODE == "fr-fr" %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/locales/bootstrap-datepicker.fr.min.js" integrity="sha512-fx3aztaUjb4NyoD+Tso5g7R1l29bU3jnnTfNRKBiY9fdQOHzVhKJ10wEAgQ1zM/WXCzB9bnVryHD1M40775Tsw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% endif %}
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.js" integrity="sha512-XgJh9jgd6gAHu9PcRBBAp0Hda8Tg87zi09Q2639t0tQpFFQhGpeCgaiEFji36Ozijjx9agZxB0w53edOFGCQ0g==" crossorigin="anonymous"></script>
 {% if LANGUAGE_CODE == "fr-fr" %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.fr.min.js" integrity="sha512-ScdKOdoxfAtvR/Dw6a3wBITAUv5TnGFbyAKmPFcnc2D2ZCHLZpNXizFMIjAbwPEO8AOYH8njwSeLFHCmFlh+Mg==" crossorigin="anonymous"></script>

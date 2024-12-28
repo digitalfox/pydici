@@ -199,14 +199,6 @@
 {% include "core/_datepicker.html" %}
 
 <script type="text/javascript">
-    // set dates on widgets with template value
-            {% if start_date %}
-                $("#startDate").datepicker("setDate", new Date("{{ start_date|date:"Y-m-d" }}"));
-            {% endif %}
-            {% if end_date %}
-                $("#endDate").datepicker("setDate", new Date("{{ end_date|date:"Y-m-d" }}"));
-            {% endif %}
-
 $(document).ready(function() {
     $(".pydici-tooltip").tooltip();
 
