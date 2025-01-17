@@ -179,7 +179,8 @@ h5 { font-size:1rem; }
 /* submit form button sticky for mobile devices */
 @media (max-width: 767px) {
     .submit-row.sticky {
-        padding:0.2rem 0 0.4rem 0;
+        padding:0.2rem 0.2rem 0.4rem 0.2rem;
+        border-right: 1px solid #DDDDDD;
     }
     .submit-row.sticky > button[type=submit] {
         width: 100%;
