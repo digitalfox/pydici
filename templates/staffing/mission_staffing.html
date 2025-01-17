@@ -74,6 +74,7 @@
         {% if read_only %}
             <em>{% trans "Note: you are not allowed to change mission staffing" %}</em>
         {% else %}
+            <div class="submit-row sticky">
 	            <button type='submit' class="btn btn-primary"><i class="bi-save"></i> {% trans 'Save' %}</button>
                 <a role="button" class="btn btn-primary button-link" href="{% url 'staffing:optimise_pdc' %}?missions={{ mission.id|unlocalize }}">
                     <i class="bi bi-gear"></i> {% trans "Optimize workload for this mission" %}
@@ -84,6 +85,7 @@
                 <a role="button" class="btn btn-primary button-link" href="{% url 'staffing:mission_staffing_shift' mission_id=mission.id shift=1 %}">
                     <i class="bi bi-box-arrow-right"></i> {% trans "Shift staffing one month" %}
                 </a>
+            </div>
 	    {% endif %}
     </form>
 </div>
