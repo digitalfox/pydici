@@ -167,13 +167,20 @@ h5 { font-size:1rem; }
     font-weight: bold;
 }
 
+
+.submit-row.sticky {
+    position: sticky;
+    bottom: 0;
+    padding:0.5rem;
+    border-top: 1px solid #DDDDDD;
+    background-color: white;
+}
+
 /* submit form button sticky for mobile devices */
 @media (max-width: 767px) {
     .submit-row.sticky {
-        position: sticky;
-        bottom: 0;
-        padding:0.2rem 0 0.4rem 0;
-        background-color: white;
+        padding:0.2rem 0.2rem 0.4rem 0.2rem;
+        border-right: 1px solid #DDDDDD;
     }
     .submit-row.sticky > button[type=submit] {
         width: 100%;
