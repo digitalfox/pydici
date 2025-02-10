@@ -127,6 +127,16 @@
                         <tr>
                             <th>{% trans "Management mode" %}</th><td><div  id="management_mode-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_management_mode_display }}</div></td>
                         </tr>
+                        {% if mission.start_date %}
+                            <tr>
+                                <th>{% trans "Start date" %}</th><td>{{ mission.start_date }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if mission.end_date %}
+                            <tr>
+                                <th>{% trans "End date" %}</th><td>{{ mission.end_date }}</td>
+                            </tr>
+                        {% endif %}
                         <tr>
                             <th>{% trans "Probability" %}</th><td><div  id="probability-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.probability }} %</div></td>
                         </tr>
