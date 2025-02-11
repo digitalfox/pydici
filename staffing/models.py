@@ -427,6 +427,24 @@ class Mission(models.Model):
         else:
             return None
 
+    @cacheable("Mission.timesheet_start_date%(id)s", 10)
+    def timesheet_start_date(self):
+        """Starting date (=oldest) timesheet date of this mission. None if no timesheet"""
+        start_dates = self.timesheet_set.all().aggregate(Min("working_date")).values()
+        if start_dates:
+            return list(start_dates)[0]
+        else:
+            return None
+
+    @cacheable("Mission.timesheet_end_date%(id)s", 10)
+    def timesheet_end_date(self):
+        """End date (=latest) timesheet date of this mission. None if no timesheet"""
+        end_dates = self.timesheet_set.all().aggregate(Max("working_date")).values()
+        if end_dates:
+            return list(end_dates)[0]
+        else:
+            return None
+
     def pivotable_data(self, startDate=None, endDate=None):
         """Compute raw data for pivot table on that mission"""
         #TODO: factorize with staffing.views.mission_timesheet

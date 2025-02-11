@@ -199,6 +199,8 @@
             <tr>
                 <th>{% trans "Mission" %}</th>
                 <th>{% trans "id" %}</th>
+                <th>{% trans "Start" %}</th>
+                <th>{% trans "End" %}</th>
                 <th>{% trans "Done days" %}</th>
                 <th>{% trans "Done work (k€)" %}</th>
                 <th>{% trans "Sold (k€)" %}</th>
@@ -209,6 +211,8 @@
             <tr>
                 <td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></td>
                 <td>{{ mission.mission_id }}</td>
+                <td>{{ mission.start_date|default_if_none:mission.staffing_start_date|default_if_none:mission.timesheet_start_date|default_if_none:'-' }}</td>
+                <td>{{ mission.end_date|default_if_none:mission.staffing_end_date|default_if_none:mission.staffing_end_date|default_if_none:'-' }}</td>
                 <td>{{ mission.done_work_k.0 }}</td>
                 <td>{{ mission.done_work_k.1|floatformat }}</td>
                 <td>{{ mission.price|default:_("To be defined") }}</td>
@@ -222,11 +226,15 @@
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th></th>
+                    <th></th>
                     <th>{{ lead.unattributed }}</th>
                     <th></th>
                 </tr>
                 <tr>
                     <th>{% trans "Total" %}</th>
+                    <th></th>
+                    <th></th>
                     <th></th>
                     <th>{{ lead.done_work_k.0 }}</th>
                     <th>{{ lead.done_work_k.1|floatformat }}</th>
