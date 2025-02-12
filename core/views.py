@@ -234,7 +234,8 @@ def financial_control(request, start_date=None, end_date=None):
 
     missionsIdsFromStaffing = Mission.objects.filter(probability__gt=0, staffing__staffing_date__gte=start_date, staffing__staffing_date__lt=nextMonth(end_date)).values_list("id", flat=True)
     missionsIdsFromTimesheet = Mission.objects.filter(probability__gt=0, timesheet__working_date__gte=start_date, timesheet__working_date__lt=nextMonth(end_date)).values_list("id", flat=True)
-    missionsIds = set(list(missionsIdsFromStaffing) + list(missionsIdsFromTimesheet))
+    missionsIdsFromBoundaries = Mission.objects.filter(probability__gt=0, end_date__lte=start_date, start_date__lt=nextMonth(end_date)).values_list("id", flat=True)
+    missionsIds = set(list(missionsIdsFromStaffing) + list(missionsIdsFromTimesheet) + list(missionsIdsFromBoundaries))
     missions = Mission.objects.filter(id__in=missionsIds)
     missions = missions.distinct().select_related().prefetch_related("lead__client__organisation__company", "lead__responsible")
 
@@ -276,7 +277,8 @@ def financial_control(request, start_date=None, end_date=None):
 
     for mission in missions:
         missionRow = createMissionRow(mission, start_date, end_date)
-        for consultant in mission.consultants().select_related().prefetch_related("staffing_manager"):
+        missionConsultants = mission.consultants().select_related().prefetch_related("staffing_manager")
+        for consultant in missionConsultants:
             consultantRow = missionRow[:]  # copy
             daily_rate, bought_daily_rate = financialConditions.get("%s-%s" % (mission.id, consultant.id), [0, 0])
             rateObjective = consultant.get_rate_objective(working_date=end_date, rate_type="DAILY_RATE")
@@ -305,9 +307,14 @@ def financial_control(request, start_date=None, end_date=None):
                 row.append(budgetType)
                 row.append(quantity or 0)
                 row.append((quantity * daily_rate) if (quantity > 0 and daily_rate > 0) else 0)
-                row.append(days["min_date"] or "")
-                row.append(days["max_date"] or "")
+                row.append(mission.start_date or days["min_date"] or "")
+                row.append(mission.end_date or days["max_date"] or "")
                 writer.writerow(row)
+        if missionConsultants.count() == 0:
+            # empty row for mission with no consultant (ex. business fee and software licence
+            row = missionRow[:]  # copy
+            row.extend(["", "", "", "", False, False, 0, 0, 0, "planned", 0, 0, mission.start_date or "", mission.end_date or ""])
+            writer.writerow(row)
 
     archivedMissions = Mission.objects.filter(active=False, archived_date__gte=start_date, archived_date__lt=end_date)
     archivedMissions = archivedMissions.filter(lead__state="WON")
