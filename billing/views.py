@@ -552,9 +552,9 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
         mine = False
 
 
-    fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE",
-                                                timesheet__working_date__gte=start_date,
-                                                timesheet__working_date__lt=end_date)
+    fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE").filter(
+                                                Q(timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date) |
+                                                Q(end_date__gte=start_date))
     undefinedBillingModeMissions = Mission.objects.filter(nature="PROD", billing_mode=None,
                                                           timesheet__working_date__gte=start_date,
                                                           timesheet__working_date__lt=end_date)
