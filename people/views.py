@@ -14,7 +14,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext as _
-from django.db.models import Count, Sum, Min, F, Avg
+from django.db.models import Count, Sum, Min, F, Avg, Q
 from django.db.models.functions import TruncMonth
 from django.conf import settings
 
@@ -66,7 +66,7 @@ def consultant_detail(request, consultant_id):
         # Compute consultant current production mission based on forecast and responsibility
         missions = consultant.current_missions().filter(nature="PROD")
         # Identify staled missions that may need new staffing or archiving
-        staled_missions = [m for m in missions if m.no_more_staffing_since()]
+        staled_missions = [m for m in missions.filter(Q(end_date__lt=date.today()) | Q(end_date__isnull=True)) if m.no_more_staffing_since()]
         # Timesheet donut data
         holidays = [h.day for h in Holiday.objects.all()]
         month_days = working_days(month, holidays, upToToday=False)
