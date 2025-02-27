@@ -210,7 +210,6 @@ def expenses_history(request):
                    "data_options": ''' "pageLength": 25,
                                        "order": [[0, "desc"]],
                                        "columnDefs": [{ "orderable": false, "targets": [6,] },
-                                                      { className: "hidden-xs hidden-sm hidden-md", "targets": [2, 10, 12, 13]},
                                                       { className: "description", "targets": [3]},
                                                       { className: "amount", "targets": [5]}],
                                        "drawCallback": function( oSettings ) {htmx.process(document.body); }''',

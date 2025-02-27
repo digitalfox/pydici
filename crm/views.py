@@ -98,8 +98,7 @@ class ContactDetail(PydiciNonPublicdMixin, ThirdPartyMixin, DetailView):
 def contact_list(request):
     return render(request, "crm/contact_list.html",
                   {"data_url": reverse("crm:all_contacts_table_DT"),
-                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [1] },
-                                                   { className: "hidden-xs hidden-sm hidden-md", "targets": [6]}],
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [1] }],
                                    "order": [[0, "asc"]] ''',
                    "user": request.user})
 
@@ -471,8 +470,7 @@ def company_detail(request, company_id):
                    "supplier_lead_data_url": reverse('leads:supplier_company_lead_table_DT', args=[company.id, ]),
                    "businessbroker_lead_data_url": reverse('leads:businessbroker_lead_table_DT', args=[company.id,]),
                    "mission_data_url": reverse('staffing:client_company_mission_table_DT', args=[company.id,]),
-                   "mission_datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9, 10] },
-                                                                     { className: "hidden-xs hidden-sm hidden-md", "targets": [6, 7,8]}],
+                   "mission_datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9, 10] }],
                                                      "order": [[0, "asc"]] ''',
                    "data_for_other_subsidiaries": data_for_other_subsidiaries,
                    "companies": companies,

@@ -132,8 +132,7 @@ def missions(request, only_active=True):
     return render(request, "staffing/missions.html",
                   {"all": not only_active,
                    "data_url": data_url,
-                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] },
-                                                             { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7,8,9]}],
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] }],
                                              "order": [[0, "asc"]],
                                              "drawCallback": function( oSettings ) {htmx.process(document.body); }''',
                    "user": request.user})
@@ -266,8 +265,7 @@ def consultant_missions(request, only_active=True, consultant_id=None):
                   {"all": not only_active,
                    "consultant": consultant,
                    "data_url": data_url,
-                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] },
-                                                                 { className: "hidden-xs hidden-sm hidden-md", "targets": [6,7,8,9]}],
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] }],
                                             "order": [[3, "asc"]],
                                             "drawCallback": function( oSettings ) {htmx.process(document.body); }
                                             ''',
