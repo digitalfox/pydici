@@ -37,7 +37,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
     def _filter_on_subsidiary(self, qs):
         subsidiary = get_subsidiary_from_session(self.request)
         if subsidiary:
-            qs = qs.filter(subsidiary=subsidiary)
+            qs = qs.filter(Q(subsidiary=subsidiary) | Q(staffing__company=subsidiary)).distinct()
         return qs
 
     def get_initial_queryset(self):
