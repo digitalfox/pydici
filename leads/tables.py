@@ -41,7 +41,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
         return qs
 
     def get_initial_queryset(self):
-        qs  = Lead.objects.all()
+        qs = Lead.objects.all()
         qs = self._filter_on_subsidiary(qs)
         return qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
 
@@ -55,7 +55,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
             return "<a href='{0}'>{1}</a>".format(row.client.get_absolute_url(), escape(row.client))
         elif column == "sales":
             if row.sales:
-                return round(float(row.sales),3)
+                return round(float(row.sales), 3)
             else:
                 return ""
         elif column == "creation_date":
@@ -70,7 +70,6 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
         search = self.request.GET.get('search[value]', None)
-        qs = self._filter_on_subsidiary(qs)
         if search:
             qs = qs.filter(Q(name__icontains=search) |
                            Q(description__icontains=search) |
@@ -107,6 +106,7 @@ class RecentArchivedLeadTableDT(ActiveLeadTableDT):
     columns = ["client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba",
                "creation_date", "start_date", "update_date"]
     order_columns = columns
+
     def get_initial_queryset(self):
         today = datetime.today()
         delay = timedelta(days=40)
@@ -152,19 +152,22 @@ class ClientCompanyLeadTableDT(LeadTableDT):
 
 
 class LeadToBill(LeadTableDT):
-        """Track missing bills"""
-        columns = ("client", "name", "deal_id", "subsidiary", "responsible", "creation_date", "sales", "to_be_billed")
-        order_columns = columns
-        max_display_length = 100
+    """Track missing bills"""
+    columns = ("client", "name", "deal_id", "subsidiary", "responsible", "creation_date", "sales", "to_be_billed")
+    order_columns = columns
+    max_display_length = 100
 
-        def get_initial_queryset(self):
-            return Lead.objects.filter(state="WON", mission__active=True).distinct()
+    def get_initial_queryset(self):
+        qs = Lead.objects.filter(state="WON", mission__active=True)
+        qs = self._filter_on_subsidiary(qs)
+        qs = qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+        return qs.distinct()
 
-        def render_column(self, row, column):
-            if column == "to_be_billed":
-                return round(row.still_to_be_billed()/1000, 3)
-            else:
-                return super(LeadToBill, self).render_column(row, column)
+    def render_column(self, row, column):
+        if column == "to_be_billed":
+            return round(row.still_to_be_billed()/1000, 3)
+        else:
+            return super(LeadToBill, self).render_column(row, column)
 
 
 class SupplierLeadTableDT(LeadTableDT):
@@ -179,5 +182,3 @@ class BusinessBrokerLeadTableDT(LeadTableDT):
         qs = Lead.objects.filter(Q(business_broker__company_id=self.kwargs["businessbroker_id"]) | Q(paying_authority__company_id=self.kwargs["businessbroker_id"]))
         qs = qs.distinct()
         return qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
-
-
