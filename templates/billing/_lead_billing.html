@@ -19,7 +19,8 @@
             $("#pivotable-output-{{ lead.id|unlocalize }}").pivot({{ data|safe }},
                     { rows: ["{% trans 'billing mode' %}", "{% trans 'mission' %}", "{% trans 'type' %}", "{% trans 'consultant' %}"],
                       cols: ["{% trans 'month' %}"],
-                      renderer: $.pivotUtilities.renderers.Table,
+                      dataClass: $.pivotUtilities.SubtotalPivotData,
+                      renderer: $.pivotUtilities.subtotal_renderers["Table With Subtotal"],
                       sorters: {"type": $.pivotUtilities.sortAs(['{% trans "Done work" %}', '{% trans "Service bill" %}',  '{% trans "Expense" %}', '{% trans "Expense bill" %}', ])},
                       aggregator: $.pivotUtilities.aggregators.Sum(["{% trans 'amount' %}"]) },
                       lang);

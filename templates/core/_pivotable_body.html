@@ -6,11 +6,12 @@
  var lang = {% if LANGUAGE_CODE == "fr-fr" %}'fr'{% else %}'en'{% endif %};
 
  function drawPivot(data, rows, cols, rendererName, aggregatorName, vals, options) {
-     var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.plotly_renderers, $.pivotUtilities.export_renderers);
+     var renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.plotly_renderers, $.pivotUtilities.export_renderers, $.pivotUtilities.subtotal_renderers);
      if (typeof options == "undefined") { var options = {}; }
      $("#{{ output|default_if_none:'pivotable-output' }}").pivotUI(
          data,
          {
+             dataClass: $.pivotUtilities.SubtotalPivotData,
              rows: rows,
              cols: cols,
              renderers: renderers,
