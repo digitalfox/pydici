@@ -428,6 +428,10 @@ class MissionForm(PydiciCrispyModelForm):
             raise ValidationError(_("Fixed price mission cannot be elastic by definition"))
         if self.cleaned_data["nature"] == "NONPROD" and not self.cleaned_data["analytic_code"]:
             raise ValidationError(_("Analytics code must be defined for non production missions"))
+        if self.cleaned_data["marketing_product"]:
+            print("coucou")
+            if self.cleaned_data["marketing_product"].subsidiary != self.cleaned_data["subsidiary"]:
+                raise ValidationError(_("Marketing product must be from same subsidiary"))
         return self.cleaned_data
 
     class Meta:
