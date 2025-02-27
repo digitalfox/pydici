@@ -19,7 +19,8 @@
 
 <div class="row col-12 col-lg-8">
     <div id="type-selector" class="btn-group" role="group">
-        <button class="btn btn-primary active" onclick="balance_per_month_table();">{% trans "Balance per month (table)" %}</button>
+        <button class="btn btn-primary active" onclick="balance_per_responsible();">{% trans "Balance per responsible" %}</button>
+        <button class="btn btn-primary" onclick="balance_per_month_table();">{% trans "Balance per month (table)" %}</button>
         <button class="btn btn-primary" onclick="balance_per_month_bargraph();">{% trans "Balance per month (bargraph)" %}</button>
         <button class="btn btn-primary" onclick="balance_per_client();">{% trans "Balance per client" %}</button>
         <button class="btn btn-primary" onclick="balance_per_billing_mode();">{% trans "Balance per billing mode" %}</button>
@@ -47,6 +48,15 @@
     var data = {{ data|safe }};
 
     // Preset definition
+
+    function balance_per_responsible() {
+        var rows = ["{% trans 'responsible' %}", "{% trans 'client company' %}", "{% trans 'deal id' %}", "{% trans 'month' %}"];
+        var cols = ["{% trans 'type' %}"];
+        var options = {};
+        options['exclusions'] = { {% trans "month" %}: {{ month_to_exclude|safe }}, "{% trans 'billing mode' %}": ['{% trans "Fixed price" %}'] };
+        options['collapseRowsAt'] = 0;
+        drawPivot(data, rows, cols, "Table With Subtotal", '{% trans "Sum" %}', ["{% trans 'amount' %}"], options);
+    }
 
     function balance_per_month_table() {
         var rows = ["{% trans 'billing mode' %}", "{% trans 'client company' %}", "{% trans 'deal id' %}", "{% trans 'month' %}"];
@@ -77,7 +87,7 @@
     }
 
     // default
-    balance_per_month_table();
+    balance_per_responsible();
 
 </script>
 
