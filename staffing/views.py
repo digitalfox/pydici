@@ -560,7 +560,7 @@ def pdc_review(request, year=None, month=None):
         client_list = ", ".join(["<a href='%s'>%s</a>" %
                                  (reverse("crm:company_detail", args=[c.id]), escape(c)) for c in
                                  consultant_clients.get(consultant, [])])
-        client_list = mark_safe("<div class='hidden-xs hidden-sm'>%s</div>" % client_list)
+        client_list = mark_safe("<div class='d-none d-sm-table-cell'>%s</div>" % client_list)
         consultant_data.append([client_list])
         data.append([consultant, consultant_data])
 
