@@ -390,10 +390,6 @@ def risk_reporting(request):
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
     for lead in leads.distinct().select_related():
-        if not "TIME_SPENT" in [m.billing_mode for m in lead.mission_set.all()]:
-            # All missions of this lead are fixed price (no one is time spent). So done works beyond billing is not considered here
-            # Fixed price mission tracking is done a separate report
-            continue
         done_d, done_a = lead.done_work()
         billed = float(ClientBill.objects.filter(lead=lead).filter(Q(state="1_SENT") | Q(state="2_PAID")).aggregate(amount=Sum("amount"))["amount"] or 0)
         if billed < done_a:

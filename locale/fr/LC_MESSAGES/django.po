@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-27 23:49+0100\n"
-"PO-Revision-Date: 2025-02-27 23:48+0100\n"
+"POT-Creation-Date: 2025-02-28 09:28+0100\n"
+"PO-Revision-Date: 2025-02-28 09:28+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -1033,7 +1033,7 @@ msgstr "client"
 
 #: core/views.py:400 templates/core/risks.html:57
 msgid "work without bill"
-msgstr "Temps passé sans facture"
+msgstr "Travail réalisé sans facture"
 
 #: core/views.py:431 templates/core/delete.html:15
 msgid "Yes"
@@ -2587,7 +2587,7 @@ msgstr "Toutes les missions"
 #: templates/core/index.html:74 templates/core/index.html:98
 #: templates/crm/clientcompany_detail.html:364
 #: templates/leads/lead_detail.html:123 templates/leads/lead_detail.html:169
-#: templates/leads/lead_detail.html:224 templates/leads/lead_detail.html:226
+#: templates/leads/lead_detail.html:230 templates/leads/lead_detail.html:232
 #: templates/leads/lead_mail.html:8 templates/leads/lead_mail.html:12
 #: templates/leads/lead_mail.txt:9 templates/leads/lead_mail.txt:13
 #: templates/leads/mail.html:8 templates/leads/mail.txt:7
@@ -2743,7 +2743,7 @@ msgid "timesheet.csv"
 msgstr "feuille-de-temps.csv"
 
 #: staffing/views.py:1346 templates/billing/_lead_billing.html:67
-#: templates/billing/bill.html:179 templates/leads/lead_detail.html:241
+#: templates/billing/bill.html:179 templates/leads/lead_detail.html:247
 #: templates/staffing/mission_timesheet.html:38
 #: templates/staffing/mission_timesheet.html:117
 #: templates/staffing/prod_report.html:78
@@ -4012,7 +4012,7 @@ msgstr "Risques par type (graphique)"
 
 #: templates/core/risks.html:18
 msgid "Work without bill"
-msgstr "Temps passé sans facture"
+msgstr "Travail réalisé sans facture"
 
 #: templates/core/search.html:12
 #, python-format
@@ -4711,7 +4711,7 @@ msgstr "Rentabilité"
 msgid "Sold"
 msgstr "Vendu"
 
-#: templates/leads/lead_detail.html:171 templates/leads/lead_detail.html:231
+#: templates/leads/lead_detail.html:171 templates/leads/lead_detail.html:237
 msgid "Unattributed"
 msgstr "Non attribué"
 
@@ -4774,11 +4774,11 @@ msgstr "Vendu (k€)"
 msgid "product"
 msgstr "produit"
 
-#: templates/leads/lead_detail.html:255
+#: templates/leads/lead_detail.html:261
 msgid "Create a new mission for this lead"
 msgstr "Créer une nouvelle mission pour cette affaire"
 
-#: templates/leads/lead_detail.html:259
+#: templates/leads/lead_detail.html:265
 msgid "A mission is created once a commercial proposal has been sent."
 msgstr ""
 "Une mission est créée une fois que la proposition commerciale est envoyée."
