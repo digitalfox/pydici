@@ -214,11 +214,17 @@
                 <td>{{ mission.mission_id }}</td>
                 <td class="d-none d-sm-table-cell">{{ mission.start_date|default_if_none:mission.staffing_start_date|default_if_none:mission.timesheet_start_date|default_if_none:'-' }}</td>
                 <td class="d-none d-sm-table-cell">{{ mission.end_date|default_if_none:mission.staffing_end_date|default_if_none:mission.staffing_end_date|default_if_none:'-' }}</td>
-                <td class="d-none d-sm-table-cell">{% if mission.no_more_staffing_since %}
+                <td class="d-none d-sm-table-cell">
+                {% if mission.active %}
+                    {% if mission.no_more_staffing_since %}
                         <i class="bi bi-exclamation-triangle" style="color:red"></i>
                     {% else %}
                         <i class="bi bi-check" style="color:green"></i>
-                    {% endif %}</td>
+                    {% endif %}
+                {% else %}
+                    -
+                {% endif %}
+                </td>
                 <td class="d-none d-sm-table-cell">{{ mission.done_work_k.0 }}</td>
                 <td class="d-none d-sm-table-cell">{{ mission.done_work_k.1|floatformat }}</td>
                 <td>{{ mission.price|default:_("To be defined") }}</td>
