@@ -60,10 +60,10 @@
                           {% endfor %}
                       </nav>
                   {% endif %}
-                  {% if fixed_price_missions %}
+                  {% if fixed_price_billing %}
                       <a href="#client-fixedprice" class="nav-link">{% trans "Pre billing for fixed price missions" %}</a>
                       <nav class="nav nav-pills flex-column">
-                          {% for mission in fixed_price_missions %}
+                          {% for mission, done, billed, still_to_bill in fixed_price_billing %}
                             {% ifchanged mission.lead.client.organisation.company %}
                                 <a href="#fp-company-{{ mission.lead.client.organisation.company.id|unlocalize }}" class="nav-link ms-3 py-0">{{ mission.lead.client.organisation.company }}</a>
                             {% endifchanged %}
@@ -127,20 +127,52 @@
 {% endfor %}
 
 <h2 id="client-fixedprice" class="mt-3">{% trans "Pre billing for fixed price missions" %} ({{ start_date }} - {{ end_date }})</h2>
-{% for mission in fixed_price_missions %}
+{% for mission, done, billed, still_to_bill in fixed_price_billing %}
     {% ifchanged mission.lead.client.organisation.company.id %}<span id="fp-company-{{ mission.lead.client.organisation.company.id|unlocalize }}"></span>{% endifchanged %}
     {% ifchanged mission.lead %}
-        <h3 class="mt-4">{{ mission.lead }} ({{ mission.lead.deal_id }})</h3>
-            {% with show_supplier_bills=False %}
-                {% with mission.lead as lead %}{% include "billing/_lead_billing.html" %}{% endwith %}
-            {% endwith %}
-        <h4 class="mt-3">{% trans "Fixed price mission(s)" %}</h4>
+        <h4 class="mt-2"><a href="{% url 'leads:detail' mission.lead.id %}">{{ mission.lead }} ({{ mission.lead.deal_id }})</a></h4>
     {% endifchanged %}
-    <p><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }} : </a>
-        {% blocktrans with mission.done_work_k.1|floatformat as done %}{{ done }} k€ done {% endblocktrans %}({% trans "sold:" %} {{ mission.price }} k€)
-    </p>
-    <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }}&proportion=0.3" target="_blank">{% trans "Bill 30% for this mission" %}</a>
-    <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }}&proportion=0.7" target="_blank">{% trans "Bill 70% for this mission" %}</a>
+
+
+    <div class="row">
+            <div class="col-lg-7 col-md-8 col-sm-12 col-12">
+                <table class="table table-sm table-striped table-hover">
+                    <tr><th>{% trans "mission" %}</th>
+                        <th>{% trans "done" %}</th>
+                        <th>{% trans "billed" %}</th>
+                        <th>{% trans "sold" %}</th>
+                        <th>{% trans "still to be billed" %}</th>
+                    </tr>
+                    <tr><td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }} : </a></td>
+                        <td>{{ done }} k€</td>
+                        <td>{{ billed | floatformat:"-3" }} k€</td>
+                        <td>{{ mission.price | floatformat:"-3" }} k€</td>
+                        <td>
+                            {% if still_to_bill > 0 %}
+                                {% if billed >= done %}
+                                    <p class="text-warning"><strong><i class="bi bi-exclamation-triangle"></i></strong>{{ still_to_bill | floatformat:"-3" }} k€</p>
+                                {% else %}
+                                    <p class="text-danger"><strong><i class="bi bi-exclamation-triangle"></i></strong>{{ still_to_bill | floatformat:"-3" }} k€</p>
+                                {% endif %}
+                            {% elif still_to_bill == 0 %}
+                                <p class="text-success"><strong><i class="bi bi-check-lg"></i></strong>{% trans "Everything has been billed" %}</p>
+                            {% else %}
+                                <p class="text-danger"><strong><i class="bi bi-exclamation-triangle"></i></strong>{% trans "Overbilling" %} {{ still_to_bill | floatformat:"-3" }} k€</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        <div class="col-lg-5 col-md-4 col-6">
+            <div class ="row">{% trans "Bill:" %}</div>
+            <div class="btn-group">
+                <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }}&proportion=0.3" target="_blank">{% trans "30%" %}</a>
+                <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }}&proportion=0.7" target="_blank">{% trans "70%" %}</a>
+                <a class="btn btn-primary" href="{% url 'billing:client_bill' %}?mission={{ mission.id|unlocalize }}&amount={{ still_to_bill|unlocalize }}" target="_blank">{% trans "Remaining" %}</a>
+            </div>
+        </div>
+    </div>
+
     <hr/>
 {% endfor %}
 

@@ -12,6 +12,7 @@ from io import BytesIO
 import os
 import subprocess
 import tempfile
+from decimal import Decimal
 
 from os.path import basename
 
@@ -408,8 +409,11 @@ def client_bill(request, bill_id=None):
                         start_date = previousMonth(date.today())
                         end_date = date.today().replace(day=1)
                     update_client_bill_from_timesheet(bill, mission, start_date, end_date)
-                else: # FIXED_PRICE mission
-                    proportion = request.GET.get("proportion", 0.30)
+                else:  # FIXED_PRICE mission
+                    if request.GET.get("amount") and mission.price:
+                        proportion = Decimal(request.GET.get("amount")) / mission.price
+                    else:
+                        proportion = request.GET.get("proportion", 0.30)
                     bill = update_client_bill_from_proportion(bill, mission, proportion=proportion)
 
             if bill:
@@ -602,6 +606,12 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
             if billing_info:
                 internalBilling[(internal_subsidiary,target_subsidiary)] = billing_info
 
+    fixed_price_billing = []
+    for mission in fixedPriceMissions:
+        done = mission.done_work_k()[1]
+        billed = Decimal((BillDetail.objects.filter(mission=mission).aggregate(Sum("amount"))["amount__sum"] or 0) / 1000)
+        fixed_price_billing.append((mission, done, billed, (mission.price or 0) - billed))
+
     scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
     if team:
         team_name = _("team %(manager_name)s") % {"manager_name": team}
@@ -610,7 +620,7 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
 
     return render(request, "billing/pre_billing.html",
                   {"time_spent_billing": timeSpentBilling,
-                   "fixed_price_missions": fixedPriceMissions,
+                   "fixed_price_billing": fixed_price_billing,
                    "undefined_billing_mode_missions": undefinedBillingModeMissions,
                    "internal_billing": internalBilling,
                    "start_date": start_date,
