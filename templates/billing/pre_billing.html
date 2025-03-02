@@ -144,7 +144,7 @@
                         <th>{% trans "still to be billed" %}</th>
                     </tr>
                     <tr><td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }} : </a></td>
-                        <td>{{ done }} k€</td>
+                        <td>{{ done | floatformat:"-3" }} k€</td>
                         <td>{{ billed | floatformat:"-3" }} k€</td>
                         <td>{{ mission.price | floatformat:"-3" }} k€</td>
                         <td>
