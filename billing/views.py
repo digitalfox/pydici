@@ -458,7 +458,7 @@ def clientbill_delete(request, bill_id):
         else:
             messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
             redirect_url = reverse_lazy("billing:client_bill", args=[bill.id, ])
-    except Exception as e:
+    except ClientBill.DoesNotExist:
         messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
 
     return HttpResponseRedirect(redirect_url)
@@ -476,7 +476,7 @@ def supplier_bill(request, bill_id=None):
     else:
         bill = None
 
-    lead_id =request.GET.get("lead")
+    lead_id = request.GET.get("lead")
 
     if request.POST:
         form = SupplierBillForm(request.POST, request.FILES, instance=bill)
@@ -511,7 +511,7 @@ def supplierbill_delete(request, bill_id):
         else:
             messages.add_message(request, messages.WARNING, _("Can't remove a bill in state %s. You may cancel it" % bill.get_state_display()))
             redirect_url = reverse_lazy("billing:supplier_bill", args=[bill.id, ])
-    except Exception as e:
+    except SupplierBill.DoesNotExist:
         messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
 
     return HttpResponseRedirect(redirect_url)
@@ -545,9 +545,8 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
         team_consultants = Consultant.objects.filter(staffing_manager=team)
         mine = False
 
-    timeSpentBilling = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
-    rates = {}  # Key is mission, value is Consultant rates dict
-    internalBilling = {}  # Same structure as timeSpentBilling but for billing between internal subsidiaries
+    timespent_billing = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
+    internal_billing = {}  # Same structure as timeSpentBilling but for billing between internal subsidiaries
 
     try:
         billing_consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
@@ -555,59 +554,58 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
         billing_consultant = None
         mine = False
 
-
-    fixedPriceMissions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE").filter(
+    fixed_price_missions = Mission.objects.filter(nature="PROD", billing_mode="FIXED_PRICE").filter(
                                                 Q(timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date) |
                                                 Q(end_date__gte=start_date))
-    undefinedBillingModeMissions = Mission.objects.filter(nature="PROD", billing_mode=None,
+    undefined_billing_mode_missions = Mission.objects.filter(nature="PROD", billing_mode=None,
                                                           timesheet__working_date__gte=start_date,
                                                           timesheet__working_date__lt=end_date)
 
     timespent_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
                                                     mission__nature="PROD", mission__billing_mode="TIME_SPENT")
 
-    internalBillingTimesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
+    internal_billing_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
                                                     mission__nature="PROD")
-    internalBillingTimesheets = internalBillingTimesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
-    internalBillingTimesheets = internalBillingTimesheets.exclude(consultant__subcontractor=True)
+    internal_billing_timesheets = internal_billing_timesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
+    internal_billing_timesheets = internal_billing_timesheets.exclude(consultant__subcontractor=True)
 
     if mine:  # Filter on consultant mission/lead as responsible
-        fixedPriceMissions = fixedPriceMissions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
-        undefinedBillingModeMissions = undefinedBillingModeMissions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
+        fixed_price_missions = fixed_price_missions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
+        undefined_billing_mode_missions = undefined_billing_mode_missions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
         timespent_timesheets = timespent_timesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
-        internalBillingTimesheets = internalBillingTimesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
+        internal_billing_timesheets = internal_billing_timesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
     elif team:  # Filter on team
-        fixedPriceMissions = fixedPriceMissions.filter(
+        fixed_price_missions = fixed_price_missions.filter(
             Q(lead__responsible__in=team_consultants) | Q(responsible__in=team_consultants))
-        undefinedBillingModeMissions = undefinedBillingModeMissions.filter(
+        undefined_billing_mode_missions = undefined_billing_mode_missions.filter(
             Q(lead__responsible__in=team_consultants) | Q(responsible__in=team_consultants))
         timespent_timesheets = timespent_timesheets.filter(
             Q(mission__lead__responsible__in=team_consultants) | Q(mission__responsible__in=team_consultants))
-        internalBillingTimesheets = internalBillingTimesheets.filter(
+        internal_billing_timesheets = internal_billing_timesheets.filter(
             Q(mission__lead__responsible__in=team_consultants) | Q(mission__responsible__in=team_consultants))
 
-    fixedPriceMissions = fixedPriceMissions.order_by("lead").distinct()
-    undefinedBillingModeMissions = undefinedBillingModeMissions.order_by("lead").distinct()
+    fixed_price_missions = fixed_price_missions.order_by("lead").distinct()
+    undefined_billing_mode_missions = undefined_billing_mode_missions.order_by("lead").distinct()
 
-    if subsidiary: # filter on subsidiary
-        fixedPriceMissions = fixedPriceMissions.filter(subsidiary=subsidiary)
+    if subsidiary:  # filter on subsidiary
+        fixed_price_missions = fixed_price_missions.filter(subsidiary=subsidiary)
         timespent_timesheets = timespent_timesheets.filter(mission__subsidiary=subsidiary)
-        undefinedBillingModeMissions = undefinedBillingModeMissions.filter(subsidiary=subsidiary)
+        undefined_billing_mode_missions = undefined_billing_mode_missions.filter(subsidiary=subsidiary)
 
     timesheet_data = timespent_timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
-    timeSpentBilling = get_billing_info(timesheet_data)
+    timespent_billing = get_billing_info(timesheet_data)
 
     for internal_subsidiary in Subsidiary.objects.all():
-        subsidiary_timesheet_data = internalBillingTimesheets.filter(consultant__company=internal_subsidiary)
+        subsidiary_timesheet_data = internal_billing_timesheets.filter(consultant__company=internal_subsidiary)
         for target_subsidiary in Subsidiary.objects.exclude(pk=internal_subsidiary.id):
             timesheet_data = subsidiary_timesheet_data.filter(mission__lead__subsidiary=target_subsidiary)
             timesheet_data = timesheet_data .order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
             billing_info = get_billing_info(timesheet_data)
             if billing_info:
-                internalBilling[(internal_subsidiary,target_subsidiary)] = billing_info
+                internal_billing[(internal_subsidiary,target_subsidiary)] = billing_info
 
     fixed_price_billing = []
-    for mission in fixedPriceMissions:
+    for mission in fixed_price_missions:
         done = mission.done_work_k()[1]
         billed = Decimal((BillDetail.objects.filter(mission=mission).aggregate(Sum("amount"))["amount__sum"] or 0) / 1000)
         fixed_price_billing.append((mission, done, billed, (mission.price or 0) - billed))
@@ -619,10 +617,10 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
         team_name = None
 
     return render(request, "billing/pre_billing.html",
-                  {"time_spent_billing": timeSpentBilling,
+                  {"time_spent_billing": timespent_billing,
                    "fixed_price_billing": fixed_price_billing,
-                   "undefined_billing_mode_missions": undefinedBillingModeMissions,
-                   "internal_billing": internalBilling,
+                   "undefined_billing_mode_missions": undefined_billing_mode_missions,
+                   "internal_billing": internal_billing,
                    "start_date": start_date,
                    "end_date": end_date,
                    "mine": mine,
@@ -662,6 +660,7 @@ def supplier_bills_archive(request):
                    "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2, 10] }]  ''',
                    "user": request.user})
 
+
 @pydici_non_public
 @pydici_feature("reports")
 def lead_billing(request, lead_id):
@@ -670,6 +669,7 @@ def lead_billing(request, lead_id):
     return render(request, "billing/_lead_billing.html",
                   {"lead": lead,
                    "show_supplier_bills": True})
+
 
 @pydici_non_public
 @pydici_feature("reports")
