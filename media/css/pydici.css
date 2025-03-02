@@ -332,6 +332,10 @@ input.timesheet-cycle{
     display: none;
 }
 
+.nowrap {
+    white-space: nowrap;
+}
+
 div.ui-tooltip {
     max-width: 800px;
     white-space: nowrap;

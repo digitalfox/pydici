@@ -144,10 +144,10 @@
                         <th>{% trans "still to be billed" %}</th>
                     </tr>
                     <tr><td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }} : </a></td>
-                        <td>{{ done | floatformat:"-3" }} k€</td>
-                        <td>{{ billed | floatformat:"-3" }} k€</td>
-                        <td>{{ mission.price | floatformat:"-3" }} k€</td>
-                        <td>
+                        <td class="nowrap">{{ done | floatformat:"-3" }} k€</td>
+                        <td class="nowrap">{{ billed | floatformat:"-3" }} k€</td>
+                        <td class="nowrap">{{ mission.price | floatformat:"-3" }} k€</td>
+                        <td class="nowrap">
                             {% if still_to_bill > 0 %}
                                 {% if billed >= done %}
                                     <p class="text-warning"><strong><i class="bi bi-exclamation-triangle"></i></strong>{{ still_to_bill | floatformat:"-3" }} k€</p>
