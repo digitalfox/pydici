@@ -6,7 +6,7 @@ Module that handle asynchronous tasks
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from celery import shared_task
 
 from django.urls import reverse
@@ -16,6 +16,7 @@ from django.template.loader import get_template
 
 from core.utils import get_parameter
 from people.models import Consultant
+from staffing.models import Holiday
 from staffing.utils import gatherTimesheetData
 
 
@@ -25,6 +26,12 @@ def warn_for_incomplete_timesheet(warn_overbooking=False, days=None, month="last
     :param warn_overbooking: Warn for overbooking days (default is false)
     :param days: only check n first days. If None (default), check all month
     :param month: Month to check: current or last (default) month"""
+
+    # Don't send mail weekend or holiday
+    today = datetime.today()
+    if today.weekday() in (5, 6) or Holiday.objects.filter(day=today).exists():
+        return
+
     email_template = get_template("batch/timesheet_warning_email.txt")
     if month == "current":
         #TODO use core.utils nextMonth()
