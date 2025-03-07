@@ -234,6 +234,7 @@ def consultant_staffing(request, consultant_id):
             try:
                 saveFormsetAndLog(formset, request)
                 formset = StaffingFormSet(instance=consultant)  # Recreate a new form for next update
+                compute_consultant_tasks.delay(consultant.id)  # update consultant tasks
             except IntegrityError:
                 # Corner case with temporary constraint violation as database does not support deferred constraints
                 formset.management_form.add_error("", _("Duplicate data error"))

@@ -53,6 +53,7 @@ def compute_consultant_tasks(consultant_id):
     ClientBill = apps.get_model("billing", "ClientBill")
     Consultant = apps.get_model("people", "Consultant")
     Lead = apps.get_model("leads", "Lead")
+    Staffing = apps.get_model("staffing", "Staffing")
     ClientOrganisation = apps.get_model("crm", "ClientOrganisation")
     from people.models import CONSULTANT_TASKS_CACHE_KEY
 
@@ -180,6 +181,15 @@ def compute_consultant_tasks(consultant_id):
         tasks.append(ConsultantTask(label=_("Timesheet beyond forecasted staffing this month"), count=overshoot_missions_count,
                                     category=_("timesheet"), priority=overshoot_missions_priority,
                                     link=reverse("people:consultant_home_by_id", args=[consultant.id])+"#tab-timesheet"))
+
+    # too few planned holidays
+    planned_holidays = Staffing.objects.filter(mission__nature="HOLIDAYS", staffing_date__gte=date.today().replace(day=1), consultant=consultant)
+    planned_holidays = planned_holidays.aggregate(Sum("charge"))["charge__sum"] or 0
+    if planned_holidays < 5:
+        planned_holidays_priority = get_task_priority(5 - planned_holidays, (2, 4))
+        tasks.append(ConsultantTask(label=_("Too few holidays planned"), count=planned_holidays,
+                                    category=_("timesheet"), priority=planned_holidays_priority,
+                                    link=reverse("people:consultant_home_by_id", args=[consultant.id])+"#tab-staffing"))
 
     # update cache with computed tasks
     cache.set(CONSULTANT_TASKS_CACHE_KEY % consultant.id, tasks, 24*3600)
