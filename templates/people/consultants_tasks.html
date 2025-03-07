@@ -28,7 +28,7 @@
                 <tr>
                     <td>{% include "people/__consultant_name.html" %}</td>
                     <td>{{ consultant.company }}</td>
-                    <td>{% with consultant=consultant.manager %}{% include "people/__consultant_name.html" %}{% endwith %}</td>
+                    <td>{% if consultant.manager %}{% with consultant=consultant.manager %}{% include "people/__consultant_name.html" %}{% endwith %}{% endif %}</td>
                     <td>{{ task.category }}</td>
                     <td><span style="display:none">{{ task.priority }}</span>
                         <i {% if task.priority == 3 %}
