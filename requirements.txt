@@ -21,6 +21,6 @@ django-celery-beat==2.5.0
 mysqlclient==2.1.1
 python-telegram-bot[job-queue]==20.1
 django-auditlog==2.3.0
-factur-x==2.3
+factur-x==3.6
 django-countries==7.5.1
 factory_boy==3.3

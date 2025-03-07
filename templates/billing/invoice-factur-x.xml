@@ -22,13 +22,8 @@
 
     <rsm:ExchangedDocument>
         <ram:ID>{{ bill.bill_id }}</ram:ID>
-        <ram:TypeCode><!-- 380 is standard invoice, 381 is credit note -->
-            {% if bill.amount_with_vat > 0 %}
-            380
-            {% else %}
-            381
-            {% endif %}
-        </ram:TypeCode>
+        <!-- 380 is standard invoice, 381 is credit note -->
+        <ram:TypeCode>{% if bill.amount_with_vat > 0 %}380{% else %}381{% endif %}</ram:TypeCode>
         <ram:IssueDateTime>
             <udt:DateTimeString format="102">{{ bill.creation_date|date:'Ymd' }}</udt:DateTimeString>
         </ram:IssueDateTime>
