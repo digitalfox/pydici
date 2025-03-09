@@ -234,7 +234,7 @@ def financial_control(request, start_date=None, end_date=None):
 
     missionsIdsFromStaffing = Mission.objects.filter(probability__gt=0, staffing__staffing_date__gte=start_date, staffing__staffing_date__lt=nextMonth(end_date)).values_list("id", flat=True)
     missionsIdsFromTimesheet = Mission.objects.filter(probability__gt=0, timesheet__working_date__gte=start_date, timesheet__working_date__lt=nextMonth(end_date)).values_list("id", flat=True)
-    missionsIdsFromBoundaries = Mission.objects.filter(probability__gt=0, end_date__lte=start_date, start_date__lt=nextMonth(end_date)).values_list("id", flat=True)
+    missionsIdsFromBoundaries = Mission.objects.filter(probability__gt=0, end_date__gte=start_date, start_date__lt=nextMonth(end_date)).values_list("id", flat=True)
     missionsIds = set(list(missionsIdsFromStaffing) + list(missionsIdsFromTimesheet) + list(missionsIdsFromBoundaries))
     missions = Mission.objects.filter(id__in=missionsIds)
     missions = missions.distinct().select_related().prefetch_related("lead__client__organisation__company", "lead__responsible")
