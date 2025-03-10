@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-07 18:54+0100\n"
-"PO-Revision-Date: 2025-03-07 18:54+0100\n"
+"POT-Creation-Date: 2025-03-10 19:12+0100\n"
+"PO-Revision-Date: 2025-03-10 19:11+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@digitalfox.org>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
 "Language: fr\n"
@@ -333,7 +333,7 @@ msgstr "Libellé"
 #: billing/tests.py:246 billing/tests.py:254 billing/tests.py:261
 #: billing/tests.py:268 billing/tests.py:277 billing/tests.py:283
 #: billing/tests.py:289 billing/utils.py:164 billing/utils.py:182
-#: billing/utils.py:198 billing/utils.py:218 billing/utils.py:225
+#: billing/utils.py:199 billing/utils.py:219 billing/utils.py:226
 #: core/views.py:383 core/views.py:400 crm/views.py:519 staffing/views.py:1625
 #: staffing/views.py:1664 staffing/views.py:1679
 #: templates/billing/_lead_billing.html:25
@@ -459,7 +459,7 @@ msgstr "responsable"
 msgid "manager"
 msgstr "manager"
 
-#: billing/utils.py:159 billing/utils.py:216 billing/utils.py:227
+#: billing/utils.py:159 billing/utils.py:217 billing/utils.py:228
 #: crm/views.py:514 staffing/models.py:482 staffing/views.py:1621
 #: staffing/views.py:1659 staffing/views.py:1674 staffing/views.py:1723
 #: staffing/views.py:2148 templates/billing/_lead_billing.html:20
@@ -478,8 +478,8 @@ msgstr "manager"
 msgid "consultant"
 msgstr "consultant"
 
-#: billing/utils.py:165 billing/utils.py:179 billing/utils.py:196
-#: billing/utils.py:217 billing/utils.py:224 staffing/views.py:1721
+#: billing/utils.py:165 billing/utils.py:179 billing/utils.py:197
+#: billing/utils.py:218 billing/utils.py:225 staffing/views.py:1721
 #: staffing/views.py:2089 staffing/views.py:2097 staffing/views.py:2147
 #: templates/billing/_lead_billing.html:21
 #: templates/billing/client_billing_control_pivotable.html:53
@@ -502,8 +502,8 @@ msgstr "consultant"
 msgid "month"
 msgstr "mois"
 
-#: billing/utils.py:166 billing/utils.py:180 billing/utils.py:197
-#: billing/utils.py:219 billing/utils.py:226 core/views.py:379
+#: billing/utils.py:166 billing/utils.py:180 billing/utils.py:198
+#: billing/utils.py:220 billing/utils.py:227 core/views.py:379
 #: core/views.py:396 staffing/views.py:1527 staffing/views.py:1623
 #: staffing/views.py:1662 staffing/views.py:1677 staffing/views.py:1722
 #: templates/billing/_lead_billing.html:20
@@ -522,13 +522,14 @@ msgstr "mois"
 msgid "type"
 msgstr "type"
 
-#: billing/utils.py:166 billing/utils.py:197 billing/utils.py:226
+#: billing/utils.py:166 billing/utils.py:198 billing/utils.py:227
 #: templates/billing/_lead_billing.html:24
 msgid "Service bill"
 msgstr "Facture prestation"
 
 #: billing/utils.py:167 billing/utils.py:183 billing/utils.py:189
 #: templates/billing/_lead_billing.html:20
+#: templates/billing/client_billing_control_pivotable.html:53
 #: templates/billing/pre_billing.html:140
 msgid "mission"
 msgstr "mission"
@@ -553,7 +554,25 @@ msgstr "Facture de frais"
 msgid "Chargeable expense"
 msgstr "Frais refacturables"
 
-#: billing/utils.py:219 templates/billing/_lead_billing.html:24
+#: billing/utils.py:192 expense/models.py:117 leads/views.py:629
+#: templates/billing/_lead_billing.html:20
+#: templates/billing/client_billing_control_pivotable.html:53
+#: templates/leads/leads_pivotable.html:52
+#: templates/leads/leads_pivotable.html:67
+#: templates/leads/leads_pivotable.html:75
+#: templates/leads/leads_pivotable.html:83
+msgid "state"
+msgstr "état"
+
+#: billing/utils.py:192 leads/views.py:633
+msgid "active"
+msgstr "active"
+
+#: billing/utils.py:192
+msgid "archived"
+msgstr "archivée"
+
+#: billing/utils.py:220 templates/billing/_lead_billing.html:24
 msgid "Done work"
 msgstr "Montant réalisé"
 
@@ -1490,14 +1509,6 @@ msgstr "Justificatif"
 msgid "Paid with corporate card"
 msgstr "Payé avec la carte société"
 
-#: expense/models.py:117 leads/views.py:629
-#: templates/leads/leads_pivotable.html:52
-#: templates/leads/leads_pivotable.html:67
-#: templates/leads/leads_pivotable.html:75
-#: templates/leads/leads_pivotable.html:83
-msgid "state"
-msgstr "état"
-
 #: expense/tables.py:130 expense/tables.py:194 people/models.py:273
 #: staffing/views.py:1422 templates/billing/bill.html:164
 #: templates/expense/expense.html:26 templates/expense/expense_archive.html:17
@@ -1828,10 +1839,6 @@ msgstr "facturé (€)"
 #: templates/leads/leads_pivotable.html:84
 msgid "Over budget margin (€)"
 msgstr "Marge au delà du budget (€)"
-
-#: leads/views.py:633
-msgid "active"
-msgstr "active"
 
 #: people/admin.py:31
 msgid "For subcontractors"
