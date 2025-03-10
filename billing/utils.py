@@ -17,7 +17,7 @@ from django.db.models.functions import TruncMonth
 from django.utils.translation import gettext as _
 from django.core.files.base import ContentFile
 
-from core.utils import to_int_or_round, nextMonth
+from core.utils import to_int_or_round, nextMonth, get_fiscal_year
 
 
 def get_billing_info(timesheet_data):
@@ -163,6 +163,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
             legacy_bill_data = lead_data.copy()
             legacy_bill_data[_("amount")] = - float(legacy_bill.amount or 0)
             legacy_bill_data[_("month")] = legacy_bill.creation_date.replace(day=1).isoformat()
+            legacy_bill_data[_("fiscal year")] = get_fiscal_year(legacy_bill.creation_date.replace(day=1))
             legacy_bill_data[_("type")] = _("Service bill")
             legacy_bill_data[_("mission")] = "-"
             mission = lead.mission_set.first()
@@ -177,6 +178,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
             for month, amount in qs.annotate(Sum("amount")).values_list("month", "amount__sum"):
                 expense_data = lead_data.copy()
                 expense_data[_("month")] = month.isoformat()
+                expense_data[_("fiscal year")] = get_fiscal_year(month)
                 expense_data[_("type")] = label
                 expense_data[_("billing mode")] = _("Chargeable expense")
                 expense_data[_("amount")] = float(amount) * way
@@ -195,6 +197,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                 for billDetail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state):
                     mission_fixed_price_data = mission_data.copy()
                     mission_fixed_price_data[_("month")] = billDetail.bill.creation_date.replace(day=1).isoformat()
+                    mission_fixed_price_data[_("fiscal year")] = get_fiscal_year(billDetail.bill.creation_date.replace(day=1))
                     mission_fixed_price_data[_("type")] = _("Service bill")
                     mission_fixed_price_data[_("amount")] = -float(billDetail.amount or 0)
                     data.append(mission_fixed_price_data)
@@ -216,6 +219,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
 
                     mission_month_consultant_data[_("consultant")] = str(consultant)
                     mission_month_consultant_data[_("month")] = month.isoformat()
+                    mission_month_consultant_data[_("fiscal year")] = get_fiscal_year(month)
                     mission_month_consultant_data[_("amount")] = turnover
                     mission_month_consultant_data[_("type")] = _("Done work")
                     data.append(mission_month_consultant_data)
@@ -223,6 +227,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                 for billed_detail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state).select_related("consultant"):
                         mission_month_bill_data = mission_data.copy()
                         mission_month_bill_data[_("month")] = billed_detail.month.isoformat()
+                        mission_month_bill_data[_("fiscal year")] = get_fiscal_year(billed_detail.month)
                         mission_month_bill_data[_("amount")] = -float(billed_detail.amount or 0)
                         mission_month_bill_data[_("type")] = _("Service bill")
                         mission_month_bill_data[_("consultant")] = str(billed_detail.consultant)

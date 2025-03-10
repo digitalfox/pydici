@@ -18,7 +18,7 @@
             var lang = {% if LANGUAGE_CODE == "fr-fr" %}'fr'{% else %}'en'{% endif %};
             $("#pivotable-output-{{ lead.id|unlocalize }}").pivot({{ data|safe }},
                     { rows: ["{% trans 'billing mode' %}", "{% trans 'state' %}", "{% trans 'mission' %}", "{% trans 'type' %}", "{% trans 'consultant' %}"],
-                      cols: ["{% trans 'month' %}"],
+                      cols: ["{% trans 'fiscal year' %}", "{% trans 'month' %}"],
                       dataClass: $.pivotUtilities.SubtotalPivotData,
                       renderer: $.pivotUtilities.subtotal_renderers["Table With Subtotal"],
                       sorters: {"type": $.pivotUtilities.sortAs(['{% trans "Done work" %}', '{% trans "Service bill" %}',  '{% trans "Expense" %}', '{% trans "Expense bill" %}', ])},
