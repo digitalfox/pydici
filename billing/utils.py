@@ -189,6 +189,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
             mission_data[_("mission")] = mission.short_name()
             mission_data[_("responsible")] = str(mission.lead.responsible)
             mission_data[_("billing mode")] = mission.get_billing_mode_display()
+            mission_data[_("state")] = _("active") if mission.active else _("archived")
             # Add fixed price bills
             if mission.billing_mode == "FIXED_PRICE":
                 for billDetail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state):

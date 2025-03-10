@@ -50,11 +50,11 @@
     // Preset definition
 
     function balance_per_responsible() {
-        var rows = ["{% trans 'responsible' %}", "{% trans 'client company' %}", "{% trans 'deal id' %}", "{% trans 'month' %}"];
+        var rows = ["{% trans 'responsible' %}", "{% trans 'client company' %}", "{% trans 'deal id' %}", "{% trans 'state' %}", "{% trans 'mission' %}","{% trans 'month' %}"];
         var cols = ["{% trans 'type' %}"];
         var options = {};
         options['exclusions'] = { {% trans "month" %}: {{ month_to_exclude|safe }}, "{% trans 'billing mode' %}": ['{% trans "Fixed price" %}'] };
-        options['collapseRowsAt'] = 0;
+        options['collapseRowsAt'] = 2;
         drawPivot(data, rows, cols, "Table With Subtotal", '{% trans "Sum" %}', ["{% trans 'amount' %}"], options);
     }
 
