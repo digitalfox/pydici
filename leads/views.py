@@ -68,7 +68,7 @@ def detail(request, lead_id):
     subsidiary = get_subsidiary_from_session(request)
     active_leads = Lead.objects.active().order_by("creation_date")
     if subsidiary:
-        active_leads = active_leads.filter(subsidiary=subsidiary)
+        active_leads = active_leads.filter(Q(subsidiary=subsidiary) | Q(staffing__company=subsidiary)).distinct()
     try:
         rank = [l.id for l in active_leads].index(lead.id)
         active_count = active_leads.count()
