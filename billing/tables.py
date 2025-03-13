@@ -148,6 +148,8 @@ class SupplierBillArchiveTableDT(BillTableDT):
     def get_initial_queryset(self):
         qs = SupplierBill.objects.all()
         qs = self._filter_on_subsidiary(qs)
+        if self.kwargs.get("company_id"):  # If provided, filter on client company
+            qs = qs.filter(lead__client__organisation__company_id=self.kwargs["company_id"])
         return qs
 
     def filter_queryset(self, qs):

@@ -542,6 +542,8 @@ def company_billing(request, company_id):
                             {"company": company,
                              "billing_control_data": get_client_billing_control_pivotable_data(filter_on_company=company),
                              "client_bill_data_url": reverse('billing:client_company_bills_archive_DT', args=[company.id,]),
+                             "supplier_bill_data_url": reverse('billing:client_supplier_bills_archive_DT',
+                                                             args=[company.id, ]),
                              "leads": leads})
 
 
