@@ -98,7 +98,6 @@ class ClientBillForm(PydiciCrispyModelForm):
         return self.cleaned_data["add_facturx_data"]
 
 
-
 class SupplierBillForm(PydiciCrispyModelForm):
     class Meta:
         model = SupplierBill

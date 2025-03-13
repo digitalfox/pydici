@@ -14,12 +14,11 @@
     {% crispy bill_form %}
     <div class="form-actions">
         {% if can_delete %}
+        <div class="float-end">
             <a role="button" class="btn btn-danger" style="color:#FFFFFF" href="{% url 'billing:supplierbill_delete' bill_id %}">{% trans "delete" %}</a>
-        {% endif %}
-        <div class="pull-right">
-            <input id="submit-id-submit" class="btn btn-primary" type="submit" value="{% trans 'Save' %}" name="Submit">
         </div>
-
+        {% endif %}
+            <input id="submit-id-submit" class="btn btn-primary" type="submit" value="{% trans 'Save' %}" name="Submit">
     </div>
 </form>
 
