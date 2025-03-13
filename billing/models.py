@@ -82,7 +82,7 @@ class AbstractBill(models.Model):
                                           null=True)
     vat = models.DecimalField(_("VAT (%)"), max_digits=4, decimal_places=2,
                               default=float(settings.PYDICI_DEFAULT_VAT_RATE))
-    expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True})
+    expenses = models.ManyToManyField(Expense, blank=True, limit_choices_to={"chargeable": True}, verbose_name=_("expenses"))
     expenses_with_vat = models.BooleanField(_("Charge expense with VAT"), default=True)
 
     def __str__(self):
