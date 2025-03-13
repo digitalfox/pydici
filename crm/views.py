@@ -35,6 +35,7 @@ from leads.utils import leads_state_stat
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciFeatureMixin
 from core.utils import COLORS, get_parameter
 from billing.models import ClientBill
+from billing.utils import get_client_billing_control_pivotable_data
 from staffing.views import mission_contacts
 
 
@@ -539,6 +540,8 @@ def company_billing(request, company_id):
     leads = leads.select_related().prefetch_related("clientbill_set", "supplierbill_set")
     return render(request, "crm/_clientcompany_billing.html",
                             {"company": company,
+                             "billing_control_data": get_client_billing_control_pivotable_data(filter_on_company=company),
+                             "client_bill_data_url": reverse('billing:client_company_bills_archive_DT', args=[company.id,]),
                              "leads": leads})
 
 

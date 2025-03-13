@@ -128,6 +128,8 @@ class ClientBillArchiveTableDT(BillTableDT):
         qs = ClientBill.objects.exclude(state__in=("0_DRAFT", "0_PROPOSED"))
         qs = qs.select_related("lead")
         qs = self._filter_on_subsidiary(qs)
+        if self.kwargs.get("company_id"):  # If provided, filter on client company
+            qs = qs.filter(lead__client__organisation__company_id=self.kwargs["company_id"])
         return qs
 
     def render_column(self, row, column):
