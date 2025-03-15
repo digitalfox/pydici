@@ -19,7 +19,8 @@ class AnalyticCodeAdmin(ReturnToAppAdmin):
 
 class MarketingProductAdmin(ReturnToAppAdmin):
     list_display = ("code", "description", "subsidiary", "active")
-    search_fields = list_display
+    search_fields = ("code", "description")
+    list_filter = ("subsidiary", "active")
     ordering = ("subsidiary", "code",)
 
 
