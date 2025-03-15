@@ -49,10 +49,19 @@ class FinancialConditionAdmin(ReturnToAppAdmin):
     actions = None
 
 
+class StaffingAdmin(ReturnToAppAdmin):
+    list_display = ("mission", "consultant", "staffing_date", "charge", "comment")
+    search_fields = ("mission__lead__name", "mission__description", "mission__deal_id", "mission__lead__client__organisation__company__name",
+                     "mission__lead__client__contact__name", "consultant__name", "consultant__trigramme")
+    date_hierarchy = "staffing_date"
+    list_filter = ("mission__subsidiary", "mission__active")
+    actions = None
+
+
 admin.site.register(AnalyticCode, AnalyticCodeAdmin)
 admin.site.register(MarketingProduct, MarketingProductAdmin)
 admin.site.register(Mission, MissionAdmin)
 admin.site.register(Holiday, HolidayAdmin)
 admin.site.register(FinancialCondition, FinancialConditionAdmin)
 admin.site.register(Timesheet)
-admin.site.register(Staffing)
+admin.site.register(Staffing, StaffingAdmin)
