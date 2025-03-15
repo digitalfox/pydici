@@ -46,13 +46,14 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
         return qs
 
     def get_initial_queryset(self):
-        return Mission.objects.all().select_related("lead__client__organisation__company", "subsidiary")
+        qs = Mission.objects.all()
+        qs = self._filter_on_subsidiary(qs)
+        qs = self._filter_on_consultant(qs)
+        return qs.select_related("lead__client__organisation__company", "subsidiary")
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
         search = self.request.GET.get(u'search[value]', None)
-        qs = self._filter_on_subsidiary(qs)
-        qs = self._filter_on_consultant(qs)
         if search:
             qs = qs.filter(Q(deal_id__icontains=search) |
                            Q(description__icontains=search) |
@@ -100,9 +101,15 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
 class ActiveMissionsTableDT(MissionsTableDT):
     """Active missions table backend for datatables"""
     def get_initial_queryset(self):
-        return Mission.objects.filter(active=True).select_related("lead__client__organisation__company", "subsidiary")
+        qs = Mission.objects.filter(active=True)
+        qs = self._filter_on_subsidiary(qs)
+        qs = self._filter_on_consultant(qs)
+        return qs.select_related("lead__client__organisation__company", "subsidiary")
 
 
 class ClientCompanyActiveMissionsTablesDT(MissionsTableDT):
     def get_initial_queryset(self):
-        return Mission.objects.filter(active=True, lead__client__organisation__company__id=self.kwargs["clientcompany_id"]).select_related("lead__client__organisation__company", "subsidiary")
+        qs = Mission.objects.filter(active=True, lead__client__organisation__company__id=self.kwargs["clientcompany_id"])
+        qs = self._filter_on_subsidiary(qs)
+        qs = self._filter_on_consultant(qs)
+        return qs.select_related("lead__client__organisation__company", "subsidiary")

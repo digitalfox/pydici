@@ -148,7 +148,10 @@ class TagTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
 
 class ClientCompanyLeadTableDT(LeadTableDT):
     def get_initial_queryset(self):
-        return Lead.objects.filter(client__organisation__company__id=self.kwargs["clientcompany_id"]).select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+        qs = Lead.objects.filter(client__organisation__company__id=self.kwargs["clientcompany_id"])
+        qs = self._filter_on_subsidiary(qs)
+        qs = qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+        return qs
 
 
 class LeadToBill(LeadTableDT):
