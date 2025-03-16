@@ -53,7 +53,7 @@
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12 /></a></td>
-                <td>{{ bill.comment }}</td>
+                <td>{{ bill.comment|default_if_none:"" }}</td>
                 <td>{% if pydici_feature.billing_management %}
                         <a href="{% url 'billing:mark_bill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
@@ -99,7 +99,7 @@
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
-                <td>{{ bill.comment }}</td>
+                <td>{{ bill.comment|default_if_none:"" }}</td>
                 <td>{% if pydici_feature.billing_management %}
                         <a href="{% url 'billing:mark_bill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
@@ -144,7 +144,7 @@
                 <td style="text-align: right">{{ bill.amount_with_vat|floatformat:-2 }}</td>
                 <td>{{ bill.payment_wait }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png'/ height=12></a></td>
-                <td>{{ bill.comment }}</td>
+                <td>{{ bill.comment|default_if_none:"" }}</td>
                 <td>{% if pydici_feature.billing_management %}
                     <a href="{% url 'billing:mark_bill_paid' bill.id %}">{% trans "Mark this bill as paid" %}</a>
                     {% endif %}
@@ -191,7 +191,7 @@
                 <td>{{ bill.creation_date }}</td>
                 <td>{{ bill.payment_delay }}</td>
                 <td><a href='{{ bill.bill_file_url }}'><img src='{{ MEDIA_URL }}pydici/receipt.png' height=12/></a></td>
-                <td>{{ bill.comment }}</td>
+                <td>{{ bill.comment|default_if_none:"" }}</td>
             </tr>
         {% endfor %}
         </tbody>
