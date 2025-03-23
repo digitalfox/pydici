@@ -8,7 +8,7 @@ Pydici staffing API.
 import datetime
 from django.http import JsonResponse
 
-from core.utils import previousMonth
+from core.utils import previousMonth, nextMonth
 from core.decorator import pydici_non_public, pydici_feature
 from staffing.models import Mission
 
@@ -18,7 +18,7 @@ from staffing.models import Mission
 def mission_list(request, start_date=None, end_date=None):
     """Return json list of missions with timesheet activity on given timeframe"""
     if end_date is None:
-        end_date = previousMonth(datetime.date.today())
+        end_date = nextMonth(datetime.date.today())
     else:
         end_date = datetime.date(int(end_date[0:4]), int(end_date[4:6]), 1)
     if start_date is None:
