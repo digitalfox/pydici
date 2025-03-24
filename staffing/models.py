@@ -90,6 +90,7 @@ class Mission(models.Model):
     end_date = models.DateField(_("End date"), blank=True, null=True)
     min_charge_multiple_per_day = models.FloatField(_("Min charge multiple per day"), default=0)
     client_deal_id = models.CharField(_("Client deal id"), max_length=100, blank=True)
+    always_displayed = models.BooleanField(_("Always displayed"), default=False)
 
     history = AuditlogHistoryField()
 

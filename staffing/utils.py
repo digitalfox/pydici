@@ -115,6 +115,26 @@ def saveTimesheetData(consultant, month, data, oldData):
                 timesheet.delete()
 
 
+def updateHolidaysStaffing(consultant, month, missions, user):
+    """Update holdays staffing to be at least equal to timesheet"""
+    staffings_updated = []
+    now = datetime.now()
+    now = now.replace(microsecond=0)
+    for mission in missions:
+        if mission.nature == "HOLIDAYS":
+            staffing, created = consultant.staffing_set.get_or_create(mission=mission, staffing_date=month)
+            previous_charge = staffing.charge
+            charge_sum = consultant.timesheet_set.filter(mission=mission, working_date__month=month.month, working_date__year=month.year).aggregate(Sum('charge'))["charge__sum"] or 0
+            new_charge = max(charge_sum, staffing.charge)  # We don't want to reduce staffing
+            if previous_charge != new_charge:
+                staffing.charge = new_charge
+                staffing.update_date = now
+                staffing.last_user = str(user)
+                staffing.save()
+                staffings_updated.append((mission, previous_charge, new_charge))
+    return staffings_updated
+
+
 @transaction.atomic
 def saveFormsetAndLog(formset, request):
     """Save the given staffing formset and log last user"""

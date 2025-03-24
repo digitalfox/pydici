@@ -65,6 +65,15 @@
         {% if price_updated_missions and not consultant.subcontractor %}
             <div class="alert alert-info col-md-6">{% trans "Price has been updated for some missions" %} ({{ price_updated_missions|join:", " }})</div>
         {% endif %}
+
+        {% for mission_updated, previous_charge, new_charge in staffings_updated %}
+            <div class="alert alert-info col-md-6">
+                {% blocktrans %}
+                    Staffing for mission <i>{{ mission_updated }}</i> updated from {{ previous_charge }} to {{ new_charge }}
+                {% endblocktrans %}
+            </div>
+        {% endfor %}
+
         <form action="{% url 'staffing:consultant_timesheet' consultant_id=consultant.id year=month|date:'Y' month=month|date:'m' timesheet_view=timesheet_view %}" method="POST" id="pydici-ajax-form-consultant-timesheet">
         <table id="pydici-consultant-timesheet-table" class='table table-pydici-extra-condensed table-hover tablesmall-form-row table-timesheet' style="text-align:center">
                 {% for field in form  %}

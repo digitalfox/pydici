@@ -49,7 +49,8 @@ from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, prev
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, \
-    timesheet_report_data, timesheet_report_data_grouped, check_timesheet_validity, compute_mission_consultant_rates
+    timesheet_report_data, timesheet_report_data_grouped, check_timesheet_validity, compute_mission_consultant_rates, \
+    updateHolidaysStaffing
 from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMIT
@@ -875,6 +876,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
     """Consultant timesheet"""
     management_mode_error = None
     price_updated_missions = []
+    staffings_updated = []
     # We use the first day to represent month
     if year and month:
         month = date(int(year), int(month), 1)
@@ -932,9 +934,15 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
         else:
             forecastTotal[staffing.mission.id] = staffing.charge
 
-    # Missions with already defined timesheet or forecasted for this month
+    # Missions always displayed
+    missions_always_displayed = Mission.objects.filter(always_displayed=True, active=True)
+    missions_always_displayed = missions_always_displayed.filter(Q(start_date__isnull=True) | Q(start_date__lt=nextMonth(month)))
+    missions_always_displayed = missions_always_displayed.filter(Q(end_date__isnull=True) | Q(end_date__gte=month))
+
+    # Missions with already defined timesheet or forecasted for this month or mission always displayed
     missions = set(list(consultant.forecasted_missions(month=month).select_related("lead__client__organisation__company")) +
-                   list(consultant.timesheet_missions(month=month).select_related("lead__client__organisation__company")))
+                   list(consultant.timesheet_missions(month=month).select_related("lead__client__organisation__company")) +
+                   list(missions_always_displayed))
     missions = sortMissions(missions)
 
     # Add zero forecast for mission with active timesheet but no more forecast
@@ -965,6 +973,10 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
                 sid = transaction.savepoint()
                 # Process the data in form.cleaned_data
                 saveTimesheetData(consultant, month, form.cleaned_data, timesheetData)
+                staffings_updated = updateHolidaysStaffing(consultant, month, missions, request.user)
+                # Need to update forecastTotal
+                for mission, previous_charge, next_charge in staffings_updated:
+                    forecastTotal[mission.id] = next_charge
                 management_mode_error = check_timesheet_validity(missions, consultant, month)
                 if management_mode_error:
                     transaction.savepoint_rollback(sid)
@@ -1014,6 +1026,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
                        "warning": warning,
                        "management_mode_error": management_mode_error,
                        "price_updated_missions": price_updated_missions,
+                       "staffings_updated": staffings_updated,
                        "next_date": next_date,
                        "previous_date": previous_date,
                        "previous_date_enabled": previous_date_enabled,
