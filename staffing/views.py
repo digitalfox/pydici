@@ -932,9 +932,15 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
         else:
             forecastTotal[staffing.mission.id] = staffing.charge
 
-    # Missions with already defined timesheet or forecasted for this month
+    # Missions always displayed
+    missions_always_displayed = Mission.objects.filter(always_displayed=True, active=True)
+    missions_always_displayed = missions_always_displayed.filter(Q(start_date__isnull=True) | Q(start_date__lt=nextMonth(month)))
+    missions_always_displayed = missions_always_displayed.filter(Q(end_date__isnull=True) | Q(end_date__gte=month))
+
+    # Missions with already defined timesheet or forecasted for this month or mission always displayed
     missions = set(list(consultant.forecasted_missions(month=month).select_related("lead__client__organisation__company")) +
-                   list(consultant.timesheet_missions(month=month).select_related("lead__client__organisation__company")))
+                   list(consultant.timesheet_missions(month=month).select_related("lead__client__organisation__company")) +
+                   list(missions_always_displayed))
     missions = sortMissions(missions)
 
     # Add zero forecast for mission with active timesheet but no more forecast
