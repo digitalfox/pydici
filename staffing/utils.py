@@ -410,3 +410,12 @@ def compute_mission_consultant_rates(mission):
         # No consultant or no objective on mission timeframe
         objective_dates = []
     return objective_dates, rates
+
+
+def is_outside_business_hours(date_with_time=None):
+    """Don't bother people outside business hours and during holidays"""
+    if date_with_time is None:
+        date_with_time = datetime.now()
+    is_not_working = Holiday.objects.filter(day=date_with_time.date()).exists()
+    is_not_working = is_not_working or date_with_time.weekday() in (5, 6) or date_with_time.hour < 9 or date_with_time.hour > 19
+    return is_not_working
