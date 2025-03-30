@@ -33,7 +33,7 @@ class MissionAdmin(ReturnToAppAdmin):
     date_hierarchy = "update_date"
     list_filter = ["nature", "probability", "subsidiary", "active", "archived_date"]
     actions = None
-    fields = ("lead", "description", "nature", "probability", "deal_id", "subsidiary", "analytic_code", "marketing_product", "active")
+    fields = ("lead", "description", "nature", "probability", "deal_id", "subsidiary", "analytic_code", "marketing_product", "active", "always_displayed")
 
 
 class HolidayAdmin(admin.ModelAdmin):
