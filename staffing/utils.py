@@ -350,7 +350,8 @@ def create_next_year_std_missions(current, target, dryrun=True, start_date=None,
                               analytic_code=m.analytic_code,
                               start_date=start_date,
                               end_date=end_date,
-                              min_charge_multiple_per_day=m.min_charge_multiple_per_day)
+                              min_charge_multiple_per_day=m.min_charge_multiple_per_day,
+                              always_displayed=m.always_displayed)
         print("Creating new mission %s" % new_mission)
         if not dryrun:
             new_mission.save()

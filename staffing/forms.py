@@ -371,7 +371,7 @@ class MissionForm(PydiciCrispyModelForm):
                                                   Row(Column( Field("deal_id", placeholder=_("Leave blank to auto generate")),
                                                               "analytic_code", "min_charge_multiple_per_day",
                                                               css_class="col-md-6"),
-                                                      Column("probability", "probability_auto",
+                                                      Column("probability", "probability_auto", "always_displayed",
                                                              css_class="col-md-6")),
                                                   ),
                                               ),
