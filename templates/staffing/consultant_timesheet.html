@@ -68,9 +68,7 @@
 
         {% for mission_updated, previous_charge, new_charge in staffings_updated %}
             <div class="alert alert-info col-md-6">
-                {% blocktrans %}
-                    Staffing for mission <i>{{ mission_updated }}</i> updated from {{ previous_charge }} to {{ new_charge }}
-                {% endblocktrans %}
+                {% blocktrans %}Staffing for mission <i>{{ mission_updated }}</i> updated from {{ previous_charge }} to {{ new_charge }}{% endblocktrans %}
             </div>
         {% endfor %}
 
