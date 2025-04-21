@@ -120,7 +120,7 @@ class ClientBillInCreationTableDT(BillTableDT):
 
 class ClientBillArchiveTableDT(BillTableDT):
     """Client bill archive"""
-    columns = ("bill_id", "subsidiary", "deal_id", "lead", "creation_date", "payment_date", "state", "amount", "amount_with_vat", "comment", "file")
+    columns = ("bill_id", "subsidiary", "deal_id", "lead", "creation_date", "due_date", "payment_date", "state", "amount", "amount_with_vat", "comment", "file")
     order_columns = columns
     max_display_length = 500
 
@@ -141,7 +141,7 @@ class ClientBillArchiveTableDT(BillTableDT):
 
 class SupplierBillArchiveTableDT(BillTableDT):
     """Supplier bill archive"""
-    columns = ("bill_id", "supplier", "subsidiary", "lead","creation_date", "payment_date", "state", "amount", "amount_with_vat", "comment",  "file")
+    columns = ("bill_id", "supplier", "subsidiary", "lead","creation_date", "due_date", "payment_date", "state", "amount", "amount_with_vat", "comment",  "file")
     order_columns = columns
     max_display_length = 20
 
