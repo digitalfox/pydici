@@ -79,7 +79,7 @@ class ClientBillForm(PydiciCrispyModelForm):
                                                   Tab(_("Advanced"), Column("client_deal_id", "lang", "allow_duplicate_expense",
                                                                             "add_facturx_data","bill_file",
                                                                             css_class="col-md-6"), ),
-                                                  css_class="row")))
+                                                  )))
 
     def clean_amount(self):
         if self.cleaned_data["amount"] or self.data["state"] == "0_DRAFT":
