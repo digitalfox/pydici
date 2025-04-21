@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load l10n %}
+{% load cache %}
+{# context: lead #}
+{% cache 60 lead_name lead.id %}
+    <a href="{% url 'leads:detail' lead.id %}">{{ lead.name }}
+        {% if not lead.checkBusinessDoc %}
+            <i title='{% trans "Business documents are missing" %}' class="pydici-tooltip bi bi-file-earmark-text" style="color: red"></i>
+        {% endif %}
+        {% for mission in lead.mission_set.all %}
+            {% if mission.no_more_staffing_since %}
+                <i title="{% blocktrans %}mission {{ mission }} has no staffing in the future{% endblocktrans %}" class="pydici-tooltip bi bi-calendar-check" style="color: red"></i>
+            {% endif %}
+            {% if not mission.defined_rates %}
+                <i title='{% trans "Consultants rates are not fully defined" %}' class="pydici-tooltip bi bi-person" style="color: red"></i>
+            {% endif %}
+        {% endfor %}
+    </a>
+{% endcache %}

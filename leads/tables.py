@@ -33,6 +33,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
     max_display_length = 500
     probaTemplate = get_template("leads/_state_column.html")
     consultantTemplate = get_template("people/__consultant_name.html")
+    nameTemplate = get_template("leads/__lead_name.html")
 
     def _filter_on_subsidiary(self, qs):
         subsidiary = get_subsidiary_from_session(self.request)
@@ -51,6 +52,8 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
                 return self.consultantTemplate.render({"consultant": row.responsible})
             else:
                 return "-"
+        elif column == "name":
+            return self.nameTemplate.render({"lead": row})
         elif column == "client":
             return "<a href='{0}'>{1}</a>".format(row.client.get_absolute_url(), escape(row.client))
         elif column == "sales":

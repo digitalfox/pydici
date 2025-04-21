@@ -118,7 +118,8 @@
                     <h3 class="pydici-block-title">{% trans "Current leads as responsible" %}</h3>
                     <ul class="row icon-list">
                     {% for lead in leads_as_responsible %}
-                        <li class="bi bi-chevron-right"><a href="{% url 'leads:detail' lead.id %}", title='{{ lead.description }}'>{{ lead }}</a></li>
+                        <li class="bi bi-chevron-right">
+                            {{ lead.client.organisation }} - {% include "leads/__lead_name.html" %}</li>
                     {% endfor %}
                     </ul>
             </div>
