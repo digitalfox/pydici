@@ -42,7 +42,9 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
         """Filter on consultant based on timesheet"""
         consultant_id = self.kwargs.get("consultant_id", None)
         if consultant_id:
-            qs = qs.filter(Q(timesheet__consultant_id=consultant_id) | Q(staffing__consultant_id=consultant_id)).distinct()
+            # Explicit subquery for performance reason
+            ids = Mission.objects.filter(staffing__consultant_id=consultant_id).values_list("id", flat=True)
+            qs = qs.filter(Q(timesheet__consultant_id=consultant_id) | Q(id__in=ids)).distinct()
         return qs
 
     def get_initial_queryset(self):
