@@ -106,7 +106,7 @@ Some comments:
 ## Migrate data from environment
 On source:
 
-    ./manage.py dumpdata -o dump.json -e contenttypes -e sessions.Session -e auth.Permission -e admin.LogEntry -e auditlog --natural-foreign
+    ./manage.py dumpdata -o dump.json -e contenttypes -e sessions.Session -e auth.Permission -e admin.LogEntry -e auditlog -e django_celery_beat.PeriodicTask --natural-foreign
 
 On target:
 
