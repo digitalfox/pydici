@@ -45,4 +45,25 @@
      }
  }
 
+function save_pivot_config() {
+   var config = $("#{{ output|default_if_none:'pivotable-output' }}").data("pivotUIOptions");
+   var config_copy = JSON.parse(JSON.stringify(config));
+   //delete some values which will not serialize to JSON or useless
+   delete config_copy["aggregators"];
+   delete config_copy["renderers"];
+   delete config_copy["localeStrings"];
+   delete config_copy["rendererOptions"]["localeStrings"];
+   Cookies.set('pivotConfig', JSON.stringify(config_copy), { path: '',  sameSite: 'strict' });
+}
+
+function restore_pivot_config() {
+   var cookie = Cookies.get("pivotConfig");
+   console.log(cookie);
+   if (cookie) {
+      var options = JSON.parse(cookie);
+      drawPivot(data, options['rows'], options['cols'], options['rendererName'], options['aggregatorName'], options['vals'], options);
+   }
+
+}
+
 </script>
