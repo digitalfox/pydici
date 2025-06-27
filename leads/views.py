@@ -592,28 +592,33 @@ def lead_pivotable(request, lead_id=None):
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 60 * 24)
-def leads_pivotable(request, year=None):
-    """Pivot table for all leads of given year"""
+def leads_pivotable(request, start_date=None, end_date=None):
+    """Pivot table for leads in given timeframe"""
+    max_timeframe = 365 * 5
     data = []
     leads = Lead.objects.passive()
     subsidiary = get_subsidiary_from_session(request)
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
     derivedAttributes = """{'%s': $.pivotUtilities.derivers.bin('%s', 20),}""" % (_("sales (interval)"), _("sales (k€)"))
-    month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
     if not leads:
         return HttpResponse()
 
-    years = get_fiscal_years_from_qs(leads, "creation_date")
+    if end_date is None:
+        end_date = date.today().replace(day=1)
+    else:
+        end_date = date(int(end_date[0:4]), int(end_date[4:6]), 1)
+    if start_date is None:
+        start_date = date.today() - timedelta(days=365)
+    else:
+        start_date = date(int(start_date[0:4]), int(start_date[4:6]), 1)
 
-    if year is None and years:
-        year = years[-1]
-    if year != "all":
-        year = int(year)
-        start = date(year, month, 1)
-        end = date(year + 1, month, 1)
-        leads = leads.filter(creation_date__gte=start, creation_date__lt=end)
+    if end_date - start_date > timedelta(max_timeframe):
+        # Prevent excessive window that is useless would lead to deny of service
+        start_date = (end_date - timedelta(max_timeframe)).replace(day=1)
+
+    leads = leads.filter(creation_date__gte=start_date, creation_date__lt=end_date)
     leads = leads.select_related("responsible", "client__contact", "client__organisation__company", "subsidiary",
                          "business_broker__company", "business_broker__contact")
     leads = leads.annotate(active_mission_count=Count('mission', filter=Q(mission__active=True)))
@@ -634,5 +639,5 @@ def leads_pivotable(request, year=None):
                      })
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
-                                                    "years": years,
-                                                    "selected_year": year})
+                                                    "start_date": start_date,
+                                                    "end_date": end_date})

@@ -11,14 +11,11 @@
 
 {% block content %}
         <h2>{% trans "Leads pivot table" %}</h2>
-        <div class="row">
-            <div id="date-selector" class="btn-group col-lg-8 col-12" role="group">
-                {% for year in years %}
-                    <a class="btn btn-primary {% if year == selected_year %}active{% endif %}" href="{% url 'leads:leads-pivotable-year' year %}?{{scope_current_filter}}">{{ year }}</a>
-                {% endfor %}
-                    <a class="btn btn-primary {% if 'all' == selected_year %}active{% endif %}" href="{% url 'leads:leads-pivotable-all' %}?{{scope_current_filter}}">{% trans "All" %}</a>
-            </div>
+        <div class="btn-group col-lg-4" data-toggle="buttons">
+            <input id="startDate" name="startDate" class="btn btn-primary datepicker dateinput" data-date-format="mm/yyyy" data-date-min-view-mode=1 placeholder="{% trans 'From' %}">
+            <input id="endDate" name="endDate" class="btn btn-primary datepicker dateinput" data-date-format="mm/yyyy" data-date-min-view-mode=1 placeholder="{% trans 'To' %}">
         </div>
+
         <div class="row mt-2">
             <div id="type-selector" class="btn-group col-lg-8 col-12" role="group">
                 <button class="btn btn-primary active" onclick="lead_per_state();">{% trans "Lead per state" %}</button>
@@ -36,6 +33,8 @@
         {% with output="pivotable-output" %}
             {% include "core/_pivotable_body.html" %}
         {% endwith %}
+
+        {% include "core/_datepicker.html" %}
 
         <script type="text/javascript">
 
@@ -88,6 +87,46 @@
 
             // default
             lead_per_state();
+
+            $(document).ready(function() {
+                //
+                $('.input-daterange input').each(function() {
+                    $(this).datepicker('clearDates');
+                });
+
+                // set dates on widgets with template value
+                {% if start_date %}
+                    $("#startDate").datepicker("setDate", new Date("{{ start_date|date:"Y-m-d" }}"));
+                {% endif %}
+                {% if end_date %}
+                    $("#endDate").datepicker("setDate", new Date("{{ end_date|date:"Y-m-d" }}"));
+                {% endif %}
+
+                // reload data with choosen timeframe
+                // TODO: factorize this code
+                $('.datepicker').datepicker().on("change", function(e) {
+                    var param = "";
+                    var fromDate = $("#startDate").datepicker("getDate");
+                    var toDate   = $("#endDate").datepicker("getDate");
+                    console.log(fromDate);
+                    console.log(toDate);
+                    if (fromDate > toDate || fromDate.getTime() == toDate.getTime()) {
+                        toDate = new Date(toDate.setMonth(toDate.getMonth()+1));
+                    }
+                    if (!isNaN(fromDate.getTime())) {
+                        param += yyyymm(fromDate) + '/';
+                    }
+                    if (!isNaN(toDate.getTime())) {
+                        param += yyyymm(toDate);
+                    }
+                    window.location.href = window.location.href.replace(/\?.*/, '').replace(/\d{6}\/?/g, '') + param;
+                });
+
+            });
+
+
+
+
         </script>
 
 

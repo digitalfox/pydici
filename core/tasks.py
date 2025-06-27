@@ -32,7 +32,8 @@ def view_warmup():
     """Warmup cache for heavy views"""
     if settings.DEBUG:
         # Don't bother developers with that.
-        return
+        #return
+        pass
     user = User.objects.filter(is_superuser=True).first()
     subsidiaries_id = list(Subsidiary.objects.filter(mission__nature="PROD").distinct().values_list("id", flat=True))
     subsidiaries_id.append(0) # Add the "all" subsidiaries
@@ -50,8 +51,6 @@ def view_warmup():
             ("people:graph_people_count", graph_people_count, {}, True),
             ("crm:clients_ranking", clients_ranking, {}, True),
             ("leads:leads-pivotable", leads_pivotable, {}, True),
-            ("leads:leads-pivotable-year", leads_pivotable, { "year": current_fiscal_year }, True),
-            ("leads:leads-pivotable-year", leads_pivotable, {"year": current_fiscal_year - 1 }, True),
     ):
         context = [None, ]
         if subsidiary_context:
