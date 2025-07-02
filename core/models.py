@@ -17,6 +17,8 @@ CLIENT_BILL_LANG = (
         ("en-en", _("English"))
     )
 
+INTERNAL_BILL_LANG = CLIENT_BILL_LANG
+
 """
 Some parts of Pydici require being a member of a group with access to specific
 features.

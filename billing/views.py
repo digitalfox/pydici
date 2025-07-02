@@ -38,7 +38,7 @@ import facturx
 
 from billing.utils import get_billing_info, update_client_bill_from_timesheet, update_client_bill_from_proportion, \
     bill_pdf_filename, get_client_billing_control_pivotable_data, generate_bill_pdf
-from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
+from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense, InternalBill, InternalBillDetail
 from leads.models import Lead
 from people.models import Consultant
 from people.utils import get_team_scopes
@@ -50,7 +50,8 @@ from core.utils import get_fiscal_years_from_qs, get_parameter, user_has_feature
 from core.utils import COLORS, nextMonth, previousMonth, get_fiscal_year
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
 from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
-from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper, SupplierBillForm
+from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper, SupplierBillForm, \
+    InternalBillForm, InternalBillDetailForm, InternalBillDetailFormSetHelper, InternalBillDetailInlineFormset
 
 
 @pydici_non_public
@@ -516,6 +517,121 @@ def supplierbill_delete(request, bill_id):
 
     return HttpResponseRedirect(redirect_url)
 
+@pydici_non_public
+@pydici_feature("billing_management")
+def internal_bill(request, bill_id=None):
+    """Add or edit internal bill"""
+    if bill_id:
+        try:
+            bill = InternalBill.objects.get(id=bill_id)
+        except InternalBill.DoesNotExist:
+            raise Http404
+    else:
+        bill = None
+
+    internalBillDetailFormSet = None
+    wip_status = ("0_DRAFT", "0_PROPOSED")
+
+    InternalBillDetailFormSet = inlineformset_factory(InternalBill, InternalBillDetail, formset=InternalBillDetailInlineFormset,
+                                                      form=InternalBillDetailForm, fields="__all__")
+
+    if request.POST:
+        form = InternalBillForm(request.POST, request.FILES, instance=bill)
+        if bill and bill.state in wip_status:
+            internalBillDetailFormSet = InternalBillDetailFormSet(request.POST, instance=bill)
+            if form.data["state"] not in wip_status and internalBillDetailFormSet.has_changed():
+                form.add_error("state", ValidationError(_("You can't modify bill details in that state")))
+        if form.is_valid() and ((internalBillDetailFormSet is None) or internalBillDetailFormSet.is_valid()):
+            bill = form.save()
+            if internalBillDetailFormSet:
+                internalBillDetailFormSet.save()
+            bill.save()  # Again, to take into account modified details.
+            if bill.state in wip_status:
+                success_url = reverse_lazy("billing:internal_bill", args=[bill.id,],)
+            else:
+                success_url = request.GET.get("return_to", False) or reverse_lazy("billing:internal_bill_detail", args=[bill.id,],)
+                if bill.bill_file:
+                    if form.changed_data == ["state"] and internalBillDetailFormSet is None:
+                        # only state has change. No need to regenerate bill file.
+                        messages.add_message(request, messages.INFO, _("Bill state has been updated"))
+                    elif "bill_file" in form.changed_data:
+                        # a file has been provided by user himself. We must not generate a file and overwrite it.
+                        messages.add_message(request, messages.WARNING, _("Using custom user file to replace current bill"))
+                    elif bill.internalbilldetail_set.exists():
+                        # bill file exist but authorized admin change information and do not provide custom file. Let's generate again bill file
+                        messages.add_message(request, messages.WARNING, _("A new bill is generated and replace the previous one"))
+                        if os.path.exists(bill.bill_file.path):
+                            os.remove(bill.bill_file.path)
+                        generate_bill_pdf(bill, request) # TODO: adapt it to internal bill
+                else:
+                    # Bill file still not exist. Let's create it
+                    messages.add_message(request, messages.INFO, _("A new bill file has been generated"))
+                    generate_bill_pdf(bill, request) # TODO: adapt it to internal bill
+            return HttpResponseRedirect(success_url)
+    else:
+        if bill:
+            # Create a form to edit the given bill
+            form = InternalBillForm(instance=bill)
+            if bill.state in wip_status:
+                internalBillDetailFormSet = InternalBillDetailFormSet(instance=bill)
+        else:
+            # Still no bill, let's create it with its detail if at least mission or lead has been provided
+            missions = []
+            if request.GET.get("lead"):
+                lead = Lead.objects.get(id=request.GET.get("lead"))
+                missions = lead.mission_set.all()  # take all missions
+            if request.GET.get("mission"):
+                missions = [Mission.objects.get(id=request.GET.get("mission"))]
+            if missions:
+                bill = InternalBill()
+                bill.save()
+            for mission in missions:
+                if mission.billing_mode == "TIME_SPENT":
+                    if request.GET.get("start_date") and request.GET.get("end_date"):
+                        start_date = date(int(request.GET.get("start_date")[0:4]), int(request.GET.get("start_date")[4:6]), 1)
+                        end_date = date(int(request.GET.get("end_date")[0:4]), int(request.GET.get("end_date")[4:6]), 1)
+                    else:
+                        start_date = previousMonth(date.today())
+                        end_date = date.today().replace(day=1)
+                    update_client_bill_from_timesheet(bill, mission, start_date, end_date) # TODO: adapt it to internal bill
+                else:  # FIXED_PRICE mission
+                    if request.GET.get("amount") and mission.price:
+                        proportion = Decimal(request.GET.get("amount")) / mission.price
+                    else:
+                        proportion = request.GET.get("proportion", 0.30)
+                    bill = update_client_bill_from_proportion(bill, mission, proportion=proportion)  # TODO: adapt it to internal bill
+
+            if bill:
+                form = InternalBillForm(instance=bill)
+                internalBillDetailFormSet = InternalBillDetailFormSet(instance=bill)
+            else:
+                # Simple virgin new form
+                form = InternalBillForm()
+
+    return render(request, "billing/internal_bill_form.html",
+                  { "bill_form": form,
+                    "detail_formset": internalBillDetailFormSet,
+                    "detail_formset_helper": InternalBillDetailFormSetHelper(),
+                    "bill_id": bill.id if bill else None,
+                    "can_delete": bill.state in wip_status if bill else False,
+                    "can_preview": bill.state in wip_status if bill else False,
+                    "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def internal_bill_detail(request, bill_id=None):
+    """Display detailed bill information, metadata and bill pdf"""
+    bill = InternalBill.objects.get(id=bill_id)
+    return render(request, "billing/internal_bill_detail.html", {"bill": bill})
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def internalbill_delete(request, bill_id):
+    """Delete supplier in early stage"""
+    #TODO: implement it
+    pass
 
 @pydici_non_public
 @pydici_feature("billing_request")
@@ -658,6 +774,24 @@ def supplier_bills_archive(request):
     return render(request, "billing/supplier_bills_archive.html",
                   {"data_url": reverse('billing:supplier_bills_archive_DT'),
                    "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2, 10] }]  ''',
+                   "user": request.user})
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def internal_bills_in_creation(request):
+    """Review internal bill in preparation"""
+    # TODO: adjust datatable_options
+    return render(request, "billing/internal_bills_in_creation.html",
+                  {"data_url": reverse('billing:internal_bills_in_creation_DT'),
+                   "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [1, 3] }]  ''',
+                   "user": request.user})
+
+def internal_bills_archive(request):
+    """Review all internal bill """
+    #TODO: adjust datatable_options
+    return render(request, "billing/internal_bills_archive.html",
+                  {"data_url": reverse('billing:internal_bills_archive_DT'),
+                   "datatable_options": ''' "lengthMenu": [ 10, 25, 50, 100, 500 ], "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [1, 2, 10] }]  ''',
                    "user": request.user})
 
 

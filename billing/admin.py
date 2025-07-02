@@ -8,7 +8,7 @@ Django administration setup
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from billing.models import ClientBill, SupplierBill
+from billing.models import ClientBill, SupplierBill, InternalBill
 from core.admin import ReturnToAppAdmin
 
 
@@ -45,5 +45,17 @@ class SupplierBillAdmin(BillAdmin):
                  ]
 
 
+class InternalBillAdmin(BillAdmin):
+    list_display = ["id", "bill_id", "state",  "amount", "creation_date",  "due_date", "payment_date", "comment"]
+    fieldsets = [
+                 (_("Description"), {"fields": ["bill_id", "bill_file"]}),
+                 (_("Amounts"), {"fields": ["amount", "vat", "amount_with_vat", ]}),
+                 (_("Dates"), {"fields": ["creation_date", "due_date", "payment_date", ]}),
+                 (_("State"), {"fields": ["state", "comment", ]}),
+                 (_("Link with expenses"), {"fields": ["expenses", "expenses_with_vat", ]}),
+                 ]
+
+
 admin.site.register(ClientBill, ClientBillAdmin)
 admin.site.register(SupplierBill, SupplierBillAdmin)
+admin.site.register(InternalBill, InternalBillAdmin)

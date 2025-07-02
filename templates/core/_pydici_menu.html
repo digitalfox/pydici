@@ -173,6 +173,13 @@
                                         <li><a class="dropdown-item" href="{% url 'billing:supplier_bill' %}">{% trans "New supplier bill" %}</a></li>
                                         <li><a class="dropdown-item" href="{% url 'billing:supplier_bills_validation' %}">{% trans "Supplier bill validation" %}</a></li>
                                     {% endif %}
+                                    {% if pydici_feature.billing_request %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li class="dropdown-header">{% trans "Internal billing" %}</li>
+                                        <li><a class="dropdown-item" href="{% url 'billing:internal_bills_archive' %}">{% trans "All internal bills" %}</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'billing:internal_bill' %}">{% trans "New internal bill" %}</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'billing:internal_bills_in_creation' %}">{% trans "Internal bills in creation" %}</a></li>
+                                    {% endif %}
                                 {% endif %}
                                 {% if pydici_feature.reports %}
                                     <li><hr class="dropdown-divider"></li>

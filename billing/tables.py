@@ -15,7 +15,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 from core.utils import to_int_or_round
 from billing.views import BillingRequestMixin
-from billing.models import ClientBill, SupplierBill
+from billing.models import ClientBill, SupplierBill, InternalBill
 from people.models import Consultant
 from crm.utils import get_subsidiary_from_session
 
@@ -166,4 +166,60 @@ class SupplierBillArchiveTableDT(BillTableDT):
                            Q(supplier__company__name__icontains=search) |
                            Q(supplier__contact__name__icontains=search)
                            )
+        return qs
+
+class InternalBillTableDT(BillTableDT):
+    """Internal Bill tables backend for datatables base class. Intended to be inherited"""
+
+    def _filter_on_subsidiary(self, qs):
+        subsidiary = get_subsidiary_from_session(self.request)
+        if subsidiary:
+            qs = qs.filter(Q(seller=subsidiary) | Q(buyer=subsidiary))
+        return qs
+
+    def get_filters(self, search):
+        """Custom method to get Q filter objects that should be combined with OR keyword"""
+        filters = []
+        try:
+            # Just try to cast to see if we have a number but use str for filter to allow proper casting by django himself
+            float(search)
+            filters.extend([Q(amount=search), Q(amount_with_vat=search)])
+        except ValueError:
+            # search term is not a number
+            filters.extend(
+                [
+                    Q(bill_id__icontains=search),
+                    Q(state__icontains=search),
+                    Q(seller__name__icontains=search),
+                    Q(buyer__name__icontains=search),
+                ]
+            )
+        return filters
+
+class InternalBillInCreationTableDT(InternalBillTableDT):
+    """Internal Bill tables backend for datatables"""
+    columns = ("bill_id", "buyer", "seller", "creation_date", "state", "amount", "amount_with_vat", "comment")
+    order_columns = columns
+
+    def get_initial_queryset(self):
+        qs = InternalBill.objects.filter(state="0_DRAFT")
+        qs = self._filter_on_subsidiary(qs)
+        return qs
+
+    def render_column(self, row, column):
+        if column == "bill_id":  # Use edit link instead of default detail display
+            return "<a href='%s'>%s</a>" % (reverse("billing:internal_bill", args=[row.id]), row.bill_id)
+        else:
+            return super(InternalBillInCreationTableDT, self).render_column(row, column)
+
+
+class InternalBillArchiveTableDT(InternalBillTableDT):
+    """Internal bill archive"""
+    columns = ("bill_id", "buyer", "seller", "creation_date", "due_date", "payment_date", "state", "amount", "amount_with_vat", "comment", "file")
+    order_columns = columns
+    max_display_length = 500
+
+    def get_initial_queryset(self):
+        qs = InternalBill.objects.exclude(state="0_DRAFT")
+        qs = self._filter_on_subsidiary(qs)
         return qs
