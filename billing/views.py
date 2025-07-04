@@ -36,7 +36,7 @@ from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
 from pypdf import PdfMerger, PdfReader
 import facturx
 
-from billing.utils import get_billing_info, update_client_bill_from_timesheet, update_client_bill_from_proportion, \
+from billing.utils import get_billing_info, update_bill_from_timesheet, update_client_bill_from_proportion, \
     bill_pdf_filename, get_client_billing_control_pivotable_data, generate_bill_pdf
 from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense, InternalBill, InternalBillDetail
 from leads.models import Lead
@@ -409,7 +409,7 @@ def client_bill(request, bill_id=None):
                     else:
                         start_date = previousMonth(date.today())
                         end_date = date.today().replace(day=1)
-                    update_client_bill_from_timesheet(bill, mission, start_date, end_date)
+                    update_bill_from_timesheet(bill, mission, start_date, end_date)
                 else:  # FIXED_PRICE mission
                     if request.GET.get("amount") and mission.price:
                         proportion = Decimal(request.GET.get("amount")) / mission.price
@@ -582,8 +582,10 @@ def internal_bill(request, bill_id=None):
                 missions = lead.mission_set.all()  # take all missions
             if request.GET.get("mission"):
                 missions = [Mission.objects.get(id=request.GET.get("mission"))]
-            if missions:
-                bill = InternalBill()
+            if missions and request.GET.get("buyer") and request.GET.get("seller"):
+                buyer = Subsidiary.objects.get(id=request.GET.get("buyer"))
+                seller = Subsidiary.objects.get(id=request.GET.get("seller"))
+                bill = InternalBill(buyer=buyer, seller=seller)
                 bill.save()
             for mission in missions:
                 if mission.billing_mode == "TIME_SPENT":
@@ -593,13 +595,13 @@ def internal_bill(request, bill_id=None):
                     else:
                         start_date = previousMonth(date.today())
                         end_date = date.today().replace(day=1)
-                    update_client_bill_from_timesheet(bill, mission, start_date, end_date) # TODO: adapt it to internal bill
+                    update_bill_from_timesheet(bill, mission, start_date, end_date)
                 else:  # FIXED_PRICE mission
                     if request.GET.get("amount") and mission.price:
                         proportion = Decimal(request.GET.get("amount")) / mission.price
                     else:
                         proportion = request.GET.get("proportion", 0.30)
-                    bill = update_client_bill_from_proportion(bill, mission, proportion=proportion)  # TODO: adapt it to internal bill
+                    bill = update_client_bill_from_proportion(bill, mission, proportion=proportion)
 
             if bill:
                 form = InternalBillForm(instance=bill)

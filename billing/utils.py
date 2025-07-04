@@ -78,19 +78,30 @@ def compute_bill(bill):
             bill.amount_with_vat = bill.amount * (1 + bill.vat / 100)
 
 
-def update_client_bill_from_timesheet(bill, mission, start_date, end_date):
-    """Populate bill detail for given mission from timesheet of given interval"""
+def update_bill_from_timesheet(bill, mission, start_date, end_date):
+    """Populate bill (client or internal)detail for given mission from timesheet of given interval"""
     ClientBill = apps.get_model("billing", "clientbill")
-    BillDetail = apps.get_model("billing", "billdetail")
+    InternalBill = apps.get_model("billing", "internalbill")
+    if isinstance(bill, ClientBill):
+        LineDetail = apps.get_model("billing", "billdetail")
+        rates = mission.consultant_rates()
+    elif isinstance(bill, InternalBill):
+        LineDetail = apps.get_model("billing", "internalbilldetail")
+        rates = { k: [v[0]*0.9, v[1]] for k, v in mission.consultant_rates().items() }  # TODO: this must be a parameter
+    else:
+        raise ValueError("Not a client or internal bill")
     Consultant = apps.get_model("people", "Consultant")
-    rates = mission.consultant_rates()
+
     month = start_date
     while month < end_date:
         timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
         timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
         for i in timesheet_data:
+            #TODO: filter on consultant subsidiary for internal bill
             consultant = Consultant.objects.get(id=i["consultant"])
-            billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
+            if isinstance(bill, InternalBill) and consultant.company != bill.seller:
+                continue
+            billDetail = LineDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
             billDetail.save()
         month = nextMonth(month)
     bill.save()  # save again to update bill amount according to its details
