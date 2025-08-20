@@ -10,14 +10,20 @@ appropriate to live in Billing models or view
 import json
 from os import path
 import os
+import subprocess
+import tempfile
+
 
 from django.apps import apps
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
 from django.utils.translation import gettext as _
 from django.core.files.base import ContentFile
+from django.template.loader import get_template
 
 from core.utils import to_int_or_round, nextMonth, get_fiscal_year
+
+import facturx
 
 
 def get_billing_info(timesheet_data):
@@ -263,3 +269,37 @@ def generate_bill_pdf(bill, request):
 def get_bill_id_from_path(name):
     """Bill id is the last part of path"""
     return os.path.split(path.dirname(name))[1]
+
+
+def format_bill_pdf(pdf_buffer, bill):
+    """Make it PDF/A-3B compliant and add optional factur-x embedded information
+    @param pdf_buffer: PDF buffer as a BytesIO object
+    @return: PDF buffer as a BytesIO object"""
+    # Make it PDF/A-3B compliant
+    cmd = "gs -q -dPDFA=3 -dBATCH -dNOPAUSE -sColorConversionStrategy=UseDeviceIndependentColor -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- -"
+    try:
+        pdf_buffer.seek(0)  # Be kind, rewind
+        gs_in = tempfile.TemporaryFile()
+        gs_out = tempfile.TemporaryFile()
+        gs_in.write(pdf_buffer.getvalue())
+        gs_in.seek(0)
+        subprocess.run(cmd.split(), stdin=gs_in, stdout=gs_out)
+        gs_out.seek(0)
+        # Add factur-x information
+        if bill.add_facturx_data:
+            facturx_xml = get_template("billing/invoice-factur-x.xml").render({"bill": bill})
+            facturx_xml = facturx_xml.encode("utf-8")
+            pdf_metadata = {
+                "author": "enioka",
+                "keywords": "Factur-X, Invoice, pydici",
+                "title": "enioka Invoice %s" % bill.bill_id,
+                "subject": "Factur-X invoice %s dated %s issued by enioka"
+                % (bill.bill_id, bill.creation_date),
+            }
+            pdf = facturx.generate_from_binary(gs_out.read(), facturx_xml, pdf_metadata=pdf_metadata, lang=bill.lang)
+        else:
+            pdf = gs_out.read()
+    finally:
+        gs_out.close()
+        gs_in.close()
+    return pdf
