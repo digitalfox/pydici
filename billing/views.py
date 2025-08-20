@@ -782,10 +782,9 @@ def supplier_bills_archive(request):
 @pydici_feature("billing_management")
 def internal_bills_in_creation(request):
     """Review internal bill in preparation"""
-    # TODO: adjust datatable_options
     return render(request, "billing/internal_bills_in_creation.html",
                   {"data_url": reverse('billing:internal_bills_in_creation_DT'),
-                   "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [1, 3] }]  ''',
+                   "datatable_options": ''' "order": [[4, "desc"]] ''',
                    "user": request.user})
 
 def internal_bills_archive(request):

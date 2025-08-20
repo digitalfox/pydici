@@ -168,6 +168,7 @@ class SupplierBillArchiveTableDT(BillTableDT):
                            )
         return qs
 
+
 class InternalBillTableDT(BillTableDT):
     """Internal Bill tables backend for datatables base class. Intended to be inherited"""
 
@@ -196,9 +197,10 @@ class InternalBillTableDT(BillTableDT):
             )
         return filters
 
+
 class InternalBillInCreationTableDT(InternalBillTableDT):
     """Internal Bill tables backend for datatables"""
-    columns = ("bill_id", "buyer", "seller", "creation_date", "state", "amount", "amount_with_vat", "comment")
+    columns = ("bill_id", "buyer", "seller", "creation_date", "due_date", "state", "amount", "amount_with_vat", "comment")
     order_columns = columns
 
     def get_initial_queryset(self):
