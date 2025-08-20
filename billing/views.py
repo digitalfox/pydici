@@ -248,8 +248,8 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
     @property
     def rendered_content(self):
         old_lang = translation.get_language()
+        target = BytesIO()
         try:
-            target = BytesIO()
             bill = self.context_data["bill"]
             translation.activate(bill.lang)
             bill_pdf = super(BillAnnexPDFTemplateResponse, self).rendered_content
@@ -273,6 +273,7 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
             target.close()
         finally:
             translation.activate(old_lang)
+            target.close()
         return pdf
 
 
@@ -282,6 +283,46 @@ class BillPdf(Bill, WeasyTemplateView):
     def get_filename(self):
         bill = self.get_context_data(**self.kwargs)["bill"]
         return bill_pdf_filename(bill)
+
+
+class InternalBillView(PydiciNonPublicdMixin, TemplateView):
+    template_name = 'billing/internal_bill.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(InternalBillView, self).get_context_data(**kwargs)
+        try:
+            bill = InternalBill.objects.get(id=kwargs.get("bill_id"))
+            context["bill"] = bill
+        except InternalBill.DoesNotExist:
+            bill = None
+        return context
+
+    @method_decorator(pydici_feature("billing_request"))
+    def dispatch(self, *args, **kwargs):
+        return super(InternalBillView, self).dispatch(*args, **kwargs)
+
+
+class InternalBillAnnexPDFTemplateResponse(WeasyTemplateResponse):
+    """TemplateResponse override to merge """
+    @property
+    def rendered_content(self):
+        old_lang = translation.get_language()
+        try:
+            bill = self.context_data["bill"]
+            translation.activate(bill.lang)
+            bill_pdf = super(InternalBillAnnexPDFTemplateResponse, self).rendered_content
+            pdf = format_bill_pdf(BytesIO(bill_pdf), bill)
+        finally:
+            translation.activate(old_lang)
+        return pdf
+
+
+class InternalBillPdf(InternalBillView, WeasyTemplateView):
+    response_class = InternalBillAnnexPDFTemplateResponse
+
+    def get_filename(self):
+        bill = self.get_context_data(**self.kwargs)["bill"]
+        return "%s-%s-%s.pdf" % (bill.bill_id, bill.buyer.code, bill.seller.code)
 
 
 @pydici_non_public
