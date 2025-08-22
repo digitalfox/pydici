@@ -93,7 +93,7 @@
         <tr><td colspan=6 class="noborder">&nbsp;</td></tr>
         <tr>
             <td colspan=4 class="no-top-border"></td>
-            <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.prestationsTotal|floatformat:2 }}</b></td>
+            <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.amount|floatformat:2 }}</b></td>
         </tr>
     {% endif %}
     {% for vat, amount in bill.taxes %}

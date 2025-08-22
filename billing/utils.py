@@ -59,7 +59,7 @@ def get_billing_info(timesheet_data):
 
 
 def compute_bill(bill):
-    """Compute bill amount according to its details. Should only be called by clientBill model save method"""
+    """Compute client bill amount according to its details. Should only be called by clientBill model save method"""
     if bill.state in ("0_DRAFT", "0_PROPOSED"):
         amount = 0
         amount_with_vat = 0
@@ -72,6 +72,28 @@ def compute_bill(bill):
         # Add expenses
         amount += bill.expensesTotal()
         amount_with_vat += bill.expensesTotalWithTaxes()
+
+        if amount != 0:
+            bill.amount = amount
+        if amount_with_vat != 0:
+            bill.amount_with_vat = amount_with_vat
+
+    # Automatically compute amount with VAT if not defined
+    if not bill.amount_with_vat:
+        if bill.amount:
+            bill.amount_with_vat = bill.amount * (1 + bill.vat / 100)
+
+
+def compute_internal_bill(bill):
+    """Compute internal bill amount according to its details. Should only be called by InternalBill model save method"""
+    if bill.state in ("0_DRAFT"):
+        amount = 0
+        amount_with_vat = 0
+        for bill_detail in bill.internalbilldetail_set.all():
+            if bill_detail.amount:
+                amount += bill_detail.amount
+            if bill_detail.amount_with_vat:
+                amount_with_vat += bill_detail.amount_with_vat
 
         if amount != 0:
             bill.amount = amount

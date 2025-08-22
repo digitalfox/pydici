@@ -27,7 +27,7 @@ from staffing.models import Mission, Timesheet
 from people.models import Consultant
 from expense.models import Expense
 from crm.models import Supplier, Subsidiary
-from billing.utils import compute_bill, get_bill_id_from_path
+from billing.utils import compute_bill, compute_internal_bill, get_bill_id_from_path
 from core.utils import sanitizeName, nextMonth
 from core.models import CLIENT_BILL_LANG, INTERNAL_BILL_LANG
 from people.tasks import compute_consultant_tasks
@@ -112,6 +112,19 @@ class AbstractBill(models.Model):
 
     def vat_amount(self):
         return self.amount_with_vat - self.amount
+
+    def bill_data(self):
+        """Return bill data in formatted way to be included inline in a html page"""
+        response = ""
+        if self.bill_file:
+            data = BytesIO()
+            for chunk in self.bill_file.chunks():
+                data.write(chunk)
+
+            data = b64encode(data.getvalue()).decode()
+            response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
+
+        return response
 
     def save(self, *args, **kwargs):
         super(AbstractBill, self).save(*args, **kwargs)  # Save it
@@ -220,19 +233,6 @@ class ClientBill(AbstractLeadBill):
         """Returns total of this bill without taxes and expenses"""
         return list(self.billdetail_set.aggregate(Sum("amount")).values())[0] or 0
 
-    def bill_data(self):
-        """Return bill data in formatted way to be included inline in a html page"""
-        response = ""
-        if self.bill_file:
-            data = BytesIO()
-            for chunk in self.bill_file.chunks():
-                data.write(chunk)
-
-            data = b64encode(data.getvalue()).decode()
-            response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
-
-        return response
-
     def get_absolute_url(self):
         return reverse("billing:client_bill_detail", args=[self.id,])
 
@@ -276,6 +276,34 @@ class InternalBill(AbstractBill):
     seller = models.ForeignKey(Subsidiary, on_delete=models.CASCADE, verbose_name=_("Seller"), related_name="seller")
     add_facturx_data = models.BooleanField(_("Add Factur-X embedded information"), default=False)
     lang = models.CharField(_("Language"), max_length=10, choices=INTERNAL_BILL_LANG, null=True, blank=True)
+
+    def taxes(self):
+        """Return taxes subtotal grouped by taxe rate like this [[20, 1923.23], [10, 152]]"""
+        taxes = {}
+        for detail in self.internalbilldetail_set.all():
+            taxes[detail.vat] = taxes.get(detail.vat, 0) + (detail.amount_with_vat - detail.amount)
+        return list(taxes.items())
+
+    def save(self, *args, **kwargs):
+        super(InternalBill, self).save(*args, **kwargs)  # Save it to create pk
+        if "force_insert" in kwargs: kwargs.pop("force_insert")
+
+        if self.state in ("0_DRAFT"):
+            compute_internal_bill(self)
+            # Update creation and due date till bill is not really sent
+            self.due_date = date.today() + (self.due_date - self.creation_date) # shift with same timeframe
+            self.creation_date = date.today()
+        # Automatically set payment date for paid bills
+        if self.state == "2_PAID" and not self.payment_date:
+            self.payment_date = date.today()
+        # Automatically switch as paid bills with payment date
+        elif self.state == "1_SENT" and self.payment_date:
+            self.state = "2_PAID"
+        super(InternalBill, self).save(*args, **kwargs)  # Save it
+
+    class Meta:
+        verbose_name = _("Internal Bill")
+        indexes = [models.Index(fields=["state", "creation_date"]),]
 
 
 class SupplierBill(AbstractLeadBill):
