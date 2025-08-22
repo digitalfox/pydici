@@ -586,13 +586,28 @@ def internal_bill(request, bill_id=None):
             if bill.state in wip_status:
                 internalBillDetailFormSet = InternalBillDetailFormSet(instance=bill)
         else:
-            # Still no bill, let's create it with its detail if at least mission or lead has been provided
+            # Still no bill, let's create it with its detail if at least mission or buyer/seller information has been provided
             missions = []
+            start_date = None
+            end_date = None
+            if request.GET.get("start_date"):
+                start_date = date(int(request.GET.get("start_date")[0:4]), int(request.GET.get("start_date")[4:6]),1)
+            if request.GET.get("end_date"):
+                end_date = date(int(request.GET.get("end_date")[0:4]), int(request.GET.get("end_date")[4:6]),1)
+
             if request.GET.get("lead"):
                 lead = Lead.objects.get(id=request.GET.get("lead"))
                 missions = lead.mission_set.all()  # take all missions
+
             if request.GET.get("mission"):
                 missions = [Mission.objects.get(id=request.GET.get("mission"))]
+
+            elif request.GET.get("buyer") and request.GET.get("seller") and start_date and end_date:
+                # Get all missions for this buyer/seller
+                buyer = Subsidiary.objects.get(id=request.GET.get("buyer"))
+                seller = Subsidiary.objects.get(id=request.GET.get("seller"))
+                missions = Mission.objects.filter(lead__subsidiary=buyer, timesheet__consultant__company=seller,
+                                                  timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date).distinct()
             if missions and request.GET.get("buyer") and request.GET.get("seller"):
                 buyer = Subsidiary.objects.get(id=request.GET.get("buyer"))
                 seller = Subsidiary.objects.get(id=request.GET.get("seller"))
