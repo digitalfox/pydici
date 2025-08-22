@@ -599,21 +599,14 @@ def internal_bill(request, bill_id=None):
                 bill = InternalBill(buyer=buyer, seller=seller)
                 bill.save()
             for mission in missions:
-                if mission.billing_mode == "TIME_SPENT":
-                    if request.GET.get("start_date") and request.GET.get("end_date"):
-                        start_date = date(int(request.GET.get("start_date")[0:4]), int(request.GET.get("start_date")[4:6]), 1)
-                        end_date = date(int(request.GET.get("end_date")[0:4]), int(request.GET.get("end_date")[4:6]), 1)
-                    else:
-                        start_date = previousMonth(date.today())
-                        end_date = date.today().replace(day=1)
-                    update_bill_from_timesheet(bill, mission, start_date, end_date)
-                else:  # FIXED_PRICE mission
-                    if request.GET.get("amount") and mission.price:
-                        proportion = Decimal(request.GET.get("amount")) / mission.price
-                    else:
-                        proportion = request.GET.get("proportion", 0.30)
-                    bill = update_client_bill_from_proportion(bill, mission, proportion=proportion)
-
+                # Always create internal bill as time spent by default.
+                if request.GET.get("start_date") and request.GET.get("end_date"):
+                    start_date = date(int(request.GET.get("start_date")[0:4]), int(request.GET.get("start_date")[4:6]), 1)
+                    end_date = date(int(request.GET.get("end_date")[0:4]), int(request.GET.get("end_date")[4:6]), 1)
+                else:
+                    start_date = previousMonth(date.today())
+                    end_date = date.today().replace(day=1)
+                update_bill_from_timesheet(bill, mission, start_date, end_date)
             if bill:
                 form = InternalBillForm(instance=bill)
                 internalBillDetailFormSet = InternalBillDetailFormSet(instance=bill)
