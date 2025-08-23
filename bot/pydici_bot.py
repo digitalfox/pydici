@@ -16,6 +16,8 @@ from datetime import time
 import random
 import pytz
 
+from staffing.utils import is_outside_business_hours
+
 # Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO,
@@ -48,7 +50,7 @@ application = get_wsgi_application()
 from core.utils import get_parameter
 
 # Bot import
-from bot.utils import check_user_is_declared, outside_business_hours, get_consultants, time_to_declare, db_sync_to_async
+from bot.utils import check_user_is_declared, get_consultants, time_to_declare, db_sync_to_async
 from bot.declare_timesheet import declare_time_entry_points, declare_time_states
 
 logger = logging.getLogger(__name__)
@@ -56,7 +58,7 @@ logger = logging.getLogger(__name__)
 
 async def alert_consultant(context):
     """Randomly alert consultant about important stuff to do"""
-    if await outside_business_hours():
+    if await db_sync_to_async(is_outside_business_hours)():
         return
 
     consultants = await get_consultants()
@@ -89,14 +91,14 @@ async def alert_consultant(context):
 
 async def call_for_timesheet(context):
     """If needed, remind people to declare timesheet of current day"""
-    if await outside_business_hours():
+    if await db_sync_to_async(is_outside_business_hours)():
         return
     msg = _("""Hope the day was fine. Time to declare your timesheet no? Just click /time""")
 
     consultants = await get_consultants()
 
     for consultant in consultants:
-        if await time_to_declare(consultant) > 0:
+        if await time_to_declare(consultant) > 0 and not await db_sync_to_async(consultant.is_in_holidays)():
             try:
                 await context.bot.send_message(chat_id=consultant.telegram_id, text=msg)
             except telegram.error.Forbidden:
