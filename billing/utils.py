@@ -277,12 +277,21 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
 
 def generate_bill_pdf(bill, request):
     """Generate bill pdf file and update bill object with file path"""
-    from billing.views import BillPdf  # Local to avoid circular import
+    from billing.views import BillPdf, InternalBillPdf  # Local to avoid circular import
+    ClientBill = apps.get_model("billing", "clientbill")
+    InternalBill = apps.get_model("billing", "internalbill")
+    if isinstance(bill, ClientBill):
+        PdfView = BillPdf
+        filename = bill_pdf_filename(bill)
+    elif isinstance(bill, InternalBill):
+        PdfView = InternalBillPdf
+        filename = "%s-%s-%s.pdf" % (bill.bill_id, bill.buyer.code, bill.seller.code)
+    else:
+        raise ValueError("Not a client or internal bill")
     fake_http_request = request
     fake_http_request.method = "GET"
-    response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
+    response = PdfView.as_view()(fake_http_request, bill_id=bill.id)
     pdf = response.rendered_content
-    filename = bill_pdf_filename(bill)
     content = ContentFile(pdf, name=filename)
     bill.bill_file.save(filename, content)
     bill.save()
