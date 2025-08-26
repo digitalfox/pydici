@@ -277,6 +277,8 @@ class InternalBill(AbstractBill):
     add_facturx_data = models.BooleanField(_("Add Factur-X embedded information"), default=False)
     lang = models.CharField(_("Language"), max_length=10, choices=INTERNAL_BILL_LANG, null=True, blank=True)
 
+    history = AuditlogHistoryField()
+
     def taxes(self):
         """Return taxes subtotal grouped by taxe rate like this [[20, 1923.23], [10, 152]]"""
         taxes = {}
