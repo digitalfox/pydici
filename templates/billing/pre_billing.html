@@ -207,6 +207,10 @@
          <a class="btn btn-primary" href="{% url 'billing:internal_bill' %}?lead={{ lead.id|unlocalize }}&start_date={{start_date|date:'Ym'}}&end_date={{end_date|date:'Ym'}}&buyer={{internal_subsidiaries.1.id}}&seller={{internal_subsidiaries.0.id}}" target="_blank">{% trans "Add an internal bill" %}</a>
          <hr/>
     {% endfor %}
+    <a class="btn btn-primary" href="{% url 'billing:internal_bill' %}?start_date={{start_date|date:'Ym'}}&end_date={{end_date|date:'Ym'}}&buyer={{internal_subsidiaries.1.id}}&seller={{internal_subsidiaries.0.id}}" target="_blank">
+        {% trans "Add internal bill for all missions" %}
+    </a>
+    <hr/>
 {% endfor %}
 {% endif %}
 
