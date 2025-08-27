@@ -126,7 +126,6 @@ def update_bill_from_timesheet(bill, mission, start_date, end_date):
         timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
         timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
         for i in timesheet_data:
-            #TODO: filter on consultant subsidiary for internal bill
             consultant = Consultant.objects.get(id=i["consultant"])
             if isinstance(bill, InternalBill) and consultant.company != bill.seller:
                 continue
