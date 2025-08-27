@@ -21,7 +21,7 @@ from django.utils.translation import gettext as _
 from django.core.files.base import ContentFile
 from django.template.loader import get_template
 
-from core.utils import to_int_or_round, nextMonth, get_fiscal_year
+from core.utils import to_int_or_round, nextMonth, get_fiscal_year, get_parameter
 
 import facturx
 
@@ -114,8 +114,9 @@ def update_bill_from_timesheet(bill, mission, start_date, end_date):
         LineDetail = apps.get_model("billing", "billdetail")
         rates = mission.consultant_rates()
     elif isinstance(bill, InternalBill):
+        markup = (100 - get_parameter("INTERNAL_MARKUP")) / 100
         LineDetail = apps.get_model("billing", "internalbilldetail")
-        rates = { k: [v[0]*0.9, v[1]] for k, v in mission.consultant_rates().items() }  # TODO: this must be a parameter
+        rates = { k: [int(v[0]*markup), v[1]] for k, v in mission.consultant_rates().items() }
     else:
         raise ValueError("Not a client or internal bill")
     Consultant = apps.get_model("people", "Consultant")
