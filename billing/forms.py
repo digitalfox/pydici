@@ -170,7 +170,6 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
         form.fields["expense"] = ModelChoiceField(label=_("Expense"), required=False, widget=ExpenseChoices(queryset=qs_widget), queryset=qs)
         form.fields["expense_date"] = DateField(label=_("Expense date"), required=False, widget=DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
 
-
     def clean(self):
         if any(self.errors):
             # Don't bother validating the formset unless each form is valid on its own
@@ -201,7 +200,6 @@ class BillExpenseFormSetHelper(FormHelper):
 
 class BillExpenseForm(ModelForm):
     pass
-    #TODO: add sanity checks
 
 
 class InternalBillForm(PydiciCrispyModelForm):
@@ -247,7 +245,6 @@ class InternalBillDetailInlineFormset(BaseInlineFormSet):
 
 
 class InternalBillDetailFormSetHelper(FormHelper):
-    #TODO: factorize it with BillDetailFormSetHelper ?
     def __init__(self, *args, **kwargs):
         super(InternalBillDetailFormSetHelper, self).__init__(*args, **kwargs)
         self.form_method = 'post'
@@ -258,4 +255,3 @@ class InternalBillDetailFormSetHelper(FormHelper):
 
 class InternalBillDetailForm(ModelForm):
     pass
-    #TODO: add sanity checks

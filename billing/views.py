@@ -573,11 +573,11 @@ def internal_bill(request, bill_id=None):
                         messages.add_message(request, messages.WARNING, _("A new bill is generated and replace the previous one"))
                         if os.path.exists(bill.bill_file.path):
                             os.remove(bill.bill_file.path)
-                        generate_bill_pdf(bill, request) # TODO: adapt it to internal bill
+                        generate_bill_pdf(bill, request)
                 else:
                     # Bill file still not exist. Let's create it
                     messages.add_message(request, messages.INFO, _("A new bill file has been generated"))
-                    generate_bill_pdf(bill, request) # TODO: adapt it to internal bill
+                    generate_bill_pdf(bill, request)
             return HttpResponseRedirect(success_url)
     else:
         if bill:
@@ -650,9 +650,21 @@ def internal_bill_detail(request, bill_id=None):
 @pydici_non_public
 @pydici_feature("billing_management")
 def internalbill_delete(request, bill_id):
-    """Delete supplier in early stage"""
-    #TODO: implement it
-    pass
+    """Delete internal in early stage"""
+    redirect_url = reverse("billing:internal_bills_in_creation")
+    try:
+        bill = InternalBill.objects.get(id=bill_id)
+        if bill.state == "0_DRAFT":
+            bill.delete()
+            messages.add_message(request, messages.INFO, _("Bill removed successfully"))
+        else:
+            messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
+            redirect_url = reverse_lazy("billing:internal_bill", args=[bill.id])
+    except InternalBill.DoesNotExist:
+        messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
+
+    return HttpResponseRedirect(redirect_url)
+
 
 @pydici_non_public
 @pydici_feature("billing_request")
@@ -808,10 +820,9 @@ def internal_bills_in_creation(request):
 
 def internal_bills_archive(request):
     """Review all internal bill """
-    #TODO: adjust datatable_options
     return render(request, "billing/internal_bills_archive.html",
                   {"data_url": reverse('billing:internal_bills_archive_DT'),
-                   "datatable_options": ''' "lengthMenu": [ 10, 25, 50, 100, 500 ], "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [1, 2, 10] }]  ''',
+                   "datatable_options": ''' "lengthMenu": [ 10, 25, 50, 100, 500 ], "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [10] }]  ''',
                    "user": request.user})
 
 
