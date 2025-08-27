@@ -32,8 +32,7 @@ def view_warmup():
     """Warmup cache for heavy views"""
     if settings.DEBUG:
         # Don't bother developers with that.
-        #return
-        pass
+        return
     user = User.objects.filter(is_superuser=True).first()
     subsidiaries_id = list(Subsidiary.objects.filter(mission__nature="PROD").distinct().values_list("id", flat=True))
     subsidiaries_id.append(0) # Add the "all" subsidiaries
