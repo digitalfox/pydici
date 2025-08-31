@@ -26,9 +26,10 @@ from core.utils import to_int_or_round, nextMonth, get_fiscal_year, get_paramete
 import facturx
 
 
-def get_billing_info(timesheet_data):
+def get_billing_info(timesheet_data, apply_internal_markup=False):
     """compute billing information from this timesheet data
     @:param timesheet_data: value queryset with mission, consultant and charge in days
+    @:param apply_internal_markup: use internal markkup rate. Default is False
     @:return billing information as a tuple (lead, (lead total, (mission total, billing data)) """
     Mission = apps.get_model("staffing", "Mission")
     Consultant = apps.get_model("people", "Consultant")
@@ -41,16 +42,20 @@ def get_billing_info(timesheet_data):
             # Bad data, mission with nature prod without lead... This should not happened
             continue
         consultant = Consultant.objects.get(id=consultant_id)
-        rates =  mission.consultant_rates()
-        if not lead in billing_data:
+        rates = mission.consultant_rates()
+        if apply_internal_markup:
+            markup = (100 - get_parameter("INTERNAL_MARKUP")) / 100
+        else:
+            markup = 1
+        if lead not in billing_data:
             billing_data[lead] = [0.0, {}]  # Lead Total and dict of mission
-        if not mission in billing_data[lead][1]:
+        if mission not in billing_data[lead][1]:
             billing_data[lead][1][mission] = [0.0, []]  # Mission Total and detail per consultant
-        total = charge * rates[consultant][0]
+        total = charge * rates[consultant][0] * markup
         billing_data[lead][0] += total
         billing_data[lead][1][mission][0] += total
         billing_data[lead][1][mission][1].append(
-            [consultant, to_int_or_round(charge, 2), rates[consultant][0], total])
+            [consultant, to_int_or_round(charge, 2), rates[consultant][0] * markup, total])
 
     # Sort data
     billing_data = list(billing_data.items())

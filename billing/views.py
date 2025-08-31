@@ -749,7 +749,7 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
         for target_subsidiary in Subsidiary.objects.exclude(pk=internal_subsidiary.id):
             timesheet_data = subsidiary_timesheet_data.filter(mission__lead__subsidiary=target_subsidiary)
             timesheet_data = timesheet_data .order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
-            billing_info = get_billing_info(timesheet_data)
+            billing_info = get_billing_info(timesheet_data, apply_internal_markup=True)
             if billing_info:
                 internal_billing[(internal_subsidiary,target_subsidiary)] = billing_info
 
