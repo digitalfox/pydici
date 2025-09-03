@@ -4,8 +4,6 @@ Staffing form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-import types
-
 from datetime import timedelta, date, datetime
 from decimal import Decimal
 from math import sqrt

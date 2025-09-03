@@ -27,8 +27,6 @@ from people.models import Consultant, RateObjective
 from core.utils import previousMonth, nextMonth
 from core.tests import PYDICI_FIXTURES, TEST_USERNAME, setup_test_user_features
 
-from datetime import date
-
 
 class TimeStringConversionTest(TestCase):
     def test_prepare_value(self):
