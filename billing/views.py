@@ -713,8 +713,7 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
     timespent_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
                                                     mission__nature="PROD", mission__billing_mode="TIME_SPENT")
 
-    internal_billing_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
-                                                    mission__nature="PROD")
+    internal_billing_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date).exclude(mission__nature="HOLIDAYS")
     internal_billing_timesheets = internal_billing_timesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
     internal_billing_timesheets = internal_billing_timesheets.exclude(consultant__subcontractor=True)
 
@@ -747,7 +746,7 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
     for internal_subsidiary in Subsidiary.objects.all():
         subsidiary_timesheet_data = internal_billing_timesheets.filter(consultant__company=internal_subsidiary)
         for target_subsidiary in Subsidiary.objects.exclude(pk=internal_subsidiary.id):
-            timesheet_data = subsidiary_timesheet_data.filter(mission__lead__subsidiary=target_subsidiary)
+            timesheet_data = subsidiary_timesheet_data.filter(Q(mission__lead__subsidiary=target_subsidiary) | Q(mission__subsidiary=target_subsidiary))
             timesheet_data = timesheet_data .order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
             billing_info = get_billing_info(timesheet_data, apply_internal_markup=True)
             if billing_info:
