@@ -39,10 +39,12 @@ def get_billing_info(timesheet_data, apply_internal_markup=False):
         if mission.lead:
             lead = mission.lead
         else:
-            # Bad data, mission with nature prod without lead... This should not happened
-            continue
+            lead = None
         consultant = Consultant.objects.get(id=consultant_id)
         rates = mission.consultant_rates()
+        if rates[consultant][0] == 0 and mission.nature == "NONPROD":
+            # for internal mission, default to objective rate if mission rate is not defined
+            rates[consultant] = [consultant.get_rate_objective(rate_type="DAILY_RATE").rate]
         if apply_internal_markup:
             markup = (100 - get_parameter("INTERNAL_MARKUP")) / 100
         else:
@@ -59,7 +61,7 @@ def get_billing_info(timesheet_data, apply_internal_markup=False):
 
     # Sort data
     billing_data = list(billing_data.items())
-    billing_data.sort(key=lambda x: x[0].deal_id)
+    billing_data.sort(key=lambda x: x[0].deal_id if x[0] else "")
     return billing_data
 
 
