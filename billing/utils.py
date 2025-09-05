@@ -119,24 +119,23 @@ def update_bill_from_timesheet(bill, mission, start_date, end_date):
     InternalBill = apps.get_model("billing", "internalbill")
     if isinstance(bill, ClientBill):
         LineDetail = apps.get_model("billing", "billdetail")
-        rates = mission.consultant_rates()
+        markup = False
     elif isinstance(bill, InternalBill):
-        markup = (100 - get_parameter("INTERNAL_MARKUP")) / 100
         LineDetail = apps.get_model("billing", "internalbilldetail")
-        rates = { k: [int(v[0]*markup), v[1]] for k, v in mission.consultant_rates().items() }
+        markup = True
     else:
         raise ValueError("Not a client or internal bill")
-    Consultant = apps.get_model("people", "Consultant")
 
     month = start_date
     while month < end_date:
         timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
-        timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
-        for i in timesheet_data:
-            consultant = Consultant.objects.get(id=i["consultant"])
+        #timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
+        timesheet_data = timesheet_data .order_by("mission", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
+        billing_info = list((get_billing_info(timesheet_data, apply_internal_markup=markup)[0][1][1].values()))[0][1]
+        for consultant, quantity, unit_price, total in billing_info:
             if isinstance(bill, InternalBill) and consultant.company != bill.seller:
                 continue
-            billDetail = LineDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
+            billDetail = LineDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=quantity, unit_price=unit_price)
             billDetail.save()
         month = nextMonth(month)
     bill.save()  # save again to update bill amount according to its details
@@ -145,7 +144,6 @@ def update_bill_from_timesheet(bill, mission, start_date, end_date):
 
 def update_client_bill_from_proportion(bill, mission, proportion):
     """Populate bill with detail for given mission from proportion of mission total price"""
-    ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
     unit_price = mission.price * 1000 if mission.price else 0
     billDetail = BillDetail(bill=bill, mission=mission, quantity=proportion, unit_price=unit_price)

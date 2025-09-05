@@ -606,8 +606,9 @@ def internal_bill(request, bill_id=None):
                 # Get all missions for this buyer/seller
                 buyer = Subsidiary.objects.get(id=request.GET.get("buyer"))
                 seller = Subsidiary.objects.get(id=request.GET.get("seller"))
-                missions = Mission.objects.filter(lead__subsidiary=buyer, timesheet__consultant__company=seller,
-                                                  timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date).distinct()
+                missions = Mission.objects.filter(Q(lead__subsidiary=buyer) | Q(subsidiary=buyer))
+                missions = missions.filter(timesheet__consultant__company=seller,
+                                           timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date).distinct()
             if missions and request.GET.get("buyer") and request.GET.get("seller"):
                 buyer = Subsidiary.objects.get(id=request.GET.get("buyer"))
                 seller = Subsidiary.objects.get(id=request.GET.get("seller"))
