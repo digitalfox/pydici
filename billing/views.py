@@ -106,6 +106,7 @@ def bill_review(request):
                    "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
                    "user": request.user})
 
+
 @pydici_non_public
 @pydici_feature("billing_request")
 def supplier_bills_validation(request):
@@ -129,7 +130,6 @@ def supplier_bills_validation(request):
                    "user": request.user})
 
 
-
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 60 * 24)
@@ -137,7 +137,7 @@ def bill_delay(request):
     """Report on client bill creation and payment delay"""
     data = []
     subsidiary = get_subsidiary_from_session(request)
-    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(2*365)), state__in=("1_SENT", "2_PAID"),
+    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(2 * 365)), state__in=("1_SENT", "2_PAID"),
                                       amount__gt=0)
     if subsidiary:
         bills = bills.filter(lead__subsidiary=subsidiary)
@@ -528,6 +528,7 @@ def supplierbill_delete(request, bill_id):
 
     return HttpResponseRedirect(redirect_url)
 
+
 @pydici_non_public
 @pydici_feature("billing_management")
 def internal_bill(request, bill_id=None):
@@ -558,9 +559,9 @@ def internal_bill(request, bill_id=None):
                 internalBillDetailFormSet.save()
             bill.save()  # Again, to take into account modified details.
             if bill.state in wip_status:
-                success_url = reverse_lazy("billing:internal_bill", args=[bill.id,],)
+                success_url = reverse_lazy("billing:internal_bill", args=[bill.id,], )
             else:
-                success_url = request.GET.get("return_to", False) or reverse_lazy("billing:internal_bill_detail", args=[bill.id,],)
+                success_url = request.GET.get("return_to", False) or reverse_lazy("billing:internal_bill_detail", args=[bill.id,], )
                 if bill.bill_file:
                     if form.changed_data == ["state"] and internalBillDetailFormSet is None:
                         # only state has change. No need to regenerate bill file.
@@ -591,9 +592,9 @@ def internal_bill(request, bill_id=None):
             start_date = None
             end_date = None
             if request.GET.get("start_date"):
-                start_date = date(int(request.GET.get("start_date")[0:4]), int(request.GET.get("start_date")[4:6]),1)
+                start_date = date(int(request.GET.get("start_date")[0:4]), int(request.GET.get("start_date")[4:6]), 1)
             if request.GET.get("end_date"):
-                end_date = date(int(request.GET.get("end_date")[0:4]), int(request.GET.get("end_date")[4:6]),1)
+                end_date = date(int(request.GET.get("end_date")[0:4]), int(request.GET.get("end_date")[4:6]), 1)
 
             if request.GET.get("lead"):
                 lead = Lead.objects.get(id=request.GET.get("lead"))
@@ -631,13 +632,13 @@ def internal_bill(request, bill_id=None):
                 form = InternalBillForm()
 
     return render(request, "billing/internal_bill_form.html",
-                  { "bill_form": form,
-                    "detail_formset": internalBillDetailFormSet,
-                    "detail_formset_helper": InternalBillDetailFormSetHelper(),
-                    "bill_id": bill.id if bill else None,
-                    "can_delete": bill.state in wip_status if bill else False,
-                    "can_preview": bill.state in wip_status if bill else False,
-                    "user": request.user})
+                  {"bill_form": form,
+                   "detail_formset": internalBillDetailFormSet,
+                   "detail_formset_helper": InternalBillDetailFormSetHelper(),
+                   "bill_id": bill.id if bill else None,
+                   "can_delete": bill.state in wip_status if bill else False,
+                   "can_preview": bill.state in wip_status if bill else False,
+                   "user": request.user})
 
 
 @pydici_non_public
@@ -751,7 +752,7 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
             timesheet_data = timesheet_data .order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
             billing_info = get_billing_info(timesheet_data, apply_internal_markup=True)
             if billing_info:
-                internal_billing[(internal_subsidiary,target_subsidiary)] = billing_info
+                internal_billing[(internal_subsidiary, target_subsidiary)] = billing_info
 
     fixed_price_billing = []
     for mission in fixed_price_missions:
@@ -809,6 +810,7 @@ def supplier_bills_archive(request):
                    "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2, 10] }]  ''',
                    "user": request.user})
 
+
 @pydici_non_public
 @pydici_feature("billing_management")
 def internal_bills_in_creation(request):
@@ -817,6 +819,7 @@ def internal_bills_in_creation(request):
                   {"data_url": reverse('billing:internal_bills_in_creation_DT'),
                    "datatable_options": ''' "order": [[4, "desc"]] ''',
                    "user": request.user})
+
 
 def internal_bills_archive(request):
     """Review all internal bill """
@@ -866,7 +869,7 @@ def client_billing_control_pivotable(request):
 def graph_billing(request):
     """Bar graph of client bills by status"""
     subsidiary = get_subsidiary_from_session(request)
-    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(3*365)), state__in=("1_SENT", "2_PAID"))
+    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(3 * 365)), state__in=("1_SENT", "2_PAID"))
     if subsidiary:
         bills = bills.filter(lead__subsidiary=subsidiary)
     if bills.count() == 0:
@@ -875,7 +878,7 @@ def graph_billing(request):
     bills = bills.annotate(amount_paid=Sum("amount", filter=Q(state="2_PAID")),
                            amount_sent=Sum("amount", filter=Q(state="1_SENT")))
     bills = bills.values("month", "amount_paid", "amount_sent").order_by()
-    bills = [{"month": b["month"].isoformat(), "amount_paid": float(b["amount_paid"] or 0)/1000, "amount_sent": float(b["amount_sent"] or 0)/1000} for b in bills]
+    bills = [{"month": b["month"].isoformat(), "amount_paid": float(b["amount_paid"] or 0) / 1000, "amount_sent": float(b["amount_sent"] or 0) / 1000} for b in bills]
 
     return render(request, "billing/graph_billing.html",
                   {"graph_data": json.dumps(bills),
@@ -896,7 +899,7 @@ def graph_yearly_billing(request):
     growth = []
     subsidiary = get_subsidiary_from_session(request)
     if subsidiary:
-        subsidiaries = [subsidiary,]
+        subsidiaries = [subsidiary, ]
     else:
         subsidiaries = Subsidiary.objects.all()
     for subsidiary in subsidiaries:
@@ -937,7 +940,7 @@ def graph_yearly_billing(request):
     return render(request, "billing/graph_yearly_billing.html",
                   {"graph_data": json.dumps(graph_data),
                    "years": years,
-                   "subsidiaries_names" : json.dumps(labels),
+                   "subsidiaries_names": json.dumps(labels),
                    "series_colors": COLORS,
                    "user": request.user})
 

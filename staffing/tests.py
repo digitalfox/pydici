@@ -107,7 +107,7 @@ class StaffingViewsTest(TestCase):
         mission = Mission(lead=lead, subsidiary_id=1, billing_mode="TIME_SPENT", nature="PROD", probability=100)
         mission.save()
         cache.clear()  # avoid bad computation due to rates cache with previous values
-        response = self.client.get(reverse("staffing:mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.client.get(reverse("staffing:mission_timesheet", args=[mission.id, ]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["margin"], 0)
         self.assertEqual(response.context["objective_margin_total"], 0)
@@ -135,7 +135,7 @@ class StaffingViewsTest(TestCase):
         mission.save()
         # Let's test if computation are rights
         cache.clear()  # avoid bad computation due to rates cache with previous values
-        response = self.client.get(reverse("staffing:mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.client.get(reverse("staffing:mission_timesheet", args=[mission.id, ]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["margin"], 0)  # That's because we are in timespent
         self.assertEqual(response.context["objective_margin_total"], 4150)
@@ -144,7 +144,7 @@ class StaffingViewsTest(TestCase):
         # Switch to fixed price mission
         mission.billing_mode = "FIXED_PRICE"
         mission.save()
-        response = self.client.get(reverse("staffing:mission_timesheet", args=[mission.id,]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.client.get(reverse("staffing:mission_timesheet", args=[mission.id, ]), follow=True, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["margin"], 6.25)
         self.assertEqual(response.context["objective_margin_total"], 4150)
@@ -159,7 +159,7 @@ class StaffingViewsTest(TestCase):
                                        [915.4, 935, 927.3], [860, 928.6, 910.5]])
 
     def test_holiday_csv_timesheet(self):
-        #TODO: inject holidays days and timesheet on fixed month with holes and holidays in first and last open days
+        # TODO: inject holidays days and timesheet on fixed month with holes and holidays in first and last open days
         self.client.force_login(self.test_user)
         c1 = Consultant.objects.get(id=1)
         # create various holidays missions
@@ -168,7 +168,7 @@ class StaffingViewsTest(TestCase):
         h2 = Mission(nature="HOLIDAYS", description="holiday 2", subsidiary=c1.company)
         h2.save()
         # inject some public holiday
-        Holiday(day=date(2023,3,14)).save()
+        Holiday(day=date(2023, 3, 14)).save()
         Holiday(day=date(2023, 3, 24)).save()
         # create some holiday timesheet on this month
         Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 1), charge=1).save()
@@ -184,7 +184,7 @@ class StaffingViewsTest(TestCase):
         Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 30), charge=1).save()
         Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 31), charge=1).save()
 
-        response = self.client.get(reverse("staffing:holiday_csv_timesheet", kwargs={"year":2023, "month":3}))
+        response = self.client.get(reverse("staffing:holiday_csv_timesheet", kwargs={"year": 2023, "month": 3}))
         self.assertEqual(response.status_code, 200)
         r = list(csv.reader(response.content.decode(response.charset).splitlines(), delimiter=";"))
         self.assertEqual([8, 8, 8, 8, 8, 8, 8, 8], [len(i) for i in r])
@@ -214,7 +214,7 @@ class StaffingFormsTest(TestCase):
 
         formset = StaffingFormSet(instance=mission)
         form = formset.forms[0]
-        self.assertEqual(form.fields["staffing_date"].choices[-1][0], previousMonth(date.today() + timedelta(days=2*365)))
+        self.assertEqual(form.fields["staffing_date"].choices[-1][0], previousMonth(date.today() + timedelta(days=2 * 365)))
 
         end_date = (date.today() + timedelta(days=100)).replace(day=1)
         mission.end_date = end_date
@@ -240,8 +240,7 @@ class OptimTest(TestCase):
     missions_remaining = {"M1": 90000,
                           "M2": 35000,
                           "M3": 30000,
-                          "M4": 40000,
-                         }
+                          "M4": 40000}
 
     missions_boundaries = {"M1": {"start": None, "end": None},
                            "M2": {"start": "feb", "end": None},
@@ -251,13 +250,11 @@ class OptimTest(TestCase):
     consultants_freetime = {"SRE": {"jan": 15, "feb": 18, "mar": 13},
                             "JCF": {"jan": 10, "feb": 15, "mar": 20},
                             "MFR": {"jan": 20, "feb": 20, "mar": 20},
-                            "TCO": {"jan": 20, "feb": 20, "mar": 20},
-                            }
+                            "TCO": {"jan": 20, "feb": 20, "mar": 20}}
     consultants_rates = {"SRE": {"M1": 1500, "M2": 1450, "M3": 1500, "M4": 1800},
                          "JCF": {"M1": 1600, "M2": 1350, "M3": 1500, "M4": 1700},
                          "MFR": {"M1": 1000, "M2": 950, "M3": 1200, "M4": 1400},
-                         "TCO": {"M1": 1000, "M2": 950, "M3": 1200, "M4": 1400},
-                        }
+                         "TCO": {"M1": 1000, "M2": 950, "M3": 1200, "M4": 1400}}
 
     predefined_assignment = {"M4": ["JCF", ]}
 

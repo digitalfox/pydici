@@ -147,7 +147,7 @@ def pydici_simple_format(value, arg=None):
     dealIds = [i[0] for i in Lead.objects.exclude(deal_id="").values_list("deal_id")]
     trigrammes = [i[0] for i in Consultant.objects.values_list("trigramme")]
 
-    #TODO: this may not scale with thousands of leads. It may be splitted in shunk on day.
+    # TODO: this may not scale with thousands of leads. It may be splitted in shunk on day.
     for dealId in set(re.findall(r"\b(%s)\b" % "|".join(dealIds), value)):
         value = re.sub(r"\b%s\b" % dealId,
                        "<a href='%s'>%s</a>" % (Lead.objects.get(deal_id=dealId).get_absolute_url(), dealId),

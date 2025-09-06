@@ -305,8 +305,8 @@ def consultant_achievements(request, consultant_id):
                                         value=max_monthly_daily_rate["daily_rate__avg"],
                                         format="%i €",
                                         link=reverse("staffing:rates_report") + "?step=month"))
-    #TODO: nb of distinct client so far and number of client last 12 month
-    #TODO number of missions last year
+    # TODO: nb of distinct client so far and number of client last 12 month
+    # TODO number of missions last year
 
     return render(request, "people/consultant_achievements.html",
                   {"consultant": consultant,

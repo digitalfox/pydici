@@ -55,7 +55,7 @@ class BillingModelTest(TransactionTestCase):
         bill.amount = 100
         self.assertIsNone(bill.amount_with_vat)
         bill.save()
-        #TODO: add billDetail test
+        # TODO: add billDetail test
         self.assertEqual(bill.state, "0_DRAFT")
         self.assertEqual(bill.payment_delay(), 0)
         self.assertEqual(bill.payment_wait(), -30)

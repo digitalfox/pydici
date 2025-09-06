@@ -34,7 +34,7 @@ class LeadManager(models.Manager):
     def active(self):
         today = datetime.today()
         delay = timedelta(days=1)
-        return self.get_queryset().exclude(Q(state__in=self.PASSIVE_STATES) & Q(update_date__lt=today-delay))
+        return self.get_queryset().exclude(Q(state__in=self.PASSIVE_STATES) & Q(update_date__lt=(today - delay)))
 
     def passive(self):
         return self.get_queryset().filter(state__in=self.PASSIVE_STATES)
@@ -43,24 +43,24 @@ class LeadManager(models.Manager):
 class Lead(models.Model):
     """A commercial lead"""
     STATES = (
-            ('QUALIF',  gettext("Qualifying")),
-            ('WRITE_OFFER',  gettext("Writting offer")),
-            ('OFFER_SENT',  gettext("Offer sent")),
-            ('NEGOTIATION',  gettext("Negotiation")),
-            ('WON',  gettext("Won")),
-            ('LOST',  gettext("Lost")),
-            ('FORGIVEN',  gettext("Forgiven")),
-            ('SLEEPING',  gettext("Sleeping")),
-           )
+        ('QUALIF', gettext("Qualifying")),
+        ('WRITE_OFFER', gettext("Writting offer")),
+        ('OFFER_SENT', gettext("Offer sent")),
+        ('NEGOTIATION', gettext("Negotiation")),
+        ('WON', gettext("Won")),
+        ('LOST', gettext("Lost")),
+        ('FORGIVEN', gettext("Forgiven")),
+        ('SLEEPING', gettext("Sleeping")),
+    )
     STATES_COLOR = {
-        "QUALIF": "#2ca02c", # green
-        "WRITE_OFFER": "#e377c2", # pink
-        "OFFER_SENT": "#9467bd", # purple
-        "NEGOTIATION": "#17becf", # cyan
-        "WON": "#1f77b4", # blue
-        "LOST": "#d62728", # red
-        "FORGIVEN": "#ff7f0e", # orange
-        "SLEEPING": "#7f7f7f", # grey
+        "QUALIF": "#2ca02c",  # green
+        "WRITE_OFFER": "#e377c2",  # pink
+        "OFFER_SENT": "#9467bd",  # purple
+        "NEGOTIATION": "#17becf",  # cyan
+        "WON": "#1f77b4",  # blue
+        "LOST": "#d62728",  # red
+        "FORGIVEN": "#ff7f0e",  # orange
+        "SLEEPING": "#7f7f7f",  # grey
     }
     name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)
@@ -207,16 +207,14 @@ class Lead(models.Model):
                 margin += mission.remaining(mode="target") * 1000
         return margin
 
-
     def billed(self, include_fixed_price=True):
         """Total amount billed for this lead"""
         bills = self.clientbill_set.filter(state__in=("0_PROPOSED", "1_SENT", "2_PAID"))
-        amount_billed =  bills.aggregate(Sum("amount"))["amount__sum"] or 0
+        amount_billed = bills.aggregate(Sum("amount"))["amount__sum"] or 0
         if not include_fixed_price:
             for bill in bills:
                 amount_billed -= bill.billdetail_set.filter(mission__billing_mode="FIXED_PRICE").aggregate(Sum("amount"))["amount__sum"] or 0
         return amount_billed
-
 
     def still_to_be_billed(self, include_current_month=True, include_fixed_price=True):
         """Amount that still need to be billed"""

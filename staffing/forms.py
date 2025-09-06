@@ -1,4 +1,4 @@
-    # coding:utf-8
+# coding:utf-8
 """
 Staffing form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
@@ -144,7 +144,7 @@ class ConsultantStaffingInlineFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """that adds the field in, overwriting the previous default field"""
         super(ConsultantStaffingInlineFormset, self).add_fields(form, index)
-        form.fields["mission"] = ModelChoiceField(widget=MissionChoices(attrs={'data-placeholder':_("Select a mission to add forecast...")}), queryset=Mission.objects)
+        form.fields["mission"] = ModelChoiceField(widget=MissionChoices(attrs={'data-placeholder': _("Select a mission to add forecast...")}), queryset=Mission.objects)
         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=self.lowerDayBound)
         form.fields["charge"].widget.attrs["class"] = "numberinput form-control"
         form.fields["comment"].widget.attrs["class"] = "d-none d-lg-table-cell form-control textinput"
@@ -172,7 +172,7 @@ class MissionStaffingInlineFormset(BaseInlineFormSet):
             maxDate = self.instance.end_date.replace(day=1)
         else:
             maxDate = None
-        form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices(attrs={'data-placeholder':_("Select a consultant to add forecast...")}), queryset=Consultant.objects)
+        form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices(attrs={'data-placeholder': _("Select a consultant to add forecast...")}), queryset=Consultant.objects)
         form.fields["staffing_date"] = StaffingDateChoicesField(minDate=minDate, maxDate=maxDate)
         form.fields["charge"].widget.attrs["class"] = "numberinput form-control"
         form.fields["comment"].widget.attrs["class"] = "d-none d-lg-table-cell form-control textinput"
@@ -192,7 +192,7 @@ class StaffingForm(forms.ModelForm):
         if staffing_date and mission and mission.end_date:
             if staffing_date > mission.end_date:
                 self.add_error("staffing_date", _("Staffing below must be before %s") % mission.end_date)
-        if mission and staffing_date and consultant and charge and mission.management_mode=="LIMITED_INDIVIDUAL":
+        if mission and staffing_date and consultant and charge and mission.management_mode == "LIMITED_INDIVIDUAL":
             done = Timesheet.objects.filter(consultant=consultant, mission=mission,
                                             working_date__gte=staffing_date, working_date__lt=nextMonth(staffing_date))
             done = done.aggregate(Sum("charge"))["charge__sum"] or 0
@@ -288,7 +288,7 @@ class TimesheetForm(forms.Form):
                             # override mission label for calendar view
                             if is_calendar_view:
                                 mission_lead_name = "<span class='lead-sub-label'>%s</span>" % mission.lead.name
-                                mission_sub_label =  "<div class='lead-mission-sub-label'>%s %s</div>" % (mission_lead_name, (" %s" % mission_description).strip())
+                                mission_sub_label = "<div class='lead-mission-sub-label'>%s %s</div>" % (mission_lead_name, (" %s" % mission_description).strip())
                                 mission_label = "<div class='mission-label'><div class='client-mission-label'>%s</div> %s</div>" % (mission.lead.client.organisation, mission_sub_label)
                             mission_link = "<a href='%s'>%s</a>" % (mission.get_absolute_url(), mission_label)
                         self.fields[key].label = mark_safe("<div class='pydici-tooltip' title='%s'>%s</div>" % (escape(tooltip), mission_link))
@@ -311,7 +311,7 @@ class TimesheetForm(forms.Form):
 
                         # After the last mission being computed
                         # add extra rows for lunch tickets and warnings
-                        if idxm == len(missions)-1:
+                        if idxm == len(missions) - 1:
                             if showLunchTickets:
                                 for lunch_day in week_days:
                                     key = "lunch_ticket_%s" % lunch_day.day
@@ -336,7 +336,7 @@ class TimesheetForm(forms.Form):
                             self.fields[key].warning = []
                             for warning_week_day in week_days:
                                 # simple way for the template to differentiate week days over weekend days
-                                self.fields[key].warning.append({"value":warning[warning_day_index], "weekday": warning_week_day.isoweekday()})
+                                self.fields[key].warning.append({"value": warning[warning_day_index], "weekday": warning_week_day.isoweekday()})
                                 warning_day_index += 1
 
 
@@ -366,7 +366,7 @@ class MissionForm(PydiciCrispyModelForm):
                                                              css_class="col-md-6"),
                                                       )),
                                               Tab(_("Advanced"),
-                                                  Row(Column( Field("deal_id", placeholder=_("Leave blank to auto generate")),
+                                                  Row(Column(Field("deal_id", placeholder=_("Leave blank to auto generate")),
                                                               "analytic_code", "min_charge_multiple_per_day",
                                                               css_class="col-md-6"),
                                                       Column("probability", "probability_auto", "always_displayed",
@@ -445,7 +445,7 @@ class MissionContactsForm(forms.ModelForm):
     class Meta:
         model = Mission
         fields = ["contacts", ]
-        widgets = { "contacts": MissionContactMChoices }
+        widgets = {"contacts": MissionContactMChoices}
 
 
 class CycleTimesheetField(forms.ChoiceField):
@@ -553,7 +553,7 @@ class MissionOptimiserForm(forms.Form):
             min_price = 0
             for consultant in self.cleaned_data.get("predefined_assignment"):
                 if consultant in rates:
-                    min_price += rates[consultant][0]/1000
+                    min_price += rates[consultant][0] / 1000
                 else:  # use consultant budget rate or set to zero
                     rate_objective = consultant.get_rate_objective(rate_type="DAILY_RATE")
                     if rate_objective:
@@ -587,7 +587,7 @@ class MissionOptimiserForm(forms.Form):
                 remaining = mission.remaining()
                 rates = [i[0] for i in mission.consultant_rates().values()]
                 if remaining > 0 and rates:
-                    avg_rate = (sum(rates) / len(rates) / 1000) or 1 # default to 1K€ per day
+                    avg_rate = (sum(rates) / len(rates) / 1000) or 1  # default to 1K€ per day
                     days = int(remaining / avg_rate)
                     duration = sqrt(days / 20) * 2  # Guess duration with square root of man.month charge as a max. Take the double for safety
                     for i, month in enumerate(mission_staffing_dates):
@@ -633,7 +633,7 @@ class OptimiserForm(forms.Form):
         self.fields["mission_per_people_weight"] = forms.ChoiceField(label=_("Mission per people weight"), choices=((0, _("None")), (1, _("Standard")), (2, _("High"))), initial=1)
         self.helper.layout = Layout(Div(Column(Row(Column("director_quota", css_class="col-md-3"), Column("senior_quota", css_class="col-md-3"),
                                                    Column("newbie_quota", css_class="col-md-3"), Column("projections", css_class="col-md-3")),
-                                               "consultants",  css_class="col-md-6"),
+                                               "consultants", css_class="col-md-6"),
                                         Column(Row(Column("planning_weight", "people_per_mission_weight", css_class="col-md-6"),
                                                    Column("freetime_weight", "mission_per_people_weight", css_class="col-md-6")),
                                                css_class="col-md-6"),

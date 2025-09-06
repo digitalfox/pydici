@@ -390,7 +390,7 @@ class Mission(models.Model):
                 if consultant.subcontractor:
                     # Compute objective margin on sold rate after removing standard subcontractor budget margin
                     if consultant_rates[consultant][0] is not None and consultant_rates[consultant][1]:
-                        result[consultant] += n_days * (consultant_rates[consultant][0] * (1 - get_parameter("SUBCONTRACTOR_BUDGET_MARGIN")/100) - consultant_rates[consultant][1])
+                        result[consultant] += n_days * (consultant_rates[consultant][0] * (1 - get_parameter("SUBCONTRACTOR_BUDGET_MARGIN") / 100) - consultant_rates[consultant][1])
                 else:
                     # Compute objective margin on rate objective for this period
                     objectiveRate = consultant.get_rate_objective(working_date=month, rate_type="DAILY_RATE")
@@ -448,8 +448,8 @@ class Mission(models.Model):
 
     def pivotable_data(self, startDate=None, endDate=None):
         """Compute raw data for pivot table on that mission"""
-        #TODO: factorize with staffing.views.mission_timesheet
-        #TODO: denormalize by adding done/planned as a type column and move days/amount in values columns
+        # TODO: factorize with staffing.views.mission_timesheet
+        # TODO: denormalize by adding done/planned as a type column and move days/amount in values columns
         data = []
         mission_id = self.mission_id()
         mission_name = self.short_name()

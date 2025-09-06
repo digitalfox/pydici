@@ -129,7 +129,6 @@ def update_bill_from_timesheet(bill, mission, start_date, end_date):
     month = start_date
     while month < end_date:
         timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
-        #timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
         timesheet_data = timesheet_data .order_by("mission", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
         billing_info = list((get_billing_info(timesheet_data, apply_internal_markup=markup)[0][1][1].values()))[0][1]
         for consultant, quantity, unit_price, total in billing_info:
@@ -197,7 +196,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                      _("client organisation"): str(lead.client.organisation),
                      _("client company"): str(lead.client.organisation.company),
                      _("broker"): str(lead.business_broker or _("Direct")),
-                     _("subsidiary") :str(lead.subsidiary),
+                     _("subsidiary"): str(lead.subsidiary),
                      _("responsible"): str(lead.responsible),
                      _("manager"): str(lead.responsible.manager if lead.responsible else "-"),
                      _("consultant"): "-"}
@@ -252,8 +251,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                 for consultant in consultants:
                     mission_month_consultant_data = mission_data.copy()
                     turnover = float(mission.done_work_period(month, next_month, include_external_subcontractor=True,
-                                                            include_internal_subcontractor=True,
-                                                            filter_on_consultant=consultant)[1])
+                                     include_internal_subcontractor=True, filter_on_consultant=consultant)[1])
                     if mission.billing_mode == "FIXED_PRICE" and mission.price:
                         if done_work_total >= 1000 * mission.price:
                             turnover = 0  # Sorry, no more money on this one
@@ -267,15 +265,15 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                     mission_month_consultant_data[_("amount")] = turnover
                     mission_month_consultant_data[_("type")] = _("Done work")
                     data.append(mission_month_consultant_data)
-            if mission.billing_mode == "TIME_SPENT": # Add bills for time spent mission
+            if mission.billing_mode == "TIME_SPENT":  # Add bills for time spent mission
                 for billed_detail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state).select_related("consultant"):
-                        mission_month_bill_data = mission_data.copy()
-                        mission_month_bill_data[_("month")] = billed_detail.month.isoformat()
-                        mission_month_bill_data[_("fiscal year")] = get_fiscal_year(billed_detail.month)
-                        mission_month_bill_data[_("amount")] = -float(billed_detail.amount or 0)
-                        mission_month_bill_data[_("type")] = _("Service bill")
-                        mission_month_bill_data[_("consultant")] = str(billed_detail.consultant)
-                        data.append(mission_month_bill_data)
+                    mission_month_bill_data = mission_data.copy()
+                    mission_month_bill_data[_("month")] = billed_detail.month.isoformat()
+                    mission_month_bill_data[_("fiscal year")] = get_fiscal_year(billed_detail.month)
+                    mission_month_bill_data[_("amount")] = -float(billed_detail.amount or 0)
+                    mission_month_bill_data[_("type")] = _("Service bill")
+                    mission_month_bill_data[_("consultant")] = str(billed_detail.consultant)
+                    data.append(mission_month_bill_data)
 
     return json.dumps(data)
 
