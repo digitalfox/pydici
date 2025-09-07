@@ -9,6 +9,7 @@ import json
 
 from django.test import TestCase, TransactionTestCase
 from django.db import IntegrityError
+from django.db.models import Sum
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
@@ -19,8 +20,8 @@ from leads.models import Lead
 from staffing.models import Timesheet, Mission, FinancialCondition
 from people.models import Consultant
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
-from core.utils import previousMonth, nextMonth
-from billing.utils import get_client_billing_control_pivotable_data
+from core.utils import previousMonth, nextMonth, get_parameter
+from billing.utils import get_client_billing_control_pivotable_data, get_billing_info
 
 
 class BillingModelTest(TransactionTestCase):
@@ -291,3 +292,21 @@ class TestBillingUtils(TestCase):
         d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=lead))
         self.assertEqual(len(d), 9)  # 6 + and 2 activities and 1 bill for fixed price mission
         self.assertEqual(sum([x[_("amount")] for x in d]), 2000)  # We should have 2K to bill, no more
+
+    def test_get_billing_info(self):
+        s = Subsidiary(name="test", code="T")
+        s.save()
+        c = Consultant.objects.get(id=1)
+        lead = Lead(subsidiary=s, client_id=1)
+        lead.save()
+        m = Mission(lead=lead, subsidiary=s, nature="PROD", probability=100, billing_mode="TIME_SPENT")
+        m.save()
+        FinancialCondition.objects.create(mission=m, consultant=c, daily_rate=1000).save()
+        Timesheet(mission=m, consultant=c, working_date=previousMonth(date.today()), charge=8).save()
+        timesheet_data = Timesheet.objects.filter(mission=m, consultant=c).values_list("mission", "consultant").annotate(Sum("charge"))
+        billing_info = get_billing_info(timesheet_data)
+        self.assertEqual(len(billing_info), 1)
+        self.assertEqual(billing_info[0][1][0], 8000)
+        billing_info = get_billing_info(timesheet_data, apply_internal_markup=True)
+        self.assertEqual(len(billing_info), 1)
+        self.assertEqual(billing_info[0][1][0], 8000 * (1 - get_parameter("INTERNAL_MARKUP") / 100))
