@@ -7,19 +7,36 @@
     margin-bottom: 20mm;
 }
 
-body
-{
-    font-size       : 10px;
+body {
+    font-size: 10px;
 }
 
-div.footer {
-    display: block;
+div.page {
+    break-after: page;
+}
+
+div.po-page {
+    page: po-page;
+}
+
+.footer {
+    position: running(running-footer);
     text-align: center;
     font-size: 8px;
     width: 100%;
-    position: fixed;
     bottom: -15mm;
 }
+
+.po-footer {
+    position: running(running-po-footer);
+    text-align: center;
+    font-size: 8px;
+    width: 100%;
+    bottom: -15mm;
+}
+
+@page { @bottom-center { content: element(running-footer) } }
+@page po-page { @bottom-center { content: element(running-po-footer) } }
 
 .receipt {
   max-width: 100%;

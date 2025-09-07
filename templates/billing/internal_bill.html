@@ -8,103 +8,193 @@
     <meta name="author" content="Sebastien Renard">
     <title>{{ bill.seller.commercial_name }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-
     <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/pydici-pdf.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="row">
-        <div class="col-xs-5">
-            <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ bill.seller.code}}.png" height=40/><br/><br/>
-            {{ bill.seller.commercial_name }}<br/>
-            {{ bill.seller.billing_address|linebreaksbr }}
-        </div>
-        <div class="col-offset-1 col-xs-6">
-            <div class="well small-margin">
-                <div class="lead small-margin text-uppercase">
-                    <strong>
-                    {% if bill.amount_with_vat > 0 %}
-                        {% trans "Bill" %}
-                    {% else %}
-                        {% trans "Credit" %}
-                    {% endif %}
-                    </strong>
-                </div>
-                <strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong>
-            </div>
-
-            <div class="lead">
-                {{ bill.buyer.commercial_name }}<br>
-                {{ bill.buyer.billing_address|linebreaksbr }}<br>
-                {% if bill.buyer.vat_id  %}
-                    {% trans "VAT id:" %} {{ bill.buyer.vat_id }}<br>
-                {% endif %}
-                {% if bill.buyer.legal_id  %}
-                    {% trans "Legal id:" %} {{ bill.buyer.legal_id }}<br>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <br/><br/>
-    <table class="table">
-        {% if bill.internalbilldetail_set.all %}
-            <thead>
-                <tr><th><small>{% trans "Description" %}</small></th><th class="text-center"><small>{% trans "Quantity" %}</small></th>
-                    <th class="text-right"><small>{% trans "Unit Price €" %}</small></th><th class="text-right"><small>{% trans "Amount €" %}</small></th>
-                    <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount inc. taxes €" %}</small></th>
-                </tr>
-            </thead>
-
-            {% regroup bill.internalbilldetail_set.all by mission as detail_list %}
-
-            {% for detail in detail_list %}
-                    <tr><td class="noborder"></td></tr>
-                    <tr><td colspan=6 class="text-left noborder"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
-                    {% regroup detail.list by month as mission_detail_list %}
-                    {% for mission_detail in mission_detail_list %}
-                        <tbody style="page-break-inside: avoid;">
-                        <tr><td class="noborder"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
-                        {% for item in mission_detail.list %}
-                            <tr>
-                                <td>{{ item.consultant|default_if_none:"" }}{% if item.label %} - {{ item.label }}{% endif %}</td>
-                                <td class="text-center">{{ item.quantity|floatformat:-2 }}</td>
-                                <td class="text-right">{{ item.unit_price|floatformat:-2 }}</td>
-                                <td class="text-right">{{ item.amount|floatformat:-2 }}</td><td class="text-right">{{ item.vat|floatformat:-2 }}</td><td class="text-right">{{ item.amount_with_vat|floatformat:-2 }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    {% endfor %}
-            {% endfor %}
-        {% endif %}
-        <tbody style="page-break-inside: avoid;">
-        {% if bill.internalbilldetail_set.all %}
-            <tr><td colspan=6 class="noborder">&nbsp;</td></tr>
-            <tr>
-                <td colspan=4 class="no-top-border"></td>
-                <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.amount|floatformat:2 }}</b></td>
-            </tr>
-        {% endif %}
-        {% for vat, amount in bill.taxes %}
-            <tr>
-                <td colspan=4 class="no-top-border"></td>
-                <td class="text-right bill-total-border-left no-top-border"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ amount|floatformat:2 }}</b></td>
-            </tr>
-        {% endfor %}
-        <tr>
-            <td colspan=4 class="no-top-border"></td>
-            <td class="text-right bill-total-border-left bill-total-border-bottom no-top-border"><b>{% trans "Total (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-bottom no-top-border"><b>{{ bill.amount_with_vat|floatformat:2 }}</b></td>
-        </tr>
-        </tbody>
-    </table>
-
-    <div style="page-break-inside: avoid;">
-        <p><small>{{  bill.seller.payment_description|linebreaksbr }}</small></p>
-        <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
-    </div>
-
-    <div class='footer'>
+    <footer class='footer'>
         <small><em>{{ bill.seller.legal_description|linebreaksbr }}</em></small>
+    </footer>
+    <footer class='po-footer'>
+        <small><em>{{ bill.buyer.legal_description|linebreaksbr }}</em></small>
+    </footer>
+
+    <div class="page">
+        <div class="row">
+            <div class="col-xs-5">
+                <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ bill.seller.code}}.png" height=40/><br/><br/>
+                {{ bill.seller.commercial_name }}<br/>
+                {{ bill.seller.billing_address|linebreaksbr }}
+            </div>
+            <div class="col-offset-1 col-xs-6">
+                <div class="well small-margin">
+                    <div class="lead small-margin text-uppercase">
+                        <strong>
+                        {% if bill.amount_with_vat > 0 %}
+                            {% trans "Bill" %}
+                        {% else %}
+                            {% trans "Credit" %}
+                        {% endif %}
+                        </strong>
+                    </div>
+                    <strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong>
+                </div>
+
+                <div class="lead">
+                    {{ bill.buyer.commercial_name }}<br>
+                    {{ bill.buyer.billing_address|linebreaksbr }}<br>
+                    {% if bill.buyer.vat_id  %}
+                        {% trans "VAT id:" %} {{ bill.buyer.vat_id }}<br>
+                    {% endif %}
+                    {% if bill.buyer.legal_id  %}
+                        {% trans "Legal id:" %} {{ bill.buyer.legal_id }}<br>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <br/><br/>
+        <table class="table">
+            {% if bill.internalbilldetail_set.all %}
+                <thead>
+                    <tr><th><small>{% trans "Description" %}</small></th><th class="text-center"><small>{% trans "Quantity" %}</small></th>
+                        <th class="text-right"><small>{% trans "Unit Price €" %}</small></th><th class="text-right"><small>{% trans "Amount €" %}</small></th>
+                        <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount inc. taxes €" %}</small></th>
+                    </tr>
+                </thead>
+
+                {% regroup bill.internalbilldetail_set.all by mission as detail_list %}
+
+                {% for detail in detail_list %}
+                        <tr><td class="noborder"></td></tr>
+                        <tr><td colspan=6 class="text-left noborder"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
+                        {% regroup detail.list by month as mission_detail_list %}
+                        {% for mission_detail in mission_detail_list %}
+                            <tbody style="page-break-inside: avoid;">
+                            <tr><td class="noborder"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
+                            {% for item in mission_detail.list %}
+                                <tr>
+                                    <td>{{ item.consultant|default_if_none:"" }}{% if item.label %} - {{ item.label }}{% endif %}</td>
+                                    <td class="text-center">{{ item.quantity|floatformat:-2 }}</td>
+                                    <td class="text-right">{{ item.unit_price|floatformat:-2 }}</td>
+                                    <td class="text-right">{{ item.amount|floatformat:-2 }}</td><td class="text-right">{{ item.vat|floatformat:-2 }}</td><td class="text-right">{{ item.amount_with_vat|floatformat:-2 }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        {% endfor %}
+                {% endfor %}
+            {% endif %}
+            <tbody style="page-break-inside: avoid;">
+            {% if bill.internalbilldetail_set.all %}
+                <tr><td colspan=6 class="noborder">&nbsp;</td></tr>
+                <tr>
+                    <td colspan=4 class="no-top-border"></td>
+                    <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.amount|floatformat:2 }}</b></td>
+                </tr>
+            {% endif %}
+            {% for vat, amount in bill.taxes %}
+                <tr>
+                    <td colspan=4 class="no-top-border"></td>
+                    <td class="text-right bill-total-border-left no-top-border"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ amount|floatformat:2 }}</b></td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan=4 class="no-top-border"></td>
+                <td class="text-right bill-total-border-left bill-total-border-bottom no-top-border"><b>{% trans "Total (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-bottom no-top-border"><b>{{ bill.amount_with_vat|floatformat:2 }}</b></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div style="page-break-inside: avoid;">
+            <p><small>{{  bill.seller.payment_description|linebreaksbr }}</small></p>
+            <p><strong>{% trans "Payment due date: " %}{{ bill.due_date }}</strong></p>
+        </div>
+    </div>
+
+    <div class="po-page page">
+        <div class="row">
+            <div class="col-xs-5">
+                <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ bill.buyer.code}}.png" height=40/><br/><br/>
+                {{ bill.buyer.commercial_name }}<br/>
+                {{ bill.buyer.billing_address|linebreaksbr }}
+            </div>
+            <div class="col-offset-1 col-xs-6">
+                <div class="well small-margin">
+                    <div class="lead small-margin text-uppercase">
+                        <strong>
+                            {% trans "Purchase order" %}
+                        </strong>
+                    </div>
+                    <strong>N° PO-{{ bill.bill_id }} / {{ bill.creation_date }}</strong>
+                </div>
+
+                <div class="lead">
+                    {{ bill.seller.commercial_name }}<br>
+                    {{ bill.seller.billing_address|linebreaksbr }}<br>
+                    {% if bill.seller.vat_id  %}
+                        {% trans "VAT id:" %} {{ bill.seller.vat_id }}<br>
+                    {% endif %}
+                    {% if bill.seller.legal_id  %}
+                        {% trans "Legal id:" %} {{ bill.seller.legal_id }}<br>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <br/><br/>
+        <table class="table">
+            {% if bill.internalbilldetail_set.all %}
+                <thead>
+                    <tr><th><small>{% trans "Description" %}</small></th><th class="text-center"><small>{% trans "Quantity" %}</small></th>
+                        <th class="text-right"><small>{% trans "Unit Price €" %}</small></th><th class="text-right"><small>{% trans "Amount €" %}</small></th>
+                        <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount inc. taxes €" %}</small></th>
+                    </tr>
+                </thead>
+
+                {% regroup bill.internalbilldetail_set.all by mission as detail_list %}
+
+                {% for detail in detail_list %}
+                        <tr><td class="noborder"></td></tr>
+                        <tr><td colspan=6 class="text-left noborder"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
+                        {% regroup detail.list by month as mission_detail_list %}
+                        {% for mission_detail in mission_detail_list %}
+                            <tbody style="page-break-inside: avoid;">
+                            <tr><td class="noborder"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
+                            {% for item in mission_detail.list %}
+                                <tr>
+                                    <td>{{ item.consultant|default_if_none:"" }}{% if item.label %} - {{ item.label }}{% endif %}</td>
+                                    <td class="text-center">{{ item.quantity|floatformat:-2 }}</td>
+                                    <td class="text-right">{{ item.unit_price|floatformat:-2 }}</td>
+                                    <td class="text-right">{{ item.amount|floatformat:-2 }}</td><td class="text-right">{{ item.vat|floatformat:-2 }}</td><td class="text-right">{{ item.amount_with_vat|floatformat:-2 }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        {% endfor %}
+                {% endfor %}
+            {% endif %}
+            <tbody style="page-break-inside: avoid;">
+            {% if bill.internalbilldetail_set.all %}
+                <tr><td colspan=6 class="noborder">&nbsp;</td></tr>
+                <tr>
+                    <td colspan=4 class="no-top-border"></td>
+                    <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.amount|floatformat:2 }}</b></td>
+                </tr>
+            {% endif %}
+            {% for vat, amount in bill.taxes %}
+                <tr>
+                    <td colspan=4 class="no-top-border"></td>
+                    <td class="text-right bill-total-border-left no-top-border"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ amount|floatformat:2 }}</b></td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan=4 class="no-top-border"></td>
+                <td class="text-right bill-total-border-left bill-total-border-bottom no-top-border"><b>{% trans "Total (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-bottom no-top-border"><b>{{ bill.amount_with_vat|floatformat:2 }}</b></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div style="page-break-inside: avoid;">
+            <p><strong>{% trans "Billing due date: " %}{{ bill.due_date }}</strong></p>
+        </div>
     </div>
 
 </body>
