@@ -132,6 +132,7 @@ def update_bill_from_timesheet(bill, mission, start_date, end_date):
         timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
         timesheet_data = timesheet_data .order_by("mission", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
         if not timesheet_data:
+            month = nextMonth(month)
             continue
         billing_info = list((get_billing_info(timesheet_data, apply_internal_markup=markup)[0][1][1].values()))[0][1]
         for consultant, quantity, unit_price, total in billing_info:
