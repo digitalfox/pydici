@@ -1,0 +1,122 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load l10n %}
+
+{% block title %}{% trans "Billing preparation" %}{% endblock %}
+
+{% block extrajs %}
+    {% include "core/_billboard.html" %}
+    {% include "core/_pivotable_header.html" %}
+{% endblock %}
+
+{% block bodyattr %} data-bs-spy="scroll" data-bs-target="#billing-toc" data-bs-offset="10" style="position: relative;" {% endblock %}
+{% block content %}
+
+
+<div class="row mt-2">
+    <div class="btn-group col-lg-4" data-toggle="buttons">
+        <input id="startDate" name="startDate" class="btn btn-primary datepicker dateinput" data-date-format="mm/yyyy" data-date-min-view-mode=1 placeholder="{% trans 'From' %}">
+        <input id="endDate" name="endDate" class="btn btn-primary datepicker dateinput" data-date-format="mm/yyyy" data-date-min-view-mode=1 placeholder="{% trans 'To' %}">
+    </div>
+</div>
+
+<div class="row">
+<div class="col-lg-3 order-1 order-lg-2">
+    <div id="billing-toc" class="sticky-lg-top">
+        <nav class="navbar navbar-light bg-light">
+              <nav class="nav nav-pills flex-column">
+                  {% if internal_billing %}
+                    {% for internal_subsidiaries, subsidiary_internal_billing in internal_billing.items %}
+                        <a href="#from-{{ internal_subsidiaries.0.code }}-to-{{ internal_subsidiaries.1.code }}" class="nav-link ms-3 py-0">
+                            {% blocktrans with from=internal_subsidiaries.0 to=internal_subsidiaries.1 %}From {{ from }} to {{ to }}{% endblocktrans %}
+                        </a>
+                    {% endfor %}
+                  {% endif %}
+              </nav>
+        </nav>
+    </div>
+</div>
+
+{% if internal_billing %}
+<div class="col-lg-9 order-2 order-lg-1">
+<h2 id="internal" class="mt-3">{% trans "Internal billing" %}</h2>
+{% for internal_subsidiaries, subsidiary_internal_billing in internal_billing.items %}
+    <h3 id="from-{{ internal_subsidiaries.0.code }}-to-{{ internal_subsidiaries.1.code }}"
+        class="mt-3">{% blocktrans with from=internal_subsidiaries.0 to=internal_subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} ({{ start_date }} - {{ end_date }})</h3>
+
+    {% for lead, lead_data in subsidiary_internal_billing %}
+        {% if lead %}
+            <h4 class="mt-2"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h4>
+        {% else %}
+            <h4 class="mt-2">{% trans "No lead" %}</h4>
+        {% endif %}
+        {% for mission, mission_data in lead_data.1.items %}
+            <h5 class="mt-2"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }}</a></h5>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 col-sm-8">
+                    <table class="table table-sm table-striped table-hover">
+                        <tr><th>{% trans "consultant" %}</th><th>{% trans "days" %}</th><th>{% trans "rate" %}</th><th>{% trans "total" %}</th></tr>
+                        {% for consultant, charge, rate, total in mission_data.1 %}
+                            <tr><td>{% include "people/__consultant_name.html" %}</td>
+                                <td>{{ charge }} </td>
+                                <td>{{ rate|floatformat:"-2" }} €</td>
+                                <td>{{ total|floatformat:"-2" }} €</td>
+                            </tr>
+                        {% endfor %}
+                        <tr><th>{% trans "total" %}</th><td></td><td></td><th>{{ mission_data.0|floatformat:"-2" }} €</th></tr>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+         {% if lead.mission_set.count != 1 %}
+            <h4>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</h4>
+         {% endif %}
+         {% if lead %}
+            <a class="btn btn-primary" href="{% url 'billing:internal_bill' %}?lead={{ lead.id|unlocalize }}&start_date={{start_date|date:'Ym'}}&end_date={{end_date|date:'Ym'}}&buyer={{internal_subsidiaries.1.id}}&seller={{internal_subsidiaries.0.id}}" target="_blank">{% trans "Add an internal bill" %}</a>
+        {% endif %}
+         <hr/>
+    {% endfor %}
+    <a class="btn btn-primary" href="{% url 'billing:internal_bill' %}?start_date={{start_date|date:'Ym'}}&end_date={{end_date|date:'Ym'}}&buyer={{internal_subsidiaries.1.id}}&seller={{internal_subsidiaries.0.id}}" target="_blank">
+        {% trans "Add internal bill for all missions" %}
+    </a>
+    <hr/>
+{% endfor %}
+</div>
+{% endif %}
+
+</div>  {# end of row #}
+
+{% include "core/_datepicker.html" %}
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $(".pydici-tooltip").tooltip();
+
+    // set dates on widgets with template value
+    {% if start_date %}
+        $("#startDate").datepicker("setDate", new Date("{{ start_date|date:"Y-m-d" }}"));
+    {% endif %}
+    {% if end_date %}
+        $("#endDate").datepicker("setDate", new Date("{{ end_date|date:"Y-m-d" }}"));
+    {% endif %}
+
+    // reload data with choosen timeframe
+    $('.datepicker').datepicker().on("change", function(e) {
+        var param = "";
+        var fromDate = $("#startDate").datepicker("getDate");
+        var toDate   = $("#endDate").datepicker("getDate");
+        if (fromDate > toDate || fromDate.getTime() == toDate.getTime()) {
+            toDate = new Date(toDate.setMonth(toDate.getMonth()+1));
+        }
+        if (!isNaN(fromDate.getTime())) {
+            param += yyyymm(fromDate) + '/';
+        }
+        if (!isNaN(toDate.getTime())) {
+            param += yyyymm(toDate);
+        }
+        window.location.href = window.location.href.replace(/\?.*/, '').replace(/\d{6}\/?/g, '') + param;
+    });
+
+});
+</script>
+{% endblock %}

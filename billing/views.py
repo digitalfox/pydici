@@ -528,6 +528,48 @@ def supplierbill_delete(request, bill_id):
 
     return HttpResponseRedirect(redirect_url)
 
+@pydici_non_public
+@pydici_feature("billing_request")
+def internal_pre_billing(request, start_date=None, end_date=None):
+    """Pre billing page for internal subsidaries"""
+    if end_date is None:
+        end_date = date.today().replace(day=1)
+    else:
+        end_date = date(int(end_date[0:4]), int(end_date[4:6]), 1)
+    if start_date is None:
+        start_date = previousMonth(date.today())
+    else:
+        start_date = date(int(start_date[0:4]), int(start_date[4:6]), 1)
+
+    if end_date - start_date > timedelta(180):
+        # Prevent excessive window that is useless would lead to deny of service
+        start_date = (end_date - timedelta(180)).replace(day=1)
+
+    if end_date < start_date:
+        end_date = nextMonth(start_date)
+
+    internal_billing = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
+
+    internal_billing_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date).exclude(mission__nature="HOLIDAYS")
+    internal_billing_timesheets = internal_billing_timesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
+    internal_billing_timesheets = internal_billing_timesheets.exclude(consultant__subcontractor=True)
+
+
+    for internal_subsidiary in Subsidiary.objects.all():
+        subsidiary_timesheet_data = internal_billing_timesheets.filter(consultant__company=internal_subsidiary)
+        for target_subsidiary in Subsidiary.objects.exclude(pk=internal_subsidiary.id):
+            timesheet_data = subsidiary_timesheet_data.filter(Q(mission__lead__subsidiary=target_subsidiary) | Q(mission__subsidiary=target_subsidiary))
+            timesheet_data = timesheet_data .order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
+            billing_info = get_billing_info(timesheet_data, apply_internal_markup=True)
+            if billing_info:
+                internal_billing[(internal_subsidiary, target_subsidiary)] = billing_info
+
+    return render(request, "billing/internal_pre_billing.html",
+                  {"internal_billing": internal_billing,
+                   "start_date": start_date,
+                   "end_date": end_date,
+                   "user": request.user})
+
 
 @pydici_non_public
 @pydici_feature("billing_management")
@@ -697,7 +739,6 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
         mine = False
 
     timespent_billing = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
-    internal_billing = {}  # Same structure as timeSpentBilling but for billing between internal subsidiaries
 
     try:
         billing_consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
@@ -715,23 +756,16 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
     timespent_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
                                                     mission__nature="PROD", mission__billing_mode="TIME_SPENT")
 
-    internal_billing_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date).exclude(mission__nature="HOLIDAYS")
-    internal_billing_timesheets = internal_billing_timesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
-    internal_billing_timesheets = internal_billing_timesheets.exclude(consultant__subcontractor=True)
-
     if mine:  # Filter on consultant mission/lead as responsible
         fixed_price_missions = fixed_price_missions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
         undefined_billing_mode_missions = undefined_billing_mode_missions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
         timespent_timesheets = timespent_timesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
-        internal_billing_timesheets = internal_billing_timesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
     elif team:  # Filter on team
         fixed_price_missions = fixed_price_missions.filter(
             Q(lead__responsible__in=team_consultants) | Q(responsible__in=team_consultants))
         undefined_billing_mode_missions = undefined_billing_mode_missions.filter(
             Q(lead__responsible__in=team_consultants) | Q(responsible__in=team_consultants))
         timespent_timesheets = timespent_timesheets.filter(
-            Q(mission__lead__responsible__in=team_consultants) | Q(mission__responsible__in=team_consultants))
-        internal_billing_timesheets = internal_billing_timesheets.filter(
             Q(mission__lead__responsible__in=team_consultants) | Q(mission__responsible__in=team_consultants))
 
     fixed_price_missions = fixed_price_missions.order_by("lead").distinct()
@@ -744,15 +778,6 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
 
     timesheet_data = timespent_timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
     timespent_billing = get_billing_info(timesheet_data)
-
-    for internal_subsidiary in Subsidiary.objects.all():
-        subsidiary_timesheet_data = internal_billing_timesheets.filter(consultant__company=internal_subsidiary)
-        for target_subsidiary in Subsidiary.objects.exclude(pk=internal_subsidiary.id):
-            timesheet_data = subsidiary_timesheet_data.filter(Q(mission__lead__subsidiary=target_subsidiary) | Q(mission__subsidiary=target_subsidiary))
-            timesheet_data = timesheet_data .order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
-            billing_info = get_billing_info(timesheet_data, apply_internal_markup=True)
-            if billing_info:
-                internal_billing[(internal_subsidiary, target_subsidiary)] = billing_info
 
     fixed_price_billing = []
     for mission in fixed_price_missions:
@@ -770,7 +795,6 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
                   {"time_spent_billing": timespent_billing,
                    "fixed_price_billing": fixed_price_billing,
                    "undefined_billing_mode_missions": undefined_billing_mode_missions,
-                   "internal_billing": internal_billing,
                    "start_date": start_date,
                    "end_date": end_date,
                    "mine": mine,

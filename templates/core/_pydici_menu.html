@@ -176,6 +176,7 @@
                                     {% if pydici_feature.billing_request %}
                                         <li><hr class="dropdown-divider"></li>
                                         <li class="dropdown-header">{% trans "Internal billing" %}</li>
+                                        <li><a class="dropdown-item" href="{% url 'billing:internal_pre_billing' %}">{% trans "Internal pre billing" %}</a></li>
                                         <li><a class="dropdown-item" href="{% url 'billing:internal_bills_archive' %}">{% trans "All internal bills" %}</a></li>
                                         <li><a class="dropdown-item" href="{% url 'billing:internal_bill' %}">{% trans "New internal bill" %}</a></li>
                                         <li><a class="dropdown-item" href="{% url 'billing:internal_bills_in_creation' %}">{% trans "Internal bills in creation" %}</a></li>
