@@ -194,27 +194,57 @@ class TestBillingViews(TestCase):
 
         # No timesheet, no pre billing
         r = self.client.get(reverse("billing:pre_billing"))
-        self.assertFalse(r.context["internal_billing"])
         self.assertFalse(r.context["time_spent_billing"])
 
-        # Add simple timesheet. Still no internal billing
+        # Add simple timesheet
         Timesheet(mission=mission, working_date=previous_month, consultant=c1, charge=7).save()
         r = self.client.get(reverse("billing:pre_billing"))
-        self.assertFalse(r.context["internal_billing"])
         self.assertEqual(len(r.context["time_spent_billing"]), 1)
 
-        # Timesheet from a consultant of another company, we have now internal billing
+        # Timesheet from a consultant of another company. We still need to bill the client
+        Timesheet.objects.filter(mission=mission).delete()
         Timesheet(mission=mission, working_date=previous_month, consultant=c2, charge=4).save()
         r = self.client.get(reverse("billing:pre_billing"))
-        self.assertTrue(r.context["internal_billing"])
         self.assertEqual(len(r.context["time_spent_billing"]), 1)
 
-        # In fact, this consultant is a subcontractor, not internal billing required
+        # In fact, this consultant is a subcontractor. We still need to bill the client.
         c2.subcontractor = True
         c2.save()
         r = self.client.get(reverse("billing:pre_billing"))
-        self.assertFalse(r.context["internal_billing"])
         self.assertEqual(len(r.context["time_spent_billing"]), 1)
+
+def test_internal_pre_billing(self):
+    self.client.force_login(self.test_user)
+    previous_month = previousMonth(date.today())
+    lead = Lead.objects.get(id=1)
+    c1 = Consultant.objects.get(id=1)
+    c2 = Consultant.objects.get(id=2)
+    c2.company_id = 2
+    c2.save()
+    mission = Mission(lead=lead, subsidiary_id=1, billing_mode="TIME_SPENT", nature="PROD", probability=100)
+    mission.save()
+    FinancialCondition(consultant=c1, mission=mission, daily_rate=800).save()
+    FinancialCondition(consultant=c2, mission=mission, daily_rate=1100).save()
+
+    # No timesheet, no pre billing
+    r = self.client.get(reverse("billing:pre_billing"))
+    self.assertFalse(r.context["internal_billing"])
+
+    # Add simple timesheet. Still no internal billing
+    Timesheet(mission=mission, working_date=previous_month, consultant=c1, charge=7).save()
+    r = self.client.get(reverse("billing:pre_billing"))
+    self.assertFalse(r.context["internal_billing"])
+
+    # Timesheet from a consultant of another company, we have now internal billing
+    Timesheet(mission=mission, working_date=previous_month, consultant=c2, charge=4).save()
+    r = self.client.get(reverse("billing:pre_billing"))
+    self.assertTrue(r.context["internal_billing"])
+
+    # In fact, this consultant is a subcontractor, not internal billing required
+    c2.subcontractor = True
+    c2.save()
+    r = self.client.get(reverse("billing:pre_billing"))
+    self.assertFalse(r.context["internal_billing"])
 
 
 class TestBillingUtils(TestCase):
