@@ -203,5 +203,9 @@ AUDITLOG_INCLUDE_TRACKING_MODELS = (
         "model": "billing.ClientBill",
         "exclude_fields": ["id", "creation_date", "update_date", "workflow_in_progress", "expensePayment"],
         "m2m_fields": ["expenses"],
+    },
+    {
+        "model": "billing.InternalBill",
+        "exclude_fields": ["id", "creation_date", "update_date"],
     }
 )

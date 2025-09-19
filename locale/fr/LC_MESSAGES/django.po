@@ -1635,7 +1635,7 @@ msgstr "Nom de l'affaire. Ne pas inclure le nom du client"
 
 #: leads/forms.py:133
 msgid "Next commercial action to be done"
-msgstr "Prochaine action commercial à prendre"
+msgstr "Prochaine action commerciale à prendre"
 
 #: leads/forms.py:136 staffing/forms.py:371
 msgid "Leave blank to auto generate"

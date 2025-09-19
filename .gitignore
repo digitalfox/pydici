@@ -8,6 +8,7 @@
 .settings
 .ipynb_checkpoints/
 static/
+.venv
 venv/
 venv3/
 data/*

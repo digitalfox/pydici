@@ -10,19 +10,26 @@ appropriate to live in Billing models or view
 import json
 from os import path
 import os
+import subprocess
+import tempfile
+
 
 from django.apps import apps
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
 from django.utils.translation import gettext as _
 from django.core.files.base import ContentFile
+from django.template.loader import get_template
 
-from core.utils import to_int_or_round, nextMonth, get_fiscal_year
+from core.utils import to_int_or_round, nextMonth, get_fiscal_year, get_parameter
+
+import facturx
 
 
-def get_billing_info(timesheet_data):
+def get_billing_info(timesheet_data, apply_internal_markup=False):
     """compute billing information from this timesheet data
     @:param timesheet_data: value queryset with mission, consultant and charge in days
+    @:param apply_internal_markup: use internal markkup rate. Default is False
     @:return billing information as a tuple (lead, (lead total, (mission total, billing data)) """
     Mission = apps.get_model("staffing", "Mission")
     Consultant = apps.get_model("people", "Consultant")
@@ -32,28 +39,35 @@ def get_billing_info(timesheet_data):
         if mission.lead:
             lead = mission.lead
         else:
-            # Bad data, mission with nature prod without lead... This should not happened
-            continue
+            lead = None
         consultant = Consultant.objects.get(id=consultant_id)
-        rates =  mission.consultant_rates()
-        if not lead in billing_data:
+        rates = mission.consultant_rates()
+        if rates[consultant][0] == 0 and mission.nature == "NONPROD":
+            # for internal mission, default to objective rate if mission rate is not defined
+            consultant_rate = consultant.get_rate_objective(rate_type="DAILY_RATE")
+            rates[consultant] = [consultant_rate.rate if consultant_rate else 0]
+        if apply_internal_markup:
+            markup = (100 - get_parameter("INTERNAL_MARKUP")) / 100
+        else:
+            markup = 1
+        if lead not in billing_data:
             billing_data[lead] = [0.0, {}]  # Lead Total and dict of mission
-        if not mission in billing_data[lead][1]:
+        if mission not in billing_data[lead][1]:
             billing_data[lead][1][mission] = [0.0, []]  # Mission Total and detail per consultant
-        total = charge * rates[consultant][0]
+        total = charge * rates[consultant][0] * markup
         billing_data[lead][0] += total
         billing_data[lead][1][mission][0] += total
         billing_data[lead][1][mission][1].append(
-            [consultant, to_int_or_round(charge, 2), rates[consultant][0], total])
+            [consultant, to_int_or_round(charge, 2), rates[consultant][0] * markup, total])
 
     # Sort data
     billing_data = list(billing_data.items())
-    billing_data.sort(key=lambda x: x[0].deal_id)
+    billing_data.sort(key=lambda x: x[0].deal_id if x[0] else "")
     return billing_data
 
 
 def compute_bill(bill):
-    """Compute bill amount according to its details. Should only be called by clientBill model save method"""
+    """Compute client bill amount according to its details. Should only be called by clientBill model save method"""
     if bill.state in ("0_DRAFT", "0_PROPOSED"):
         amount = 0
         amount_with_vat = 0
@@ -78,19 +92,53 @@ def compute_bill(bill):
             bill.amount_with_vat = bill.amount * (1 + bill.vat / 100)
 
 
-def update_client_bill_from_timesheet(bill, mission, start_date, end_date):
-    """Populate bill detail for given mission from timesheet of given interval"""
+def compute_internal_bill(bill):
+    """Compute internal bill amount according to its details. Should only be called by InternalBill model save method"""
+    if bill.state in ("0_DRAFT"):
+        amount = 0
+        amount_with_vat = 0
+        for bill_detail in bill.internalbilldetail_set.all():
+            if bill_detail.amount:
+                amount += bill_detail.amount
+            if bill_detail.amount_with_vat:
+                amount_with_vat += bill_detail.amount_with_vat
+
+        if amount != 0:
+            bill.amount = amount
+        if amount_with_vat != 0:
+            bill.amount_with_vat = amount_with_vat
+
+    # Automatically compute amount with VAT if not defined
+    if not bill.amount_with_vat:
+        if bill.amount:
+            bill.amount_with_vat = bill.amount * (1 + bill.vat / 100)
+
+
+def update_bill_from_timesheet(bill, mission, start_date, end_date):
+    """Populate bill (client or internal)detail for given mission from timesheet of given interval"""
     ClientBill = apps.get_model("billing", "clientbill")
-    BillDetail = apps.get_model("billing", "billdetail")
-    Consultant = apps.get_model("people", "Consultant")
-    rates = mission.consultant_rates()
+    InternalBill = apps.get_model("billing", "internalbill")
+    if isinstance(bill, ClientBill):
+        LineDetail = apps.get_model("billing", "billdetail")
+        markup = False
+    elif isinstance(bill, InternalBill):
+        LineDetail = apps.get_model("billing", "internalbilldetail")
+        markup = True
+    else:
+        raise ValueError("Not a client or internal bill")
+
     month = start_date
     while month < end_date:
         timesheet_data = mission.timesheet_set.filter(working_date__gte=month, working_date__lt=nextMonth(month))
-        timesheet_data = timesheet_data.order_by("consultant").values("consultant").annotate(Sum("charge"))
-        for i in timesheet_data:
-            consultant = Consultant.objects.get(id=i["consultant"])
-            billDetail =  BillDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=i["charge__sum"], unit_price=rates[consultant][0])
+        timesheet_data = timesheet_data .order_by("mission", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
+        if not timesheet_data:
+            month = nextMonth(month)
+            continue
+        billing_info = list((get_billing_info(timesheet_data, apply_internal_markup=markup)[0][1][1].values()))[0][1]
+        for consultant, quantity, unit_price, total in billing_info:
+            if isinstance(bill, InternalBill) and consultant.company != bill.seller:
+                continue
+            billDetail = LineDetail(bill=bill, mission=mission, month=month, consultant=consultant, quantity=quantity, unit_price=unit_price)
             billDetail.save()
         month = nextMonth(month)
     bill.save()  # save again to update bill amount according to its details
@@ -99,7 +147,6 @@ def update_client_bill_from_timesheet(bill, mission, start_date, end_date):
 
 def update_client_bill_from_proportion(bill, mission, proportion):
     """Populate bill with detail for given mission from proportion of mission total price"""
-    ClientBill = apps.get_model("billing", "clientbill")
     BillDetail = apps.get_model("billing", "billdetail")
     unit_price = mission.price * 1000 if mission.price else 0
     billDetail = BillDetail(bill=bill, mission=mission, quantity=proportion, unit_price=unit_price)
@@ -153,7 +200,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                      _("client organisation"): str(lead.client.organisation),
                      _("client company"): str(lead.client.organisation.company),
                      _("broker"): str(lead.business_broker or _("Direct")),
-                     _("subsidiary") :str(lead.subsidiary),
+                     _("subsidiary"): str(lead.subsidiary),
                      _("responsible"): str(lead.responsible),
                      _("manager"): str(lead.responsible.manager if lead.responsible else "-"),
                      _("consultant"): "-"}
@@ -208,8 +255,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                 for consultant in consultants:
                     mission_month_consultant_data = mission_data.copy()
                     turnover = float(mission.done_work_period(month, next_month, include_external_subcontractor=True,
-                                                            include_internal_subcontractor=True,
-                                                            filter_on_consultant=consultant)[1])
+                                     include_internal_subcontractor=True, filter_on_consultant=consultant)[1])
                     if mission.billing_mode == "FIXED_PRICE" and mission.price:
                         if done_work_total >= 1000 * mission.price:
                             turnover = 0  # Sorry, no more money on this one
@@ -223,27 +269,36 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                     mission_month_consultant_data[_("amount")] = turnover
                     mission_month_consultant_data[_("type")] = _("Done work")
                     data.append(mission_month_consultant_data)
-            if mission.billing_mode == "TIME_SPENT": # Add bills for time spent mission
+            if mission.billing_mode == "TIME_SPENT":  # Add bills for time spent mission
                 for billed_detail in BillDetail.objects.filter(mission=mission, bill__state__in=bill_state).select_related("consultant"):
-                        mission_month_bill_data = mission_data.copy()
-                        mission_month_bill_data[_("month")] = billed_detail.month.isoformat()
-                        mission_month_bill_data[_("fiscal year")] = get_fiscal_year(billed_detail.month)
-                        mission_month_bill_data[_("amount")] = -float(billed_detail.amount or 0)
-                        mission_month_bill_data[_("type")] = _("Service bill")
-                        mission_month_bill_data[_("consultant")] = str(billed_detail.consultant)
-                        data.append(mission_month_bill_data)
+                    mission_month_bill_data = mission_data.copy()
+                    mission_month_bill_data[_("month")] = billed_detail.month.isoformat()
+                    mission_month_bill_data[_("fiscal year")] = get_fiscal_year(billed_detail.month)
+                    mission_month_bill_data[_("amount")] = -float(billed_detail.amount or 0)
+                    mission_month_bill_data[_("type")] = _("Service bill")
+                    mission_month_bill_data[_("consultant")] = str(billed_detail.consultant)
+                    data.append(mission_month_bill_data)
 
     return json.dumps(data)
 
 
 def generate_bill_pdf(bill, request):
     """Generate bill pdf file and update bill object with file path"""
-    from billing.views import BillPdf  # Local to avoid circular import
+    from billing.views import BillPdf, InternalBillPdf  # Local to avoid circular import
+    ClientBill = apps.get_model("billing", "clientbill")
+    InternalBill = apps.get_model("billing", "internalbill")
+    if isinstance(bill, ClientBill):
+        PdfView = BillPdf
+        filename = bill_pdf_filename(bill)
+    elif isinstance(bill, InternalBill):
+        PdfView = InternalBillPdf
+        filename = "%s-%s-%s.pdf" % (bill.bill_id, bill.buyer.code, bill.seller.code)
+    else:
+        raise ValueError("Not a client or internal bill")
     fake_http_request = request
     fake_http_request.method = "GET"
-    response = BillPdf.as_view()(fake_http_request, bill_id=bill.id)
+    response = PdfView.as_view()(fake_http_request, bill_id=bill.id)
     pdf = response.rendered_content
-    filename = bill_pdf_filename(bill)
     content = ContentFile(pdf, name=filename)
     bill.bill_file.save(filename, content)
     bill.save()
@@ -252,3 +307,37 @@ def generate_bill_pdf(bill, request):
 def get_bill_id_from_path(name):
     """Bill id is the last part of path"""
     return os.path.split(path.dirname(name))[1]
+
+
+def format_bill_pdf(pdf_buffer, bill):
+    """Make it PDF/A-3B compliant and add optional factur-x embedded information
+    @param pdf_buffer: PDF buffer as a BytesIO object
+    @return: PDF buffer as a BytesIO object"""
+    # Make it PDF/A-3B compliant
+    cmd = "gs -q -dPDFA=3 -dBATCH -dNOPAUSE -sColorConversionStrategy=UseDeviceIndependentColor -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- -"
+    try:
+        pdf_buffer.seek(0)  # Be kind, rewind
+        gs_in = tempfile.TemporaryFile()
+        gs_out = tempfile.TemporaryFile()
+        gs_in.write(pdf_buffer.getvalue())
+        gs_in.seek(0)
+        subprocess.run(cmd.split(), stdin=gs_in, stdout=gs_out)
+        gs_out.seek(0)
+        # Add factur-x information
+        if bill.add_facturx_data:
+            facturx_xml = get_template("billing/invoice-factur-x.xml").render({"bill": bill})
+            facturx_xml = facturx_xml.encode("utf-8")
+            pdf_metadata = {
+                "author": "enioka",
+                "keywords": "Factur-X, Invoice, pydici",
+                "title": "enioka Invoice %s" % bill.bill_id,
+                "subject": "Factur-X invoice %s dated %s issued by enioka"
+                % (bill.bill_id, bill.creation_date),
+            }
+            pdf = facturx.generate_from_binary(gs_out.read(), facturx_xml, pdf_metadata=pdf_metadata, lang=bill.lang)
+        else:
+            pdf = gs_out.read()
+    finally:
+        gs_out.close()
+        gs_in.close()
+    return pdf

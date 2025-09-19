@@ -10,8 +10,6 @@ import mimetypes
 import json
 from io import BytesIO
 import os
-import subprocess
-import tempfile
 from decimal import Decimal
 
 from os.path import basename
@@ -29,16 +27,13 @@ from django.forms.models import inlineformset_factory
 from django.forms.utils import ValidationError
 from django.contrib import messages
 from django.utils.decorators import method_decorator
-from django.template.loader import get_template
-
 
 from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
 from pypdf import PdfMerger, PdfReader
-import facturx
 
-from billing.utils import get_billing_info, update_client_bill_from_timesheet, update_client_bill_from_proportion, \
-    bill_pdf_filename, get_client_billing_control_pivotable_data, generate_bill_pdf
-from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense
+from billing.utils import get_billing_info, update_bill_from_timesheet, update_client_bill_from_proportion, \
+    bill_pdf_filename, get_client_billing_control_pivotable_data, generate_bill_pdf, format_bill_pdf
+from billing.models import ClientBill, SupplierBill, BillDetail, BillExpense, InternalBill, InternalBillDetail
 from leads.models import Lead
 from people.models import Consultant
 from people.utils import get_team_scopes
@@ -50,7 +45,8 @@ from core.utils import get_fiscal_years_from_qs, get_parameter, user_has_feature
 from core.utils import COLORS, nextMonth, previousMonth, get_fiscal_year
 from core.decorator import pydici_non_public, PydiciNonPublicdMixin, pydici_feature, PydiciFeatureMixin
 from billing.forms import BillDetailInlineFormset, BillExpenseFormSetHelper, BillExpenseInlineFormset, BillExpenseForm
-from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper, SupplierBillForm
+from billing.forms import ClientBillForm, BillDetailForm, BillDetailFormSetHelper, SupplierBillForm, \
+    InternalBillForm, InternalBillDetailForm, InternalBillDetailFormSetHelper, InternalBillDetailInlineFormset
 
 
 @pydici_non_public
@@ -110,6 +106,7 @@ def bill_review(request):
                    "consultant": Consultant.objects.filter(trigramme__iexact=request.user.username).first(),
                    "user": request.user})
 
+
 @pydici_non_public
 @pydici_feature("billing_request")
 def supplier_bills_validation(request):
@@ -133,7 +130,6 @@ def supplier_bills_validation(request):
                    "user": request.user})
 
 
-
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 60 * 24)
@@ -141,7 +137,7 @@ def bill_delay(request):
     """Report on client bill creation and payment delay"""
     data = []
     subsidiary = get_subsidiary_from_session(request)
-    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(2*365)), state__in=("1_SENT", "2_PAID"),
+    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(2 * 365)), state__in=("1_SENT", "2_PAID"),
                                       amount__gt=0)
     if subsidiary:
         bills = bills.filter(lead__subsidiary=subsidiary)
@@ -252,8 +248,8 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
     @property
     def rendered_content(self):
         old_lang = translation.get_language()
+        target = BytesIO()
         try:
-            target = BytesIO()
             bill = self.context_data["bill"]
             translation.activate(bill.lang)
             bill_pdf = super(BillAnnexPDFTemplateResponse, self).rendered_content
@@ -273,35 +269,11 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
                                                                    end=mission.billdetail__month__max)
                     merger.append(BytesIO(response.rendered_content))
             merger.write(target)
-            target.seek(0)  # Be kind, rewind
-            # Make it PDF/A-3B compliant
-            cmd = "gs -q -dPDFA=3 -dBATCH -dNOPAUSE -sColorConversionStrategy=UseDeviceIndependentColor -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- -"
-            try:
-                gs_in = tempfile.TemporaryFile()
-                gs_out = tempfile.TemporaryFile()
-                gs_in.write(target.getvalue())
-                target.close()
-                gs_in.seek(0)
-                subprocess.run(cmd.split(), stdin=gs_in, stdout=gs_out)
-                gs_out.seek(0)
-                # Add factur-x information
-                if bill.add_facturx_data:
-                    facturx_xml = get_template("billing/invoice-factur-x.xml").render({"bill": bill})
-                    facturx_xml = facturx_xml.encode("utf-8")
-                    pdf_metadata = {
-                        "author": "enioka",
-                        "keywords": "Factur-X, Invoice, pydici",
-                        "title": "enioka Invoice %s" % bill.bill_id,
-                        "subject": "Factur-X invoice %s dated %s issued by enioka" % (bill.bill_id, bill.creation_date),
-                    }
-                    pdf = facturx.generate_from_binary(gs_out.read(), facturx_xml, pdf_metadata=pdf_metadata, lang=bill.lang)
-                else:
-                    pdf = gs_out.read()
-            finally:
-                gs_out.close()
-                gs_in.close()
+            pdf = format_bill_pdf(target, bill)
+            target.close()
         finally:
             translation.activate(old_lang)
+            target.close()
         return pdf
 
 
@@ -311,6 +283,46 @@ class BillPdf(Bill, WeasyTemplateView):
     def get_filename(self):
         bill = self.get_context_data(**self.kwargs)["bill"]
         return bill_pdf_filename(bill)
+
+
+class InternalBillView(PydiciNonPublicdMixin, TemplateView):
+    template_name = 'billing/internal_bill.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(InternalBillView, self).get_context_data(**kwargs)
+        try:
+            bill = InternalBill.objects.get(id=kwargs.get("bill_id"))
+            context["bill"] = bill
+        except InternalBill.DoesNotExist:
+            bill = None
+        return context
+
+    @method_decorator(pydici_feature("billing_request"))
+    def dispatch(self, *args, **kwargs):
+        return super(InternalBillView, self).dispatch(*args, **kwargs)
+
+
+class InternalBillAnnexPDFTemplateResponse(WeasyTemplateResponse):
+    """TemplateResponse override to merge """
+    @property
+    def rendered_content(self):
+        old_lang = translation.get_language()
+        try:
+            bill = self.context_data["bill"]
+            translation.activate(bill.lang)
+            bill_pdf = super(InternalBillAnnexPDFTemplateResponse, self).rendered_content
+            pdf = format_bill_pdf(BytesIO(bill_pdf), bill)
+        finally:
+            translation.activate(old_lang)
+        return pdf
+
+
+class InternalBillPdf(InternalBillView, WeasyTemplateView):
+    response_class = InternalBillAnnexPDFTemplateResponse
+
+    def get_filename(self):
+        bill = self.get_context_data(**self.kwargs)["bill"]
+        return "%s-%s-%s.pdf" % (bill.bill_id, bill.buyer.code, bill.seller.code)
 
 
 @pydici_non_public
@@ -408,7 +420,7 @@ def client_bill(request, bill_id=None):
                     else:
                         start_date = previousMonth(date.today())
                         end_date = date.today().replace(day=1)
-                    update_client_bill_from_timesheet(bill, mission, start_date, end_date)
+                    update_bill_from_timesheet(bill, mission, start_date, end_date)
                 else:  # FIXED_PRICE mission
                     if request.GET.get("amount") and mission.price:
                         proportion = Decimal(request.GET.get("amount")) / mission.price
@@ -516,6 +528,187 @@ def supplierbill_delete(request, bill_id):
 
     return HttpResponseRedirect(redirect_url)
 
+@pydici_non_public
+@pydici_feature("billing_request")
+def internal_pre_billing(request, start_date=None, end_date=None):
+    """Pre billing page for internal subsidaries"""
+    if end_date is None:
+        end_date = date.today().replace(day=1)
+    else:
+        end_date = date(int(end_date[0:4]), int(end_date[4:6]), 1)
+    if start_date is None:
+        start_date = previousMonth(date.today())
+    else:
+        start_date = date(int(start_date[0:4]), int(start_date[4:6]), 1)
+
+    if end_date - start_date > timedelta(180):
+        # Prevent excessive window that is useless would lead to deny of service
+        start_date = (end_date - timedelta(180)).replace(day=1)
+
+    if end_date < start_date:
+        end_date = nextMonth(start_date)
+
+    internal_billing = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
+
+    internal_billing_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date).exclude(mission__nature="HOLIDAYS")
+    internal_billing_timesheets = internal_billing_timesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
+    internal_billing_timesheets = internal_billing_timesheets.exclude(consultant__subcontractor=True)
+
+
+    for internal_subsidiary in Subsidiary.objects.all():
+        subsidiary_timesheet_data = internal_billing_timesheets.filter(consultant__company=internal_subsidiary)
+        for target_subsidiary in Subsidiary.objects.exclude(pk=internal_subsidiary.id):
+            timesheet_data = subsidiary_timesheet_data.filter(Q(mission__lead__subsidiary=target_subsidiary) | Q(mission__subsidiary=target_subsidiary))
+            timesheet_data = timesheet_data .order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
+            billing_info = get_billing_info(timesheet_data, apply_internal_markup=True)
+            if billing_info:
+                internal_billing[(internal_subsidiary, target_subsidiary)] = billing_info
+
+    return render(request, "billing/internal_pre_billing.html",
+                  {"internal_billing": internal_billing,
+                   "start_date": start_date,
+                   "end_date": end_date,
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def internal_bill(request, bill_id=None):
+    """Add or edit internal bill"""
+    if bill_id:
+        try:
+            bill = InternalBill.objects.get(id=bill_id)
+        except InternalBill.DoesNotExist:
+            raise Http404
+    else:
+        bill = None
+
+    internalBillDetailFormSet = None
+    wip_status = ("0_DRAFT", "0_PROPOSED")
+
+    InternalBillDetailFormSet = inlineformset_factory(InternalBill, InternalBillDetail, formset=InternalBillDetailInlineFormset,
+                                                      form=InternalBillDetailForm, fields="__all__")
+
+    if request.POST:
+        form = InternalBillForm(request.POST, request.FILES, instance=bill)
+        if bill and bill.state in wip_status:
+            internalBillDetailFormSet = InternalBillDetailFormSet(request.POST, instance=bill)
+            if form.data["state"] not in wip_status and internalBillDetailFormSet.has_changed():
+                form.add_error("state", ValidationError(_("You can't modify bill details in that state")))
+        if form.is_valid() and ((internalBillDetailFormSet is None) or internalBillDetailFormSet.is_valid()):
+            bill = form.save()
+            if internalBillDetailFormSet:
+                internalBillDetailFormSet.save()
+            bill.save()  # Again, to take into account modified details.
+            if bill.state in wip_status:
+                success_url = reverse_lazy("billing:internal_bill", args=[bill.id,], )
+            else:
+                success_url = request.GET.get("return_to", False) or reverse_lazy("billing:internal_bill_detail", args=[bill.id,], )
+                if bill.bill_file:
+                    if form.changed_data == ["state"] and internalBillDetailFormSet is None:
+                        # only state has change. No need to regenerate bill file.
+                        messages.add_message(request, messages.INFO, _("Bill state has been updated"))
+                    elif "bill_file" in form.changed_data:
+                        # a file has been provided by user himself. We must not generate a file and overwrite it.
+                        messages.add_message(request, messages.WARNING, _("Using custom user file to replace current bill"))
+                    elif bill.internalbilldetail_set.exists():
+                        # bill file exist but authorized admin change information and do not provide custom file. Let's generate again bill file
+                        messages.add_message(request, messages.WARNING, _("A new bill is generated and replace the previous one"))
+                        if os.path.exists(bill.bill_file.path):
+                            os.remove(bill.bill_file.path)
+                        generate_bill_pdf(bill, request)
+                else:
+                    # Bill file still not exist. Let's create it
+                    messages.add_message(request, messages.INFO, _("A new bill file has been generated"))
+                    generate_bill_pdf(bill, request)
+            return HttpResponseRedirect(success_url)
+    else:
+        if bill:
+            # Create a form to edit the given bill
+            form = InternalBillForm(instance=bill)
+            if bill.state in wip_status:
+                internalBillDetailFormSet = InternalBillDetailFormSet(instance=bill)
+        else:
+            # Still no bill, let's create it with its detail if at least mission or buyer/seller information has been provided
+            missions = []
+            start_date = None
+            end_date = None
+            if request.GET.get("start_date"):
+                start_date = date(int(request.GET.get("start_date")[0:4]), int(request.GET.get("start_date")[4:6]), 1)
+            if request.GET.get("end_date"):
+                end_date = date(int(request.GET.get("end_date")[0:4]), int(request.GET.get("end_date")[4:6]), 1)
+
+            if request.GET.get("lead"):
+                lead = Lead.objects.get(id=request.GET.get("lead"))
+                missions = lead.mission_set.all()  # take all missions
+
+            if request.GET.get("mission"):
+                missions = [Mission.objects.get(id=request.GET.get("mission"))]
+
+            elif request.GET.get("buyer") and request.GET.get("seller") and start_date and end_date:
+                # Get all missions for this buyer/seller
+                buyer = Subsidiary.objects.get(id=request.GET.get("buyer"))
+                seller = Subsidiary.objects.get(id=request.GET.get("seller"))
+                missions = Mission.objects.filter(Q(lead__subsidiary=buyer) | Q(subsidiary=buyer))
+                missions = missions.filter(timesheet__consultant__company=seller,
+                                           timesheet__working_date__gte=start_date, timesheet__working_date__lt=end_date).distinct()
+            if missions and request.GET.get("buyer") and request.GET.get("seller"):
+                buyer = Subsidiary.objects.get(id=request.GET.get("buyer"))
+                seller = Subsidiary.objects.get(id=request.GET.get("seller"))
+                bill = InternalBill(buyer=buyer, seller=seller)
+                bill.save()
+            for mission in missions:
+                # Always create internal bill as time spent by default.
+                if request.GET.get("start_date") and request.GET.get("end_date"):
+                    start_date = date(int(request.GET.get("start_date")[0:4]), int(request.GET.get("start_date")[4:6]), 1)
+                    end_date = date(int(request.GET.get("end_date")[0:4]), int(request.GET.get("end_date")[4:6]), 1)
+                else:
+                    start_date = previousMonth(date.today())
+                    end_date = date.today().replace(day=1)
+                update_bill_from_timesheet(bill, mission, start_date, end_date)
+            if bill:
+                form = InternalBillForm(instance=bill)
+                internalBillDetailFormSet = InternalBillDetailFormSet(instance=bill)
+            else:
+                # Simple virgin new form
+                form = InternalBillForm()
+
+    return render(request, "billing/internal_bill_form.html",
+                  {"bill_form": form,
+                   "detail_formset": internalBillDetailFormSet,
+                   "detail_formset_helper": InternalBillDetailFormSetHelper(),
+                   "bill_id": bill.id if bill else None,
+                   "can_delete": bill.state in wip_status if bill else False,
+                   "can_preview": bill.state in wip_status if bill else False,
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def internal_bill_detail(request, bill_id=None):
+    """Display detailed bill information, metadata and bill pdf"""
+    bill = InternalBill.objects.get(id=bill_id)
+    return render(request, "billing/internal_bill_detail.html", {"bill": bill})
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def internalbill_delete(request, bill_id):
+    """Delete internal in early stage"""
+    redirect_url = reverse("billing:internal_bills_in_creation")
+    try:
+        bill = InternalBill.objects.get(id=bill_id)
+        if bill.state == "0_DRAFT":
+            bill.delete()
+            messages.add_message(request, messages.INFO, _("Bill removed successfully"))
+        else:
+            messages.add_message(request, messages.WARNING, _("Can't remove a bill that have been sent. You may cancel it"))
+            redirect_url = reverse_lazy("billing:internal_bill", args=[bill.id])
+    except InternalBill.DoesNotExist:
+        messages.add_message(request, messages.WARNING, _("Can't find bill %s" % bill_id))
+
+    return HttpResponseRedirect(redirect_url)
+
 
 @pydici_non_public
 @pydici_feature("billing_request")
@@ -546,7 +739,6 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
         mine = False
 
     timespent_billing = {}  # Key is lead, value is total and dict of mission(total, Mission billingData)
-    internal_billing = {}  # Same structure as timeSpentBilling but for billing between internal subsidiaries
 
     try:
         billing_consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
@@ -564,24 +756,16 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
     timespent_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
                                                     mission__nature="PROD", mission__billing_mode="TIME_SPENT")
 
-    internal_billing_timesheets = Timesheet.objects.filter(working_date__gte=start_date, working_date__lt=end_date,
-                                                    mission__nature="PROD")
-    internal_billing_timesheets = internal_billing_timesheets.exclude(Q(consultant__company=F("mission__subsidiary")) & Q(consultant__company=F("mission__lead__subsidiary")))
-    internal_billing_timesheets = internal_billing_timesheets.exclude(consultant__subcontractor=True)
-
     if mine:  # Filter on consultant mission/lead as responsible
         fixed_price_missions = fixed_price_missions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
         undefined_billing_mode_missions = undefined_billing_mode_missions.filter(Q(lead__responsible=billing_consultant) | Q(responsible=billing_consultant))
         timespent_timesheets = timespent_timesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
-        internal_billing_timesheets = internal_billing_timesheets.filter(Q(mission__lead__responsible=billing_consultant) | Q(mission__responsible=billing_consultant))
     elif team:  # Filter on team
         fixed_price_missions = fixed_price_missions.filter(
             Q(lead__responsible__in=team_consultants) | Q(responsible__in=team_consultants))
         undefined_billing_mode_missions = undefined_billing_mode_missions.filter(
             Q(lead__responsible__in=team_consultants) | Q(responsible__in=team_consultants))
         timespent_timesheets = timespent_timesheets.filter(
-            Q(mission__lead__responsible__in=team_consultants) | Q(mission__responsible__in=team_consultants))
-        internal_billing_timesheets = internal_billing_timesheets.filter(
             Q(mission__lead__responsible__in=team_consultants) | Q(mission__responsible__in=team_consultants))
 
     fixed_price_missions = fixed_price_missions.order_by("lead").distinct()
@@ -594,15 +778,6 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
 
     timesheet_data = timespent_timesheets.order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
     timespent_billing = get_billing_info(timesheet_data)
-
-    for internal_subsidiary in Subsidiary.objects.all():
-        subsidiary_timesheet_data = internal_billing_timesheets.filter(consultant__company=internal_subsidiary)
-        for target_subsidiary in Subsidiary.objects.exclude(pk=internal_subsidiary.id):
-            timesheet_data = subsidiary_timesheet_data.filter(mission__lead__subsidiary=target_subsidiary)
-            timesheet_data = timesheet_data .order_by("mission__lead", "consultant").values_list("mission", "consultant").annotate(Sum("charge"))
-            billing_info = get_billing_info(timesheet_data)
-            if billing_info:
-                internal_billing[(internal_subsidiary,target_subsidiary)] = billing_info
 
     fixed_price_billing = []
     for mission in fixed_price_missions:
@@ -620,7 +795,6 @@ def pre_billing(request, start_date=None, end_date=None, mine=False):
                   {"time_spent_billing": timespent_billing,
                    "fixed_price_billing": fixed_price_billing,
                    "undefined_billing_mode_missions": undefined_billing_mode_missions,
-                   "internal_billing": internal_billing,
                    "start_date": start_date,
                    "end_date": end_date,
                    "mine": mine,
@@ -658,6 +832,24 @@ def supplier_bills_archive(request):
     return render(request, "billing/supplier_bills_archive.html",
                   {"data_url": reverse('billing:supplier_bills_archive_DT'),
                    "datatable_options": ''' "order": [[4, "desc"]], "columnDefs": [{ "orderable": false, "targets": [2, 10] }]  ''',
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("billing_management")
+def internal_bills_in_creation(request):
+    """Review internal bill in preparation"""
+    return render(request, "billing/internal_bills_in_creation.html",
+                  {"data_url": reverse('billing:internal_bills_in_creation_DT'),
+                   "datatable_options": ''' "order": [[4, "desc"]] ''',
+                   "user": request.user})
+
+
+def internal_bills_archive(request):
+    """Review all internal bill """
+    return render(request, "billing/internal_bills_archive.html",
+                  {"data_url": reverse('billing:internal_bills_archive_DT'),
+                   "datatable_options": ''' "lengthMenu": [ 10, 25, 50, 100, 500 ], "order": [[3, "desc"]], "columnDefs": [{ "orderable": false, "targets": [10] }]  ''',
                    "user": request.user})
 
 
@@ -701,7 +893,7 @@ def client_billing_control_pivotable(request):
 def graph_billing(request):
     """Bar graph of client bills by status"""
     subsidiary = get_subsidiary_from_session(request)
-    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(3*365)), state__in=("1_SENT", "2_PAID"))
+    bills = ClientBill.objects.filter(creation_date__gt=(date.today() - timedelta(3 * 365)), state__in=("1_SENT", "2_PAID"))
     if subsidiary:
         bills = bills.filter(lead__subsidiary=subsidiary)
     if bills.count() == 0:
@@ -710,7 +902,7 @@ def graph_billing(request):
     bills = bills.annotate(amount_paid=Sum("amount", filter=Q(state="2_PAID")),
                            amount_sent=Sum("amount", filter=Q(state="1_SENT")))
     bills = bills.values("month", "amount_paid", "amount_sent").order_by()
-    bills = [{"month": b["month"].isoformat(), "amount_paid": float(b["amount_paid"] or 0)/1000, "amount_sent": float(b["amount_sent"] or 0)/1000} for b in bills]
+    bills = [{"month": b["month"].isoformat(), "amount_paid": float(b["amount_paid"] or 0) / 1000, "amount_sent": float(b["amount_sent"] or 0) / 1000} for b in bills]
 
     return render(request, "billing/graph_billing.html",
                   {"graph_data": json.dumps(bills),
@@ -731,7 +923,7 @@ def graph_yearly_billing(request):
     growth = []
     subsidiary = get_subsidiary_from_session(request)
     if subsidiary:
-        subsidiaries = [subsidiary,]
+        subsidiaries = [subsidiary, ]
     else:
         subsidiaries = Subsidiary.objects.all()
     for subsidiary in subsidiaries:
@@ -772,7 +964,7 @@ def graph_yearly_billing(request):
     return render(request, "billing/graph_yearly_billing.html",
                   {"graph_data": json.dumps(graph_data),
                    "years": years,
-                   "subsidiaries_names" : json.dumps(labels),
+                   "subsidiaries_names": json.dumps(labels),
                    "series_colors": COLORS,
                    "user": request.user})
 

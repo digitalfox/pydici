@@ -26,14 +26,14 @@ from django.conf import settings
 
 from taggit.models import Tag, TaggedItem
 
-from core.utils import sortedValues, COLORS, get_parameter, moving_average, nextMonth
+from core.utils import sortedValues, COLORS, moving_average, nextMonth
 from crm.utils import get_subsidiary_from_session
 from leads.models import Lead
 from leads.forms import LeadForm, LeadTagForm
 from leads.utils import post_save_lead, leads_state_stat
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_similar
-from core.utils import getLeadDirs, createProjectTree, get_fiscal_years_from_qs, to_int_or_round
+from core.utils import getLeadDirs, createProjectTree, to_int_or_round
 from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
 from people.tasks import compute_consultant_tasks
@@ -325,7 +325,7 @@ def manage_tags(request):
 @pydici_feature("leads")
 def tags(request, lead_id):
     """@return: all tags that contains q parameter and are not already associated to this lead as a simple text list"""
-    #TODO: remove this function
+    # TODO: remove this function
     tags = Tag.objects.all().exclude(lead__id=lead_id)  # Exclude existing tags
     tags = tags.filter(name__icontains=request.GET["term"])
     tags = tags.values_list("name", flat=True)

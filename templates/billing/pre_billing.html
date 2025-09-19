@@ -70,9 +70,6 @@
                           {% endfor %}
                       </nav>
                   {% endif %}
-                  {% if internal_billing %}
-                    <a href="#internal" class="nav-link">{% trans "Pre billing between subsidiaries" %}</a>
-                  {% endif %}
               </nav>
         </nav>
     </div>
@@ -175,40 +172,6 @@
 
     <hr/>
 {% endfor %}
-
-{% if internal_billing %}
-<h2 id="internal" class="mt-3">{% trans "Internal billing" %}</h2>
-{% for internal_subsidiaries, subsidiary_internal_billing in internal_billing.items %}
-    <h3 class="mt-3">{% blocktrans with from=internal_subsidiaries.0 to=internal_subsidiaries.1 %}Internal billing from {{ from }} to {{ to }}{% endblocktrans %} ({{ start_date }} - {{ end_date }})</h3>
-
-    {% for lead, lead_data in subsidiary_internal_billing %}
-        <h4 class="mt-2"><a href="{% url 'leads:detail' lead.id %}">{{ lead }} ({{ lead.deal_id }})</a></h4>
-        {% for mission, mission_data in lead_data.1.items %}
-            <h5 class="mt-2"><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission.short_name }}</a></h5>
-            <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-8">
-                    <table class="table table-sm table-striped table-hover">
-                        <tr><th>{% trans "consultant" %}</th><th>{% trans "days" %}</th><th>{% trans "rate" %}</th><th>{% trans "total" %}</th></tr>
-                        {% for consultant, charge, rate, total in mission_data.1 %}
-                            <tr><td>{% include "people/__consultant_name.html" %}</td>
-                                <td>{{ charge }} </td>
-                                <td>{{ rate|floatformat:"-2" }} €</td>
-                                <td>{{ total|floatformat:"-2" }} €</td>
-                            </tr>
-                        {% endfor %}
-                        <tr><th>{% trans "total" %}</th><td></td><td></td><th>{{ mission_data.0|floatformat:"-2" }} €</th></tr>
-                    </table>
-                </div>
-            </div>
-        {% endfor %}
-         {% if lead.mission_set.count != 1 %}
-            <h4>{% trans "Total:" %} {{ lead_data.0|floatformat:"-2"}} €</h4>
-         {% endif %}
-         <button type="button" class="btn btn-primary" disabled>{% trans "Add an internal bill" %}</button>
-         <hr/>
-    {% endfor %}
-{% endfor %}
-{% endif %}
 
 {% if undefined_billing_mode_missions %}
     <hr>

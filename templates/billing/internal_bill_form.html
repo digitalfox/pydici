@@ -1,0 +1,39 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %} 
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+
+<form action="{%if bill_id %}{% url 'billing:internal_bill' bill_id=bill_id %}{% endif %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h2 class="mt-2">{% trans "Bill header" %}</h2>
+    {% crispy bill_form %}
+    <hr>
+    {% if detail_formset %}
+        <h2>{% trans "Bill mission detail" %}</h2>
+        {% with detail_formset as formset %}{% include "bootstrap5/errors_formset.html" %}{% endwith %}
+        {% crispy detail_formset detail_formset_helper %}
+    {% endif %}
+    <div class="row mb-2">
+        {% if can_delete %}
+            <div class="col-auto me-auto"><a role="button" class="btn btn-danger" style="color:#FFFFFF" href="{% url 'billing:internalbill_delete' bill_id %}">{% trans "delete" %}</a></div>
+        {% endif %}
+        <div class="col-auto">
+            <input id="submit-id-submit" class="btn btn-primary" type="submit" value="{% trans 'Save' %}" name="Submit">
+            {% if can_preview %}
+                <a class="btn btn-primary" href="{% url 'billing:internal_bill_detail' bill_id %}">{% trans "Display bill details" %}</a>
+                <a class="btn btn-primary" target="_blank" href="{% url 'billing:internal_bill_pdf' bill_id %}">{% trans "Preview bill as PDF" %}</a>
+            {% endif %}
+        </div>
+
+    </div>
+</form>
+{% include "core/_datepicker.html" %}
+
+{% include "core/_select2.html" %}
+
+{% endblock %}

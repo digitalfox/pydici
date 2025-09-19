@@ -27,7 +27,7 @@ def warn_for_incomplete_timesheet(warn_overbooking=False, days=None, month="last
     :param month: Month to check: current or last (default) month"""
     email_template = get_template("batch/timesheet_warning_email.txt")
     if month == "current":
-        #TODO use core.utils nextMonth()
+        # TODO use core.utils nextMonth()
         nextMonth = (date.today().replace(day=1) + timedelta(days=40)).replace(day=1)
         currentMonth = date.today().replace(day=1)
     elif month == "last":

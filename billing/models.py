@@ -26,10 +26,10 @@ from leads.models import Lead
 from staffing.models import Mission, Timesheet
 from people.models import Consultant
 from expense.models import Expense
-from crm.models import Supplier
-from billing.utils import compute_bill, get_bill_id_from_path
+from crm.models import Supplier, Subsidiary
+from billing.utils import compute_bill, compute_internal_bill, get_bill_id_from_path
 from core.utils import sanitizeName, nextMonth
-from core.models import CLIENT_BILL_LANG
+from core.models import CLIENT_BILL_LANG, INTERNAL_BILL_LANG
 from people.tasks import compute_consultant_tasks
 
 
@@ -44,10 +44,7 @@ class BillStorage(FileSystemStorage):
     def url(self, name):
         try:
             bill_id = get_bill_id_from_path(name)
-            if self.nature == "client":
-                return reverse("billing:bill_file", kwargs={"bill_id": bill_id, "nature": "client"})
-            else:
-                return reverse("billing:bill_file", kwargs={"bill_id": bill_id, "nature": "supplier"})
+            return reverse("billing:bill_file", kwargs={"bill_id": bill_id, "nature": self.nature})
         except Exception:
             # Don't display URL if Bill does not exist or path is invalid
             return ""
@@ -70,8 +67,7 @@ def default_bill_id():
 
 
 class AbstractBill(models.Model):
-    """Abstract class that factorize ClientBill and SupplierBill fields and logic"""
-    lead = models.ForeignKey(Lead, verbose_name=_("Lead"), on_delete=models.CASCADE)
+    """Abstract class that factorize ClientBill, SupplierBill and InternalBill fields and logic"""
     bill_id = models.CharField(_("Bill id"), max_length=200, unique=True, default=default_bill_id)
     creation_date = models.DateField(_("Creation date"), default=date.today)
     due_date = models.DateField(_("Due date"), default=default_due_date)
@@ -107,6 +103,52 @@ class AbstractBill(models.Model):
             wait = date.today() - self.creation_date
         return wait.days
 
+    def bill_file_url(self):
+        """Return url if file exists, else #"""
+        try:
+            return self.bill_file.url
+        except ValueError:
+            return "#"
+
+    def vat_amount(self):
+        return self.amount_with_vat - self.amount
+
+    def bill_data(self):
+        """Return bill data in formatted way to be included inline in a html page"""
+        response = ""
+        if self.bill_file:
+            data = BytesIO()
+            for chunk in self.bill_file.chunks():
+                data.write(chunk)
+
+            data = b64encode(data.getvalue()).decode()
+            response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
+
+        return response
+
+    def save(self, *args, **kwargs):
+        super(AbstractBill, self).save(*args, **kwargs)  # Save it
+        if "force_insert" in kwargs: kwargs.pop("force_insert")
+
+        if self.bill_file:
+            bill_id = get_bill_id_from_path(self.bill_file.name)
+            if bill_id == "None":
+                # Bill file was saved prior ID generation. Let's move it to proper directory name
+                old_file_path = self.bill_file.path
+                self.bill_file.name = bill_file_path(self, os.path.basename(self.bill_file.name))  # Define new name
+                os.makedirs(os.path.dirname(self.bill_file.path), exist_ok=True) # Create dir if needed (it should)
+                os.rename(old_file_path, self.bill_file.path)  # Move file
+                super(AbstractBill, self).save(*args, **kwargs)  # Save it again with new path
+
+    class Meta:
+        abstract = True
+        ordering = ["creation_date"]
+
+
+class AbstractLeadBill(AbstractBill):
+    """Abstract class that factorize related to lead bills: ClientBill, SupplierBill"""
+    lead = models.ForeignKey(Lead, verbose_name=_("Lead"), on_delete=models.CASCADE)
+
     def creation_lag(self):
         """Time between bill creation and earliest possible date. Worst case is considered when bill has multiple detail lines"""
         lag = []
@@ -129,38 +171,18 @@ class AbstractBill(models.Model):
         if lag:
             return max(lag).days
 
-    def bill_file_url(self):
-        """Return url if file exists, else #"""
-        try:
-            return self.bill_file.url
-        except ValueError:
-            return "#"
-
-    def vat_amount(self):
-        return self.amount_with_vat - self.amount
-
     def save(self, *args, **kwargs):
-        super(AbstractBill, self).save(*args, **kwargs)  # Save it
+        super(AbstractLeadBill, self).save(*args, **kwargs)  # Save it
         if "force_insert" in kwargs: kwargs.pop("force_insert")
         if self.lead.responsible:
             compute_consultant_tasks.delay(self.lead.responsible.id)
-
-        if self.bill_file:
-            bill_id = get_bill_id_from_path(self.bill_file.name)
-            if bill_id == "None":
-                # Bill file was saved prior ID generation. Let's move it to proper directory name
-                old_file_path = self.bill_file.path
-                self.bill_file.name = bill_file_path(self, os.path.basename(self.bill_file.name))  # Define new name
-                os.makedirs(os.path.dirname(self.bill_file.path), exist_ok=True) # Create dir if needed (it should)
-                os.rename(old_file_path, self.bill_file.path)  # Move file
-                super(AbstractBill, self).save(*args, **kwargs)  # Save it again with new path
 
     class Meta:
         abstract = True
         ordering = ["lead__client__organisation__company", "creation_date"]
 
 
-class ClientBill(AbstractBill):
+class ClientBill(AbstractLeadBill):
     CLIENT_BILL_STATE = (
         ('0_DRAFT', _("Draft")),
         ('0_PROPOSED', _("Proposed")),
@@ -211,19 +233,6 @@ class ClientBill(AbstractBill):
         """Returns total of this bill without taxes and expenses"""
         return list(self.billdetail_set.aggregate(Sum("amount")).values())[0] or 0
 
-    def bill_data(self):
-        """Return bill data in formatted way to be included inline in a html page"""
-        response = ""
-        if self.bill_file:
-            data = BytesIO()
-            for chunk in self.bill_file.chunks():
-                data.write(chunk)
-
-            data = b64encode(data.getvalue()).decode()
-            response = "<object data='data:application/pdf;base64,%s' type='application/pdf' width='100%%' height='100%%'></object>" % data
-
-        return response
-
     def get_absolute_url(self):
         return reverse("billing:client_bill_detail", args=[self.id,])
 
@@ -255,7 +264,51 @@ class ClientBill(AbstractBill):
         indexes = [models.Index(fields=["state", "due_date"]),]
 
 
-class SupplierBill(AbstractBill):
+class InternalBill(AbstractBill):
+    INTERNAL_BILL_STATE = (
+        ("0_DRAFT", _("Draft")),
+        ("1_SENT", _("Sent")),
+        ("2_PAID", _("Paid")),
+    )
+    state = models.CharField(_("State"), max_length=30, choices=INTERNAL_BILL_STATE, default="0_DRAFT")
+    bill_file = models.FileField(_("File"), max_length=500, upload_to=bill_file_path, storage=BillStorage(nature="internal"), null=True, blank=True)
+    buyer = models.ForeignKey(Subsidiary, on_delete=models.CASCADE, verbose_name=_("Buyer"), related_name="buyer")
+    seller = models.ForeignKey(Subsidiary, on_delete=models.CASCADE, verbose_name=_("Seller"), related_name="seller")
+    add_facturx_data = models.BooleanField(_("Add Factur-X embedded information"), default=False)
+    lang = models.CharField(_("Language"), max_length=10, choices=INTERNAL_BILL_LANG, null=True, blank=True)
+
+    history = AuditlogHistoryField()
+
+    def taxes(self):
+        """Return taxes subtotal grouped by taxe rate like this [[20, 1923.23], [10, 152]]"""
+        taxes = {}
+        for detail in self.internalbilldetail_set.all():
+            taxes[detail.vat] = taxes.get(detail.vat, 0) + (detail.amount_with_vat - detail.amount)
+        return list(taxes.items())
+
+    def save(self, *args, **kwargs):
+        super(InternalBill, self).save(*args, **kwargs)  # Save it to create pk
+        if "force_insert" in kwargs: kwargs.pop("force_insert")
+
+        if self.state in ("0_DRAFT"):
+            compute_internal_bill(self)
+            # Update creation and due date till bill is not really sent
+            self.due_date = date.today() + (self.due_date - self.creation_date) # shift with same timeframe
+            self.creation_date = date.today()
+        # Automatically set payment date for paid bills
+        if self.state == "2_PAID" and not self.payment_date:
+            self.payment_date = date.today()
+        # Automatically switch as paid bills with payment date
+        elif self.state == "1_SENT" and self.payment_date:
+            self.state = "2_PAID"
+        super(InternalBill, self).save(*args, **kwargs)  # Save it
+
+    class Meta:
+        verbose_name = _("Internal Bill")
+        indexes = [models.Index(fields=["state", "creation_date"]),]
+
+
+class SupplierBill(AbstractLeadBill):
     SUPPLIER_BILL_STATE = (
         ('1_RECEIVED', _("Received")),
         ('1_VALIDATED', _("Validated")),
@@ -290,7 +343,6 @@ class SupplierBill(AbstractBill):
 
         return total_expected - float(already_paid)
 
-
     def save(self, *args, **kwargs):
         # Save it first to define pk and allow browsing relationship
         super(SupplierBill, self).save(*args, **kwargs)
@@ -310,20 +362,21 @@ class SupplierBill(AbstractBill):
         unique_together = (("supplier", "supplier_bill_id"),)
 
 
-class BillDetail(models.Model):
-    """Lines of a client bill that describe what's actually billed for mission"""
-    bill = models.ForeignKey(ClientBill, on_delete=models.CASCADE)
+class AbstractBillDetail(models.Model):
+    """Common fields for (client)BillDetail and internalBillDetail"""
     mission = models.ForeignKey(Mission, on_delete=models.CASCADE)
     month = models.DateField(null=True)
     consultant = models.ForeignKey(Consultant, null=True, blank=True, on_delete=models.CASCADE)
     quantity = models.FloatField(_("Quantity"))
     unit_price = models.DecimalField(_("Unit price (€)"), max_digits=10, decimal_places=2)
     amount = models.DecimalField(_("Amount (€ excl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
-    amount_with_vat = models.DecimalField(_("Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True,
-                                          null=True)
-    vat = models.DecimalField(_("VAT (%)"), max_digits=4, decimal_places=2,
-                              default=Decimal(settings.PYDICI_DEFAULT_VAT_RATE))
+    amount_with_vat = models.DecimalField(_("Amount (€ incl tax)"), max_digits=10, decimal_places=2, blank=True, null=True)
+    vat = models.DecimalField(_("VAT (%)"), max_digits=4, decimal_places=2, default=Decimal(settings.PYDICI_DEFAULT_VAT_RATE))
     label = models.CharField(_("Label"), max_length=200, blank=True, null=True)
+
+    class Meta:
+        abstract = True
+        ordering = ("mission", "month", "consultant")
 
     def save(self, *args, **kwargs):
         if self.unit_price and self.quantity:
@@ -339,10 +392,17 @@ class BillDetail(models.Model):
             self.amount = self.amount_with_vat / (1 + self.vat / 100)
         else:
             self.amount_with_vat = 0
-        super(BillDetail, self).save(*args, **kwargs)  # Save it
+        super(AbstractBillDetail, self).save(*args, **kwargs)  # Save it
 
-    class Meta:
-        ordering = ("mission", "month", "consultant")
+
+class BillDetail(AbstractBillDetail):
+    """Lines of a client bill that describe what's actually billed for mission"""
+    bill = models.ForeignKey(ClientBill, on_delete=models.CASCADE)
+
+
+class InternalBillDetail(AbstractBillDetail):
+    """Lines of an internal bill that describe what's actually billed for mission"""
+    bill = models.ForeignKey(InternalBill, on_delete=models.CASCADE)
 
 
 class BillExpense(models.Model):

@@ -7,8 +7,9 @@ Test cases for billing module
 from datetime import date
 import json
 
-from django.test import TestCase, TransactionTestCase, RequestFactory
+from django.test import TestCase, TransactionTestCase
 from django.db import IntegrityError
+from django.db.models import Sum
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
@@ -19,9 +20,8 @@ from leads.models import Lead
 from staffing.models import Timesheet, Mission, FinancialCondition
 from people.models import Consultant
 from core.tests import PYDICI_FIXTURES, setup_test_user_features, TEST_USERNAME
-from core.utils import previousMonth, nextMonth
-from billing.utils import get_client_billing_control_pivotable_data
-
+from core.utils import previousMonth, nextMonth, get_parameter
+from billing.utils import get_client_billing_control_pivotable_data, get_billing_info
 
 
 class BillingModelTest(TransactionTestCase):
@@ -55,7 +55,7 @@ class BillingModelTest(TransactionTestCase):
         bill.amount = 100
         self.assertIsNone(bill.amount_with_vat)
         bill.save()
-        #TODO: add billDetail test
+        # TODO: add billDetail test
         self.assertEqual(bill.state, "0_DRAFT")
         self.assertEqual(bill.payment_delay(), 0)
         self.assertEqual(bill.payment_wait(), -30)
@@ -121,19 +121,19 @@ class BillingModelTest(TransactionTestCase):
         lead.save()
         self.assertEqual(mission.client_deal_id, "")
         self.assertEqual(bill.client_deal_id, "")
-        bill.save() # trigger inheritance
+        bill.save()  # trigger inheritance
         self.assertEqual(bill.client_deal_id, "123")
-        mission.save() # trigger inheritance
+        mission.save()  # trigger inheritance
         self.assertEqual(mission.client_deal_id, "123")
 
         # With mission client deal id
         mission.client_deal_id = "123M"
         mission.save()
-        self.assertEqual(bill.client_deal_id, "123") # still lead client deal id
+        self.assertEqual(bill.client_deal_id, "123")  # still lead client deal id
         bill.save()
         self.assertEqual(bill.client_deal_id, "123")  # again, because id is defined
         bill.client_deal_id = ""
-        bill.save() # trigger inheritance
+        bill.save()  # trigger inheritance
         self.assertEqual(bill.client_deal_id, "123M")  # this time, inherit from mission
 
         # With bill client deal id
@@ -152,11 +152,14 @@ class BillingModelTest(TransactionTestCase):
         bill2.save()
         self.assertEqual(bill2.client_deal_id, "123")  # multiple mission. Use lead client deal id
 
+
 class TestBillingViews(TestCase):
     fixtures = PYDICI_FIXTURES
+
     def setUp(self):
         setup_test_user_features()
         self.test_user = User.objects.get(username=TEST_USERNAME)
+
     def test_create_client_bill(self):
         self.client.force_login(self.test_user)
         bill_count = ClientBill.objects.count()
@@ -173,7 +176,7 @@ class TestBillingViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(bill_count + 1, ClientBill.objects.count())
 
-        response = self.client.get(reverse("billing:bill_pdf", args=[ClientBill.objects.last().id,]))
+        response = self.client.get(reverse("billing:bill_pdf", args=[ClientBill.objects.last().id, ]))
         self.assertEqual(response.status_code, 200)
 
     def test_pre_billing(self):
@@ -191,30 +194,62 @@ class TestBillingViews(TestCase):
 
         # No timesheet, no pre billing
         r = self.client.get(reverse("billing:pre_billing"))
-        self.assertFalse(r.context["internal_billing"])
         self.assertFalse(r.context["time_spent_billing"])
 
-        # Add simple timesheet. Still no internal billing
+        # Add simple timesheet
         Timesheet(mission=mission, working_date=previous_month, consultant=c1, charge=7).save()
         r = self.client.get(reverse("billing:pre_billing"))
-        self.assertFalse(r.context["internal_billing"])
         self.assertEqual(len(r.context["time_spent_billing"]), 1)
 
-        # Timesheet from a consultant of another company, we have now internal billing
+        # Timesheet from a consultant of another company. We still need to bill the client
+        Timesheet.objects.filter(mission=mission).delete()
         Timesheet(mission=mission, working_date=previous_month, consultant=c2, charge=4).save()
         r = self.client.get(reverse("billing:pre_billing"))
-        self.assertTrue(r.context["internal_billing"])
         self.assertEqual(len(r.context["time_spent_billing"]), 1)
 
-        # In fact, this consultant is a subcontractor, not internal billing required
+        # In fact, this consultant is a subcontractor. We still need to bill the client.
         c2.subcontractor = True
         c2.save()
         r = self.client.get(reverse("billing:pre_billing"))
-        self.assertFalse(r.context["internal_billing"])
         self.assertEqual(len(r.context["time_spent_billing"]), 1)
+
+def test_internal_pre_billing(self):
+    self.client.force_login(self.test_user)
+    previous_month = previousMonth(date.today())
+    lead = Lead.objects.get(id=1)
+    c1 = Consultant.objects.get(id=1)
+    c2 = Consultant.objects.get(id=2)
+    c2.company_id = 2
+    c2.save()
+    mission = Mission(lead=lead, subsidiary_id=1, billing_mode="TIME_SPENT", nature="PROD", probability=100)
+    mission.save()
+    FinancialCondition(consultant=c1, mission=mission, daily_rate=800).save()
+    FinancialCondition(consultant=c2, mission=mission, daily_rate=1100).save()
+
+    # No timesheet, no pre billing
+    r = self.client.get(reverse("billing:pre_billing"))
+    self.assertFalse(r.context["internal_billing"])
+
+    # Add simple timesheet. Still no internal billing
+    Timesheet(mission=mission, working_date=previous_month, consultant=c1, charge=7).save()
+    r = self.client.get(reverse("billing:pre_billing"))
+    self.assertFalse(r.context["internal_billing"])
+
+    # Timesheet from a consultant of another company, we have now internal billing
+    Timesheet(mission=mission, working_date=previous_month, consultant=c2, charge=4).save()
+    r = self.client.get(reverse("billing:pre_billing"))
+    self.assertTrue(r.context["internal_billing"])
+
+    # In fact, this consultant is a subcontractor, not internal billing required
+    c2.subcontractor = True
+    c2.save()
+    r = self.client.get(reverse("billing:pre_billing"))
+    self.assertFalse(r.context["internal_billing"])
+
 
 class TestBillingUtils(TestCase):
     fixtures = PYDICI_FIXTURES
+
     def setUp(self):
         setup_test_user_features()
         self.test_user = User.objects.get(username=TEST_USERNAME)
@@ -230,60 +265,78 @@ class TestBillingUtils(TestCase):
         d = json.loads(get_client_billing_control_pivotable_data(filter_on_subsidiary=s))
         self.assertEqual(len(d), 0)  # new subsidiary, empty set
 
-        l = Lead(subsidiary=s, client_id=1)
-        l.save()
-        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        lead = Lead(subsidiary=s, client_id=1)
+        lead.save()
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=lead))
         self.assertEqual(len(d), 0)  # new lead, empty set
 
-        m = Mission(lead=l, subsidiary=s, nature="PROD", probability=100, billing_mode="TIME_SPENT")
+        m = Mission(lead=lead, subsidiary=s, nature="PROD", probability=100, billing_mode="TIME_SPENT")
         m.save()
         FinancialCondition(consultant=c, mission=m, daily_rate=1000).save()
         self.assertEqual(len(d), 0)  # new mission but no timesheet, empty set
 
         Timesheet(mission=m, consultant=c, working_date=date.today(), charge=1).save()
-        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=lead))
         self.assertEqual(len(d), 1)  # still no billing
         self.assertEqual(sum([x[_("amount")] for x in d]), 1000)
 
         # add client bill detail
-        bill = ClientBill(lead=l, creation_date=date.today(), state="0_PROPOSED")
+        bill = ClientBill(lead=lead, creation_date=date.today(), state="0_PROPOSED")
         bill.save()
         BillDetail(bill=bill, consultant=c, mission=m, quantity=1, unit_price=1000, month=date.today().replace(day=1)).save()
-        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=lead))
         self.assertEqual(len(d), 2)  # 1 activity and 1 bill
         self.assertEqual(sum([x[_("amount")] for x in d]), 0)  # we billed what we did
 
         # add bills outside timesheet window and with wrong consultant
         BillDetail(bill=bill, consultant=c, mission=m, quantity=3, unit_price=1000, month=nextMonth(date.today())).save()
         BillDetail(bill=bill, consultant=c2, mission=m, quantity=4, unit_price=1000, month=previousMonth(date.today())).save()
-        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=lead))
         self.assertEqual(len(d), 4)  # 2 + 2 new bills
         self.assertEqual(sum([x[_("amount")] for x in d]), -7000)  # we over bill by 7 * 1000
 
         # add timesheet according billing
         Timesheet(mission=m, consultant=c, working_date=nextMonth(date.today()), charge=3).save()
         Timesheet(mission=m, consultant=c, working_date=previousMonth(date.today()), charge=4).save()
-        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=lead))
         self.assertEqual(len(d), 6)  # activity and bill for 3 months
         self.assertEqual(sum([x[_("amount")] for x in d]), 0)  # we billed what we did
 
         # And new, add a fixed price mission
-        m2 = Mission(lead=l, subsidiary=s, nature="PROD", probability=100, price=5, billing_mode="FIXED_PRICE")
+        m2 = Mission(lead=lead, subsidiary=s, nature="PROD", probability=100, price=5, billing_mode="FIXED_PRICE")
         m2.save()
         FinancialCondition(consultant=c, mission=m2, daily_rate=1000).save()
         BillDetail(bill=bill, mission=m2, quantity=1, unit_price=3000).save()
-        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=lead))
         self.assertEqual(len(d), 7)  # activity and bill for 3 months and 1 fixed price bill
-        self.assertEqual(sum([x[_("amount")] for x in d]), -3000) # we bill in advance
+        self.assertEqual(sum([x[_("amount")] for x in d]), -3000)  # we bill in advance
 
         # Add timesheet on fixed price mission
         Timesheet(mission=m2, consultant=c, working_date=date.today(), charge=2).save()
-        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=lead))
         self.assertEqual(len(d), 8)  # 6 + and 1 activity and 1 bill for fixed price mission
-        self.assertEqual(sum([x[_("amount")] for x in d]), -1000) # Still one day of advance
+        self.assertEqual(sum([x[_("amount")] for x in d]), -1000)  # Still one day of advance
 
         # We spent too much time, but it won't be billed as it's a fixe price mission
         Timesheet(mission=m2, consultant=c, working_date=nextMonth(date.today()), charge=8).save()
-        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=l))
+        d = json.loads(get_client_billing_control_pivotable_data(filter_on_lead=lead))
         self.assertEqual(len(d), 9)  # 6 + and 2 activities and 1 bill for fixed price mission
         self.assertEqual(sum([x[_("amount")] for x in d]), 2000)  # We should have 2K to bill, no more
+
+    def test_get_billing_info(self):
+        s = Subsidiary(name="test", code="T")
+        s.save()
+        c = Consultant.objects.get(id=1)
+        lead = Lead(subsidiary=s, client_id=1)
+        lead.save()
+        m = Mission(lead=lead, subsidiary=s, nature="PROD", probability=100, billing_mode="TIME_SPENT")
+        m.save()
+        FinancialCondition.objects.create(mission=m, consultant=c, daily_rate=1000).save()
+        Timesheet(mission=m, consultant=c, working_date=previousMonth(date.today()), charge=8).save()
+        timesheet_data = Timesheet.objects.filter(mission=m, consultant=c).values_list("mission", "consultant").annotate(Sum("charge"))
+        billing_info = get_billing_info(timesheet_data)
+        self.assertEqual(len(billing_info), 1)
+        self.assertEqual(billing_info[0][1][0], 8000)
+        billing_info = get_billing_info(timesheet_data, apply_internal_markup=True)
+        self.assertEqual(len(billing_info), 1)
+        self.assertEqual(billing_info[0][1][0], 8000 * (1 - get_parameter("INTERNAL_MARKUP") / 100))

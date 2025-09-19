@@ -1,0 +1,66 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load l10n %}
+{% load pydici_filters %}
+
+{% block title %}{% trans "Internal bill detail" %}{% endblock %}
+
+
+{% block content %}
+
+<h2>
+    {% blocktrans with id=bill.bill_id %}Bill n°{{ id }}{% endblocktrans %}
+    {% if pydici_feature.billing_management %}<a href="{% url 'billing:internal_bill' bill.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>{% endif %}
+</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-hover table-striped table-sm">
+            <tr>
+                <th>{% trans "Bill id" %}</th>
+                <td>{{ bill.bill_id }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Amount" %}</th>
+                <td>{{ bill.amount }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Amount with VAT" %}</th>
+                <td>{{ bill.amount_with_vat }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Creation date" %}</th>
+                <td>{{ bill.creation_date }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Due date" %}</th>
+                <td><span {% if bill.payment_wait > 0 %} style='color:red'{% endif %}>{{ bill.due_date }}</span></td>
+            </tr>
+            <tr>
+                <th>{% trans "Payment date" %}</th>
+                <td>{{ bill.payment_date|default_if_none:"-" }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "State" %}</th>
+                <td>{{ bill.get_state_display }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Comment" %}</th>
+                <td>{{ bill.comment|default_if_none:"" }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <div class="bill-file">
+            {{ bill.bill_data|safe }}
+        </div>
+    </div>
+</div>
+
+{% with object=bill %}
+    {% include "core/_object_history.html" %}
+{% endwith %}
+
+
+{% endblock %}

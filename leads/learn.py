@@ -57,7 +57,7 @@ FR_STOP_WORDS = """alors au aucun aussi autre avant avec avoir bon car ce cela c
 
 def pairwise(iterable):
     """s -> (s0,s1), (s1,s2), (s2, s3), ...
-    #TODO: included in itertools in python 3.11"""
+    # TODO: included in itertools in python 3.11"""
     a, b = itertools.tee(iterable)
     next(b, None)
     return zip(a, b)

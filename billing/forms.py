@@ -23,14 +23,14 @@ from crispy_forms.bootstrap import TabHolder, Tab
 from crispy_forms.helper import FormHelper
 from django_select2.forms import Select2Widget
 
-from billing.models import ClientBill, SupplierBill
+from billing.models import ClientBill, SupplierBill, InternalBill
 from staffing.models import Mission
 from expense.models import Expense
 from people.models import Consultant
 from leads.forms import LeadChoices
 from expense.forms import ChargeableExpenseMChoices, ExpenseChoices
 from crm.forms import SupplierChoices
-from staffing.forms import LeadMissionChoices
+from staffing.forms import LeadMissionChoices, MissionChoices
 from people.forms import ConsultantChoices
 from core.forms import PydiciCrispyModelForm
 from core.utils import nextMonth
@@ -170,7 +170,6 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
         form.fields["expense"] = ModelChoiceField(label=_("Expense"), required=False, widget=ExpenseChoices(queryset=qs_widget), queryset=qs)
         form.fields["expense_date"] = DateField(label=_("Expense date"), required=False, widget=DateInput(format="%d/%m/%Y"), input_formats=["%d/%m/%Y",])
 
-
     def clean(self):
         if any(self.errors):
             # Don't bother validating the formset unless each form is valid on its own
@@ -190,7 +189,6 @@ class BillExpenseInlineFormset(BaseInlineFormSet):
                     raise ValidationError(_("If expense is not selected, please provide at least amount or amount with vat"))
 
 
-
 class BillExpenseFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super(BillExpenseFormSetHelper, self).__init__(*args, **kwargs)
@@ -202,4 +200,58 @@ class BillExpenseFormSetHelper(FormHelper):
 
 class BillExpenseForm(ModelForm):
     pass
-    #TODO: add sanity checks
+
+
+class InternalBillForm(PydiciCrispyModelForm):
+    class Meta:
+        model = InternalBill
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(InternalBillForm, self).__init__(*args, **kwargs)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(Div(TabHolder(Tab(_("Description"),
+                                                      Row(Column("bill_id"), Column("comment")),
+                                                      Row(Column("state"), Column("buyer"), Column("seller")),),
+                                                  Tab(_("Amounts"),
+                                                      Column("amount", "vat", "amount_with_vat", css_class="col-md-6")),
+                                                  Tab(_("Dates"), Column("creation_date", "due_date", "payment_date",
+                                                                         css_class="col-md-6"), ),
+                                                  Tab(_("Advanced"), "lang", "add_facturx_data", "bill_file",),
+                                                  )))
+
+    def clean_amount(self):
+        if self.cleaned_data["amount"] or self.data["state"] == "0_DRAFT":
+            # Amount is defined or we are in early step, nothing to say
+            return self.cleaned_data["amount"]
+        else:
+            # Amount must be defined
+            raise ValidationError(_("Bill amount must be computed from bill detail or defined manually"))
+
+    def clean_add_facturx_data(self):
+        if self.cleaned_data["add_facturx_data"]:
+            if not self.instance.seller.vat_id or not self.instance.seller.legal_id:
+                raise ValidationError(_("You must define subsidiary VAT id and Legal id to generate Facturx data"))
+        return self.cleaned_data["add_facturx_data"]
+
+
+class InternalBillDetailInlineFormset(BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super(InternalBillDetailInlineFormset, self).add_fields(form, index)
+        form.fields["mission"] = ModelChoiceField(widget=MissionChoices(), queryset=Mission.objects)
+        form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices(attrs={"data-allow-clear": False}), queryset=Consultant.objects, required=False)
+        form.fields["month"] = BillingDateChoicesField(required=False)
+
+
+
+class InternalBillDetailFormSetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super(InternalBillDetailFormSetHelper, self).__init__(*args, **kwargs)
+        self.form_method = 'post'
+        self.form_tag = False
+        self.field_class = "pydici-bill-input"
+        self.template = 'bootstrap5/table_inline_formset.html'
+
+
+class InternalBillDetailForm(ModelForm):
+    pass
