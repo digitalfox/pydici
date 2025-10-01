@@ -61,6 +61,7 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
                            Q(description__icontains=search) |
                            Q(description__icontains=search) |
                            Q(subsidiary__name__icontains=search) |
+                           Q(client_deal_id__icontains=search) |
                            Q(lead__name__icontains=search) |
                            Q(lead__responsible__name__icontains=search) |
                            Q(lead__mission__responsible__name__icontains=search) |
