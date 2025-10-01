@@ -117,6 +117,7 @@ def search(request):
         for word in words:
             leads = leads.filter(Q(name__icontains=word) |
                                  Q(description__icontains=word) |
+                                 Q(client_deal_id__icontains=word) |
                                  Q(tags__name__iexact=word) |
                                  Q(client__contact__name__icontains=word) |
                                  Q(client__organisation__company__name__icontains=word) |
@@ -133,6 +134,7 @@ def search(request):
         missions = Mission.objects.all()
         for word in words:
             missions = missions.filter(Q(deal_id__icontains=word) |
+                                       Q(client_deal_id__icontains=word) |
                                        Q(description__icontains=word))
         if subsidiary:
             missions = missions.filter(subsidiary=subsidiary)
@@ -160,6 +162,7 @@ def search(request):
         bills = ClientBill.objects.all()
         for word in words:
             bills = bills.filter(Q(bill_id__icontains=word) |
+                                 Q(client_deal_id__icontains=word) |
                                  Q(comment__icontains=word))
         if subsidiary:
             bills = bills.filter(lead__subsidiary=subsidiary)
