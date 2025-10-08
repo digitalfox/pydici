@@ -303,6 +303,9 @@ class InternalBill(AbstractBill):
             self.state = "2_PAID"
         super(InternalBill, self).save(*args, **kwargs)  # Save it
 
+    def get_absolute_url(self):
+        return reverse("billing:internal_bill_detail", args=[self.id,])
+
     class Meta:
         verbose_name = _("Internal Bill")
         indexes = [models.Index(fields=["state", "creation_date"]),]
