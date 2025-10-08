@@ -209,8 +209,13 @@ def bill_file(request, bill_id=0, nature="client"):
     try:
         if nature == "client":
             bill = ClientBill.objects.get(id=bill_id)
-        else:
+        elif nature == "supplier":
             bill = SupplierBill.objects.get(id=bill_id)
+        elif nature == "internal":
+            bill = InternalBill.objects.get(id=bill_id)
+        else:
+            # Invalid bill nature, don't answer
+            pass
         if bill.bill_file:
             response["Content-Type"] = mimetypes.guess_type(bill.bill_file.name)[0] or "application/stream"
             response["Content-Disposition"] = 'attachment; filename="%s"' % basename(bill.bill_file.name)
