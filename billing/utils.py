@@ -230,6 +230,7 @@ def get_client_billing_control_pivotable_data(filter_on_subsidiary=None, filter_
                 expense_data[_("billing mode")] = _("Chargeable expense")
                 expense_data[_("amount")] = float(amount) * way
                 expense_data[_("mission")] = "-"
+                expense_data[_("state")] = "-"
                 data.append(expense_data)
         # Add new-style client bills and done work per mission
         for mission in lead.mission_set.all().select_related("responsible"):
