@@ -23,7 +23,7 @@ services:
     image: digitalfox/pydici:latest
     command: python manage.py runserver_plus 0.0.0.0:8888
     volumes:
-      - .:/code
+      - .:/code:z
     ports:
       - "8888:8888"
     environment:
@@ -36,7 +36,7 @@ services:
     image: digitalfox/pydici:latest
     command: celery -A pydici worker -B -l INFO -Q pydici --concurrency=1
     volumes:
-      - .:/code
+      - .:/code:z
     environment:
       PYDICI_ENV: "dev"
     depends_on:
@@ -49,6 +49,6 @@ services:
       PYDICI_ENV: "dev"
     command: python bot/pydici_bot.py
     volumes:
-      - .:/code
+      - .:/code:z
     depends_on:
       - django
