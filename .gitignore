@@ -18,6 +18,7 @@ data/documents/*
 node_modules/
 .DS_Store
 .vscode/
+.zed/
 notebooks/
 celerybeat-schedule
 package-lock.json
