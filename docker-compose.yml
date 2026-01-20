@@ -4,15 +4,15 @@ services:
     image: memcached
     command: memcached -l 0.0.0.0 -I 32m  -m 128
     ports:
-      - "11211:11211"
+      - "127.0.0.1:11211:11211"
   redis:
     image: redis
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
   mariadb:
     image: mariadb
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     environment:
       MARIADB_ROOT_PASSWORD: root
       MARIADB_DATABASE: pydici
@@ -25,7 +25,7 @@ services:
     volumes:
       - .:/code:z
     ports:
-      - "8888:8888"
+      - "127.0.0.1:8888:8888"
     environment:
       PYDICI_ENV: "dev"
     depends_on:
