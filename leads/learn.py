@@ -33,7 +33,7 @@ from django.core.cache import cache
 from django.db.models.query import QuerySet
 
 from leads.models import Lead, StateProba
-from taggit.models import Tag
+from core.models import Tag
 from billing.models import ClientBill
 from crm.models import Client
 from staffing.models import Consultant

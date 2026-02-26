@@ -11,6 +11,9 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.cache import cache
 
+from taggit.models import TagBase, GenericTaggedItemBase
+
+
 # Some shared value list
 CLIENT_BILL_LANG = (
         ("fr-fr", _("French")),
@@ -87,3 +90,26 @@ class Parameter(models.Model):
         """Invalidate cache for this param"""
         cache.set(self.PARAMETER_CACHE_KEY % self.key, None)
         super(Parameter, self).save(*args, **kwargs)
+
+
+class TagCategory(models.Model):
+    """Category for tags"""
+    name = models.CharField(_("Name"), max_length=255, unique=True)
+    description = models.TextField(_("Description"), blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Tag(TagBase):
+    """Pydici custom Tag to allow specific attributes"""
+    category = models.ForeignKey(TagCategory, on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
+
+
+class TaggedItem(GenericTaggedItemBase):
+    """Relation model between tags and objects"""
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_items")

@@ -24,7 +24,7 @@ from django.db.models.functions import TruncMonth
 from django.db import transaction
 from django.conf import settings
 
-from taggit.models import Tag, TaggedItem
+from core.models import Tag, TaggedItem
 
 from core.utils import sortedValues, COLORS, moving_average, nextMonth
 from crm.utils import get_subsidiary_from_session

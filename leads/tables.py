@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils.html import escape
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
-from taggit.models import Tag
+from core.models import Tag
 
 from datetime import datetime, timedelta
 
