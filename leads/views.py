@@ -302,18 +302,17 @@ def remove_tag(request, lead_id, tag_id):
 def manage_tags(request):
     """Manage (rename, merge, remove) tags"""
     tags_to_merge = request.GET.get("tags_to_merge", None)
-    ct = ContentType.objects.get_for_model(Lead)
     if tags_to_merge:
         tags = []
         for tag_id in tags_to_merge.split(","):
             tags.append(Tag.objects.get(id=tag_id.split("-")[1]))
         if tags and len(tags) > 1:
             target_tag = tags[0]
-            object_ids = list(TaggedItem.objects.filter(tag__in=tags[1:]).values_list("object_id", flat=True))
+            tagged_objects = list(TaggedItem.objects.filter(tag__in=tags[1:]).values_list("object_id", "content_type_id"))
             for tag in tags[1:]:
                 tag.delete()
-            for object_id in object_ids:
-                TaggedItem.objects.update_or_create(content_type=ct, object_id=object_id, tag=target_tag)
+            for object_id, content_type_id in tagged_objects:
+                TaggedItem.objects.update_or_create(content_type_id=content_type_id, object_id=object_id, tag=target_tag)
     return render(request, "leads/manage_tags.html",
                   {"data_url": reverse('leads:tag_table_DT'),
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
