@@ -92,7 +92,6 @@ def detail(request, lead_id):
                    "next_lead": next_lead,
                    "previous_lead": previous_lead,
                    "link_root": reverse("core:index"),
-                   "completion_url": reverse("leads:tags", args=[lead.id, ]),
                    "similar_leads": predict_similar(lead),
                    "enable_doc_tab": bool(settings.DOCUMENT_PROJECT_PATH),
                    "lead_tag_form": LeadTagForm(lead=lead),
@@ -290,17 +289,6 @@ def remove_tag(request, lead_id, tag_id):
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         return Http404()
     return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": LeadTagForm(lead=lead)})
-
-
-@pydici_non_public
-@pydici_feature("leads")
-def tags(request, lead_id):
-    """@return: all tags that contains q parameter and are not already associated to this lead as a simple text list"""
-    # TODO: remove this function
-    tags = Tag.objects.all().exclude(lead__id=lead_id)  # Exclude existing tags
-    tags = tags.filter(name__icontains=request.GET["term"])
-    tags = tags.values_list("name", flat=True)
-    return HttpResponse(json.dumps(list(tags)), content_type="application/json")
 
 
 @pydici_non_public

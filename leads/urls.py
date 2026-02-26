@@ -12,7 +12,6 @@ import leads.views as v
 leads_urls = [ re_path(r'^review/?$', v.review, name="review"),
                re_path(r'^csv/(?P<target>.*)$', v.csv_export, name="csv_export"),
                re_path(r'^tag/(?P<tag_id>\d+)/$', v.tag, name="tag"),
-               re_path(r'^tags/(?P<lead_id>\d+)$', v.tags, name="tags"),
                re_path(r'^tag/add$', v.add_tag, name="add_tag"),
                re_path(r'^tag/add/(?P<lead_id>\d+)/(?P<tag_id>\d+)?$', v.add_tag, name="add_tag"),
                re_path(r'^tag/remove/(?P<lead_id>\d+)/(?P<tag_id>\d+)$', v.remove_tag, name="remove_tag"),
