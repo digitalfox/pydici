@@ -13,9 +13,12 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.core.cache import cache
 
+from taggit.managers import TaggableManager
+
 from datetime import date, timedelta
 
 from core.utils import capitalize, cacheable, previousMonth, nextMonth, working_days
+from core.models import TaggedItem
 from crm.models import Subsidiary, Supplier
 from people.tasks import compute_consultant_tasks
 
@@ -53,6 +56,7 @@ class Consultant(models.Model):
     subcontractor_company = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
     telegram_alias = models.CharField(max_length=50, null=True, blank=True)
     telegram_id = models.BigIntegerField(null=True)
+    tags = TaggableManager(through=TaggedItem, blank=True)
 
     def __str__(self):
         return self.name
