@@ -24,7 +24,6 @@
                           <ul class="dropdown-menu pydici-on-top" aria-labelledby="navbarDropdown">
                               <li><a class="dropdown-item" href="{% url 'leads:review' %}">{% trans "Current leads review" %}</a></li>
                               <li><a class="dropdown-item" href="{% url 'leads:lead' %}">{% trans 'New lead' %}</a></li>
-                              <li><a class="dropdown-item" href="{% url 'leads:manage_tags' %}">{% trans 'Leads tag management' %}</a></li>
                               {% if pydici_feature.reports %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="dropdown-header">{% trans "Rates Reporting" %}</li>
@@ -198,6 +197,9 @@
                             {% trans "Help" %}
                         </a>
                         <ul class="dropdown-menu pydici-on-top" aria-labelledby="navbarDropdown">
+                            {% if pydici_feature.tag_manager %}
+                                <li><a class="dropdown-item" href="{% url 'core:manage_tags' %}">{% trans 'Tag management' %}</a></li>
+                            {% endif %}
                             {% if user.is_staff %}
                                 <li><a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "Admin console" %}</a></li>
                             {% endif %}

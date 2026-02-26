@@ -19,13 +19,10 @@ from django.utils.translation import gettext as _
 from django.db.models import Sum, Count, Min, Q
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
-from django.contrib.contenttypes.models import ContentType
 from django.db.models.functions import TruncMonth
-from django.db import transaction
 from django.conf import settings
 
-from core.models import Tag, TaggedItem
-
+from core.models import Tag
 from core.utils import sortedValues, COLORS, moving_average, nextMonth
 from crm.utils import get_subsidiary_from_session
 from leads.models import Lead
@@ -293,31 +290,6 @@ def remove_tag(request, lead_id, tag_id):
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         return Http404()
     return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": LeadTagForm(lead=lead)})
-
-
-@pydici_non_public
-@pydici_feature("leads")
-@permission_required("leads.change_lead")
-@transaction.atomic
-def manage_tags(request):
-    """Manage (rename, merge, remove) tags"""
-    tags_to_merge = request.GET.get("tags_to_merge", None)
-    if tags_to_merge:
-        tags = []
-        for tag_id in tags_to_merge.split(","):
-            tags.append(Tag.objects.get(id=tag_id.split("-")[1]))
-        if tags and len(tags) > 1:
-            target_tag = tags[0]
-            tagged_objects = list(TaggedItem.objects.filter(tag__in=tags[1:]).values_list("object_id", "content_type_id"))
-            for tag in tags[1:]:
-                tag.delete()
-            for object_id, content_type_id in tagged_objects:
-                TaggedItem.objects.update_or_create(content_type_id=content_type_id, object_id=object_id, tag=target_tag)
-    return render(request, "leads/manage_tags.html",
-                  {"data_url": reverse('leads:tag_table_DT'),
-                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
-                                                             "order": [[1, "asc"]] ''',
-                   "user": request.user})
 
 
 @pydici_non_public
