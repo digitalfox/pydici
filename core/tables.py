@@ -22,7 +22,7 @@ class TagTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
 
     def render_column(self, row, column):
         if column == "name":
-            return "<a href='{0}'>{1}</a>".format(reverse("leads:tag", args=[row.id,]), row.name)
+            return "<a href='{0}'>{1}</a>".format(reverse("core:tag", args=[row.id,]), row.name)
         elif column == "select":
             return "<input id='tag-%s' type='checkbox'onclick='gather_tags_to_merge()' />" % row.id
 

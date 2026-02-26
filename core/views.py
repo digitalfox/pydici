@@ -497,3 +497,15 @@ def manage_tags(request):
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
                                                              "order": [[1, "asc"]] ''',
                    "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def tag(request, tag_id):
+    """Displays objects for given tag"""
+
+    return render(request, "core/tag.html",
+                  {"leads": Lead.objects.filter(tags=tag_id),
+                   "consultants": Consultant.objects.filter(tags=tag_id),
+                   "tag": Tag.objects.get(id=tag_id),
+                   "user": request.user})

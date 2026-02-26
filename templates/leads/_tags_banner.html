@@ -9,7 +9,7 @@
             <div class="d-flex flex-wrap">
                 {% for tag in lead.tags.all %}
                 <div class="mx-1">
-                    <a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a>
+                    <a href="{% url 'core:tag' tag.id %}">{{ tag }}</a>
                     <a href='#' hx-delete="{% url 'leads:remove_tag' lead.id|unlocalize tag.id|unlocalize %}" >
                        <i class="bi bi-x-circle"></i></a>&nbsp;
                 </div>
@@ -35,4 +35,3 @@
         {% endfor %}
     {% endif %}
 </div>
-

@@ -233,17 +233,6 @@ def leads_to_bill(request):
 
 @pydici_non_public
 @pydici_feature("leads")
-def tag(request, tag_id):
-    """Displays leads for given tag"""
-
-    return render(request, "leads/tag.html",
-                  {"leads": Lead.objects.filter(tags=tag_id),
-                   "tag": Tag.objects.get(id=tag_id),
-                   "user": request.user})
-
-
-@pydici_non_public
-@pydici_feature("leads")
 @permission_required("leads.change_lead")
 def add_tag(request, lead_id, tag_id=None):
     """Add a tag by id (PUT) to a lead or create (through POST) a new one and attach it and return tag banner."""

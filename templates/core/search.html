@@ -59,7 +59,7 @@
             <h2>{% trans "Tags"%}</h2>
             <ul class="row icon-list">
             {% for tag in tags %}
-                <li class="col-12 col-sm-12 col-md-6 col-lg-4 bi bi-tag"><a href="{% url 'leads:tag' tag.id %}">{{ tag }}</a></li>
+                <li class="col-12 col-sm-12 col-md-6 col-lg-4 bi bi-tag"><a href="{% url 'core:tag' tag.id %}">{{ tag }}</a></li>
             {% endfor %}
             </ul>
         </div>
