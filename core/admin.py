@@ -44,7 +44,9 @@ class ParameterAdmin(ReturnToAppAdmin):
 
 class TagAdmin(ReturnToAppAdmin):
     """Admin model for tags"""
-    list_display = ("name", "slug")
+    list_display = ("name", "slug", "category")
+    list_filter = ("category",)
+    search_fields = ("name",)
     ordering = ("name",)
 
 

@@ -4,5 +4,7 @@
 {% include "core/_select2.html" %}
 
 <script type="text/javascript">
-    $(document).ready(function() { htmx.process(document.body); });
+    $(document).ready(function() { htmx.process(document.body);
+                                   $(".pydici-tooltip").tooltip(); });
+
 </script>

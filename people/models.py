@@ -269,6 +269,9 @@ class Consultant(models.Model):
         else:
             return False
 
+    def sorted_tags(self):
+        return self.tags.all().order_by('category__name')
+
     def get_absolute_url(self):
         return reverse('people:consultant_home', args=[str(self.trigramme)])
 
