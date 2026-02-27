@@ -13,6 +13,7 @@ from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
+from django.contrib.auth.decorators import permission_required
 from django.utils.translation import gettext as _
 from django.db.models import Count, Sum, Min, F, Avg, Q
 from django.db.models.functions import TruncMonth
@@ -22,11 +23,13 @@ from people.models import Consultant
 from crm.models import Company
 from crm.utils import get_subsidiary_from_session
 from staffing.models import Holiday, Mission, Timesheet, FinancialCondition
-from core.decorator import pydici_non_public, pydici_subcontractor
+from core.decorator import pydici_non_public, pydici_subcontractor, pydici_feature
 from core.utils import working_days, previousMonth, nextMonth, COLORS
 from people.utils import subcontractor_is_user
+from people.forms import ConsultantTagForm
 from crm.models import Subsidiary
 from leads.models import Lead
+from core.models import Tag
 
 
 def _consultant_home(request, consultant):
@@ -311,6 +314,63 @@ def consultant_achievements(request, consultant_id):
     return render(request, "people/consultant_achievements.html",
                   {"consultant": consultant,
                    "achievements": achievements})
+
+@pydici_non_public
+def consultant_profile(request, consultant_id):
+    """Consultant tag management"""
+    if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        # This view should only be accessed by ajax request. Redirect lost users
+        return redirect("people:consultant_home_by_id", consultant_id)
+    try:
+        consultant = Consultant.objects.get(id=consultant_id)
+    except Consultant.DoesNotExist:
+        raise Http404
+
+    return render(request, "people/consultant_profile.html",
+                  {"consultant": consultant,
+                   "consultant_tag_form": ConsultantTagForm(consultant=consultant),})
+
+@pydici_non_public
+@pydici_feature("tag_manager")
+@permission_required("people.change_consultant")  #TODO: adapt this
+def add_tag(request, consultant_id, tag_id=None):
+    """Add a tag by id (PUT) to a consultant or create (through POST) a new one and attach it and return tag banner."""
+    try:
+        consultant = Consultant.objects.get(id=consultant_id)
+    except Consultant.DoesNotExist:
+        return Http404()
+    if request.method == "POST":
+        form = ConsultantTagForm(request.POST)
+        if form.is_valid():
+            tags = form.cleaned_data["tag"]
+            consultant.tags.add(*tags)
+        else:  # Returns forms with errors
+            return render(request, "people/_tags_banner.html", {"consultant": consultant, "consultant_tag_form": form})
+    elif tag_id:  # PUT, we add an existing tag
+        try:
+            tag = Tag.objects.get(id=tag_id)
+            consultant.tags.add(tag)
+        except Tag.DoesNotExist:
+            return HttpResponse(_("Invalid tag"), status=400)
+    else:
+        return HttpResponse(_("No tag provided"), status=400)
+
+    return render(request, "people/_tags_banner.html", {"consultant": consultant, "consultant_tag_form": ConsultantTagForm(consultant=consultant) })
+
+
+@pydici_non_public
+@pydici_feature("tag_manager")
+@permission_required("people.change_consultant") #TODO: adapt this
+def remove_tag(request, consultant_id, tag_id):
+    """Remove a tag to a consultant and return tag banner"""
+    try:
+        tag = Tag.objects.get(id=tag_id)
+        consultant = Consultant.objects.get(id=consultant_id)
+        consultant.tags.remove(tag)
+    except (Tag.DoesNotExist, Consultant.DoesNotExist):
+        return Http404()
+    return render(request, "people/_tags_banner.html", {"consultant": consultant, "consultant_tag_form": ConsultantTagForm(consultant=consultant)})
+
 
 @pydici_non_public
 @cache_page(60 * 60 * 24)
