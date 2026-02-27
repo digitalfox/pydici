@@ -5,6 +5,7 @@ Database access layer for pydici core module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 
 """
+from django_extensions.management.commands.sqldiff import ORDERING_FIELD
 
 from django.contrib.auth.models import Group
 from django.db import models
@@ -109,6 +110,7 @@ class Tag(TagBase):
     class Meta:
         verbose_name = _("Tag")
         verbose_name_plural = _("Tags")
+        ordering = ['category', 'name']
 
 
 class TaggedItem(GenericTaggedItemBase):
