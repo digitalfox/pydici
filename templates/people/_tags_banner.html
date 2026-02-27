@@ -3,19 +3,24 @@
 {% load i18n %}
 {% load l10n %}
 
-<div class="tag_banner alert" hx-target="this" hx-swap="outerHTML" hx-on::after-settle="$('.django-select2').djangoSelect2({ 'theme': 'bootstrap-5', 'width': 'auto'});">
-    <div class="row">
-        <div class="col-lg-auto col-md-12 align-self-center">
-            <div class="d-flex flex-wrap">
-                {% for tag in consultant.tags.all %}
-                <div class="mx-1">
-                    <a href="{% url 'core:tag' tag.id %}">{{ tag }}</a>
-                    <a href='#' hx-delete="{% url 'people:remove_tag' consultant.id|unlocalize tag.id|unlocalize %}" >
-                       <i class="bi bi-x-circle"></i></a>&nbsp;
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+<div class="alert" hx-target="this" hx-swap="outerHTML" hx-on::after-settle="$('.django-select2').djangoSelect2({ 'theme': 'bootstrap-5', 'width': 'auto'});">
+    {% for tag in consultant.tags.all %}
+                    {% ifchanged tag.category %}
+                    {% if not forloop.first %} </div></div></div> {% endif %}
+                        <div class="row my-2">
+                            <div class="col-lg-auto col-md-12 align-self-center">
+                                <div class="d-flex flex-wrap">
+                                    <div class="mx-1">{{ tag.category | default:"" }}</div>
+                    {% endifchanged %}
+                    <div class="mx-1">
+                        <a href="{% url 'core:tag' tag.id %}">{{ tag }}</a>
+                        <a href='#' hx-delete="{% url 'people:remove_tag' consultant.id|unlocalize tag.id|unlocalize %}" >
+                        <i class="bi bi-x-circle"></i></a>&nbsp;
+                    </div>
+
+
+    {% endfor %}
+                </div></div></div>
 
         {% if perms.people.change_consultant %} {# TODO change with perm for self or other for manager #}
         <div class="col-lg-auto col-md-12">
