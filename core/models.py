@@ -56,7 +56,8 @@ _FEATURES_CHOICES = (
     ("expense_manager", _("Expense manager: validate expense of his team")),
     ("expense_subsidiary_manager", _("Expense manager on subsidiary perimeter: act an expense manager for every consultant of his subsidiary")),
     ("expense_administrator", _("Expense administator: full right to manage expense")),
-    ("tag_manager", _("Merge, categorize and remove tags")),
+    ("tag", _("Add and remove tag for leads, self and own team")),
+    ("tag_manager", _("Merge, categorize and remove tags. Manage tags for everyone")),
 )
 
 FEATURES = set([x[0] for x in _FEATURES_CHOICES])

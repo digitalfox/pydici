@@ -54,3 +54,13 @@ def subcontractor_is_user(consultant, user):
         if consultant.trigramme.lower() != user.username.lower():
             return False
     return True
+
+def can_manage_tags(consultant, request_user):
+    """Returns true if user can manage tags"""
+    user = consultant.get_user()
+    if user_has_feature(user, "tag_manager"):
+        return True
+    user_team = Consultant.objects.get(trigramme=request_user.username.upper()).user_team(exclude_self=False)
+    if user == request_user or user in user_team:
+        return True
+    return False

@@ -24,8 +24,8 @@ from crm.models import Company
 from crm.utils import get_subsidiary_from_session
 from staffing.models import Holiday, Mission, Timesheet, FinancialCondition
 from core.decorator import pydici_non_public, pydici_subcontractor, pydici_feature
-from core.utils import working_days, previousMonth, nextMonth, COLORS
-from people.utils import subcontractor_is_user
+from core.utils import working_days, previousMonth, nextMonth, COLORS, user_has_feature
+from people.utils import subcontractor_is_user, can_manage_tags
 from people.forms import ConsultantTagForm
 from crm.models import Subsidiary
 from leads.models import Lead
@@ -315,6 +315,7 @@ def consultant_achievements(request, consultant_id):
                   {"consultant": consultant,
                    "achievements": achievements})
 
+
 @pydici_non_public
 def consultant_profile(request, consultant_id):
     """Consultant tag management"""
@@ -326,19 +327,28 @@ def consultant_profile(request, consultant_id):
     except Consultant.DoesNotExist:
         raise Http404
 
+    read_only = True
+    if user_has_feature(request.user, "tag_manager") or can_manage_tags(consultant, request.user):
+        read_only = False
+
     return render(request, "people/consultant_profile.html",
                   {"consultant": consultant,
-                   "consultant_tag_form": ConsultantTagForm(consultant=consultant),})
+                   "consultant_tag_form": ConsultantTagForm(consultant=consultant),
+                   "read_only": read_only})
+
 
 @pydici_non_public
-@pydici_feature("tag_manager")
-@permission_required("people.change_consultant")  #TODO: adapt this
+@pydici_feature("tag")
 def add_tag(request, consultant_id, tag_id=None):
     """Add a tag by id (PUT) to a consultant or create (through POST) a new one and attach it and return tag banner."""
     try:
         consultant = Consultant.objects.get(id=consultant_id)
     except Consultant.DoesNotExist:
         return Http404()
+
+    if not can_manage_tags(consultant, request.user):
+        return HttpResponseRedirect(reverse("core:forbidden"))
+
     if request.method == "POST":
         form = ConsultantTagForm(request.POST)
         if form.is_valid():
@@ -359,13 +369,14 @@ def add_tag(request, consultant_id, tag_id=None):
 
 
 @pydici_non_public
-@pydici_feature("tag_manager")
-@permission_required("people.change_consultant") #TODO: adapt this
+@pydici_feature("tag")
 def remove_tag(request, consultant_id, tag_id):
     """Remove a tag to a consultant and return tag banner"""
     try:
         tag = Tag.objects.get(id=tag_id)
         consultant = Consultant.objects.get(id=consultant_id)
+        if not can_manage_tags(consultant, request.user):
+            return HttpResponseRedirect(reverse("core:forbidden"))
         consultant.tags.remove(tag)
     except (Tag.DoesNotExist, Consultant.DoesNotExist):
         return Http404()

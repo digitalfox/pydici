@@ -25,8 +25,7 @@
         {% endif %}
     {% endfor %}
 
-
-        {% if perms.people.change_consultant %} {# TODO change with perm for self or other for manager #}
+    {% if not read_only %}
         <div class="col-lg-auto col-md-12">
         <form id="tag_form">
             <div class="d-flex">
@@ -35,9 +34,9 @@
             </div>
         </form>
         </div>
-        {% endif %}
+    {% endif %}
     </div>
-    {% if perms.people.change_consultant %} {# TODO change with perm for self or other for manager #}
+    {% if not read_only %}
         {% for tag in consultant.suggested_tags %}
             {% if forloop.first %}{% trans "Suggested tags: " %}{% endif %}
             <a href="#" hx-put="{% url 'people:add_tag' consultant.id|unlocalize tag.id|unlocalize %}">{{ tag }}</a></form>
