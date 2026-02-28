@@ -4,6 +4,7 @@ People form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+import bleach
 
 from django.forms import models
 from django import forms
@@ -66,8 +67,16 @@ class ConsultantForm(models.ModelForm):
 
 
 class ConsultantTagForm(forms.Form):
+    """Add and create tags for a consultant"""
     def __init__(self, *args, **kwargs):
         consultant = kwargs.pop("consultant", None)
         super(ConsultantTagForm, self).__init__(*args, **kwargs)
         self.fields["tag"] = forms.ModelMultipleChoiceField(widget=ConsultantTagChoices(consultant=consultant, attrs={"data-placeholder": _("New tags"), "style": "min-width: 200px;"}),
                                                             queryset=Tag.objects, label=False)
+
+class ConsultantFilterTagForm(forms.Form):
+    """Select only tag form, used for filtering consultants by tag"""
+    def __init__(self, *args, **kwargs):
+        super(ConsultantFilterTagForm, self).__init__(*args, **kwargs)
+        self.fields["tag"] = forms.ModelMultipleChoiceField(widget=ConsultantTagChoices(attrs={"data-tags": "false", "style": "min-width: 200px;"}, required=False),
+                                                            queryset=Tag.objects, label=False, required=False)

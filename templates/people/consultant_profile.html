@@ -4,7 +4,13 @@
 {% include "core/_select2.html" %}
 
 <script type="text/javascript">
-    $(document).ready(function() { htmx.process(document.body);
-                                   $(".pydici-tooltip").tooltip(); });
+    $(document).ready(function() {
+      htmx.process(document.body);
+      $(".pydici-tooltip").tooltip();
+      $('select[multiple]').on('select2:select select2:unselect change', function () {
+          $(this).next().find('.select2-selection--multiple')
+              .attr('style', ('padding: ' + ($(this).val().length ? 0 : '0rem 0.75rem') + '!important'));
+      });
+    });
 
 </script>

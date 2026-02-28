@@ -6,6 +6,10 @@
     {% include "core/_billboard.html" %}
 {% endblock %}
 
+{% block extracss %}
+    <link href="{{ MEDIA_URL }}css/inline_multiple_select2.css" rel="stylesheet">
+{% endblock %}
+
 
 {% block title %}{% trans "Workload schedule" %}{% endblock %}
 
@@ -28,7 +32,7 @@
 
 <!-- buttons bar -->
 <div class="row">
-    <div class="col-lg-12">
+    <div class="col-lg-5 my-2">
         <!-- Projection button -->
         <div class="btn-group">
           <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -67,6 +71,16 @@
               {% endfor %}
           </ul>
         </div>
+    </div>
+    <!-- Tag selector -->
+    <div class="col-lg-6 col-md-12 my-2">
+    <form id="tag_form">
+        <div class="d-flex">
+            <span class="my-auto mx-2 d-none d-lg-block">{% trans "Tags: " %}</span>
+            <div class="col" style="min-width: 200px">{{ tag_form }}</div>
+            <div class="col mx-2"><button type="submit" class="btn btn-primary">{% trans "Filter" context "verb" %}</button></div>
+        </div>
+    </form>
     </div>
 </div>
 
@@ -110,7 +124,7 @@
                 <tr><th>{{consultant.profil}}</th></tr>
             {% endifchanged %}
         {% endif %}
-    
+
         <tr>
             <td>
                 {% with tab="#tab-staffing" %}{% include "people/__consultant_name.html" %}{% endwith %}
@@ -226,5 +240,7 @@ $(document).ready(function(){
 });
 //-->
 </script>
+
+{% include "core/_select2.html" %}
 
 {% endblock %}
