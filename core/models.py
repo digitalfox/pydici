@@ -103,6 +103,11 @@ class TagCategory(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = _("Tag Category")
+        verbose_name_plural = _("Tag Categories")
+        ordering = ['name']
+
 
 class Tag(TagBase):
     """Pydici custom Tag to allow specific attributes"""

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-28 21:01+0100\n"
-"PO-Revision-Date: 2026-02-28 21:01+0100\n"
+"POT-Creation-Date: 2026-02-28 22:46+0100\n"
+"PO-Revision-Date: 2026-02-28 22:45+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@enioka.com>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: billing/admin.py:27 billing/admin.py:40 billing/admin.py:51
 #: billing/forms.py:71 billing/forms.py:213 billing/models.py:418
-#: core/models.py:89 core/models.py:100 expense/models.py:102
+#: core/models.py:90 core/models.py:101 expense/models.py:102
 #: leads/models.py:141 leads/views.py:186 staffing/models.py:28
 #: staffing/models.py:39 staffing/models.py:74 staffing/models.py:504
 #: templates/billing/bill.html:79 templates/billing/internal_bill.html:60
@@ -1075,34 +1075,41 @@ msgstr ""
 "frais"
 
 #: core/models.py:59
-msgid "Merge, categorize and remove tags"
-msgstr "Fusionner, organiser et supprimer des étiquettes"
+msgid "Add and remove tag for leads, self and own team"
+msgstr ""
+"Ajouter et supprimer des étiquettes pour les affaires, pour soi et son équipe"
 
-#: core/models.py:70
+#: core/models.py:60
+msgid "Merge, categorize and remove tags. Manage tags for everyone"
+msgstr ""
+"Fusionner, organiser et supprimer des étiquettes. Gérer les étiquettes de "
+"toute le monde"
+
+#: core/models.py:71
 msgid "Feature"
 msgstr "Fonctionnalité"
 
-#: core/models.py:84
+#: core/models.py:85
 msgid "text"
 msgstr "texte"
 
-#: core/models.py:85
+#: core/models.py:86
 msgid "float"
 msgstr "flottant"
 
-#: core/models.py:86
+#: core/models.py:87
 msgid "Key"
 msgstr "Clé"
 
-#: core/models.py:87
+#: core/models.py:88
 msgid "Value"
 msgstr "Valeur"
 
-#: core/models.py:88 staffing/models.py:75 templates/staffing/mission.html:92
+#: core/models.py:89 staffing/models.py:75 templates/staffing/mission.html:92
 msgid "Type"
 msgstr "Type"
 
-#: core/models.py:99 crm/models.py:60 crm/models.py:82 crm/models.py:184
+#: core/models.py:100 crm/models.py:60 crm/models.py:82 crm/models.py:184
 #: crm/models.py:502 expense/models.py:67 leads/models.py:66 leads/views.py:186
 #: people/models.py:34 people/models.py:334 templates/core/manage_tags.html:22
 #: templates/crm/clientcompany_detail.html:404 templates/leads/review.html:31
@@ -1111,11 +1118,19 @@ msgstr "Type"
 msgid "Name"
 msgstr "Nom"
 
-#: core/models.py:111
+#: core/models.py:107
+msgid "Tag Category"
+msgstr "Catégorie d'étiquette"
+
+#: core/models.py:108
+msgid "Tag Categories"
+msgstr "Catégories d'étiquettes"
+
+#: core/models.py:117
 msgid "Tag"
 msgstr "Étiquette"
 
-#: core/models.py:112 templates/core/search.html:59
+#: core/models.py:118 templates/core/search.html:59
 msgid "Tags"
 msgstr "Étiquettes"
 
@@ -1600,8 +1615,8 @@ msgstr "Montant"
 msgid "VAT (€)"
 msgstr "TVA (€)"
 
-#: expense/models.py:111 templates/expense/expense.html:30
-#: templates/expense/expense_archive.html:18
+#: expense/models.py:111 templates/core/manage_tags.html:23
+#: templates/expense/expense.html:30 templates/expense/expense_archive.html:18
 msgid "Category"
 msgstr "Catégorie"
 
@@ -1873,11 +1888,11 @@ msgstr "Géré par"
 msgid "Sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/views.py:255 people/views.py:354
+#: leads/views.py:255 people/views.py:364
 msgid "Invalid tag"
 msgstr "Étiquette invalide"
 
-#: leads/views.py:257 people/views.py:356
+#: leads/views.py:257 people/views.py:366
 msgid "No tag provided"
 msgstr "Aucune étiquette fournie"
 
@@ -2116,12 +2131,12 @@ msgstr "Max missions sur un mois (%s)"
 msgid "Max monthly daily rate (%s)"
 msgstr "Meilleur TJM mensuel (%s)"
 
-#: people/views.py:425
+#: people/views.py:436
 #, python-format
 msgid "consultants %s"
 msgstr "consultants %s"
 
-#: people/views.py:426
+#: people/views.py:437
 #, python-format
 msgid "subcontractors %s"
 msgstr "sous-traitant %s"
@@ -4803,11 +4818,11 @@ msgstr "Les documents commerciaux sont manquants. Merci de les ranger ici : "
 msgid "Delivery documents are missing. Please put them here: "
 msgstr "Les livrables sont manquants. Merci de les ranger ici : "
 
-#: templates/leads/_tags_banner.html:25 templates/people/_tags_banner.html:34
+#: templates/leads/_tags_banner.html:25 templates/people/_tags_banner.html:33
 msgid "Add"
 msgstr "Ajouter"
 
-#: templates/leads/_tags_banner.html:33 templates/people/_tags_banner.html:42
+#: templates/leads/_tags_banner.html:33 templates/people/_tags_banner.html:41
 msgid "Suggested tags: "
 msgstr "Étiquette(s) suggérée(s) : "
 
