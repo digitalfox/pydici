@@ -5,23 +5,26 @@
 
 <div class="alert" hx-target="this" hx-swap="outerHTML" hx-on::after-settle="$('.django-select2').djangoSelect2({ 'theme': 'bootstrap-5', 'width': 'auto'});">
     {% for tag in consultant.sorted_tags %}
-                    {% ifchanged tag.category %}
-                    {% if not forloop.first %} </div></div> {% endif %}
-                        <div class="row my-2">
-                            <div class="align-self-center">
-                                <class="d-flex flex-wrap">
-                                    <h3>{{ tag.category.name | default:"" }} <i class="bi bi-question-circle pydici-tooltip d-none d-md-inline" title="{{ tag.category.description }}"></i></h3>
-                                    <ul class="row list-unstyled">
-                    {% endifchanged %}
-                    <li class="col-lg-auto col-sm-3 col-md-2">
-                        <div class="mx-1">
-                            <a href="{% url 'core:tag' tag.id %}">{{ tag }}</a>
-                            <a href='#' hx-delete="{% url 'people:remove_tag' consultant.id|unlocalize tag.id|unlocalize %}" >
-                            <i class="bi bi-x-circle"></i></a>&nbsp;
-                        </div>
-                    </li>
+        {% ifchanged tag.category %}
+        {% if not forloop.first %} </div></div> {% endif %}
+            <div class="row my-2">
+                <div class="align-self-center">
+                    <class="d-flex flex-wrap">
+                        <h3>{{ tag.category.name | default:"" }} <i class="bi bi-question-circle pydici-tooltip d-none d-md-inline" title="{{ tag.category.description }}"></i></h3>
+                        <ul class="row list-unstyled">
+        {% endifchanged %}
+        <li class="col-lg-auto col-sm-3 col-md-2">
+            <div class="mx-1">
+                <a href="{% url 'core:tag' tag.id %}">{{ tag }}</a>
+                <a href='#' hx-delete="{% url 'people:remove_tag' consultant.id|unlocalize tag.id|unlocalize %}" >
+                <i class="bi bi-x-circle"></i></a>&nbsp;
+            </div>
+        </li>
+        {% if forloop.last %}
+            </ul></div></div>
+        {% endif %}
     {% endfor %}
-                    </ul></div></div>
+
 
         {% if perms.people.change_consultant %} {# TODO change with perm for self or other for manager #}
         <div class="col-lg-auto col-md-12">
