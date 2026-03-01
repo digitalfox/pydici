@@ -29,7 +29,7 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 
 from django_weasyprint.views import WeasyTemplateResponse, WeasyTemplateView
-from pypdf import PdfMerger, PdfReader
+from pypdf import PdfWriter, PdfReader
 
 from billing.utils import get_billing_info, update_bill_from_timesheet, update_client_bill_from_proportion, \
     bill_pdf_filename, get_client_billing_control_pivotable_data, generate_bill_pdf, format_bill_pdf
@@ -258,7 +258,7 @@ class BillAnnexPDFTemplateResponse(WeasyTemplateResponse):
             bill = self.context_data["bill"]
             translation.activate(bill.lang)
             bill_pdf = super(BillAnnexPDFTemplateResponse, self).rendered_content
-            merger = PdfMerger()
+            merger = PdfWriter()
             merger.append(PdfReader(BytesIO(bill_pdf)))
             # Add expense receipt
             for billExpense in bill.billexpense_set.all():
