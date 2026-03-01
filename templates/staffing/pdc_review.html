@@ -73,14 +73,19 @@
         </div>
     </div>
     <!-- Tag selector -->
-    <div class="col-lg-6 col-md-12 my-2">
+    <div class="col-lg-6 col-md-12">
+    <div class="row">
     <form id="tag_form">
+
         <div class="d-flex">
             <span class="my-auto mx-2 d-none d-lg-block">{% trans "Tags: " %}</span>
             <div class="col" style="min-width: 200px">{{ tag_form }}</div>
+            <span class="my-auto mx-2 d-none d-lg-block">{% trans "Wished Tags: " %}</span>
+            <div class="col" style="min-width: 200px">{{ wished_tag_form }}</div>
             <div class="col mx-2"><button type="submit" class="btn btn-primary">{% trans "Filter" context "verb" %}</button></div>
         </div>
     </form>
+    </div>
     </div>
 </div>
 
