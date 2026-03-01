@@ -10,9 +10,10 @@ import datetime
 import json
 
 from django.shortcuts import render
-from django.db.models import Q, Sum, Min, Max
+from django.db.models import Q, Sum, Min, Max, F
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
@@ -503,9 +504,11 @@ def manage_tags(request):
 @pydici_feature("leads")
 def tag(request, tag_id):
     """Displays objects for given tag"""
+    consultant_ctype = ContentType.objects.get(model='Consultant')
+    tagged_consultant = TaggedItem.objects.filter(content_type=consultant_ctype, tag_id=tag_id).order_by('tag__category__name', "nature", "tag__name")
 
     return render(request, "core/tag.html",
                   {"leads": Lead.objects.filter(tags=tag_id),
-                   "consultants": Consultant.objects.filter(tags=tag_id),
+                   "tagged_consultants": tagged_consultant,
                    "tag": Tag.objects.get(id=tag_id),
                    "user": request.user})

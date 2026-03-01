@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block title %}{% trans "All tags" %}{% endblock %}
+{% block title %}{{ tag }}{% endblock %}
 
 {% block content %}
 
@@ -21,9 +21,12 @@
 <h1 class="mt-3">{% blocktrans %}Consultants for tag <em>{{ tag }}</em>{% endblocktrans %}</h1>
 
 <ul class="row">
-{% for consultant in consultants %}
-    <li class="col-sm-6 col-md-4">
-        <a href="{% url 'people:consultant_home_by_id' consultant.id %}">{{ consultant }}</a>
+{% for tc in tagged_consultants %}
+    <li class="col-sm-6 col-md-4 col-lg-2">
+        <a href="{% url 'people:consultant_home_by_id' tc.content_object.id %}#goto_tab-profile">
+            <span class="badge rounded-pill tag_level_{{ tc.level }}">{{ tc.content_object }}</span>
+        </a>
+        {% if tc.nature == '2_WISH' %} <i class="bi bi-heart-fill tag_wish"></i>{% endif %}
     </li>
 {% endfor %}
 </ul>
