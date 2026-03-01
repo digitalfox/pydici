@@ -129,7 +129,7 @@ class TaggedItem(GenericTaggedItemBase):
         )
     TAG_NATURE_TYPES = (
         ('1_KNOWLEDGE', gettext("Knowledge")),
-        ('1_WISH', gettext("Wish"))
+        ('2_WISH', gettext("Wish"))
     )
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_items")
     level = models.CharField(_("Level"), max_length=30, choices=TAG_LEVEL_TYPES, null=True, blank=True)

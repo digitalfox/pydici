@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='taggeditem',
             name='nature',
-            field=models.CharField(blank=True, choices=[('1_KNOWLEDGE', 'Knowledge'), ('1_WISH', 'Wish')], max_length=30, null=True, verbose_name='Nature'),
+            field=models.CharField(blank=True, choices=[('1_KNOWLEDGE', 'Knowledge'), ('2_WISH', 'Wish')], max_length=30, null=True, verbose_name='Nature'),
         ),
     ]
