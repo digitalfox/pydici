@@ -12,10 +12,11 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
+from crispy_forms.layout import Layout, Column, Field, HTML, Row, Submit
 
-from core.forms import PydiciSelect2WidgetMixin, TagChoices
+from core.forms import PydiciSelect2WidgetMixin, TagChoices, PydiciCrispyForm
 from people.models import Consultant, SalesMan
-from core.models import Tag
+from core.models import Tag, TaggedItem
 
 
 class ConsultantChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
@@ -66,13 +67,23 @@ class ConsultantForm(models.ModelForm):
             return self.cleaned_data["subcontractor_company"]
 
 
-class ConsultantTagForm(forms.Form):
+class ConsultantTagForm(PydiciCrispyForm):
     """Add and create tags for a consultant"""
     def __init__(self, *args, **kwargs):
         consultant = kwargs.pop("consultant", None)
         super(ConsultantTagForm, self).__init__(*args, **kwargs)
         self.fields["tag"] = forms.ModelMultipleChoiceField(widget=ConsultantTagChoices(consultant=consultant, attrs={"data-placeholder": _("New tags"), "style": "min-width: 200px;"}),
-                                                            queryset=Tag.objects, label=False)
+                                                            queryset=Tag.objects)
+        self.fields["level"] = forms.ChoiceField(label=_("Level"), choices=TaggedItem.TAG_LEVEL_TYPES, required=False)
+        self.fields["nature"] = forms.ChoiceField(label=_("Nature"), choices=TaggedItem.TAG_NATURE_TYPES, required=False)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(Row(
+            Column(Field("tag"), css_class="col-lg-8"),
+            Column(Field("level"), css_class="col-lg-2"),
+            Column(Field("nature"), css_class="col-lg-2"),
+            ),
+        )
+
 
 class ConsultantFilterTagForm(forms.Form):
     """Select only tag form, used for filtering consultants by tag"""

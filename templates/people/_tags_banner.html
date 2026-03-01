@@ -2,6 +2,7 @@
 {# Context/Argument: consultant #}
 {% load i18n %}
 {% load l10n %}
+{% load crispy_forms_tags %}
 
 <div class="alert" hx-target="this" hx-swap="outerHTML" hx-on::after-settle="$('.django-select2').djangoSelect2({ 'theme': 'bootstrap-5', 'width': 'auto'});">
     {% for tag in consultant.sorted_tags %}
@@ -10,13 +11,13 @@
             <div class="row my-2">
                 <div class="align-self-center">
                     <class="d-flex flex-wrap">
-                        <h3>{{ tag.category.name | default:"" }} <i class="bi bi-question-circle pydici-tooltip d-none d-md-inline" title="{{ tag.category.description }}"></i></h3>
+                        <h3>{{ tag.category | default:"" }} <i class="bi bi-question-circle pydici-tooltip d-none d-md-inline" title="{{ tag.category_description }}"></i></h3>
                         <ul class="row list-unstyled">
         {% endifchanged %}
         <li class="col-lg-auto col-sm-3 col-md-2">
             <div class="mx-1">
-                <a href="{% url 'core:tag' tag.id %}">{{ tag }}</a>
-                <a href='#' hx-delete="{% url 'people:remove_tag' consultant.id|unlocalize tag.id|unlocalize %}" >
+                <a href="{% url 'core:tag' tag.tag_id %}"><span class="badge rounded-pill tag_level_{{ tag.level }}">{{ tag.name }}</span></a>{% if tag.nature == '1_WISH' %} <i class="bi bi-heart-fill tag_wish"></i>{% endif %}
+                <a href='#' hx-delete="{% url 'people:remove_tag' consultant.id|unlocalize tag.tag_id|unlocalize %}" >
                 <i class="bi bi-x-circle"></i></a>&nbsp;
             </div>
         </li>
@@ -28,10 +29,10 @@
     {% if not read_only %}
         <div class="col-lg-auto col-md-12">
         <form id="tag_form">
-            <div class="d-flex">
-                <div class="col" style="min-width: 200px">{{ consultant_tag_form }}</div>
-                <div class="col"><button type="submit" class="btn btn-primary" hx-post="{% url 'people:add_tag' consultant.id|unlocalize %}">{% trans "Add" %}</button></div>
-            </div>
+            {% crispy consultant_tag_form consultant_tag_form.helper %}
+
+            <div class="col"><button type="submit" class="btn btn-primary" hx-post="{% url 'people:add_tag' consultant.id|unlocalize %}">{% trans "Add" %}</button></div>
+
         </form>
         </div>
     {% endif %}

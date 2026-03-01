@@ -13,11 +13,11 @@ from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
-from django.contrib.auth.decorators import permission_required
 from django.utils.translation import gettext as _
 from django.db.models import Count, Sum, Min, F, Avg, Q
 from django.db.models.functions import TruncMonth
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 
 from people.models import Consultant
 from crm.models import Company
@@ -29,7 +29,7 @@ from people.utils import subcontractor_is_user, can_manage_tags
 from people.forms import ConsultantTagForm
 from crm.models import Subsidiary
 from leads.models import Lead
-from core.models import Tag
+from core.models import Tag, TaggedItem
 
 
 def _consultant_home(request, consultant):
@@ -340,7 +340,7 @@ def consultant_profile(request, consultant_id):
 @pydici_non_public
 @pydici_feature("tag")
 def add_tag(request, consultant_id, tag_id=None):
-    """Add a tag by id (PUT) to a consultant or create (through POST) a new one and attach it and return tag banner."""
+    """Add a tag by id (PUT) to a consultant or create/update (through POST) a new one with optional level/wish attributes, attach it and return tag banner."""
     try:
         consultant = Consultant.objects.get(id=consultant_id)
     except Consultant.DoesNotExist:
@@ -352,8 +352,11 @@ def add_tag(request, consultant_id, tag_id=None):
     if request.method == "POST":
         form = ConsultantTagForm(request.POST)
         if form.is_valid():
+            ctype = ContentType.objects.get(model='Consultant')
             tags = form.cleaned_data["tag"]
-            consultant.tags.add(*tags)
+            for tag in tags:
+                TaggedItem.objects.update_or_create(tag=tag, object_id=consultant.id, content_type=ctype,
+                    level=form.cleaned_data["level"], nature=form.cleaned_data["nature"])
         else:  # Returns forms with errors
             return render(request, "people/_tags_banner.html", {"consultant": consultant, "consultant_tag_form": form})
     elif tag_id:  # PUT, we add an existing tag

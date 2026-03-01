@@ -376,7 +376,7 @@ div.ui-tooltip {
   background-clip: padding-box;
   *border-right-width: 2px;
   *border-bottom-width: 2px;
- 
+
   .ui-menu-item > a.ui-corner-all {
     display: block;
     padding: 3px 15px;
@@ -385,7 +385,7 @@ div.ui-tooltip {
     line-height: 18px;
     color: #555555;
     white-space: nowrap;
- 
+
     &.ui-state-hover, &.ui-state-active {
       color: #ffffff;
       text-decoration: none;
@@ -672,3 +672,29 @@ td a:hover {
   animation: l3 1s infinite linear;
 }
 @keyframes l3 {to{transform: rotate(1turn)}}
+
+.tag_wish {
+    color: #F527DA;
+}
+
+.tag_level_None {
+    background-color: #999999 !important;
+    font-size: 1em;
+}
+
+.tag_level_1_BEGINNER {
+    background-color: #FF0000 !important;
+    font-size: 1em;
+}
+
+.tag_level_2_INTERMEDIATE {
+    background-color: #FFFF00 !important;
+    font-size: 1em;
+    color: #444444 ;
+}
+
+.tag_level_3_ADVANCED {
+    background-color: #00FF00 !important;
+    font-size: 1em;
+    color: #444444 ;
+}

@@ -10,6 +10,7 @@ from django_extensions.management.commands.sqldiff import ORDERING_FIELD
 from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext
 from django.core.cache import cache
 
 from taggit.models import TagBase, GenericTaggedItemBase
@@ -121,4 +122,15 @@ class Tag(TagBase):
 
 class TaggedItem(GenericTaggedItemBase):
     """Relation model between tags and objects"""
+    TAG_LEVEL_TYPES = (
+        ('1_BEGINNER', gettext("Beginner")),
+        ('2_INTERMEDIATE', gettext("Intermediate")),
+        ('3_ADVANCED', gettext("Advanced")),
+        )
+    TAG_NATURE_TYPES = (
+        ('1_KNOWLEDGE', gettext("Knowledge")),
+        ('1_WISH', gettext("Wish"))
+    )
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_items")
+    level = models.CharField(_("Level"), max_length=30, choices=TAG_LEVEL_TYPES, null=True, blank=True)
+    nature = models.CharField(_("Nature"), max_length=30, choices=TAG_NATURE_TYPES, null=True, blank=True)

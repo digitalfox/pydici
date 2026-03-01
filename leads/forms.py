@@ -16,8 +16,8 @@ from crispy_forms.layout import Layout, Column, Fieldset, Field, HTML, Row
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, FieldWithButtons
 from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
-from core.models import Tag
 
+from core.models import Tag
 from leads.models import Lead
 from people.models import Consultant, SalesMan
 from crm.models import Client, BusinessBroker
