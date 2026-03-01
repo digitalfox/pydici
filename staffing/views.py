@@ -473,8 +473,8 @@ def pdc_review(request, year=None, month=None):
         consultants = consultants.filter(company=subsidiary)
     if tags:
         for tag in tags:
-            staffings = staffings.filter(consultant__tags__id=tag)
-            consultants = consultants.filter(tags__id=tag)
+            staffings = staffings.filter(consultant__tagged_items__tag__id=tag, consultant__tagged_items__nature="1_KNOWLEDGE")
+            consultants = consultants.filter(tagged_items__tag__id=tag, tagged_items__nature="1_KNOWLEDGE")
         tag_form = ConsultantFilterTagForm(initial={"tag": tags})
     else:
         tag_form = ConsultantFilterTagForm()
