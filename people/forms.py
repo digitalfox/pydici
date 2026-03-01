@@ -72,8 +72,9 @@ class ConsultantTagForm(PydiciCrispyForm):
     def __init__(self, *args, **kwargs):
         consultant = kwargs.pop("consultant", None)
         super(ConsultantTagForm, self).__init__(*args, **kwargs)
-        self.fields["tag"] = forms.ModelMultipleChoiceField(widget=ConsultantTagChoices(consultant=consultant, attrs={"data-placeholder": _("New tags"), "style": "min-width: 200px;"}),
-                                                            queryset=Tag.objects)
+        self.fields["tag"] = forms.ModelMultipleChoiceField(label=_("Tag"),
+            widget=ConsultantTagChoices(consultant=consultant, attrs={"data-placeholder": _("New tags"), "style": "min-width: 200px;"}),
+            queryset=Tag.objects)
         self.fields["level"] = forms.ChoiceField(label=_("Level"), choices=TaggedItem.TAG_LEVEL_TYPES, required=False)
         self.fields["nature"] = forms.ChoiceField(label=_("Nature"), choices=TaggedItem.TAG_NATURE_TYPES, required=False)
         self.helper.form_tag = False

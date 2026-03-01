@@ -13,11 +13,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='taggeditem',
             name='level',
-            field=models.CharField(blank=True, choices=[('1_BEGINNER', 'Beginner'), ('2_INTERMEDIATE', 'Intermediate'), ('3_ADVANCED', 'Avancé')], max_length=30, null=True, verbose_name='Level'),
+            field=models.CharField(blank=True, choices=[('1_BEGINNER', 'Débutant(e)'), ('2_INTERMEDIATE', 'Intermédiaire'), ('3_ADVANCED', 'Avancé(e)')], max_length=30, null=True, verbose_name='Level'),
         ),
         migrations.AddField(
             model_name='taggeditem',
             name='nature',
-            field=models.CharField(blank=True, choices=[('1_KNOWLEDGE', 'Knowledge'), ('2_WISH', 'Wish')], max_length=30, null=True, verbose_name='Nature'),
+            field=models.CharField(blank=True, choices=[('1_KNOWLEDGE', 'Compétence'), ('2_WISH', 'Souhait')], max_length=30, null=True, verbose_name='Nature'),
         ),
     ]
