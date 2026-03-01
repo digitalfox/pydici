@@ -683,19 +683,19 @@ td a:hover {
 }
 
 .tag_level_1_BEGINNER {
-    background-color: #fff7cd !important;
+    background-image: linear-gradient(to right, rgba(85,85,255,.3), rgba(85,85,255,0));
     font-size: 1em;
     color: #444444 ;
 }
 
 .tag_level_2_INTERMEDIATE {
-    background-color: #ffd29b !important;
+    background-image: linear-gradient(to right, rgba(85,85,255,.6), rgba(85,85,255,.1));
     font-size: 1em;
     color: #444444 ;
 }
 
 .tag_level_3_ADVANCED {
-    background-color: #ffafbe !important;
+    background-color: rgba(85,85,255,.7);
     font-size: 1em;
-    color: #444444 ;
+    color: #FFFF ;
 }
