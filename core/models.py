@@ -5,11 +5,16 @@ Database access layer for pydici core module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 
 """
+from django_extensions.management.commands.sqldiff import ORDERING_FIELD
 
 from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, pgettext
 from django.core.cache import cache
+
+from taggit.models import TagBase, GenericTaggedItemBase
+
 
 # Some shared value list
 CLIENT_BILL_LANG = (
@@ -52,6 +57,8 @@ _FEATURES_CHOICES = (
     ("expense_manager", _("Expense manager: validate expense of his team")),
     ("expense_subsidiary_manager", _("Expense manager on subsidiary perimeter: act an expense manager for every consultant of his subsidiary")),
     ("expense_administrator", _("Expense administator: full right to manage expense")),
+    ("tag", _("Add and remove tag for leads, self and own team")),
+    ("tag_manager", _("Merge, categorize and remove tags. Manage tags for everyone")),
 )
 
 FEATURES = set([x[0] for x in _FEATURES_CHOICES])
@@ -87,3 +94,43 @@ class Parameter(models.Model):
         """Invalidate cache for this param"""
         cache.set(self.PARAMETER_CACHE_KEY % self.key, None)
         super(Parameter, self).save(*args, **kwargs)
+
+
+class TagCategory(models.Model):
+    """Category for tags"""
+    name = models.CharField(_("Name"), max_length=255, unique=True)
+    description = models.TextField(_("Description"), blank=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("Tag Category")
+        verbose_name_plural = _("Tag Categories")
+        ordering = ['name']
+
+
+class Tag(TagBase):
+    """Pydici custom Tag to allow specific attributes"""
+    category = models.ForeignKey(TagCategory, on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
+        ordering = ['category', 'name']
+
+
+class TaggedItem(GenericTaggedItemBase):
+    """Relation model between tags and objects"""
+    TAG_LEVEL_TYPES = (
+        ('1_BEGINNER', gettext("Beginner")),
+        ('2_INTERMEDIATE', gettext("Intermediate")),
+        ('3_ADVANCED', pgettext("people", "Advanced")),
+        )
+    TAG_NATURE_TYPES = (
+        ('1_KNOWLEDGE', gettext("Knowledge")),
+        ('2_WISH', gettext("Wish"))
+    )
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_items")
+    level = models.CharField(_("Level"), max_length=30, choices=TAG_LEVEL_TYPES, null=True, blank=True)
+    nature = models.CharField(_("Nature"), max_length=30, choices=TAG_NATURE_TYPES, null=True, blank=True)

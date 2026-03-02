@@ -19,13 +19,10 @@ from django.utils.translation import gettext as _
 from django.db.models import Sum, Count, Min, Q
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
-from django.contrib.contenttypes.models import ContentType
 from django.db.models.functions import TruncMonth
-from django.db import transaction
 from django.conf import settings
 
-from taggit.models import Tag, TaggedItem
-
+from core.models import Tag
 from core.utils import sortedValues, COLORS, moving_average, nextMonth
 from crm.utils import get_subsidiary_from_session
 from leads.models import Lead
@@ -95,7 +92,6 @@ def detail(request, lead_id):
                    "next_lead": next_lead,
                    "previous_lead": previous_lead,
                    "link_root": reverse("core:index"),
-                   "completion_url": reverse("leads:tags", args=[lead.id, ]),
                    "similar_leads": predict_similar(lead),
                    "enable_doc_tab": bool(settings.DOCUMENT_PROJECT_PATH),
                    "lead_tag_form": LeadTagForm(lead=lead),
@@ -237,17 +233,6 @@ def leads_to_bill(request):
 
 @pydici_non_public
 @pydici_feature("leads")
-def tag(request, tag_id):
-    """Displays leads for given tag"""
-
-    return render(request, "leads/tag.html",
-                  {"leads": Lead.objects.filter(tags=tag_id),
-                   "tag": Tag.objects.get(id=tag_id),
-                   "user": request.user})
-
-
-@pydici_non_public
-@pydici_feature("leads")
 @permission_required("leads.change_lead")
 def add_tag(request, lead_id, tag_id=None):
     """Add a tag by id (PUT) to a lead or create (through POST) a new one and attach it and return tag banner."""
@@ -293,43 +278,6 @@ def remove_tag(request, lead_id, tag_id):
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         return Http404()
     return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": LeadTagForm(lead=lead)})
-
-
-@pydici_non_public
-@pydici_feature("leads")
-@permission_required("leads.change_lead")
-@transaction.atomic
-def manage_tags(request):
-    """Manage (rename, merge, remove) tags"""
-    tags_to_merge = request.GET.get("tags_to_merge", None)
-    ct = ContentType.objects.get_for_model(Lead)
-    if tags_to_merge:
-        tags = []
-        for tag_id in tags_to_merge.split(","):
-            tags.append(Tag.objects.get(id=tag_id.split("-")[1]))
-        if tags and len(tags) > 1:
-            target_tag = tags[0]
-            object_ids = list(TaggedItem.objects.filter(tag__in=tags[1:]).values_list("object_id", flat=True))
-            for tag in tags[1:]:
-                tag.delete()
-            for object_id in object_ids:
-                TaggedItem.objects.update_or_create(content_type=ct, object_id=object_id, tag=target_tag)
-    return render(request, "leads/manage_tags.html",
-                  {"data_url": reverse('leads:tag_table_DT'),
-                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
-                                                             "order": [[1, "asc"]] ''',
-                   "user": request.user})
-
-
-@pydici_non_public
-@pydici_feature("leads")
-def tags(request, lead_id):
-    """@return: all tags that contains q parameter and are not already associated to this lead as a simple text list"""
-    # TODO: remove this function
-    tags = Tag.objects.all().exclude(lead__id=lead_id)  # Exclude existing tags
-    tags = tags.filter(name__icontains=request.GET["term"])
-    tags = tags.values_list("name", flat=True)
-    return HttpResponse(json.dumps(list(tags)), content_type="application/json")
 
 
 @pydici_non_public

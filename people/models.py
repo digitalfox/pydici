@@ -13,9 +13,12 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.core.cache import cache
 
+from taggit.managers import TaggableManager
+
 from datetime import date, timedelta
 
 from core.utils import capitalize, cacheable, previousMonth, nextMonth, working_days
+from core.models import TaggedItem
 from crm.models import Subsidiary, Supplier
 from people.tasks import compute_consultant_tasks
 
@@ -53,6 +56,7 @@ class Consultant(models.Model):
     subcontractor_company = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
     telegram_alias = models.CharField(max_length=50, null=True, blank=True)
     telegram_id = models.BigIntegerField(null=True)
+    tags = TaggableManager(through=TaggedItem, blank=True)
 
     def __str__(self):
         return self.name
@@ -264,6 +268,11 @@ class Consultant(models.Model):
             return True
         else:
             return False
+
+    def sorted_tags(self):
+        return self.tagged_items.all().order_by('tag__category__name', "nature", "tag__name").values("tag_id","level", "nature", category=F("tag__category__name"),
+            category_description=F("tag__category__description"), name=F("tag__name"))
+
 
     def get_absolute_url(self):
         return reverse('people:consultant_home', args=[str(self.trigramme)])

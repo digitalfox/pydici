@@ -41,6 +41,7 @@ from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCond
 from people.models import Consultant, Subsidiary, RateObjective
 from leads.models import Lead
 from people.models import ConsultantProfile
+from people.forms import ConsultantFilterTagForm
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm, StaffingForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
@@ -428,6 +429,15 @@ def pdc_review(request, year=None, month=None):
         if request.GET["groupby"] in ("manager", "level"):
             groupby = request.GET["groupby"]
 
+    tags = None
+    if "tag" in request.GET:
+        tags = [int(i) for i in request.GET.getlist("tag")]
+
+    wished_tags = None
+    if "wish-tag" in request.GET:
+        wished_tags = [int(i) for i in request.GET.getlist("wish-tag")]
+        print(wished_tags)
+
     if year and month:
         start_date = date(int(year), int(month), 1)
     else:
@@ -465,6 +475,20 @@ def pdc_review(request, year=None, month=None):
     if subsidiary:
         staffings = staffings.filter(consultant__company=subsidiary)
         consultants = consultants.filter(company=subsidiary)
+    if tags:
+        for tag in tags:
+            staffings = staffings.filter(consultant__tagged_items__tag__id=tag, consultant__tagged_items__nature="1_KNOWLEDGE")
+            consultants = consultants.filter(tagged_items__tag__id=tag, tagged_items__nature="1_KNOWLEDGE")
+        tag_form = ConsultantFilterTagForm(initial={"tag": tags})
+    else:
+        tag_form = ConsultantFilterTagForm()
+    if wished_tags:
+        for tag in wished_tags:
+            staffings = staffings.filter(consultant__tagged_items__tag__id=tag, consultant__tagged_items__nature="2_WISH")
+            consultants = consultants.filter(tagged_items__tag__id=tag, tagged_items__nature="2_WISH")
+        wished_tag_form = ConsultantFilterTagForm(initial={"tag": wished_tags}, prefix="wish")
+    else:
+        wished_tag_form = ConsultantFilterTagForm(prefix="wish")
     if projection in ("balanced", "full"):
         # Only exclude null (0%) mission
         staffings = staffings.filter(mission__probability__gt=0)
@@ -621,7 +645,9 @@ def pdc_review(request, year=None, month=None):
                    "scope": team_name or subsidiary or _("Everybody"),
                    "team_current_filter" : team_current_filter,
                    "team_current_url_filter": team_current_url_filter,
-                   "scopes": scopes})
+                   "scopes": scopes,
+                   "tag_form": tag_form,
+                   "wished_tag_form": wished_tag_form,})
 
 
 @pydici_non_public

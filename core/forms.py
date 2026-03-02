@@ -12,6 +12,10 @@ from django.utils.translation import gettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django_select2.forms import ModelSelect2Widget
+from django_select2.forms import ModelSelect2TagWidget
+
+from core.models import Tag
+from core.utils import capitalize
 
 
 class PydiciSelect2WidgetMixin(object):
@@ -22,10 +26,33 @@ class PydiciSelect2WidgetMixin(object):
 
     def build_attrs(self, base_attrs, extra_attrs=None):
         """Set select2's attributes."""
-        default_attrs = {"data-minimum-input-length": 0, "data-theme": "bootstrap-5", "data-width": "auto"}
+        default_attrs = {"data-minimum-input-length": 0, "data-theme": "bootstrap-5", "data-width": "auto", "data-token-separators": '[","]'}
         default_attrs.update(base_attrs)
         attrs = super().build_attrs(default_attrs, extra_attrs=extra_attrs)
         return attrs
+
+class TagChoices(PydiciSelect2WidgetMixin, ModelSelect2TagWidget):
+    model = Tag
+    search_fields = ["name__icontains"]
+    queryset = Tag.objects.all()
+
+    def __init__(self, *args, **kwargs):
+        super(TagChoices, self).__init__(*args, **kwargs)
+
+
+    def value_from_datadict(self, data, files, name):
+        """Create objects for given non-pimary-key values. Return list of all primary keys."""
+        cleaned_values = []
+        values = set(super().value_from_datadict(data, files, name))
+        for value in values:
+            try:  # Tag exists
+                cleaned_values.append(self.queryset.get(pk=int(value)).pk)
+            except (ValueError, TypeError) or self.model.DoesNotExist:
+                # We need to create it needed
+                tag, created = self.queryset.get_or_create(name=capitalize(value))
+                cleaned_values.append(tag.pk)
+
+        return cleaned_values
 
 
 class SearchForm(forms.Form):

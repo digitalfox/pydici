@@ -376,7 +376,7 @@ div.ui-tooltip {
   background-clip: padding-box;
   *border-right-width: 2px;
   *border-bottom-width: 2px;
- 
+
   .ui-menu-item > a.ui-corner-all {
     display: block;
     padding: 3px 15px;
@@ -385,7 +385,7 @@ div.ui-tooltip {
     line-height: 18px;
     color: #555555;
     white-space: nowrap;
- 
+
     &.ui-state-hover, &.ui-state-active {
       color: #ffffff;
       text-decoration: none;
@@ -564,7 +564,8 @@ body {
 
 .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--selected, .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected="true"],
 .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--highlighted,
-.nav-pills .nav-link.active {
+.nav-pills .nav-link.active,
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected="true"]:not(.select2-results__option--highlighted) {
     background-color: rgba(244,141,51);
     color: #fff;
 }
@@ -672,3 +673,30 @@ td a:hover {
   animation: l3 1s infinite linear;
 }
 @keyframes l3 {to{transform: rotate(1turn)}}
+
+.tag_wish {
+    color: #F527DA;
+}
+
+.tag_level_None {
+    background-color: #999999 !important;
+    font-size: 1em;
+}
+
+.tag_level_1_BEGINNER {
+    background-image: linear-gradient(to right, rgba(85,85,255,.3), rgba(85,85,255,0));
+    font-size: 1em;
+    color: #444444 ;
+}
+
+.tag_level_2_INTERMEDIATE {
+    background-image: linear-gradient(to right, rgba(85,85,255,.6), rgba(85,85,255,.1));
+    font-size: 1em;
+    color: #444444 ;
+}
+
+.tag_level_3_ADVANCED {
+    background-color: rgba(85,85,255,.7);
+    font-size: 1em;
+    color: #FFFF ;
+}

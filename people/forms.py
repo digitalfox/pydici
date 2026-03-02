@@ -4,15 +4,19 @@ People form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+import bleach
 
 from django.forms import models
+from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
+from crispy_forms.layout import Layout, Column, Field, HTML, Row, Submit
 
-from core.forms import PydiciSelect2WidgetMixin
+from core.forms import PydiciSelect2WidgetMixin, TagChoices, PydiciCrispyForm
 from people.models import Consultant, SalesMan
+from core.models import Tag, TaggedItem
 
 
 class ConsultantChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
@@ -38,6 +42,17 @@ class SalesManChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     def get_queryset(self):
         return SalesMan.objects.filter(active=True)
 
+class ConsultantTagChoices(TagChoices):
+    def __init__(self, *args, **kwargs):
+        self.consultant = kwargs.pop("consultant", None)
+        super(ConsultantTagChoices, self).__init__(*args, **kwargs)
+
+    def get_queryset(self):
+        qs = super(ConsultantTagChoices, self).get_queryset()
+        if self.consultant:
+            qs = qs.exclude(lead__id=self.consultant.id)  # Exclude existing tags
+        return qs
+
 
 class ConsultantForm(models.ModelForm):
     class Meta:
@@ -50,3 +65,30 @@ class ConsultantForm(models.ModelForm):
             raise ValidationError(_("Subcontractor company can only be defined for subcontractors"))
         else:
             return self.cleaned_data["subcontractor_company"]
+
+
+class ConsultantTagForm(PydiciCrispyForm):
+    """Add and create tags for a consultant"""
+    def __init__(self, *args, **kwargs):
+        consultant = kwargs.pop("consultant", None)
+        super(ConsultantTagForm, self).__init__(*args, **kwargs)
+        self.fields["tag"] = forms.ModelMultipleChoiceField(label=_("Tag"),
+            widget=ConsultantTagChoices(consultant=consultant, attrs={"data-placeholder": _("New tags"), "style": "min-width: 200px;"}),
+            queryset=Tag.objects)
+        self.fields["level"] = forms.ChoiceField(label=_("Level"), choices=TaggedItem.TAG_LEVEL_TYPES, required=False)
+        self.fields["nature"] = forms.ChoiceField(label=_("Nature"), choices=TaggedItem.TAG_NATURE_TYPES, required=False)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(Row(
+            Column(Field("tag"), css_class="col-lg-8"),
+            Column(Field("level"), css_class="col-lg-2"),
+            Column(Field("nature"), css_class="col-lg-2"),
+            ),
+        )
+
+
+class ConsultantFilterTagForm(forms.Form):
+    """Select only tag form, used for filtering consultants by tag"""
+    def __init__(self, *args, **kwargs):
+        super(ConsultantFilterTagForm, self).__init__(*args, **kwargs)
+        self.fields["tag"] = forms.ModelMultipleChoiceField(widget=ConsultantTagChoices(attrs={"data-tags": "false", "style": "min-width: 200px;"}, required=False),
+                                                            queryset=Tag.objects, label=False, required=False)

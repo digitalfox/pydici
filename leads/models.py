@@ -19,6 +19,7 @@ from taggit.managers import TaggableManager
 from auditlog.models import AuditlogHistoryField
 
 from core.utils import compact_text
+from core.models import TaggedItem
 from crm.models import Client, BusinessBroker, Subsidiary
 from people.models import Consultant, SalesMan
 from billing.utils import get_client_billing_control_pivotable_data
@@ -84,7 +85,7 @@ class Lead(models.Model):
     deal_id.db_index = True
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     send_email = models.BooleanField(_("Send lead by email"), default=True)
-    tags = TaggableManager(blank=True)
+    tags = TaggableManager(through=TaggedItem, blank=True)
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     external_id = models.CharField(max_length=200, default=None, blank=True, null=True, unique=True)
 

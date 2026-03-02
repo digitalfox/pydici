@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
 {% endblock %}
 
-{% block title %}{% trans "Forecast/timesheet " %}{{ consultant }}{% endblock %}
+{% block title %}{% trans "Consultant " %}{{ consultant }}{% endblock %}
 
 {% block content %}
 
@@ -43,16 +43,18 @@
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-achievements" data-tab-url="{% url 'people:consultant_achievements' consultant.id %}"><i class="bi-trophy"></i> <div class="d-none d-md-inline">{% trans "Achievements" %}</div></button></li>
             {% endif %}
         {% endif %}
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-profile" data-tab-url="{% url 'people:consultant_profile' consultant.id %}"><i class="bi-sliders"></i> <div class="d-none d-md-inline">{% trans "Profile" %}</div></button></li>
     </ul>
     {% endcache %}
 </div>
-    
+
 <div class="tab-content">
     <div id="tab-home" class="tab-pane fade show active " role="tabpanel"></div>
     <div id="tab-timesheet" class="tab-pane fade" role="tabpanel"></div>
     <div id="tab-staffing" class="tab-pane fade" role="tabpanel"></div>
     <div id="tab-missions" class="tab-pane fade" role="tabpanel"></div>
     <div id="tab-achievements" class="tab-pane fade" role="tabpanel"></div>
+    <div id="tab-profile" class="tab-pane fade" role="tabpanel"></div>
 </div>
 
 {% endblock %}

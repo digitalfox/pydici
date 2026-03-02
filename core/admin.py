@@ -8,7 +8,7 @@ Admin module for pydici core module
 from django.contrib import admin
 from django.utils.encoding import iri_to_uri
 
-from core.models import GroupFeature, Parameter
+from core.models import GroupFeature, Parameter, Tag, TaggedItem, TagCategory
 
 
 class ReturnToAppAdmin(admin.ModelAdmin):
@@ -41,5 +41,27 @@ class ParameterAdmin(ReturnToAppAdmin):
     list_display =  ("key", "value", "type", "desc")
     ordering = ("key",)
 
+
+class TagAdmin(ReturnToAppAdmin):
+    """Admin model for tags"""
+    list_display = ("name", "slug", "category")
+    list_filter = ("category",)
+    search_fields = ("name",)
+    ordering = ("name",)
+
+
+class TaggedItemAdmin(ReturnToAppAdmin):
+    """Admin model for tags"""
+    search_fields = ("tag__name",)
+
+class TagCategoryAdmin(ReturnToAppAdmin):
+    """Admin model for tags"""
+    list_display = ("name", "description")
+    ordering = ("name",)
+
+
 admin.site.register(GroupFeature, GroupFeatureAdmin)
 admin.site.register(Parameter, ParameterAdmin)
+admin.site.register(Tag, TagAdmin)
+admin.site.register(TaggedItem, TaggedItemAdmin)
+admin.site.register(TagCategory, TagCategoryAdmin)

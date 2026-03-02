@@ -10,8 +10,10 @@ import datetime
 import json
 
 from django.shortcuts import render
-from django.db.models import Q, Sum, Min, Max
+from django.db.models import Q, Sum, Min, Max, F
+from django.db import transaction
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
@@ -19,9 +21,9 @@ from django.utils.translation import pgettext
 from django.core.cache import cache
 from django.conf import settings
 from django.apps import apps
+from django.urls import reverse
 
 from django_select2.views import AutoResponseView
-from taggit.models import Tag
 
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciSubcontractordMixin
 from leads.models import Lead
@@ -32,6 +34,7 @@ from staffing.models import Mission, FinancialCondition, Staffing, Timesheet
 from billing.models import ClientBill
 from expense.models import Expense
 from people.views import consultant_home
+from core.models import Tag, TaggedItem
 from core.utils import nextMonth, previousMonth, get_fiscal_year, user_has_feature
 
 
@@ -471,3 +474,41 @@ def object_history(request, object_type, object_id):
     except model.DoesNotExist:
         raise Http404
     return render(request, "core/_object_history.html", {"object": o})
+
+
+@pydici_non_public
+@pydici_feature("tag_manager")
+@transaction.atomic
+def manage_tags(request):
+    """Manage (rename, merge, remove) tags"""
+    tags_to_merge = request.GET.get("tags_to_merge", None)
+    if tags_to_merge:
+        tags = []
+        for tag_id in tags_to_merge.split(","):
+            tags.append(Tag.objects.get(id=tag_id.split("-")[1]))
+        if tags and len(tags) > 1:
+            target_tag = tags[0]
+            tagged_objects = list(TaggedItem.objects.filter(tag__in=tags[1:]).values_list("object_id", "content_type_id"))
+            for tag in tags[1:]:
+                tag.delete()
+            for object_id, content_type_id in tagged_objects:
+                TaggedItem.objects.update_or_create(content_type_id=content_type_id, object_id=object_id, tag=target_tag)
+    return render(request, "core/manage_tags.html",
+                  {"data_url": reverse('core:tag_table_DT'),
+                   "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
+                                                             "order": [[1, "asc"]] ''',
+                   "user": request.user})
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def tag(request, tag_id):
+    """Displays objects for given tag"""
+    consultant_ctype = ContentType.objects.get(model='Consultant')
+    tagged_consultant = TaggedItem.objects.filter(content_type=consultant_ctype, tag_id=tag_id).order_by('tag__category__name', "nature", "tag__name")
+
+    return render(request, "core/tag.html",
+                  {"leads": Lead.objects.filter(tags=tag_id),
+                   "tagged_consultants": tagged_consultant,
+                   "tag": Tag.objects.get(id=tag_id),
+                   "user": request.user})

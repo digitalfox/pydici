@@ -7,11 +7,9 @@ Pydici leads tables
 
 from django.db.models import Q
 from django.template.loader import get_template
-from django.urls import reverse
 from django.utils.html import escape
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
-from taggit.models import Tag
 
 from datetime import datetime, timedelta
 
@@ -118,35 +116,6 @@ class RecentArchivedLeadTableDT(ActiveLeadTableDT):
                                                             Q(state="SLEEPING"))
         qs = self._filter_on_subsidiary(qs)
         qs = qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
-        return qs
-
-
-class TagTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
-    """Tag tables backend for datatables"""
-    pydici_feature = {"leads_list_all", "leads"}
-    columns = ["select", "name"]
-    order_columns = columns
-
-    def render_column(self, row, column):
-        if column == "name":
-            return "<a href='{0}'>{1}</a>".format(reverse("leads:tag", args=[row.id,]), row.name)
-        elif column == "select":
-            return "<input id='tag-%s' type='checkbox'onclick='gather_tags_to_merge()' />" % row.id
-
-    def get_initial_queryset(self):
-        return Tag.objects.all()
-
-    def filter_queryset(self, qs):
-        search = self.request.GET.get(u'search[value]', None)
-        filters = None
-        for word in search.split():
-            filter = Q(name__icontains=word)
-            if not filters:
-                filters = filter
-            else:
-                filters |= filter
-        if filters:
-            qs = qs.filter(filters)
         return qs
 
 

@@ -1,0 +1,62 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load taggit_templatetags2_tags %}
+
+{% block title %}{{ tag }}{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+
+    <div class="row">
+        <div class="col-lg-8 col-md-12">
+            <h2 class="mt-3">{% blocktrans %}Leads for tag <em>{{ tag }}</em>{% endblocktrans %}</h2>
+
+            <ul class="row">
+            {% for lead in leads %}
+                <li class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
+                    <a href="{% url 'leads:detail' lead.id %}">{{ lead }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+            <h2>{% trans "All leads tags" %}</h2>
+            {% get_tagcloud as lead_tags for 'leads.lead' %}
+            <ul class="row list-unstyled">
+            {% for tag in lead_tags %}
+                <li class="col-6 col-sm-3 col-md-2">
+                    <font size={{tag.weight|floatformat:0}}>
+                        <a href="{% url 'core:tag' tag.id %}">{{ tag }} ({{tag.num_times}})</a>
+                    </font>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="col-lg-4 col-md-12">
+            <h2 class="mt-3">{% blocktrans %}Consultants for tag <em>{{ tag }}</em>{% endblocktrans %}</h2>
+
+            <ul class="row list-unstyled">
+            {% for tc in tagged_consultants %}
+                <li class="col-xxl-4 col-xl-6 col-lg-6 col-sm-12 my-1">
+                    <a href="{% url 'people:consultant_home_by_id' tc.content_object.id %}#goto_tab-profile">
+                        <span class="badge rounded-pill tag_level_{{ tc.level }}">{{ tc.content_object }}</span>
+                    </a>
+                    {% if tc.nature == '2_WISH' %} <i class="bi bi-heart-fill tag_wish"></i>{% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+            <h2>{% trans "All people tags" %}</h2>
+            {% get_tagcloud as people_tags for 'people.consultant' %}
+            <ul class="row list-unstyled">
+            {% for tag in people_tags %}
+                <li class="col-xxl-4 col-xl-6 col-lg-6 col-sm-12">
+                    <font size={{tag.weight|floatformat:0}}>
+                        <a href="{% url 'core:tag' tag.id %}">{{ tag }} ({{tag.num_times}})</a>
+                    </font>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
