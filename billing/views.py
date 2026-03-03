@@ -850,6 +850,8 @@ def internal_bills_in_creation(request):
                    "user": request.user})
 
 
+@pydici_non_public
+@pydici_feature("billing_request")
 def internal_bills_archive(request):
     """Review all internal bill """
     return render(request, "billing/internal_bills_archive.html",
