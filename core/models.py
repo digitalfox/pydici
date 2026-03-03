@@ -5,13 +5,12 @@ Database access layer for pydici core module
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 
 """
-from django_extensions.management.commands.sqldiff import ORDERING_FIELD
-
 from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext, pgettext
 from django.core.cache import cache
+from django.urls import reverse
 
 from taggit.models import TagBase, GenericTaggedItemBase
 
@@ -113,6 +112,9 @@ class TagCategory(models.Model):
 class Tag(TagBase):
     """Pydici custom Tag to allow specific attributes"""
     category = models.ForeignKey(TagCategory, on_delete=models.CASCADE, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return reverse('core:tag', args=[str(self.id)])
 
     class Meta:
         verbose_name = _("Tag")
