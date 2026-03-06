@@ -384,11 +384,13 @@ def remove_tag(request, consultant_id, tag_id):
     try:
         tag = Tag.objects.get(id=tag_id)
         consultant = Consultant.objects.get(id=consultant_id)
+        ctype = ContentType.objects.get(model='Consultant')
+        nature = "2_WISH" if "wished" in request.GET else "1_KNOWLEDGE"
         if not can_manage_tags(consultant, request.user):
             return HttpResponseRedirect(reverse("core:forbidden"))
-        consultant.tags.remove(tag)
-    except (Tag.DoesNotExist, Consultant.DoesNotExist):
-        return Http404()
+        TaggedItem.objects.get(tag=tag, object_id=consultant.id, content_type=ctype, nature=nature).delete()
+    except (Tag.DoesNotExist, Consultant.DoesNotExist, TaggedItem.DoesNotExist):
+        raise Http404
     return render(request, "people/_tags_banner.html", {"consultant": consultant, "consultant_tag_form": ConsultantTagForm(consultant=consultant)})
 
 
