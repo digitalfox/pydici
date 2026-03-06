@@ -4,6 +4,8 @@ Pydici people views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from dotenv.variables import Atom
+from django.db.transaction import Atomic
 
 from datetime import date, timedelta
 import json
@@ -16,6 +18,7 @@ from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext as _
 from django.db.models import Count, Sum, Min, F, Avg, Q
 from django.db.models.functions import TruncMonth
+from django.db.transaction import atomic
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
@@ -339,6 +342,7 @@ def consultant_profile(request, consultant_id):
 
 @pydici_non_public
 @pydici_feature("tag")
+@atomic
 def add_tag(request, consultant_id, tag_id=None):
     """Add a tag by id (PUT) to a consultant or create/update (through POST) a new one with optional level/wish attributes, attach it and return tag banner."""
     try:
@@ -355,6 +359,8 @@ def add_tag(request, consultant_id, tag_id=None):
             ctype = ContentType.objects.get(model='Consultant')
             tags = form.cleaned_data["tag"]
             for tag in tags:
+                # We need to delete existing tags before creating new ones to allow level overriding with respect to nature
+                TaggedItem.objects.filter(tag=tag, object_id=consultant.id, content_type=ctype, nature=form.cleaned_data["nature"]).delete()
                 TaggedItem.objects.update_or_create(tag=tag, object_id=consultant.id, content_type=ctype,
                     level=form.cleaned_data["level"], nature=form.cleaned_data["nature"])
         else:  # Returns forms with errors
