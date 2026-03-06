@@ -16,7 +16,7 @@ from django.template.loader import get_template
 
 from core.utils import get_parameter
 from people.models import Consultant
-from staffing.utils import gatherTimesheetData
+from staffing.utils import gatherTimesheetData, is_outside_business_hours
 
 
 @shared_task
@@ -25,6 +25,9 @@ def warn_for_incomplete_timesheet(warn_overbooking=False, days=None, month="last
     :param warn_overbooking: Warn for overbooking days (default is false)
     :param days: only check n first days. If None (default), check all month
     :param month: Month to check: current or last (default) month"""
+    if is_outside_business_hours():
+        return
+
     email_template = get_template("batch/timesheet_warning_email.txt")
     if month == "current":
         # TODO use core.utils nextMonth()
