@@ -239,7 +239,7 @@ def add_tag(request, lead_id, tag_id=None):
     try:
         lead = Lead.objects.get(id=lead_id)
     except Lead.DoesNotExist:
-        return Http404()
+        raise Http404
     if request.method == "POST":
         form = LeadTagForm(request.POST)
         if form.is_valid():
@@ -276,7 +276,7 @@ def remove_tag(request, lead_id, tag_id):
             compute_leads_state.delay(relearn=False, leads_id=[lead.id, ])  # Update (in background) lead proba state as tag are used in computation
         compute_lead_similarity.delay()  # update lead similarity model in background
     except (Tag.DoesNotExist, Lead.DoesNotExist):
-        return Http404()
+        raise Http404
     return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": LeadTagForm(lead=lead)})
 
 
@@ -523,7 +523,7 @@ def lead_pivotable(request, lead_id=None):
     try:
         lead = Lead.objects.get(id=lead_id)
     except Lead.DoesNotExist:
-        return Http404()
+        raise Http404
     for mission in lead.mission_set.all():
         data.extend(mission.pivotable_data(startDate=startDate, endDate=endDate))
 

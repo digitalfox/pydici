@@ -572,7 +572,7 @@ def company_pivotable(request, company_id=None):
     try:
         company = Company.objects.get(id=company_id)
     except Company.DoesNotExist:
-        return Http404()
+        raise Http404()
     leads = Lead.objects.filter(client__organisation__company=company)
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)

@@ -348,7 +348,7 @@ def add_tag(request, consultant_id, tag_id=None):
     try:
         consultant = Consultant.objects.get(id=consultant_id)
     except Consultant.DoesNotExist:
-        return Http404()
+        raise Http404
 
     if not can_manage_tags(consultant, request.user):
         return HttpResponseRedirect(reverse("core:forbidden"))
