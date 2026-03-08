@@ -4,9 +4,6 @@ Pydici people views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from dotenv.variables import Atom
-from django.db.transaction import Atomic
-
 from datetime import date, timedelta
 import json
 from dataclasses import dataclass
