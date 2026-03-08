@@ -32,7 +32,7 @@
 
 <!-- buttons bar -->
 <div class="row">
-    <div class="col-lg-5 my-2">
+    <div class="col-xl-5 col-md-12 my-1">
         <!-- Projection button -->
         <div class="btn-group">
           <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -73,15 +73,15 @@
         </div>
     </div>
     <!-- Tag selector -->
-    <div class="col-lg-6 col-md-12">
+    <div class="col-xl-7 col-lg-12 my-1">
     <div class="row">
     <form id="tag_form">
 
         <div class="d-flex">
-            <span class="my-auto mx-2 d-none d-lg-block">{% trans "Tags: " %}</span>
-            <div class="col" style="min-width: 200px">{{ tag_form }}</div>
-            <span class="my-auto mx-2 d-none d-lg-block">{% trans "Wished Tags: " %}</span>
-            <div class="col" style="min-width: 200px">{{ wished_tag_form }}</div>
+            <span class="my-auto mx-2 d-none d-lg-block">{% trans "Knowledge:" %}</span>
+            <div class="col-4">{{ tag_form }}</div>
+            <span class="my-auto mx-2 d-none d-lg-block">{% trans "Wish:" %}</span>
+            <div class="col-4">{{ wished_tag_form }}</div>
             <div class="col mx-2"><button type="submit" class="btn btn-primary">{% trans "Filter" context "verb" %}</button></div>
         </div>
     </form>

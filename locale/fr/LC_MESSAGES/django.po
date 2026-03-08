@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-01 22:57+0100\n"
-"PO-Revision-Date: 2026-03-01 22:57+0100\n"
+"POT-Creation-Date: 2026-03-08 20:37+0100\n"
+"PO-Revision-Date: 2026-03-08 20:37+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@enioka.com>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: billing/admin.py:27 billing/admin.py:40 billing/admin.py:51
 #: billing/forms.py:71 billing/forms.py:213 billing/models.py:418
-#: core/models.py:91 core/models.py:102 expense/models.py:102
+#: core/models.py:90 core/models.py:101 expense/models.py:102
 #: leads/models.py:141 leads/views.py:186 staffing/models.py:28
 #: staffing/models.py:39 staffing/models.py:74 staffing/models.py:504
 #: templates/billing/bill.html:79 templates/billing/internal_bill.html:60
@@ -794,17 +794,17 @@ msgstr "équipe %(manager_name)s"
 msgid "Everybody"
 msgstr "Tout le monde"
 
-#: billing/views.py:966 billing/views.py:967
+#: billing/views.py:968 billing/views.py:969
 #: templates/billing/graph_yearly_billing.html:14
 #: templates/billing/graph_yearly_billing.html:16
 msgid "growth"
 msgstr "croissance"
 
-#: billing/views.py:1002
+#: billing/views.py:1004
 msgid "billing outstanding"
 msgstr "encours des factures émises"
 
-#: billing/views.py:1003
+#: billing/views.py:1005
 msgid "billing outstanding overdue"
 msgstr "encours des factures en retard"
 
@@ -942,15 +942,15 @@ msgstr "Désolé, on ne se connaît pas"
 msgid "Save"
 msgstr "Enregistrer"
 
-#: core/models.py:21
+#: core/models.py:20
 msgid "French"
 msgstr "Français"
 
-#: core/models.py:22
+#: core/models.py:21
 msgid "English"
 msgstr "Anglais"
 
-#: core/models.py:37
+#: core/models.py:36
 msgid ""
 "Provides basic access for company users. Every user except subcontractor "
 "should have this."
@@ -958,26 +958,26 @@ msgstr ""
 "Accès de base pour les utilisateurs internes. Tout utilisateur, hors sous "
 "traitant, devrait avoir cette fonctionnalité."
 
-#: core/models.py:38
+#: core/models.py:37
 msgid "3rd Parties: Access to the 'Third parties' menu"
 msgstr "Tierces parties : accès au menu « Tierces parties »"
 
-#: core/models.py:39
+#: core/models.py:38
 msgid "Contacts, write access: Allow adding, editing, removing contacts"
 msgstr ""
 "Modification des contacts : permet l'ajout, la modification et la "
 "suppression de contacts"
 
-#: core/models.py:40
+#: core/models.py:39
 msgid "Leads: Create and modify leads. Access to business menu"
 msgstr "Affaires : créer et modifier des affaires. Accès au menu commerce"
 
-#: core/models.py:41
+#: core/models.py:40
 msgid "Leads, list all: Access to the 'Leads > All leads' menu entry"
 msgstr ""
 "Toutes les affaires : donne accès au menu Affaires => Toutes les affaires"
 
-#: core/models.py:42
+#: core/models.py:41
 msgid ""
 "Leads, profitability: Access to the 'Profitability' information in lead "
 "description"
@@ -985,78 +985,78 @@ msgstr ""
 "Rentabilité : affiche le panneau de rentabilité dans les feuilles de temps "
 "des missions"
 
-#: core/models.py:43
+#: core/models.py:42
 msgid "Management: Access to the 'Management' menu"
 msgstr "Management : accès au menu « Management »"
 
-#: core/models.py:44
+#: core/models.py:43
 msgid "Menubar: Show the menubar"
 msgstr "Barre de menu : affichage de la barre de menu"
 
-#: core/models.py:45
+#: core/models.py:44
 msgid "Reports: Access to the 'Reports' menu"
 msgstr "Rapports : accès au menu « Rapports »"
 
-#: core/models.py:46
+#: core/models.py:45
 msgid "Search: Allow searching"
 msgstr "Recherche : accès au champ de recherche global"
 
-#: core/models.py:47
+#: core/models.py:46
 msgid "Staffing: Access to staffing features"
 msgstr "Prévision : accès aux fonctionnalités de prévision de staffing"
 
-#: core/models.py:48
+#: core/models.py:47
 msgid "Staffing, mass edit: Access to mass staffing features"
 msgstr "Staffing en masse : accès à l'écran de staffing en masse"
 
-#: core/models.py:49
+#: core/models.py:48
 msgid "Timesheet, all: Access to all timesheets of all users"
 msgstr ""
 "Feuille de temps global : accès à la feuille de temps consolidé de tous les "
 "utilisateurs"
 
-#: core/models.py:50
+#: core/models.py:49
 msgid ""
 "Timesheet, current month: Access to current month timesheets of all users"
 msgstr ""
 "Feuille de temps du mois courant : accès à la feuille de temps du mois "
 "courant pour tous les utilisateurs"
 
-#: core/models.py:51
+#: core/models.py:50
 msgid "Timesheet management of subcontractor"
 msgstr "Feuille de temps pour les sous traitants"
 
-#: core/models.py:52
+#: core/models.py:51
 msgid "Timesheet management (R/W) of all user own subsidiary"
 msgstr ""
 "Gestion des feuilles (en lecture/écriture) de temps pour les consultants de "
 "sa filiale"
 
-#: core/models.py:53
+#: core/models.py:52
 msgid "Manage bills, allow to mark bills sent, paid etc."
 msgstr "Gérer les factures, les marquer comme envoyées, payées etc."
 
-#: core/models.py:54
+#: core/models.py:53
 msgid "Create bills and proposed them to billing team "
 msgstr ""
 "Créer des factures et les proposer à l'équipe en charge de la facturation"
 
-#: core/models.py:55
+#: core/models.py:54
 msgid "Expense request"
 msgstr "Demande de frais"
 
-#: core/models.py:56
+#: core/models.py:55
 msgid "Expense paymaster: create expense payment to pay expense to consultant"
 msgstr ""
 "Gestionnaire de remboursement de frais : création des remboursements de "
 "frais pour les consultants"
 
-#: core/models.py:57
+#: core/models.py:56
 msgid "Expense manager: validate expense of his team"
 msgstr ""
 "Manager des notes de frais : validation des notes de frais de son équipe"
 
-#: core/models.py:58
+#: core/models.py:57
 msgid ""
 "Expense manager on subsidiary perimeter: act an expense manager for every "
 "consultant of his subsidiary"
@@ -1064,48 +1064,48 @@ msgstr ""
 "Manager filiale des notes de frais : validation des notes de frais des "
 "personnes de sa filiale"
 
-#: core/models.py:59
+#: core/models.py:58
 msgid "Expense administator: full right to manage expense"
 msgstr ""
 "Administrateur des notes frais : droits complets de gestion des notes de "
 "frais"
 
-#: core/models.py:60
+#: core/models.py:59
 msgid "Add and remove tag for leads, self and own team"
 msgstr ""
 "Ajouter et supprimer des étiquettes pour les affaires, pour soi et son équipe"
 
-#: core/models.py:61
+#: core/models.py:60
 msgid "Merge, categorize and remove tags. Manage tags for everyone"
 msgstr ""
 "Fusionner, organiser et supprimer des étiquettes. Gérer les étiquettes de "
 "toute le monde"
 
-#: core/models.py:72
+#: core/models.py:71
 msgid "Feature"
 msgstr "Fonctionnalité"
 
-#: core/models.py:86
+#: core/models.py:85
 msgid "text"
 msgstr "texte"
 
-#: core/models.py:87
+#: core/models.py:86
 msgid "float"
 msgstr "flottant"
 
-#: core/models.py:88
+#: core/models.py:87
 msgid "Key"
 msgstr "Clé"
 
-#: core/models.py:89
+#: core/models.py:88
 msgid "Value"
 msgstr "Valeur"
 
-#: core/models.py:90 staffing/models.py:75 templates/staffing/mission.html:92
+#: core/models.py:89 staffing/models.py:75 templates/staffing/mission.html:92
 msgid "Type"
 msgstr "Type"
 
-#: core/models.py:101 crm/models.py:60 crm/models.py:82 crm/models.py:184
+#: core/models.py:100 crm/models.py:60 crm/models.py:82 crm/models.py:184
 #: crm/models.py:502 expense/models.py:67 leads/models.py:66 leads/views.py:186
 #: people/models.py:34 people/models.py:336 templates/core/manage_tags.html:22
 #: templates/crm/clientcompany_detail.html:404 templates/leads/review.html:31
@@ -1114,48 +1114,48 @@ msgstr "Type"
 msgid "Name"
 msgstr "Nom"
 
-#: core/models.py:108
+#: core/models.py:107
 msgid "Tag Category"
 msgstr "Catégorie d'étiquette"
 
-#: core/models.py:109
+#: core/models.py:108
 msgid "Tag Categories"
 msgstr "Catégories d'étiquettes"
 
-#: core/models.py:118 people/forms.py:75
+#: core/models.py:120 people/forms.py:75
 msgid "Tag"
 msgstr "Étiquette"
 
-#: core/models.py:119 templates/core/search.html:59
+#: core/models.py:121 templates/core/search.html:59
 msgid "Tags"
 msgstr "Étiquettes"
 
-#: core/models.py:126
+#: core/models.py:128
 msgid "Beginner"
 msgstr "Débutant(e)"
 
-#: core/models.py:127
+#: core/models.py:129
 msgid "Intermediate"
 msgstr "Intermédiaire"
 
-#: core/models.py:128
+#: core/models.py:130
 msgctxt "people"
 msgid "Advanced"
 msgstr "Avancé(e)"
 
-#: core/models.py:131
+#: core/models.py:133
 msgid "Knowledge"
 msgstr "Compétence"
 
-#: core/models.py:132
+#: core/models.py:134
 msgid "Wish"
 msgstr "Souhait"
 
-#: core/models.py:135 people/forms.py:78 people/models.py:35
+#: core/models.py:137 people/forms.py:78 people/models.py:35
 msgid "Level"
 msgstr "Niveau"
 
-#: core/models.py:136 people/forms.py:79
+#: core/models.py:138 people/forms.py:79
 msgid "Nature"
 msgstr "Nature"
 
@@ -1905,11 +1905,11 @@ msgstr "Géré par"
 msgid "Sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/views.py:255 people/views.py:367
+#: leads/views.py:255 people/views.py:370
 msgid "Invalid tag"
 msgstr "Étiquette invalide"
 
-#: leads/views.py:257 people/views.py:369
+#: leads/views.py:257 people/views.py:372
 msgid "No tag provided"
 msgstr "Aucune étiquette fournie"
 
@@ -2144,12 +2144,12 @@ msgstr "Max missions sur un mois (%s)"
 msgid "Max monthly daily rate (%s)"
 msgstr "Meilleur TJM mensuel (%s)"
 
-#: people/views.py:439
+#: people/views.py:444
 #, python-format
 msgid "consultants %s"
 msgstr "consultants %s"
 
-#: people/views.py:440
+#: people/views.py:445
 #, python-format
 msgid "subcontractors %s"
 msgstr "sous-traitant %s"
@@ -5922,12 +5922,12 @@ msgid "Workload shedule review"
 msgstr "Revue du plan de charge"
 
 #: templates/staffing/pdc_review.html:81
-msgid "Tags: "
-msgstr "Étiquettes : "
+msgid "Knowledge:"
+msgstr "Compétence&nbsp;: "
 
 #: templates/staffing/pdc_review.html:83
-msgid "Wished Tags: "
-msgstr "Étiquettes souhaitées : "
+msgid "Wish:"
+msgstr "Souhait&nbsp;: "
 
 #: templates/staffing/pdc_review.html:85
 msgctxt "verb"
@@ -6048,6 +6048,12 @@ msgstr "Proportion de sous traitance par produit"
 #: templates/staffing/turnover_pivotable.html:131
 msgid "Sum ratio"
 msgstr "Ratio de sommes"
+
+#~ msgid "Tags: "
+#~ msgstr "Étiquettes : "
+
+#~ msgid "Wished Tags: "
+#~ msgstr "Étiquettes souhaitées : "
 
 #, fuzzy
 #~| msgid "People"
