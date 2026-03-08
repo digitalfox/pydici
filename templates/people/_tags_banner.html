@@ -15,7 +15,7 @@
                         <ul class="row list-unstyled">
         {% endifchanged %}
         <li class="col-lg-auto col-sm-3 col-md-2">
-            <div class="mx-1">
+            <div class="mx-1 my-2">
                 <a href="{% url 'core:tag' tag.tag_id %}"><span class="badge rounded-pill tag_level_{{ tag.level }}">{{ tag.name }}</span></a>{% if tag.nature == '2_WISH' %} <i class="bi bi-heart-fill tag_wish"></i>{% endif %}
                 <a href='#' hx-delete="{% url 'people:remove_tag' consultant.id|unlocalize tag.tag_id|unlocalize %}{% if tag.nature == '2_WISH' %}?wished{% endif %}">
                 <i class="bi bi-x-circle"></i></a>&nbsp;
