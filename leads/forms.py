@@ -18,12 +18,14 @@ from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
 
 from core.models import Tag
-from leads.models import Lead
+from leads.models import Lead, Activity
 from people.models import Consultant, SalesMan
 from crm.models import Client, BusinessBroker
 from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
-from crm.forms import ClientChoices, BusinessBrokerChoices
+from crm.forms import ClientChoices, BusinessBrokerChoices, ContactChoices, ClientOrganisationChoices
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin, TagChoices
+from staffing.forms import MarketingProductMChoices
+from staffing.models import MarketingProduct
 
 
 class LeadChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
@@ -161,3 +163,33 @@ class LeadForm(PydiciCrispyModelForm):
                 raise ValidationError(_("Deal id must be unique. Use another value or let the field blank for automatic computation"))
             else:
                 return self.cleaned_data["deal_id"]
+
+class ActivityForm(PydiciCrispyModelForm):
+    class Meta:
+        model = Activity
+        exclude = ["creation_date"]
+        widgets = {"contact": ContactChoices,
+                   "client_organisation": ClientOrganisationChoices,
+                   "responsible": ConsultantChoices }
+
+
+    def __init__(self, *args, **kwargs):
+        super(ActivityForm, self).__init__(*args, **kwargs)
+        self.fields["marketing_products"] = forms.ModelMultipleChoiceField(widget=MarketingProductMChoices(mission=self.instance),
+            queryset=MarketingProduct.objects.all(), required=False)
+        self.helper.layout = Layout(TabHolder(
+            Tab(_("Description"),
+                Row(
+                    Column("name", "comment", css_class="col-md-6 col-12"),
+                    Column("responsible", "subsidiary", "nature", "marketing_products", "business_broker", css_class="col-md-6 col-12"))),
+            Tab(_("Target"),
+                "client_organisation",
+                "contact",
+                "objective"
+            ),
+            Tab(_("State"),
+                "state",
+                Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
+                Field("done_date", placeholder=_("Completion date"), css_class="datepicker")
+            ),
+        ))

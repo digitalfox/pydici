@@ -141,7 +141,7 @@ DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
 # since django 3.2, default PK field has changed from autofield (integer) to bigint. Set here previous default.
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-# mission staffing sometimes needs lots of fields: month (12) * fields (6) * people 
+# mission staffing sometimes needs lots of fields: month (12) * fields (6) * people
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 LOGGING = {
@@ -190,6 +190,11 @@ AUDITLOG_INCLUDE_TRACKING_MODELS = (
         "model": "leads.Lead",
         "exclude_fields": ["id", "description", "administrative_notes", "send_email", "tagged_items", "update_date", "creation_date"],
         "m2m_fields": ["staffing"],
+    },
+    {
+        "model": "leads.Activity",
+        "exclude_fields": ["id", "comment", "update_date", "creation_date"],
+        "m2m_fields": ["marketing_products"]
     },
     {
         "model": "staffing.Mission",
