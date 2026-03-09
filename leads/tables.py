@@ -203,7 +203,24 @@ class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVi
                 return self.consultantTemplate.render({"consultant": row.responsible})
             else:
                 return "-"
+        elif column == "client_organisation":
+            if row.client_organisation:
+                return "<a href='{0}'>{1}</a>".format(row.client_organisation.get_absolute_url(), escape(row.client_organisation))
+            else:
+                return "-"
+        elif column == "contact":
+            if row.contact:
+                return "<a href='{0}'>{1}</a>".format(row.contact.get_absolute_url(), escape(row.contact))
+            else:
+                return "-"
         elif column in ("creation_date", "expense_date"):
             return self.date_template.render(context={"date": getattr(row, column)}, request=self.request)
         else:
             return super(ActivityTableDT, self).render_column(row, column)
+
+
+class ContactActivityTableDT(ActivityTableDT):
+    def get_initial_queryset(self):
+        qs = Activity.objects.filter(contact__id=self.kwargs["contact_id"])
+        qs = self._filter_on_subsidiary(qs)
+        return qs.select_related("contact", "client_organisation__company", "responsible", "subsidiary")

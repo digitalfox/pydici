@@ -39,4 +39,5 @@ leads_urls = [ re_path(r'^review/?$', v.review, name="review"),
                re_path(r'^datatable/businessbroker-lead/(?P<businessbroker_id>\d+)/data/$', t.BusinessBrokerLeadTableDT.as_view(), name='businessbroker_lead_table_DT'),
                re_path(r'^datatable/leads-to-bill/data/$', t.LeadToBill.as_view(), name='leads_to_bill_table_DT'),
                re_path(r'^datatable/activities/data/$', t.ActivityTableDT.as_view(), name='activity_table_DT'),
+               re_path(r'^datatable/activities/contact/(?P<contact_id>\d+)/data/$', t.ContactActivityTableDT.as_view(), name='contact_activity_table_DT'),
               ]
