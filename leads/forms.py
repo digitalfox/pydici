@@ -5,25 +5,25 @@ Leads form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-from django.utils.translation import gettext_lazy as _
+from django import forms
 from django.core.exceptions import ValidationError
 from django.urls import reverse
-from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
-from django import forms
-
-from crispy_forms.layout import Layout, Column, Fieldset, Field, HTML, Row
-from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, FieldWithButtons
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
+from crispy_forms.bootstrap import AppendedText, FieldWithButtons, Tab, TabHolder
+from crispy_forms.layout import HTML, Column, Field, Fieldset, Layout, Row
 
-from core.models import Tag
-from leads.models import Lead, Activity
-from people.models import Consultant, SalesMan
-from crm.models import Client, BusinessBroker
-from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
-from crm.forms import ClientChoices, BusinessBrokerChoices, ContactChoices, ClientOrganisationChoices
+
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin, TagChoices
+from core.models import Tag
+from crm.forms import BusinessBrokerChoices, ClientChoices, ClientOrganisationChoices, ContactChoices
+from crm.models import BusinessBroker, Client
+from leads.models import Activity, Lead
+from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
+from people.models import Consultant, SalesMan
 from staffing.forms import MarketingProductMChoices
 from staffing.models import MarketingProduct
 
@@ -177,19 +177,25 @@ class ActivityForm(PydiciCrispyModelForm):
         super(ActivityForm, self).__init__(*args, **kwargs)
         self.fields["marketing_products"] = forms.ModelMultipleChoiceField(widget=MarketingProductMChoices(mission=self.instance),
             queryset=MarketingProduct.objects.all(), required=False)
-        self.helper.layout = Layout(TabHolder(
-            Tab(_("Description"),
-                Row(
-                    Column("name", "comment", css_class="col-md-6 col-12"),
-                    Column("responsible", "subsidiary", "nature", "marketing_products", "business_broker", css_class="col-md-6 col-12"))),
-            Tab(_("Target"),
-                "client_organisation",
-                "contact",
-                "objective"
+        self.helper.layout = Layout(
+            Row(
+                Column("name", "state", "comment", css_class="col-md-4 col-12"),
+                Column(
+                    "responsible",
+                    "subsidiary",
+                    "nature",
+                    "marketing_products",
+                    "business_broker",
+                    css_class="col-md-4 col-sm-6 col-12",
+                ),
+                Column(
+                    "client_organisation",
+                    "contact",
+                    "objective",
+                    Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
+                    Field("done_date", placeholder=_("Completion date"), css_class="datepicker"),
+                    css_class="col-md-4 col-sm-6 col-12",
+                ),
             ),
-            Tab(_("State"),
-                "state",
-                Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
-                Field("done_date", placeholder=_("Completion date"), css_class="datepicker")
-            ),
-        ))
+            self.submit
+        )

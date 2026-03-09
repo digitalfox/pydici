@@ -4,17 +4,19 @@ Pydici leads tables
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from ortools.linear_solver.pywraplp import Objective
 
 from django.db.models import Q
 from django.template.loader import get_template
 from django.utils.html import escape
+from django.urls import reverse
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from datetime import datetime, timedelta
 
 
-from leads.models import Lead
+from leads.models import Lead, Activity
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 from crm.utils import get_subsidiary_from_session
 
@@ -158,3 +160,50 @@ class BusinessBrokerLeadTableDT(LeadTableDT):
         qs = Lead.objects.filter(Q(business_broker__company_id=self.kwargs["businessbroker_id"]) | Q(paying_authority__company_id=self.kwargs["businessbroker_id"]))
         qs = qs.distinct()
         return qs.select_related("client__contact", "client__organisation__company", "responsible", "subsidiary")
+
+
+class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
+    pydici_feature = {"leads"}
+    columns = ["name", "responsible", "state", "nature", "objective", "client_organisation", "contact", "creation_date", "due_date"]
+    order_columns = columns
+    max_display_length = 500
+    date_template = get_template("core/_date_column.html")
+    consultantTemplate = get_template("people/__consultant_name.html")
+
+    def _filter_on_subsidiary(self, qs):
+        subsidiary = get_subsidiary_from_session(self.request)
+        if subsidiary:
+            qs = qs.filter(subsidiary=subsidiary)
+        return qs
+
+    def get_initial_queryset(self):
+        qs = Activity.objects.all()
+        qs = self._filter_on_subsidiary(qs)
+        return qs.select_related("contact", "client_organisation__company", "responsible", "subsidiary")
+
+    def filter_queryset(self, qs):
+        """ simple search on some attributes"""
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(Q(name__icontains=search) |
+                        Q(comment__icontains=search) |
+                        Q(contact__name__icontains=search) |
+                        Q(client_organisation__company__name__icontains=search) |
+                        Q(client_organisation__name__iexact=search) |
+                        Q(responsible__name__icontains=search) |
+                        Q(subsidiary__name__icontains=search))
+
+        return qs
+
+    def render_column(self, row, column):
+        if column == "name":
+            return "<a href='%s'>%s</a>" % (reverse("leads:activity", args=[row.id]), row.name)
+        elif column == "responsible":
+            if row.responsible:
+                return self.consultantTemplate.render({"consultant": row.responsible})
+            else:
+                return "-"
+        elif column in ("creation_date", "expense_date"):
+            return self.date_template.render(context={"date": getattr(row, column)}, request=self.request)
+        else:
+            return super(ActivityTableDT, self).render_column(row, column)

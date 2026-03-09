@@ -323,7 +323,8 @@ class Activity(models.Model):
         ('PHONE_VISIO', gettext("Phone/Visio")),
         ('MEETING', gettext("meeting")),
         ('LUNCH_DINER', gettext("Lunch/Diner")),
-        ('EVENT', gettext("Conference/Seminar"))
+        ('EVENT', gettext("Conference/Seminar")),
+        ('MAIL', gettext("Mail"))
     )
     OBJECTIVES = (
         ('RELATIONSHIP', gettext("Relationship maintenance")),
@@ -332,7 +333,7 @@ class Activity(models.Model):
     )
     name = models.CharField(_("Name"), max_length=200)
     comment = models.TextField(blank=True)
-    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), blank=True, null=True, on_delete=models.SET_NULL)
+    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), null=True, on_delete=models.SET_NULL)
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     nature = models.CharField(_("Nature"), max_length=30, choices=NATURES)
     objective = models.CharField(_("Objective"), max_length=30, choices=OBJECTIVES)

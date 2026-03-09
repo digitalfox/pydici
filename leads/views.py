@@ -316,7 +316,9 @@ def activity(request, activity_id=None):
 @pydici_feature("leads")
 def activities(request):
     """Current commercial activities"""
-    return render(request, "leads/activities.html", {})
+    return render(request, "leads/activities.html",
+                  {"data_url" : reverse('leads:activity_table_DT'),
+                   "user": request.user})
 
 
 @pydici_non_public
