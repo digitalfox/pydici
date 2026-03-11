@@ -25,6 +25,7 @@ from django.conf import settings
 from core.models import Tag
 from core.utils import sortedValues, COLORS, moving_average, nextMonth
 from crm.utils import get_subsidiary_from_session
+from crm.models import Client
 from leads.models import Lead, Activity
 from leads.forms import LeadForm, LeadTagForm, ActivityForm
 from leads.utils import post_save_lead, leads_state_stat
@@ -126,7 +127,13 @@ def lead(request, lead_id=None):
         else:
             try:
                 consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-                form = LeadForm(initial={"responsible": consultant, "subsidiary": consultant.company})  # An unbound form
+                activity_id = request.GET.get("activity", None)
+                client = None
+                if activity_id:
+                    activity = Activity.objects.get(id=activity_id)
+                    if activity.client_organisation:
+                        client, created = Client.objects.get_or_create(organisation=activity.client_organisation, contact=activity.contact)
+                form = LeadForm(initial={"responsible": consultant, "subsidiary": consultant.company, "client": client})  # An unbound form
             except Consultant.DoesNotExist:
                 form = LeadForm()  # An unbound form
 
