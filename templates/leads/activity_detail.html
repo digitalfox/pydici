@@ -1,0 +1,63 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load l10n %}
+{% load pydici_filters %}
+
+{% block title %}{% trans "Activity detail" %} {{ contact }}{% endblock %}
+
+{% block content %}
+
+<h1><a href="{% url 'leads:activity' activity.id %}">{{ activity.name }}</a></h1>
+
+<p>{{ activity.description }}</p>
+
+<div class="row mt-2">
+    <div class="col-lg-6 col-xl-4">
+        <table class="table table-hover table-striped">
+            <tr><th class="text-nowrap"><i class="bi bi-bullseye"></i> {% trans "Objective" %}</th><td>{{ activity.get_objective_display }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-person-check"></i> {% trans "Nature" %}</th><td>{{ activity.get_nature_display }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-boxes"></i> {% trans "Products" %}</th><td>{{ activity.marketing_products.all |join:", " }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-file-earmark-text"></i> {% trans "Comment" %}</th><td>{{ activity.comment | pydici_simple_format }}</td></tr>
+        </table>
+    </div>
+    <div class="col-lg-6 col-xl-4">
+        <table class="table table-hover table-striped">
+            <tr><th class="text-nowrap"><i class="bi bi-arrow-right-circle"></i> {% trans "State" %}</th><td>{{ activity.get_state_display }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-person-circle"></i> {% trans "Responsible" %}</th><td>{{ activity.responsible }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-people"></i> {% trans "Business broker" %}</th><td>{{ activity.business_broker|default:"-" }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-calendar"></i> {% trans "Creation date" %}</th><td>{{ activity.creation_date }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-calendar-plus"></i> {% trans "Due date" %}</th><td>{{ activity.due_date|default:"-" }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-calendar-event"></i> {% trans "Update date" %}</th><td>{{ activity.update_date }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-calendar-check"></i> {% trans "Done date" %}</th><td>{{ activity.done_date|default:"-" }}</td></tr>
+        </table>
+    </div>
+    <div class="col-lg-6 col-xl-4">
+        <table class="table table-hover table-striped">
+        <tr><th class="text-nowrap"><i class="bi bi-house"></i> {% trans "company" %}</th><td><a href="{{ activity.client_organisation.get_absolute_url }}">{{ activity.client_organisation | default:"-" }}</a></td></tr>
+        <tr><th class="text-nowrap"><i class="bi bi-person"></i> {% trans "contact" %}</th><td><a href="{% url 'crm:contact_detail' activity.contact.id %}">{{ activity.contact.name }}</a></td></tr>
+        <tr><th class="text-nowrap"><i class="bi bi-telephone"></i> {% trans "phone" %}</th><td>{{ activity.contact.phone }}</td></tr>
+        <tr><th class="text-nowrap"><i class="bi bi-phone"></i> {% trans "mobile phone" %}</th><td>{{ activity.contact.mobile_phone }}</td></tr>
+        <tr><th class="text-nowrap"><i class="bi bi-printer"></i> {% trans "fax" %}</th><td>{{ activity.contact.fax }}</td></tr>
+        <tr><th class="text-nowrap"><i class="bi bi-envelope"></i> {% trans "email" %}</th><td>{{ activity.contact.email|urlize }}</td></tr>
+        <tr><th class="text-nowrap"><i class="bi bi-briefcase"></i> {% trans "function" %}</th><td>{{ activity.contact.function }}</td></tr>
+        </table>
+    </div>
+</div>
+
+{% if activity.contact %}<a href="{% url 'leads:activity' %}?contact={{ activity.contact.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New activity for this contact" %}</a>{% endif %}
+{% if activity.client_organisation %}<a href="{% url 'leads:activity' %}?client_organisation={{ activity.client_organisation.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New activity for this client organisation" %}</a>{% endif %}
+<a href="{% url 'leads:lead' %}?activity={{ activity.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "Create a lead from this activity" %}</a>
+
+{% with object=activity %}
+    {% include "core/_object_history.html" %}
+{% endwith %}
+
+<h2 class="my-3">{% trans "Other activities for this client organisation and contacts" %}</h2>
+{% with data_url=related_activities_data_url %}
+    {% include "leads/_activities_table.html" %}
+{% endwith %}
+
+<p><a class="btn btn-primary" href="{% url 'leads:activities' %}">{% trans "All activities" %}</a></p>
+
+{% endblock %}

@@ -12,7 +12,7 @@ import os
 import codecs
 from collections import defaultdict, OrderedDict
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import gettext as _
@@ -305,11 +305,22 @@ def activity(request, activity_id=None):
         else:
             try:
                 consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-                form = ActivityForm(initial={"responsible": consultant, "subsidiary": consultant.company})  # An unbound form
+                contact = request.GET.get("contact", None)
+                form = ActivityForm(initial={"responsible": consultant, "subsidiary": consultant.company, "contact": contact})  # An unbound form
             except Consultant.DoesNotExist:
                 form = ActivityForm()  # An unbound form
 
     return render(request, "leads/activity.html", {"activity": activity, "form": form})
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def activity_detail(request, activity_id):
+    activity = get_object_or_404(Activity, id=activity_id)
+    return render(request, "leads/activity_detail.html",
+        {"activity": activity,
+         "related_activities_data_url": reverse('leads:related_activity_table_DT', kwargs={"activity_id": activity_id}),
+         })
 
 
 @pydici_non_public

@@ -287,9 +287,6 @@ class Contact(models.Model):
         except Exception as e:
             print(e)
 
-    def activities_data_url(self):
-        return reverse("leads:contact_activity_table_DT", args=[self.id, ])
-
     def get_absolute_url(self):
         return reverse("crm:contact_detail", args=[self.id, ])
 

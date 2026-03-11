@@ -93,6 +93,11 @@ class ContactDelete(PydiciNonPublicdMixin, FeatureContactsWriteMixin, DeleteView
 class ContactDetail(PydiciNonPublicdMixin, ThirdPartyMixin, DetailView):
     model = Contact
 
+    def get_context_data(self,*args, **kwargs):
+            context = super(ContactDetail, self).get_context_data(*args,**kwargs)
+            context['contact_activities_data_url'] = reverse('leads:contact_activity_table_DT', kwargs={"contact_id": self.object.id})
+            return context
+
 
 @pydici_non_public
 @pydici_feature("3rdparties")

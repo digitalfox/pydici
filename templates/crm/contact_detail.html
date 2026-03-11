@@ -28,9 +28,10 @@
     </div>
     <div class="col-md-8">
         <h4>{% trans "Commercial activities for this contact" %}</h4>
-        {% with data_url=contact.activities_data_url %}
+        {% with data_url=contact_activities_data_url %}
             {% include "leads/_activities_table.html" %}
         {% endwith %}
+        <a href="{% url 'leads:activity' %}?contact={{ contact.id }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New activity for this contact" %}</a>
     </div>
 </div>
 

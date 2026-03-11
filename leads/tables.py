@@ -197,7 +197,7 @@ class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVi
 
     def render_column(self, row, column):
         if column == "name":
-            return "<a href='%s'>%s</a>" % (reverse("leads:activity", args=[row.id]), row.name)
+            return "<a href='%s'>%s</a>" % (reverse("leads:activity_detail", args=[row.id]), row.name)
         elif column == "responsible":
             if row.responsible:
                 return self.consultantTemplate.render({"consultant": row.responsible})
@@ -222,5 +222,14 @@ class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVi
 class ContactActivityTableDT(ActivityTableDT):
     def get_initial_queryset(self):
         qs = Activity.objects.filter(contact__id=self.kwargs["contact_id"])
+        qs = self._filter_on_subsidiary(qs)
+        return qs.select_related("contact", "client_organisation__company", "responsible", "subsidiary")
+
+
+class RelatedActivityTableDT(ActivityTableDT):
+    def get_initial_queryset(self):
+        activity = Activity.objects.get(id=self.kwargs["activity_id"])
+        qs = Activity.objects.exclude(id=activity.id)
+        qs = qs.filter(Q(contact=activity.contact) | Q(client_organisation=activity.client_organisation))
         qs = self._filter_on_subsidiary(qs)
         return qs.select_related("contact", "client_organisation__company", "responsible", "subsidiary")
