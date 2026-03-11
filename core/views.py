@@ -488,11 +488,11 @@ def manage_tags(request):
             tags.append(Tag.objects.get(id=tag_id.split("-")[1]))
         if tags and len(tags) > 1:
             target_tag = tags[0]
-            tagged_objects = list(TaggedItem.objects.filter(tag__in=tags[1:]).values_list("object_id", "content_type_id"))
+            tagged_objects = list(TaggedItem.objects.filter(tag__in=tags[1:]).values_list("object_id", "content_type_id", "level", "nature"))
             for tag in tags[1:]:
                 tag.delete()
-            for object_id, content_type_id in tagged_objects:
-                TaggedItem.objects.update_or_create(content_type_id=content_type_id, object_id=object_id, tag=target_tag)
+            for object_id, content_type_id, level, nature in tagged_objects:
+                TaggedItem.objects.update_or_create(content_type_id=content_type_id, object_id=object_id, tag=target_tag, level=level, nature=nature)
     return render(request, "core/manage_tags.html",
                   {"data_url": reverse('core:tag_table_DT'),
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [0] }],
