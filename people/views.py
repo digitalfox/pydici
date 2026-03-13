@@ -385,7 +385,7 @@ def remove_tag(request, consultant_id, tag_id):
         nature = "2_WISH" if "wished" in request.GET else "1_KNOWLEDGE"
         if not can_manage_tags(consultant, request.user):
             return HttpResponseRedirect(reverse("core:forbidden"))
-        TaggedItem.objects.get(tag=tag, object_id=consultant.id, content_type=ctype, nature=nature).delete()
+        TaggedItem.objects.filter(tag=tag, object_id=consultant.id, content_type=ctype, nature=nature).delete()
     except (Tag.DoesNotExist, Consultant.DoesNotExist, TaggedItem.DoesNotExist):
         raise Http404
     return render(request, "people/_tags_banner.html", {"consultant": consultant, "consultant_tag_form": ConsultantTagForm(consultant=consultant)})
