@@ -4,6 +4,7 @@ Leads form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from numpy import require
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -99,13 +100,15 @@ class LeadForm(PydiciCrispyModelForm):
     paying_authority = forms.ModelChoiceField(required=False, label=_("Paying authority"), widget=BusinessBrokerChoices(attrs={"data-placeholder": _("If payment is done by a third party")}), queryset=BusinessBroker.objects.all())
     client = forms.ModelChoiceField(widget=ClientChoices, queryset=Client.objects.all())
     staffing = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, required=False, queryset=Consultant.objects.all())
+    renewal = forms.NullBooleanField(required=True, label=_("Renewal"))
     tags = TagField(label="", required=False)
 
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)
         clientPopupUrl = reverse("crm:client_organisation_company_popup")
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"),
-                                                  Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-12"),
+                                                  Row(Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-6 col-12"),
+                                                      Column(Field("renewal"), css_class="col-md-6 col-12")),
                                                   Row(Column(FieldWithButtons("client", HTML(
                                                           "<a role='button' class='btn btn-primary' href='%s' data-remote='false' data-bs-toggle='modal' data-bs-target='#clientModal'><i class='bi bi-plus'></i></a>" % clientPopupUrl)),
                                                           css_class="col-6"),

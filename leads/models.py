@@ -63,6 +63,7 @@ class Lead(models.Model):
         "FORGIVEN": "#ff7f0e",  # orange
         "SLEEPING": "#7f7f7f",  # grey
     }
+
     name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)
     administrative_notes = models.TextField(_("Administrative notes"), blank=True)
@@ -88,6 +89,7 @@ class Lead(models.Model):
     tags = TaggableManager(through=TaggedItem, blank=True)
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     external_id = models.CharField(max_length=200, default=None, blank=True, null=True, unique=True)
+    renewal = models.BooleanField(_("Renewal"), null=True)
 
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
     history = AuditlogHistoryField()
