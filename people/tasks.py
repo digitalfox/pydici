@@ -18,7 +18,7 @@ from django.apps import apps
 
 from celery import shared_task
 
-from core.utils import nextMonth
+from core.utils import nextMonth, previousMonth
 
 
 @dataclass
@@ -183,7 +183,7 @@ def compute_consultant_tasks(consultant_id):
                                     link=reverse("people:consultant_home_by_id", args=[consultant.id])+"#tab-timesheet"))
 
     # too few planned holidays
-    planned_holidays = Staffing.objects.filter(mission__nature="HOLIDAYS", staffing_date__gte=date.today().replace(day=1), consultant=consultant)
+    planned_holidays = Staffing.objects.filter(mission__nature="HOLIDAYS", staffing_date__gte=previousMonth(date.today()), consultant=consultant)
     planned_holidays = planned_holidays.aggregate(Sum("charge"))["charge__sum"] or 0
     if planned_holidays < 5:
         planned_holidays_priority = get_task_priority(5 - planned_holidays, (2, 4))
