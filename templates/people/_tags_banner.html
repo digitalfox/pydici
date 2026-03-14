@@ -36,11 +36,20 @@
         </form>
         </div>
     {% endif %}
-    </div>
     {% if not read_only %}
-        {% for tag in consultant.suggested_tags %}
+    <div class="col-lg-auto col-md-12 my-3">
+        <ul class="row list-unstyled">
+        {% for tag in suggested_tags %}
             {% if forloop.first %}{% trans "Suggested tags: " %}{% endif %}
-            <a href="#" hx-put="{% url 'people:add_tag' consultant.id|unlocalize tag.id|unlocalize %}">{{ tag }}</a></form>
+            {% for level in tag_levels %}
+                <li class="col-lg-auto col-sm-3 col-md-2">
+                    <a href="#" hx-put="{% url 'people:add_tag' consultant.id|unlocalize tag.tags__id|unlocalize level %}">
+                        <span class="badge rounded-pill tag_level_{{ level }}">{{ tag.tags__name }}</span>
+                    </a>
+                </li>
+            {% endfor %}
         {% endfor %}
+        </ul>
+    </div>
     {% endif %}
 </div>

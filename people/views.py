@@ -334,13 +334,15 @@ def consultant_profile(request, consultant_id):
     return render(request, "people/consultant_profile.html",
                   {"consultant": consultant,
                    "consultant_tag_form": ConsultantTagForm(consultant=consultant),
-                   "read_only": read_only})
+                   "read_only": read_only,
+                   "suggested_tags": consultant.suggested_tags(),
+                   "tag_levels": [i[0] for i in TaggedItem.TAG_LEVEL_TYPES]})
 
 
 @pydici_non_public
 @pydici_feature("tag")
 @atomic
-def add_tag(request, consultant_id, tag_id=None):
+def add_tag(request, consultant_id, tag_id=None, level=None):
     """Add a tag by id (PUT) to a consultant or create/update (through POST) a new one with optional level/wish attributes, attach it and return tag banner."""
     try:
         consultant = Consultant.objects.get(id=consultant_id)
@@ -360,18 +362,25 @@ def add_tag(request, consultant_id, tag_id=None):
                 TaggedItem.objects.filter(tag=tag, object_id=consultant.id, content_type=ctype, nature=form.cleaned_data["nature"]).delete()
                 TaggedItem.objects.update_or_create(tag=tag, object_id=consultant.id, content_type=ctype,
                     level=form.cleaned_data["level"], nature=form.cleaned_data["nature"])
-        else:  # Returns forms with errors
-            return render(request, "people/_tags_banner.html", {"consultant": consultant, "consultant_tag_form": form})
     elif tag_id:  # PUT, we add an existing tag
-        try:
-            tag = Tag.objects.get(id=tag_id)
-            consultant.tags.add(tag)
-        except Tag.DoesNotExist:
+        if not Tag.objects.filter(id=tag_id).exists():
             return HttpResponse(_("Invalid tag"), status=400)
+        if level is None or level not in [i[0] for i in TaggedItem.TAG_LEVEL_TYPES]:
+            return HttpResponse(_("Invalid level"), status=400)
+        ctype = ContentType.objects.get(model='Consultant')
+        #TODO: sanity check on level and tag_id
+        TaggedItem.objects.filter(tag_id=tag_id, object_id=consultant.id, content_type=ctype, nature="1_KNOWLEDGE").delete()
+        TaggedItem.objects.update_or_create(tag_id=tag_id, object_id=consultant.id, content_type=ctype, level=level, nature="1_KNOWLEDGE")
+        form = ConsultantTagForm(consultant=consultant)
+
     else:
         return HttpResponse(_("No tag provided"), status=400)
 
-    return render(request, "people/_tags_banner.html", {"consultant": consultant, "consultant_tag_form": ConsultantTagForm(consultant=consultant) })
+    return render(request, "people/_tags_banner.html",
+        {"consultant": consultant,
+         "consultant_tag_form": form,
+         "suggested_tags": consultant.suggested_tags(),
+         "tag_levels": [i[0] for i in TaggedItem.TAG_LEVEL_TYPES] })
 
 
 @pydici_non_public
@@ -390,7 +399,11 @@ def remove_tag(request, consultant_id, tag_id):
         TaggedItem.objects.filter(tag=tag, object_id=consultant.id, content_type=ctype, nature=None).delete()
     except (Tag.DoesNotExist, Consultant.DoesNotExist, TaggedItem.DoesNotExist):
         raise Http404
-    return render(request, "people/_tags_banner.html", {"consultant": consultant, "consultant_tag_form": ConsultantTagForm(consultant=consultant)})
+    return render(request, "people/_tags_banner.html",
+        {"consultant": consultant,
+         "consultant_tag_form": ConsultantTagForm(consultant=consultant),
+         "suggested_tags": consultant.suggested_tags(),
+         "tag_levels": [i[0] for i in TaggedItem.TAG_LEVEL_TYPES]})
 
 
 @pydici_non_public

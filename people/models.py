@@ -7,7 +7,7 @@ Database access layer for pydici people module
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.db.models import F, Sum, Max
+from django.db.models import F, Sum, Max, Count
 from django.apps import apps
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -273,6 +273,11 @@ class Consultant(models.Model):
         return self.tagged_items.all().order_by('tag__category__name', "nature", "tag__name").values("tag_id","level", "nature", category=F("tag__category__name"),
             category_description=F("tag__category__description"), name=F("tag__name"))
 
+    def suggested_tags(self):
+        Lead = apps.get_model('leads', 'Lead')
+        tags = Lead.objects.filter(state="WON", mission__timesheet__consultant=self, mission__timesheet__working_date__gt=(date.today() - timedelta(days=360))) \
+            .order_by("tags").values("tags__id").annotate(Count("tags__id")).order_by("-tags__id__count").values("tags__id", "tags__name")
+        return [t for t in tags if t["tags__id"] not in self.tags.all().values_list("id", flat=True)][0:3]
 
     def get_absolute_url(self):
         return reverse('people:consultant_home', args=[str(self.trigramme)])
