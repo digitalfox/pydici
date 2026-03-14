@@ -76,6 +76,10 @@ def get_lead_state_data(lead):
         feature["responsible_is_company_business_owner"] = int(
             lead.client.organisation.company.businessOwner == lead.responsible)
     feature["subsidiary"] = str(lead.subsidiary)
+    if lead.renewal is not None:
+        feature["renewal"] = "yes" if lead.renewal else "no"
+    else:
+        feature["renewal"] = "unknown"
     feature["client_orga"] = str(lead.client.organisation)
     feature["client_company"] = str(lead.client.organisation.company)
     bills = ClientBill.objects.filter(lead__client__organisation__company=lead.client.organisation.company)
