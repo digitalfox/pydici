@@ -350,3 +350,8 @@ class Activity(models.Model):
     client_organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Client"), blank=True, null=True, on_delete=models.SET_NULL)
     contact = models.ForeignKey(Contact, verbose_name=_("Contact"), blank=True, null=True, on_delete=models.SET_NULL)
     history = AuditlogHistoryField()
+
+    def save(self, *args, **kwargs):
+        if self.state == "DONE" and self.done_date is None:
+            self.done_date = date.today()
+        super().save(*args, **kwargs)
