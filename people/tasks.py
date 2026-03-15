@@ -53,6 +53,7 @@ def compute_consultant_tasks(consultant_id):
     ClientBill = apps.get_model("billing", "ClientBill")
     Consultant = apps.get_model("people", "Consultant")
     Lead = apps.get_model("leads", "Lead")
+    Activity = apps.get_model("leads", "Activity")
     Staffing = apps.get_model("staffing", "Staffing")
     ClientOrganisation = apps.get_model("crm", "ClientOrganisation")
     from people.models import CONSULTANT_TASKS_CACHE_KEY
@@ -157,6 +158,13 @@ def compute_consultant_tasks(consultant_id):
     if leads_with_past_due_date_count > 0:
         tasks.append(ConsultantTask(label=_("Leads with past due date"), count=leads_with_past_due_date_count, category=_("leads"),
                                     priority=1, link=reverse("leads:detail", args=[random.choice(leads_with_past_due_date).id])))
+
+    # commercial activities with past due date
+    commercial_activities_with_past_due_date = Activity.objects.filter(responsible=consultant, state="TODO_PLANNED", due_date__lt=date.today())
+    commercial_activities_with_past_due_date_count = commercial_activities_with_past_due_date.count()
+    if commercial_activities_with_past_due_date_count > 0:
+        tasks.append(ConsultantTask(label=_("Commercial activities with past due date"), count=commercial_activities_with_past_due_date_count, category=_("leads"),
+                                    priority=1, link=reverse("leads:activity_detail", args=[random.choice(commercial_activities_with_past_due_date).id])))
 
     # active client organisation with incomplete legal information
     incomplete_client_orga = ClientOrganisation.objects.filter(client__active=True, company__businessOwner=consultant)
