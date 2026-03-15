@@ -363,6 +363,7 @@ def add_tag(request, consultant_id, tag_id=None, level=None):
                 TaggedItem.objects.filter(tag=tag, object_id=consultant.id, content_type=ctype, nature=form.cleaned_data["nature"]).delete()
                 TaggedItem.objects.update_or_create(tag=tag, object_id=consultant.id, content_type=ctype,
                     level=form.cleaned_data["level"], nature=form.cleaned_data["nature"])
+            form = ConsultantTagForm(consultant=consultant)  # create a new unbound form for the next tag addition
     elif tag_id:  # PUT, we add an existing tag
         if not Tag.objects.filter(id=tag_id).exists():
             return HttpResponse(_("Invalid tag"), status=400)
