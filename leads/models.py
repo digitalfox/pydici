@@ -4,6 +4,7 @@ Database access layer for pydici leads module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from scipy.ndimage import label
 
 import os
 
@@ -334,7 +335,7 @@ class Activity(models.Model):
         ('TARGET', gettext("Answer to target need"))
     )
     name = models.CharField(_("Name"), max_length=200)
-    comment = models.TextField(blank=True)
+    comment = models.TextField(_("Comment"), blank=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), null=True, on_delete=models.SET_NULL)
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     nature = models.CharField(_("Nature"), max_length=30, choices=NATURES)
@@ -347,7 +348,7 @@ class Activity(models.Model):
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     state = models.CharField(_("State"), max_length=30, choices=STATES, default=STATES[0][0])
     state.db_index = True
-    client_organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Client"), blank=True, null=True, on_delete=models.SET_NULL)
+    client_organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Client organisation"), blank=True, null=True, on_delete=models.SET_NULL)
     contact = models.ForeignKey(Contact, verbose_name=_("Contact"), blank=True, null=True, on_delete=models.SET_NULL)
     history = AuditlogHistoryField()
 
