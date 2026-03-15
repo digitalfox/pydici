@@ -4,8 +4,6 @@ Database access layer for pydici leads module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from scipy.ndimage import label
-
 import os
 
 from django.db import models
