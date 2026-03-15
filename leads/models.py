@@ -343,7 +343,7 @@ class Activity(models.Model):
     business_broker = models.ForeignKey(BusinessBroker, related_name="%(class)s_broker", verbose_name=_("Business broker"), blank=True, null=True, on_delete=models.SET_NULL)
     creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
     due_date = models.DateField(_("Due"), blank=True, null=True)
-    done_date = models.DateField(_("Done"), blank=True, null=True)
+    done_date = models.DateField(_("Done date"), blank=True, null=True)
     update_date = models.DateTimeField(_("Updated"), auto_now=True)
     state = models.CharField(_("State"), max_length=30, choices=STATES, default=STATES[0][0])
     state.db_index = True

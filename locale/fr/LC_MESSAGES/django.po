@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-15 15:46+0100\n"
-"PO-Revision-Date: 2026-03-15 15:46+0100\n"
+"POT-Creation-Date: 2026-03-15 16:44+0100\n"
+"PO-Revision-Date: 2026-03-15 16:44+0100\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@enioka.com>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -689,7 +689,7 @@ msgid "Responsible"
 msgstr "Responsable"
 
 #: billing/views.py:151 crm/models.py:97 leads/models.py:90 leads/models.py:339
-#: people/models.py:49 people/models.py:338 staffing/models.py:40
+#: people/models.py:49 people/models.py:343 staffing/models.py:40
 #: staffing/models.py:84 templates/billing/client_bills_archive.html:13
 #: templates/billing/client_bills_in_creation.html:13
 #: templates/billing/payment_delay.html:51
@@ -1116,7 +1116,7 @@ msgstr "Type"
 #: core/models.py:100 crm/models.py:60 crm/models.py:82 crm/models.py:184
 #: crm/models.py:502 expense/models.py:67 leads/models.py:67
 #: leads/models.py:336 leads/views.py:193 people/models.py:34
-#: people/models.py:336 templates/core/manage_tags.html:22
+#: people/models.py:341 templates/core/manage_tags.html:22
 #: templates/crm/clientcompany_detail.html:410
 #: templates/leads/_activities_table.html:8 templates/leads/review.html:31
 #: templates/leads/review.html:64 templates/staffing/fixed_price_report.html:15
@@ -1370,7 +1370,7 @@ msgstr "Contact facturation"
 msgid "Billing language"
 msgstr "Langue des factures"
 
-#: crm/models.py:186 people/models.py:341
+#: crm/models.py:186 people/models.py:346
 #: templates/staffing/mission_contacts.html:20
 msgid "Phone"
 msgstr "Téléphone"
@@ -1466,7 +1466,7 @@ msgstr "Perspectives"
 msgid "Strategic alignment"
 msgstr "Alignement stratégique"
 
-#: crm/models.py:365 people/models.py:51 people/models.py:339
+#: crm/models.py:365 people/models.py:51 people/models.py:344
 #: staffing/models.py:41 staffing/models.py:78
 msgid "Active"
 msgstr "Active"
@@ -1664,7 +1664,7 @@ msgstr "Justificatif"
 msgid "Paid with corporate card"
 msgstr "Payé avec la carte société"
 
-#: expense/tables.py:130 expense/tables.py:194 people/models.py:282
+#: expense/tables.py:130 expense/tables.py:194 people/models.py:287
 #: staffing/views.py:1461 templates/billing/bill.html:163
 #: templates/expense/expense.html:26 templates/expense/expense_archive.html:17
 #: templates/expense/expense_payments.html:44
@@ -1723,7 +1723,7 @@ msgstr "Staffing"
 msgid "New tags"
 msgstr "Nouvelles étiquettes"
 
-#: leads/forms.py:98 leads/models.py:72 leads/views.py:193 people/models.py:353
+#: leads/forms.py:98 leads/models.py:72 leads/views.py:193 people/models.py:358
 #: templates/leads/lead_detail.html:127
 msgid "Salesman"
 msgstr "Commercial"
@@ -1851,7 +1851,7 @@ msgstr "Montant (k€)"
 msgid "External staffing"
 msgstr "Staffing externe"
 
-#: leads/models.py:78 leads/views.py:193 people/models.py:329
+#: leads/models.py:78 leads/views.py:193 people/models.py:334
 msgid "Starting"
 msgstr "Démarrage"
 
@@ -1884,7 +1884,7 @@ msgstr "Score"
 msgid "Todo/planned"
 msgstr "À faire / prévu"
 
-#: leads/models.py:320 leads/models.py:346
+#: leads/models.py:320
 msgid "Done"
 msgstr "Faite"
 
@@ -1928,6 +1928,10 @@ msgstr "Objectif"
 #: leads/models.py:342
 msgid "Marketing products"
 msgstr "Produits marketing"
+
+#: leads/models.py:346 templates/leads/activity_detail.html:32
+msgid "Done date"
+msgstr "Date de réalisation"
 
 #: leads/tasks.py:69
 #, python-format
@@ -1976,11 +1980,11 @@ msgstr "Géré par"
 msgid "Sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/views.py:262 people/views.py:371
+#: leads/views.py:262 people/views.py:368
 msgid "Invalid tag"
 msgstr "Étiquette invalide"
 
-#: leads/views.py:264 people/views.py:373
+#: leads/views.py:264 people/views.py:378
 msgid "No tag provided"
 msgstr "Aucune étiquette fournie"
 
@@ -2075,7 +2079,7 @@ msgstr "Profil"
 msgid "Subcontractor"
 msgstr "Sous-traitant"
 
-#: people/models.py:326 staffing/views.py:1716
+#: people/models.py:331 staffing/views.py:1716
 #: templates/people/consultant_detail.html:250
 #: templates/people/consultant_detail.html:256
 #: templates/staffing/_consultant_prod_tooltip.html:2
@@ -2083,7 +2087,7 @@ msgstr "Sous-traitant"
 msgid "daily rate"
 msgstr "taux journalier"
 
-#: people/models.py:327 staffing/views.py:1701 staffing/views.py:2259
+#: people/models.py:332 staffing/views.py:1701 staffing/views.py:2259
 #: templates/staffing/_consultant_prod_tooltip.html:1
 #: templates/staffing/graph_timesheet_rates_bar.html:15
 #: templates/staffing/graph_timesheet_rates_bar.html:25
@@ -2091,15 +2095,15 @@ msgstr "taux journalier"
 msgid "production rate"
 msgstr "taux de production"
 
-#: people/models.py:330
+#: people/models.py:335
 msgid "Rate"
 msgstr "Taux"
 
-#: people/models.py:331
+#: people/models.py:336
 msgid "Rate type"
 msgstr "Type de taux"
 
-#: people/models.py:354
+#: people/models.py:359
 msgid "Salesmen"
 msgstr "Commerciaux"
 
@@ -2219,12 +2223,16 @@ msgstr "Max missions sur un mois (%s)"
 msgid "Max monthly daily rate (%s)"
 msgstr "Meilleur TJM mensuel (%s)"
 
-#: people/views.py:445
+#: people/views.py:370
+msgid "Invalid level"
+msgstr "Niveau invalide"
+
+#: people/views.py:460
 #, python-format
 msgid "consultants %s"
 msgstr "consultants %s"
 
-#: people/views.py:446
+#: people/views.py:461
 #, python-format
 msgid "subcontractors %s"
 msgstr "sous-traitant %s"
@@ -4914,7 +4922,7 @@ msgstr "Les livrables sont manquants. Merci de les ranger ici : "
 msgid "Add"
 msgstr "Ajouter"
 
-#: templates/leads/_tags_banner.html:33 templates/people/_tags_banner.html:42
+#: templates/leads/_tags_banner.html:33 templates/people/_tags_banner.html:43
 msgid "Suggested tags: "
 msgstr "Étiquette(s) suggérée(s) : "
 
@@ -4937,10 +4945,6 @@ msgstr "Détail de l'activité"
 #: templates/leads/activity_detail.html:20
 msgid "Products"
 msgstr "Produits"
-
-#: templates/leads/activity_detail.html:32
-msgid "Done date"
-msgstr "Date de réalisation"
 
 #: templates/leads/activity_detail.html:49
 msgid "New activity for this client organisation"
