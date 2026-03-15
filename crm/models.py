@@ -171,7 +171,7 @@ class ClientOrganisation(AbstractAddress, AbstractLegalInformation):
         super(ClientOrganisation, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("crm:client_organisation", args=[self.id, ])
+        return reverse("crm:company_detail", args=[self.company.id, ])
 
     class Meta:
         ordering = ["company", "name"]
@@ -232,7 +232,7 @@ class Contact(models.Model):
             # Mission relations
             for missionContact in self.missioncontact_set.all():
                 for mission in missionContact.mission_set.all():
-                    missionNode = GNode("mission-%s" % mission.id, """<i class="bi bi-gear"></i> 
+                    missionNode = GNode("mission-%s" % mission.id, """<i class="bi bi-gear"></i>
                                                                       <span class='graph-tooltip' title='%s'><a href='%s'>%s&nbsp;</a></span>""" % (mission.short_name(),
                                                                                                                                                           mission.get_absolute_url(),
                                                                                                                                                           mission.mission_id()))

@@ -4,26 +4,29 @@ Leads form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from numpy import require
 
-from django.utils.translation import gettext_lazy as _
+from django import forms
 from django.core.exceptions import ValidationError
 from django.urls import reverse
-from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
-from django import forms
-
-from crispy_forms.layout import Layout, Column, Fieldset, Field, HTML, Row
-from crispy_forms.bootstrap import AppendedText, TabHolder, Tab, FieldWithButtons
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
+from crispy_forms.bootstrap import AppendedText, FieldWithButtons, Tab, TabHolder
+from crispy_forms.layout import HTML, Column, Field, Fieldset, Layout, Row
 
-from core.models import Tag
-from leads.models import Lead
-from people.models import Consultant, SalesMan
-from crm.models import Client, BusinessBroker
-from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
-from crm.forms import ClientChoices, BusinessBrokerChoices
+
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin, TagChoices
+from core.models import Tag
+from crm.forms import BusinessBrokerChoices, ClientChoices, ClientOrganisationChoices, ContactChoices
+from crm.models import BusinessBroker, Client
+from leads.models import Activity, Lead
+from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
+from people.models import Consultant, SalesMan
+from staffing.forms import MarketingProductMChoices
+from staffing.models import MarketingProduct
 
 
 class LeadChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
@@ -97,13 +100,15 @@ class LeadForm(PydiciCrispyModelForm):
     paying_authority = forms.ModelChoiceField(required=False, label=_("Paying authority"), widget=BusinessBrokerChoices(attrs={"data-placeholder": _("If payment is done by a third party")}), queryset=BusinessBroker.objects.all())
     client = forms.ModelChoiceField(widget=ClientChoices, queryset=Client.objects.all())
     staffing = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, required=False, queryset=Consultant.objects.all())
+    renewal = forms.NullBooleanField(required=True, label=_("Renewal"))
     tags = TagField(label="", required=False)
 
     def __init__(self, *args, **kwargs):
         super(LeadForm, self).__init__(*args, **kwargs)
         clientPopupUrl = reverse("crm:client_organisation_company_popup")
         self.helper.layout = Layout(TabHolder(Tab(_("Identification"),
-                                                  Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-12"),
+                                                  Row(Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-6 col-12"),
+                                                      Column(Field("renewal"), css_class="col-md-6 col-12")),
                                                   Row(Column(FieldWithButtons("client", HTML(
                                                           "<a role='button' class='btn btn-primary' href='%s' data-remote='false' data-bs-toggle='modal' data-bs-target='#clientModal'><i class='bi bi-plus'></i></a>" % clientPopupUrl)),
                                                           css_class="col-6"),
@@ -161,3 +166,39 @@ class LeadForm(PydiciCrispyModelForm):
                 raise ValidationError(_("Deal id must be unique. Use another value or let the field blank for automatic computation"))
             else:
                 return self.cleaned_data["deal_id"]
+
+class ActivityForm(PydiciCrispyModelForm):
+    class Meta:
+        model = Activity
+        exclude = ["creation_date"]
+        widgets = {"contact": ContactChoices,
+                   "client_organisation": ClientOrganisationChoices,
+                   "responsible": ConsultantChoices }
+
+
+    def __init__(self, *args, **kwargs):
+        super(ActivityForm, self).__init__(*args, **kwargs)
+        self.fields["marketing_products"] = forms.ModelMultipleChoiceField(widget=MarketingProductMChoices(mission=self.instance),
+            queryset=MarketingProduct.objects.all(), required=False)
+        self.helper.layout = Layout(
+            Row(
+                Column("name", "state", "comment", css_class="col-md-4 col-12"),
+                Column(
+                    "responsible",
+                    "subsidiary",
+                    "nature",
+                    "marketing_products",
+                    "business_broker",
+                    css_class="col-md-4 col-sm-6 col-12",
+                ),
+                Column(
+                    "client_organisation",
+                    "contact",
+                    "objective",
+                    Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
+                    Field("done_date", placeholder=_("Completion date"), css_class="datepicker"),
+                    css_class="col-md-4 col-sm-6 col-12",
+                ),
+            ),
+            self.submit
+        )

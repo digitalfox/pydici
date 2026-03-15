@@ -68,6 +68,11 @@ class MarketingProductChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
             return MarketingProduct.objects.none()
 
 
+class MarketingProductMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
+    model = MarketingProduct
+    search_fields = ["code__icontains", "description__icontains"]
+
+
 class LeadMissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = Mission
     search_fields = MissionChoices.search_fields

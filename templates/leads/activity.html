@@ -1,0 +1,19 @@
+{% extends "core/pydici.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Add or modify a commercial activity" %}{% endblock %}
+
+{% block content %}
+<h2>
+    {% if activity %}{% trans "Update this commercial activity" %}
+    {% else %}{% trans "Create a commercial activity" %}{% endif %}
+</h2>
+<div class="row py-2">
+  {% crispy form form.helper %}
+</div>
+
+{% include "core/_datepicker.html" %}
+
+{% endblock %}

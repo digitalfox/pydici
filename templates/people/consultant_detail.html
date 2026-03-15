@@ -112,6 +112,21 @@
         </div>
 	</div>
 
+	{% if commercial_activities %}
+        <div class="col-md-4 col-sm-6 col-12">
+            <div class="pydici-block">
+                    <h3 class="pydici-block-title">{% trans "Current commercial activities" %}</h3>
+                    <ul class="row icon-list">
+                    {% for activity in commercial_activities %}
+                        <li class="bi bi-chevron-right"><a href="{% url 'leads:activity_detail' activity.id %}">
+                            {{ activity.client_organisation|default:"" }} {{ activity.contact|default:"" }} - {{ activity.name }}
+                        </a></li>
+                    {% endfor %}
+                    </ul>
+            </div>
+        </div>
+    {% endif %}
+
     {% if leads_as_responsible %}
         <div class="col-md-4 col-sm-6 col-12">
             <div class="pydici-block">

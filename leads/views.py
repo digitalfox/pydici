@@ -12,7 +12,7 @@ import os
 import codecs
 from collections import defaultdict, OrderedDict
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import gettext as _
@@ -25,8 +25,9 @@ from django.conf import settings
 from core.models import Tag
 from core.utils import sortedValues, COLORS, moving_average, nextMonth
 from crm.utils import get_subsidiary_from_session
-from leads.models import Lead
-from leads.forms import LeadForm, LeadTagForm
+from crm.models import Client
+from leads.models import Lead, Activity
+from leads.forms import LeadForm, LeadTagForm, ActivityForm
 from leads.utils import post_save_lead, leads_state_stat
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_similar
@@ -126,7 +127,13 @@ def lead(request, lead_id=None):
         else:
             try:
                 consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
-                form = LeadForm(initial={"responsible": consultant, "subsidiary": consultant.company})  # An unbound form
+                activity_id = request.GET.get("activity", None)
+                client = None
+                if activity_id:
+                    activity = Activity.objects.get(id=activity_id)
+                    if activity.client_organisation:
+                        client, created = Client.objects.get_or_create(organisation=activity.client_organisation, contact=activity.contact)
+                form = LeadForm(initial={"responsible": consultant, "subsidiary": consultant.company, "client": client})  # An unbound form
             except Consultant.DoesNotExist:
                 form = LeadForm()  # An unbound form
 
@@ -278,6 +285,58 @@ def remove_tag(request, lead_id, tag_id):
     except (Tag.DoesNotExist, Lead.DoesNotExist):
         raise Http404
     return render(request, "leads/_tags_banner.html", {"lead": lead, "lead_tag_form": LeadTagForm(lead=lead)})
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def activity(request, activity_id=None):
+    """Commercial activity creation or update"""
+    activity = None
+    try:
+        if activity_id:
+            activity = Activity.objects.get(id=activity_id)
+    except Activity.DoesNotExist:
+        pass
+
+    if request.method == "POST":
+        if activity:
+            form = ActivityForm(request.POST, instance=activity)
+        else:
+            form = ActivityForm(request.POST)
+        if form.is_valid():
+            activity = form.save()
+            return HttpResponseRedirect(reverse("leads:activities"))
+    else:
+        if activity:
+            form = ActivityForm(instance=activity)  # A form that edit current activity
+        else:
+            try:
+                consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
+                contact = request.GET.get("contact", None)
+                form = ActivityForm(initial={"responsible": consultant, "subsidiary": consultant.company, "contact": contact})  # An unbound form
+            except Consultant.DoesNotExist:
+                form = ActivityForm()  # An unbound form
+
+    return render(request, "leads/activity.html", {"activity": activity, "form": form})
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def activity_detail(request, activity_id):
+    activity = get_object_or_404(Activity, id=activity_id)
+    return render(request, "leads/activity_detail.html",
+        {"activity": activity,
+         "related_activities_data_url": reverse('leads:related_activity_table_DT', kwargs={"activity_id": activity_id}),
+         })
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def activities(request):
+    """Current commercial activities"""
+    return render(request, "leads/activities.html",
+                  {"data_url" : reverse('leads:activity_table_DT'),
+                   "user": request.user})
 
 
 @pydici_non_public

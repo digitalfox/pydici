@@ -20,7 +20,7 @@ from auditlog.models import AuditlogHistoryField
 
 from core.utils import compact_text
 from core.models import TaggedItem
-from crm.models import Client, BusinessBroker, Subsidiary
+from crm.models import Client, BusinessBroker, Subsidiary, ClientOrganisation, Contact
 from people.models import Consultant, SalesMan
 from billing.utils import get_client_billing_control_pivotable_data
 from core.utils import getLeadDirs, cacheable, nextMonth
@@ -63,6 +63,7 @@ class Lead(models.Model):
         "FORGIVEN": "#ff7f0e",  # orange
         "SLEEPING": "#7f7f7f",  # grey
     }
+
     name = models.CharField(_("Name"), max_length=200)
     description = models.TextField(blank=True)
     administrative_notes = models.TextField(_("Administrative notes"), blank=True)
@@ -88,6 +89,7 @@ class Lead(models.Model):
     tags = TaggableManager(through=TaggedItem, blank=True)
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     external_id = models.CharField(max_length=200, default=None, blank=True, null=True, unique=True)
+    renewal = models.BooleanField(_("Renewal"), null=True)
 
     objects = LeadManager()  # Custom manager that factorise active/passive lead code
     history = AuditlogHistoryField()
@@ -309,3 +311,47 @@ class StateProba(models.Model):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE)
     state = models.CharField(_("State"), max_length=30, choices=Lead.STATES)
     score = models.IntegerField(_("Score"))
+
+
+class Activity(models.Model):
+    """Commercial activity"""
+    STATES = (
+        ('TODO_PLANNED', gettext("Todo/planned")),
+        ('DONE', gettext("Done")),
+        ('CANCELED', gettext("Canceled")),
+        ('SLEEPING', gettext("Sleeping"))
+    )
+    NATURES = (
+        ('PHONE_VISIO', gettext("Phone/Visio")),
+        ('MEETING', gettext("meeting")),
+        ('LUNCH_DINER', gettext("Lunch/Diner")),
+        ('EVENT', gettext("Conference/Seminar")),
+        ('MAIL', gettext("Mail"))
+    )
+    OBJECTIVES = (
+        ('RELATIONSHIP', gettext("Relationship maintenance")),
+        ('PITCH', gettext("Company/product pitch")),
+        ('TARGET', gettext("Answer to target need"))
+    )
+    name = models.CharField(_("Name"), max_length=200)
+    comment = models.TextField(blank=True)
+    responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), null=True, on_delete=models.SET_NULL)
+    subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
+    nature = models.CharField(_("Nature"), max_length=30, choices=NATURES)
+    objective = models.CharField(_("Objective"), max_length=30, choices=OBJECTIVES)
+    marketing_products = models.ManyToManyField("staffing.MarketingProduct", verbose_name=_("Marketing products"))
+    business_broker = models.ForeignKey(BusinessBroker, related_name="%(class)s_broker", verbose_name=_("Business broker"), blank=True, null=True, on_delete=models.SET_NULL)
+    creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
+    due_date = models.DateField(_("Due"), blank=True, null=True)
+    done_date = models.DateField(_("Done"), blank=True, null=True)
+    update_date = models.DateTimeField(_("Updated"), auto_now=True)
+    state = models.CharField(_("State"), max_length=30, choices=STATES, default=STATES[0][0])
+    state.db_index = True
+    client_organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Client"), blank=True, null=True, on_delete=models.SET_NULL)
+    contact = models.ForeignKey(Contact, verbose_name=_("Contact"), blank=True, null=True, on_delete=models.SET_NULL)
+    history = AuditlogHistoryField()
+
+    def save(self, *args, **kwargs):
+        if self.state == "DONE" and self.done_date is None:
+            self.done_date = date.today()
+        super().save(*args, **kwargs)

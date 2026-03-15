@@ -28,7 +28,7 @@ from core.utils import working_days, previousMonth, nextMonth, COLORS, user_has_
 from people.utils import subcontractor_is_user, can_manage_tags
 from people.forms import ConsultantTagForm
 from crm.models import Subsidiary
-from leads.models import Lead
+from leads.models import Lead, Activity
 from core.models import Tag, TaggedItem
 
 
@@ -144,6 +144,7 @@ def consultant_detail(request, consultant_id):
                    "business_territory": Company.objects.filter(businessOwner=consultant),
                    "leads_as_responsible": consultant.active_leads(),
                    "leads_as_staffee": consultant.lead_set.active(),
+                   "commercial_activities": Activity.objects.filter(responsible=consultant, state="TODO_PLANNED"),
                    "done_days": done_days,
                    "late": late,
                    "to_be_done": to_be_done,

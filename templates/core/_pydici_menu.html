@@ -22,8 +22,13 @@
                             {% trans "Business" %}
                           </a>
                           <ul class="dropdown-menu pydici-on-top" aria-labelledby="navbarDropdown">
+                              <li class="dropdown-header">{% trans "Leads" %}</li>
                               <li><a class="dropdown-item" href="{% url 'leads:review' %}">{% trans "Current leads review" %}</a></li>
                               <li><a class="dropdown-item" href="{% url 'leads:lead' %}">{% trans 'New lead' %}</a></li>
+                              <li><hr class="dropdown-divider"></li>
+                              <li class="dropdown-header">{% trans "Commercial activities" %}</li>
+                              <li><a class="dropdown-item" href="{% url 'leads:activity' %}">{% trans 'New commercial activity' %}</a></li>
+                              <li><a class="dropdown-item" href="{% url 'leads:activities' %}">{% trans 'All commercial activities' %}</a></li>
                               {% if pydici_feature.reports %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="dropdown-header">{% trans "Rates Reporting" %}</li>
