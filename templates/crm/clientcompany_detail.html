@@ -354,8 +354,14 @@
                 {% include "core/_datatables.html" %}
             {% endwith %}
         {% endwith %}
+
+        <h2 class="mt-4">{% trans "Business activites" %}</h2>
+        {% with data_url=company_activities_data_url %}
+            {% include "leads/_activities_table.html" %}
+        {% endwith %}
+        <a href="{% url 'leads:activity' %}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New commercial activity" %}</a>
     </div>
-    
+
     <div id="tab-consultants" class="tab-pane fade" role="tabpanel">
     {% if consultants %}
         <h2 class="mt-2">{% trans "Business owner for this company:" %}</h2>
@@ -397,7 +403,7 @@
         {% endwith %}
 
         <h2 class="mt-4">{% trans "Administrative contacts" %}</h2>
-        
+
         <table class="table table-hover table-striped table-sm table-bordered" id="admin_contacts_table">
             <thead>
             <tr>

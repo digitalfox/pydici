@@ -478,6 +478,7 @@ def company_detail(request, company_id):
                    "mission_data_url": reverse('staffing:client_company_mission_table_DT', args=[company.id,]),
                    "mission_datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9, 10] }],
                                                      "order": [[0, "asc"]] ''',
+                   "company_activities_data_url": reverse('leads:company_activity_table_DT', kwargs={"company_id": company.id}),
                    "data_for_other_subsidiaries": data_for_other_subsidiaries,
                    "companies": companies,
                    "sales_last_year": sales_last_year
