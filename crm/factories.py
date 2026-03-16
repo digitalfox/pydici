@@ -48,7 +48,6 @@ class ContactFactory(DjangoModelFactory):
     email = factory.Faker("email")
     phone = factory.Faker("phone_number")
     mobile_phone = factory.Faker("phone_number")
-    fax = factory.Faker("phone_number")
     function = factory.fuzzy.FuzzyChoice(["director", "manager", "head of department", "project director"])
 
     @factory.post_generation

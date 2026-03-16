@@ -185,7 +185,6 @@ class Contact(models.Model):
     email = models.EmailField(blank=True)
     phone = models.CharField(_("Phone"), max_length=30, blank=True)
     mobile_phone = models.CharField(_("Mobile phone"), max_length=30, blank=True)
-    fax = models.CharField(_("Fax"), max_length=30, blank=True)
     function = models.CharField(_("Function"), max_length=200, blank=True)
     contact_points = models.ManyToManyField("people.Consultant", verbose_name="Points of contact", blank=True)
     external_id = models.CharField(max_length=200, blank=True, null=True, unique=True, default=None)
@@ -514,7 +513,6 @@ class AdministrativeContact(models.Model):
     function = models.ForeignKey(AdministrativeFunction, verbose_name=_("Function"), on_delete=models.CASCADE)
     default_phone = models.CharField(_("Phone Switchboard"), max_length=30, blank=True, null=True)
     default_mail = models.EmailField(_("Generic email"), max_length=100, blank=True, null=True)
-    default_fax = models.CharField(_("Generic fax"), max_length=100, blank=True, null=True)
     contact = models.ForeignKey(Contact, blank=True, null=True, verbose_name=_("Contact"), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -543,14 +541,6 @@ class AdministrativeContact(models.Model):
         # Default to default team generic email
         return self.default_mail
 
-    def fax(self):
-        """Best fax number to use"""
-        if self.contact:
-            # Use contact fax if defined
-            if self.contact.fax:
-                return self.contact.fax
-        # Default to default team generic fax
-        return self.default_fax
 
     class Meta:
         verbose_name = _("Administrative contact")

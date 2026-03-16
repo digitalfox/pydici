@@ -30,7 +30,7 @@ class CompanyAdmin(ReturnToAppAdmin):
 
 
 class ContactAdmin(ReturnToAppAdmin):
-    list_display = ("name", "companies", "function", "email", "phone", "mobile_phone", "fax")
+    list_display = ("name", "companies", "function", "email", "phone", "mobile_phone")
     ordering = ("name",)
     search_fields = ["name", "email", "function", "client__organisation__company__name",
                      "client__organisation__name"]

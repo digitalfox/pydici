@@ -30,7 +30,6 @@ class ContactTableDT(PydiciNonPublicdMixin, ThirdPartyMixin, BaseDatatableView):
                            Q(function__icontains=search) |
                            Q(email__icontains=search) |
                            Q(mobile_phone__icontains=search) |
-                           Q(fax__icontains=search) |
                            Q(contact_points__name__icontains=search) |
                            Q(contact_points__trigramme__icontains=search) |
                            Q(phone__icontains=search) |

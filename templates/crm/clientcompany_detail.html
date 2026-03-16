@@ -413,7 +413,6 @@
                 <th>{% trans "Email" %}</th>
                 <th>{% trans "Phone Switchboard" %}</th>
                 <th>{% trans "Mobile phone" %}</th>
-                <th>{% trans "Fax" %}</th>
             </tr>
             </thead>
             <tbody>
@@ -435,7 +434,6 @@
                    <td>{{ admincontact.email|urlize }}</td>
                    <td>{{ admincontact.phone }}</td>
                    <td>{{ admincontact.contact.mobile_phone }}</td>
-                   <td>{{ admincontact.fax }}</td>
                 </tr>
             {% endfor %}
             </tbody>

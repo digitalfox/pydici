@@ -222,13 +222,13 @@ class ContactForm(PydiciCrispyModelForm):
     def __init__(self, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column("name", "email", "function", "contact_points", css_class="col-md-6"),
-                                        Column("mobile_phone", "phone", "fax", css_class="col-md-6"),
+                                        Column("mobile_phone", "phone", css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Contact"),
                                                     Row(Column("name"), Column("mobile_phone")),
                                                     Row(Column("email"), Column("phone")),
-                                                    Row(Column("function"), Column("fax")),
+                                                    Row(Column("function")),
                                                     Row("contact_points", css_class="col-md-6"),
                                                     css_class="collapse", css_id="contactForm"),
                                            )
@@ -297,7 +297,6 @@ class AdministrativeContactForm(PydiciCrispyModelForm):
                                         Column(FieldWithButtons("company", HTML(
                                             "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                                 "crm:company"))),
-                                               "default_fax",
                                                FieldWithButtons("contact", HTML(
                                                    "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
                                                        "crm:contact_create"))),

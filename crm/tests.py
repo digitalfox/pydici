@@ -35,7 +35,6 @@ class CrmViewsTest(TestCase):
                  "contact-function": "",
                  "contact-mobile_phone": "",
                  "contact-phone": "",
-                 "contact-fax": "",
                  "organisation-name": "",
                  "organisation-billing_lang": "fr-fr",
                  "company-name": "",

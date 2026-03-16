@@ -38,7 +38,6 @@
         <tr><th class="text-nowrap"><i class="bi bi-person"></i> {% trans "contact" %}</th><td>{% if activity.contact.id %}<a href="{% url 'crm:contact_detail' activity.contact.id %}">{{ activity.contact.name }}</a>{% else %}-{% endif %}</td></tr>
         <tr><th class="text-nowrap"><i class="bi bi-telephone"></i> {% trans "phone" %}</th><td>{{ activity.contact.phone }}</td></tr>
         <tr><th class="text-nowrap"><i class="bi bi-phone"></i> {% trans "mobile phone" %}</th><td>{{ activity.contact.mobile_phone }}</td></tr>
-        <tr><th class="text-nowrap"><i class="bi bi-printer"></i> {% trans "fax" %}</th><td>{{ activity.contact.fax }}</td></tr>
         <tr><th class="text-nowrap"><i class="bi bi-envelope"></i> {% trans "email" %}</th><td>{{ activity.contact.email|urlize }}</td></tr>
         <tr><th class="text-nowrap"><i class="bi bi-briefcase"></i> {% trans "function" %}</th><td>{{ activity.contact.function }}</td></tr>
         </table>
