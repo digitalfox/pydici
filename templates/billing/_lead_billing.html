@@ -71,7 +71,7 @@
     {% endif %}
     {% with to_bill=lead.still_to_be_billed %}
         {% if to_bill > 0 %}
-            <p><strong>{% trans "Still to be billed:" %} {{ to_bill|floatformat:-2 }} €</strong></p>
+            <p><strong>{% trans "Still to be billedf for this lead:" %} {{ to_bill|floatformat:-2 }} €</strong></p>
         {% elif to_bill == 0 %}
             <p class="text-success"><strong>{% trans "Everything has been billed" %}</strong></p>
         {% elif to_bill < 0 %}
@@ -125,4 +125,3 @@
                 <a class="btn btn-primary" href="{% url 'billing:supplier_bill' %}?lead={{ lead.id|unlocalize }}" target="_blank">{% trans "Add a supplier bill for this lead" %}</a>
         {% endif %}
     {% endif %}
-

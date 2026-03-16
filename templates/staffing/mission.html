@@ -58,7 +58,7 @@
                             <div id="mission_no_staffing_warning" class="alert alert-warning">
                                 <i class="bi bi-eye"></i>
                                {% trans "This mission has no staffing in future" %}.
-                               {% if mission.lead %}<strong>{% trans "Still to be billed" %}: {{ mission.lead.still_to_be_billed|floatformat:-2 }} €. </strong>{% endif %}
+                               {% if mission.lead %}<strong>{% trans "Still to be billed for this lead: " %}{{ mission.lead.still_to_be_billed|floatformat:-2 }} €. </strong>{% endif %}
                                 <button hx-post="{% url 'staffing:deactivate_mission' mission.id %}"
                                         hx-target="#mission_no_staffing_warning"
                                    class="btn btn-primary">{% trans "Archive this mission" %}</button>
@@ -160,7 +160,7 @@
     <div id="tab-consultants" class="tab-pane fade" role="tabpanel"></div>
 
     <div id="tab-contacts" class="tab-pane fade" role="tabpanel"></div>
-    
+
     <div id="tab-other-missions" class="tab-pane fade" role="tabpanel">
         {% if mission.sister_missions %}
         <h2 class="mt-2">{% trans "Other missions linked to this lead" %}</h2>
@@ -199,15 +199,15 @@
     </div>
 
     <div id="tab-timesheet" class="tab-pane fade" role="tabpanel"></div>
-    
+
     <div id="tab-staffing" class="tab-pane fade" role="tabpanel"></div>
-    
+
     <div id="tab-expenses" class="tab-pane fade" role="tabpanel"></div>
-    
+
     {% if enable_doc_tab %}<div id="tab-documents" class="tab-pane fade" role="tabpanel"></div>{% endif %}
 
     <div id="tab-reporting" class="tab-pane fade" role="tabpanel"></div>
-    
+
     <div id="tab-billing" class="tab-pane fade" role="tabpanel"></div>
 
     <div id="tab-history" class="tab-pane fade"></div>
