@@ -276,7 +276,7 @@ class Consultant(models.Model):
     def suggested_tags(self):
         Lead = apps.get_model('leads', 'Lead')
         tags = Lead.objects.filter(state="WON", mission__timesheet__consultant=self, mission__timesheet__working_date__gt=(date.today() - timedelta(days=360))) \
-            .order_by("tags").values("tags__id").annotate(Count("tags__id")).order_by("-tags__id__count").values("tags__id", "tags__name")
+            .exclude(tags__id=None).order_by("tags").values("tags__id").annotate(Count("tags__id")).order_by("-tags__id__count").values("tags__id", "tags__name")
         return [t for t in tags if t["tags__id"] not in self.tags.all().values_list("id", flat=True)][0:3]
 
     def get_absolute_url(self):
