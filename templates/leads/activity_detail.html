@@ -35,7 +35,7 @@
     <div class="col-lg-6 col-xl-4">
         <table class="table table-hover table-striped">
         <tr><th class="text-nowrap"><i class="bi bi-house"></i> {% trans "company" %}</th><td><a href="{{ activity.client_organisation.get_absolute_url }}">{{ activity.client_organisation | default:"-" }}</a></td></tr>
-        <tr><th class="text-nowrap"><i class="bi bi-person"></i> {% trans "contact" %}</th><td><a href="{% url 'crm:contact_detail' activity.contact.id %}">{{ activity.contact.name }}</a></td></tr>
+        <tr><th class="text-nowrap"><i class="bi bi-person"></i> {% trans "contact" %}</th><td>{% if activity.contact.id %}<a href="{% url 'crm:contact_detail' activity.contact.id %}">{{ activity.contact.name }}</a>{% else %}-{% endif %}</td></tr>
         <tr><th class="text-nowrap"><i class="bi bi-telephone"></i> {% trans "phone" %}</th><td>{{ activity.contact.phone }}</td></tr>
         <tr><th class="text-nowrap"><i class="bi bi-phone"></i> {% trans "mobile phone" %}</th><td>{{ activity.contact.mobile_phone }}</td></tr>
         <tr><th class="text-nowrap"><i class="bi bi-printer"></i> {% trans "fax" %}</th><td>{{ activity.contact.fax }}</td></tr>
