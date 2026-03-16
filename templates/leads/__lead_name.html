@@ -5,7 +5,7 @@
 {% cache 60 lead_name lead.id %}
     <a href="{% url 'leads:detail' lead.id %}">{{ lead.name }}
         {% if lead.renewal %}
-            <i title='{% trans "Lead is a renewal" %}' class="pydici-tooltip bi bi-recycle"></i>
+            <i title="{% trans 'Lead is a renewal' %}" class="pydici-tooltip bi bi-recycle"></i>
         {% endif %}
         {% if not lead.checkBusinessDoc %}
             <i title='{% trans "Business documents are missing" %}' class="pydici-tooltip bi bi-file-earmark-text" style="color: red"></i>
