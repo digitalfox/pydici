@@ -313,7 +313,8 @@ def activity(request, activity_id=None):
             try:
                 consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
                 contact = request.GET.get("contact", None)
-                form = ActivityForm(initial={"responsible": consultant, "subsidiary": consultant.company, "contact": contact})  # An unbound form
+                client_organisation = request.GET.get("client_organisation", None)
+                form = ActivityForm(initial={"responsible": consultant, "subsidiary": consultant.company, "contact": contact, "client_organisation": client_organisation})  # An unbound form
             except Consultant.DoesNotExist:
                 form = ActivityForm()  # An unbound form
 
