@@ -70,7 +70,7 @@ class MarketingProductChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
 
 class MarketingProductMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
     model = MarketingProduct
-    search_fields = ["code__icontains", "description__icontains"]
+    search_fields = ["code__icontains", "description__icontains", "subsidiary__name__icontains"]
 
 
 class LeadMissionChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
