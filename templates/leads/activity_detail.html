@@ -44,8 +44,9 @@
     </div>
 </div>
 
-{% if activity.contact %}<a href="{% url 'leads:activity' %}?contact={{ activity.contact.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New activity for this contact" %}</a>{% endif %}
-{% if activity.client_organisation %}<a href="{% url 'leads:activity' %}?client_organisation={{ activity.client_organisation.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New activity for this client organisation" %}</a>{% endif %}
+{% if activity.client_organisation or activity.contact %}
+    <a href="{% url 'leads:activity' %}?client_organisation={{ activity.client_organisation.id | unlocalize }}&contact={{ activity.contact.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New activity for this client organisation / contact" %}</a>
+    {% endif %}
 <a href="{% url 'leads:lead' %}?activity={{ activity.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "Create a lead from this activity" %}</a>
 
 {% with object=activity %}
