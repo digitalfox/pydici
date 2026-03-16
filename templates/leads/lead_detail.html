@@ -149,6 +149,9 @@
                 <tr>
                     <th>{% trans "Sales (k€)" %}</th><td>{{ lead.sales|default_if_none:_("Unknown amount") }}</td>
                 </tr>
+                <tr>
+                    <th>{% trans "Renewal" %}</th><td>{% if lead.renewal is True %}<span class="bi bi-check"></span>{% elif lead.renewal is False %}<span class="bi bi-x"></span>{% else %}<span class="bi bi-question"></span>{% endif %}</td>
+                </tr>
                 {% if lead.stateproba_set.all.count > 0 %}
                     <tr class="d-md-none"><th>{% trans "Estimation" %}</th><td>{% for code, state, proba in lead.getStateProba %}{{state }} : {{ proba }} %, {% endfor %}</td></tr>
                 {% endif %}

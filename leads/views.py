@@ -639,6 +639,7 @@ def leads_pivotable(request, start_date=None, end_date=None):
                      _("responsible"): str(lead.responsible),
                      _("broker"): str(lead.business_broker),
                      _("state"): lead.get_state_display(),
+                     _("renewal"): str(lead.renewal),
                      _("billed (€)"): int(list(lead.clientbill_set.filter(state__in=("1_SENT", "2_PAID")).aggregate(Sum("amount")).values())[0] or 0),
                      _("Over budget margin (€)"): lead.margin(),
                      _("subsidiary"): str(lead.subsidiary),
