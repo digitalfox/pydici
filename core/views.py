@@ -26,7 +26,7 @@ from django.urls import reverse
 from django_select2.views import AutoResponseView
 
 from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMixin, PydiciSubcontractordMixin
-from leads.models import Lead
+from leads.models import Lead, Activity
 from people.models import Consultant
 from crm.models import Company, Contact
 from crm.utils import get_subsidiary_from_session
@@ -66,7 +66,7 @@ def search(request):
     words = request.GET.get("q", "")
     words = words.split()[:10]  # limits search to 10 words
     words = [w for w in words if len(w) > 1]  # remove one letter words
-    consultants = companies = contacts = leads = active_missions = archived_missions = bills = tags = None
+    consultants = companies = contacts = leads = active_missions = archived_missions = bills = tags = activities = None
     max_record = 50
     more_record = False  # Whether we have more records
     subsidiary = get_subsidiary_from_session(request)
@@ -133,6 +133,18 @@ def search(request):
         if len(leads) >= max_record:
             more_record = True
 
+        # Commercial activities
+        activities = Activity.objects.all()
+        for word in words:
+            activities = activities.filter(Q(name__icontains=word) |
+                                           Q(comment__icontains=word))
+        if subsidiary:
+            activities = activities.filter(subsidiary=subsidiary)
+        activities = activities.select_related("client_organisation__company", "contact")[:max_record]
+        if len(activities) >= max_record:
+            more_record = True
+
+
         # Missions
         missions = Mission.objects.all()
         for word in words:
@@ -183,6 +195,7 @@ def search(request):
                    "companies": companies,
                    "contacts": contacts,
                    "leads": leads,
+                   "activities": activities,
                    "tags": tags,
                    "active_missions": active_missions,
                    "archived_missions": archived_missions,

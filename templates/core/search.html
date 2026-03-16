@@ -79,6 +79,19 @@
 </div>
 {% endif %}
 
+{% if activities %}
+<div class="row">
+    <div class="col-12">
+        <h2>{% trans "Commmercial activities" %}</h2>
+        <ul class="row icon-list">
+        {% for activity in activities %}
+            <li class="col-12 col-sm-12 col-md-6 col-lg-4 bi bi-chevron-right"><a href="{% url 'leads:activity_detail' activity.id %}">{{ activity.name }} ({{ activity.client_organisation|default:"" }} {{ activity.contact|default:"" }})</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
 {% if active_missions %}
 <div class="row">
     <div class="col-12">
