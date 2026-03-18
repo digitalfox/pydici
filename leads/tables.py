@@ -19,6 +19,7 @@ from datetime import datetime, timedelta
 from leads.models import Lead, Activity
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 from crm.utils import get_subsidiary_from_session
+from leads.filters import ActivityFilter
 
 
 class LeadsViewsReadMixin(PydiciNonPublicdMixin, PydiciFeatureMixin):
@@ -177,7 +178,8 @@ class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVi
         return qs
 
     def get_initial_queryset(self):
-        qs = Activity.objects.all()
+        filter = ActivityFilter(self.request.GET, queryset=Activity.objects.all(), request=self.request)
+        qs = filter.qs
         qs = self._filter_on_subsidiary(qs)
         return qs.select_related("contact", "client_organisation__company", "responsible", "subsidiary")
 

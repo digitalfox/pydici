@@ -700,3 +700,7 @@ td a:hover {
     font-size: 1em;
     color: #FFFF ;
 }
+
+.filter-submit-btn {
+    margin-top: 28px; /* I would have prefered a vertical alignment...*/
+}

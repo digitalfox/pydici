@@ -35,6 +35,7 @@ from core.utils import getLeadDirs, createProjectTree, to_int_or_round
 from core.decorator import pydici_non_public, pydici_feature
 from people.models import Consultant
 from people.tasks import compute_consultant_tasks
+from leads.filters import ActivityFilter, ActivityFilterFormHelper
 
 
 @pydici_non_public
@@ -335,8 +336,12 @@ def activity_detail(request, activity_id):
 @pydici_feature("leads")
 def activities(request):
     """Current commercial activities"""
+    filter = ActivityFilter(request.GET, queryset=Activity.objects.all(), request=request)
     return render(request, "leads/activities.html",
                   {"data_url" : reverse('leads:activity_table_DT'),
+                   "filter": filter,
+                   "filter_form_helper": ActivityFilterFormHelper(),
+                   "request_params": request.GET,
                    "user": request.user})
 
 
