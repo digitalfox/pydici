@@ -4,8 +4,8 @@ Leads form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from numpy import require
-
+from crispy_forms.bootstrap import AppendedText, FieldWithButtons, Tab, TabHolder
+from crispy_forms.layout import HTML, Column, Field, Fieldset, Layout, Row
 from django import forms
 from django.core.exceptions import ValidationError
 from django.urls import reverse
@@ -13,10 +13,8 @@ from django.utils.encoding import smart_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_select2.forms import ModelSelect2Widget
+from numpy import require
 from taggit.forms import TagField
-from crispy_forms.bootstrap import AppendedText, FieldWithButtons, Tab, TabHolder
-from crispy_forms.layout import HTML, Column, Field, Fieldset, Layout, Row
-
 
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin, TagChoices
 from core.models import Tag
@@ -173,7 +171,8 @@ class ActivityForm(PydiciCrispyModelForm):
         exclude = ["creation_date"]
         widgets = {"contact": ContactChoices,
                    "client_organisation": ClientOrganisationChoices,
-                   "responsible": ConsultantChoices }
+                   "responsible": ConsultantChoices,
+                   "business_broker": BusinessBrokerChoices}
 
 
     def __init__(self, *args, **kwargs):
@@ -188,24 +187,35 @@ class ActivityForm(PydiciCrispyModelForm):
                     "subsidiary",
                     "nature",
                     "marketing_products",
-                    "business_broker",
+                    FieldWithButtons(
+                        "business_broker",
+                        HTML(
+                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>"
+                            % reverse("crm:businessbroker_create")
+                        ),
+                    ),
                     css_class="col-md-4 col-sm-6 col-12",
                 ),
                 Column(
                     FieldWithButtons(
                         "client_organisation",
                         HTML(
-                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
-                                "crm:client_organisation"))),
-                    FieldWithButtons("contact",
-                                     HTML(
-                                         "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
-                                             "crm:contact_create"))),
+                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>"
+                            % reverse("crm:client_organisation")
+                        ),
+                    ),
+                    FieldWithButtons(
+                        "contact",
+                        HTML(
+                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>"
+                            % reverse("crm:contact_create")
+                        ),
+                    ),
                     "objective",
                     Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
                     Field("done_date", placeholder=_("Completion date"), css_class="datepicker"),
                     css_class="col-md-4 col-sm-6 col-12",
                 ),
             ),
-            self.submit
+            self.submit,
         )
