@@ -239,6 +239,13 @@ class RelatedActivityTableDT(ActivityTableDT):
     def get_initial_queryset(self):
         activity = Activity.objects.get(id=self.kwargs["activity_id"])
         qs = Activity.objects.exclude(id=activity.id)
-        qs = qs.filter(Q(contact=activity.contact) | Q(client_organisation=activity.client_organisation))
+        if activity.contact and activity.client_organisation:
+            qs = qs.filter(Q(contact=activity.contact) | Q(client_organisation=activity.client_organisation))
+        elif activity.contact and activity.client_organisation is None:
+            qs = qs.filter(contact=activity.contact)
+        elif activity.client_organisation and activity.contact is None:
+            qs = qs.filter(client_organisation=activity.client_organisation)
+        else:
+            qs = qs.none()
         qs = self._filter_on_subsidiary(qs)
         return qs.select_related("contact", "client_organisation__company", "responsible", "subsidiary")
