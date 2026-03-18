@@ -518,7 +518,7 @@ def manage_tags(request):
 def tag(request, tag_id):
     """Displays objects for given tag"""
     consultant_ctype = ContentType.objects.get(model='Consultant')
-    tagged_consultant = TaggedItem.objects.filter(content_type=consultant_ctype, tag_id=tag_id).order_by('tag__category__name', "nature", "tag__name")
+    tagged_consultant = TaggedItem.objects.filter(content_type=consultant_ctype, tag_id=tag_id).order_by('tag__category__name', "nature", "level", "tag__name")
 
     return render(request, "core/tag.html",
                   {"leads": Lead.objects.filter(tags=tag_id),
