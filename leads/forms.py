@@ -192,8 +192,15 @@ class ActivityForm(PydiciCrispyModelForm):
                     css_class="col-md-4 col-sm-6 col-12",
                 ),
                 Column(
-                    "client_organisation",
-                    "contact",
+                    FieldWithButtons(
+                        "client_organisation",
+                        HTML(
+                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
+                                "crm:client_organisation"))),
+                    FieldWithButtons("contact",
+                                     HTML(
+                                         "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse(
+                                             "crm:contact_create"))),
                     "objective",
                     Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
                     Field("done_date", placeholder=_("Completion date"), css_class="datepicker"),
