@@ -191,7 +191,9 @@ class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVi
                         Q(comment__icontains=search) |
                         Q(contact__name__icontains=search) |
                         Q(client_organisation__company__name__icontains=search) |
-                        Q(client_organisation__name__iexact=search) |
+                        Q(client_organisation__name__icontains=search) |
+                        Q(business_broker__contact__name__icontains=search) |
+                        Q(business_broker__company__name__icontains=search) |
                         Q(responsible__name__icontains=search) |
                         Q(subsidiary__name__icontains=search))
 
