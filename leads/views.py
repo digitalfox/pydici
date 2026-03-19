@@ -4,6 +4,7 @@ Pydici leads views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from charset_normalizer import from_bytes
 
 import csv
 from datetime import datetime, timedelta, date
@@ -314,11 +315,18 @@ def activity(request, activity_id=None):
             form = ActivityForm(instance=activity)  # A form that edit current activity
         else:
             try:
+                due_date = None
                 consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
                 contact = request.GET.get("contact", None)
                 client_organisation = request.GET.get("client_organisation", None)
-                form = ActivityForm(initial={"responsible": consultant, "subsidiary": consultant.company, "contact": contact, "client_organisation": client_organisation})  # An unbound form
-            except Consultant.DoesNotExist:
+                from_activity_id = request.GET.get("from_activity", None)
+                if from_activity_id:
+                    from_activity = Activity.objects.get(id=from_activity_id)
+                    contact = from_activity.contact
+                    client_organisation = from_activity.client_organisation
+                    due_date = date.today() + timedelta(days=180)
+                form = ActivityForm(initial={"responsible": consultant, "subsidiary": consultant.company, "contact": contact, "client_organisation": client_organisation, "due_date": due_date, })  # An unbound form
+            except (Consultant.DoesNotExist, Activity.DoesNotExist):
                 form = ActivityForm()  # An unbound form
 
     return render(request, "leads/activity.html", {"activity": activity, "form": form})
