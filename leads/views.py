@@ -132,6 +132,8 @@ def lead(request, lead_id=None):
                 client = None
                 if activity_id:
                     activity = Activity.objects.get(id=activity_id)
+                    activity.state = "DONE"
+                    activity.save()
                     if activity.client_organisation:
                         client, created = Client.objects.get_or_create(organisation=activity.client_organisation, contact=activity.contact)
                 form = LeadForm(initial={"responsible": consultant, "subsidiary": consultant.company, "client": client})  # An unbound form
