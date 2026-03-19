@@ -195,6 +195,7 @@ class Contact(models.Model):
     def companies(self, html=False):
         """Return companies for whom this contact currently works"""
         companies = list(Company.objects.filter(Q(clientorganisation__client__contact__id=self.id) |
+                                           Q(clientorganisation__activity__contact__id=self.id) |
                                            Q(businessbroker__contact__id=self.id) |
                                            Q(missioncontact__contact__id=self.id) |
                                            Q(administrativecontact__contact__id=self.id) |
