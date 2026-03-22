@@ -1,0 +1,32 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+<form method="post" id="pydici-ajax-form-client-organisation" action="{% url 'crm:client_organisation_popup' %}" novalidate>
+    {% crispy organisationForm organisationForm.inline_helper %}
+    {% crispy companyForm companyForm.inline_helper %}
+    <input type="submit" name="submit" value="{% trans 'Save' %}" class="btn btn-primary" id="submit-id-submit">
+</form>
+
+
+{% with "pydici-ajax-form-client-organisation" as formid %}
+{% with "organisationModal" as modal_id %}
+{% with "id_client_organisation" as target_id %}
+    {% include "core/_ajax_popup_post.html" %}
+{% endwith %}
+{% endwith %}
+{% endwith %}
+
+<script type="text/javascript">
+{% if organisationForm.errors %}
+    $("#organisationForm").show();
+    $("#organisation_input_group").hide();
+{% endif %}
+{% if companyForm.errors %}
+    $("#companyForm").show();
+    $("#company_input_group").hide();
+{% endif %}
+</script>
+
+{% with "organisationModal" as modal_id %}
+    {% include "core/_select2_bs_modal.html" %}
+{% endwith %}

@@ -47,5 +47,6 @@ crm_urls = [
              re_path(r'^company/graph/sales/lastyear/(?P<subsidiary_id>[0-9]+)$', v.graph_company_sales, {"onlyLastYear": True}, name="graph_company_lastyear_sales"),
              re_path(r'^company/(?P<company_id>\d+)/graph/business_activity$', v.graph_company_business_activity, name="graph_company_business_activity"),
              re_path(r'^client-organisation-company-popup$', v.client_organisation_company_popup, name="client_organisation_company_popup"),
+             re_path(r'^contact-organisation-popup$', v.client_organisation_popup, name="client_organisation_popup"),
              re_path(r'^contact-popup$', v.contact_popup, name="contact_popup"),
             ]
