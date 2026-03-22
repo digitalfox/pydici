@@ -115,9 +115,9 @@ class CrmViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, msg)
         response_data = json.loads(response.content)
         self.assertTrue(response_data["success"], msg)
-        self.assertIn("client_id", response_data, msg)
-        self.assertIn("client_name", response_data, msg)
-        return Client.objects.get(id=int(response_data["client_id"]))
+        self.assertIn("object_id", response_data, msg)
+        self.assertIn("object_name", response_data, msg)
+        return Client.objects.get(id=int(response_data["object_id"]))
 
     def check_client_popup_response_is_ko(self, response, msg):
         self.assertEqual(response.status_code, 200, msg)

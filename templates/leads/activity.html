@@ -14,6 +14,40 @@
   {% crispy form form.helper %}
 </div>
 
+<!-- Modal window to display contact creation -->
+<div class="modal fade" id="contactModal">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title">{% trans "New contact" %}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/JavaScript">
+
+$(document).ready(function(){
+    // Fill modal with content from link href
+    $("#contactModal").on("show.bs.modal", function(e) {
+        var link = $(e.relatedTarget);
+
+        $.ajax({url: link.attr("href"),
+                     success: function(result){
+                                 $('#contactModal').find(".modal-body").html(result.form);
+                                 $("#contactForm").show();
+                            },
+               });
+    });
+});
+
+</script>
+
 {% include "core/_datepicker.html" %}
 
 {% endblock %}

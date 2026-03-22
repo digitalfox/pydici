@@ -13,7 +13,6 @@ from django.utils.encoding import smart_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_select2.forms import ModelSelect2Widget
-from numpy import require
 from taggit.forms import TagField
 
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin, TagChoices
@@ -207,8 +206,8 @@ class ActivityForm(PydiciCrispyModelForm):
                     FieldWithButtons(
                         "contact",
                         HTML(
-                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>"
-                            % reverse("crm:contact_create")
+                            "<a role='button' class='btn btn-primary' href='%s' data-remote='false' data-bs-toggle='modal' data-bs-target='#contactModal'><i class='bi bi-plus'></i></a>"
+                            % reverse("crm:contact_popup")
                         ),
                     ),
                     "objective",

@@ -1,0 +1,20 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+<form method="post" id="pydici-ajax-form-contact" action="{% url 'crm:contact_popup' %}" novalidate>
+    {% crispy contactForm contactForm.inline_helper %}
+    <input type="submit" name="submit" value="{% trans 'Save' %}" class="btn btn-primary" id="submit-id-submit">
+
+</form>
+
+{% with "pydici-ajax-form-contact" as formid %}
+{% with "contactModal" as modal_id %}
+{% with "id_contact" as target_id %}
+    {% include "core/_ajax_popup_post.html" %}
+{% endwith %}
+{% endwith %}
+{% endwith %}
+
+{% with "contactModal" as modal_id %}
+    {% include "core/_select2_bs_modal.html" %}
+{% endwith %}

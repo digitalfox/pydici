@@ -1,0 +1,12 @@
+{# To be included in bootstrap modal popups that require select2 #}
+<script type="text/javascript">
+$(document).ready(function(){
+    // In bootstrap modal, we need to attach select2 to modal instead of body
+    $('.django-select2').djangoSelect2({ "theme": "bootstrap-5", "width": "auto", "dropdownParent": $('#{{ modal_id }}')});
+
+    // re-activate django-select after modal is closed
+    $('#{{ modal_id }}').on('hidden.bs.modal', function (e) {
+        $('.django-select2').djangoSelect2({ "theme": "bootstrap-5", "width": "auto"});
+    })
+});
+</script>
