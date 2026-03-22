@@ -180,12 +180,12 @@ class ActivityForm(PydiciCrispyModelForm):
             queryset=MarketingProduct.objects.all(), required=False)
         self.helper.layout = Layout(
             Row(
-                Column("name", "state", "comment", css_class="col-md-4 col-12"),
+                Column("name", "state", "comment", css_class="col-md-6 col-12"),
                 Column(
                     "responsible",
                     "subsidiary",
                     "nature",
-                    "marketing_products",
+                    "objective",
                     FieldWithButtons(
                         "business_broker",
                         HTML(
@@ -193,7 +193,7 @@ class ActivityForm(PydiciCrispyModelForm):
                             % reverse("crm:businessbroker_create")
                         ),
                     ),
-                    css_class="col-md-4 col-sm-6 col-12",
+                    css_class="col-md-3 col-sm-6 col-12",
                 ),
                 Column(
                     FieldWithButtons(
@@ -210,10 +210,10 @@ class ActivityForm(PydiciCrispyModelForm):
                             % reverse("crm:contact_popup")
                         ),
                     ),
-                    "objective",
+                    "marketing_products",
                     Field("due_date", placeholder=_("Due date for next step"), css_class="datepicker"),
                     Field("done_date", placeholder=_("Completion date"), css_class="datepicker"),
-                    css_class="col-md-4 col-sm-6 col-12",
+                    css_class="col-md-3 col-sm-6 col-12",
                 ),
             ),
             self.submit,
