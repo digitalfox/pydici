@@ -4,7 +4,6 @@ Pydici leads views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from charset_normalizer import from_bytes
 
 import csv
 from datetime import datetime, timedelta, date
