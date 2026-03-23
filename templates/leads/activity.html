@@ -48,18 +48,6 @@
 <script type="text/JavaScript">
 
 $(document).ready(function(){
-    // Fill contact modal with content from link href
-    $("#contactModal").on("show.bs.modal", function(e) {
-        var link = $(e.relatedTarget);
-
-        $.ajax({url: link.attr("href"),
-                     success: function(result){
-                                 $('#contactModal').find(".modal-body").html(result.form);
-                                 $("#contactForm").show();
-                            },
-               });
-    });
-
     // Fill client organisation modal with content from link href
     $("#organisationModal").on("show.bs.modal", function(e) {
         var link = $(e.relatedTarget);

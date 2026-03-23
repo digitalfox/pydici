@@ -206,8 +206,13 @@ class ActivityForm(PydiciCrispyModelForm):
                     FieldWithButtons(
                         "contact",
                         HTML(
-                            "<a role='button' class='btn btn-primary' href='%s' data-remote='false' data-bs-toggle='modal' data-bs-target='#contactModal'><i class='bi bi-plus'></i></a>"
-                            % reverse("crm:contact_popup")
+                            """<button
+                                hx-get="%s"
+                                hx-target="#contactModal"
+                                hx-trigger="click"
+                                data-bs-toggle="modal"
+                                data-bs-target="#contactModal"
+                                class="btn btn-primary"><i class='bi bi-plus'></i></button>""" % reverse("crm:contact_popup")
                         ),
                     ),
                     "marketing_products",

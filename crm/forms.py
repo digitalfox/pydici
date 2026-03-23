@@ -230,7 +230,7 @@ class ContactForm(PydiciCrispyModelForm):
                                                     Row(Column("email"), Column("phone")),
                                                     Row(Column("function")),
                                                     Row("contact_points", css_class="col-md-6"),
-                                                    css_class="collapse", css_id="contactForm"),
+                                                    css_id="contactForm"),
                                            )
 
     def clean_name(self):

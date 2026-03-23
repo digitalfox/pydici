@@ -380,26 +380,16 @@ def client_organisation_popup(request):
 @pydici_feature("3rdparties")
 def contact_popup(request):
     """Contact creation in one popup"""
-    template = get_template("crm/contact-popup.html")
-    result = {"success": False}
+    contact = None
     if request.method == "POST":
         contactForm = ContactForm(request.POST, prefix="contact")
-
         if contactForm.is_valid():
             contact = contactForm.save()
-            result["success"] = True
-            result["object_id"] = contact.id
-            result["object_name"] = str(contact)
-        else:
-            contact = None
     else:
         # Unbound forms for GET requests
         contactForm = ContactForm(prefix="contact")
 
-    # Render form
-    result["form"] = template.render({ "contactForm": contactForm})
-
-    return HttpResponse(json.dumps(result), content_type="application/json")
+    return render(request, "crm/contact-popup.html", {"contactForm": contactForm, "contact": contact})
 
 
 @pydici_non_public
