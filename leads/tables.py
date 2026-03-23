@@ -217,7 +217,7 @@ class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVi
                 return "<a href='{0}'>{1}</a>".format(row.contact.get_absolute_url(), escape(row.contact))
             else:
                 return "-"
-        elif column in ("creation_date", "expense_date"):
+        elif column in ("creation_date", "expense_date", "due_date"):
             return self.date_template.render(context={"date": getattr(row, column)}, request=self.request)
         else:
             return super(ActivityTableDT, self).render_column(row, column)
