@@ -39,6 +39,6 @@ class ActivityFilterFormHelper(FormHelper):
         Column(Field("objective"), css_class="col-md-2"),
         Column(Field("nature"), css_class="col-md-2"),
         Column(Field("responsible"), css_class="col-md-2"),
-        Column(Submit('submit', 'Apply Filter', css_class="filter-submit-btn"), css_class="col-md-2"),
+        Column(Submit('submit', _('Apply Filter'), css_class="filter-submit-btn"), css_class="col-md-2"),
         css_class="my-3"
     ))
