@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200, verbose_name='Name')),
                 ('comment', models.TextField(blank=True)),
-                ('nature', models.CharField(choices=[('PHONE_VISIO', 'Phone/Visio'), ('MEETING', 'meeting'), ('LUNCH_DINER', 'Lunch/Diner'), ('EVENT', 'Conference/Seminar')], max_length=30, verbose_name='Nature')),
+                ('nature', models.CharField(choices=[('PHONE_VISIO', 'Phone/Visio'), ('MEETING', 'Meeting'), ('LUNCH_DINER', 'Lunch/Diner'), ('EVENT', 'Conference/Seminar')], max_length=30, verbose_name='Nature')),
                 ('objective', models.CharField(choices=[('RELATIONSHIP', 'Relationship maintenance'), ('PITCH', 'Company/product pitch'), ('TARGET', 'Answer to target need')], max_length=30, verbose_name='Objective')),
                 ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name='Creation')),
                 ('due_date', models.DateField(blank=True, null=True, verbose_name='Due')),

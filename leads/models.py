@@ -322,7 +322,7 @@ class Activity(models.Model):
     )
     NATURES = (
         ('PHONE_VISIO', gettext("Phone/Visio")),
-        ('MEETING', gettext("meeting")),
+        ('MEETING', gettext("Meeting")),
         ('LUNCH_DINER', gettext("Lunch/Diner")),
         ('EVENT', gettext("Conference/Seminar")),
         ('MAIL', gettext("Mail"))

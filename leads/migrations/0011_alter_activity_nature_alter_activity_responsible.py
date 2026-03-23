@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='activity',
             name='nature',
-            field=models.CharField(choices=[('PHONE_VISIO', 'Phone/Visio'), ('MEETING', 'meeting'), ('LUNCH_DINER', 'Lunch/Diner'), ('EVENT', 'Conference/Seminar'), ('MAIL', 'Mail')], max_length=30, verbose_name='Nature'),
+            field=models.CharField(choices=[('PHONE_VISIO', 'Phone/Visio'), ('MEETING', 'Meeting'), ('LUNCH_DINER', 'Lunch/Diner'), ('EVENT', 'Conference/Seminar'), ('MAIL', 'Mail')], max_length=30, verbose_name='Nature'),
         ),
         migrations.AlterField(
             model_name='activity',
