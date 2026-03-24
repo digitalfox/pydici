@@ -16,7 +16,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import gettext as _
-from django.db.models import Sum, Count, Min, Q
+from django.db.models import Sum, Count, Min, Q, F
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 from django.db.models.functions import TruncMonth
@@ -663,5 +663,59 @@ def leads_pivotable(request, start_date=None, end_date=None):
                      })
     return render(request, "leads/leads_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": derivedAttributes,
+                                                    "start_date": start_date,
+                                                    "end_date": end_date})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+@cache_page(60 * 60 * 24)
+def activities_pivotable(request, start_date=None, end_date=None):
+    """Pivot table for commercial activities in given timeframe"""
+    max_timeframe = 365 * 5
+    data = []
+    activities = Activity.objects.all()
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        activities = activities.filter(subsidiary=subsidiary)
+
+    if not activities:
+        return HttpResponse()
+
+    if end_date is None:
+        end_date = date.today()
+    else:
+        end_date = date(int(end_date[0:4]), int(end_date[4:6]), 1)
+    if start_date is None:
+        start_date = date.today() - timedelta(days=365)
+    else:
+        start_date = date(int(start_date[0:4]), int(start_date[4:6]), 1)
+
+    if end_date - start_date > timedelta(max_timeframe):
+        # Prevent excessive window that is useless would lead to deny of service
+        start_date = (end_date - timedelta(max_timeframe)).replace(day=1)
+    print(activities)
+    print(start_date)
+    print(end_date)
+    activities = activities.filter(creation_date__gte=start_date, creation_date__lte=end_date)
+    activities = activities.select_related("responsible", "contact", "client_organisation__company", "subsidiary",
+                         "business_broker__company", "business_broker__contact")
+    activities = activities.annotate(duration=(F("done_date") or date.today()) - F("creation_date__date"))
+    print(activities)
+
+    for activity in activities:
+        data.append({_("name"): activity.name,
+                     _("client organisation"): str(activity.client_organisation or ""),
+                     _("client company"): str(activity.client_organisation.company) if activity.client_organisation else "",
+                     _("date"): activity.creation_date.strftime("%Y-%m"),
+                     _("responsible"): str(activity.responsible),
+                     _("broker"): str(activity.business_broker),
+                     _("state"): activity.get_state_display(),
+                     _("nature"): activity.get_nature_display(),
+                     _("objective"): activity.get_objective_display(),
+                     _("duration"): activity.duration.days if activity.duration else "-",
+                     _("subsidiary"): str(activity.subsidiary),
+                     })
+    return render(request, "leads/activities_pivotable.html", { "data": json.dumps(data),
                                                     "start_date": start_date,
                                                     "end_date": end_date})

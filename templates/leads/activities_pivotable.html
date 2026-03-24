@@ -7,10 +7,10 @@
     {% include "core/_pivotable_header.html" %}
 {% endblock %}
 
-{% block title %}{% trans "Leads pivot table" %}{% endblock %}
+{% block title %}{% trans "Commercial activities pivot table" %}{% endblock %}
 
 {% block content %}
-        <h2>{% trans "Leads pivot table" %}</h2>
+        <h2>{% trans "Commercial activities pivot table" %}</h2>
         <div class="btn-group col-lg-4" data-toggle="buttons">
             <input id="startDate" name="startDate" class="btn btn-primary datepicker dateinput" data-date-format="mm/yyyy" data-date-min-view-mode=1 placeholder="{% trans 'From' %}">
             <input id="endDate" name="endDate" class="btn btn-primary datepicker dateinput" data-date-format="mm/yyyy" data-date-min-view-mode=1 placeholder="{% trans 'To' %}">
@@ -18,11 +18,8 @@
 
         <div class="row mt-2">
             <div id="type-selector" class="btn-group col-lg-8 col-12" role="group">
-                <button class="btn btn-primary active" onclick="lead_per_state();">{% trans "Lead per state" %}</button>
-                <button class="btn btn-primary" onclick="price_interval();">{% trans "Lead per price interval" %}</button>
-                <button class="btn btn-primary" onclick="billing_per_client();">{% trans "Billing per client" %}</button>
-                <button class="btn btn-primary" onclick="margin_over_budget_graph();">{% trans "Margin over budget (graph)" %}</button>
-                <button class="btn btn-primary" onclick="margin_over_budget_table();">{% trans "Margin over budget (table)" %}</button>
+                <button class="btn btn-primary active" onclick="activity_per_state();">{% trans "Activity per state" %}</button>
+                <button class="btn btn-primary" onclick="activity_duration();">{% trans "Duration" %}</button>
                 <button class="btn btn-primary" onclick="restore_pivot_config();">{% trans "Load user config" %}</button>
                 <button class="btn btn-primary" onclick="save_pivot_config();">{% trans "Save user config" %}</button>
             </div>
@@ -49,44 +46,20 @@
             var data = {{ data|safe }};
 
             // Preset definition
-            function lead_per_state() {
+            function activity_per_state() {
                 var rows = ["{% trans 'state' %}"];
                 var cols = ["{% trans 'date' %}"];;
                 drawPivot(data, rows, cols, "Stacked Bar Chart");
             }
 
-            function price_interval() {
-                var rows = ["{% trans 'subsidiary' %}", "{% trans 'responsible' %}"];
-                var cols = ["{% trans 'sales (interval)'%}"];
-                drawPivot(data, rows, cols, "Heatmap");
-            }
-
-            function billing_per_client() {
-                var rows = ["{% trans 'client company' %}"];
-                var cols = ["{% trans 'subsidiary' %}", "{% trans 'responsible' %}"];
-                var options = {}
-                options['inclusions'] = { {% trans "state" %}: ['{% trans "Won" %}'] };
-                drawPivot(data, rows, cols, "Heatmap", '{% trans "Integer Sum" %}', ['{% trans "billed (€)" %}'], options);
-            }
-
-            function margin_over_budget_graph() {
-                var rows = ["{% trans 'subsidiary' %}"];
-                var cols = ["{% trans 'client company' %}"];
-                var options = {}
-                options['inclusions'] = { {% trans "state" %}: ['{% trans "Won" %}'] };
-                drawPivot(data, rows, cols, "Horizontal Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "Over budget margin (€)" %}'], options);
-            }
-
-            function margin_over_budget_table() {
-                var rows = ["{% trans 'client company' %}", "{% trans 'deal id' %}"];
-                var cols = ["{% trans 'subsidiary' %}"];
-                var options = {}
-                options['inclusions'] = { {% trans "state" %}: ['{% trans "Won" %}'] };
-                drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ['{% trans "Over budget margin (€)" %}'], options);
+            function activity_duration() {
+                var rows = ["{% trans 'objective' %}", "{% trans 'nature' %}"];
+                var cols = ["{% trans 'date' %}"];;
+                drawPivot(data, rows, cols, "Table", '{% trans "Average" %}', ["{% trans 'duration' %}"]);
             }
 
             // default
-            lead_per_state();
+            activity_per_state();
 
             $(document).ready(function() {
                 //
@@ -123,11 +96,5 @@
 
             });
 
-
-
-
         </script>
-
-
-
 {% endblock %}
