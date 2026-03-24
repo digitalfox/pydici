@@ -113,16 +113,13 @@ class CrmViewsTest(TestCase):
     def check_client_popup_response_is_ok(self, response, msg):
         """Ensure POST form is ok and return created client"""
         self.assertEqual(response.status_code, 200, msg)
-        response_data = json.loads(response.content)
-        self.assertTrue(response_data["success"], msg)
-        self.assertIn("object_id", response_data, msg)
-        self.assertIn("object_name", response_data, msg)
-        return Client.objects.get(id=int(response_data["object_id"]))
+        self.assertFalse(bool(response.context["clientForm"].errors), msg)
+        return response.context["client"]
 
     def check_client_popup_response_is_ko(self, response, msg):
         self.assertEqual(response.status_code, 200, msg)
-        response_data = json.loads(response.content)
-        self.assertFalse(response_data["success"], msg)
+        self.assertTrue(bool(response.context["clientForm"].errors), msg)
+
 
 
 class CrmModelTest(TestCase):

@@ -1,36 +1,54 @@
 {% load i18n %}
+{% load l10n %}
 {% load crispy_forms_tags %}
 
+<div class="modal-dialog modal-xl">
+<div class="modal-content">
+    <div class="modal-header">
+    <h1 class="modal-title">{% trans "New client" %}</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+    </div>
+    <div class="modal-body">
+        <form method="post" id="pydici-ajax-form-client" action="{% url 'crm:client_organisation_company_popup' %}" novalidate>
+            {% crispy clientForm clientForm.inline_helper %}
+            {% crispy contactForm contactForm.inline_helper %}
+            {% crispy organisationForm organisationForm.inline_helper %}
+            {% crispy companyForm companyForm.inline_helper %}
+            <button type="button" name="submit" class="btn btn-primary"
+                hx-post="{% url 'crm:client_organisation_company_popup' %}" hx-target="#clientModal"
+                hx-on:htmx:after-request="$('#companyForm').hide();$('#organisationForm').hide();$('#contactForm').hide();"
+                data-bs-dismiss="modal">{% trans "Save" %}</button>
+        </form>
+    </div>
+</div>
+</div>
 
-<form method="post" id="pydici-ajax-form-client" action="{% url 'crm:client_organisation_company_popup' %}" novalidate>
-    {% crispy clientForm clientForm.inline_helper %}
-    {% crispy contactForm contactForm.inline_helper %}
-    {% crispy organisationForm organisationForm.inline_helper %}
-    {% crispy companyForm companyForm.inline_helper %}
+{# Out of band update for the client select #}
+<div id="id_client" hx-swap-oob="innerHTML">
+    <option value="{{ client.id | unlocalize }}">{{ client|default_if_none:"" }}</option>
+</div>
 
-    <input type="submit" name="submit" value="{% trans 'Save' %}" class="btn btn-primary" id="submit-id-submit">
-
-</form>
-
-
-{% with "pydici-ajax-form-client" as formid %}
-{% with "clientModal" as modal_id %}
-{% with "id_client" as target_id %}
-    {% include "core/_ajax_popup_post.html" %}
-{% endwith %}
-{% endwith %}
-{% endwith %}
-
-<script type="text/javascript">
-{% if organisationForm.errors %}
-    $("#organisationForm").show();
-    $("#organisation_input_group").hide();
+{% if organisationForm.errors or companyForm.errors %}
+    {# in case of error display modal #}
+    <script type="text/javascript">
+        var clientModalEl = document.getElementById('clientModal');
+        var clientModal = new bootstrap.Modal(clientModalEl);
+        clientModalEl.addEventListener('shown.bs.modal', event => {
+          $('#companyForm').hide();
+          $('#organisationForm').hide();
+          $('#contactForm').hide();
+          {% if organisationForm.errors %}
+              $("#organisationForm").show();
+              $("#organisation_input_group").hide();
+          {% endif %}
+          {% if companyForm.errors %}
+              $("#companyForm").show();
+              $("#company_input_group").hide();
+          {% endif %}
+        });
+        clientModal.show();
+    </script>
 {% endif %}
-{% if companyForm.errors %}
-    $("#companyForm").show();
-    $("#company_input_group").hide();
-{% endif %}
-</script>
 
 {% with "clientModal" as modal_id %}
     {% include "core/_select2_bs_modal.html" %}

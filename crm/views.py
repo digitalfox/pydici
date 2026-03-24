@@ -261,8 +261,11 @@ def client(request, client_id=None):
 @pydici_feature("3rdparties")
 def client_organisation_company_popup(request):
     """Client, organisation and company creation in one popup"""
-    template = get_template("crm/client-popup.html")
-    result = {"success": False}
+    contact = None
+    company = None
+    organisation = None
+    client = None
+
     if request.method == "POST":
         clientForm = ClientForm(request.POST, prefix="client")
         organisationForm = ClientOrganisationForm(request.POST, prefix="organisation")
@@ -271,17 +274,15 @@ def client_organisation_company_popup(request):
 
         if contactForm.is_valid():
             contact = contactForm.save()
-        else:
-            contact = None
 
         if companyForm.is_valid():
             company = companyForm.save()
-        else:
-            company = None
 
-        client = None
         if clientForm.is_valid():
             client = clientForm.save(commit=False)
+            companyForm = CompanyForm(prefix="company")  # Reset company form after client save
+            contactForm = ContactForm(prefix="contact")  # Reset contact form after client save
+            organisationForm = ClientOrganisationForm(prefix="organisation")  # Reset organisation form after client save
         else:
             # clientForm may be invalid because client organisation is a new one
             if organisationForm.is_valid():
@@ -291,6 +292,7 @@ def client_organisation_company_popup(request):
                 clientForm.full_clean()
                 if clientForm.is_valid():
                     client = clientForm.save(commit=False)
+                    companyForm = CompanyForm(prefix="company")  # Reset company form after client save
             elif company:
                 # organisationForm may be invalid because company is a new one
                 organisationForm.data = organisationForm.data.copy()
@@ -311,9 +313,6 @@ def client_organisation_company_popup(request):
                 client.contact = contact
             client.active = True
             client.save()
-            result["success"] = True
-            result["object_id"] = client.id
-            result["object_name"] = str(client)
 
     else:
         # Unbound forms for GET requests
@@ -322,13 +321,11 @@ def client_organisation_company_popup(request):
         companyForm = CompanyForm(prefix="company")
         contactForm = ContactForm(prefix="contact")
 
-    # Render form
-    result["form"] = template.render({ "clientForm": clientForm,
+    return render(request, "crm/client-popup.html", { "clientForm": clientForm,
                                        "organisationForm": organisationForm,
                                        "companyForm": companyForm ,
-                                       "contactForm": contactForm})
-
-    return HttpResponse(json.dumps(result), content_type="application/json")
+                                       "contactForm": contactForm,
+                                       "client": client})
 
 
 @pydici_non_public

@@ -107,7 +107,14 @@ class LeadForm(PydiciCrispyModelForm):
                                                   Row(Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-6 col-12"),
                                                       Column(Field("renewal"), css_class="col-md-6 col-12")),
                                                   Row(Column(FieldWithButtons("client", HTML(
-                                                          "<a role='button' class='btn btn-primary' href='%s' data-remote='false' data-bs-toggle='modal' data-bs-target='#clientModal'><i class='bi bi-plus'></i></a>" % clientPopupUrl)),
+                                                      """<button
+                                                          hx-get="%s"
+                                                          hx-target="#clientModal"
+                                                          hx-trigger="click"
+                                                          hx-on:htmx:after-request="$('#companyForm').hide();$('#organisationForm').hide();$('#contactForm').hide()"
+                                                          data-bs-toggle="modal"
+                                                          data-bs-target="#clientModal"
+                                                          class="btn btn-primary"><i class='bi bi-plus'></i></button>""" % clientPopupUrl)),
                                                           css_class="col-6"),
                                                       Column("subsidiary", css_class="col-md-6 col-12"),),
                                                   Row(Column("description", css_class="col-md-6 col-12"),

@@ -27,22 +27,6 @@
 </div>
 
 
-<script type="text/JavaScript">
-
-$(document).ready(function(){
-    // Fill modal with content from link href
-    $("#clientModal").on("show.bs.modal", function(e) {
-        var link = $(e.relatedTarget);
-
-        $.ajax({url: link.attr("href"),
-                     success: function(result){
-                                 $('#clientModal').find(".modal-body").html(result.form);
-                            },
-               });
-    });
-});
-
-</script>
 
 {% include "core/_datepicker.html" %}
 
