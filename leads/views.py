@@ -713,7 +713,7 @@ def activities_pivotable(request, start_date=None, end_date=None):
                      _("state"): activity.get_state_display(),
                      _("nature"): activity.get_nature_display(),
                      _("objective"): activity.get_objective_display(),
-                     _("duration"): activity.duration.days if activity.duration else "-",
+                     _("duration"): activity.duration.days if activity.duration and activity.duration.days >= 0 else "-",
                      _("subsidiary"): str(activity.subsidiary),
                      })
     return render(request, "leads/activities_pivotable.html", { "data": json.dumps(data),
