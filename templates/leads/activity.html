@@ -44,25 +44,6 @@
   </div>
 </div>
 
-
-<script type="text/JavaScript">
-
-$(document).ready(function(){
-    // Fill client organisation modal with content from link href
-    $("#organisationModal").on("show.bs.modal", function(e) {
-        var link = $(e.relatedTarget);
-
-        $.ajax({url: link.attr("href"),
-                     success: function(result){
-                                 $('#organisationModal').find(".modal-body").html(result.form);
-                                 $("#organisationForm").show();
-                            },
-               });
-    });
-});
-
-</script>
-
 {% include "core/_datepicker.html" %}
 
 {% endblock %}

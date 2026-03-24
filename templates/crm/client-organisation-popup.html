@@ -1,31 +1,44 @@
 {% load i18n %}
+{% load l10n %}
 {% load crispy_forms_tags %}
 
-<form method="post" id="pydici-ajax-form-client-organisation" action="{% url 'crm:client_organisation_popup' %}" novalidate>
-    {% crispy organisationForm organisationForm.inline_helper %}
-    {% crispy companyForm companyForm.inline_helper %}
-    <input type="submit" name="submit" value="{% trans 'Save' %}" class="btn btn-primary" id="submit-id-submit">
-</form>
+<div class="modal-dialog modal-xl">
+<div class="modal-content">
+    <div class="modal-header">
+    <h1 class="modal-title">{% trans "New client organisation" %}</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+    </div>
+    <div class="modal-body">
+        <form method="post" id="pydici-ajax-form-client-organisation" action="{% url 'crm:client_organisation_popup' %}" novalidate>
+            {% crispy organisationForm organisationForm.inline_helper %}
+            {% crispy companyForm companyForm.inline_helper %}
+            <button type="button" name="submit" class="btn btn-primary"
+                hx-post="{% url 'crm:client_organisation_popup' %}" hx-target="#organisationModal"
+                data-bs-dismiss="modal">{% trans "Save" %}</button>
+        </form>
+    </div>
+</div>
+</div>
 
+{# Out of band update for the client organisation select #}
+<div id="id_client_organisation" hx-swap-oob="innerHTML">
+    <option value="{{ client_organisation.id | unlocalize }}">{{ client_organisation }}</option>
+</div>
 
-{% with "pydici-ajax-form-client-organisation" as formid %}
-{% with "organisationModal" as modal_id %}
-{% with "id_client_organisation" as target_id %}
-    {% include "core/_ajax_popup_post.html" %}
-{% endwith %}
-{% endwith %}
-{% endwith %}
-
-<script type="text/javascript">
-{% if organisationForm.errors %}
-    $("#organisationForm").show();
-    $("#organisation_input_group").hide();
+{% if organisationForm.errors or companyForm.errors %}
+    {# in case of error display modal #}
+    <script type="text/javascript">
+        var organisationModalEl = document.getElementById('organisationModal');
+        var organisationModal = new bootstrap.Modal(organisationModalEl);
+        organisationModalEl.addEventListener('shown.bs.modal', event => {
+        {% if companyForm.errors %}
+            $("#companyForm").show();
+            $("#company_input_group").hide();
+        {% endif %}
+        });
+        organisationModal.show();
+    </script>
 {% endif %}
-{% if companyForm.errors %}
-    $("#companyForm").show();
-    $("#company_input_group").hide();
-{% endif %}
-</script>
 
 {% with "organisationModal" as modal_id %}
     {% include "core/_select2_bs_modal.html" %}

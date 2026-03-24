@@ -335,19 +335,18 @@ def client_organisation_company_popup(request):
 @pydici_feature("3rdparties")
 def client_organisation_popup(request):
     """Client organisation creation in one popup"""
-    template = get_template("crm/client-organisation-popup.html")
-    result = {"success": False}
+    organisation = None
+    company = None
     if request.method == "POST":
         organisationForm = ClientOrganisationForm(request.POST, prefix="organisation")
         companyForm = CompanyForm(request.POST, prefix="company")
 
         if companyForm.is_valid():
             company = companyForm.save()
-        else:
-            company = None
 
         if organisationForm.is_valid():
             organisation = organisationForm.save()
+            companyForm = CompanyForm(prefix="company")  # Reset company form after organisation save
         elif company:
             # organisationForm may be invalid because company is a new one
             organisationForm.data = organisationForm.data.copy()
@@ -355,25 +354,14 @@ def client_organisation_popup(request):
             organisationForm.full_clean()
             if organisationForm.is_valid():
                 organisation = organisationForm.save()
-        else:
-            organisation = None
-
-        # If everything is alright, save the client organisation and create response
-        if organisation:
-            result["success"] = True
-            result["object_id"] = organisation.id
-            result["object_name"] = str(organisation)
 
     else:
         # Unbound forms for GET requests
         organisationForm = ClientOrganisationForm(prefix="organisation")
         companyForm = CompanyForm(prefix="company")
 
-    # Render form
-    result["form"] = template.render({ "organisationForm": organisationForm,
-                                       "companyForm": companyForm })
-
-    return HttpResponse(json.dumps(result), content_type="application/json")
+    return render(request, "crm/client-organisation-popup.html",
+        {"organisationForm": organisationForm, "companyForm": companyForm, "client_organisation": organisation})
 
 
 @pydici_non_public

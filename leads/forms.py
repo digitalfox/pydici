@@ -199,8 +199,14 @@ class ActivityForm(PydiciCrispyModelForm):
                     FieldWithButtons(
                         "client_organisation",
                         HTML(
-                            "<a role='button' class='btn btn-primary' href='%s' data-remote='false' data-bs-toggle='modal' data-bs-target='#organisationModal'><i class='bi bi-plus'></i></a>"
-                            % reverse("crm:client_organisation_popup")
+                            """<button
+                                hx-get="%s"
+                                hx-target="#organisationModal"
+                                hx-trigger="click"
+                                hx-on:htmx:after-request="$('#companyForm').hide()"
+                                data-bs-toggle="modal"
+                                data-bs-target="#organisationModal"
+                                class="btn btn-primary"><i class='bi bi-plus'></i></button>""" % reverse("crm:client_organisation_popup")
                         ),
                     ),
                     FieldWithButtons(

@@ -21,4 +21,18 @@
 
 {# Out of band update for the contact select #}
 <div id="id_contact" hx-swap-oob="innerHTML">
-    <option value="{{ contact.id | unlocalize }}">{{ contact }}</option></div>
+    <option value="{{ contact.id | unlocalize }}">{{ contact }}</option>
+</div>
+
+{% if contactForm.errors %}
+    {# in case of error display modal #}
+    <script>
+      var contactModalEl = document.getElementById('contactModal');
+      var contactModal = new bootstrap.Modal(contactModalEl);
+      contactModal.show();
+    </script>
+{% endif %}
+
+{% with "contactModal" as modal_id %}
+    {% include "core/_select2_bs_modal.html" %}
+{% endwith %}

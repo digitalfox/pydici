@@ -187,7 +187,7 @@ class ClientOrganisationForm(PydiciCrispyModelForm):
                                                         Column(Field("vat_id", placeholder=_("Leave blank to use company vat id")),
                                                                Field("legal_id", placeholder=_("Leave blank to use company legal id"))),
                                                         ),
-                                                    css_class="collapse", css_id="organisationForm"))
+                                                    css_id="organisationForm"))
 
 
 class CompanyForm(PydiciCrispyModelForm):
@@ -209,7 +209,7 @@ class CompanyForm(PydiciCrispyModelForm):
                                                     Row(Column("name", "businessOwner", "business_sector"),
                                                         Column("code", "web"),
                                                         Column("vat_id", "legal_id")),
-                                                    css_class="collapse", css_id="companyForm"))
+                                                    css_id="companyForm"))
     def clean_code(self):
         return self.cleaned_data["code"].upper()
 
