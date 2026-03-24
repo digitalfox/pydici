@@ -92,7 +92,7 @@ class LeadTableDT(LeadsViewsReadMixin, BaseDatatableView):
 class ActiveLeadTableDT(LeadTableDT):
     columns = ["client", "name", "deal_id", "subsidiary", "responsible", "staffing_list", "sales", "state", "proba", "creation_date", "due_date", "start_date", "update_date"]
     order_columns = columns
-    dateTemplate = get_template("core/_date_column.html")
+    date_template = get_template("core/_date_column.html")
     pydici_feature = "leads"
 
     def get_initial_queryset(self):
@@ -102,7 +102,8 @@ class ActiveLeadTableDT(LeadTableDT):
 
     def render_column(self, row, column):
         if column in ("creation_date", "due_date", "start_date", "update_date"):
-            return self.dateTemplate.render({"date": getattr(row, column)})
+            late = column == "due_date" and row.is_late()
+            return self.date_template.render({"date": getattr(row, column), "late": late})
         else:
             return super(ActiveLeadTableDT, self).render_column(row, column)
 
@@ -218,7 +219,8 @@ class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVi
             else:
                 return "-"
         elif column in ("creation_date", "expense_date", "due_date"):
-            return self.date_template.render(context={"date": getattr(row, column)}, request=self.request)
+            late = column == "due_date" and row.is_late()
+            return self.date_template.render({"date": getattr(row, column), "late": late})
         else:
             return super(ActivityTableDT, self).render_column(row, column)
 

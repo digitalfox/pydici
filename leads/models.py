@@ -142,12 +142,8 @@ class Lead(models.Model):
     short_description.short_description = _("Description")
 
     def is_late(self):
-        """@return: True if due date is today or in the past.
-        False if not defined or in the future"""
-        if self.due_date and self.due_date <= date.today():
-            return True
-        else:
-            return False
+        """@return: True if due date is today or in the past. False if not defined or in the future"""
+        return self.due_date and self.due_date <= date.today()
 
     def done_work(self):
         """Compute done work according to timesheet for all missions of this lead
@@ -349,6 +345,10 @@ class Activity(models.Model):
     client_organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Client organisation"), blank=True, null=True, on_delete=models.SET_NULL)
     contact = models.ForeignKey(Contact, verbose_name=_("Contact"), blank=True, null=True, on_delete=models.SET_NULL)
     history = AuditlogHistoryField()
+
+    def is_late(self):
+        """@return: True if due date is today or in the past. False if not defined or in the future"""
+        return self.due_date and self.due_date <= date.today()
 
     def save(self, *args, **kwargs):
         if self.state == "DONE" and self.done_date is None:

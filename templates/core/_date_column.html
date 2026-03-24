@@ -1,3 +1,4 @@
 {# context : date #}
-
+<span {% if late %} class="text-danger"{% endif %}>
 {{ date|date:"j M y"|default_if_none:"-" }}
+</span>
