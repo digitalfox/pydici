@@ -4,6 +4,8 @@ Leads filters
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from datetime import date
+
 from django.utils.translation import gettext as _
 
 import django_filters
@@ -16,7 +18,9 @@ from people.models import Consultant
 
 class ActivityFilter(django_filters.FilterSet):
     responsible = django_filters.ChoiceFilter(method="responsible_filter",
-        choices=(("ME", _("Me")), ("TEAM", _("My team"))), empty_label=_("Everybody"))
+        choices=(("ME", _("Me")), ("TEAM", _("My team"))))
+    state = django_filters.ChoiceFilter(method="state_filter",
+        choices=(Activity.STATES + (("LATE", _("Late")),)))
 
     def responsible_filter(self, queryset, name, value):
         consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
@@ -25,6 +29,12 @@ class ActivityFilter(django_filters.FilterSet):
         if value == "TEAM":
             return queryset.filter(responsible__in=consultant.team(exclude_self=False))
         return queryset
+
+    def state_filter(self, queryset, name, value):
+        if value == "LATE":
+            return queryset.filter(due_date__lt=date.today())
+        else:
+            return queryset.filter(state=value)
 
 
     class Meta:

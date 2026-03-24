@@ -353,4 +353,6 @@ class Activity(models.Model):
     def save(self, *args, **kwargs):
         if self.state == "DONE" and self.done_date is None:
             self.done_date = date.today()
+        if self.state in ("DONE", "CANCELLED"):
+            self.due_date = None
         super().save(*args, **kwargs)
