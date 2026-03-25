@@ -461,7 +461,7 @@ def company_detail(request, company_id):
         consultants = consultants.filter(company=subsidiary)
 
     # Gather contacts for this company
-    business_contacts = Contact.objects.filter(client__organisation__company=company).distinct()
+    business_contacts = Contact.objects.filter(Q(client__organisation__company=company) | Q(activity__client_organisation__company=company)).distinct()
     mission_contacts = Contact.objects.filter(missioncontact__mission__lead__client__organisation__company=company).distinct()
     administrative_contacts = AdministrativeContact.objects.filter(company=company)
 
