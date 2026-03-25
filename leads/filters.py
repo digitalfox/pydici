@@ -18,7 +18,7 @@ from people.models import Consultant
 
 class ActivityFilter(django_filters.FilterSet):
     responsible = django_filters.ChoiceFilter(method="responsible_filter",
-        choices=(("ME", _("Me")), ("TEAM", _("My team"))))
+        choices=(("ME", _("Me")), ("TEAM", _("My team")), ("TERRITORY", _("My business territory"))))
     state = django_filters.ChoiceFilter(method="state_filter",
         choices=(Activity.STATES + (("LATE", _("Late")),)))
 
@@ -26,8 +26,11 @@ class ActivityFilter(django_filters.FilterSet):
         consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
         if value == "ME":
             return queryset.filter(responsible=consultant)
-        if value == "TEAM":
+        elif value == "TEAM":
             return queryset.filter(responsible__in=consultant.team(exclude_self=False))
+        elif value == "TERRITORY":
+            return queryset.filter(client_organisation__company__businessOwner=consultant)
+
         return queryset
 
     def state_filter(self, queryset, name, value):
