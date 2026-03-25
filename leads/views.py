@@ -16,7 +16,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.translation import gettext as _
-from django.db.models import Sum, Count, Min, Q, F
+from django.db.models import Sum, Count, Min, Avg, Q, F
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import permission_required
 from django.db.models.functions import TruncMonth
@@ -569,12 +569,66 @@ def graph_leads_activity(request):
 
     return render(request, "leads/graph_leads_activity.html",
                   {"leads_state_data": leads_state_stat(current_leads),
-                   "leads_state_names": json.dumps(dict(Lead.STATES)),
-                   "leads_state_title": _("%s leads in progress") % len(current_leads),
-                   "leads_state_colors": json.dumps(Lead.STATES_COLOR),
+                   "state_names": json.dumps(dict(Lead.STATES)),
+                   "state_title": _("%s leads in progress") % len(current_leads),
+                   "state_colors": json.dumps(Lead.STATES_COLOR),
                    "lead_creation_rate_data": json.dumps(lead_creation_rate_data),
                    "max_creation_rate": max_creation_rate,
                    "leads_duration_data": json.dumps(leads_duration_data) if leads_duration_data else None,
+                   "user": request.user})
+
+@pydici_non_public
+@pydici_feature("reports")
+@cache_page(60 * 60)
+def graph_activities_activity(request):
+    """some graph and figures about current activities activity"""
+    today = date.today()
+    subsidiary = get_subsidiary_from_session(request)
+    activities = Activity.objects.all()
+    if subsidiary:
+        activities = activities.filter(subsidiary=subsidiary)
+    recent_activities = activities.filter(update_date__gt=today - timedelta(30))
+
+    activity_stat = recent_activities.values("state").order_by("state").annotate(count=Count("state")).values_list("state", "count")
+    activity_stat =  json.dumps(list(activity_stat))
+
+    if not activities:
+        return HttpResponse('')
+
+    # activity creation rate per week
+    first_creation_date = activities.aggregate(Min("creation_date")).get("creation_date__min", datetime.now()).date()
+
+    creation_rate_data = []
+    max_creation_rate = 0
+    for timeframe in (7, 30, 30*6, 365):
+        start = today - timedelta(timeframe)
+        if start > first_creation_date:
+            rate = 7 * activities.filter(creation_date__gte=start).count() / timeframe
+            rate = round(rate, 2)
+            creation_rate_data.append([_("Last %s days") % timeframe, rate])
+            max_creation_rate = max(rate, max_creation_rate)
+
+    # activity duration
+    d_activities = activities.filter(creation_date__gt=(datetime.today() - timedelta(2 * 365))).filter(creation_date__lte=F("done_date"))
+    d_activities = d_activities.annotate(duration=(F("done_date") or date.today()) - F("creation_date__date"), month=TruncMonth("creation_date"))
+    d_activities = d_activities.order_by("month").values("month").annotate(avg_duration=Avg("duration"))
+
+    if d_activities:
+        duration_data = [["x"] + [d["month"].isoformat() for d in d_activities],
+                               [_("duration")] + [d["avg_duration"].days for d in d_activities],
+                               [_("average duration 6 months")] + moving_average([d["avg_duration"].days for d in d_activities], 6,
+                                                                                 round_digits=1)]
+    else:
+        duration_data = []
+
+    return render(request, "leads/graph_activities_activity.html",
+                  {"state_data": activity_stat,
+                   "state_names": json.dumps(dict(Activity.STATES)),
+                   "state_title": _("%s activities last 30 days") % len(recent_activities),
+                   "state_colors": json.dumps(Lead.STATES_COLOR),
+                   "creation_rate_data": json.dumps(creation_rate_data),
+                   "max_creation_rate": max_creation_rate,
+                   "duration_data": json.dumps(duration_data) if duration_data else None,
                    "user": request.user})
 
 

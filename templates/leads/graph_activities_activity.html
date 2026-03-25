@@ -1,23 +1,22 @@
-{# Fragment that display leads activity stats graph to be included with a jquery load #}
+{# Fragment that display activities activity stats graph to be included with a jquery load #}
 {# One must include in its extrajs block core/_billboard.html to load according js/css #}
 {% load i18n %}
 {% load l10n %}
 
     <div class="row">
-        {% with data=leads_state_data title=state_title target="leads_donut" %}
+        {% with data=state_data title=state_title target="activities_donut" %}
             {% include "leads/__state_donut.html" %}
         {% endwith %}
         {% if max_creation_rate > 0 %}
         <div class="col-lg-3 col-sm-6 col-12 align-self-center">
-                <div id="leads_activity" class="mt-2"></div>
-                <h5 class="mt-2"><div class="text-center">{% trans "New leads per week" %}</div></h5>
+                <div id="activities_activity" class="mt-2"></div>
+                <h5 class="mt-2"><div class="text-center">{% trans "New activities per week" %}</div></h5>
                 <script type="text/javascript">
                     $(document).ready(function() {
-                        // Display new lead activity
                             bb.generate({
-                                bindto: '#leads_activity',
+                                bindto: '#activities_activity',
                                 data: {
-                                    columns: {{ lead_creation_rate_data | safe }},
+                                    columns: {{ creation_rate_data | safe }},
                                     type : 'gauge',
                                 },
                                 gauge: {
@@ -34,16 +33,15 @@
                 </script>
         </div>
         {% endif %}
-        {% if leads_duration_data %}
+        {% if duration_data %}
         <div class="col-lg-6 col-12">
-                <div id="leads_duration"></div>
+                <div id="activities_duration"></div>
                 <script type="text/javascript">
                     $(document).ready(function() {
-                        // Display new lead activity
                             bb.generate({
-                                bindto: '#leads_duration',
+                                bindto: '#activities_duration',
                                 data: {
-                                    columns: {{ leads_duration_data | safe }},
+                                    columns: {{ duration_data | safe }},
                                     x: "x",
                                     types : {
                                         '{% trans 'duration' %}' : 'bar',
@@ -67,7 +65,7 @@
                                     },
                                     y: {
                                         label : {
-                                            text: "{% trans 'lead duration (days)' %}",
+                                            text: "{% trans 'activity duration (days)' %}",
                                             position: 'outer-middle',
                                         },
                                     },

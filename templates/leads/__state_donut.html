@@ -1,20 +1,19 @@
 {% load i18n %}
-{# display lead states as a donut #}
-{# context : "data" in compatible billboard.js format and "title" of donut #}
+{# display lead or activity states as a donut #}
+{# context : "data" in compatible billboard.js format "title" of donut and "target" id of div #}
 
 <div class="col-lg-3 col-sm-6 col-12">
-    <div id="leads_stat"></div>
+    <div id="{{ target }}"></div>
     {% if data %}
     <script type="text/javascript">
     $(document).ready(function() {
-        // Display donnut of lead statistics
             var chart_leads_stat = bb.generate({
-                bindto: '#leads_stat',
+                bindto: '#{{ target }}',
                 data: {
                     columns: {{ data | safe }},
                     type : 'donut',
-                    colors: {{ leads_state_colors | safe }},
-                    names: {{ leads_state_names | safe }},
+                    colors: {{ state_colors | safe }},
+                    names: {{ state_names | safe }},
                 },
                 tooltip: {
                     format: {

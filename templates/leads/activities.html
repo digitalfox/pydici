@@ -5,8 +5,13 @@
 
 {% block title %}{% trans "All commercial activities" %}{% endblock %}
 
-<h2>{% trans "All commercial activities" %}</h2>
+{% block extrajs %}
+    {% include "core/_billboard.html" %}
+{% endblock %}
+
 {% block content %}
+    <div hx-get="{% url 'leads:graph_activities_activity' %}?{{ scope_current_filter }}" hx-trigger="load" class="col-12"><div class="loader m-3"></div></div>
+    <h2>{% trans "All commercial activities" %}</h2>
     {% crispy filter.form filter_form_helper %}
     {% include "leads/_activities_table.html" %}
 

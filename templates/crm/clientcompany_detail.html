@@ -139,8 +139,8 @@
         </div> <!-- end of dashboard panels -->
 
         <div class="row">
-            {% with data=leads_stat %}
-                {% include "crm/__leads_state_donut.html" %}
+            {% with data=leads_state_data target="lead_state_donut" %}
+                {% include "leads/__state_donut.html" %}
             {% endwith %}
             <div class="col-lg-3 col-md-6 col-sm-6 align-self-center">
                 <div id="leads_won_rate"></div>
