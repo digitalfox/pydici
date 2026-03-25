@@ -359,7 +359,6 @@
         {% with data_url=company_activities_data_url %}
             {% include "leads/_activities_table.html" %}
         {% endwith %}
-        <a href="{% url 'leads:activity' %}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New commercial activity" %}</a>
     </div>
 
     <div id="tab-consultants" class="tab-pane fade" role="tabpanel">
