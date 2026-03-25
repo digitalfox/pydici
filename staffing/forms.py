@@ -55,7 +55,7 @@ class MissionMChoices(PydiciSelect2WidgetMixin, ModelSelect2MultipleWidget):
 
 class MarketingProductChoices(PydiciSelect2WidgetMixin, ModelSelect2Widget):
     model = MarketingProduct
-    search_fields = ["code__icontains", "description__icontains"]
+    search_fields = ["code__icontains", "description__icontains", "subsidiary__name__icontains"]
 
     def __init__(self, *args, **kwargs):
         self.mission = kwargs.pop("mission", None)
