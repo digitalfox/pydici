@@ -707,7 +707,7 @@ def activities_pivotable(request, start_date=None, end_date=None):
         data.append({_("name"): activity.name,
                      _("client organisation"): str(activity.client_organisation or ""),
                      _("client company"): str(activity.client_organisation.company) if activity.client_organisation else "",
-                     _("date"): activity.creation_date.strftime("%Y-%m"),
+                     _("date"): (activity.creation_date - timedelta(days=activity.creation_date.weekday())).strftime("%Y-%m-%d"),
                      _("responsible"): str(activity.responsible),
                      _("broker"): str(activity.business_broker),
                      _("state"): activity.get_state_display(),
