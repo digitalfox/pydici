@@ -44,15 +44,28 @@
     </div>
 </div>
 
+<a href="#" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#historyModal"><span class="bi bi-clock-history"></span> {% trans "Display history" %}</a>
 {% if activity.client_organisation or activity.contact %}
     <a href="{% url 'leads:activity' %}?client_organisation={{ activity.client_organisation.id | unlocalize }}&contact={{ activity.contact.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New activity for this client organisation / contact" %}</a>
     {% endif %}
 <a href="{% url 'leads:lead' %}?activity={{ activity.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "Create a lead from this activity" %}</a>
 <a href="{% url 'leads:activity' %}?from_activity={{ activity.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "Create a new future activity" %}</a>
 
-{% with object=activity %}
-    {% include "core/_object_history.html" %}
-{% endwith %}
+<div class="modal fade" id="historyModal">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+      <div class="modal-body">
+          {% with object=activity %}
+              {% include "core/_object_history.html" %}
+          {% endwith %}
+      </div>
+    </div>
+  </div>
+</div>
 
 <h2 class="my-3">{% trans "Other activities for this client organisation and contacts" %}</h2>
 {% with data_url=related_activities_data_url %}
