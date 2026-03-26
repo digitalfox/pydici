@@ -128,6 +128,7 @@ def lead(request, lead_id=None):
         else:
             try:
                 activity_id = request.GET.get("activity", None)
+                consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
                 client = None
                 if activity_id:
                     activity = Activity.objects.get(id=activity_id)
@@ -136,8 +137,10 @@ def lead(request, lead_id=None):
                     activity_url = get_parameter("HOST") + reverse("leads:activity_detail", args=[activity.id])
                     if activity.client_organisation:
                         client, created = Client.objects.get_or_create(organisation=activity.client_organisation, contact=activity.contact)
-                form = LeadForm(initial={"responsible": activity.responsible, "subsidiary": activity.subsidiary, "client": client, "renewal": False,
-                    "name": activity.name, "state": "WRITE_OFFER", "description": activity.comment + "\n" + activity_url})  # An unbound form
+                    form = LeadForm(initial={"responsible": activity.responsible, "subsidiary": activity.subsidiary, "client": client, "renewal": False,
+                        "name": activity.name, "state": "WRITE_OFFER", "description": activity.comment + "\n" + activity_url})  # An unbound form
+                else:
+                    form = LeadForm(initial={"responsible": consultant, "subsidiary": consultant.company})  # An unbound form
             except Consultant.DoesNotExist:
                 form = LeadForm()  # An unbound form
 
