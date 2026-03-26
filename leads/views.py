@@ -23,7 +23,7 @@ from django.db.models.functions import TruncMonth
 from django.conf import settings
 
 from core.models import Tag
-from core.utils import sortedValues, COLORS, moving_average, nextMonth
+from core.utils import sortedValues, COLORS, moving_average, nextMonth, get_parameter
 from crm.utils import get_subsidiary_from_session
 from crm.models import Client
 from leads.models import Lead, Activity
@@ -127,16 +127,17 @@ def lead(request, lead_id=None):
             form = LeadForm(instance=lead)  # A form that edit current lead
         else:
             try:
-                consultant = Consultant.objects.get(trigramme__iexact=request.user.username)
                 activity_id = request.GET.get("activity", None)
                 client = None
                 if activity_id:
                     activity = Activity.objects.get(id=activity_id)
                     activity.state = "DONE"
                     activity.save()
+                    activity_url = get_parameter("HOST") + reverse("leads:activity_detail", args=[activity.id])
                     if activity.client_organisation:
                         client, created = Client.objects.get_or_create(organisation=activity.client_organisation, contact=activity.contact)
-                form = LeadForm(initial={"responsible": consultant, "subsidiary": consultant.company, "client": client})  # An unbound form
+                form = LeadForm(initial={"responsible": activity.responsible, "subsidiary": activity.subsidiary, "client": client, "renewal": False,
+                    "name": activity.name, "state": "WRITE_OFFER", "description": activity.comment + "\n" + activity_url})  # An unbound form
             except Consultant.DoesNotExist:
                 form = LeadForm()  # An unbound form
 
