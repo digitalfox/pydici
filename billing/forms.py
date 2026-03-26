@@ -37,7 +37,7 @@ from core.utils import nextMonth
 
 
 class BillingDateChoicesField(TypedChoiceField):
-    widget = Select2Widget(attrs={'data-placeholder':_("Select a month..."), "data-theme": "bootstrap-5"})
+    widget = Select2Widget(attrs={'data-placeholder':_("Select a month..."), "data-theme": "bootstrap-5", "data-width": "auto"})
 
     def __init__(self, *args, **kwargs):
         minDate = kwargs.pop("minDate", date.today() - timedelta(30*11))
