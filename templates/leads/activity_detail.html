@@ -18,7 +18,13 @@
             <tr><th class="text-nowrap"><i class="bi bi-bullseye"></i> {% trans "Objective" %}</th><td>{{ activity.get_objective_display }}</td></tr>
             <tr><th class="text-nowrap"><i class="bi bi-person-check"></i> {% trans "Nature" %}</th><td>{{ activity.get_nature_display }}</td></tr>
             <tr><th class="text-nowrap"><i class="bi bi-boxes"></i> {% trans "Products" %}</th><td>{{ activity.marketing_products.all |join:", " }}</td></tr>
-            <tr><th class="text-nowrap"><i class="bi bi-file-earmark-text"></i> {% trans "Comment" %}</th><td>{{ activity.comment | pydici_simple_format }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-file-earmark-text"></i> {% trans "Comment" %}</th>
+                <td>
+                    {% for activity_comment in activity.activitycomment_set.all %}
+                        {{ activity_comment.creation_date }}
+                        {{ activity_comment.comment | pydici_simple_format }}
+                    {% endfor %}
+                </td></tr>
         </table>
     </div>
     <div class="col-lg-6 col-xl-3">
