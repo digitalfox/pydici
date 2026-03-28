@@ -349,6 +349,15 @@ def activity_detail(request, activity_id):
 
 @pydici_non_public
 @pydici_feature("leads")
+def activity_comment_delete(request, comment_id):
+    """Delete a comment on an activity and return activity comments"""
+    comment = get_object_or_404(ActivityComment, id=comment_id)
+    comment.delete()
+    return render(request, "leads/_activity_comments.html", {"activity": comment.activity})
+
+
+@pydici_non_public
+@pydici_feature("leads")
 def activities(request):
     """Current commercial activities"""
     filter = ActivityFilter(request.GET, queryset=Activity.objects.all(), request=request)

@@ -20,12 +20,7 @@
             <tr><th class="text-nowrap"><i class="bi bi-boxes"></i> {% trans "Products" %}</th><td>{{ activity.marketing_products.all |join:", " }}</td></tr>
             <tr><th class="text-nowrap"><i class="bi bi-file-earmark-text"></i> {% trans "Comment" %}</th>
                 <td>
-                    {% for activity_comment in activity.activitycomment_set.all %}
-                    <div class="small p-2 ms-3 mb-1 rounded-3 bg-body-tertiary">
-                                <div class="float-end">{{ activity_comment.creation_date }} ({% blocktrans with c_date=activity_comment.creation_date|timesince %}{{ c_date }} ago{% endblocktrans %})</div>
-                                {{ activity_comment.comment | pydici_simple_format }}
-                    </div>
-                    {% endfor %}
+                    {% include "leads/_activity_comments.html" %}
                 </td></tr>
         </table>
     </div>
