@@ -14,15 +14,18 @@
 
 <div class="row mt-2">
     <div class="col-lg-6 col-xl-6">
-        <table class="table table-hover table-striped">
+        <table class="table table-striped">
             <tr><th class="text-nowrap"><i class="bi bi-bullseye"></i> {% trans "Objective" %}</th><td>{{ activity.get_objective_display }}</td></tr>
             <tr><th class="text-nowrap"><i class="bi bi-person-check"></i> {% trans "Nature" %}</th><td>{{ activity.get_nature_display }}</td></tr>
             <tr><th class="text-nowrap"><i class="bi bi-boxes"></i> {% trans "Products" %}</th><td>{{ activity.marketing_products.all |join:", " }}</td></tr>
-            <tr><th class="text-nowrap"><i class="bi bi-file-earmark-text"></i> {% trans "Comment" %}</th><td>{{ activity.comment | pydici_simple_format }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-file-earmark-text"></i> {% trans "Comment" %}</th>
+                <td>
+                    {% include "leads/_activity_comments.html" %}
+                </td></tr>
         </table>
     </div>
     <div class="col-lg-6 col-xl-3">
-        <table class="table table-hover table-striped">
+        <table class="table table-striped">
             <tr><th class="text-nowrap"><i class="bi bi-arrow-right-circle"></i> {% trans "State" %}</th><td>{{ activity.get_state_display }}</td></tr>
             <tr><th class="text-nowrap"><i class="bi bi-person-circle"></i> {% trans "Responsible" %}</th><td>{{ activity.responsible }}</td></tr>
             <tr><th class="text-nowrap"><i class="bi bi-people"></i> {% trans "Business broker" %}</th><td>{{ activity.business_broker|default:"-" }}</td></tr>
@@ -33,7 +36,7 @@
         </table>
     </div>
     <div class="col-lg-6 col-xl-3">
-        <table class="table table-hover table-striped">
+        <table class="table table-striped">
         <tr><th class="text-nowrap"><i class="bi bi-house"></i> {% trans "company" %}</th><td><a href="{{ activity.client_organisation.get_absolute_url }}">{{ activity.client_organisation | default:"-" }}</a></td></tr>
         <tr><th class="text-nowrap"><i class="bi bi-person"></i> {% trans "contact" %}</th><td>{% if activity.contact.id %}<a href="{% url 'crm:contact_detail' activity.contact.id %}">{{ activity.contact.name }}</a>{% else %}-{% endif %}</td></tr>
         <tr><th class="text-nowrap"><i class="bi bi-telephone"></i> {% trans "phone" %}</th><td>{{ activity.contact.phone }}</td></tr>

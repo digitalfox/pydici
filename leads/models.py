@@ -329,7 +329,6 @@ class Activity(models.Model):
         ('TARGET', gettext("Answer to target need"))
     )
     name = models.CharField(_("Name"), max_length=200)
-    comment = models.TextField(_("Comment"), blank=True)
     responsible = models.ForeignKey(Consultant, related_name="%(class)s_responsible", verbose_name=_("Responsible"), null=True, on_delete=models.SET_NULL)
     subsidiary = models.ForeignKey(Subsidiary, verbose_name=_("Subsidiary"), on_delete=models.CASCADE)
     nature = models.CharField(_("Nature"), max_length=30, choices=NATURES)
@@ -356,3 +355,13 @@ class Activity(models.Model):
         if self.state in ("DONE", "CANCELLED"):
             self.due_date = None
         super().save(*args, **kwargs)
+
+
+class ActivityComment(models.Model):
+    """Comment on an activity"""
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    comment = models.TextField(_("Comment"))
+    creation_date = models.DateTimeField(_("Creation"), auto_now_add=True)
+
+    class Meta:
+        ordering = ["creation_date"]

@@ -183,6 +183,7 @@ class ActivityForm(PydiciCrispyModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
+        self.fields["comment"] = forms.CharField(label=_("New comment"), widget=forms.Textarea(), required=False)
         self.fields["marketing_products"] = forms.ModelMultipleChoiceField(widget=MarketingProductMChoices(mission=self.instance),
             queryset=MarketingProduct.objects.all(), required=False)
         self.helper.layout = Layout(

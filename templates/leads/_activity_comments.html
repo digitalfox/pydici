@@ -1,0 +1,19 @@
+{# Fragment for rendering activity comments #}
+{# context activity #}
+{% load i18n %}
+{% load pydici_filters %}
+
+<div id="activity-{{ activity.id }}-comments">
+{% for activity_comment in activity.activitycomment_set.all %}
+<div id="comment-{{ activity_comment.id }}" class="small p-2 ms-3 mb-1 rounded-3 bg-body-tertiary">
+    <div class="float-end">
+        {{ activity_comment.creation_date }} ({% blocktrans with c_date=activity_comment.creation_date|timesince %}{{ c_date }} ago{% endblocktrans %})
+        &nbsp;
+        <a href="#" hx-delete="{% url 'leads:activity_comment_delete' activity_comment.pk %}"
+        hx-target="#activity-{{ activity.id }}-comments" hx-confirm="{% trans 'Are you sure you want to delete this comment?' %}"
+        class="bi bi-x-circle"></a>
+    </div>
+    {{ activity_comment.comment | pydici_simple_format }}
+</div>
+{% endfor %}
+</div>

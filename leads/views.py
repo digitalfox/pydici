@@ -26,7 +26,7 @@ from core.models import Tag
 from core.utils import sortedValues, COLORS, moving_average, nextMonth, get_parameter
 from crm.utils import get_subsidiary_from_session
 from crm.models import Client
-from leads.models import Lead, Activity
+from leads.models import Lead, Activity, ActivityComment
 from leads.forms import LeadForm, LeadTagForm, ActivityForm
 from leads.utils import post_save_lead, leads_state_stat
 from leads.learn import compute_leads_state, compute_lead_similarity
@@ -312,6 +312,8 @@ def activity(request, activity_id=None):
             form = ActivityForm(request.POST)
         if form.is_valid():
             activity = form.save()
+            if form.cleaned_data["comment"]:
+                ActivityComment.objects.create(activity=activity, comment=form.cleaned_data["comment"])
             return HttpResponseRedirect(reverse("leads:activities"))
     else:
         if activity:
@@ -343,6 +345,15 @@ def activity_detail(request, activity_id):
         {"activity": activity,
          "related_activities_data_url": reverse('leads:related_activity_table_DT', kwargs={"activity_id": activity_id}),
          })
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def activity_comment_delete(request, comment_id):
+    """Delete a comment on an activity and return activity comments"""
+    comment = get_object_or_404(ActivityComment, id=comment_id)
+    comment.delete()
+    return render(request, "leads/_activity_comments.html", {"activity": comment.activity})
 
 
 @pydici_non_public
