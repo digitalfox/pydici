@@ -137,7 +137,9 @@ def search(request):
         activities = Activity.objects.all()
         for word in words:
             activities = activities.filter(Q(name__icontains=word) |
-                                           Q(comment__icontains=word))
+                                           Q(contact__name__icontains=word) |
+                                           Q(client_organisation__name__iexact=word) |
+                                           Q(client_organisation__company__name__icontains=word))
         if subsidiary:
             activities = activities.filter(subsidiary=subsidiary)
         activities = activities.select_related("client_organisation__company", "contact")[:max_record]
