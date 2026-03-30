@@ -5,7 +5,7 @@ import django.db.models.deletion
 
 def migrate_comment(apps, schema_editor):
     ActivityComment = apps.get_model('leads', 'ActivityComment')
-    for activity in apps.get_model('leads', 'Activity').objects.all():
+    for activity in apps.get_model('leads', 'Activity').objects.exclude(comment=""):
         ActivityComment.objects.create(activity=activity, comment=activity.comment)
 
 
