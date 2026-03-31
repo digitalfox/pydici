@@ -28,6 +28,7 @@
                               <li><hr class="dropdown-divider"></li>
                               <li class="dropdown-header">{% trans "Commercial activities" %}</li>
                               <li><a class="dropdown-item" href="{% url 'leads:activities' %}">{% trans 'All commercial activities' %}</a></li>
+                              <li><a class="dropdown-item" href="{% url 'leads:activities' %}?state=TODO_PLANNED&responsible=TEAM">{% trans 'My team current commercial activities' %}</a></li>
                               <li><a class="dropdown-item" href="{% url 'leads:activity' %}">{% trans 'New commercial activity' %}</a></li>
                               {% if pydici_feature.reports %}
                                 <li><hr class="dropdown-divider"></li>
