@@ -4,8 +4,7 @@ Pydici leads tables
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from ortools.linear_solver.pywraplp import Objective
-
+from leads.views import activity
 from django.db.models import Q
 from django.template.loader import get_template
 from django.utils.html import escape
@@ -189,7 +188,7 @@ class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVi
         search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(Q(name__icontains=search) |
-                        Q(comment__icontains=search) |
+                        Q(activitycomment__comment__icontains=search) |
                         Q(contact__name__icontains=search) |
                         Q(client_organisation__company__name__icontains=search) |
                         Q(client_organisation__name__icontains=search) |
