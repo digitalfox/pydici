@@ -27,7 +27,7 @@ class ActivityFilter(django_filters.FilterSet):
         if value == "ME":
             return queryset.filter(responsible=consultant)
         elif value == "TEAM":
-            return queryset.filter(responsible__in=consultant.team(exclude_self=False))
+            return queryset.filter(responsible__in=consultant.team(exclude_self=False, staffing=True))
         elif value == "TERRITORY":
             return queryset.filter(client_organisation__company__businessOwner=consultant)
 
