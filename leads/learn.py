@@ -43,6 +43,7 @@ INV_STATES = dict([(v, k) for k, v in list(STATES.items())])
 
 TAG_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_TAGS_MODEL"
 STATE_MODEL_CACHE_KEY = "PYDICI_LEAD_LEARN_STATE_MODEL"
+STATE_MODEL_LAST_UPDATE_CACHE_KEY = "PYDICI_LEAD_LEARN_STATE_MODEL_LAST_UPDATE"
 SIMILARITY_MODEL_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_MODEL"
 SIMILARITY_LEADS_IDS_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_LEADS_IDS"
 SIMILARITY_LEADS_SALES_SCALER_CACHE_KEY = "PYDICI_LEAD_SIMILARITY_SALES_SCALER"
@@ -428,13 +429,20 @@ def predict_similar(lead):
 
 ############# Entry points for computation ##########################
 @shared_task(rate_limit="10/h")
-def compute_leads_state(relearn=True, leads_id=None):
+def compute_leads_state(relearn=True, force=False, leads_id=None):
     """Learn state from past leads and compute state probal for current leads. This function is intended to be run async
-    as it could last few seconds.
+    as it could last few seconds. Full relearn is only done one time per day except when force parameter is True
     @:param relearn; if true (default) learn again from leads, else, use previous computation if available
     @:param leads_id: estimate those leads. All current leads if None. Parameter is a list of id to ease serialisation"""
     if not HAVE_SCIKIT:
         return
+
+    model = cache.get(STATE_MODEL_CACHE_KEY)
+
+    if relearn and model:
+        last_update = cache.get(STATE_MODEL_LAST_UPDATE_CACHE_KEY)
+        if last_update and last_update == date.today().isoformat() and not force:
+            return
 
     # only predict proba for in-progress leads
     current_leads = Lead.objects.exclude(state__in=list(STATES.keys()))
@@ -449,7 +457,6 @@ def compute_leads_state(relearn=True, leads_id=None):
 
     current_features, current_targets = extract_leads_state(current_leads)
 
-    model = cache.get(STATE_MODEL_CACHE_KEY)
     if relearn or model is None:
         learn_leads = Lead.objects.filter(state__in=list(STATES.keys()))
         if learn_leads.count() < 5:
@@ -459,6 +466,7 @@ def compute_leads_state(relearn=True, leads_id=None):
         model = get_state_model()
         model.fit(learn_features, process_target(learn_targets))
         cache.set(STATE_MODEL_CACHE_KEY, model, 3600 * 24)
+        cache.set(STATE_MODEL_LAST_UPDATE_CACHE_KEY, date.today().isoformat())
 
     for lead, score in zip(current_leads, predict_state(model, current_features)):
         for state, proba in list(score.items()):
