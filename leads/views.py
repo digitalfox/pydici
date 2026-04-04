@@ -27,7 +27,7 @@ from core.utils import sortedValues, COLORS, moving_average, nextMonth, get_para
 from crm.utils import get_subsidiary_from_session
 from crm.models import Client
 from leads.models import Lead, Activity, ActivityComment
-from leads.forms import LeadForm, LeadTagForm, ActivityForm
+from leads.forms import LeadForm, LeadTagForm, ActivityForm, ActivityCommentForm
 from leads.utils import post_save_lead, leads_state_stat
 from leads.learn import compute_leads_state, compute_lead_similarity
 from leads.learn import predict_similar
@@ -343,8 +343,36 @@ def activity_detail(request, activity_id):
     activity = get_object_or_404(Activity, id=activity_id)
     return render(request, "leads/activity_detail.html",
         {"activity": activity,
+         "comment_form": ActivityCommentForm(),
          "related_activities_data_url": reverse('leads:related_activity_table_DT', kwargs={"activity_id": activity_id}),
          })
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def activity_comment_create(request, activity_id):
+    """Add a new comment on an activity and return activity comments"""
+    activity = get_object_or_404(Activity, id=activity_id)
+    form = ActivityCommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.activity = activity
+        comment.save()
+        return render(request, "leads/_activity_comments.html", {"activity": activity, "comment_form": ActivityCommentForm()})
+    return render(request, "leads/_activity_comments.html", {"activity": activity, "comment_form": form})
+
+
+@pydici_non_public
+@pydici_feature("leads")
+def activity_comment_edit(request, comment_id):
+    """Edit a comment on an activity and return activity comments"""
+    comment = get_object_or_404(ActivityComment, id=comment_id)
+    if request.method == "POST":
+        form = ActivityCommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            return render(request, "leads/_activity_comments.html", {"activity": comment.activity, "comment_form": ActivityCommentForm()})
+    return render(request, "leads/_activity_comments.html", {"activity": comment.activity, "comment_form": ActivityCommentForm(instance=comment), "comment": comment})
 
 
 @pydici_non_public
@@ -353,7 +381,7 @@ def activity_comment_delete(request, comment_id):
     """Delete a comment on an activity and return activity comments"""
     comment = get_object_or_404(ActivityComment, id=comment_id)
     comment.delete()
-    return render(request, "leads/_activity_comments.html", {"activity": comment.activity})
+    return render(request, "leads/_activity_comments.html", {"activity": comment.activity, "comment_form": ActivityCommentForm()})
 
 
 @pydici_non_public

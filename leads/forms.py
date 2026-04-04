@@ -4,6 +4,7 @@ Leads form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from lxml.html.builder import LABEL
 from crispy_forms.bootstrap import AppendedText, FieldWithButtons, Tab, TabHolder
 from crispy_forms.layout import HTML, Column, Field, Fieldset, Layout, Row
 from django import forms
@@ -19,7 +20,7 @@ from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin, TagChoic
 from core.models import Tag
 from crm.forms import BusinessBrokerChoices, ClientChoices, ClientOrganisationChoices, ContactChoices
 from crm.models import BusinessBroker, Client
-from leads.models import Activity, Lead
+from leads.models import Activity, Lead, ActivityComment
 from people.forms import ConsultantChoices, ConsultantMChoices, SalesManChoices
 from people.models import Consultant, SalesMan
 from staffing.forms import MarketingProductMChoices
@@ -237,3 +238,10 @@ class ActivityForm(PydiciCrispyModelForm):
             ),
             self.submit,
         )
+
+class ActivityCommentForm(forms.ModelForm):
+    class Meta:
+        model = ActivityComment
+        fields = ["comment"]
+        widgets = { "comment": forms.Textarea(attrs={"rows": 5, "class": "form-control", "placeholder": _("New comment")}),}
+        form_show_labels = False
