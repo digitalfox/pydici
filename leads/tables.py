@@ -4,7 +4,6 @@ Pydici leads tables
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from leads.views import activity
 from django.db.models import Q
 from django.template.loader import get_template
 from django.utils.html import escape

@@ -314,7 +314,7 @@ def activity(request, activity_id=None):
             activity = form.save()
             if form.cleaned_data["comment"]:
                 ActivityComment.objects.create(activity=activity, comment=form.cleaned_data["comment"])
-            return HttpResponseRedirect(reverse("leads:activities"))
+            return HttpResponseRedirect(reverse("leads:activity_detail", args=[activity.id]))
     else:
         if activity:
             form = ActivityForm(instance=activity)  # A form that edit current activity
