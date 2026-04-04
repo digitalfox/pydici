@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-31 10:47+0200\n"
+"POT-Creation-Date: 2026-04-04 17:49+0200\n"
 "PO-Revision-Date: 2026-03-31 11:04+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@enioka.com>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
@@ -434,7 +434,7 @@ msgstr "Libellé"
 msgid "amount"
 msgstr "montant"
 
-#: billing/utils.py:199 leads/views.py:718 staffing/views.py:2095
+#: billing/utils.py:199 leads/views.py:746 staffing/views.py:2095
 #: templates/billing/client_billing_control_pivotable.html:53
 #: templates/billing/client_billing_control_pivotable.html:62
 #: templates/crm/clientcompany_detail.html:292
@@ -446,13 +446,13 @@ msgstr "montant"
 msgid "deal id"
 msgstr "N° affaire"
 
-#: billing/utils.py:200 leads/views.py:720 leads/views.py:777
+#: billing/utils.py:200 leads/views.py:748 leads/views.py:805
 #: staffing/views.py:2097
 msgid "client organisation"
 msgstr "organisation client"
 
-#: billing/utils.py:201 billing/views.py:152 leads/views.py:721
-#: leads/views.py:778 staffing/views.py:2098 staffing/views.py:2131
+#: billing/utils.py:201 billing/views.py:152 leads/views.py:749
+#: leads/views.py:806 staffing/views.py:2098 staffing/views.py:2131
 #: staffing/views.py:2147 staffing/views.py:2148
 #: templates/billing/client_billing_control_pivotable.html:53
 #: templates/billing/client_billing_control_pivotable.html:62
@@ -467,7 +467,7 @@ msgstr "organisation client"
 msgid "client company"
 msgstr "entreprise"
 
-#: billing/utils.py:202 leads/views.py:725 leads/views.py:781
+#: billing/utils.py:202 leads/views.py:753 leads/views.py:809
 #: staffing/views.py:2101 templates/staffing/turnover_pivotable.html:73
 msgid "broker"
 msgstr "apporteur"
@@ -477,7 +477,7 @@ msgid "Direct"
 msgstr "Direct"
 
 #: billing/utils.py:203 core/views.py:401 core/views.py:418 crm/views.py:568
-#: leads/views.py:730 leads/views.py:786 staffing/models.py:484
+#: leads/views.py:758 leads/views.py:814 staffing/models.py:484
 #: staffing/views.py:1661 staffing/views.py:1700 staffing/views.py:1715
 #: staffing/views.py:1763 staffing/views.py:2102 staffing/views.py:2135
 #: staffing/views.py:2188 templates/billing/bill_review.html:34
@@ -522,8 +522,8 @@ msgstr "Direct"
 msgid "subsidiary"
 msgstr "filiale"
 
-#: billing/utils.py:204 billing/utils.py:240 leads/views.py:724
-#: leads/views.py:780 staffing/views.py:2099
+#: billing/utils.py:204 billing/utils.py:240 leads/views.py:752
+#: leads/views.py:808 staffing/views.py:2099
 #: templates/billing/client_billing_control_pivotable.html:53
 #: templates/crm/clientcompany_detail.html:263
 #: templates/crm/clientcompany_detail.html:294
@@ -652,7 +652,7 @@ msgid "Chargeable expense"
 msgstr "Frais refacturables"
 
 #: billing/utils.py:233 billing/utils.py:242 expense/models.py:117
-#: leads/views.py:726 leads/views.py:782
+#: leads/views.py:754 leads/views.py:810
 #: templates/billing/_lead_billing.html:20
 #: templates/billing/client_billing_control_pivotable.html:53
 #: templates/crm/_clientcompany_billing.html:20
@@ -664,7 +664,7 @@ msgstr "Frais refacturables"
 msgid "state"
 msgstr "état"
 
-#: billing/utils.py:242 leads/views.py:731
+#: billing/utils.py:242 leads/views.py:759
 msgid "active"
 msgstr "active"
 
@@ -677,7 +677,7 @@ msgstr "archivée"
 msgid "Done work"
 msgstr "Montant réalisé"
 
-#: billing/views.py:150 leads/forms.py:94 leads/models.py:74
+#: billing/views.py:150 leads/forms.py:95 leads/models.py:74
 #: leads/models.py:332 staffing/models.py:86
 #: templates/billing/bill_review.html:36 templates/billing/bill_review.html:208
 #: templates/billing/payment_delay.html:89
@@ -710,7 +710,7 @@ msgstr "Responsable"
 msgid "Subsidiary"
 msgstr "Filiale"
 
-#: billing/views.py:153 leads/forms.py:97 leads/models.py:76
+#: billing/views.py:153 leads/forms.py:98 leads/models.py:76
 #: templates/billing/payment_delay.html:66
 #: templates/billing/payment_delay.html:74 templates/leads/lead_detail.html:137
 msgid "Paying authority"
@@ -1408,7 +1408,7 @@ msgstr "%s affaires"
 msgid "Broker company"
 msgstr "Société de l'apporteur"
 
-#: crm/models.py:324 leads/forms.py:96 leads/models.py:75 leads/models.py:337
+#: crm/models.py:324 leads/forms.py:97 leads/models.py:75 leads/models.py:337
 #: templates/leads/activity_detail.html:31
 msgid "Business broker"
 msgstr "Apporteur d'affaires"
@@ -1701,15 +1701,15 @@ msgstr "La note de frais n'existe pas"
 msgid "Expense payment %s does not exist"
 msgstr "Le remboursement de frais %s n'existe pas"
 
-#: leads/admin.py:21 leads/forms.py:123
+#: leads/admin.py:21 leads/forms.py:124
 msgid "State and tracking"
 msgstr "État et suivi"
 
-#: leads/admin.py:22 leads/forms.py:130
+#: leads/admin.py:22 leads/forms.py:131
 msgid "Commercial"
 msgstr "Commercial"
 
-#: leads/admin.py:23 leads/forms.py:136 leads/views.py:201
+#: leads/admin.py:23 leads/forms.py:137 leads/views.py:201
 #: staffing/models.py:536 templates/billing/bill_review.html:209
 #: templates/leads/review.html:35 templates/leads/review.html:68
 msgid "Staffing"
@@ -1735,76 +1735,76 @@ msgstr "En retard"
 msgid "Apply Filter"
 msgstr "Filtrer"
 
-#: leads/forms.py:85 people/forms.py:76
+#: leads/forms.py:86 people/forms.py:76
 msgid "New tags"
 msgstr "Nouvelles étiquettes"
 
-#: leads/forms.py:95 leads/models.py:71 leads/views.py:200 people/models.py:358
+#: leads/forms.py:96 leads/models.py:71 leads/views.py:200 people/models.py:358
 #: templates/leads/lead_detail.html:127
 msgid "Salesman"
 msgstr "Commercial"
 
-#: leads/forms.py:96
+#: leads/forms.py:97
 msgid "If the leads was brought by a third party"
 msgstr "Si l'affaire a été apportée par un tiers"
 
-#: leads/forms.py:97
+#: leads/forms.py:98
 msgid "If payment is done by a third party"
 msgstr "Si la facturation est faite via un tiers"
 
-#: leads/forms.py:100 leads/models.py:91 templates/leads/lead_detail.html:153
+#: leads/forms.py:101 leads/models.py:91 templates/leads/lead_detail.html:153
 msgid "Renewal"
 msgstr "Renouvellement"
 
-#: leads/forms.py:106 staffing/forms.py:356
+#: leads/forms.py:107 staffing/forms.py:356
 msgid "Identification"
 msgstr "Identification"
 
-#: leads/forms.py:107
+#: leads/forms.py:108
 msgid "Name of the lead. don't include client name"
 msgstr "Nom de l'affaire. Ne pas inclure le nom du client"
 
-#: leads/forms.py:122
+#: leads/forms.py:123
 msgid "Next commercial action to be done"
 msgstr "Prochaine action commerciale à prendre"
 
-#: leads/forms.py:125 staffing/forms.py:374
+#: leads/forms.py:126 staffing/forms.py:374
 msgid "Leave blank to auto generate"
 msgstr "Laissez vide pour auto générer"
 
-#: leads/forms.py:126 leads/forms.py:233
+#: leads/forms.py:127 leads/forms.py:234
 msgid "Due date for next step"
 msgstr "Échéance de la prochaine étape"
 
-#: leads/forms.py:127
+#: leads/forms.py:128
 msgid "Internal client reference"
 msgstr "Référence interne du client"
 
-#: leads/forms.py:128
+#: leads/forms.py:129
 msgid "Date of the operational start"
 msgstr "Date du démarrage effectif"
 
-#: leads/forms.py:136
+#: leads/forms.py:137
 msgid "People that could contribute..."
 msgstr "Personnes qui pourraient contribuer..."
 
-#: leads/forms.py:137
+#: leads/forms.py:138
 msgid "People outside company that could contribute..."
 msgstr "Personnes externes à la société qui pourraient contribuer..."
 
-#: leads/forms.py:150
+#: leads/forms.py:151
 msgid "Sales amount must be defined at this step of the commercial process"
 msgstr ""
 "Le montant de l'affaire doit être connu à cette étape du processus d'avant-"
 "vente"
 
-#: leads/forms.py:159
+#: leads/forms.py:160
 msgid "Start date must be defined at this step of the commercial process"
 msgstr ""
 "La date de démarrage de l'affaire doit être connue à cette étape du "
 "processus d'avant-vente"
 
-#: leads/forms.py:170
+#: leads/forms.py:171
 msgid ""
 "Deal id must be unique. Use another value or let the field blank for "
 "automatic computation"
@@ -1812,11 +1812,11 @@ msgstr ""
 "Le n° d'affaire n'est pas unique. Utilisez une autre valeur ou bien laissez "
 "le champ vide pour une numérotation automatique."
 
-#: leads/forms.py:186
+#: leads/forms.py:187 leads/forms.py:246
 msgid "New comment"
 msgstr "Nouveau commentaire"
 
-#: leads/forms.py:234
+#: leads/forms.py:235
 msgid "Completion date"
 msgstr "Date de réalisation"
 
@@ -2019,52 +2019,52 @@ msgstr "Étiquette invalide"
 msgid "No tag provided"
 msgstr "Aucune étiquette fournie"
 
-#: leads/views.py:398 templates/core/_pydici_menu.html:44
+#: leads/views.py:426 templates/core/_pydici_menu.html:44
 #: templates/leads/leads.html:11
 msgid "All leads"
 msgstr "Toutes les affaires"
 
-#: leads/views.py:398 templates/crm/graph_company_business_activity.html:30
+#: leads/views.py:426 templates/crm/graph_company_business_activity.html:30
 msgid "Won leads"
 msgstr "Affaires gagnées"
 
-#: leads/views.py:563 leads/views.py:623
+#: leads/views.py:591 leads/views.py:651
 #, python-format
 msgid "Last %s days"
 msgstr "%s derniers jours"
 
-#: leads/views.py:578 leads/views.py:633 leads/views.py:785
+#: leads/views.py:606 leads/views.py:661 leads/views.py:813
 #: templates/leads/activities_pivotable.html:58
 #: templates/leads/graph_activities_activity.html:47
 #: templates/leads/graph_leads_activity.html:49
 msgid "duration"
 msgstr "durée"
 
-#: leads/views.py:579 leads/views.py:634
+#: leads/views.py:607 leads/views.py:662
 #: templates/leads/graph_activities_activity.html:48
 #: templates/leads/graph_leads_activity.html:50
 msgid "average duration 6 months"
 msgstr "durée moyenne sur 6 mois"
 
-#: leads/views.py:588
+#: leads/views.py:616
 #, python-format
 msgid "%s leads in progress"
 msgstr "%s affaires en cours"
 
-#: leads/views.py:642
+#: leads/views.py:670
 #, python-format
 msgid "%s activities last 30 days"
 msgstr "%s activités sur 30 jours"
 
-#: leads/views.py:695 templates/leads/leads_pivotable.html:60
+#: leads/views.py:723 templates/leads/leads_pivotable.html:60
 msgid "sales (interval)"
 msgstr "prix (interval)"
 
-#: leads/views.py:695 leads/views.py:722
+#: leads/views.py:723 leads/views.py:750
 msgid "sales (k€)"
 msgstr "C.A. (k€)"
 
-#: leads/views.py:719 leads/views.py:776 staffing/views.py:1566
+#: leads/views.py:747 leads/views.py:804 staffing/views.py:1566
 #: staffing/views.py:2096 templates/crm/_contact_list.html:9
 #: templates/crm/clientcompany_detail.html:261
 #: templates/crm/clientcompany_detail.html:291
@@ -2077,7 +2077,7 @@ msgstr "C.A. (k€)"
 msgid "name"
 msgstr "nom"
 
-#: leads/views.py:723 leads/views.py:779 staffing/models.py:486
+#: leads/views.py:751 leads/views.py:807 staffing/models.py:486
 #: templates/crm/company_pivotable.html:50
 #: templates/crm/company_pivotable.html:56
 #: templates/crm/company_pivotable.html:62
@@ -2088,26 +2088,26 @@ msgstr "nom"
 msgid "date"
 msgstr "date"
 
-#: leads/views.py:727
+#: leads/views.py:755
 msgid "renewal"
 msgstr "renouvellement"
 
-#: leads/views.py:728 templates/leads/leads_pivotable.html:69
+#: leads/views.py:756 templates/leads/leads_pivotable.html:69
 msgid "billed (€)"
 msgstr "facturé (€)"
 
-#: leads/views.py:729 templates/leads/leads_pivotable.html:77
+#: leads/views.py:757 templates/leads/leads_pivotable.html:77
 #: templates/leads/leads_pivotable.html:85
 msgid "Over budget margin (€)"
 msgstr "Marge au delà du budget (€)"
 
-#: leads/views.py:783 templates/crm/clientcompany_detail.html:264
+#: leads/views.py:811 templates/crm/clientcompany_detail.html:264
 #: templates/leads/activities_pivotable.html:56
 #: templates/staffing/_mission_table.html:19
 msgid "nature"
 msgstr "nature"
 
-#: leads/views.py:784 templates/leads/activities_pivotable.html:56
+#: leads/views.py:812 templates/leads/activities_pivotable.html:56
 #: templates/staffing/_consultant_prod_tooltip.html:1
 #: templates/staffing/_consultant_prod_tooltip.html:2
 #: templates/staffing/prod_report.html:69
@@ -4987,9 +4987,21 @@ msgstr "La mission %(mission)s n'a plus de prévisions dans le futur"
 msgid "%(c_date)s ago"
 msgstr "il y a %(c_date)s"
 
-#: templates/leads/_activity_comments.html:13
+#: templates/leads/_activity_comments.html:16
 msgid "Are you sure you want to delete this comment?"
 msgstr "Voulez-vous vraiment supprimer ce commentaire ?"
+
+#: templates/leads/_activity_comments.html:29
+#, fuzzy
+#| msgid "Client comments"
+msgid "Edit a comment"
+msgstr "Commentaires client"
+
+#: templates/leads/_activity_comments.html:34
+#, fuzzy
+#| msgid "All clients"
+msgid "Add a comment"
+msgstr "Tous les clients"
 
 #: templates/leads/_lead_checkdoc.html:8
 msgid "Business documents are missing. Please put them here: "
@@ -6832,11 +6844,6 @@ msgstr "Ratio de sommes"
 
 #~ msgid "Timesheet does not seem ok"
 #~ msgstr "La feuille de temps ne semble pas ok"
-
-#, fuzzy
-#~| msgid "All clients"
-#~ msgid "Add client"
-#~ msgstr "Tous les clients"
 
 #~ msgid "including"
 #~ msgstr "dont"

@@ -314,6 +314,7 @@ def activity(request, activity_id=None):
             activity = form.save()
             if form.cleaned_data["comment"]:
                 ActivityComment.objects.create(activity=activity, comment=form.cleaned_data["comment"])
+            compute_consultant_tasks.delay(activity.responsible.id)
             return HttpResponseRedirect(reverse("leads:activity_detail", args=[activity.id]))
     else:
         if activity:
