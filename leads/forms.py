@@ -4,7 +4,7 @@ Leads form setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from lxml.html.builder import LABEL
+
 from crispy_forms.bootstrap import AppendedText, FieldWithButtons, Tab, TabHolder
 from crispy_forms.layout import HTML, Column, Field, Fieldset, Layout, Row
 from django import forms

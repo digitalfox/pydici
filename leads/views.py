@@ -134,11 +134,12 @@ def lead(request, lead_id=None):
                     activity = Activity.objects.get(id=activity_id)
                     activity.state = "DONE"
                     activity.save()
+                    comments = "\n".join([c.comment for c in activity.activitycomment_set.all()])
                     activity_url = get_parameter("HOST") + reverse("leads:activity_detail", args=[activity.id])
                     if activity.client_organisation:
                         client, created = Client.objects.get_or_create(organisation=activity.client_organisation, contact=activity.contact)
                     form = LeadForm(initial={"responsible": activity.responsible, "subsidiary": activity.subsidiary, "client": client, "renewal": False,
-                        "name": activity.name, "state": "WRITE_OFFER", "description": activity.comment + "\n" + activity_url})  # An unbound form
+                        "name": activity.name, "state": "WRITE_OFFER", "description": comments + "\n" + activity_url})  # An unbound form
                 else:
                     form = LeadForm(initial={"responsible": consultant, "subsidiary": consultant.company})  # An unbound form
             except Consultant.DoesNotExist:
