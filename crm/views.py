@@ -4,8 +4,6 @@ Pydici crm views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-import cssselect2
-
 import json
 from datetime import date, datetime, timedelta
 
@@ -15,13 +13,12 @@ from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
 from django.contrib import messages
 from django.utils.translation import gettext as _
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.utils.html import escape
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
 from django.utils.safestring import mark_safe
-from django.template.loader import get_template
 
 
 from crm.models import Company, Client, ClientOrganisation, Contact, AdministrativeContact, MissionContact,\
