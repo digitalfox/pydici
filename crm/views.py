@@ -384,16 +384,25 @@ def businessbroker_popup(request):
     """Business broker creation in one popup"""
     businessbroker = None
     company = None
+    contact = None
     if request.method == "POST":
         businessbrokerForm = BusinessBrokerForm(request.POST, prefix="businessbroker")
         companyForm = CompanyForm(request.POST, prefix="brokercompany", css_id="brokerCompanyForm")
+        contactForm = ContactForm(request.POST, prefix="brokercontact", css_id="brokerContactForm")
 
         if companyForm.is_valid():
             company = companyForm.save()
 
+        if contactForm.is_valid():
+            contact = contactForm.save()
+            businessbrokerForm.data = businessbrokerForm.data.copy()
+            businessbrokerForm.data["businessbroker-contact"] = contact.id  # Inject contact in business broker form
+            businessbrokerForm.full_clean()
+
         if businessbrokerForm.is_valid():
             businessbroker = businessbrokerForm.save()
             companyForm = CompanyForm(prefix="brokercompany", css_id="brokerCompanyForm")  # Reset company form after business broker save
+            contactForm = ContactForm(prefix="brokercontact", css_id="brokerContactForm")  # Reset contact form after business broker save
         elif company:
             # businessbrokerForm may be invalid because company is a new one
             businessbrokerForm.data = businessbrokerForm.data.copy()
@@ -406,9 +415,11 @@ def businessbroker_popup(request):
         # Unbound forms for GET requests
         businessbrokerForm = BusinessBrokerForm(prefix="businessbroker")
         companyForm = CompanyForm(prefix="brokercompany", css_id="brokerCompanyForm")
+        contactForm = ContactForm(prefix="brokercontact", css_id="brokerContactForm")
 
     return render(request, "crm/businessbroker-popup.html",
-        {"businessbrokerForm": businessbrokerForm, "brokerCompanyForm": companyForm, "businessbroker": businessbroker})
+        {"businessbrokerForm": businessbrokerForm, "brokerCompanyForm": companyForm, "brokerContactForm": contactForm,
+         "businessbroker": businessbroker})
 
 
 @pydici_non_public

@@ -12,6 +12,7 @@
         <form method="post" id="pydici-ajax-form-businessbroker" action="{% url 'crm:businessbroker_popup' %}" novalidate>
             {% crispy businessbrokerForm businessbrokerForm.inline_helper %}
             {% crispy brokerCompanyForm brokerCompanyForm.inline_helper %}
+            {% crispy brokerContactForm brokerContactForm.inline_helper %}
             <button type="button" name="submit" class="btn btn-primary"
                 hx-post="{% url 'crm:businessbroker_popup' %}" hx-target="#businessbrokerModal"
                 data-bs-dismiss="modal">{% trans "Save" %}</button>
@@ -34,17 +35,22 @@
         {% if brokerCompanyForm.errors %}
             $("#brokerCompanyForm").show();
             $("#broker_company_input_group").hide();
+        {% elif brokerContactForm.errors %}
+            $("#brokerContactForm").show();
+            $("#broker_contact_input_group").hide();
         {% else %}
             $("#brokerCompanyForm").hide();
+            $("#brokerContactForm").hide();
         {% endif %}
         });
         businessbrokerModal.show();
     </script>
 {% else %}
     <script type="text/javascript">
-        // Hide company form by default
+        // Hide company and contact form by default
         $(document).ready(function() {
             $("#brokerCompanyForm").hide();
+            $("#brokerContactForm").hide();
         });
     </script>
 {% endif %}

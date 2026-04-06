@@ -221,6 +221,7 @@ class ContactForm(PydiciCrispyModelForm):
         widgets = {"contact_points": ConsultantMChoices}
 
     def __init__(self, *args, **kwargs):
+        css_id = kwargs.pop("css_id", "contactForm")
         super(ContactForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(Div(Column("name", "email", "function", "contact_points", css_class="col-md-6"),
                                         Column("mobile_phone", "phone", css_class="col-md-6"),
@@ -231,7 +232,7 @@ class ContactForm(PydiciCrispyModelForm):
                                                     Row(Column("email"), Column("phone")),
                                                     Row(Column("function")),
                                                     Row("contact_points", css_class="col-md-6"),
-                                                    css_id="contactForm"),
+                                                    css_id=css_id),
                                            )
 
     def clean_name(self):
@@ -283,11 +284,14 @@ class BusinessBrokerForm(PydiciCrispyModelForm):
                                         css_class="row"),
                                     self.submit)
         self.inline_helper.layout = Layout(Fieldset(_("Business broker"),
-                                                    Row(Column("contact"),
+                                                    Row(Column(
+                                                        FieldWithButtons("contact",HTML(
+                                                                """<a role='button' class='btn btn-primary' href='#' onclick='$("#brokerContactForm").show("slow"); $("#broker_contact_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
+                                                                css_id="broker_contact_input_group")),
                                                         Column(
                                                             FieldWithButtons("company", HTML(
                                                                 """<a role='button' class='btn btn-primary' href='#' onclick='$("#brokerCompanyForm").show("slow"); $("#broker_company_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
-                                                                     css_id="broker_company_input_group"))),
+                                                                css_id="broker_company_input_group"))),
                                                     Row(Column("billing_name")),
                                                     css_id="businessbrokerForm"),
                                            )
