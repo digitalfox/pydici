@@ -4,6 +4,7 @@ Pydici crm views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+import cssselect2
 
 import json
 from datetime import date, datetime, timedelta
@@ -382,15 +383,32 @@ def contact_popup(request):
 def businessbroker_popup(request):
     """Business broker creation in one popup"""
     businessbroker = None
+    company = None
     if request.method == "POST":
         businessbrokerForm = BusinessBrokerForm(request.POST, prefix="businessbroker")
+        companyForm = CompanyForm(request.POST, prefix="brokercompany", css_id="brokerCompanyForm")
+
+        if companyForm.is_valid():
+            company = companyForm.save()
+
         if businessbrokerForm.is_valid():
             businessbroker = businessbrokerForm.save()
+            companyForm = CompanyForm(prefix="brokercompany", css_id="brokerCompanyForm")  # Reset company form after business broker save
+        elif company:
+            # businessbrokerForm may be invalid because company is a new one
+            businessbrokerForm.data = businessbrokerForm.data.copy()
+            businessbrokerForm.data["businessbroker-company"] = company.id  # Inject company in business broker form
+            businessbrokerForm.full_clean()
+            if businessbrokerForm.is_valid():
+                businessbroker = businessbrokerForm.save()
+
     else:
         # Unbound forms for GET requests
         businessbrokerForm = BusinessBrokerForm(prefix="businessbroker")
+        companyForm = CompanyForm(prefix="brokercompany", css_id="brokerCompanyForm")
 
-    return render(request, "crm/businessbroker-popup.html", {"businessbrokerForm": businessbrokerForm, "businessbroker": businessbroker})
+    return render(request, "crm/businessbroker-popup.html",
+        {"businessbrokerForm": businessbrokerForm, "brokerCompanyForm": companyForm, "businessbroker": businessbroker})
 
 
 @pydici_non_public

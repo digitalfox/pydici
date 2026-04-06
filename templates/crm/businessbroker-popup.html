@@ -11,6 +11,7 @@
     <div class="modal-body">
         <form method="post" id="pydici-ajax-form-businessbroker" action="{% url 'crm:businessbroker_popup' %}" novalidate>
             {% crispy businessbrokerForm businessbrokerForm.inline_helper %}
+            {% crispy brokerCompanyForm brokerCompanyForm.inline_helper %}
             <button type="button" name="submit" class="btn btn-primary"
                 hx-post="{% url 'crm:businessbroker_popup' %}" hx-target="#businessbrokerModal"
                 data-bs-dismiss="modal">{% trans "Save" %}</button>
@@ -24,12 +25,27 @@
     <option value="{{ businessbroker.id | unlocalize }}">{{ businessbroker }}</option>
 </div>
 
-{% if businessbrokerForm.errors %}
+{% if businessbrokerForm.errors or brokerCompanyForm.errors %}
     {# in case of error display modal #}
-    <script></script>
-      var businessbrokerModalEl = document.getElementById('businessbrokerModal');
-      var businessbrokerModal = new bootstrap.Modal(businessbrokerModalEl);
-      businessbrokerModal.show();
+    <script type="text/javascript">
+        var businessbrokerModalEl = document.getElementById('businessbrokerModal');
+        var businessbrokerModal = new bootstrap.Modal(businessbrokerModalEl);
+        businessbrokerModalEl.addEventListener('shown.bs.modal', event => {
+        {% if brokerCompanyForm.errors %}
+            $("#brokerCompanyForm").show();
+            $("#broker_company_input_group").hide();
+        {% else %}
+            $("#brokerCompanyForm").hide();
+        {% endif %}
+        });
+        businessbrokerModal.show();
+    </script>
+{% else %}
+    <script type="text/javascript">
+        // Hide company form by default
+        $(document).ready(function() {
+            $("#brokerCompanyForm").hide();
+        });
     </script>
 {% endif %}
 

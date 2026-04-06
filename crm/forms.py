@@ -200,6 +200,7 @@ class CompanyForm(PydiciCrispyModelForm):
                    "legal_description": Textarea(attrs={'cols': 17, 'rows': 2})}
 
     def __init__(self, *args, **kwargs):
+        css_id = kwargs.pop("css_id", "companyForm")
         super(CompanyForm, self).__init__(*args, **kwargs)
         self.helper.layout = Layout(
             Div(Column("name", "code", "businessOwner", "business_sector", "vat_id", "legal_id",  "web", "legal_description", css_class="col-md-6"),
@@ -209,7 +210,7 @@ class CompanyForm(PydiciCrispyModelForm):
                                                     Row(Column("name", "businessOwner", "business_sector"),
                                                         Column("code", "web"),
                                                         Column("vat_id", "legal_id")),
-                                                    css_id="companyForm"))
+                                                    css_id=css_id))
     def clean_code(self):
         return self.cleaned_data["code"].upper()
 
@@ -281,6 +282,15 @@ class BusinessBrokerForm(PydiciCrispyModelForm):
                                                css_class="col-md-6"),
                                         css_class="row"),
                                     self.submit)
+        self.inline_helper.layout = Layout(Fieldset(_("Business broker"),
+                                                    Row(Column("contact"),
+                                                        Column(
+                                                            FieldWithButtons("company", HTML(
+                                                                """<a role='button' class='btn btn-primary' href='#' onclick='$("#brokerCompanyForm").show("slow"); $("#broker_company_input_group").hide("slow")'><i class='bi bi-plus'></i></a>"""),
+                                                                     css_id="broker_company_input_group"))),
+                                                    Row(Column("billing_name")),
+                                                    css_id="businessbrokerForm"),
+                                           )
 
 
 class AdministrativeContactForm(PydiciCrispyModelForm):
