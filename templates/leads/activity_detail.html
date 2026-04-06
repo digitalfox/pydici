@@ -27,8 +27,8 @@
     <div class="col-lg-6 col-xl-3">
         <table class="table table-striped">
             <tr><th class="text-nowrap"><i class="bi bi-arrow-right-circle"></i> {% trans "State" %}</th><td>{{ activity.get_state_display }}</td></tr>
-            <tr><th class="text-nowrap"><i class="bi bi-person-circle"></i> {% trans "Responsible" %}</th><td>{{ activity.responsible }}</td></tr>
-            <tr><th class="text-nowrap"><i class="bi bi-people"></i> {% trans "Business broker" %}</th><td>{{ activity.business_broker|default:"-" }}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-person-circle"></i> {% trans "Responsible" %}</th><td>{% with consultant=activity.responsible %}{% include "people/__consultant_name.html" %}{% endwith %}</td></tr>
+            <tr><th class="text-nowrap"><i class="bi bi-people"></i> {% trans "Business broker" %}</th><td>{% if activity.business_broker %}<a href="{% url 'crm:company_detail' activity.business_broker.company.id %}">{{ activity.business_broker }}</a>{% else %}-{% endif %}</td></tr>
             <tr><th class="text-nowrap"><i class="bi bi-calendar"></i> {% trans "Creation date" %}</th><td>{{ activity.creation_date }}</td></tr>
             <tr><th class="text-nowrap"><i class="bi bi-calendar-plus"></i> {% trans "Due date" %}</th><td>{{ activity.due_date|default:"-" }}</td></tr>
             <tr><th class="text-nowrap"><i class="bi bi-calendar-event"></i> {% trans "Update date" %}</th><td>{{ activity.update_date }}</td></tr>
