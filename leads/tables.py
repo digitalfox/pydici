@@ -232,7 +232,7 @@ class ContactActivityTableDT(ActivityTableDT):
 
 class CompanyActivityTableDT(ActivityTableDT):
     def get_initial_queryset(self):
-        qs = Activity.objects.filter(client_organisation__company__id=self.kwargs["company_id"])
+        qs = Activity.objects.filter(Q(client_organisation__company__id=self.kwargs["company_id"]) | Q(business_broker__company__id=self.kwargs["company_id"]))
         qs = self._filter_on_subsidiary(qs)
         return qs.select_related("contact", "client_organisation__company", "responsible", "subsidiary")
 
