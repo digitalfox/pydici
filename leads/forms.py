@@ -129,8 +129,18 @@ class LeadForm(PydiciCrispyModelForm):
                                                   Row(Column(Field("start_date", placeholder=_("Date of the operational start"), css_class="datepicker"), css_class="col-md-6 col-12"),
                                                       Column("state", css_class='col-md-6'))),
                                               Tab(_("Commercial"), Row(Column(AppendedText("sales", "k€"), css_class="col-md-6"),
-                                                                       Column(FieldWithButtons("business_broker",
-                                                                                           HTML("<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse("crm:businessbroker_create"))),css_class="col-md-6")),
+                                                                       Column(FieldWithButtons(
+                                                                           "business_broker",
+                                                                           HTML(
+                                                                               """<button
+                                                                                   hx-get="%s"
+                                                                                   hx-target="#businessbrokerModal"
+                                                                                   hx-trigger="click"
+                                                                                   data-bs-toggle="modal"
+                                                                                   data-bs-target="#businessbrokerModal"
+                                                                                   class="btn btn-primary"><i class='bi bi-plus'></i></button>""" % reverse("crm:businessbroker_popup")
+                                                                           ),
+                                                                       ),css_class="col-md-6")),
                                                                    Row(Column("salesman", css_class="col-md-6"),
                                                                        Column(FieldWithButtons("paying_authority",
                                                                                            HTML("<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>" % reverse("crm:businessbroker_create")))))),
