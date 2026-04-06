@@ -49,4 +49,5 @@ crm_urls = [
              re_path(r'^client-organisation-company-popup$', v.client_organisation_company_popup, name="client_organisation_company_popup"),
              re_path(r'^contact-organisation-popup$', v.client_organisation_popup, name="client_organisation_popup"),
              re_path(r'^contact-popup$', v.contact_popup, name="contact_popup"),
+             re_path(r'^businessbroker-popup$', v.businessbroker_popup, name='businessbroker_popup'),
             ]

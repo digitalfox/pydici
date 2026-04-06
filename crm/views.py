@@ -379,6 +379,22 @@ def contact_popup(request):
 
 @pydici_non_public
 @pydici_feature("3rdparties")
+def businessbroker_popup(request):
+    """Business broker creation in one popup"""
+    businessbroker = None
+    if request.method == "POST":
+        businessbrokerForm = BusinessBrokerForm(request.POST, prefix="businessbroker")
+        if businessbrokerForm.is_valid():
+            businessbroker = businessbrokerForm.save()
+    else:
+        # Unbound forms for GET requests
+        businessbrokerForm = BusinessBrokerForm(prefix="businessbroker")
+
+    return render(request, "crm/businessbroker-popup.html", {"businessbrokerForm": businessbrokerForm, "businessbroker": businessbroker})
+
+
+@pydici_non_public
+@pydici_feature("3rdparties")
 def clientOrganisation(request, client_organisation_id=None):
     """Client creation or modification"""
     clientOrganisation = None

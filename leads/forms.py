@@ -198,8 +198,13 @@ class ActivityForm(PydiciCrispyModelForm):
                     FieldWithButtons(
                         "business_broker",
                         HTML(
-                            "<a role='button' class='btn btn-primary' href='%s' target='_blank'><i class='bi bi-plus'></i></a>"
-                            % reverse("crm:businessbroker_create")
+                            """<button
+                                hx-get="%s"
+                                hx-target="#businessbrokerModal"
+                                hx-trigger="click"
+                                data-bs-toggle="modal"
+                                data-bs-target="#businessbrokerModal"
+                                class="btn btn-primary"><i class='bi bi-plus'></i></button>""" % reverse("crm:businessbroker_popup")
                         ),
                     ),
                     css_class="col-md-3 col-sm-6 col-12",

@@ -1,0 +1,38 @@
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+
+<div class="modal-dialog modal-xl">
+<div class="modal-content">
+    <div class="modal-header">
+    <h1 class="modal-title">{% trans "New business broker" %}</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+    </div>
+    <div class="modal-body">
+        <form method="post" id="pydici-ajax-form-businessbroker" action="{% url 'crm:businessbroker_popup' %}" novalidate>
+            {% crispy businessbrokerForm businessbrokerForm.inline_helper %}
+            <button type="button" name="submit" class="btn btn-primary"
+                hx-post="{% url 'crm:businessbroker_popup' %}" hx-target="#businessbrokerModal"
+                data-bs-dismiss="modal">{% trans "Save" %}</button>
+        </form>
+    </div>
+</div>
+</div>
+
+{# Out of band update for the business broker select #}
+<div id="id_business_broker" hx-swap-oob="innerHTML">
+    <option value="{{ businessbroker.id | unlocalize }}">{{ businessbroker }}</option>
+</div>
+
+{% if businessbrokerForm.errors %}
+    {# in case of error display modal #}
+    <script></script>
+      var businessbrokerModalEl = document.getElementById('businessbrokerModal');
+      var businessbrokerModal = new bootstrap.Modal(businessbrokerModalEl);
+      businessbrokerModal.show();
+    </script>
+{% endif %}
+
+{% with "businessbrokerModal" as modal_id %}
+    {% include "core/_select2_bs_modal.html" %}
+{% endwith %}
