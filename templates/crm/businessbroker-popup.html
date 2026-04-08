@@ -35,6 +35,7 @@
         {% if brokerCompanyForm.errors %}
             $("#brokerCompanyForm").show();
             $("#broker_company_input_group").hide();
+            $("#brokerContactForm").hide();
         {% elif brokerContactForm.errors %}
             $("#brokerContactForm").show();
             $("#broker_contact_input_group").hide();
