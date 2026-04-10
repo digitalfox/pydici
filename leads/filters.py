@@ -7,6 +7,7 @@ Leads filters
 from datetime import date
 
 from django.utils.translation import gettext as _
+from django.db.models import Q
 
 import django_filters
 from crispy_forms.helper import FormHelper
@@ -35,7 +36,7 @@ class ActivityFilter(django_filters.FilterSet):
 
     def state_filter(self, queryset, name, value):
         if value == "LATE":
-            return queryset.filter(due_date__lt=date.today())
+            return queryset.filter(Q(due_date__lt=date.today()) | Q(due_date__isnull=True)).filter(state__in=("TODO_PLANNED", "SLEEPING"))
         else:
             return queryset.filter(state=value)
 
