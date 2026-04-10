@@ -108,7 +108,7 @@ class LeadForm(PydiciCrispyModelForm):
                                                   Row(Column(Field("name", placeholder=mark_safe(_("Name of the lead. don't include client name"))), css_class="col-md-6 col-12"),
                                                       Column(Field("renewal"), css_class="col-md-6 col-12")),
                                                   Row(Column(FieldWithButtons("client", HTML(
-                                                      """<button
+                                                      """<button type='button'
                                                           hx-get="%s"
                                                           hx-target="#clientModal"
                                                           hx-trigger="click"
@@ -132,7 +132,7 @@ class LeadForm(PydiciCrispyModelForm):
                                                                        Column(FieldWithButtons(
                                                                            "business_broker",
                                                                            HTML(
-                                                                               """<button
+                                                                               """<button type="button"
                                                                                    hx-get="%s"
                                                                                    hx-target="#businessbrokerModal"
                                                                                    hx-trigger="click"
@@ -208,7 +208,7 @@ class ActivityForm(PydiciCrispyModelForm):
                     FieldWithButtons(
                         "business_broker",
                         HTML(
-                            """<button
+                            """<button type='button'
                                 hx-get="%s"
                                 hx-target="#businessbrokerModal"
                                 hx-trigger="click"
@@ -223,7 +223,7 @@ class ActivityForm(PydiciCrispyModelForm):
                     FieldWithButtons(
                         "client_organisation",
                         HTML(
-                            """<button
+                            """<button type='button'
                                 hx-get="%s"
                                 hx-target="#organisationModal"
                                 hx-trigger="click"
@@ -236,7 +236,7 @@ class ActivityForm(PydiciCrispyModelForm):
                     FieldWithButtons(
                         "contact",
                         HTML(
-                            """<button
+                            """<button type='button'
                                 hx-get="%s"
                                 hx-target="#contactModal"
                                 hx-trigger="click"
