@@ -196,7 +196,7 @@ class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVi
                         Q(responsible__name__icontains=search) |
                         Q(subsidiary__name__icontains=search))
 
-        return qs
+        return qs.distinct()
 
     def render_column(self, row, column):
         if column == "name":
