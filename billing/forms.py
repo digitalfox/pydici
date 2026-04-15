@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django.forms.models import BaseInlineFormSet, ModelChoiceField
 from django.forms.fields import DateField, TypedChoiceField
 from django.forms.widgets import DateInput
-from django.forms.utils import ValidationError
+from django.core.exceptions import ValidationError
 from django.utils import formats
 from django.utils.safestring import mark_safe
 from django.urls import reverse
@@ -120,6 +120,7 @@ class BillDetailInlineFormset(BaseInlineFormSet):
         form.fields["mission"] = ModelChoiceField(widget=LeadMissionChoices(lead=self.instance.lead), queryset=Mission.objects)
         form.fields["consultant"] = ModelChoiceField(widget=ConsultantChoices(attrs={"data-allow-clear": False}), queryset=Consultant.objects, required=False)
         form.fields["month"] = BillingDateChoicesField(required=False)
+        form.fields["unit_price"].required = False  # Remove required constraint for unit_price to allow automatic unit price calculation
 
     def clean(self):
         if any(self.errors):
@@ -145,8 +146,23 @@ class BillDetailFormSetHelper(FormHelper):
 
 
 class BillDetailForm(ModelForm):
+    def clean_unit_price(self):
+        if self.cleaned_data.get("unit_price"):
+            return self.cleaned_data.get("unit_price")
+        else:
+            mission = self.cleaned_data.get("mission")
+            if mission:
+                if mission.billing_mode == "FIXED_PRICE":
+                    return round(mission.price * 1000, 2)
+                elif mission.billing_mode == "TIME_SPENT" and self.cleaned_data.get("consultant"):
+                    return mission.consultant_rates()[self.cleaned_data.get("consultant")][0]
+
+        # Can't determine unit price automatically
+        raise ValidationError(_("Unit price must be defined"))
+
+
     def clean(self):
-        mission = self.cleaned_data.get("mission", None)
+        mission = self.cleaned_data.get("mission")
         if mission:
             if mission.billing_mode is None:
                 link = reverse("staffing:mission_home", args=[mission.id])

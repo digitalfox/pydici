@@ -8,6 +8,7 @@ from datetime import date
 import json
 
 from django.test import TestCase, TransactionTestCase
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.db.models import Sum
 from django.urls import reverse
@@ -16,6 +17,7 @@ from django.utils.translation import gettext as _
 
 from crm.models import Supplier, Subsidiary
 from billing.models import SupplierBill, ClientBill, BillDetail
+from billing.forms import BillDetailForm
 from leads.models import Lead
 from staffing.models import Timesheet, Mission, FinancialCondition
 from people.models import Consultant
@@ -340,3 +342,158 @@ class TestBillingUtils(TestCase):
         billing_info = get_billing_info(timesheet_data, apply_internal_markup=True)
         self.assertEqual(len(billing_info), 1)
         self.assertEqual(billing_info[0][1][0], 8000 * (1 - get_parameter("INTERNAL_MARKUP") / 100))
+
+
+class TestBillDetailForm(TestCase):
+    """Test BillDetailForm"""
+    fixtures = PYDICI_FIXTURES
+
+    def setUp(self):
+        setup_test_user_features()
+        self.test_user = User.objects.get(username=TEST_USERNAME)
+        self.lead = Lead.objects.get(id=1)
+        self.mission = self.lead.mission_set.first()
+        self.consultant = Consultant.objects.get(id=1)
+        # Create a client bill for testing
+        self.client_bill = ClientBill.objects.create(
+            lead=self.lead,
+            state="0_DRAFT"
+        )
+
+    def _create_test_form_instance(self):
+        """Create a BillDetailForm instance for testing by temporarily adding Meta class"""
+        # Temporarily add Meta class to BillDetailForm for testing
+        class TestBillDetailForm(BillDetailForm):
+            class Meta:
+                from billing.models import BillDetail
+                model = BillDetail
+                fields = "__all__"
+
+        return TestBillDetailForm
+
+    def test_clean_unit_price_with_manual_price(self):
+        """Test that manual unit price is accepted"""
+        # Create a form instance with manual unit price
+        TestForm = self._create_test_form_instance()
+        form = TestForm()
+        form.cleaned_data = {
+            'unit_price': 1000,
+        }
+        # Should return the manual unit price
+        self.assertEqual(form.clean_unit_price(), 1000)
+
+    def test_clean_unit_price_fixed_price_mission(self):
+        """Test automatic unit price calculation for fixed price mission"""
+        self.mission.billing_mode = "FIXED_PRICE"
+        self.mission.price = 10  # 10k€
+        self.mission.save()
+
+        TestForm = self._create_test_form_instance()
+        form = TestForm()
+        form.cleaned_data = {
+            'unit_price': None,
+            'mission': self.mission,
+        }
+        self.assertEqual(form.clean_unit_price(), 10000)
+
+    def test_clean_unit_price_time_spent_mission(self):
+        """Test automatic unit price calculation for time spent mission"""
+        self.mission.billing_mode = "TIME_SPENT"
+        self.mission.save()
+        FinancialCondition.objects.create(
+            mission=self.mission,
+            consultant=self.consultant,
+            daily_rate=800
+        )
+
+        TestForm = self._create_test_form_instance()
+        form = TestForm()
+        form.cleaned_data = {
+            'unit_price': None,
+            'mission': self.mission,
+            'consultant': self.consultant,
+        }
+        # Should calculate unit price automatically
+        self.assertEqual(form.clean_unit_price(), 800)
+
+    def test_clean_unit_price_missing_required_fields(self):
+        """Test that validation fails when required fields for automatic calculation are missing"""
+        TestForm = self._create_test_form_instance()
+        form = TestForm()
+        form.cleaned_data = {
+            'unit_price': None,
+            'mission': self.mission,
+        }
+        # Should raise ValidationError
+        with self.assertRaises(ValidationError):
+            form.clean_unit_price()
+
+    def test_clean_method_no_mission(self):
+        """Test clean method when no mission is provided"""
+        TestForm = self._create_test_form_instance()
+        form = TestForm()
+        form.cleaned_data = {
+            'mission': None,
+        }
+        # Should pass validation when no mission is provided
+        self.assertEqual(form.clean(), form.cleaned_data)
+
+    def test_clean_method_mission_no_billing_mode(self):
+        """Test clean method when mission has no billing mode"""
+        self.mission.billing_mode = None
+        self.mission.save()
+
+        TestForm = self._create_test_form_instance()
+        form = TestForm()
+        form.cleaned_data = {
+            'mission': self.mission,
+        }
+        # Should raise ValidationError
+        with self.assertRaises(ValidationError):
+            form.clean()
+
+    def test_clean_method_time_spent_mission_no_month(self):
+        """Test clean method for time spent mission without month"""
+        self.mission.billing_mode = "TIME_SPENT"
+        self.mission.save()
+
+        TestForm = self._create_test_form_instance()
+        form = TestForm()
+        form.cleaned_data = {
+            'mission': self.mission,
+            'month': None,
+        }
+        # Should raise ValidationError
+        with self.assertRaises(ValidationError):
+            form.clean()
+
+    def test_clean_method_time_spent_mission_no_consultant(self):
+        """Test clean method for time spent mission without consultant"""
+        self.mission.billing_mode = "TIME_SPENT"
+        self.mission.save()
+
+        TestForm = self._create_test_form_instance()
+        form = TestForm()
+        form.cleaned_data = {
+            'mission': self.mission,
+            'month': date.today().replace(day=1),
+            'consultant': None,
+        }
+        # Should raise ValidationError
+        with self.assertRaises(ValidationError):
+            form.clean()
+
+    def test_clean_method_valid_time_spent_mission(self):
+        """Test clean method for valid time spent mission"""
+        self.mission.billing_mode = "TIME_SPENT"
+        self.mission.save()
+
+        TestForm = self._create_test_form_instance()
+        form = TestForm()
+        form.cleaned_data = {
+            'mission': self.mission,
+            'month': date.today().replace(day=1),
+            'consultant': self.consultant,
+        }
+        # Should pass validation
+        self.assertEqual(form.clean(), form.cleaned_data)
