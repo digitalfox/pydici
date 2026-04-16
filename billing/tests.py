@@ -260,7 +260,7 @@ class TestBillingUtils(TestCase):
         c = Consultant.objects.get(id=1)
         c2 = Consultant.objects.get(id=2)
         d = json.loads(get_client_billing_control_pivotable_data())
-        self.assertEqual(len(d), 13)  # Default test fixtures
+        self.assertEqual(len(d), 15)  # Default test fixtures
 
         s = Subsidiary(name="test", code="T")
         s.save()

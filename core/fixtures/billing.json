@@ -1,92 +1,141 @@
 [
     {
-        "pk": 2, 
-        "model": "billing.clientbill", 
+        "pk": 2,
+        "model": "billing.clientbill",
         "fields": {
-            "comment": "poupoupou", 
-            "payment_date": "2010-11-30", 
-            "lead": 3, 
+            "comment": "poupoupou",
+            "payment_date": "2010-11-30",
+            "lead": 3,
             "due_date": "2010-11-10",
-            "state": "2_PAID", 
-            "creation_date": "2010-11-29", 
+            "state": "2_PAID",
+            "creation_date": "2010-11-29",
             "amount": "25",
-            "vat" : "19.6", 
+            "vat" : "19.6",
             "bill_id": "A101010"
         }
-    }, 
+    },
     {
-        "pk": 4, 
-        "model": "billing.clientbill", 
+        "pk": 4,
+        "model": "billing.clientbill",
         "fields": {
-            "comment": "", 
-            "payment_date": "2010-11-29", 
-            "lead": 3, 
+            "comment": "",
+            "payment_date": "2010-11-29",
+            "lead": 3,
             "due_date": "2010-11-29",
-            "state": "2_PAID", 
-            "creation_date": "2010-11-29", 
+            "state": "2_PAID",
+            "creation_date": "2010-11-29",
             "amount": "11110010",
-            "vat" : "19.6", 
+            "vat" : "19.6",
             "bill_id": "A111111"
         }
-    }, 
+    },
     {
-        "pk": 5, 
-        "model": "billing.clientbill", 
+        "pk": 5,
+        "model": "billing.clientbill",
         "fields": {
-            "comment": "", 
-            "payment_date": "2010-11-29", 
-            "lead": 3, 
+            "comment": "",
+            "payment_date": "2010-11-29",
+            "lead": 3,
             "due_date": "2010-11-29",
-            "state": "2_PAID", 
-            "creation_date": "2010-11-29", 
+            "state": "2_PAID",
+            "creation_date": "2010-11-29",
             "amount": "1000",
-            "vat" : "19.6", 
+            "vat" : "19.6",
             "bill_id": "A121212"
         }
-    }, 
+    },
     {
-        "pk": 1, 
-        "model": "billing.clientbill", 
+        "pk": 1,
+        "model": "billing.clientbill",
         "fields": {
-            "comment": "", 
-            "payment_date": null, 
-            "lead": 1, 
+            "comment": "",
+            "payment_date": null,
+            "lead": 1,
             "due_date": "2010-11-30",
-            "state": "1_SENT", 
-            "creation_date": "2010-09-29", 
+            "state": "1_SENT",
+            "creation_date": "2010-09-29",
             "amount": "10.5",
-            "vat" : "19.6", 
+            "vat" : "19.6",
             "bill_id": "A201001"
         }
-    }, 
+    },
     {
-        "pk": 6, 
-        "model": "billing.clientbill", 
+        "pk": 6,
+        "model": "billing.clientbill",
         "fields": {
-            "comment": "", 
-            "payment_date": null, 
-            "lead": 2, 
+            "comment": "",
+            "payment_date": null,
+            "lead": 2,
             "due_date": "2010-12-30",
-            "state": "1_SENT", 
-            "creation_date": "2010-11-30", 
+            "state": "1_SENT",
+            "creation_date": "2010-11-30",
             "amount": "20",
-            "vat" : "19.6", 
+            "vat" : "19.6",
             "bill_id": "A131313"
         }
-    }, 
+    },
     {
-        "pk": 3, 
-        "model": "billing.clientbill", 
+        "pk": 3,
+        "model": "billing.clientbill",
         "fields": {
-            "comment": "", 
-            "payment_date": "2010-11-29", 
-            "lead": 1, 
+            "comment": "",
+            "payment_date": "2010-11-29",
+            "lead": 1,
             "due_date": "2010-11-29",
-            "state": "2_PAID", 
-            "creation_date": "2010-10-29", 
+            "state": "2_PAID",
+            "creation_date": "2010-10-29",
             "amount": "50.2",
-            "vat" : "19.6", 
+            "vat" : "19.6",
             "bill_id": "A232323"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "billing.supplierbill",
+        "fields": {
+            "comment": "External consulting services",
+            "payment_date": "2010-11-15",
+            "lead": 1,
+            "due_date": "2010-11-10",
+            "state": "2_PAID",
+            "creation_date": "2010-11-05",
+            "amount": "5000",
+            "vat" : "19.6",
+            "bill_id": "S201001",
+            "supplier": 1,
+            "supplier_bill_id": "SUP-2010-001"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "billing.internalbill",
+        "fields": {
+            "comment": "Internal project services",
+            "payment_date": "2010-12-15",
+            "due_date": "2010-12-10",
+            "state": "2_PAID",
+            "creation_date": "2010-12-05",
+            "amount": "1500",
+            "vat" : "19.6",
+            "bill_id": "I201001",
+            "buyer_id": 1,
+            "seller_id": 2
+        }
+    },
+    {
+        "pk": 2,
+        "model": "billing.internalbill",
+        "fields": {
+            "comment": "Inter-subsidiary services",
+            "payment_date": null,
+            "due_date": "2010-12-30",
+            "state": "1_SENT",
+            "creation_date": "2010-12-10",
+            "amount": "3200",
+            "vat" : "19.6",
+            "bill_id": "I201002",
+            "buyer_id": 2,
+            "seller_id": 1
         }
     }
 ]

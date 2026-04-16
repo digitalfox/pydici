@@ -1,0 +1,90 @@
+[
+  {
+    "model": "expense.expensecategory",
+    "pk": 1,
+    "fields": {
+      "name": "Travel"
+    }
+  },
+  {
+    "model": "expense.expensecategory",
+    "pk": 2,
+    "fields": {
+      "name": "Accommodation"
+    }
+  },
+  {
+    "model": "expense.expensecategory",
+    "pk": 3,
+    "fields": {
+      "name": "Meals"
+    }
+  },
+  {
+    "model": "expense.expensepayment",
+    "pk": 1,
+    "fields": {
+      "payment_date": "2023-01-15"
+    }
+  },
+  {
+    "model": "expense.expense",
+    "pk": 1,
+    "fields": {
+      "description": "Flight to client meeting",
+      "user": 1,
+      "lead": 1,
+      "chargeable": true,
+      "creation_date": "2023-01-10",
+      "expense_date": "2023-01-10",
+      "update_date": "2023-01-10T10:30",
+      "amount": "450.00",
+      "vat": "0.00",
+      "category": 1,
+      "corporate_card": false,
+      "comment": "Business class flight",
+      "state": "PAID",
+      "expensePayment": 1
+    }
+  },
+  {
+    "model": "expense.expense",
+    "pk": 2,
+    "fields": {
+      "description": "Hotel during conference",
+      "user": 1,
+      "lead": 2,
+      "chargeable": true,
+      "creation_date": "2023-01-12",
+      "expense_date": "2023-01-12",
+      "update_date": "2023-01-12T14:15",
+      "amount": "220.50",
+      "vat": "10",
+      "category": 2,
+      "corporate_card": true,
+      "comment": "3 nights at downtown hotel",
+      "state": "VALIDATED",
+      "expensePayment": null
+    }
+  },
+  {
+    "model": "expense.expense",
+    "pk": 3,
+    "fields": {
+      "description": "Team dinner with client",
+      "user": 1,
+      "lead": 1,
+      "chargeable": false,
+      "creation_date": "2023-01-11",
+      "expense_date": "2023-01-11",
+      "update_date": "2023-01-11T09:45",
+      "amount": "85.75",
+      "vat": "20",
+      "category": 3,
+      "corporate_card": false,
+      "comment": "Dinner at restaurant XYZ",
+      "state": "REQUESTED",
+      "expensePayment": null
+    }
+  }
+]

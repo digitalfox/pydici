@@ -24,7 +24,7 @@ from django.db.models.functions import TruncMonth
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.forms.models import inlineformset_factory
-from django.forms.utils import ValidationError
+from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 

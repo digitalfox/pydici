@@ -67,5 +67,65 @@
             "description": "again, a big project",
             "subsidiary": 1
         }
+    },
+    {
+        "pk": 1,
+        "model": "leads.activity",
+        "fields": {
+            "name": "Initial client meeting",
+            "responsible": 1,
+            "subsidiary": 1,
+            "nature": "MEETING",
+            "objective": "RELATIONSHIP",
+            "marketing_products": [],
+            "business_broker": null,
+            "creation_date": "2010-02-20 10:00:00",
+            "due_date": "2010-02-25",
+            "done_date": null,
+            "update_date": "2010-02-20 10:00:00",
+            "state": "TODO_PLANNED",
+            "client_organisation": 1,
+            "contact": 1
+        }
+    },
+    {
+        "pk": 2,
+        "model": "leads.activity",
+        "fields": {
+            "name": "Follow-up call",
+            "responsible": 2,
+            "subsidiary": 1,
+            "nature": "PHONE_VISIO",
+            "objective": "TARGET",
+            "marketing_products": [],
+            "business_broker": null,
+            "creation_date": "2010-02-22 14:30:00",
+            "due_date": "2010-02-23",
+            "done_date": "2010-02-23",
+            "update_date": "2010-02-23 16:00:00",
+            "state": "DONE",
+            "client_organisation": 2,
+            "contact": 1
+        }
+    },
+    {
+        "pk": 3,
+        "model": "leads.activity",
+        "fields": {
+            "name": "Project presentation",
+            "responsible": 1,
+            "subsidiary": 1,
+            "nature": "MEETING",
+            "objective": "PITCH",
+            "marketing_products": [],
+            "business_broker": 1,
+            "creation_date": "2010-02-24 09:00:00",
+            "due_date": null,
+            "done_date": null,
+            "update_date": "2010-02-24 09:00:00",
+            "state": "SLEEPING",
+            "client_organisation": 1,
+            "contact": 1
+        }
     }
 ]

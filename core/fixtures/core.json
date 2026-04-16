@@ -1,0 +1,17 @@
+[
+    {
+        "pk": 1,
+        "model": "core.tagcategory",
+        "fields": {
+            "name": "middleware"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "core.tag",
+        "fields": {
+            "name": "database",
+            "category_id": 1
+        }
+    }
+]
