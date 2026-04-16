@@ -793,14 +793,11 @@ def activities_pivotable(request, start_date=None, end_date=None):
     if end_date - start_date > timedelta(max_timeframe):
         # Prevent excessive window that is useless would lead to deny of service
         start_date = (end_date - timedelta(max_timeframe)).replace(day=1)
-    print(activities)
-    print(start_date)
-    print(end_date)
+
     activities = activities.filter(creation_date__gte=start_date, creation_date__lte=end_date)
     activities = activities.select_related("responsible", "contact", "client_organisation__company", "subsidiary",
                          "business_broker__company", "business_broker__contact")
     activities = activities.annotate(duration=(F("done_date") or date.today()) - F("creation_date__date"))
-    print(activities)
 
     for activity in activities:
         data.append({_("name"): activity.name,
