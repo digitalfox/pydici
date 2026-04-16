@@ -13,8 +13,8 @@ import os
 from os.path import abspath, join, dirname, pardir
 import logging
 from datetime import time
+from zoneinfo import ZoneInfo
 import random
-import pytz
 
 # Enable logging
 logging.basicConfig(
@@ -179,10 +179,10 @@ def main():
     # Add call for timesheet alert
     try:
         timesheet_time = time(*[int(i) for i in get_parameter("BOT_CALL_TIME_FOR_TIMESHEET").split(":")],
-                              tzinfo=pytz.timezone(settings.TIME_ZONE))
+                              tzinfo=ZoneInfo(settings.TIME_ZONE))
     except (TypeError, ValueError):
         logger.error("Cannot parse timesheet time. Defaulting to 19:00")
-        timesheet_time = time(19, tzinfo=pytz.timezone(settings.TIME_ZONE))
+        timesheet_time = time(19, tzinfo=ZoneInfo(settings.TIME_ZONE))
     application.job_queue.run_daily(call_for_timesheet, timesheet_time)
 
     try:
