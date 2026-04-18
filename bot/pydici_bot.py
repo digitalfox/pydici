@@ -16,11 +16,6 @@ from datetime import time
 from zoneinfo import ZoneInfo
 import random
 
-# Enable logging
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO,
-)
-
 from telegram.ext import CommandHandler, ConversationHandler
 from telegram.ext import Application as TelegramApplication
 import telegram.error
@@ -51,6 +46,12 @@ from core.utils import get_parameter
 from bot.utils import check_user_is_declared, outside_business_hours, get_consultants, time_to_declare, db_sync_to_async
 from bot.declare_timesheet import declare_time_entry_points, declare_time_states
 
+
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.WARNING,
+)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
