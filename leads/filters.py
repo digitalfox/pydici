@@ -4,7 +4,7 @@ Leads filters
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from datetime import date
+from datetime import date, timedelta
 
 from django.utils.translation import gettext as _
 from django.db.models import Q
@@ -21,7 +21,7 @@ class ActivityFilter(django_filters.FilterSet):
     responsible = django_filters.ChoiceFilter(method="responsible_filter",
         choices=(("ME", _("Me")), ("TEAM", _("My team")), ("TERRITORY", _("My business territory"))))
     state = django_filters.ChoiceFilter(method="state_filter",
-        choices=(Activity.STATES + (("LATE", _("Late")),)))
+        choices=(Activity.STATES + (("LATE", _("Late")), ("SOON", _("Soon")))))
 
     def responsible_filter(self, queryset, name, value):
         consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
@@ -37,6 +37,8 @@ class ActivityFilter(django_filters.FilterSet):
     def state_filter(self, queryset, name, value):
         if value == "LATE":
             return queryset.filter(Q(due_date__lt=date.today()) | Q(due_date__isnull=True)).filter(state__in=("TODO_PLANNED", "SLEEPING"))
+        elif value == "SOON":
+            return queryset.filter(Q(due_date__lt=(date.today() + timedelta(days=30))) | Q(due_date__isnull=True)).filter(state__in=("TODO_PLANNED", "SLEEPING"))
         else:
             return queryset.filter(state=value)
 
