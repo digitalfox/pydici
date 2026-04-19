@@ -318,6 +318,7 @@ def consultant_achievements(request, consultant_id):
 
 
 @pydici_non_public
+@pydici_feature("tag")
 def consultant_profile(request, consultant_id):
     """Consultant tag management"""
     if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
