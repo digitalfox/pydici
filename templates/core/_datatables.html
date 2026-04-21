@@ -11,7 +11,7 @@
             "deferRender": true,
             "responsive": true,
             "fixedHeader": true,
-            "ajax": "{{ data_url }}?{% for key, value in request.GET.items %}&{{ key }}={{ value }}{% endfor %}",
+            "ajax": "{{ data_url }}?{{ request.GET.urlencode|safe }}",
             layout: {
                topStart: ['pageLength', { buttons: [ 'excel', 'csv' ]}],
             },
