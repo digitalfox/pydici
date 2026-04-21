@@ -1576,13 +1576,8 @@ def holidays_planning(request, year=None, month=None):
     else:
         month = date.today().replace(day=1)
 
-    if "team_id" in request.GET:
-        team = Consultant.objects.get(id=int(request.GET["team_id"]))
-        team_name = _("team %(manager_name)s") % {"manager_name": team}
-    else:
-        team = team_name = None
+    filter = ConsultantFilter(request.GET, queryset=Consultant.objects.filter(active=True), request=request)
 
-    subsidiary = get_subsidiary_from_session(request)
     holidays_days = Holiday.objects.all().values_list("day", flat=True)
     days = daysOfMonth(month)
     data = []
@@ -1594,12 +1589,7 @@ def holidays_planning(request, year=None, month=None):
 
     next_month = nextMonth(month)
     previous_month = previousMonth(month)
-    consultants = Consultant.objects.filter(active=True, subcontractor=False)
-    if subsidiary:
-        consultants = consultants.filter(company=subsidiary)
-    if team:
-        consultants = consultants.filter(staffing_manager=team)
-
+    consultants = filter.qs.filter(active=True)
 
     for consultant in consultants:
         consultantData = [consultant, ]
@@ -1614,8 +1604,6 @@ def holidays_planning(request, year=None, month=None):
                 consultantData.append("holidays-weekend")
         data.append(consultantData)
 
-    scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team, only_productive=False)
-
     return render(request, "staffing/holidays_planning.html",
                   {"days": days,
                    "data": data,
@@ -1623,10 +1611,8 @@ def holidays_planning(request, year=None, month=None):
                    "today": today,
                    "previous_month": previous_month,
                    "next_month": next_month,
-                   "scope": team_name or subsidiary or _("Everybody"),
-                   "team_current_filter": team_current_filter,
-                   "team_current_url_filter": team_current_url_filter,
-                   "scopes": scopes,
+                   "filter": filter,
+                   "filter_form_helper": ConsultantFilterFormHelper(),
                    "user": request.user, })
 
 
