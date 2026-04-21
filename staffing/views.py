@@ -15,7 +15,7 @@ from math import sqrt
 
 from django.core.cache import cache
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden, QueryDict
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.forms import formset_factory
@@ -42,6 +42,7 @@ from people.models import Consultant, Subsidiary, RateObjective
 from leads.models import Lead
 from people.models import ConsultantProfile
 from people.forms import ConsultantFilterTagForm
+from people.filters import ConsultantFilter, ConsultantFilterFormHelper
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm, StaffingForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
@@ -681,11 +682,15 @@ def pdc_detail(request, consultant_id, staffing_date):
 @pydici_feature("reports")
 def prod_report(request, year=None, month=None):
     """Report production by each people and team for each month"""
-    team = None
-    subsidiary = get_subsidiary_from_session(request)
     months = []
     n_month = 5
     tooltip_template = get_template("staffing/_consultant_prod_tooltip.html")
+
+    if request.GET.get("subcontractor") is None:
+        request.GET = request.GET.copy()
+        request.GET["subcontractor"] = False
+
+    filter = ConsultantFilter(request.GET, queryset=Consultant.objects.filter(active=True, productive=True), request=request)
 
     all_status = {"ok": "#43E707",
                   "ko": "#E76F6F",
@@ -712,16 +717,8 @@ def prod_report(request, year=None, month=None):
     previous_slice_date = end_date - timedelta(days=(28 * n_month))
     next_slice_date = end_date + timedelta(days=(31 * n_month))
 
-    # Get team and subsidiary
-    if "team_id" in request.GET:
-        team = Consultant.objects.get(id=int(request.GET["team_id"]))
-
     # Filter on scope
-    consultants = Consultant.objects.filter(productive=True).filter(subcontractor=False, timesheet__working_date__gte=start_date).distinct().select_related("staffing_manager")
-    if team:
-        consultants = consultants.filter(staffing_manager=team)
-    if subsidiary:
-        consultants = consultants.filter(company=subsidiary)
+    consultants = filter.qs.filter(timesheet__working_date__gte=start_date).distinct().select_related("staffing_manager")
 
     holidays_days = Holiday.objects.filter(day__gte=start_date, day__lte=nextMonth(end_date)).values_list("day", flat=True)
     data = []
@@ -843,12 +840,6 @@ def prod_report(request, year=None, month=None):
                   ["objective_delta"] + [int(i+j) for i, j in zip(delta_daily_rate.values(), delta_prod_rate.values())],
                   ]
 
-    # Get team scopes
-    scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
-    if team:
-        team_name = _("team %(manager_name)s") % {"manager_name": team}
-    else:
-        team_name = None
 
     return render(request, "staffing/prod_report.html",
                   {"data": data,
@@ -858,10 +849,8 @@ def prod_report(request, year=None, month=None):
                    "end_date": end_date,
                    "previous_slice_date": previous_slice_date,
                    "next_slice_date": next_slice_date,
-                   "scope": team_name or  subsidiary or _("Everybody"),
-                   "team_current_filter": team_current_filter,
-                   "team_current_url_filter": team_current_url_filter,
-                   "scopes": scopes})
+                   "filter": filter,
+                   "filter_form_helper": ConsultantFilterFormHelper()})
 
 
 @pydici_non_public
@@ -2225,6 +2214,7 @@ def graph_timesheet_rates_bar(request, team_id=None):
 
     subsidiary = get_subsidiary_from_session(request)
     # Filter on scope
+    # TODO: to be removed once pdc_review has been migrated on new filters
     if team_id:
         timesheets = Timesheet.objects.filter(consultant__staffing_manager_id=team_id)
     elif subsidiary:
@@ -2232,8 +2222,11 @@ def graph_timesheet_rates_bar(request, team_id=None):
     else:
         timesheets = Timesheet.objects.all()
 
-    timesheets = timesheets.filter(consultant__subcontractor=False,
-                                   consultant__productive=True,
+    # Filter on consultant request params
+    consultantFilter = ConsultantFilter(request.GET, request=request)
+    timesheets = timesheets.filter(consultant__in=consultantFilter.qs)
+
+    timesheets = timesheets.filter(consultant__productive=True,
                                    working_date__gt=timesheetStartDate,
                                    working_date__lt=timesheetEndDate).select_related()
 
@@ -2285,12 +2278,17 @@ def graph_profile_rates(request, team_id=None):
     timesheetEndDate = nextMonth(date.today())  # First day of next month
     profils = dict(ConsultantProfile.objects.all().values_list("id", "name"))  # Consultant Profiles
 
-    consultants = Consultant.objects.filter(subcontractor=False, productive=True,
+    # Filter on consultant request params
+    consultantFilter = ConsultantFilter(request.GET, request=request)
+
+
+    consultants = consultantFilter.qs.filter(productive=True,
                                             timesheet__working_date__gte=timesheetStartDate,
                                             timesheet__working_date__lt=timesheetEndDate)
 
     subsidiary = get_subsidiary_from_session(request)
     # Filter on scope
+    # TODO: to be removed once pdc_review has been migrated on new filters
     if team_id:
         consultants = consultants.filter(staffing_manager_id=team_id)
     elif subsidiary:

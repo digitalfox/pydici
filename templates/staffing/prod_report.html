@@ -1,6 +1,7 @@
 {% extends "core/pydici.html" %}
 
 {% load i18n %}
+{% load crispy_forms_tags %}
 
 {% block extrajs %}
     {% include "core/_billboard.html" %}
@@ -31,22 +32,7 @@
 <!-- buttons bar -->
 <div class="row mb-2">
     <div class="col-lg-12">
-        <!-- Scope  button -->
-        <div class="btn-group">
-          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            {{ scope }}
-          </button>
-          <ul class="dropdown-menu">
-              {% for scope_type, scope_filter, scope_label in scopes %}
-                {% ifchanged scope_type %}
-                    {% if not forloop.first %}
-                        <li><hr class="dropdown-divider"></li>
-                    {% endif %}
-                {% endifchanged %}
-                <li><a class="dropdown-item" href="{% url 'staffing:prod_report' year=end_date|date:'Y' month=end_date|date:'m' %}/?{{scope_filter}}">{{ scope_label }}</a></li>
-              {% endfor %}
-          </ul>
-        </div>
+        {% crispy filter.form filter_form_helper %}
     </div>
 </div>
 
@@ -158,15 +144,15 @@
 <div class="row">
     <div class="col-lg-12">
         <h2>{% trans "Production rates and daily rates review" %}</h2>
-        <div hx-get="{% url 'staffing:graph_timesheet_rates_bar' %}/{{team_current_url_filter}}?{{scope_current_filter}}" hx-trigger="load"><div class="loader m-3"></div></div>
+        <div hx-get="{% url 'staffing:graph_timesheet_rates_bar' %}?{% for key, value in request.GET.items %}&{{ key }}={{ value }}{% endfor %}" hx-trigger="load"><div class="loader m-3"></div></div>
     </div>
     <div class="col-lg-12">
-        <div hx-get="{% url 'staffing:graph_profile_rates' %}/{{team_current_url_filter}}?{{scope_current_filter}}" hx-trigger="load"><div class="loader m-3"></div></div>
+        <div hx-get="{% url 'staffing:graph_profile_rates' %}?{% for key, value in request.GET.items %}&{{ key }}={{ value }}{% endfor %}" hx-trigger="load"><div class="loader m-3"></div></div>
     </div>
 </div>
 
 <SCRIPT type="text/JavaScript">
-<!-- 
+<!--
 var cells=document.getElementsByTagName('td');
 var j=0;
 for(i in cells)
