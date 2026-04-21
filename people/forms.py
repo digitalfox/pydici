@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
-from crispy_forms.layout import Layout, Column, Field, HTML, Row, Submit
+from crispy_forms.layout import Layout, Column, Field, Row
 
 from core.forms import PydiciSelect2WidgetMixin, TagChoices, PydiciCrispyForm
 from people.models import Consultant, SalesMan

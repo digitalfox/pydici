@@ -22,12 +22,12 @@ from django.db.models import Sum
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Column, Field, Row
 from crispy_forms.bootstrap import AppendedText, TabHolder, Tab
-from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget, Select2Widget
+from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget, Select2Widget, Select2MultipleWidget
 from django.utils import formats
 
 
 from staffing.models import Mission, Staffing, MarketingProduct, Timesheet
-from people.models import Consultant
+from people.models import Consultant, ConsultantProfile
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
@@ -214,13 +214,14 @@ class MassStaffingForm(forms.Form):
         self.helper = FormHelper()
         self.fields["charge"] = forms.fields.FloatField(label=_("Charge"), min_value=0.25, max_value=31)
         self.fields["comment"] = forms.fields.CharField(label=_("Comment"), max_length=100, required=False)
-        self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All active consultants"), required=False)
+        self.fields["all_consultants"] = forms.fields.BooleanField(label=_("All productive consultants"), required=False)
         self.fields["staffing_dates"] = forms.fields.MultipleChoiceField(label=_("Staffing dates"), choices=staffing_dates)
         self.fields["missions"] = forms.ModelMultipleChoiceField(widget=MissionMChoices, queryset=Mission.objects.all())
         self.fields["consultants"] = forms.ModelMultipleChoiceField(widget=ConsultantMChoices, queryset=Consultant.objects.all(), required=False)
+        self.fields["profiles"] = forms.MultipleChoiceField(label=_("Profiles"), widget=Select2MultipleWidget, choices=ConsultantProfile.objects.all().values_list("id", "name"), initial=[], required=False)
         submit = Submit("Submit", _("Save"))
         submit.field_classes = "btn btn-primary"
-        self.helper.layout = Layout(Div(Column("missions", "consultants", "all_consultants", css_class='col-md-6'),
+        self.helper.layout = Layout(Div(Column("missions", "consultants", "profiles", "all_consultants", css_class='col-md-6'),
                                         Column("charge", "staffing_dates", "comment", css_class='col-md-6'),
                                         css_class='row'),
                                     submit)

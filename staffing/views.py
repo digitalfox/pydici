@@ -287,13 +287,16 @@ def mass_staffing(request):
         form = MassStaffingForm(request.POST, staffing_dates=staffing_dates)
         if form.is_valid():  # All validation rules pass
             # Process the data in form.cleaned_data
+            consultants = []
             if form.cleaned_data["all_consultants"]:
                 # Get all active, productive non subcontractors consultants
                 consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
                 if subsidiary:
                     consultants = consultants.filter(company=subsidiary)
-            else:
-                # Use selected consultants
+            if form.cleaned_data["profiles"]:
+                consultants = Consultant.objects.filter(active=True, profil__in=form.cleaned_data["profiles"])
+            if form.cleaned_data["consultants"]:
+                # Use selected consultants only
                 consultants = form.cleaned_data["consultants"]
             for mission in form.cleaned_data["missions"]:
                 for consultant in consultants:
