@@ -686,10 +686,6 @@ def prod_report(request, year=None, month=None):
     n_month = 5
     tooltip_template = get_template("staffing/_consultant_prod_tooltip.html")
 
-    if request.GET.get("subcontractor") is None:
-        request.GET = request.GET.copy()
-        request.GET["subcontractor"] = False
-
     filter = ConsultantFilter(request.GET, queryset=Consultant.objects.filter(active=True, productive=True), request=request)
 
     all_status = {"ok": "#43E707",

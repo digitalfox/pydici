@@ -26,6 +26,12 @@ class ConsultantFilter(FilterSet):
     profil = ModelChoiceFilter(queryset=ConsultantProfile.objects.filter(consultant__active=True, consultant__productive=True).distinct())
     subcontractor = ChoiceFilter(label=_("Subcontracting"), choices=[(True, _("Yes")), (False, _("No"))], empty_label=_("Anyone"))
 
+    def __init__(self, data, *args, **kwargs):
+        if data.get("subcontractor") is None:
+            data = data.copy()
+            data["subcontractor"] = False
+        super().__init__(data, *args, **kwargs)
+
     @property
     def qs(self):
         queryset = super().qs
