@@ -9,7 +9,7 @@ from datetime import date, timedelta
 from django.utils.translation import gettext as _
 from django.db.models import Q
 
-import django_filters
+from django_filters import FilterSet, ChoiceFilter
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Row, Column, Field
 
@@ -17,10 +17,10 @@ from leads.models import Activity
 from people.models import Consultant
 
 
-class ActivityFilter(django_filters.FilterSet):
-    responsible = django_filters.ChoiceFilter(method="responsible_filter",
+class ActivityFilter(FilterSet):
+    responsible = ChoiceFilter(method="responsible_filter",
         choices=(("ME", _("Me")), ("TEAM", _("My team")), ("TERRITORY", _("My business territory"))))
-    state = django_filters.ChoiceFilter(method="state_filter",
+    state = ChoiceFilter(method="state_filter",
         choices=(Activity.STATES + (("LATE", _("Late")), ("SOON", _("Soon")))))
 
     def responsible_filter(self, queryset, name, value):

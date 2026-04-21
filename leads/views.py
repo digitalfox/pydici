@@ -396,7 +396,6 @@ def activities(request):
                    "datatable_options": ''' "order": [[7, "desc"]]  ''',
                    "filter": filter,
                    "filter_form_helper": ActivityFilterFormHelper(),
-                   "request_params": request.GET,
                    "user": request.user})
 
 
