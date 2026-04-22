@@ -290,8 +290,8 @@ def mass_staffing(request):
             # Process the data in form.cleaned_data
             consultants = []
             if form.cleaned_data["all_consultants"]:
-                # Get all active, productive non subcontractors consultants
-                consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
+                # Get all active, non subcontractors consultants
+                consultants = Consultant.objects.filter(active=True, subcontractor=False)
                 if subsidiary:
                     consultants = consultants.filter(company=subsidiary)
             if form.cleaned_data["profiles"]:
