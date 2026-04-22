@@ -53,9 +53,19 @@ class ConsultantFilter(FilterSet):
 class ConsultantFilterFormHelper(FormHelper):
     form_method = 'GET'
     layout = Layout(Row(
-        Column(Field("profil"), css_class="col-md-2"),
-        Column(Field("team"), css_class="col-md-2"),
-        Column(Field("subcontractor"), css_class="col-md-2"),
-        Column(Submit('submit', _('Apply Filter'), css_class="filter-submit-btn"), css_class="col-md-2"),
+        Column(Field("profil"), css_class="col-md-3 col-xs-12"),
+        Column(Field("team"), css_class="col-md-3 col-xs-12"),
+        Column(Field("subcontractor"), css_class="col-md-3 col-xs-12"),
+        Column(Submit('submit', _('Apply Filter'), css_class="filter-submit-btn"), css_class="col-md-3 col-xs-12"),
         css_class="my-3"
     ))
+
+class ConsultantFilterInlineFormHelper(FormHelper):
+    form_method = 'GET'
+    layout = Layout(Row(
+        Column(Field("profil"), css_class="col-md-4 col-xs-12"),
+        Column(Field("team"), css_class="col-md-4 col-xs-12"),
+        Column(Field("subcontractor"), css_class="col-md-4 col-xs-12"),
+        css_class="my-3"
+    ))
+    form_tag = False

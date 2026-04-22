@@ -15,7 +15,7 @@ from math import sqrt
 
 from django.core.cache import cache
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden, QueryDict
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
 from django.forms import formset_factory
@@ -42,7 +42,7 @@ from people.models import Consultant, Subsidiary, RateObjective
 from leads.models import Lead
 from people.models import ConsultantProfile
 from people.forms import ConsultantFilterTagForm
-from people.filters import ConsultantFilter, ConsultantFilterFormHelper
+from people.filters import ConsultantFilter, ConsultantFilterFormHelper, ConsultantFilterInlineFormHelper
 from staffing.forms import ConsultantStaffingInlineFormset, MissionStaffingInlineFormset, \
     TimesheetForm, MassStaffingForm, MissionContactsForm, StaffingForm
 from core.utils import working_days, nextMonth, previousMonth, daysOfMonth, previousWeek, nextWeek, monthWeekNumber, \
@@ -56,7 +56,6 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
 from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMIT
-from people.utils import get_team_scopes
 from people.tasks import compute_consultant_tasks
 from crm.utils import get_subsidiary_from_session
 from people.utils import subcontractor_is_user
@@ -394,25 +393,18 @@ def pdc_review(request, year=None, month=None):
     @param year: start date year. None means current year
     @param year: start date year. None means current month,
     Request option parameters:
-    - team: only display this team (staffing manager id)
     - n_month: number of month to display in forceast
-    - projection: projection mode (nonce, balanced, full) used to filter still-not-won leads"""
-
-    team = None
-    subsidiary = get_subsidiary_from_session(request)
+    - projection: projection mode (nonce, balanced, full) used to filter still-not-won leads
+    - consultant filters"""
 
     # Various projections modes. Value is ("short name", "description")
-    projections = {"none": (_("Only won leads"), _("Only consider won leads for staffing forecasting")),
-                   "balanced": (_("Balanced staffing projection"), _(u"Add missions forcecast staffing even if still not won with a ponderation based on the mission won probability")),
-                   "full": (_("Full staffing projection"), _("Add missions forcecast staffing even if still not won without any ponderation. All forecast is considered."))}
+    projections = {"none": (_("Won leads"), _("Only consider won leads for staffing forecasting")),
+                   "balanced": (_("Balanced projection"), _(u"Add missions forcecast staffing even if still not won with a ponderation based on the mission won probability")),
+                   "full": (_("Full projection"), _("Add missions forcecast staffing even if still not won without any ponderation. All forecast is considered."))}
 
     # Group by modes. Value is label
     groups = {"manager": _("Group by Manager"),
               "level": _("Group by Level")}
-
-    # Get team
-    if "team_id" in request.GET:
-        team = Consultant.objects.get(id=int(request.GET["team_id"]))
 
     n_month = 4  # Default number of month to display
     if "n_month" in request.GET:
@@ -440,7 +432,6 @@ def pdc_review(request, year=None, month=None):
     wished_tags = None
     if "wish-tag" in request.GET:
         wished_tags = [int(i) for i in request.GET.getlist("wish-tag")]
-        print(wished_tags)
 
     if year and month:
         start_date = date(int(year), int(month), 1)
@@ -469,30 +460,27 @@ def pdc_review(request, year=None, month=None):
         total[month] = {"prod": 0, "unprod": 0, "holidays": 0, "available": 0, "total": 0}
         available_month[month] = working_days(month, holidays_days)
 
-    # Get consultants staffing
-    consultants = Consultant.objects.filter(active=True, productive=True, subcontractor=False)
-    staffings = Staffing.objects.filter(consultant__productive=True, consultant__active=True, consultant__subcontractor=False)
-    staffings = staffings.filter(staffing_date__gte=months[0], staffing_date__lte=months[-1])
-    if team:
-        staffings = staffings.filter(consultant__staffing_manager=team)
-        consultants = consultants.filter(staffing_manager=team)
-    if subsidiary:
-        staffings = staffings.filter(consultant__company=subsidiary)
-        consultants = consultants.filter(company=subsidiary)
+    # Filter consultants
+    filter = ConsultantFilter(request.GET, queryset=Consultant.objects.filter(active=True, productive=True), request=request)
+
+    consultants = filter.qs
     if tags:
         for tag in tags:
-            staffings = staffings.filter(consultant__tagged_items__tag__id=tag, consultant__tagged_items__nature="1_KNOWLEDGE")
             consultants = consultants.filter(tagged_items__tag__id=tag, tagged_items__nature="1_KNOWLEDGE")
         tag_form = ConsultantFilterTagForm(initial={"tag": tags})
     else:
         tag_form = ConsultantFilterTagForm()
     if wished_tags:
         for tag in wished_tags:
-            staffings = staffings.filter(consultant__tagged_items__tag__id=tag, consultant__tagged_items__nature="2_WISH")
             consultants = consultants.filter(tagged_items__tag__id=tag, tagged_items__nature="2_WISH")
         wished_tag_form = ConsultantFilterTagForm(initial={"tag": wished_tags}, prefix="wish")
     else:
         wished_tag_form = ConsultantFilterTagForm(prefix="wish")
+
+    # Get consultants staffing
+    staffings = Staffing.objects.filter(consultant__in=consultants)
+    staffings = staffings.filter(staffing_date__gte=months[0], staffing_date__lte=months[-1])
+
     if projection in ("balanced", "full"):
         # Only exclude null (0%) mission
         staffings = staffings.filter(mission__probability__gt=0)
@@ -625,12 +613,6 @@ def pdc_review(request, year=None, month=None):
     else:
         data.sort(key=lambda x: (x[0].profil.level, x[0].profil.id))  # Sort by level
 
-    scopes, team_current_filter, team_current_url_filter = get_team_scopes(subsidiary, team)
-    if team:
-        team_name = _("team %(manager_name)s") % {"manager_name": team}
-    else:
-        team_name = None
-
     return render(request, "staffing/pdc_review.html",
                   {"staffing": data,
                    "months": months,
@@ -646,10 +628,8 @@ def pdc_review(request, year=None, month=None):
                    "groupby": groupby,
                    "groupby_label": groups[groupby],
                    "groups": groups,
-                   "scope": team_name or subsidiary or _("Everybody"),
-                   "team_current_filter" : team_current_filter,
-                   "team_current_url_filter": team_current_url_filter,
-                   "scopes": scopes,
+                   "filter": filter,
+                   "filter_form_helper": ConsultantFilterInlineFormHelper(),
                    "tag_form": tag_form,
                    "wished_tag_form": wished_tag_form,})
 
