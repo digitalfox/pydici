@@ -33,34 +33,32 @@
 
 <!-- buttons bar -->
 <form id="filter_form" class="row">
-
-    <div class="col-xxl-3 col-xl-12 d-flex flex-wrap align-items-center mt-2">
+    <div class="col-xxl-2 col-xl-12 d-flex align-items-center">
         <!-- Projection button -->
-        <button type="button" class="btn btn-primary dropdown-toggle mx-1" data-bs-toggle="dropdown" aria-expanded="false">
-        {{ projection_label }}
-        </button>
-        <ul class="dropdown-menu">
-            {% for projection_key, projection_data in projections.items %}
-            <li><a class="dropdown-item" href="{% url 'staffing:pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{groupby}}&projection={{projection_key}}&{{scope_current_filter}}" title="{{projection_data|last}}">{{ projection_data|first }}</a></li>
-            {% endfor %}
-        </ul>
-
-        <!-- Group by button -->
-        <button type="button" class="btn btn-primary dropdown-toggle mx-1" data-bs-toggle="dropdown" aria-expanded="false">
-        {{ groupby_label }}
-        </button>
-        <ul class="dropdown-menu">
-            {% for group_key, group_label in groups.items %}
-            <li><a class="dropdown-item" href="{% url 'staffing:pdcreview' year=start_date|date:'Y' month=start_date|date:'m' %}/?groupby={{group_key}}&projection={{projection}}&{{scope_current_filter}}">{{ group_label }}</a></li>
-            {% endfor %}
-        </ul>
+        <div id="div_id_projection" class="mx-1 mb-3">
+            <label for="id_projection" class="form-label">{% trans "Projections" %}</label>
+            <select name="projection" class="select form-select" id="id_projection">
+                {% for projection_key, projection_data in projections.items %}
+                <option value="{{ projection_key }}"{% if projection_key == projection %} selected{% endif %} title="{{projection_data|last}}">{{ projection_data|first }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <!-- Groupby button -->
+        <div id="div_id_groupby" class="mx-1 mb-3">
+            <label for="id_groupby" class="form-label">{% trans "Group by" %}</label>
+            <select name="groupby" class="select form-select" id="id_groupby">
+                {% for groupby_key, groupby_data in groups.items %}
+                <option value="{{ groupby_key }}"{% if groupby_key == groupby %} selected{% endif %}>{{ groupby_data }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
     <div class="col-xxl-5 col-xl-12 text-nowrap">
         <!-- filter  buttons -->
         {% crispy filter.form filter_form_helper %}
     </div>
     <!-- Tag selector -->
-    <div class="col-xxl-3 col-xl-12">
+    <div class="col-xxl-4 col-xl-12">
     <div class="row">
         <div class="d-flex mt-3">
             <div class="col-6"><label class="form-label">{% trans "Knowledge:" %}</label>{{ tag_form }}</div>

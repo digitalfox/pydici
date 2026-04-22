@@ -398,13 +398,13 @@ def pdc_review(request, year=None, month=None):
     - consultant filters"""
 
     # Various projections modes. Value is ("short name", "description")
-    projections = {"none": (_("Won leads"), _("Only consider won leads for staffing forecasting")),
-                   "balanced": (_("Balanced projection"), _(u"Add missions forcecast staffing even if still not won with a ponderation based on the mission won probability")),
-                   "full": (_("Full projection"), _("Add missions forcecast staffing even if still not won without any ponderation. All forecast is considered."))}
+    projections = {"none": (_("Won"), _("Only consider won leads for staffing forecasting")),
+                   "balanced": (_("Balanced"), _(u"Add missions forcecast staffing even if still not won with a ponderation based on the mission won probability")),
+                   "full": (_("Full"), _("Add missions forcecast staffing even if still not won without any ponderation. All forecast is considered."))}
 
     # Group by modes. Value is label
-    groups = {"manager": _("Group by Manager"),
-              "level": _("Group by Level")}
+    groups = {"manager": _("Manager"),
+              "level": _("Profil")}
 
     n_month = 4  # Default number of month to display
     if "n_month" in request.GET:
