@@ -393,7 +393,7 @@ def activities(request):
     filter = ActivityFilter(request.GET, queryset=Activity.objects.all(), request=request)
     return render(request, "leads/activities.html",
                   {"data_url" : reverse('leads:activity_table_DT'),
-                   "datatable_options": ''' "order": [[7, "desc"]]  ''',
+                   "datatable_options": ''' "order": [[8, "asc"]]  ''',
                    "filter": filter,
                    "filter_form_helper": ActivityFilterFormHelper(),
                    "user": request.user})
