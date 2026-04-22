@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-22 07:57+0200\n"
+"POT-Creation-Date: 2026-04-22 07:58+0200\n"
 "PO-Revision-Date: 2026-04-22 07:57+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@enioka.com>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
@@ -2475,7 +2475,6 @@ msgid "Charge"
 msgstr "Charge"
 
 #: staffing/forms.py:217
-#| msgid "All active consultants"
 msgid "All active consultants"
 msgstr "Toutes les consultants actifs"
 
