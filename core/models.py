@@ -119,7 +119,7 @@ class Tag(TagBase):
     class Meta:
         verbose_name = _("Tag")
         verbose_name_plural = _("Tags")
-        ordering = ['category', 'name']
+        ordering = ['name']
 
 
 class TaggedItem(GenericTaggedItemBase):
