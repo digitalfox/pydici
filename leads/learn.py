@@ -438,6 +438,8 @@ def compute_leads_state(relearn=True, force=False, leads_id=None):
         return
 
     model = cache.get(STATE_MODEL_CACHE_KEY)
+    if model:
+        model = pickle.loads(zlib.decompress(model))
 
     if relearn and model:
         last_update = cache.get(STATE_MODEL_LAST_UPDATE_CACHE_KEY)
@@ -465,7 +467,7 @@ def compute_leads_state(relearn=True, force=False, leads_id=None):
         learn_features, learn_targets = extract_leads_state(learn_leads)
         model = get_state_model()
         model.fit(learn_features, process_target(learn_targets))
-        cache.set(STATE_MODEL_CACHE_KEY, model, 3600 * 24)
+        cache.set(STATE_MODEL_CACHE_KEY, zlib.compress(pickle.dumps(model, protocol=5), level=1), 3600 * 24)
         cache.set(STATE_MODEL_LAST_UPDATE_CACHE_KEY, date.today().isoformat())
 
     for lead, score in zip(current_leads, predict_state(model, current_features)):
