@@ -2155,9 +2155,8 @@ def lunch_tickets_pivotable(request):
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 60 * 24)
-def graph_timesheet_rates_bar(request, team_id=None):
-    """Nice graph bar of timesheet prod/holidays/nonprod rates
-    @:param team_id: filter graph on the given team
+def graph_timesheet_rates_bar(request):
+    """Nice graph bar of timesheet prod/holidays/nonprod rates. Can be filtered with ConsultantFilter.
     @todo: per year, with start-end date"""
     data = {}  # Graph data
     natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures id
@@ -2174,19 +2173,9 @@ def graph_timesheet_rates_bar(request, team_id=None):
     timesheetStartDate = (date.today() - 3 * timedelta(365)).replace(day=1)  # Last three years
     timesheetEndDate = date.today()
 
-    subsidiary = get_subsidiary_from_session(request)
-    # Filter on scope
-    # TODO: to be removed once pdc_review has been migrated on new filters
-    if team_id:
-        timesheets = Timesheet.objects.filter(consultant__staffing_manager_id=team_id)
-    elif subsidiary:
-        timesheets = Timesheet.objects.filter(consultant__company=subsidiary)
-    else:
-        timesheets = Timesheet.objects.all()
-
     # Filter on consultant request params
     consultantFilter = ConsultantFilter(request.GET, request=request)
-    timesheets = timesheets.filter(consultant__in=consultantFilter.qs)
+    timesheets = Timesheet.objects.filter(consultant__in=consultantFilter.qs)
 
     timesheets = timesheets.filter(consultant__productive=True,
                                    working_date__gt=timesheetStartDate,
@@ -2226,9 +2215,8 @@ def graph_timesheet_rates_bar(request, team_id=None):
 
 @pydici_non_public
 @cache_page(60 * 60 * 24)
-def graph_profile_rates(request, team_id=None):
-    """Sale rate per profil
-    @:param team_id: filter graph on the given team"""
+def graph_profile_rates(request):
+    """Sale rate per profil. Can be filtered with ConsultantFilter."""
     #TODO: add start/end timeframe
     graph_data = []
     turnover = {}
@@ -2246,17 +2234,7 @@ def graph_profile_rates(request, team_id=None):
 
     consultants = consultantFilter.qs.filter(productive=True,
                                             timesheet__working_date__gte=timesheetStartDate,
-                                            timesheet__working_date__lt=timesheetEndDate)
-
-    subsidiary = get_subsidiary_from_session(request)
-    # Filter on scope
-    # TODO: to be removed once pdc_review has been migrated on new filters
-    if team_id:
-        consultants = consultants.filter(staffing_manager_id=team_id)
-    elif subsidiary:
-        consultants = consultants.filter(company=subsidiary)
-
-    consultants = consultants.distinct()
+                                            timesheet__working_date__lt=timesheetEndDate).distinct()
 
     for profil, profilName in profils.items():
         nDays[profil] = {}
