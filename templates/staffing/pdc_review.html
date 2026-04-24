@@ -78,23 +78,23 @@
     <tr>
         <th></th>
     	{% for month in months %}
-    	    <th colspan="4" class="text-center" style="border-left:1px solid #C3C3C3;">{{ month|date:"F y" }}</th>
+    	    <th colspan="4" class="text-center" style="border-left:2px solid lightgrey;">{{ month|date:"F y" }}</th>
     	{% endfor %}
-    	<th style="border-left:1px solid #C3C3C3;"></th>
+    	<th style="border-left:2px solid lightgrey;"></th>
     </tr>
         <th></th>
         {% for month in months %}
-            <th style="border-left:1px solid #C3C3C3;">{% trans "prod" %}<span title="{{ month|date:'Ym' }}"></span></th>
+            <th style="border-left:2px solid lightgrey;">{% trans "prod" %}<span title="{{ month|date:'Ym' }}"></span></th>
             <th>{% trans "unprod" %}<span title="{{ month|date:'Ym' }}"></span></th>
             <th>{% trans "hol." %}<span title="{{ month|date:'Ym' }}"></span></th>
             <th>{% trans "avai." %}<span title="{{ month|date:'Ym' }}"></span></th>
         {% endfor %}
-            <th style="border-left:1px solid #C3C3C3;" class="d-none d-sm-table-cell">{% trans "Clients" %}</th>
+            <th style="border-left:2px solid lightgrey;" class="d-none d-sm-table-cell">{% trans "Clients" %}</th>
     </tr>
     <tr>
         <th>{% trans "Rates"%} (%)</th>
         {% for month_rates in rates %}
-            <th style="border-left:2px solid #C3C3C3;">{{ month_rates|join:"</th><th>" }}</th>
+            <th style="border-left:2px solid lightgrey;">{{ month_rates|join:"</th><th>" }}</th>
         {% endfor %}
         <th></th>
     </tr>
@@ -115,21 +115,21 @@
                 {% with tab="#tab-staffing" %}{% include "people/__consultant_name.html" %}{% endwith %}
             </td>
             {% for charge in charges %}
-                <td class='pdc-tooltip' data-bs-toggle="popover" style="cursor: help; border-left:1px solid #C3C3C3;">{{ charge|join:"</td><td style=' cursor: help' class='charge pdc-tooltip' data-bs-toggle='popover'>" }}</td>
+                <td class='pdc-tooltip' data-bs-toggle="popover" style="cursor: help; border-left:2px solid lightgrey;">{{ charge|join:"</td><td style=' cursor: help' class='charge pdc-tooltip' data-bs-toggle='popover'>" }}</td>
             {% endfor %}
         </tr>
     {% endfor %}
     <tr>
         <th>{% trans "Totals" %}</th>
         {% for month_total in total %}
-            <th style="cursor: help; border-left:2px solid #C3C3C3;">{{ month_total|join:"</th><th>" }}</th>
+            <th style="cursor: help; border-left:2px solid lightgrey;">{{ month_total|join:"</th><th>" }}</th>
         {% endfor %}
         <th></th>
     </tr>
     <tr>
         <th>{% trans "Rates" %} (%)</th>
         {% for month_rates in rates %}
-            <th style="border-left:2px solid #C3C3C3;">{{ month_rates|join:"</th><th>" }}</th>
+            <th style="border-left:2px solid lightgrey;">{{ month_rates|join:"</th><th>" }}</th>
         {% endfor %}
         <th></th>
     </tr>
