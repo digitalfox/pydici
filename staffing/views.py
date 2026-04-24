@@ -2163,6 +2163,13 @@ def graph_timesheet_rates_bar(request):
     nature_data = {}
     holiday_days = [h.day for h in  Holiday.objects.all()]
     graph_data = []
+    tags = None
+    if "tag" in request.GET:
+        tags = [int(i) for i in request.GET.getlist("tag")]
+
+    wished_tags = None
+    if "wish-tag" in request.GET:
+        wished_tags = [int(i) for i in request.GET.getlist("wish-tag")]
 
     # Create dict per mission nature
     for nature in natures:
@@ -2173,8 +2180,17 @@ def graph_timesheet_rates_bar(request):
     timesheetEndDate = date.today()
 
     # Filter on consultant request params
-    consultantFilter = ConsultantFilter(request.GET, request=request)
-    timesheets = Timesheet.objects.filter(consultant__in=consultantFilter.qs)
+    consultants = ConsultantFilter(request.GET, request=request).qs
+    if tags:
+        for tag in tags:
+            consultants = consultants.filter(tagged_items__tag__id=tag, tagged_items__nature="1_KNOWLEDGE")
+    if wished_tags:
+        for tag in wished_tags:
+            consultants = consultants.filter(tagged_items__tag__id=tag, tagged_items__nature="2_WISH")
+
+    consultants = consultants.distinct()
+
+    timesheets = Timesheet.objects.filter(consultant__in=consultants)
 
     timesheets = timesheets.filter(consultant__productive=True,
                                    working_date__gt=timesheetStartDate,
@@ -2227,13 +2243,29 @@ def graph_profile_rates(request):
     timesheetEndDate = nextMonth(date.today())  # First day of next month
     profils = dict(ConsultantProfile.objects.all().values_list("id", "name"))  # Consultant Profiles
 
+    tags = None
+    if "tag" in request.GET:
+        tags = [int(i) for i in request.GET.getlist("tag")]
+
+    wished_tags = None
+    if "wish-tag" in request.GET:
+        wished_tags = [int(i) for i in request.GET.getlist("wish-tag")]
+
     # Filter on consultant request params
     consultantFilter = ConsultantFilter(request.GET, request=request)
 
-
     consultants = consultantFilter.qs.filter(productive=True,
                                             timesheet__working_date__gte=timesheetStartDate,
-                                            timesheet__working_date__lt=timesheetEndDate).distinct()
+                                            timesheet__working_date__lt=timesheetEndDate)
+
+    if tags:
+        for tag in tags:
+            consultants = consultants.filter(tagged_items__tag__id=tag, tagged_items__nature="1_KNOWLEDGE")
+    if wished_tags:
+        for tag in wished_tags:
+            consultants = consultants.filter(tagged_items__tag__id=tag, tagged_items__nature="2_WISH")
+
+    consultants = consultants.distinct()
 
     for profil, profilName in profils.items():
         nDays[profil] = {}

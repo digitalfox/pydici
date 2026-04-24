@@ -141,13 +141,13 @@
 <div class="row">
     <div class="col-lg-12">
         <h1>{% trans "Production rates and daily rates review" %}</h1>
-        <div hx-get="{% url 'staffing:graph_timesheet_rates_bar' %}/{{team_current_url_filter}}?{{ request.GET.urlencode }}" hx-trigger="load"><div class="loader m-3"></div></div>
+        <div hx-get="{% url 'staffing:graph_timesheet_rates_bar' %}/?{{ request.GET.urlencode }}" hx-trigger="load"><div class="loader m-3"></div></div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-lg-12">
-        <div hx-get="{% url 'staffing:graph_profile_rates' %}/{{team_current_url_filter}}?{{ request.GET.urlencode }}" hx-trigger="load"><div class="loader m-3"></div></div>
+        <div hx-get="{% url 'staffing:graph_profile_rates' %}/?{{ request.GET.urlencode }}" hx-trigger="load"><div class="loader m-3"></div></div>
     </div>
 </div>
 
