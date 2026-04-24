@@ -1,0 +1,5 @@
+{# fragment for displaying consultant monthly staffing from a tag #}
+{% load i18n %}
+<span class="fw-medium">
+    {% blocktrans %}{{ total }} days planned, <span style='color: {{ color }};'>{{ available }}</span> days available{% endblocktrans %}
+</span>
