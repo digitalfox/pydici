@@ -7,7 +7,9 @@
     <meta name="description" content="pydici">
     <meta name="author" content="Sebastien Renard">
     <title>{{ bill.lead.subsidiary.commercial_name }}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
     <link href="{{ MEDIA_URL }}css/pydici.css" rel="stylesheet">
     <link href="{{ MEDIA_URL }}css/pydici-pdf.css" rel="stylesheet">
 </head>
@@ -19,14 +21,15 @@
 
     <div class="page">
         <div class="row">
-            <div class="col-xs-5">
-                <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ bill.lead.subsidiary.code}}.png" height=40/><br/><br/>
-                {{ bill.lead.subsidiary.commercial_name }}<br/>
-                {{ bill.lead.subsidiary.billing_address|linebreaksbr }}
-                <br/><br/>
+            <div class="col-5">
+                <img alt="" src="{{ MEDIA_URL }}pydici/company_logo-{{ bill.lead.subsidiary.code}}.png" class="logo-image"/><br/><br/>
+                <div class="company-name">
+                    {{ bill.lead.subsidiary.commercial_name }}<br/>
+                    {{ bill.lead.subsidiary.billing_address|linebreaksbr }}
+                </div>
+                <br/>
                 {% if bill.client_deal_id %}{% trans "Your ref.: " %}{{ bill.client_deal_id }}<br/>{% endif %}
                 {% trans "Our ref.: " %}{{ bill.lead.deal_id }}<br/>
-                <br/>
                 {% if bill.lead.paying_authority %}
                     {% if bill.lead.paying_authority.contact %}{% trans "Your contact: " %}{{ bill.lead.paying_authority.contact }}<br/>{% endif %}
                 {% else %}
@@ -34,8 +37,8 @@
                 {% endif %}
                 {% trans "Our contact: " %}{{ bill.lead.responsible }}<br/>
             </div>
-            <div class="col-offset-1 col-xs-6">
-                <div class="well small-margin"><div class="lead small-margin text-uppercase">
+            <div class="col-offset-1 col-6">
+                <div class="card card-body bg-light small-margin"><div class="lead small-margin text-uppercase">
                     <strong>
                         {% if bill.amount_with_vat > 0 %}
                             {% trans "Bill" %}
@@ -47,28 +50,30 @@
                 <strong>N° {{ bill.bill_id }} / {{ bill.creation_date }}</strong></div>
 
                 {% if bill.lead.paying_authority %}
-                    <div class="lead">
+                <div class="company-name">
                         {{ bill.lead.paying_authority.billing_name|default:bill.lead.paying_authority.company }}<br>
                         {{ bill.lead.paying_authority.company.billing_address|linebreaksbr }}<br>
-                        {% if bill.lead.paying_authority.company.vat_id %}
-                            {% trans "VAT id:" %} {{ bill.lead.paying_authority.company.vat_id }}<br>
-                        {% endif %}
-                        {% if bill.lead.paying_authority.company.legal_id %}
-                            {% trans "Legal id:" %} {{ bill.lead.paying_authority.company.legal_id }}<br>
-                        {% endif %}
-                    </div>
+                </div>
+                <br>
+                    {% if bill.lead.paying_authority.company.vat_id %}
+                        {% trans "VAT id:" %} {{ bill.lead.paying_authority.company.vat_id }}<br>
+                    {% endif %}
+                    {% if bill.lead.paying_authority.company.legal_id %}
+                        {% trans "Legal id:" %} {{ bill.lead.paying_authority.company.legal_id }}<br>
+                    {% endif %}
                 {% else %}
-                    <div class="lead">
+                    <div class="company-name">
                         {{ bill.lead.client.organisation.billing_name|default:bill.lead.client.organisation }}
                         {{ bill.lead.client.billing_contact.contact }}<br>
                         {{ bill.lead.client.billing_address|linebreaksbr }}<br>
-                        {% if bill.lead.client.organisation.vat_id  %}
-                            {% trans "VAT id:" %} {{ bill.lead.client.organisation.vat_id }}<br>
-                        {% endif %}
-                        {% if bill.lead.client.organisation.legal_id  %}
-                            {% trans "Legal id:" %} {{ bill.lead.client.organisation.legal_id }}<br>
-                        {% endif %}
                     </div>
+                    <br>
+                    {% if bill.lead.client.organisation.vat_id  %}
+                        {% trans "VAT id:" %} {{ bill.lead.client.organisation.vat_id }}<br>
+                    {% endif %}
+                    {% if bill.lead.client.organisation.legal_id  %}
+                        {% trans "Legal id:" %} {{ bill.lead.client.organisation.legal_id }}<br>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
@@ -76,9 +81,9 @@
         <table class="table">
             {% if bill.billdetail_set.all %}
                 <thead>
-                    <tr><th><small>{% trans "Description" %}</small></th><th class="text-center"><small>{% trans "Quantity" %}</small></th>
-                        <th class="text-right"><small>{% trans "Unit Price €" %}</small></th><th class="text-right"><small>{% trans "Amount €" %}</small></th>
-                        <th class="text-right"><small>{% trans "VAT (%)" %}</small></th><th class="text-right"><small>{% trans "Amount inc. taxes €" %}</small></th>
+                    <tr><th class="text-muted"><small>{% trans "Description" %}</small></th><th class="text-center text-muted"><small>{% trans "Quantity" %}</small></th>
+                        <th class="text-end text-muted"><small>{% trans "Unit Price €" %}</small></th><th class="text-end text-muted"><small>{% trans "Amount €" %}</small></th>
+                        <th class="text-end text-muted"><small>{% trans "VAT (%)" %}</small></th><th class="text-end text-muted"><small>{% trans "Amount inc. taxes €" %}</small></th>
                     </tr>
                 </thead>
 
@@ -86,7 +91,7 @@
 
                 {% for detail in detail_list %}
                         <tr><td class="noborder"></td></tr>
-                        <tr><td colspan=6 class="text-left noborder"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
+                        <tr><td colspan=6 class="text-start noborder"><strong>{{ detail.grouper.short_name }}</strong></td></tr>
                         {% regroup detail.list by month as mission_detail_list %}
                         {% for mission_detail in mission_detail_list %}
                             <tbody style="page-break-inside: avoid;">
@@ -104,8 +109,8 @@
                                         <td>{% trans "Fixed price"%}{% if item.label %} - {{ item.label }}{% endif %}</td>
                                         <td class="text-center">{% widthratio item.quantity 1 100 %} %</td>
                                     {% endif %}
-                                    <td class="text-right">{{ item.unit_price|floatformat:-2 }}</td>
-                                    <td class="text-right">{{ item.amount|floatformat:-2 }}</td><td class="text-right">{{ item.vat|floatformat:-2 }}</td><td class="text-right">{{ item.amount_with_vat|floatformat:-2 }}</td>
+                                    <td class="text-end">{{ item.unit_price|floatformat:-2 }}</td>
+                                    <td class="text-end">{{ item.amount|floatformat:-2 }}</td><td class="text-end">{{ item.vat|floatformat:-2 }}</td><td class="text-end">{{ item.amount_with_vat|floatformat:-2 }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -116,27 +121,27 @@
             {% if bill.billdetail_set.all %}
                 <tr><td colspan=6 class="noborder">&nbsp;</td></tr>
                 <tr>
-                    <td colspan=4 class="no-top-border"></td>
-                    <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.prestationsTotal|floatformat:2 }}</b></td>
+                    <td colspan=4 class="noborder"></td>
+                    <td class="text-end bill-total-border-left bill-total-border-top noborder"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-end bill-total-border-right bill-total-border-top noborder"><b>{{ bill.prestationsTotal|floatformat:2 }}</b></td>
                 </tr>
             {% endif %}
             {% with bill.expensesTotal as expensesTotal %}
                 {% if expensesTotal %}
                     <tr>
-                        <td colspan=4 class="no-top-border"></td>
-                        <td class="text-right bill-total-border-left {% if bill.billdetail_set.all%}no-top-border{% endif %}"><b>{% trans "Expenses (€)" %}</b></td><td class="text-right bill-total-border-right {% if bill.billdetail_set.all%}no-top-border{% endif %}"><b>{{ expensesTotal|floatformat:2 }}</b></td>
+                        <td colspan=4 class="noborder"></td>
+                        <td class="text-end bill-total-border-left {% if bill.billdetail_set.all%}noborder{% endif %}"><b>{% trans "Expenses (€)" %}</b></td><td class="text-end bill-total-border-right {% if bill.billdetail_set.all%}noborder{% endif %}"><b>{{ expensesTotal|floatformat:2 }}</b></td>
                     </tr>
                 {% endif %}
             {% endwith %}
             {% for vat, amount in bill.taxes %}
                 <tr>
-                    <td colspan=4 class="no-top-border"></td>
-                    <td class="text-right bill-total-border-left no-top-border"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ amount|floatformat:2 }}</b></td>
+                    <td colspan=4 class="noborder"></td>
+                    <td class="text-end bill-total-border-left noborder"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-end bill-total-border-right noborder"><b>{{ amount|floatformat:2 }}</b></td>
                 </tr>
             {% endfor %}
             <tr>
-                <td colspan=4 class="no-top-border"></td>
-                <td class="text-right bill-total-border-left bill-total-border-bottom no-top-border"><b>{% trans "Total (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-bottom no-top-border"><b>{{ bill.amount_with_vat|floatformat:2 }}</b></td>
+                <td colspan=4 class="noborder"></td>
+                <td class="text-end bill-total-border-left bill-total-border-bottom noborder"><b>{% trans "Total (€)" %}</b></td><td class="text-end bill-total-border-right bill-total-border-bottom noborder"><b>{{ bill.amount_with_vat|floatformat:2 }}</b></td>
             </tr>
             </tbody>
         </table>
@@ -159,11 +164,11 @@
         <h2>{% trans "Expenses details" %}</h2>
         <table class="table table-sm table-stripped">
             <tr>
-                <th>{% trans "Date" %}</th>
-                <th>{% trans "Consultant" %}</th>
-                <th>{% trans "Expense label" %}</th>
-                <th>{% trans "Amount" %}</th>
-                <th>{% trans "Amount (with VAT)" %}</th>
+                <th class="text-muted">{% trans "Date" %}</th>
+                <th class="text-muted">{% trans "Consultant" %}</th>
+                <th class="text-muted">{% trans "Expense label" %}</th>
+                <th class="text-muted">{% trans "Amount" %}</th>
+                <th class="text-muted">{% trans "Amount (with VAT)" %}</th>
             </tr>
             {% for billExpense in bill.billexpense_set.all %}
                 <tr>
@@ -175,7 +180,7 @@
                 </tr>
             {% endfor %}
             <tr>
-                <th colspan="3" class="text-right">{% trans "Total" %}</th>
+                <th colspan="3" class="text-end">{% trans "Total" %}</th>
                 <th>{{ bill.expensesTotal }} €</th>
                 <th>{{ bill.expensesTotalWithTaxes }} €</th>
             </tr>

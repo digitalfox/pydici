@@ -49,3 +49,13 @@ div.po-page {
 .small-margin {
     margin-bottom: 5px;
 }
+
+.logo-image {
+    height: 80px;
+    width: auto;
+}
+
+.company-name {
+    font-size: 1rem;
+    font-weight: 300;
+}
