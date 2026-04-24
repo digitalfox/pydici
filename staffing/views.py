@@ -1801,7 +1801,7 @@ def mission_consultant_rate(request, mission_id, consultant_id):
                 return HttpResponse(status=400)
             if mission.responsible:
                 compute_consultant_tasks.delay(mission.responsible.id)
-            LogEntry.objects.log_create(instance=mission, actor=request.user, action=LogEntry.Action.UPDATE, changes=json.dumps(change))
+            LogEntry.objects.log_create(instance=mission, actor=request.user, action=LogEntry.Action.UPDATE, changes=change)
 
     objective_dates, rates = compute_mission_consultant_rates(mission)
     return render(request, "staffing/_mission_consultants_rate.html", {"mission": mission, "consultant": consultant,
