@@ -5,16 +5,11 @@ Pydici custom tags
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
-import re
-
-import markdown
-from markdown.extensions.sane_lists import SaneListExtension
-import bleach
-
 from django import template
+from django.template.loader import get_template
+
 
 register = template.Library()
-
 
 @register.simple_tag(takes_context=True)
 def call_for_current_subsidiary(context, obj, f_name):
@@ -27,3 +22,13 @@ def call_for_current_subsidiary(context, obj, f_name):
         return f(subsidiary=subsidiary)
     else:
         return f()
+
+@register.simple_tag(takes_context=True)
+def consultant_monthly_staffing(context, consultant, month):
+    template = get_template("people/__consultant_monthly_staffing.html")
+    staffings, total, available = consultant.monthly_staffing(month)
+    if available < 0:
+        color = "red"
+    else:
+        color = "green"
+    return template.render({"total": total, "available": available, "color": color})

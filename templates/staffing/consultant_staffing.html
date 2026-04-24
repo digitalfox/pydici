@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load l10n %}
+{% load pydici_tags %}
 {# Fragment of page to be included in a consultant_home tab #}
 
 <div id="pydici-ajax-form-content-consultant-staffing" class="py-2">
@@ -24,6 +25,8 @@
                                     <i class="{% if year_month == current_month or form.errors %}bi-chevron-compact-down{% else %}bi-chevron-compact-right{% endif %}"></i>
                                     {{ form.initial.staffing_date|date:"F Y" }}
                                 </a>
+                                &nbsp;&nbsp;
+                                {% consultant_monthly_staffing consultant form.initial.staffing_date %}
                             </th></tr>
                        {% else %}
                            <tr><th style="backround-color:white" colspan=8>{% trans "New staffing:" %}</th></tr>
@@ -58,7 +61,7 @@
             {% endfor %}
         </table>
         </div>
-    
+
         <div class="submit-row sticky">
             <button type='submit' class="btn btn-primary"><i class="bi bi-save"></i> {% trans 'Save' %}</button>
             <a role="button" class="btn btn-primary button-link"

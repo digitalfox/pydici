@@ -648,9 +648,8 @@ def pdc_detail(request, consultant_id, staffing_date):
     except (ValueError, IndexError):
         raise Http404
 
-    staffings = Staffing.objects.filter(mission__active=True, consultant=consultant, staffing_date__gte=month, staffing_date__lt=nextMonth(month))
-    total = staffings.aggregate(Sum("charge"))["charge__sum"] or 0
-    available = working_days(month, holidays=holidayDays(month), upToToday=False) - total
+    staffings, total, available = consultant.monthly_staffing(month)
+
     return render(request, "staffing/pdc_detail.html",
                   {"staffings": staffings,
                    "total": total,

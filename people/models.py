@@ -252,6 +252,15 @@ class Consultant(models.Model):
         days = list(days.values())[0]
         return days or 0
 
+    def monthly_staffing(self, month):
+        """Return forecast staffing, total days and available days"""
+        Staffing = apps.get_model("staffing", "Staffing")  # Get Staffing with get_model to avoid circular imports
+        from staffing.utils import holidayDays
+        staffings = Staffing.objects.filter(mission__active=True, consultant=self, staffing_date__gte=month, staffing_date__lt=nextMonth(month))
+        total = staffings.aggregate(Sum("charge"))["charge__sum"] or 0
+        available = working_days(month, holidays=holidayDays(month), upToToday=False) - total
+        return staffings, total, available
+
     @cacheable(CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY, 6*3600)
     def is_in_holidays(self):
         """True if consultant is in holiday today. Else False"""
@@ -311,7 +320,6 @@ class Consultant(models.Model):
             sd = sd.aggregate(p_charge=Sum(F("charge")*F("mission__probability")/100))["p_charge"] or 0
             result.append(sd - md)
         return result
-
 
     def get_tasks(self):
         """gather all tasks consultant should do
