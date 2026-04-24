@@ -159,13 +159,13 @@
 
          // available >= 5
 	     if(available_days >= 5) {
-	         cell.style.backgroundColor = "#43E707";
+			cell.classList.add("pdc_big_avail");
              return;
 	     }
          // 2 <= available < 5
          if(available_days >= 2) {
-	         cell.style.backgroundColor = "#CCE7B2";
-             return;
+			cell.classList.add("pdc_small_avail");
+            return;
 	     }
          // 0 <= available < 2
          if(available_days >= 0) {
@@ -173,12 +173,11 @@
 	     }
          // -2 <= available < 0
          if(available_days >= -2) {
-	         cell.style.backgroundColor = "#E7E36D";
-             return;
+           cell.classList.add("pdc_warn");
+           return;
 	     }
-
          // available < -2
-         cell.style.backgroundColor = "#E76F6F";
+         cell.classList.add("pdc_danger");
      }
  })
 

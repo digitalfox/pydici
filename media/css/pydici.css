@@ -428,10 +428,12 @@ div.ui-tooltip {
     width: 5em;
 }
 
-/* workload optim result */
-.optim_ok { background-color: #e7ffde !important; }
-.optim_warn { background-color: #ffc5c5 !important; }
+/* workload color classes */
+.pdc_big_avail { background-color: #8fff49 !important; }
+.optim_ok, .pdc_small_avail { background-color: #c7ffb7 !important; }
+.optim_warn, .pdc_danger { background-color: #ffb3a4 !important; }
 .optim_info { background-color: #c7f3ff !important; }
+.pdc_warn { background-color: #f5f598 !important; }
 
 /* override boostratp default */
 body {
