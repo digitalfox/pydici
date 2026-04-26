@@ -16,6 +16,10 @@
     {% crispy filter.form filter_form_helper %}
 
     <pre class="mermaid kanban">
+---
+config:
+    theme: 'forest'
+---
 {{ kanban_activites_data|safe }}
     </pre>
     {% include "leads/_activities_table.html" %}
