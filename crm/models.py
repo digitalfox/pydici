@@ -219,73 +219,57 @@ class Contact(models.Model):
         return self.companies(html=True)
 
     def relationData(self):
-        """Compute relational data in json format usable by Dagre / D3 library"""
-        nodes = GNodes()
-        edges = GEdges()
-        leadColor = "#8AA7FF"
-        directColor= "#82D887"
-        missionColor = "#E4C160"
+        """Compute relational data markdown format usable by mermaid"""
+        data = []
+        leadColor = "#d4ffe7"
+        missionColor = "#f7eac3"
 
-        try:
-            me = GNode(str(self.id), str(self), color="#EEE")
-            nodes.add(me)
-            # Mission relations
-            for missionContact in self.missioncontact_set.all():
-                for mission in missionContact.mission_set.all():
-                    missionNode = GNode("mission-%s" % mission.id, """<i class="bi bi-gear"></i>
-                                                                      <span class='graph-tooltip' title='%s'><a href='%s'>%s&nbsp;</a></span>""" % (mission.short_name(),
-                                                                                                                                                          mission.get_absolute_url(),
-                                                                                                                                                          mission.mission_id()))
-                    nodes.add(missionNode)
-                    edges.append(GEdge(me, missionNode, color=missionColor))
-                    for consultant in mission.consultants():
-                        consultantNode = GNode("consultant-%s" % consultant.id, str(consultant))
-                        nodes.add(consultantNode)
-                        edges.append(GEdge(missionNode, consultantNode, color=missionColor))
-            # Business / Lead relations
-            for client in self.client_set.all():
-                if client.lead_set.count() < 5 :
-                    for lead in client.lead_set.all():
-                        leadNode = GNode("lead-%s" % lead.id, """<i class="bi bi-calculator"></i>
-                                                                 <span class='graph-tooltip' title='%s'><a href='%s'>%s&nbsp;</a></span>""" % (str(lead),
-                                                                                                                                               lead.get_absolute_url(),
-                                                                                                                                               lead.deal_id))
-                        nodes.add(leadNode)
-                        edges.append(GEdge(me,leadNode, color=leadColor))
-                        if lead.responsible:
-                            consultantNode = GNode("consultant-%s" % lead.responsible.id, str(lead.responsible))
-                            nodes.add(consultantNode)
-                            edges.append(GEdge(leadNode, consultantNode, color=leadColor))
-                else:
-                    # Group link for highly linked contact
-                    leads = []
-                    responsibles = []
-                    for lead in client.lead_set.all():
-                        leads.append(lead)
-                        if lead.responsible:
-                            responsibles.append(lead.responsible)
-                    leadsId = "-".join([str(l.id) for l in leads])
-                    leadsTitle = str(client.organisation)
-                    leadsLabel = _("%s leads" % len(leads))
-                    leadsNode = GNode("leads-%s" % leadsId, """<i class="bi bi-calculator"></i>
-                                                               <span class='graph-tooltip' title='%s'>&nbsp;%s&nbsp;</span>""" % (leadsTitle, leadsLabel))
-                    nodes.add(leadsNode)
-                    edges.append(GEdge(me,leadsNode, color=leadColor))
-                    for responsible in responsibles:
-                        consultantNode = GNode("consultant-%s" % responsible.id, str(responsible))
-                        nodes.add(consultantNode)
-                        edges.append(GEdge(leadsNode, consultantNode, color=leadColor))
+        data.append(f"""{self.id}("{str(self)}")""")
+        # Mission relations
+        for missionContact in self.missioncontact_set.all():
+            for mission in missionContact.mission_set.all():
+                data.append(f"""M{mission.id}("<i class='bi bi-gear'></i> <a href='{mission.get_absolute_url()}'>{mission.short_name()}</a>")""")
+                data.append(f"""style M{mission.id} fill: {missionColor}""")
+                data.append(f"{self.id}-->M{mission.id}")
+                for consultant in mission.consultants():
+                    data.append(f"""C{consultant.id}("<a href='{consultant.get_absolute_url()}'>{str(consultant)}</a>")""")
+                    data.append(f"M{mission.id}-->C{consultant.id}")
 
-            # Direct contact relation
-            for consultant in self.contact_points.all():
-                consultantNode = GNode("consultant-%s" % consultant.id, str(consultant))
-                nodes.add(consultantNode)
-                edges.append(GEdge(me, consultantNode, color=directColor))
+        # Business / Lead relations
+        for client in self.client_set.all():
+            if client.lead_set.count() < 5 :
+                for lead in client.lead_set.all():
+                    data.append(f"""L{lead.id}("<i class='bi bi-briefcase'></i> <a href='{lead.get_absolute_url()}'>{str(lead)}</a>")""")
+                    data.append(f"""style L{lead.id} fill: {leadColor}""")
+                    data.append(f"{self.id}-->L{lead.id}")
+                    if lead.responsible:
+                        data.append(f"""C{lead.responsible.id}("<a href='{lead.responsible.get_absolute_url()}'>{str(lead.responsible)}</a>")""")
+                        data.append(f"L{lead.id}-->C{lead.responsible.id}")
+            else:
+                # Group link for highly linked contact
+                leads = []
+                responsibles = []
+                for lead in client.lead_set.all():
+                    leads.append(lead)
+                    if lead.responsible:
+                        responsibles.append(lead.responsible)
+                leadsId = ".".join([str(l.id) for l in leads])
+                leadsTitle = f"<i class='bi bi-building-fill-add'></i> <a href='{client.get_absolute_url()}'>{str(client.organisation)}</a>"
+                leadsLabel = _("%s leads" % len(leads))
 
-            return """var nodes=%s; var edges=%s;""" % (nodes.dump(), edges.dump())
+                data.append(f"""L{leadsId}("{leadsTitle} ({leadsLabel})")""")
+                data.append(f"{self.id}-->L{leadsId}")
+                for responsible in responsibles:
+                    data.append(f"""C{responsible.id}("<a href='{responsible.get_absolute_url()}'>{str(responsible)}</a>")""")
+                    data.append(f"L{leadsId}-->C{responsible.id}")
 
-        except Exception as e:
-            print(e)
+        # Direct contact relation
+        for consultant in self.contact_points.all():
+            data.append(f"""C{consultant.id}("<a href='{consultant.get_absolute_url()}'>{str(consultant)}</a>")""")
+            data.append(f"{self.id}-->C{consultant.id}")
+
+        return "\n   ".join(data)
+
 
     def get_absolute_url(self):
         return reverse("crm:contact_detail", args=[self.id, ])

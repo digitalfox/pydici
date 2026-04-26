@@ -6,9 +6,7 @@
 
 {% block extrajs %}
 
-<script src="{{ MEDIA_URL }}js/d3.v3.min.js"></script>
-<script src="{{ MEDIA_URL }}js/dagre-d3.min.js"></script>
-
+<script src="{{ MEDIA_URL }}js/mermaid-11.14.min.js"></script>
 
 {% endblock %}
 
@@ -41,54 +39,10 @@
 {% endif %}
 
 
-<style>
-svg {
-    overflow: hidden;
-}
-
-.node rect {
-    stroke: #333;
-    stroke-width: 1.5px;
-    fill: #fff;
-}
-
-.edgeLabel rect {
-    fill: #fff;
-}
-
-.edgePath {
-    stroke: #333;
-    stroke-width: 1.5px;
-    fill: none;
-}
-
-</style>
-<svg width="100%" height="500px">
-    <g />
-</svg>
-
-
-<script type="text/javascript">
-<!--
-$(document).ready(function() {
-
-    {{ contact.relationData|safe }}
-
-    var g = dagreD3.json.decode(nodes, edges);
-    var layout = dagreD3.layout()
-                    .nodeSep(20)
-                    .rankDir("LR");
-    var renderer = new dagreD3.Renderer();
-    renderer.zoom(false);
-    renderer.layout(layout).run(g, d3.select("svg g"));
-
-    $('.graph-tooltip').tooltip({
-        "container": "body"
-    });
-
-});
--->
-</script>
+<pre class="mermaid">
+graph LR
+{{ contact.relationData|safe }}
+</pre>
 
 
 {% endblock %}
