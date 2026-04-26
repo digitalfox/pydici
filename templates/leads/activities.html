@@ -7,12 +7,17 @@
 
 {% block extrajs %}
     {% include "core/_billboard.html" %}
+    <script src="{{ MEDIA_URL }}js/mermaid-11.14.min.js"></script>
 {% endblock %}
 
 {% block content %}
     <div hx-get="{% url 'leads:graph_activities_activity' %}?{{ scope_current_filter }}" hx-trigger="load" class="col-12"><div class="loader m-3"></div></div>
     <h2>{% trans "All commercial activities" %}</h2>
     {% crispy filter.form filter_form_helper %}
+
+    <pre class="mermaid kanban">
+{{ kanban_activites_data|safe }}
+    </pre>
     {% include "leads/_activities_table.html" %}
 
     <a href="{% url 'leads:activity' %}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New commercial activity" %}</a>

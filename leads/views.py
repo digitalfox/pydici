@@ -390,12 +390,27 @@ def activity_comment_delete(request, comment_id):
 @pydici_feature("leads")
 def activities(request):
     """Current commercial activities"""
-    filter = ActivityFilter(request.GET, queryset=Activity.objects.all(), request=request)
+    qs = Activity.objects.all()
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        qs = qs.filter(subsidiary=subsidiary)
+    filter = ActivityFilter(request.GET, queryset=qs, request=request)
+    kanban_columns = [(_("Sleeping"), filter.qs.filter(state="SLEEPING")), (_("Recently canceled"), filter.qs.recently_canceled()),
+        (_("Late"), filter.qs.late()), (_("Soon"), filter.qs.soon()), (_("Recently done"), filter.qs.recently_done()),
+        (_("Later"), filter.qs.later())]
+    data = ["kanban"]
+    for column_name, activities in kanban_columns:
+        data.append(f"""["{column_name}"]""")
+        for activity in activities:
+            activity_title = f"{activity.client_organisation or ''} {activity.contact or ''}"
+            data.append(f"""  {activity.id}["<a href='{reverse('leads:activity_detail', args=[activity.id])}' title='{activity_title}'>{activity.name}</a>"]@{{assigned: "{activity.responsible.trigramme}"}}""")
+
     return render(request, "leads/activities.html",
                   {"data_url" : reverse('leads:activity_table_DT'),
                    "datatable_options": ''' "order": [[8, "asc"]]  ''',
                    "filter": filter,
                    "filter_form_helper": ActivityFilterFormHelper(),
+                   "kanban_activites_data": "\n  ".join(data),
                    "user": request.user})
 
 
